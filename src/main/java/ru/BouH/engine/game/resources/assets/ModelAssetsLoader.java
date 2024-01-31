@@ -11,9 +11,9 @@ public class ModelAssetsLoader implements IAssetsLoader {
 
     @Override
     public void load(GameCache gameCache) {
-        this.cube = ResourceManager.createMesh("/models/cube/cube.obj");
-        this.knife = ResourceManager.createMesh("/models/knife/knife.obj");
-        this.house = ResourceManager.createMesh("/models/house/house.obj");
+        this.cube = ResourceManager.createMesh("/models/cube/", "cube.obj");
+        this.knife = ResourceManager.createMesh("/models/knife/", "knife.obj");
+        this.house = ResourceManager.createMesh("/models/house/", "house.obj");
     }
 
     @Override

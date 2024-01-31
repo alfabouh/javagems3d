@@ -94,9 +94,6 @@ vec3 calc_normal_map() {
     return normal;
 }
 
-float per_cascade_bias_shadow[3] = float[](5.0e-6f, 7.5e-6f, 1.0e-6f);
-float per_cascade_linear_shadow[3] = float[](0.5, 0.575, 0.65);
-
 void main()
 {
     vec4 diffuse_texture = texture(diffuse_map, scaled_coordinates());
@@ -137,38 +134,49 @@ void main()
     bright_color = brightness >= 8. ? frag_color : vec4(0., 0., 0., 1.);
 }
 
-float calcVSM(sampler2D samp, vec4 shadow_coord, vec2 offset, float bias, float linear) {
-    vec2 moments = texture2D(samp, shadow_coord.xy + offset).rg;
+float per_cascade_bias_shadow[3] = float[](5.0e-7f, 5.0e-7f, 5.0e-7f);
+float per_cascade_linear_shadow[3] = float[](0.5, 0.5, 0.75);
 
+float calcVSM(int idx, vec4 shadow_coord, vec2 offset, float bias, float linear) {
+    vec2 moments = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord.xy + offset).rg;
     float variance = moments.y - (moments.x * moments.x);
 
     variance = max(variance, bias);
     float d = shadow_coord.z - moments.x;
     float shadowPCT = smoothstep(linear, 1.0, variance / (variance + d * d));
 
-    return shadow_coord.z <= moments.x ? 1.0 : shadowPCT;
-}
-
-float calculate_shadow_pcf(vec4 worldPosition, int idx, float bias, float linear) {
-    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
-    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, 0);
-
-    for (int x = -1; x <= 1; x++) {
-        for (int y = -1; y <= 1; y++) {
-            shadow += calcVSM(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord, vec2(x, y) * texelSize, bias, linear);
-        }
-    }
-
-    return shadow / 9.0;
+    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x ? 1.0 : shadowPCT;
 }
 
 float calculate_shadow_no_pcf(vec4 worldPosition, int idx, float bias, float linear) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    return calcVSM(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord, vec2(0.0), bias, linear);
+    return calcVSM(idx, shadow_coord, vec2(0.0), bias, linear);
+}
+
+float calculate_shadow_blur5x5(vec4 worldPosition, int idx, float bias, float linear) {
+    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
+    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
+
+    float kernel[5][5] = float[5][5](
+        float[5](1.0,  4.0,  6.0,  4.0, 1.0),
+        float[5](4.0, 16.0, 24.0, 16.0, 4.0),
+        float[5](6.0, 24.0, 36.0, 24.0, 6.0),
+        float[5](4.0, 16.0, 24.0, 16.0, 4.0),
+        float[5](1.0,  4.0,  6.0,  4.0, 1.0)
+    );
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, 0);
+
+    for (int i = -2; i <= 2; i++) {
+        for (int j = -2; j <= 2; j++) {
+            vec2 offset = vec2(float(i), float(j)) * texelSize;
+            shadow += calcVSM(idx, shadow_coord, offset, bias, linear) * kernel[i + 2][j + 2];
+        }
+    }
+
+    return shadow / 256.0;
 }
 
 vec4 calc_light() {
@@ -177,8 +185,11 @@ vec4 calc_light() {
     vec3 sunPos = normalize(vec3(sunX, sunY, sunZ));
     int cascadeIndex = int(out_view_position.z < cascade_shadow[0].split_distance) + int(out_view_position.z < cascade_shadow[1].split_distance);
     float bias = per_cascade_bias_shadow[cascadeIndex];
+    bias *= tan(acos(dot(normal, sunPos)));
+    bias = clamp(bias, 0.0, 1.0e-5f);
+
     float linear = per_cascade_linear_shadow[cascadeIndex];
-    float sun_shadow = (cascadeIndex != 2 ? calculate_shadow_pcf(out_world_position, cascadeIndex, bias, linear) : calculate_shadow_no_pcf(out_world_position, cascadeIndex, bias, linear));
+    float sun_shadow = calculate_shadow_blur5x5(out_world_position, cascadeIndex, bias, linear);
 
     vec4 calcSunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, mv_vertex_pos, normal);
 

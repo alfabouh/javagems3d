@@ -21,4 +21,4 @@ illum 2
 map_Kd Texture/Metal iron 1_baseColor.jpeg
 map_Ks Texture/Metal iron 1_specular.jpeg
 map_Ns Texture/Metal iron 1_roughness.jpeg
-map_refl Texture/Metal iron 1_metallic.jpeg
+map_Ka Texture/Metal iron 1_metallic.jpeg

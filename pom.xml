@@ -45,11 +45,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.l33tlabs.twl</groupId>
-            <artifactId>pngdecoder</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>bullet-platform</artifactId>
             <version>3.25-1.5.9</version>

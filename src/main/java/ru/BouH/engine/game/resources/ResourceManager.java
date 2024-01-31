@@ -26,8 +26,8 @@ public class ResourceManager {
         this.assetsObjects = new ArrayList<>();
     }
 
-    public static MeshDataGroup createMesh(String modelPath) {
-        return ModelLoader.createMesh(Game.getGame().getResourceManager().getGameCache(), modelPath);
+    public static MeshDataGroup createMesh(String modelPath, String modelName) {
+        return ModelLoader.createMesh(Game.getGame().getResourceManager().getGameCache(), modelPath, modelName);
     }
 
     public static TextureSample createTextureOutsideJar(String fullPath) {

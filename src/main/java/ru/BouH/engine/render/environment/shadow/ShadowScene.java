@@ -34,7 +34,7 @@ public class ShadowScene {
 
     public ShadowScene(Scene scene) {
         this.scene = scene;
-        this.frameBufferObjectProgram = new FrameBufferObjectProgram(true, false, GL43.GL_RG32F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, GL30.GL_CLAMP_TO_EDGE, null);
+        this.frameBufferObjectProgram = new FrameBufferObjectProgram(true, true, GL43.GL_RG32F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, GL30.GL_CLAMP_TO_EDGE, null);
         this.frameBufferObjectProgram.createFrameBuffer(new Vector2i(ShadowScene.SHADOW_MAP_SIZE), new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true);
         this.initCascades();
     }
@@ -51,7 +51,7 @@ public class ShadowScene {
         Matrix4d projection = RenderManager.instance.getProjectionMatrix();
         Vector4d sunPos = new Vector4d(this.getScene().getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
 
-        float[] cascadeSplitLambda = new float[] {0.875f, 0.7f, 0.95f};
+        float[] cascadeSplitLambda = new float[] {0.85f, 0.7f, 0.95f};
         float[] cascadeSplits = new float[ShadowScene.CASCADE_SPLITS];
 
         float nearClip = (float) projection.perspectiveNear();
