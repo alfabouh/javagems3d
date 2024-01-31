@@ -29,7 +29,7 @@ public class TextureSample implements IImageSample {
         if (inJar) {
             try (InputStream inputStream = Game.loadFileJar(fullPath)) {
                 if (inputStream == null) {
-                    Game.getGame().getLogManager().warn("Error, while loading texture " + fullPath);
+                    Game.getGame().getLogManager().warn("Error, while loading texture " + fullPath + " InputStream is NULL");
                     this.imageBuffer = null;
                 } else {
                     this.imageBuffer = this.readTextureFromMemory(fullPath, inputStream);
@@ -52,7 +52,7 @@ public class TextureSample implements IImageSample {
         this.isValid = true;
         this.scaling = new Vector2d(1.0d);
         if (inputStream == null) {
-            Game.getGame().getLogManager().warn("Error, while loading texture " + id);
+            Game.getGame().getLogManager().warn("Error, while loading texture " + id + " InputStream is NULL");
             this.imageBuffer = null;
         } else {
             this.imageBuffer = this.readTextureFromMemory(id, inputStream);
@@ -67,7 +67,9 @@ public class TextureSample implements IImageSample {
             return gameCache.getCachedTexture(fullPath);
         }
         TextureSample textureSample = new TextureSample(false, fullPath);
-        gameCache.addObjectInBuffer(fullPath, textureSample);
+        if (textureSample.isValid()) {
+            gameCache.addObjectInBuffer(fullPath, textureSample);
+        }
         return textureSample;
     }
 
@@ -76,7 +78,9 @@ public class TextureSample implements IImageSample {
             return gameCache.getCachedTexture(fullPath);
         }
         TextureSample textureSample = new TextureSample(true, fullPath);
-        gameCache.addObjectInBuffer(fullPath, textureSample);
+        if (textureSample.isValid()) {
+            gameCache.addObjectInBuffer(fullPath, textureSample);
+        }
         return textureSample;
     }
 

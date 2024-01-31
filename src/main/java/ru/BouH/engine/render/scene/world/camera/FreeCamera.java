@@ -7,7 +7,7 @@ import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.IController;
 
 public class FreeCamera extends Camera {
-    public static final double CAM_SPEED = 0.25d;
+    public static final double CAM_SPEED = 0.75d;
     private IController controller;
 
     public FreeCamera(IController controller, Vector3d pos, Vector3d rot) {

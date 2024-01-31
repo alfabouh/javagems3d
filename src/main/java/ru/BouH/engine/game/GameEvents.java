@@ -44,7 +44,7 @@ public class GameEvents {
         PhysEntityCube entityPropInfo = new PhysEntityCube(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 20.0d), new Vector3d(1, 1, 1), 1.0d, new Vector3d(0.0d, 15.0d, 10.0d), new Vector3d(0.0d));
         Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
 
-        PhysEntityCube entityPropInfo2 = new PhysEntityCube(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 100.0d), new Vector3d(1, 1, 1), 50.0d, new Vector3d(0.0d, 120.0d, 200.0d), new Vector3d(0.0d));
+        PhysEntityCube entityPropInfo2 = new PhysEntityCube(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 100.0d), new Vector3d(1, 1, 1), 50.0d, new Vector3d(0.0d, 60.0d, 200.0d), new Vector3d(0.0d));
         Game.getGame().getProxy().addItemInWorlds(entityPropInfo2, ResourceManager.renderDataAssets.entityLargeCube);
     }
 

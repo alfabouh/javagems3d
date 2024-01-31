@@ -40,6 +40,10 @@ public class Game {
         return new File(Game.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
     }
 
+    public static boolean seekInJar(String path) {
+        return Game.class.getResourceAsStream(path) != null;
+    }
+
     public static InputStream loadFileJar(String path) {
         return Game.class.getResourceAsStream(path);
     }
