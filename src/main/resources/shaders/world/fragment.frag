@@ -2,9 +2,9 @@ in vec2 texture_coordinates;
 in vec3 mv_vertex_normal;
 in vec3 mv_vertex_pos;
 in mat3 TBN;
-in vec4 light_frag_pos;
 in vec3 out_view_position;
 in vec4 out_world_position;
+in mat4 out_view_matrix;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
@@ -14,6 +14,15 @@ uniform sampler2D texture_sampler;
 
 uniform int texturing_code;
 uniform int lighting_code;
+
+const vec3 sampleOffsetDirections[20] = vec3[]
+(
+    vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1),
+    vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+    vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);
 
 const int light_opacity_code = 1 << 2;
 
@@ -40,9 +49,11 @@ struct CascadeShadow {
 };
 
 uniform CascadeShadow cascade_shadow[3];
+uniform samplerCube point_light_cubemap[3];
 uniform sampler2D shadow_map0;
 uniform sampler2D shadow_map1;
 uniform sampler2D shadow_map2;
+uniform float far_plane;
 
 struct PointLight
 {
@@ -53,6 +64,7 @@ struct PointLight
     float plG;
     float plB;
     float brightness;
+    int shadowMapId;
 };
 
 layout (std140, binding = 0) uniform SunLight {
@@ -64,7 +76,7 @@ layout (std140, binding = 0) uniform SunLight {
 };
 
 layout (std140, binding = 1) uniform PointLights {
-    PointLight p_l[1024];
+    PointLight p_l[128];
 };
 
 layout (std140, binding = 2) uniform Misc {
@@ -179,6 +191,17 @@ float calculate_shadow_blur5x5(vec4 worldPosition, int idx, float bias, float li
     return shadow / 256.0;
 }
 
+float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos)
+{
+    vec3 fragToLight = fragPosition - lightPos;
+    float closestDepth = texture(cubemap, fragToLight).r;
+    closestDepth *= far_plane;
+    float currentDepth = length(fragToLight);
+    float bias = 0.05;
+    float shadow = currentDepth - bias > closestDepth ? 0.0 : 1.0;
+    return shadow;
+}
+
 vec4 calc_light() {
     vec4 lightFactors = vec4(0.);
     vec3 normal = normalize(mv_vertex_normal);
@@ -201,7 +224,8 @@ vec4 calc_light() {
         float at_base = 1.8 / (bright * 0.5);
         float linear = 2.25 / (bright * 2.75);
         float expo = 0.6 / (bright * 0.25f);
-        point_light_factor += calc_point_light(p, mv_vertex_pos, normal, at_base, linear, expo, bright);
+        vec4 shadow = p.shadowMapId != -1 ? vec4(calculate_point_light_shadow(point_light_cubemap[p.shadowMapId], out_world_position.xyz, vec3(p.plPosX, p.plPosY, p.plPosZ))) : vec4(1.0);
+        point_light_factor += calc_point_light(p, mv_vertex_pos, normal, at_base, linear, expo, bright) * shadow;
     }
 
     float prgb = point_light_factor.r + point_light_factor.g + point_light_factor.b;
@@ -237,7 +261,7 @@ vec4 calc_sun_light(vec3 sunPos, vec3 vPos, vec3 vNormal) {
 }
 
 vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, float linear, float expo, float bright) {
-    vec3 pos = vec3(light.plPosX, light.plPosY, light.plPosZ);
+    vec3 pos = (out_view_matrix * vec4(vec3(light.plPosX, light.plPosY, light.plPosZ), 1.0)).xyz;
 
     vec3 light_dir = pos - vPos;
     vec3 to_light = normalize(light_dir);

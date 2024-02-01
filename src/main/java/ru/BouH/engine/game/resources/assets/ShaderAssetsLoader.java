@@ -26,7 +26,8 @@ public class ShaderAssetsLoader implements IAssetsLoader {
     public final ShaderManager skybox;
     public final ShaderManager world;
     public final ShaderManager simple;
-    public final ShaderManager depth;
+    public final ShaderManager depth_sun;
+    public final ShaderManager depth_plight;
     public final ShaderManager depth_test;
     public final ShaderManager debug;
 
@@ -42,7 +43,8 @@ public class ShaderAssetsLoader implements IAssetsLoader {
         this.skybox = this.createShaderManager("skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight);
         this.world = this.createShaderManager("world", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights);
         this.simple = this.createShaderManager("simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.depth = this.createShaderManager("depth", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.depth_sun = this.createShaderManager("depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.depth_plight = this.createShaderManager("depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT | Shader.ShaderType.GEOMETRIC_BIT);
         this.depth_test = this.createShaderManager("depth_test", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.gameUbo = this.createShaderManager("gameubo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights);

@@ -14,6 +14,7 @@ import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.render.RenderManager;
 import ru.BouH.engine.render.environment.shadow.CascadeShadow;
+import ru.BouH.engine.render.environment.shadow.PointLightShadow;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.fabric.constraints.ModelRenderConstraints;
@@ -21,7 +22,6 @@ import ru.BouH.engine.render.scene.programs.CubeMapProgram;
 import ru.BouH.engine.render.scene.programs.ShaderProgram;
 import ru.BouH.engine.render.scene.programs.UniformBufferProgram;
 import ru.BouH.engine.render.scene.programs.UniformProgram;
-import ru.BouH.engine.render.scene.scene_render.utility.UniformConstants;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -259,9 +259,9 @@ public final class ShaderManager {
             IImageSample normals = material.getNormals();
             IImageSample specular = material.getSpecular();
             CubeMapProgram cubeMapProgram = material.getAmbientCubeMap();
-            int texturing_code = 0;
 
-            for (int i = 0; i < 8; i++) {
+            int texturing_code = 0;
+            for (int i = 0; i < 12; i++) {
                 Scene.activeGlTexture(i);
                 GL30.glBindTexture(GL11.GL_TEXTURE_2D, 0);
             }
@@ -310,10 +310,10 @@ public final class ShaderManager {
             }
             if (cubeMapProgram != null) {
                 final int code = 5;
-                cubeMapProgram.bindCubeMap(code);
+                Scene.activeGlTexture(code);
+                cubeMapProgram.bindCubeMap();
                 ShaderManager.this.performUniform("ambient_cubemap", code);
             }
-
             if (passShadows) {
                 for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
                     int startCode = 6;
@@ -324,29 +324,53 @@ public final class ShaderManager {
                     ShaderManager.this.performUniform("cascade_shadow", ".split_distance", i, cascadeShadow.getSplitDistance());
                     ShaderManager.this.performUniform("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
                 }
+                for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
+                    PointLightShadow pointLightShadow = scene.getSceneRender().getShadowScene().getPointLightShadows().get(i);
+                    final int code = 9;
+                    Scene.activeGlTexture(code + i);
+                    pointLightShadow.getPointLightCubeMap().bindCubeMap();
+                    ShaderManager.this.performUniform("far_plane", pointLightShadow.farPlane());
+                    ShaderManager.this.performUniform("point_light_cubemap", i, code + i);
+                }
             }
 
             ShaderManager.this.performUniform("texturing_code", texturing_code);
         }
 
+        public void passViewAndModelMatrices(Matrix4d viewMatrix, Model<Format3D> model) {
+            if (ShaderManager.this.checkUniformInGroup("model_matrix")) {
+                this.performModelMatrix3d(model);
+            }
+            if (ShaderManager.this.checkUniformInGroup("view_matrix")) {
+                this.performViewMatrix3d(viewMatrix);
+            }
+            if (ShaderManager.this.checkUniformInGroup("model_view_matrix")) {
+                this.performModelViewMatrix3d(model);
+            }
+        }
+
+        public void passViewAndModelMatrices(Model<Format3D> model) {
+            this.passViewAndModelMatrices(RenderManager.instance.getViewMatrix(), model);
+        }
+
         public void performProjectionMatrix() {
-            ShaderManager.this.performUniform(UniformConstants.projection_matrix, RenderManager.instance.getProjectionMatrix());
+            ShaderManager.this.performUniform("projection_matrix", RenderManager.instance.getProjectionMatrix());
         }
 
         public void performProjectionMatrix2d(Model<Format2D> model) {
-            ShaderManager.this.performUniform(UniformConstants.projection_model_matrix, RenderManager.instance.getOrthographicScreenModelMatrix(model));
+            ShaderManager.this.performUniform("projection_model_matrix", RenderManager.instance.getOrthographicScreenModelMatrix(model));
         }
 
         public void performModelViewMatrix3d(Model<Format3D> model) {
-            ShaderManager.this.performUniform(UniformConstants.model_view_matrix, RenderManager.instance.getModelViewMatrix(model));
+            ShaderManager.this.performUniform("model_view_matrix", RenderManager.instance.getModelViewMatrix(model));
         }
 
         public void performModelViewMatrix3d(Matrix4d matrix4d) {
-            ShaderManager.this.performUniform(UniformConstants.model_view_matrix, matrix4d);
+            ShaderManager.this.performUniform("model_view_matrix", matrix4d);
         }
 
         public void performViewMatrix3d(Matrix4d matrix4d) {
-            ShaderManager.this.performUniform(UniformConstants.view_matrix, matrix4d);
+            ShaderManager.this.performUniform("view_matrix", matrix4d);
         }
 
         public void performModelMatrix3d(Model<Format3D> model) {
@@ -358,7 +382,7 @@ public final class ShaderManager {
         }
 
         public void setCubeMapTexture(CubeMapProgram cubeMapTexture) {
-            this.setCubeMapTexture(GL30.GL_TEXTURE0, cubeMapTexture);
+            this.setCubeMapTexture(0, cubeMapTexture);
         }
 
         public void setCubeMapTexture(int code, CubeMapProgram cubeMapTexture) {
@@ -366,7 +390,7 @@ public final class ShaderManager {
                 Game.getGame().getLogManager().warn("CubeMap is NULL!");
                 return;
             }
-            ShaderManager.this.performUniform(UniformConstants.cube_map_sampler, code);
+            ShaderManager.this.performUniform("cube_map_sampler", code);
             GL30.glActiveTexture(GL30.GL_TEXTURE0 + code);
             GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, cubeMapTexture.getTextureId());
         }

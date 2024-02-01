@@ -1,25 +1,43 @@
 package ru.BouH.engine.render.scene.programs;
 
+import org.joml.Vector2i;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
+import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.scene.Scene;
+
+import java.nio.ByteBuffer;
 
 public class CubeMapProgram {
     public static final String folder = "/textures/cubemaps/";
 
     private int textureId;
 
-    public CubeMapProgram(String textureName, String format) {
-        CubeMapTextureArray cubeMapTextureArray = new CubeMapTextureArray(textureName, format);
-        this.generateTexture(cubeMapTextureArray);
+    public CubeMapProgram() {
     }
 
-    public CubeMapProgram(CubeMapTextureArray cubeMapTextureArray) {
-        this.generateTexture(cubeMapTextureArray);
+    public void createCubeMap(Vector2i size, int internalFormat, int textureFormat, int filter, int clamp, boolean aliasing) {
+        this.textureId = GL30.glGenTextures();
+
+        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, this.textureId);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_MIN_FILTER, filter);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_MAG_FILTER, filter);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_T, clamp);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_S, clamp);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_R, clamp);
+        if (aliasing) {
+            GL30.glTexParameterf(GL30.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL30.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+        }
+        for (int i = 0; i < 6; i++) {
+            GL30.glTexImage2D(GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, size.x, size.y, 0, textureFormat, GL30.GL_FLOAT, (ByteBuffer) null);
+        }
+
+        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
     }
 
-    private void generateTexture(CubeMapTextureArray cubeMapTextureArray) {
+    public void generateCubeMapFromTexture(CubeMapTextureArray cubeMapTextureArray) {
         this.textureId = GL30.glGenTextures();
 
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, this.textureId);
@@ -37,8 +55,11 @@ public class CubeMapProgram {
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
     }
 
-    public void bindCubeMap(int code) {
-        Scene.activeGlTexture(code);
+    public void unBindCubeMap() {
+        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
+    }
+
+    public void bindCubeMap() {
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, this.getTextureId());
     }
 

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LightManager implements ILightManager {
-    public static final int MAX_POINT_LIGHTS = 1024;
+    public static final int MAX_POINT_LIGHTS = 128;
     private List<PointLight> pointLightList;
     private List<PointLight> activeLights;
     private final Environment environment;
@@ -82,41 +82,39 @@ public class LightManager implements ILightManager {
     public void updateBuffers(SceneWorld sceneWorld, Matrix4d viewMatrix) {
         this.getActiveLights().forEach(e -> e.onUpdate(sceneWorld));
         this.updateSunUbo(viewMatrix);
-        this.updatePointLightsUbo(viewMatrix);
+        this.updatePointLightsUbo();
         this.activeLights = this.getPointLightList().stream().filter(Light::isEnabled).collect(Collectors.toList());
     }
 
     private void updateSunUbo(Matrix4d viewMatrix) {
         Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunAngle(), viewMatrix, 0.0f);
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(5);
-
         value1Buffer.put(this.calcAmbientLight());
         value1Buffer.put(this.environment.getSky().getSunBrightness());
         value1Buffer.put(angle.x);
         value1Buffer.put(angle.y);
         value1Buffer.put(angle.z);
         value1Buffer.flip();
-
-        Game.getGame().getScreen().getScene().getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.SunLight, value1Buffer);
+        Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.SunLight, value1Buffer);
         MemoryUtil.memFree(value1Buffer);
     }
 
-    private void updatePointLightsUbo(Matrix4d viewMatrix) {
+    private void updatePointLightsUbo() {
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(7 * LightManager.MAX_POINT_LIGHTS);
         List<PointLight> pointLightList = this.getActiveLights();
         int activeLights = pointLightList.size();
         for (int i = 0; i < activeLights; i++) {
             PointLight pointLight = pointLightList.get(i);
-            Vector3f pos = LightManager.passVectorInViewSpace(new Vector3f((float) pointLight.getLightPos().x, (float) pointLight.getLightPos().y, (float) pointLight.getLightPos().z), viewMatrix, 1.0f);
-            value1Buffer.put(pos.x);
-            value1Buffer.put(pos.y);
-            value1Buffer.put(pos.z);
+            value1Buffer.put((float) pointLight.getLightPos().x);
+            value1Buffer.put((float) pointLight.getLightPos().y);
+            value1Buffer.put((float) pointLight.getLightPos().z);
             value1Buffer.put((float) pointLight.getLightColor().x);
             value1Buffer.put((float) pointLight.getLightColor().y);
             value1Buffer.put((float) pointLight.getLightColor().z);
             value1Buffer.put(!pointLight.isEnabled() ? -1.0f : pointLight.getBrightness());
+            value1Buffer.put(pointLight.getAttachedShadowSceneId());
             value1Buffer.flip();
-            Game.getGame().getScreen().getScene().getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
+            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
         }
         MemoryUtil.memFree(value1Buffer);
     }

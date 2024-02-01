@@ -8,44 +8,23 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.screen.Screen;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class FrameBufferObjectProgram {
+public class FBOTexture2DProgram {
     private int frameBufferId;
     private int renderBufferId;
     private final List<TextureProgram> texturePrograms;
     private final boolean drawColor;
     private final boolean aliasing;
-    private final int internalFormat;
-    private final int textureFormat;
-    private final int filtering1;
-    private final int filtering2;
-    private final int compareMode;
-    private final int compareFunc;
-    private final int clamp1;
-    private final int clamp2;
-    private final float[] borderColor;
 
-    public FrameBufferObjectProgram(boolean drawColor, boolean aliasing, int internalFormat, int textureFormat, int filtering_mag, int filtering_min, int compareMode, int compareFunc, int clamp_s, int clamp_t, float[] borderColor) {
+    public FBOTexture2DProgram(boolean drawColor, boolean aliasing) {
         this.texturePrograms = new ArrayList<>();
         this.drawColor = drawColor;
         this.aliasing = aliasing;
-        this.internalFormat = internalFormat;
-        this.textureFormat = textureFormat;
-        this.filtering1 = filtering_mag;
-        this.filtering2 = filtering_min;
-        this.compareMode = compareMode;
-        this.compareFunc = compareFunc;
-        this.clamp1 = clamp_s;
-        this.clamp2 = clamp_t;
-        this.borderColor = borderColor;
     }
 
-    public void createFrameBuffer(Vector2i size, int[] attachments, boolean depthBuffer) {
+    public void createFrameBuffer2DTexture(Vector2i size, int[] attachments, boolean depthBuffer, int internalFormat, int textureFormat, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
         if (!Scene.isSceneActive()) {
             return;
         }
@@ -55,7 +34,7 @@ public class FrameBufferObjectProgram {
 
         for (final int attachment : attachments) {
             TextureProgram textureProgram = new TextureProgram();
-            textureProgram.createTexture(size, this.internalFormat, this.textureFormat, this.filtering1, this.filtering2, this.compareMode, this.compareFunc, this.clamp1, this.clamp2, this.borderColor, this.aliasing);
+            textureProgram.createTexture(size, internalFormat, textureFormat, filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor, this.aliasing);
             GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_2D, textureProgram.getTextureId(), 0);
             this.getTexturePrograms().add(textureProgram);
         }

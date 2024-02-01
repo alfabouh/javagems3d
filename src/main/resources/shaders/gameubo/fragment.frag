@@ -7,6 +7,7 @@ struct PointLight
     float plG;
     float plB;
     float brightness;
+    int shadowMapId;
 };
 
 layout (std140, binding = 0) uniform SunLight {
@@ -18,7 +19,7 @@ layout (std140, binding = 0) uniform SunLight {
 };
 
 layout (std140, binding = 1) uniform PointLights {
-    PointLight p_l[1024];
+    PointLight p_l[128];
 };
 
 layout (std140, binding = 2) uniform Misc {
