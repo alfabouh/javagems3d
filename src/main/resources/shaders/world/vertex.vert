@@ -13,6 +13,7 @@ struct PointLight
     float plG;
     float plB;
     float brightness;
+    int shadowMapId;
 };
 
 layout (std140, binding = 0) uniform SunLight {
@@ -24,7 +25,7 @@ layout (std140, binding = 0) uniform SunLight {
 };
 
 layout (std140, binding = 1) uniform PointLights {
-    PointLight p_l[1024];
+    PointLight p_l[128];
 };
 
 layout (std140, binding = 2) uniform Misc {
@@ -34,19 +35,19 @@ layout (std140, binding = 2) uniform Misc {
 out vec2 texture_coordinates;
 out vec3 mv_vertex_normal;
 out vec3 mv_vertex_pos;
-out vec4 light_frag_pos;
 out mat3 TBN;
+out mat4 out_view_matrix;
 
 out vec3 out_view_position;
 out vec4 out_world_position;
 
+uniform mat4 view_matrix;
 uniform mat4 model_matrix;
-uniform mat4 model_view_matrix;
 uniform mat4 projection_matrix;
-uniform mat4 light_model_projection_view_matrix;
 
 void main()
 {
+    mat4 model_view_matrix = view_matrix * model_matrix;
     vec4 mv_pos = model_view_matrix * vec4(aPosition, 1.0f);
     gl_Position = projection_matrix * mv_pos;
 
@@ -59,8 +60,7 @@ void main()
     vec3 N = normalize(vec3(model_view_matrix * (vec4(aNormal, 0.0))));
     TBN = mat3(T, B, N);
 
-    light_frag_pos = light_model_projection_view_matrix * vec4(aPosition, 1.0f);
-
     out_view_position = mv_pos.xyz;
     out_world_position = model_matrix * vec4(aPosition, 1.0f);
+    out_view_matrix = view_matrix;
 }

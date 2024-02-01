@@ -14,7 +14,6 @@ import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.objects.gui.hud.GuiPicture;
 import ru.BouH.engine.render.scene.objects.gui.hud.GuiText;
-import ru.BouH.engine.render.scene.scene_render.utility.UniformConstants;
 import ru.BouH.engine.render.screen.Screen;
 
 public class GUI {
@@ -61,7 +60,7 @@ public class GUI {
         if (model2D != null) {
             guiPicture.getShaderManager().bind();
             guiPicture.getShaderManager().getUtils().performProjectionMatrix2d(guiPicture.getModel2DInfo());
-            guiPicture.getShaderManager().performUniform(UniformConstants.colour, new Vector4d(1.0f, 1.0f, 1.0f, 1.0f));
+            guiPicture.getShaderManager().performUniform("colour", new Vector4d(1.0f, 1.0f, 1.0f, 1.0f));
             guiPicture.renderFabric().onRender(partialTicks, sceneRenderBase, guiPicture);
             guiPicture.getShaderManager().unBind();
             guiPicture.getModel2DInfo().clean();
@@ -75,7 +74,7 @@ public class GUI {
         guiText.getShaderManager().bind();
         guiText.getShaderManager().getUtils().performProjectionMatrix2d(guiText.getModel2DInfo());
         float[] hex = GUI.HEX2RGB(HEX);
-        guiText.getShaderManager().performUniform(UniformConstants.colour, new Vector4d(hex[0], hex[1], hex[2], 1.0f));
+        guiText.getShaderManager().performUniform("colour", new Vector4d(hex[0], hex[1], hex[2], 1.0f));
         guiText.renderFabric().onRender(partialTicks, sceneRenderBase, guiText);
         guiText.getShaderManager().unBind();
         guiText.getModel2DInfo().clean();

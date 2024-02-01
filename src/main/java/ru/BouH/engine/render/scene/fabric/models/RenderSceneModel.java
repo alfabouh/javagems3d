@@ -36,7 +36,6 @@ public class RenderSceneModel extends RenderSceneObject {
     public void onRender(double partialTicks) {
         this.getShaderManager().bind();
         this.getShaderManager().getUtils().performProjectionMatrix();
-        this.getShaderManager().getUtils().performModelViewMatrix3d(this.toRender());
         this.getShaderManager().performUniform("texture_scaling", this.textureScaling);
         Scene.renderModelWithMaterials(this.toRender(), this.getShaderManager(), this.getModelRenderConstraints(), GL30.GL_TRIANGLES);
         this.getShaderManager().unBind();

@@ -21,7 +21,6 @@ import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.scene_render.RenderGroup;
-import ru.BouH.engine.render.scene.scene_render.utility.UniformConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,7 @@ public class DebugRender extends SceneRenderBase {
     private void renderDebugSunDirection(SceneRenderBase sceneRenderBase) {
         Model<Format3D> model = MeshHelper.generateVector3DModel(new Vector3d(0.0d), new Vector3d(sceneRenderBase.getSceneWorld().getEnvironment().getSky().getSunAngle()).mul(1000.0f));
         this.debugShaders.getUtils().performModelViewMatrix3d(model);
-        this.debugShaders.performUniform(UniformConstants.colour, new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+        this.debugShaders.performUniform("colour", new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
         Scene.renderModel(model, GL30.GL_LINES);
         model.clean();
     }
@@ -69,7 +68,7 @@ public class DebugRender extends SceneRenderBase {
             Model<Format3D> form = MeshHelper.generateWirebox3DModel(new Vector3d(triggerZone.getZone().getSize()).mul(-0.5f), new Vector3d(triggerZone.getZone().getSize()).mul(0.5f));
             form.getFormat().setPosition(triggerZone.getZone().getLocation());
             this.debugShaders.getUtils().performModelViewMatrix3d(form);
-            this.debugShaders.performUniform(UniformConstants.colour, new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
+            this.debugShaders.performUniform("colour", new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
             Scene.renderModel(form, GL30.GL_LINES);
             form.clean();
         }
@@ -84,7 +83,7 @@ public class DebugRender extends SceneRenderBase {
                 Model<Format3D> form = this.constructForm(rigidBodyObject);
                 form.getFormat().setPosition(physicsObject.getRenderPosition());
                 this.debugShaders.getUtils().performModelViewMatrix3d(form);
-                this.debugShaders.performUniform(UniformConstants.colour, new Vector4f(1.0f, 0.0f, 1.0f, 1.0f));
+                this.debugShaders.performUniform("colour", new Vector4f(1.0f, 0.0f, 1.0f, 1.0f));
                 Scene.renderModel(form, GL30.GL_LINES);
                 form.clean();
             }
