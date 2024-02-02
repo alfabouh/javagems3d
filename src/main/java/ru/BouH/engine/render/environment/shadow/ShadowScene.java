@@ -198,7 +198,7 @@ public class ShadowScene {
             if (pointLightShadow.isAttachedToLight()) {
                 pointLightShadow.getPointLightCubeMap().bindFBO();
                 pointLightShadow.configureMatrices();
-                GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT);
+                GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
                 for (int j = 0; j < 6; j++) {
                     this.getPointLightShadowShader().performUniform("shadow_matrices", j, pointLightShadow.getShadowDirections().get(j));
                 }
