@@ -54,8 +54,7 @@ public class LightManager implements ILightManager {
     }
 
     public float calcAmbientLight() {
-        float ambient = 0.5f;
-        return Math.max(ambient * this.environment.getSky().getSunBrightness(), 5.0e-2f);
+        return Math.max(0.5f * this.environment.getSky().getSunBrightness(), 5.0e-2f);
     }
 
     public List<PointLight> getPointLightList() {

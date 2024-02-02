@@ -345,7 +345,7 @@ public final class ShaderManager {
                 this.performViewMatrix3d(viewMatrix);
             }
             if (ShaderManager.this.checkUniformInGroup("model_view_matrix")) {
-                this.performModelViewMatrix3d(model);
+                this.performModelViewMatrix3d(model, viewMatrix);
             }
         }
 
@@ -362,7 +362,11 @@ public final class ShaderManager {
         }
 
         public void performModelViewMatrix3d(Model<Format3D> model) {
-            ShaderManager.this.performUniform("model_view_matrix", RenderManager.instance.getModelViewMatrix(model));
+            this.performModelViewMatrix3d(model, RenderManager.instance.getViewMatrix());
+        }
+
+        public void performModelViewMatrix3d(Model<Format3D> model, Matrix4d view) {
+            ShaderManager.this.performUniform("model_view_matrix", RenderManager.instance.getModelViewMatrix(model, view));
         }
 
         public void performModelViewMatrix3d(Matrix4d matrix4d) {

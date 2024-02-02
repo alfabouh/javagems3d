@@ -10,7 +10,6 @@ layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
 uniform vec3 camera_pos;
-uniform sampler2D texture_sampler;
 
 uniform int texturing_code;
 uniform int lighting_code;
@@ -25,7 +24,6 @@ const vec3 sampleOffsetDirections[20] = vec3[]
 );
 
 const int light_opacity_code = 1 << 2;
-
 
 const int diffuse_code = 1 << 2;
 const int emissive_code = 1 << 3;
