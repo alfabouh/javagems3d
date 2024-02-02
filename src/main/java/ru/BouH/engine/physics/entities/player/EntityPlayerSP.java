@@ -225,7 +225,6 @@ public class EntityPlayerSP extends PhysEntity implements IRemoteController {
             PointLight pointLight = (PointLight) new PointLight().setLightColor(new Vector3d(a == 0 ? 1.0d : Game.random.nextFloat(), a == 1 ? 1.0d : Game.random.nextFloat(), a == 2 ? 1.0d : Game.random.nextFloat()));
             pointLight.setBrightness(8.0f);
             Game.getGame().getProxy().addLight(entityPropInfo, pointLight);
-            Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().bindPointLightToShadowScene(0, pointLight);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(20.0f));
         }
         if (BindingList.instance.keyBlock3.isClicked()) {

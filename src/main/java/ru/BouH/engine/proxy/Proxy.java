@@ -8,6 +8,7 @@ import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
 import ru.BouH.engine.render.environment.light.Light;
+import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.preforms.RenderObjectData;
 import ru.BouH.engine.render.screen.Screen;
 
@@ -32,6 +33,11 @@ public class Proxy {
         } catch (GameException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addPointLight(WorldItem worldItem, PointLight light, int attachShadowScene) {
+        this.addLight(worldItem, light);
+        Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
     }
 
     public void addLight(WorldItem worldItem, Light light) {
