@@ -17,7 +17,7 @@ public class PointLightShadow {
     private final int id;
     private final Scene scene;
     private PointLight pointLight;
-    private final List<Matrix4d> shadowDirections;
+    private List<Matrix4d> shadowDirections;
 
     public PointLightShadow(int id, Scene scene) {
         this.id = id;
@@ -29,22 +29,7 @@ public class PointLightShadow {
     }
 
     public void configureMatrices() {
-        this.shadowDirections.clear();
-        Matrix4d perspective = new Matrix4d().perspective((float) Math.toRadians(90.0f), 1.0f, this.nearPlane(), this.farPlane());
-
-        Matrix4d projectionViewMatrix1 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(this.getPointLight().getLightPos(), new Vector3d(0.0d, -1.0d, 0.0d), this.getPointLight().getLightPos().add(1.0d, 0.0d, 0.0d)));
-        Matrix4d projectionViewMatrix2 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(this.getPointLight().getLightPos(), new Vector3d(0.0d, -1.0d, 0.0d), this.getPointLight().getLightPos().add(-1.0d, 0.0d, 0.0d)));
-        Matrix4d projectionViewMatrix3 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(this.getPointLight().getLightPos(), new Vector3d(0.0d, 0.0d, 1.0d), this.getPointLight().getLightPos().add(0.0d, 1.0d, 0.0d)));
-        Matrix4d projectionViewMatrix4 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(this.getPointLight().getLightPos(), new Vector3d(0.0d, 0.0d, -1.0d), this.getPointLight().getLightPos().add(0.0d, -1.0d, 0.0d)));
-        Matrix4d projectionViewMatrix5 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(this.getPointLight().getLightPos(), new Vector3d(0.0d, -1.0d, 0.0d), this.getPointLight().getLightPos().add(0.0d, 0.0d, 1.0d)));
-        Matrix4d projectionViewMatrix6 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(this.getPointLight().getLightPos(), new Vector3d(0.0d, -1.0d, 0.0d), this.getPointLight().getLightPos().add(0.0d, 0.0d, -1.0d)));
-
-        this.shadowDirections.add(projectionViewMatrix1);
-        this.shadowDirections.add(projectionViewMatrix2);
-        this.shadowDirections.add(projectionViewMatrix3);
-        this.shadowDirections.add(projectionViewMatrix4);
-        this.shadowDirections.add(projectionViewMatrix5);
-        this.shadowDirections.add(projectionViewMatrix6);
+        this.shadowDirections = RenderManager.instance.getAllDirectionViewSpaces(this.getPointLight().getLightPos(), this.nearPlane(), this.farPlane());
     }
 
     public int getId() {

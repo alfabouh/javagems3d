@@ -7,6 +7,7 @@ import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.RenderManager;
 import ru.BouH.engine.render.environment.light.LightManager;
 import ru.BouH.engine.render.environment.sky.Sky;
+import ru.BouH.engine.render.environment.sky.skybox.SkyBox2D;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
 public class Environment implements IEnvironment, IWorldDynamic {
@@ -19,7 +20,7 @@ public class Environment implements IEnvironment, IWorldDynamic {
 
     @Override
     public void init(SceneWorld sceneWorld) {
-        this.sky = new Sky(ResourceManager.renderAssets.skyboxCubeMap, new Vector3f(1.0f, 1.0f, 0.2f));
+        this.sky = new Sky(new SkyBox2D(ResourceManager.renderAssets.skyboxCubeMap), new Vector3f(-1.0f, 1.0f, -1.0f), 1.0f);
         this.lightManager = new LightManager(this);
     }
 

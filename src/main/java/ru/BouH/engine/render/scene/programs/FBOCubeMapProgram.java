@@ -60,10 +60,8 @@ public class FBOCubeMapProgram {
         this.unBindFBO();
     }
 
-    public void connectCubeMapToBuffer(int attachment) {
-        for (int j = 0; j < 6; j++) {
-            GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
-        }
+    public void connectCubeMapToBuffer(int attachment, int j) {
+        GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
     }
 
     public int msaaSamples() {

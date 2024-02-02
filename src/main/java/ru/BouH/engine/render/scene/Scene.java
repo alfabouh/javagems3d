@@ -114,15 +114,23 @@ public class Scene implements IScene {
         }
     }
 
-    @SuppressWarnings("all")
     public static void renderModelWithMaterials(Model<?> model, ShaderManager shaderManager, ModelRenderConstraints modelRenderConstraints, int code) {
+        Scene.renderModelWithMaterials(model, shaderManager, modelRenderConstraints, code, null);
+    }
+
+    @SuppressWarnings("all")
+    public static void renderModelWithMaterials(Model<?> model, ShaderManager shaderManager, ModelRenderConstraints modelRenderConstraints, int code, Matrix4d view) {
         if (model == null || model.getMeshDataGroup() == null) {
             return;
         }
         if (model.getFormat() instanceof Format3D) {
             Model<Format3D> format3DModel = (Model<Format3D>) model;
             Matrix4d modelMatrix = RenderManager.instance.getModelMatrix(format3DModel);
-            shaderManager.getUtils().passViewAndModelMatrices(format3DModel);
+            if (view == null) {
+                shaderManager.getUtils().passViewAndModelMatrices(format3DModel);
+            } else {
+                shaderManager.getUtils().passViewAndModelMatrices(view, format3DModel);
+            }
         }
         for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
             shaderManager.getUtils().performConstraintsOnShader(modelRenderConstraints);
@@ -428,27 +436,28 @@ public class Scene implements IScene {
         }
 
         private void renderDebugScreen(double partialTicks) {
-            //ResourceManager.shaderAssets.guiShader.bind();
-            //this.getBlurShader().performUniform(UniformConstants.texture_sampler, 0);
-            //GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            //this.sceneFbo.bindTexture(1);
-            //ResourceManager.shaderAssets.guiShader.getUtils().performProjectionMatrix2d(model);
-            //Scene.renderModel(model, GL30.GL_TRIANGLES);
-            //ResourceManager.shaderAssets.guiShader.unBind();
+            if (this.getCurrentDebugMode() == 1) {
+                Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d), new Vector2d(400.0d, 300.0d), 0);
+                ResourceManager.shaderAssets.guiShader.bind();
+                this.getBlurShader().performUniform("texture_sampler", 0);
+                GL30.glActiveTexture(GL30.GL_TEXTURE0);
+                this.sceneFbo.bindTexture(1);
+                ResourceManager.shaderAssets.guiShader.getUtils().performProjectionMatrix2d(model);
+                Scene.renderModel(model, GL30.GL_TRIANGLES);
+                ResourceManager.shaderAssets.guiShader.unBind();
 
-
-            Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d), new Vector2d(400, 300), 0);
-            ResourceManager.shaderAssets.depth_test.bind();
-            ResourceManager.shaderAssets.depth_test.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.getShadowScene().getFrameBufferObjectProgram().bindTexture(0);
-            ResourceManager.shaderAssets.depth_test.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            this.getShadowScene().getFrameBufferObjectProgram().unBindTexture();
-            ResourceManager.shaderAssets.depth_test.unBind();
-            model.clean();
-
-
+                model.clean();
+                model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d, 350.0d), new Vector2d(400.0d, 650.0d), 0);
+                ResourceManager.shaderAssets.depth_test.bind();
+                ResourceManager.shaderAssets.depth_test.performUniform("texture_sampler", 0);
+                GL30.glActiveTexture(GL30.GL_TEXTURE0);
+                this.getShadowScene().getFrameBufferObjectProgram().bindTexture(0);
+                ResourceManager.shaderAssets.depth_test.getUtils().performProjectionMatrix2d(model);
+                Scene.renderModel(model, GL30.GL_TRIANGLES);
+                this.getShadowScene().getFrameBufferObjectProgram().unBindTexture();
+                ResourceManager.shaderAssets.depth_test.unBind();
+                model.clean();
+            }
         }
 
         private void renderMixedScene(double partialTicks, Model<Format2D> model) {

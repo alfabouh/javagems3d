@@ -9,6 +9,9 @@ import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.render.scene.world.camera.ICamera;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RenderManager {
     public static final float FOV = (float) Math.toRadians(60.0f);
     public static final float Z_NEAR = 0.1f;
@@ -36,12 +39,12 @@ public class RenderManager {
         return RenderManager.instance.getTransform().getViewMatrix();
     }
 
-    public Matrix4d getModelViewMatrix(Matrix4d matrix4d, Model<Format3D> model) {
-        return RenderManager.instance.getTransform().getModelViewMatrix(model, matrix4d);
-    }
-
     public Matrix4d getModelViewMatrix(Model<Format3D> model) {
         return RenderManager.instance.getTransform().getModelViewMatrix(model, this.getViewMatrix());
+    }
+
+    public Matrix4d getModelViewMatrix(Model<Format3D> model, Matrix4d viewMatrix) {
+        return RenderManager.instance.getTransform().getModelViewMatrix(model, viewMatrix);
     }
 
     public Matrix4d getModelMatrix(Model<Format3D> model) {
@@ -71,5 +74,25 @@ public class RenderManager {
 
     public final Matrix4d getLookAtMatrix(Vector3d eye, Vector3d up, Vector3d destination) {
         return RenderManager.instance.getTransform().getLookAtMatrix(eye, up, destination);
+    }
+
+    public List<Matrix4d> getAllDirectionViewSpaces(Vector3d pos, float near, float far) {
+        List<Matrix4d> directions = new ArrayList<>();
+        Matrix4d perspective = new Matrix4d().perspective((float) Math.toRadians(90.0f), 1.0f, near, far);
+
+        Matrix4d projectionViewMatrix1 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(1.0d, 0.0d, 0.0d)));
+        Matrix4d projectionViewMatrix2 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(-1.0d, 0.0d, 0.0d)));
+        Matrix4d projectionViewMatrix3 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, 0.0d, 1.0d), pos.add(0.0d, 1.0d, 0.0d)));
+        Matrix4d projectionViewMatrix4 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, 0.0d, -1.0d), pos.add(0.0d, -1.0d, 0.0d)));
+        Matrix4d projectionViewMatrix5 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(0.0d, 0.0d, 1.0d)));
+        Matrix4d projectionViewMatrix6 = new Matrix4d(perspective).mul(RenderManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(0.0d, 0.0d, -1.0d)));
+
+        directions.add(projectionViewMatrix1);
+        directions.add(projectionViewMatrix2);
+        directions.add(projectionViewMatrix3);
+        directions.add(projectionViewMatrix4);
+        directions.add(projectionViewMatrix5);
+        directions.add(projectionViewMatrix6);
+        return directions;
     }
 }
