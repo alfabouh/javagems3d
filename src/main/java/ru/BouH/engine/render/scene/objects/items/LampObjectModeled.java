@@ -5,13 +5,12 @@ import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.materials.textures.ColorSample;
 import ru.BouH.engine.physics.entities.prop.PhysLightCube;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
-import ru.BouH.engine.render.scene.preforms.RenderObjectData;
+import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
-public class LampObject extends EntityObject {
-    public LampObject(SceneWorld sceneWorld, WorldItem worldItem, RenderObjectData renderData) {
+public class LampObjectModeled extends EntityObjectModeled {
+    public LampObjectModeled(SceneWorld sceneWorld, WorldItem worldItem, RenderObjectData renderData) {
         super(sceneWorld, worldItem, renderData);
     }
 
@@ -24,7 +23,7 @@ public class LampObject extends EntityObject {
                 Material material = new Material();
                 material.setDiffuse(ColorSample.createColor(color));
                 this.getRenderData().setOverObjectMaterial(material);
-                this.getRenderData().getModelRenderConstraints().setLightOpaque(false);
+                this.getRenderData().getModelRenderParams().setLightOpaque(false);
             }
         }
     }

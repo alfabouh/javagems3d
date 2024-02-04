@@ -17,7 +17,7 @@ import ru.BouH.engine.render.environment.shadow.CascadeShadow;
 import ru.BouH.engine.render.environment.shadow.PointLightShadow;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.scene.Scene;
-import ru.BouH.engine.render.scene.fabric.constraints.ModelRenderConstraints;
+import ru.BouH.engine.render.scene.fabric.render_data.ModelRenderParams;
 import ru.BouH.engine.render.scene.programs.CubeMapProgram;
 import ru.BouH.engine.render.scene.programs.ShaderProgram;
 import ru.BouH.engine.render.scene.programs.UniformBufferProgram;
@@ -49,7 +49,7 @@ public final class ShaderManager {
         return new ShaderManager(this.getShaderGroup());
     }
 
-    private boolean checkUniformInGroup(String uniform) {
+    public boolean checkUniformInGroup(String uniform) {
         for (Uniform u : this.getShaderGroup().getUniformsFullSet()) {
             if (u.getId().equals(uniform)) {
                 return true;
@@ -238,9 +238,9 @@ public final class ShaderManager {
             GL30.glEnable(GL30.GL_MULTISAMPLE);
         }
 
-        public void performConstraintsOnShader(ModelRenderConstraints modelRenderConstraints) {
+        public void performConstraintsOnShader(ModelRenderParams modelRenderParams) {
             int lighting_code = 0;
-            if (modelRenderConstraints.isLightOpaque()) {
+            if (modelRenderParams.isLightOpaque()) {
                 lighting_code |= 1 << 2;
             }
             ShaderManager.this.performUniform("lighting_code", lighting_code);
@@ -251,7 +251,9 @@ public final class ShaderManager {
             if (material == null) {
                 return;
             }
-            ShaderManager.this.performUniform("show_cascades", scene.getSceneRender().getCurrentDebugMode() == 1 ? 1 : 0);
+            if (ShaderManager.this.checkUniformInGroup("show_cascades")) {
+                ShaderManager.this.performUniform("show_cascades", scene.getSceneRender().getCurrentDebugMode() == 1 ? 1 : 0);
+            }
             ShaderManager.this.performUniform("camera_pos", Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition());
             ISample diffuse = material.getDiffuse();
             IImageSample emissive = material.getEmissive();

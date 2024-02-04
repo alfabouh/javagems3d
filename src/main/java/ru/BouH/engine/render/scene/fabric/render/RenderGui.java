@@ -1,9 +1,9 @@
-package ru.BouH.engine.render.scene.fabric.physics;
+package ru.BouH.engine.render.scene.fabric.render;
 
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
-import ru.BouH.engine.render.scene.fabric.physics.base.IRenderFabric;
+import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.BouH.engine.render.scene.objects.IRenderObject;
 import ru.BouH.engine.render.scene.objects.gui.AbstractGui;
 

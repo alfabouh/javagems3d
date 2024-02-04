@@ -9,9 +9,9 @@ import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.Environment;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.frustum.FrustumCulling;
-import ru.BouH.engine.render.scene.fabric.models.base.IRenderSceneModel;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
-import ru.BouH.engine.render.scene.preforms.RenderObjectData;
+import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,43 +20,37 @@ import java.util.stream.Collectors;
 
 public final class SceneWorld implements IWorld {
     public static float elapsedRenderTicks;
-    private final List<PhysicsObject> entityList;
-    private final List<IRenderSceneModel> sceneModelsList;
+    private final List<IModeledSceneObject> toRenderList;
     private final Environment environment;
     private final World world;
     private FrustumCulling frustumCulling;
 
     public SceneWorld(World world) {
         this.world = world;
-        this.entityList = new ArrayList<>();
-        this.sceneModelsList = new ArrayList<>();
+        this.toRenderList = new ArrayList<>();
         this.environment = Environment.createEnvironment();
         this.frustumCulling = null;
     }
 
-    public List<PhysicsObject> getFilteredEntityList() {
-        List<PhysicsObject> physicsObjects = new ArrayList<>(this.getEntityList());
+    public List<IModeledSceneObject> getFilteredEntityList() {
+        List<IModeledSceneObject> physicsObjects = new ArrayList<>(this.getToRenderList());
         if (this.getFrustumCulling() == null) {
             return physicsObjects;
         }
-        return physicsObjects.stream().filter(PhysicsObject::isVisible).collect(Collectors.toList());
+        return physicsObjects.stream().filter(e -> e.isVisible() && (this.getFrustumCulling().isInFrustum(e.getRenderABB()) || !e.canBeCulled())).collect(Collectors.toList());
     }
 
-    public List<PhysicsObject> getEntityList() {
-        return this.entityList;
+    public List<IModeledSceneObject> getToRenderList() {
+        return this.toRenderList;
     }
 
-    public List<IRenderSceneModel> getSceneModelsList() {
-        return this.sceneModelsList;
+    public void addRenderObjectInScene(IModeledSceneObject renderObject) {
+        this.getToRenderList().add(renderObject);
     }
 
-    public void addModelToRender(IRenderSceneModel renderSceneModel) {
-        this.getSceneModelsList().add(renderSceneModel);
-    }
-
-    public void removeModelFromRender(IRenderSceneModel renderSceneModel) {
-        if (!this.getSceneModelsList().remove(renderSceneModel)) {
-            Game.getGame().getLogManager().warn("Couldn't remove a model from scene rendering!");
+    public void removeRenderObjectFromScene(IModeledSceneObject renderObject) {
+        if (!this.getToRenderList().remove(renderObject)) {
+            Game.getGame().getLogManager().warn("Couldn't remove a render object from scene rendering!");
         }
     }
 
@@ -64,29 +58,34 @@ public final class SceneWorld implements IWorld {
         if (renderData == null) {
             throw new GameException("Wrong render parameters: " + worldItem.toString());
         }
-        PhysicsObject physicsObject = renderData.constructPhysicsObject(this, worldItem);
+        PhysicsObjectModeled physicsObject = renderData.constructPhysicsObject(this, worldItem);
         this.addPhysEntity(physicsObject);
         worldItem.setRelativeRenderObject(physicsObject);
     }
 
-    public void addPhysEntity(PhysicsObject physicsObject) {
+    public void addPhysEntity(PhysicsObjectModeled physicsObject) {
         physicsObject.onSpawn(this);
-        this.getEntityList().add(physicsObject);
+        this.addRenderObjectInScene(physicsObject);
     }
 
-    public void removeEntity(PhysicsObject physicsObject) {
+    public void removeEntity(PhysicsObjectModeled physicsObject) {
         physicsObject.onDestroy(this);
-        this.getEntityList().remove(physicsObject);
+        this.removeRenderObjectFromScene(physicsObject);
+    }
+
+    public List<PhysicsObjectModeled> getPhysicsObjects() {
+        return this.getToRenderList().stream().filter(e -> e instanceof PhysicsObjectModeled).map(e -> (PhysicsObjectModeled) e).collect(Collectors.toList());
     }
 
     public void removeAllEntities() {
-        Iterator<PhysicsObject> iterator = this.getEntityList().iterator();
+        Iterator<PhysicsObjectModeled> iterator = this.getPhysicsObjects().iterator();
         while (iterator.hasNext()) {
-            PhysicsObject physicsObject = iterator.next();
+            PhysicsObjectModeled physicsObject = iterator.next();
             physicsObject.onDestroy(this);
             iterator.remove();
         }
     }
+
     public void disableLight(WorldItem worldItem, int i) {
         this.removeLight(worldItem.getAttachedLights().get(i));
     }
@@ -115,21 +114,23 @@ public final class SceneWorld implements IWorld {
     }
 
     public void onWorldEntityUpdate(boolean refresh, double partialTicks) {
-        Iterator<PhysicsObject> iterator = this.getEntityList().iterator();
+        Iterator<IModeledSceneObject> iterator = this.getToRenderList().iterator();
         while (iterator.hasNext()) {
-            PhysicsObject physicsObject = iterator.next();
-            if (refresh) {
-                physicsObject.refreshInterpolatingState();
-                physicsObject.setPrevPos(physicsObject.getWorldItem().getPosition());
-                physicsObject.setPrevRot(physicsObject.getWorldItem().getRotation());
-            }
-            physicsObject.onUpdate(this);
-            physicsObject.updateRenderPos(partialTicks);
-            physicsObject.updateRenderTranslation();
-            physicsObject.checkCulling(this.getFrustumCulling().isEnabled() ? this.getFrustumCulling() : null);
-            if (physicsObject.isDead()) {
-                physicsObject.onDestroy(this);
-                iterator.remove();
+            IModeledSceneObject sceneObject = iterator.next();
+            if (sceneObject instanceof PhysicsObjectModeled) {
+                PhysicsObjectModeled physicsObject = (PhysicsObjectModeled) sceneObject;
+                if (refresh) {
+                    physicsObject.refreshInterpolatingState();
+                    physicsObject.setPrevPos(physicsObject.getWorldItem().getPosition());
+                    physicsObject.setPrevRot(physicsObject.getWorldItem().getRotation());
+                }
+                physicsObject.onUpdate(this);
+                physicsObject.updateRenderPos(partialTicks);
+                physicsObject.updateRenderTranslation();
+                if (physicsObject.isDead()) {
+                    physicsObject.onDestroy(this);
+                    iterator.remove();
+                }
             }
         }
         this.onWorldUpdate();

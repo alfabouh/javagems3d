@@ -14,10 +14,7 @@ import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
 import ru.BouH.engine.proxy.LocalPlayer;
 import ru.BouH.engine.render.scene.Scene;
-import ru.BouH.engine.render.scene.scene_render.groups.DebugRender;
-import ru.BouH.engine.render.scene.scene_render.groups.GuiRender;
-import ru.BouH.engine.render.scene.scene_render.groups.SkyRender;
-import ru.BouH.engine.render.scene.scene_render.groups.WorldRender;
+import ru.BouH.engine.render.scene.scene_render.groups.*;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.scene.world.camera.ICamera;
 import ru.BouH.engine.render.screen.timer.Timer;
@@ -40,10 +37,6 @@ public class Screen {
 
     public Screen() {
         this.timer = new Timer();
-    }
-
-    public static void takeScreenshot() {
-        Game.getGame().getScreen().getScene().takeScreenshot();
     }
 
     public static boolean isScreenActive() {
@@ -72,6 +65,7 @@ public class Screen {
 
     private void fillScene(Scene scene) {
         scene.addSceneRenderBase(new WorldRender(scene.getSceneRender()));
+        scene.addSceneRenderBase(new WorldTransparentRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new SkyRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new GuiRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new DebugRender(scene.getSceneRender()));

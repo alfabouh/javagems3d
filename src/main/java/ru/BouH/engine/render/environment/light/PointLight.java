@@ -3,7 +3,7 @@ package ru.BouH.engine.render.environment.light;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.proxy.IWorld;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
 
 public class PointLight extends Light {
     private int attachedShadowSceneId = -1;
@@ -25,15 +25,15 @@ public class PointLight extends Light {
         super(lightPos, lightColor, offset);
     }
 
-    public PointLight(PhysicsObject physicsObject) {
+    public PointLight(PhysicsObjectModeled physicsObject) {
         super(physicsObject);
     }
 
-    public PointLight(PhysicsObject physicsObject, Vector3d lightColor) {
+    public PointLight(PhysicsObjectModeled physicsObject, Vector3d lightColor) {
         super(physicsObject, lightColor);
     }
 
-    public PointLight(PhysicsObject physicsObject, Vector3d lightColor, Vector3d offset) {
+    public PointLight(PhysicsObjectModeled physicsObject, Vector3d lightColor, Vector3d offset) {
         super(physicsObject, lightColor, offset);
     }
 

@@ -20,7 +20,7 @@ public class Environment implements IEnvironment, IWorldDynamic {
 
     @Override
     public void init(SceneWorld sceneWorld) {
-        this.sky = new Sky(new SkyBox2D(ResourceManager.renderAssets.skyboxCubeMap), new Vector3f(-1.0f, 1.0f, -1.0f), 1.0f);
+        this.sky = new Sky(new SkyBox2D(ResourceManager.renderAssets.skyboxCubeMap), new Vector3f(0.0f, 1.0f, -1.0f), 1.0f);
         this.lightManager = new LightManager(this);
     }
 

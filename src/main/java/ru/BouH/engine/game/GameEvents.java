@@ -2,7 +2,9 @@ package ru.BouH.engine.game;
 
 import org.joml.Vector3d;
 import ru.BouH.engine.game.resources.ResourceManager;
+import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.models.Model;
+import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.physics.brush.Plane4dBrush;
 import ru.BouH.engine.physics.entities.Materials;
@@ -12,8 +14,9 @@ import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.render.scene.Scene;
-import ru.BouH.engine.render.scene.fabric.models.RenderSceneModel;
-import ru.BouH.engine.render.scene.fabric.models.base.RenderSceneObject;
+import ru.BouH.engine.render.scene.fabric.models.SceneObject;
+import ru.BouH.engine.render.scene.fabric.models.AbstractSceneObject;
+import ru.BouH.engine.render.scene.fabric.render.RenderSceneModel;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
 public class GameEvents {
@@ -23,15 +26,29 @@ public class GameEvents {
         knife.getFormat().setScale(new Vector3d(50.0d));
         knife.getFormat().setPosition(new Vector3d(0.0d, -54.0d, 0.0d));
         knife.getFormat().setRotation(new Vector3d(0, 20, 0));
-        RenderSceneObject renderSceneObject = new RenderSceneModel(knife, ResourceManager.shaderAssets.world);
-        sceneWorld.addModelToRender(renderSceneObject);
+        AbstractSceneObject sceneObject = new SceneObject(new RenderSceneModel(), knife, ResourceManager.shaderAssets.world);
+        sceneWorld.addRenderObjectInScene(sceneObject);
 
         Model<Format3D> house = new Model<>(new Format3D(), ResourceManager.modelAssets.house);
         house.getFormat().setScale(new Vector3d(5.0d));
         house.getFormat().setPosition(new Vector3d(0.0d, 5.0d, 30.0d));
         house.getFormat().setRotation(new Vector3d(0, 20, 0));
-        RenderSceneObject renderSceneObject2 = new RenderSceneModel(house, ResourceManager.shaderAssets.world);
-        sceneWorld.addModelToRender(renderSceneObject2);
+        AbstractSceneObject sceneObject2 = new SceneObject(new RenderSceneModel(), house, ResourceManager.shaderAssets.world);
+        sceneWorld.addRenderObjectInScene(sceneObject2);
+
+        Material grass = new Material();
+        grass.setDiffuse(ResourceManager.renderAssets.tallGrass);
+
+        Model<Format3D> tallgrass = new Model<>(new Format3D(), MeshHelper.generatePlane3DMesh(new Vector3d(0.0d, 0.0d, 0.0d), new Vector3d(0.0d, 1.0d, 0.0d), new Vector3d(1.0d, 1.0d, 0.0d), new Vector3d(1.0d, 0.0d, 0.0d)));
+        tallgrass.getFormat().setScale(new Vector3d(5.0d));
+        tallgrass.getFormat().setPosition(new Vector3d(0.0d, -1.0d, 20.0d));
+        tallgrass.getFormat().setRotation(new Vector3d(0, 20, 0));
+        AbstractSceneObject sceneObject3 = new SceneObject(new RenderSceneModel(), tallgrass, ResourceManager.shaderAssets.world).setOverObjectMaterial(grass);
+        sceneObject3.getModelRenderParams().setHasTransparency(true);
+        sceneObject3.getModelRenderParams().setShadowCaster(false);
+        sceneObject3.getModelRenderParams().setShadowReceiver(false);
+        sceneObject3.getModelRenderParams().invertTextureCoordinates();
+        sceneWorld.addRenderObjectInScene(sceneObject3);
     }
 
     public static void populate(World world) {
@@ -49,7 +66,7 @@ public class GameEvents {
     }
 
     public static void addTriggers(World world) {
-        world.createSimpleTriggerZone(new ITriggerZone.Zone(new Vector3d(350.0d, 0.0d, 0.0d), new Vector3d(5.0d, 5.0d, 5.0d)), (e) -> {
+        world.createSimpleTriggerZone(new ITriggerZone.Zone(new Vector3d(50.0d, 0.0d, 0.0d), new Vector3d(5.0d, 5.0d, 5.0d)), (e) -> {
             if (e instanceof EntityPlayerSP) {
                 Scene.testTrigger = true;
             }

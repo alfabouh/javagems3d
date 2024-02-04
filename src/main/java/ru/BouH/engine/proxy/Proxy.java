@@ -9,7 +9,7 @@ import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.environment.light.PointLight;
-import ru.BouH.engine.render.scene.preforms.RenderObjectData;
+import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
 import ru.BouH.engine.render.screen.Screen;
 
 public class Proxy {

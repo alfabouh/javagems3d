@@ -7,11 +7,8 @@ import org.joml.Vector4d;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.ResourceManager;
-import ru.BouH.engine.physics.world.object.IWorldDynamic;
-import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.Environment;
 import ru.BouH.engine.render.scene.Scene;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
 import java.nio.FloatBuffer;

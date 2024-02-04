@@ -7,8 +7,8 @@ import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
-import ru.BouH.engine.render.scene.fabric.physics.RenderGui;
-import ru.BouH.engine.render.scene.fabric.physics.base.IRenderFabric;
+import ru.BouH.engine.render.scene.fabric.render.RenderGui;
+import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.BouH.engine.render.scene.objects.gui.AbstractGui;
 
 public class GuiPicture extends AbstractGui {

@@ -7,8 +7,8 @@ import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
 import ru.BouH.engine.game.resources.assets.models.mesh.Mesh;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
-import ru.BouH.engine.render.scene.fabric.physics.RenderGui;
-import ru.BouH.engine.render.scene.fabric.physics.base.IRenderFabric;
+import ru.BouH.engine.render.scene.fabric.render.RenderGui;
+import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.BouH.engine.render.scene.objects.gui.AbstractGui;
 import ru.BouH.engine.render.scene.objects.gui.font.FontTexture;
 
