@@ -8,13 +8,11 @@ import ru.BouH.engine.physics.entities.IRemoteController;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public abstract class WorldItem implements IWorldObject {
     private static int globalId;
@@ -29,7 +27,7 @@ public abstract class WorldItem implements IWorldObject {
     private boolean isDead;
     private boolean spawned;
     private double scale;
-    private PhysicsObject relativeRenderObject;
+    private PhysicsObjectModeled relativeRenderObject;
 
     public WorldItem(World world, double scale, @NotNull Vector3d pos, @NotNull Vector3d rot, String itemName) {
         this.itemName = itemName;
@@ -79,7 +77,7 @@ public abstract class WorldItem implements IWorldObject {
         return this.spawned;
     }
 
-    public void setRelativeRenderObject(PhysicsObject relativeRenderObject) {
+    public void setRelativeRenderObject(PhysicsObjectModeled relativeRenderObject) {
         this.relativeRenderObject = relativeRenderObject;
     }
 
@@ -191,7 +189,7 @@ public abstract class WorldItem implements IWorldObject {
         return true;
     }
 
-    private PhysicsObject relativeRenderObject() {
+    private PhysicsObjectModeled relativeRenderObject() {
         return this.relativeRenderObject;
     }
 }

@@ -115,7 +115,7 @@ void main()
     diffuse += (texturing_code & metallic_code) != 0 ? (refract_cubemap(mv_vertex_normal, 1.73) * texture2D(metallic_map, texture_coordinates)) : vec4(0.0);
 
     vec4 final = diffuse * lightFactor;
-    frag_color = final;
+    frag_color = vec4(final.xyz, diffuse_texture.a);
 
     vec3 cascmask = vec3(1.0);
     int cascadeIndex = int(out_view_position.z < cascade_shadow[0].split_distance) + int(out_view_position.z < cascade_shadow[1].split_distance);
@@ -138,10 +138,9 @@ void main()
 
     float brightness = frag_color.r + frag_color.g + frag_color.b;
     float distance_to_tx = length(mv_vertex_pos);
-
     brightness *= distance_to_tx <= 64. ? 1. : 0.;
 
-    bright_color = brightness >= 8. ? frag_color : vec4(0., 0., 0., 1.);
+    bright_color = brightness >= 8. ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
 }
 
 float per_cascade_bias_shadow[3] = float[](5.0e-7f, 5.0e-7f, 5.0e-7f);

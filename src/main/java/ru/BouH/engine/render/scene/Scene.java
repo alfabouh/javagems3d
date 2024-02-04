@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL43;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.IController;
 import ru.BouH.engine.game.resources.ResourceManager;
+import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
@@ -20,10 +21,10 @@ import ru.BouH.engine.proxy.LocalPlayer;
 import ru.BouH.engine.render.RenderManager;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.frustum.FrustumCulling;
-import ru.BouH.engine.render.scene.fabric.constraints.ModelRenderConstraints;
-import ru.BouH.engine.render.scene.fabric.models.base.IRenderSceneModel;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
+import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
 import ru.BouH.engine.render.scene.programs.FBOTexture2DProgram;
+import ru.BouH.engine.render.scene.scene_render.groups.WorldTransparentRender;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.scene.world.camera.FreeCamera;
@@ -114,52 +115,34 @@ public class Scene implements IScene {
         }
     }
 
-    public static void renderModelWithMaterials(Model<?> model, ShaderManager shaderManager, ModelRenderConstraints modelRenderConstraints, int code) {
-        Scene.renderModelWithMaterials(model, shaderManager, modelRenderConstraints, code, null);
+    public static void renderSceneObject(IModeledSceneObject sceneObject) {
+        Scene.renderSceneObject(sceneObject, null);
     }
 
-    @SuppressWarnings("all")
-    public static void renderModelWithMaterials(Model<?> model, ShaderManager shaderManager, ModelRenderConstraints modelRenderConstraints, int code, Matrix4d view) {
-        if (model == null || model.getMeshDataGroup() == null) {
-            return;
-        }
-        if (model.getFormat() instanceof Format3D) {
-            Model<Format3D> format3DModel = (Model<Format3D>) model;
-            Matrix4d modelMatrix = RenderManager.instance.getModelMatrix(format3DModel);
-            if (view == null) {
-                shaderManager.getUtils().passViewAndModelMatrices(format3DModel);
-            } else {
-                shaderManager.getUtils().passViewAndModelMatrices(view, format3DModel);
-            }
-        }
-        for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-            shaderManager.getUtils().performConstraintsOnShader(modelRenderConstraints);
-            shaderManager.getUtils().performModelMaterialOnShader(modelNode.getMaterial(), modelRenderConstraints.isShadowReceiver());
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
-            GL30.glBindVertexArray(0);
-        }
+    public static void renderSceneObject(IModeledSceneObject sceneObject, Material material) {
+        Scene.renderSceneObject(sceneObject, null, material);
     }
 
-    public static void renderEntity(PhysicsObject physicsObject) {
+    public static void renderSceneObject(IModeledSceneObject sceneObject, Matrix4d view, Material overMaterial) {
         Scene scene = Game.getGame().getScreen().getScene();
-        if (physicsObject != null) {
-            Model<Format3D> model = physicsObject.getModel3D();
+        if (sceneObject != null) {
+            Model<Format3D> model = sceneObject.getModel3D();
+
             if (model == null || model.getMeshDataGroup() == null) {
                 return;
             }
-            ShaderManager shaderManager = physicsObject.getShaderManager();
-            shaderManager.getUtils().passViewAndModelMatrices(model);
-            shaderManager.getUtils().performConstraintsOnShader(physicsObject.getRenderData().getModelRenderConstraints());
-            shaderManager.performUniform("texture_scaling", physicsObject.getRenderData().getModelTextureScaling());
+            ShaderManager shaderManager = sceneObject.getModelRenderParams().getShaderManager();
+            if (view == null) {
+                shaderManager.getUtils().passViewAndModelMatrices(model);
+            } else {
+                shaderManager.getUtils().passViewAndModelMatrices(view, model);
+            }
+            shaderManager.getUtils().performConstraintsOnShader(sceneObject.getModelRenderParams());
+            if (shaderManager.checkUniformInGroup("texture_scaling")) {
+                shaderManager.performUniform("texture_scaling", sceneObject.getModelRenderParams().getTextureScaling());
+            }
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-                shaderManager.getUtils().performModelMaterialOnShader(physicsObject.getRenderData().getOverObjectMaterial() != null ? physicsObject.getRenderData().getOverObjectMaterial() : modelNode.getMaterial(), physicsObject.getRenderData().getModelRenderConstraints().isShadowReceiver());
+                shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial(), sceneObject.getModelRenderParams().isShadowReceiver());
                 GL30.glBindVertexArray(modelNode.getMesh().getVao());
                 for (int a : modelNode.getMesh().getAttributePointers()) {
                     GL30.glEnableVertexAttribArray(a);
@@ -175,10 +158,6 @@ public class Scene implements IScene {
 
     public static void activeGlTexture(int code) {
         GL30.glActiveTexture(GL13.GL_TEXTURE0 + code);
-    }
-
-    public static void glClear() {
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
     }
 
     public void addSceneRenderBase(SceneRenderBase sceneRenderBase) {
@@ -258,11 +237,11 @@ public class Scene implements IScene {
         this.setRenderCamera(new AttachedCamera(worldItem));
     }
 
-    public void enableAttachedCamera(PhysicsObject physicsObject) {
+    public void enableAttachedCamera(PhysicsObjectModeled physicsObject) {
         this.setRenderCamera(new AttachedCamera(physicsObject));
     }
 
-    public boolean isCameraAttachedToItem(PhysicsObject physicsObject) {
+    public boolean isCameraAttachedToItem(PhysicsObjectModeled physicsObject) {
         return this.getCurrentCamera() instanceof AttachedCamera && ((AttachedCamera) this.getCurrentCamera()).getPhysXObject() == physicsObject;
     }
 
@@ -299,10 +278,6 @@ public class Scene implements IScene {
         return this.sceneRenderConveyor;
     }
 
-    public void takeScreenshot() {
-        this.getSceneRender().takeScreenshot();
-    }
-
     public FrustumCulling getFrustumCulling() {
         return this.frustumCulling;
     }
@@ -327,7 +302,6 @@ public class Scene implements IScene {
         private final float[] blurKernel;
         private int CURRENT_POST_RENDER = 0;
         private int CURRENT_DEBUG_MODE;
-        private boolean wantsTakeScreenshot;
 
         public SceneRenderConveyor() {
             this.shadowScene = new ShadowScene(Scene.this);
@@ -383,20 +357,13 @@ public class Scene implements IScene {
 
             Scene.getGameUboShader().bind();
             Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d), new Vector2d(this.getWindowDimensions().x, this.getWindowDimensions().y), 0);
-
-            GL30.glEnable(GL30.GL_STENCIL_TEST);
+            GL30.glEnable(GL30.GL_DEPTH_TEST);
             this.renderSceneInFbo(partialTicks, mainGroup);
+            GL30.glDisable(GL30.GL_DEPTH_TEST);
             this.twoPassBlurShader(partialTicks, model);
             this.renderMixedScene(partialTicks, model);
             this.renderDebugScreen(partialTicks);
             this.renderSideGroup(partialTicks, sideGroup);
-            GL30.glDisable(GL30.GL_STENCIL_TEST);
-
-            if (this.wantsTakeScreenshot) {
-                this.writeBufferInFile();
-                this.wantsTakeScreenshot = false;
-            }
-
             model.clean();
             Scene.getGameUboShader().unBind();
         }
@@ -408,17 +375,22 @@ public class Scene implements IScene {
         }
 
         private void renderSceneInFbo(double partialTicks, List<SceneRenderBase> mainList) {
-            GL30.glEnable(GL30.GL_DEPTH_TEST);
-            this.getShadowScene().concatenateListsAndRender(this.getRenderWorld().getSceneModelsList(), this.getRenderWorld().getEntityList());
+            this.getShadowScene().renderAllModelsInShadowMap(this.getRenderWorld().getToRenderList());
             Screen.setViewport(Scene.this.getWindowDimensions());
             this.sceneFbo.bindFBO();
-            Scene.glClear();
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL30.glEnable(GL30.GL_BLEND);
+            GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
             this.renderMainScene(partialTicks, mainList);
-            this.renderSceneModels(partialTicks);
+            GL30.glDisable(GL30.GL_BLEND);
             this.sceneFbo.unBindFBO();
-            GL30.glDisable(GL30.GL_DEPTH_TEST);
         }
 
+        private void renderMainScene(double partialTicks, List<SceneRenderBase> mainList) {
+            for (SceneRenderBase sceneRenderBase : mainList) {
+                sceneRenderBase.onRender(partialTicks);
+            }
+        }
 
         private void twoPassBlurShader(double partialTicks, Model<Format2D> model) {
             this.fboBlur.bindFBO();
@@ -427,10 +399,8 @@ public class Scene implements IScene {
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
             this.sceneFbo.bindTexture(1);
             this.getBlurShader().performUniform("texture_sampler", 0);
-            Scene.glClear();
             this.getBlurShader().getUtils().performProjectionMatrix2d(model);
             Scene.renderModel(model, GL30.GL_TRIANGLES);
-            this.sceneFbo.unBindTexture();
             this.getBlurShader().unBind();
             this.fboBlur.unBindFBO();
         }
@@ -445,17 +415,17 @@ public class Scene implements IScene {
                 ResourceManager.shaderAssets.guiShader.getUtils().performProjectionMatrix2d(model);
                 Scene.renderModel(model, GL30.GL_TRIANGLES);
                 ResourceManager.shaderAssets.guiShader.unBind();
-
                 model.clean();
+
                 model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d, 350.0d), new Vector2d(400.0d, 650.0d), 0);
-                ResourceManager.shaderAssets.depth_test.bind();
-                ResourceManager.shaderAssets.depth_test.performUniform("texture_sampler", 0);
+                ResourceManager.shaderAssets.guiShader.bind();
+                ResourceManager.shaderAssets.guiShader.performUniform("texture_sampler", 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 this.getShadowScene().getFrameBufferObjectProgram().bindTexture(0);
-                ResourceManager.shaderAssets.depth_test.getUtils().performProjectionMatrix2d(model);
+                ResourceManager.shaderAssets.guiShader.getUtils().performProjectionMatrix2d(model);
                 Scene.renderModel(model, GL30.GL_TRIANGLES);
                 this.getShadowScene().getFrameBufferObjectProgram().unBindTexture();
-                ResourceManager.shaderAssets.depth_test.unBind();
+                ResourceManager.shaderAssets.guiShader.unBind();
                 model.clean();
             }
         }
@@ -469,18 +439,9 @@ public class Scene implements IScene {
             this.sceneFbo.bindTexture(0);
             GL30.glActiveTexture(GL30.GL_TEXTURE1);
             this.fboBlur.bindTexture(1);
-            Scene.glClear();
             this.getPostProcessingShader().getUtils().performProjectionMatrix2d(model);
             Scene.renderModel(model, GL30.GL_TRIANGLES);
-            this.fboBlur.unBindTexture();
-            this.sceneFbo.unBindTexture();
             this.getPostProcessingShader().unBind();
-        }
-
-        private void renderSceneModels(double partialTicks) {
-            for (IRenderSceneModel renderSceneModel : this.getRenderWorld().getSceneModelsList()) {
-                renderSceneModel.onRender(partialTicks);
-            }
         }
 
         public ShadowScene getShadowScene() {
@@ -493,12 +454,6 @@ public class Scene implements IScene {
 
         public SceneWorld getRenderWorld() {
             return Scene.this.getSceneWorld();
-        }
-
-        private void renderMainScene(double partialTicks, List<SceneRenderBase> mainList) {
-            for (SceneRenderBase sceneRenderBase : mainList) {
-                sceneRenderBase.onRender(partialTicks);
-            }
         }
 
         public void onStartRender() {
@@ -515,40 +470,6 @@ public class Scene implements IScene {
 
         public ShaderManager getPostProcessingShader() {
             return ResourceManager.shaderAssets.post_render_1;
-        }
-
-        private void writeBufferInFile() {
-            Vector2d vector2d = Game.getGame().getScreen().getDimensions();
-            int w = (int) vector2d.x;
-            int h = (int) vector2d.y;
-            int i1 = w * h;
-            ByteBuffer p = ByteBuffer.allocateDirect(i1 * 4);
-            GL30.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
-            GL30.glReadPixels(0, 0, w, h, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, p);
-            try {
-                BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-                int[] pArray = new int[i1];
-                p.asIntBuffer().get(pArray);
-                for (int y = 0; y < h; y++) {
-                    for (int x = 0; x < w; x++) {
-                        int i = (x + (w * y)) * 4;
-                        int r = p.get(i) & 0xFF;
-                        int g = p.get(i + 1) & 0xFF;
-                        int b = p.get(i + 2) & 0xFF;
-                        int a = p.get(i + 3) & 0xFF;
-                        int rgb = (a << 24) | (r << 16) | (g << 8) | b;
-                        image.setRGB(x, (int) (vector2d.y - y - 1), rgb);
-                    }
-                }
-                String builder = "screen.png";
-                ImageIO.write(image, "PNG", new File(builder));
-            } catch (IOException e) {
-                Game.getGame().getLogManager().error(e.getMessage());
-            }
-        }
-
-        public void takeScreenshot() {
-            this.wantsTakeScreenshot = true;
         }
     }
 }

@@ -9,10 +9,10 @@ import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
 import ru.BouH.engine.game.resources.cache.GameCache;
 import ru.BouH.engine.physics.brush.Plane4dBrush;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.render.scene.fabric.physics.RenderObject;
-import ru.BouH.engine.render.scene.objects.items.EntityObject;
-import ru.BouH.engine.render.scene.objects.items.LampObject;
-import ru.BouH.engine.render.scene.preforms.RenderObjectData;
+import ru.BouH.engine.render.scene.fabric.render.RenderObject;
+import ru.BouH.engine.render.scene.objects.items.EntityObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.LampObjectModeled;
+import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
 
 public class RenderDataLoader implements IAssetsLoader {
     public RenderObjectData entityCube;
@@ -30,6 +30,9 @@ public class RenderDataLoader implements IAssetsLoader {
             return new MeshDataGroup(MeshHelper.generatePlane3DMesh(plane4dBrush.getVertices()[0], plane4dBrush.getVertices()[1], plane4dBrush.getVertices()[2], plane4dBrush.getVertices()[3]));
         };
 
+        Material tallGrassPlane = new Material();
+        tallGrassPlane.setDiffuse(ResourceManager.renderAssets.tallGrass);
+
         Material grassPlane = new Material();
         grassPlane.setDiffuse(ResourceManager.renderAssets.grassTexture);
         grassPlane.setNormals(ResourceManager.renderAssets.grassNormals);
@@ -39,14 +42,14 @@ public class RenderDataLoader implements IAssetsLoader {
         brickPlane.setDiffuse(ResourceManager.renderAssets.bricksTexture);
         brickPlane.setNormals(ResourceManager.renderAssets.bricksNormals);
 
-        this.entityCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
-        this.entityCube2 = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
+        this.entityCube = new RenderObjectData(new RenderObject(), EntityObjectModeled.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
+        this.entityCube2 = new RenderObjectData(new RenderObject(), EntityObjectModeled.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
 
-        this.entityLargeCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
-        this.entityLamp = new RenderObjectData(new RenderObject(), LampObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
-        this.player = new RenderObjectData(null, EntityObject.class, ResourceManager.shaderAssets.world);
-        this.plane = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setEntityModelConstructor(entityModelConstructor).setModelTextureScaling(new Vector2d(64.0d, 4.0d));
-        this.planeGround = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setEntityModelConstructor(entityModelConstructor).setModelTextureScaling(new Vector2d(128.0d));
+        this.entityLargeCube = new RenderObjectData(new RenderObject(), EntityObjectModeled.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
+        this.entityLamp = new RenderObjectData(new RenderObject(), LampObjectModeled.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
+        this.player = new RenderObjectData(null, EntityObjectModeled.class, ResourceManager.shaderAssets.world);
+        this.plane = new RenderObjectData(new RenderObject(), EntityObjectModeled.class, ResourceManager.shaderAssets.world).setEntityModelConstructor(entityModelConstructor).setModelTextureScaling(new Vector2d(64.0d, 4.0d));
+        this.planeGround = new RenderObjectData(new RenderObject(), EntityObjectModeled.class, ResourceManager.shaderAssets.world).setEntityModelConstructor(entityModelConstructor).setModelTextureScaling(new Vector2d(128.0d));
 
         this.plane.setOverObjectMaterial(brickPlane);
         this.planeGround.setOverObjectMaterial(grassPlane);

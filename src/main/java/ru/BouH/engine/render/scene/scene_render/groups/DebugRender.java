@@ -16,10 +16,10 @@ import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
+import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
 import ru.BouH.engine.render.scene.scene_render.RenderGroup;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class DebugRender extends SceneRenderBase {
     private final ShaderManager debugShaders;
 
     public DebugRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(4, sceneRenderConveyor, new RenderGroup("DEBUG", false));
+        super(2, sceneRenderConveyor, new RenderGroup("DEBUG", true));
         this.debugShaders = ResourceManager.shaderAssets.debug;
     }
 
@@ -40,8 +40,10 @@ public class DebugRender extends SceneRenderBase {
             this.renderTriggers(partialTicks, this);
             GL30.glEnable(GL30.GL_DEPTH_TEST);
             this.debugShaders.getUtils().performProjectionMatrix();
-            for (PhysicsObject entityItem : this.getSceneWorld().getFilteredEntityList()) {
-                this.renderHitBox(partialTicks, this, entityItem);
+            for (IModeledSceneObject entityItem : this.getSceneWorld().getFilteredEntityList()) {
+                if (entityItem instanceof PhysicsObjectModeled) {
+                    this.renderHitBox(partialTicks, this, (PhysicsObjectModeled) entityItem);
+                }
             }
             GL30.glDisable(GL30.GL_DEPTH_TEST);
             this.debugShaders.unBind();
@@ -74,7 +76,7 @@ public class DebugRender extends SceneRenderBase {
         }
     }
 
-    private void renderHitBox(double partialTicks, SceneRenderBase sceneRenderBase, PhysicsObject physicsObject) {
+    private void renderHitBox(double partialTicks, SceneRenderBase sceneRenderBase, PhysicsObjectModeled physicsObject) {
         WorldItem worldItem = physicsObject.getWorldItem();
         if (worldItem instanceof JBulletEntity) {
             JBulletEntity jBulletEntity = (JBulletEntity) worldItem;

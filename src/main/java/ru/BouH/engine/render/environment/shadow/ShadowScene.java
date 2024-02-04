@@ -11,8 +11,7 @@ import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.render.RenderManager;
 import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.Scene;
-import ru.BouH.engine.render.scene.fabric.models.base.IRenderSceneModel;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
+import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
 import ru.BouH.engine.render.scene.programs.FBOTexture2DProgram;
 import ru.BouH.engine.render.screen.Screen;
 
@@ -32,7 +31,7 @@ public class ShadowScene {
 
     public ShadowScene(Scene scene) {
         this.scene = scene;
-        this.FBOTexture2DProgram = new FBOTexture2DProgram(true, true);
+        this.FBOTexture2DProgram = new FBOTexture2DProgram(true, false);
         this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL43.GL_RG32F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.initCascades();
         this.initPointLightShadows();
@@ -60,8 +59,8 @@ public class ShadowScene {
         float[] cascadeSplitLambda = new float[] {0.85f, 0.7f, 0.95f};
         float[] cascadeSplits = new float[ShadowScene.CASCADE_SPLITS];
 
-        float nearClip = (float) projection.perspectiveNear();
-        float farClip = (float) projection.perspectiveFar();
+        float nearClip = this.nearCascadeClip();
+        float farClip = this.farCascadeClip();
         float clipRange = farClip - nearClip;
 
         float minZ = nearClip;
@@ -153,13 +152,17 @@ public class ShadowScene {
         }
     }
 
-    public void concatenateListsAndRender(List<IRenderSceneModel> renderSceneModels, List<PhysicsObject> toRender) {
-        List<Model<Format3D>> list = new ArrayList<>();
-        List<Model<Format3D>> l1 = renderSceneModels.stream().filter(e -> e.getModelRenderConstraints().isShadowCaster()).map(IRenderSceneModel::toRender).collect(Collectors.toList());
-        List<Model<Format3D>> l2 = toRender.stream().filter(e -> e.getRenderData().getModelRenderConstraints().isShadowCaster()).map(PhysicsObject::getModel3D).filter(Objects::nonNull).collect(Collectors.toList());
-        list.addAll(l1);
-        list.addAll(l2);
-        this.renderSceneInShadowMap(list);
+    public float nearCascadeClip() {
+        return 1.0f;
+    }
+
+    public float farCascadeClip() {
+        return RenderManager.Z_FAR;
+    }
+
+    public void renderAllModelsInShadowMap(List<IModeledSceneObject> renderModels) {
+        List<Model<Format3D>> l1 = renderModels.stream().filter(e -> e.hasRender() && e.getModelRenderParams().isShadowCaster()).map(IModeledSceneObject::getModel3D).collect(Collectors.toList());
+        this.renderSceneInShadowMap(l1);
     }
 
     public void renderSceneInShadowMap(List<Model<Format3D>> modelList) {
@@ -177,13 +180,12 @@ public class ShadowScene {
             CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
             this.getFrameBufferObjectProgram().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
-            GL30.glCullFace(GL30.GL_BACK);
             this.getSunShadowShader().performUniform("projection_view_matrix", new Matrix4d(cascadeShadow.getLightProjectionViewMatrix()));
+            GL30.glCullFace(GL30.GL_BACK);
             for (Model<Format3D> model : modelList) {
                 this.getSunShadowShader().getUtils().performModelMatrix3d(model, false);
                 Scene.renderModel(model, GL30.GL_TRIANGLES);
             }
-            GL30.glCullFace(GL30.GL_BACK);
         }
 
         this.getFrameBufferObjectProgram().unBindFBO();

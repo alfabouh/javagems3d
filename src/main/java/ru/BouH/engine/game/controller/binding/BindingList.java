@@ -25,11 +25,6 @@ public class BindingList {
     public Key keyBlock3 = new Key(GLFW.GLFW_KEY_G);
     public Key keyClear = new Key(GLFW.GLFW_KEY_X);
 
-    public Key keySCS = new FunctionalKey(e -> {
-        if (e == IKeyAction.KeyAction.CLICK) {
-            Screen.takeScreenshot();
-        }
-    }, GLFW.GLFW_KEY_F2);
     public Key keyEsc = new FunctionalKey(e -> {
         if (e == IKeyAction.KeyAction.CLICK) {
             Game.getGame().destroyGame();
@@ -85,7 +80,6 @@ public class BindingList {
         Binding.createBinding(this.keyUp, "Лететь вверх");
         Binding.createBinding(this.keyDown, "Лететь вниз");
         Binding.createBinding(this.keyR, "Режим камеры");
-        Binding.createBinding(this.keySCS, "Скриншот");
         Binding.createBinding(this.keyY, "Переключить пост-обработку");
         Binding.createBinding(this.keyZ, "Режим отладки");
         Binding.createBinding(this.keyClear, "Очистка");

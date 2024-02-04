@@ -16,6 +16,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
     public TextureSample bricksTexture;
     public TextureSample grassTexture;
     public TextureSample guiTestImage;
+    public TextureSample tallGrass;
     public CubeMapProgram skyboxCubeMap;
     public FontTexture standardFont;
 
@@ -29,6 +30,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
         this.grassNormals = ResourceManager.createTexture("/textures/normals/grass01_n.png");
         this.grassTexture = ResourceManager.createTexture("/textures/terrain/grass02.png");
         this.grassSpecular = ResourceManager.createTexture("/textures/normals/specular_grass.png");
+        this.tallGrass = ResourceManager.createTexture("/textures/props/tallgrass.png");
         this.skyboxCubeMap = new CubeMapProgram();
         this.skyboxCubeMap.generateCubeMapFromTexture(new CubeMapProgram.CubeMapTextureArray("skybox/sky1", ".png"));
     }

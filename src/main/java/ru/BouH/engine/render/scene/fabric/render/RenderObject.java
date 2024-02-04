@@ -1,10 +1,10 @@
-package ru.BouH.engine.render.scene.fabric.physics;
+package ru.BouH.engine.render.scene.fabric.render;
 
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
-import ru.BouH.engine.render.scene.fabric.physics.base.RenderWorldItem;
+import ru.BouH.engine.render.scene.fabric.render.base.RenderWorldItem;
 import ru.BouH.engine.render.scene.objects.IRenderObject;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
 
 public class RenderObject extends RenderWorldItem {
     public RenderObject() {
@@ -12,9 +12,9 @@ public class RenderObject extends RenderWorldItem {
 
     @Override
     public void onRender(double partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
-        PhysicsObject entityObject = (PhysicsObject) renderItem;
+        PhysicsObjectModeled entityObject = (PhysicsObjectModeled) renderItem;
         if (entityObject.isHasModel()) {
-            Scene.renderEntity(entityObject);
+            Scene.renderSceneObject(entityObject, entityObject.getRenderData().getOverObjectMaterial());
         }
     }
 }

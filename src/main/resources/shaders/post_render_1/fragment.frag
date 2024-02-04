@@ -34,7 +34,7 @@ vec4 hdr(vec4 in_col, float exposure, float gamma) {
     rgb += bl_c;
     vec3 mapped = vec3(1.) - exp(-rgb * exposure);
     mapped = pow(mapped, vec3(1.0 / gamma));
-    return vec4(mapped, in_col.w);
+    return vec4(mapped, in_col.a);
 }
 
 vec4 choose_mode(int i) {

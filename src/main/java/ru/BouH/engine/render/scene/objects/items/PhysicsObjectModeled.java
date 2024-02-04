@@ -16,14 +16,14 @@ import ru.BouH.engine.physics.world.object.IWorldObject;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
-import ru.BouH.engine.render.frustum.FrustumCulling;
 import ru.BouH.engine.render.frustum.RenderABB;
-import ru.BouH.engine.render.scene.fabric.physics.base.IRenderFabric;
-import ru.BouH.engine.render.scene.objects.IRenderObject;
-import ru.BouH.engine.render.scene.preforms.RenderObjectData;
+import ru.BouH.engine.render.scene.fabric.render_data.ModelRenderParams;
+import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
+import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
+import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
-public abstract class PhysicsObject implements IRenderObject, IWorldObject, IWorldDynamic {
+public abstract class PhysicsObjectModeled implements IModeledSceneObject, IWorldObject, IWorldDynamic {
     private final RenderABB renderABB;
     private final SceneWorld sceneWorld;
     private final WorldItem worldItem;
@@ -35,11 +35,10 @@ public abstract class PhysicsObject implements IRenderObject, IWorldObject, IWor
     protected Vector3d renderRotation;
     private InterpolationPoints currentPositionInterpolation;
     private InterpolationPoints currentRotationInterpolation;
-    private boolean isObjectCulled;
     private boolean isVisible;
     private boolean isDead;
 
-    public PhysicsObject(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull RenderObjectData renderData) {
+    public PhysicsObjectModeled(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull RenderObjectData renderData) {
         this.renderABB = new RenderABB();
         this.worldItem = worldItem;
         this.renderPosition = new Vector3d(worldItem.getPosition());
@@ -49,7 +48,6 @@ public abstract class PhysicsObject implements IRenderObject, IWorldObject, IWor
         this.sceneWorld = sceneWorld;
         this.renderData = renderData;
         this.isVisible = true;
-        this.isObjectCulled = false;
         this.currentPositionInterpolation = new InterpolationPoints(this.getPrevRenderPosition(), this.getFixedPosition());
         this.currentRotationInterpolation = new InterpolationPoints(this.getPrevRenderRotation(), this.getFixedRotation());
     }
@@ -110,8 +108,18 @@ public abstract class PhysicsObject implements IRenderObject, IWorldObject, IWor
         return new Vector3d(worldItem.getScale() + 1.0d);
     }
 
+    @Override
+    public ModelRenderParams getModelRenderParams() {
+        return this.getRenderData().getModelRenderParams();
+    }
+
+    @Override
+    public boolean canBeCulled() {
+        return true;
+    }
+
     public ShaderManager getShaderManager() {
-        return this.getRenderData().getShaderManager();
+        return this.getModelRenderParams().getShaderManager();
     }
 
     public RenderABB getRenderABB() {
@@ -190,14 +198,8 @@ public abstract class PhysicsObject implements IRenderObject, IWorldObject, IWor
         return this.currentRotationInterpolation;
     }
 
-    public void checkCulling(FrustumCulling frustumCulling) {
-        if (frustumCulling != null) {
-            this.isObjectCulled = !frustumCulling.isInFrustum(this.getRenderABB());
-        }
-    }
-
     public boolean isVisible() {
-        return !this.isObjectCulled && this.isVisible;
+        return this.isVisible;
     }
 
     public void setVisible(boolean visible) {

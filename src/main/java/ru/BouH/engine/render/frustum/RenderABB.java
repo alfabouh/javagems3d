@@ -8,8 +8,14 @@ public class RenderABB {
     private final Vector3f abbMax;
 
     public RenderABB() {
-        this.abbMin = new Vector3f(0);
-        this.abbMax = new Vector3f(0);
+        this.abbMin = new Vector3f(0.0f);
+        this.abbMax = new Vector3f(0.0f);
+    }
+
+    public RenderABB(Vector3d center, Vector3d size) {
+        this.abbMin = new Vector3f(0.0f);
+        this.abbMax = new Vector3f(0.0f);
+        this.setAbbForm(center, size);
     }
 
     public void setAbbForm(Vector3d center, Vector3d size) {
