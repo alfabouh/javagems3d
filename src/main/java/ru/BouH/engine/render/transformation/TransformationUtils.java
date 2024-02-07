@@ -1,10 +1,9 @@
-package ru.BouH.engine.render;
+package ru.BouH.engine.render.transformation;
 
 import org.joml.Matrix4d;
 import org.joml.Quaterniond;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
-import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
@@ -62,6 +61,9 @@ public class TransformationUtils {
         Vector3d rotation = model.getFormat().getRotation();
         Matrix4d m1 = new Matrix4d();
         m1.identity().translate(model.getFormat().getPosition()).rotateXYZ(Math.toRadians(-rotation.x), Math.toRadians(-rotation.y), Math.toRadians(-rotation.z)).scale(model.getFormat().getScale());
+        if (model.getFormat().isOrientedToViewMatrix()) {
+            viewMatrix.transpose3x3(m1);
+        }
         Matrix4d viewCurr = new Matrix4d(viewMatrix);
         return viewCurr.mul(m1);
     }
@@ -81,7 +83,7 @@ public class TransformationUtils {
         return m1;
     }
 
-    public Matrix4d getViewMatrix() {
+    public Matrix4d getMainCameraViewMatrix() {
         return new Matrix4d(this.viewMatrix);
     }
 }

@@ -2,6 +2,7 @@ package ru.BouH.engine.physics.entities;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
+import ru.BouH.engine.physics.brush.WorldBrush;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.CollidableWorldItem;
@@ -44,6 +45,12 @@ public abstract class PhysEntity extends CollidableWorldItem implements IWorldDy
             if (this.getPosition().y <= -10 || this.getPosition().y >= 500) {
                 this.setPosition(new Vector3d(0, 5, 0));
                 this.setObjectVelocity(new Vector3d(0.0d));
+            }
+            if (this.isInWater()) {
+                if (!(this instanceof WorldBrush)) {
+                    this.getRigidBodyObject().setObjectLinearVelocity(this.getRigidBodyObject().getObjectLinearVelocity().mul(0.9f));
+                    this.getRigidBodyObject().activateObject();
+                }
             }
         }
     }

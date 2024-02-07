@@ -8,7 +8,7 @@ import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.render.frustum.RenderABB;
-import ru.BouH.engine.render.scene.fabric.render_data.ModelRenderParams;
+import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
 

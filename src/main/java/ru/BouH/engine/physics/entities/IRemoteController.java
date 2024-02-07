@@ -14,4 +14,6 @@ public interface IRemoteController {
     default boolean isValidController() {
         return this.currentController() != null;
     }
+
+    double getEyeHeight();
 }

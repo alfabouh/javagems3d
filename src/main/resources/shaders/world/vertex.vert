@@ -22,6 +22,9 @@ layout (std140, binding = 0) uniform SunLight {
     float sunX;
     float sunY;
     float sunZ;
+    float sunColorR;
+    float sunColorG;
+    float sunColorB;
 };
 
 layout (std140, binding = 1) uniform PointLights {
@@ -32,13 +35,19 @@ layout (std140, binding = 2) uniform Misc {
     float w_tick;
 };
 
+layout (std140, binding = 3) uniform Fog {
+    float fogDensity;
+    float fogColorR;
+    float fogColorG;
+    float fogColorB;
+};
+
 out vec2 texture_coordinates;
 out vec3 mv_vertex_normal;
 out vec3 mv_vertex_pos;
 out mat3 TBN;
 out mat4 out_view_matrix;
 
-out vec3 out_view_position;
 out vec4 out_world_position;
 
 uniform mat4 view_matrix;
@@ -60,7 +69,6 @@ void main()
     vec3 N = normalize(vec3(model_view_matrix * (vec4(aNormal, 0.0))));
     TBN = mat3(T, B, N);
 
-    out_view_position = mv_pos.xyz;
     out_world_position = model_matrix * vec4(aPosition, 1.0f);
     out_view_matrix = view_matrix;
 }

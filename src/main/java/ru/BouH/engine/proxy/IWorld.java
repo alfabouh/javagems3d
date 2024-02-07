@@ -6,4 +6,5 @@ public interface IWorld {
     void onWorldUpdate();
 
     void onWorldEnd();
+    int getTicks();
 }

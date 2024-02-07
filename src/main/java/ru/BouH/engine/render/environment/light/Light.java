@@ -2,7 +2,7 @@ package ru.BouH.engine.render.environment.light;
 
 import org.joml.Vector3d;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public abstract class Light implements IWorldDynamic {
     public static final int
@@ -11,7 +11,7 @@ public abstract class Light implements IWorldDynamic {
     private final Vector3d offset;
     private final Vector3d lightColor;
     private final Vector3d lightPos;
-    private PhysicsObjectModeled attachedTo;
+    private PhysicsObject attachedTo;
     private boolean enabled;
 
     public Light() {
@@ -34,23 +34,23 @@ public abstract class Light implements IWorldDynamic {
         this.attachedTo = null;
     }
 
-    public Light(PhysicsObjectModeled physicsObject) {
+    public Light(PhysicsObject physicsObject) {
         this(physicsObject.getRenderPosition(), new Vector3d(1.0d), new Vector3d(0.0d));
     }
 
-    public Light(PhysicsObjectModeled physicsObject, Vector3d lightColor) {
+    public Light(PhysicsObject physicsObject, Vector3d lightColor) {
         this(physicsObject.getRenderPosition(), lightColor, new Vector3d(0.0d));
     }
 
-    public Light(PhysicsObjectModeled physicsObject, Vector3d lightColor, Vector3d offset) {
+    public Light(PhysicsObject physicsObject, Vector3d lightColor, Vector3d offset) {
         this(physicsObject.getRenderPosition(), lightColor, offset);
     }
 
-    public PhysicsObjectModeled getAttachedTo() {
+    public PhysicsObject getAttachedTo() {
         return this.attachedTo;
     }
 
-    public void setAttachedTo(PhysicsObjectModeled attachedTo) {
+    public void setAttachedTo(PhysicsObject attachedTo) {
         this.attachedTo = attachedTo;
     }
 

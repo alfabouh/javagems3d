@@ -11,7 +11,11 @@ import ru.BouH.engine.physics.entities.Materials;
 import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
 import ru.BouH.engine.physics.entities.prop.PhysEntityCube;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
-import ru.BouH.engine.physics.triggers.ITriggerZone;
+import ru.BouH.engine.physics.liquids.ILiquid;
+import ru.BouH.engine.physics.liquids.Water;
+import ru.BouH.engine.physics.particles.ParticleFlame;
+import ru.BouH.engine.physics.particles.SimpleParticle;
+import ru.BouH.engine.physics.triggers.Zone;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.fabric.models.SceneObject;
@@ -20,6 +24,13 @@ import ru.BouH.engine.render.scene.fabric.render.RenderSceneModel;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
 public class GameEvents {
+
+    public static void worldUpdateEvent(World world) {
+        if (world.getTicks() % 20 == 0) {
+            SimpleParticle simpleParticle = new ParticleFlame(world, 15.0d, new Vector3d(Game.random.nextFloat(), Game.random.nextFloat() + 0.5f, Game.random.nextFloat()).add(0, 0, 0), new Vector3d(0.0d));
+            Game.getGame().getProxy().addItemInWorlds(simpleParticle, ResourceManager.renderDataAssets.particleFlame);
+        }
+    }
 
     public static void addSceneModels(SceneWorld sceneWorld) {
         Model<Format3D> knife = new Model<>(new Format3D(), ResourceManager.modelAssets.knife);
@@ -66,7 +77,7 @@ public class GameEvents {
     }
 
     public static void addTriggers(World world) {
-        world.createSimpleTriggerZone(new ITriggerZone.Zone(new Vector3d(50.0d, 0.0d, 0.0d), new Vector3d(5.0d, 5.0d, 5.0d)), (e) -> {
+        world.createSimpleTriggerZone(new Zone(new Vector3d(50.0d, 0.0d, 0.0d), new Vector3d(5.0d, 5.0d, 5.0d)), (e) -> {
             if (e instanceof EntityPlayerSP) {
                 Scene.testTrigger = true;
             }
@@ -95,5 +106,22 @@ public class GameEvents {
 
         Plane4dBrush plane4dBrush5 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(size, 0, size), new Vector3d(size, wallH, size), new Vector3d(size, 0, -size), new Vector3d(size, wallH, -size)});
         Game.getGame().getProxy().addItemInWorlds(plane4dBrush5, ResourceManager.renderDataAssets.plane);
+
+
+        Plane4dBrush plane4dBrush6 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -75.0d), new Vector3d(25.0d, 0.0d, -75.0d), new Vector3d(-25.0d, 1.5d, -75.0d), new Vector3d(25.0d, 1.5d, -75.0d)});
+        Game.getGame().getProxy().addItemInWorlds(plane4dBrush6, ResourceManager.renderDataAssets.test);
+
+        Plane4dBrush plane4dBrush7 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -125.0d), new Vector3d(25.0d, 0.0d, -125.0d), new Vector3d(-25.0d, 1.5d, -125.0d), new Vector3d(25.0d, 1.5d, -125.0d)});
+        Game.getGame().getProxy().addItemInWorlds(plane4dBrush7, ResourceManager.renderDataAssets.test);
+
+        Plane4dBrush plane4dBrush8 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -75.0d), new Vector3d(-25.0d, 0.0d, -125.0d), new Vector3d(-25.0d, 1.5d, -75.0d), new Vector3d(-25.0d, 1.5d, -125.0d)});
+        Game.getGame().getProxy().addItemInWorlds(plane4dBrush8, ResourceManager.renderDataAssets.test);
+
+        Plane4dBrush plane4dBrush9 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(25.0d, 0.0d, -75.0d), new Vector3d(25.0d, 0.0d, -125.0d), new Vector3d(25.0d, 1.5d, -75.0d), new Vector3d(25.0d, 1.5d, -125.0d)});
+        Game.getGame().getProxy().addItemInWorlds(plane4dBrush9, ResourceManager.renderDataAssets.test);
+
+
+        ILiquid liquid = new Water(new Zone(new Vector3d(0.0d, 0.0d, -100.0d), new Vector3d(50.0d, 3.0d, 50.0d)));
+        Game.getGame().getProxy().addLiquidInWorlds(liquid, ResourceManager.renderDataAssets.renderLiquidData);
     }
 }

@@ -70,8 +70,14 @@ public class EntityPlayerSP extends PhysEntity implements IRemoteController {
             if (this.isValidController()) {
                 final Vector3d motionC = this.calcControllerMotion();
                 this.onStep(this.getStepVelocityVector(motionC));
-                if (motionC.y > 0) {
-                    this.onJump();
+                if (this.isInWater()) {
+                    if (motionC.y != 0.0d) {
+                        this.swim(motionC.y > 0);
+                    }
+                } else {
+                    if (motionC.y > 0) {
+                        this.onJump();
+                    }
                 }
             }
         }
@@ -87,8 +93,11 @@ public class EntityPlayerSP extends PhysEntity implements IRemoteController {
         if (speed > this.getSpeed() * this.getSpeedMultiplier()) {
             v1.div(speed);
         }
-        if (!this.isOnGround()) {
-            v1.mul(0.1d);
+        if (!this.isOnGround() && !this.isInWater()) {
+            this.getRigidBodyObject().setFrictionAxes(new Vector3d(0.0d));
+            v1.mul(0.05d);
+        } else {
+            this.getRigidBodyObject().setFrictionAxes(new Vector3d(1.0d));
         }
         return v1;
     }
@@ -136,8 +145,14 @@ public class EntityPlayerSP extends PhysEntity implements IRemoteController {
         closestConvexResultCallback.deallocate();
     }
 
+    public void swim(boolean up) {
+        this.getRigidBodyObject().setFrictionAxes(new Vector3d(0.0d));
+        this.addObjectVelocity(new Vector3d(0.0d, up ? 0.5d : -0.3d, 0.0d));
+    }
+
     public void onJump() {
         if (this.canJump) {
+            this.getRigidBodyObject().setFrictionAxes(new Vector3d(0.0d));
             this.addObjectVelocity(new Vector3d(0.0d, 8.0d, 0.0d));
             this.ticksBeforeCanJump = 20;
             this.canJump = false;

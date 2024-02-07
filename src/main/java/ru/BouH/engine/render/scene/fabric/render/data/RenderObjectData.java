@@ -1,4 +1,4 @@
-package ru.BouH.engine.render.scene.fabric.render_data;
+package ru.BouH.engine.render.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
@@ -8,20 +8,20 @@ import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class RenderObjectData {
     private final IRenderFabric renderFabric;
-    private final Class<? extends PhysicsObjectModeled> aClass;
+    private final Class<? extends PhysicsObject> aClass;
     private IEntityModelConstructor<WorldItem> entityModelConstructor;
     private MeshDataGroup meshDataGroup;
     private Material overObjectMaterial;
     private ModelRenderParams modelRenderParams;
 
-    public RenderObjectData(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObjectModeled> aClass, @NotNull ShaderManager shaderManager) {
+    public RenderObjectData(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ShaderManager shaderManager) {
         this.aClass = aClass;
         this.renderFabric = renderFabric;
         this.overObjectMaterial = null;
@@ -29,14 +29,19 @@ public class RenderObjectData {
         this.modelRenderParams = ModelRenderParams.defaultModelRenderConstraints(shaderManager);
     }
 
-    public PhysicsObjectModeled constructPhysicsObject(SceneWorld sceneWorld, WorldItem worldItem) {
+    public PhysicsObject constructPhysicsObject(SceneWorld sceneWorld, WorldItem worldItem) {
         final RenderObjectData renderObjectData = this.copyObject();
         try {
-            return this.aClass.getDeclaredConstructor(SceneWorld.class, WorldItem.class, RenderObjectData.class).newInstance(sceneWorld, worldItem, renderObjectData);
+            PhysicsObject physicsObject = this.aClass.getDeclaredConstructor(SceneWorld.class, WorldItem.class, RenderObjectData.class).newInstance(sceneWorld, worldItem, renderObjectData);
+            this.onPhysicsObjectCreated(physicsObject);
+            return physicsObject;
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                  InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected void onPhysicsObjectCreated(PhysicsObject physicsObject) {
     }
 
     public Vector2d getModelTextureScaling() {
@@ -89,7 +94,7 @@ public class RenderObjectData {
         return this;
     }
 
-    public Class<? extends PhysicsObjectModeled> getRenderClass() {
+    public Class<? extends PhysicsObject> getRenderClass() {
         return this.aClass;
     }
 

@@ -1,6 +1,7 @@
 package ru.BouH.engine.game.resources.assets;
 
 import ru.BouH.engine.game.resources.ResourceManager;
+import ru.BouH.engine.game.resources.assets.materials.textures.ParticleTexturePack;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.cache.GameCache;
 import ru.BouH.engine.render.scene.objects.gui.font.FontCode;
@@ -17,6 +18,8 @@ public class TextureAssetsLoader implements IAssetsLoader {
     public TextureSample grassTexture;
     public TextureSample guiTestImage;
     public TextureSample tallGrass;
+    public TextureSample waterTexture;
+    public ParticleTexturePack particleTexturePack;
     public CubeMapProgram skyboxCubeMap;
     public FontTexture standardFont;
 
@@ -31,6 +34,9 @@ public class TextureAssetsLoader implements IAssetsLoader {
         this.grassTexture = ResourceManager.createTexture("/textures/terrain/grass02.png");
         this.grassSpecular = ResourceManager.createTexture("/textures/normals/specular_grass.png");
         this.tallGrass = ResourceManager.createTexture("/textures/props/tallgrass.png");
+        this.waterTexture = ResourceManager.createTexture("/textures/liquids/water.jpg");
+        this.particleTexturePack = new ParticleTexturePack("/textures/particles/flame/flame", ".png", 4, 0.25f);
+
         this.skyboxCubeMap = new CubeMapProgram();
         this.skyboxCubeMap.generateCubeMapFromTexture(new CubeMapProgram.CubeMapTextureArray("skybox/sky1", ".png"));
     }

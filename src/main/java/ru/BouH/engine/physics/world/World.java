@@ -5,13 +5,18 @@ import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.BulletCollision.btGhostObject;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
 import org.bytedeco.bullet.BulletDynamics.btRigidBody;
+import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.GameEvents;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
+import ru.BouH.engine.physics.liquids.ILiquid;
+import ru.BouH.engine.physics.liquids.Water;
 import ru.BouH.engine.physics.triggers.ITrigger;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.triggers.SimpleTriggerZone;
+import ru.BouH.engine.physics.triggers.Zone;
 import ru.BouH.engine.physics.world.object.CollidableWorldItem;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.WorldItem;
@@ -27,6 +32,7 @@ public final class World implements IWorld {
     private final Set<IWorldDynamic> allDynamicItems;
     private final Set<CollidableWorldItem> allBulletItems;
     private final Set<ITriggerZone> triggerZones;
+    private final Set<ILiquid> liquids;
     private final Set<WorldItem> toCleanItems;
     private boolean collectionsWaitingRefresh;
     private int ticks;
@@ -37,6 +43,7 @@ public final class World implements IWorld {
         this.toCleanItems = new HashSet<>();
         this.triggerZones = new HashSet<>();
         this.allBulletItems = new HashSet<>();
+        this.liquids = new HashSet<>();
     }
 
     public static boolean isItemDynamic(WorldItem worldItem) {
@@ -65,27 +72,31 @@ public final class World implements IWorld {
         List<WorldItem> copy1 = new ArrayList<>(this.getAllWorldItems());
         if (this.collectionsWaitingRefresh) {
             synchronized (PhysicsTimer.lock) {
-                this.getAllDynamicItems().clear();
-                this.getAllDynamicItems().addAll(copy1.stream().filter(World::isItemDynamic).map(e -> (IWorldDynamic) e).collect(Collectors.toList()));
-                this.getAllBulletItems().clear();
-                this.getAllBulletItems().addAll(copy1.stream().filter(World::isItemJBulletObject).map(e -> (CollidableWorldItem) e).collect(Collectors.toList()));
+                this.allDynamicItems.clear();
+                this.allBulletItems.clear();
+                this.allDynamicItems.addAll(copy1.stream().filter(World::isItemDynamic).map(e -> (IWorldDynamic) e).collect(Collectors.toList()));
+                this.allDynamicItems.addAll(this.liquids);
+                this.allDynamicItems.addAll(this.triggerZones);
+                this.allBulletItems.addAll(copy1.stream().filter(World::isItemJBulletObject).map(e -> (CollidableWorldItem) e).collect(Collectors.toList()));
             }
             this.collectionsWaitingRefresh = false;
         }
-        List<IWorldDynamic> copy2 = new ArrayList<>(this.getAllDynamicItems());
-        for (IWorldDynamic iWorldDynamic : copy2) {
+        Set<IWorldDynamic> toUpdate = new HashSet<>(this.allDynamicItems);
+        for (IWorldDynamic iWorldDynamic : toUpdate) {
+            if (iWorldDynamic instanceof WorldItem) {
+                WorldItem worldItem1 = (WorldItem) iWorldDynamic;
+                worldItem1.setPrevPosition(new Vector3d(worldItem1.getPosition()));
+            }
             iWorldDynamic.onUpdate(this);
-        }
-        List<ITriggerZone> copy3 = new ArrayList<>(this.getTriggerZones());
-        for (ITriggerZone triggerZone : copy3) {
-            triggerZone.onUpdate(this);
         }
         this.clearItemsCollection(this.toCleanItems);
         this.toCleanItems.clear();
+        GameEvents.worldUpdateEvent(this);
         this.ticks += 1;
     }
 
     public void onWorldEnd() {
+        this.getTriggerZones().forEach(e -> e.onDestroy(this));
     }
 
     public void addLight(Light light) {
@@ -132,16 +143,31 @@ public final class World implements IWorld {
         return this.ticks;
     }
 
-    public void createSimpleTriggerZone(ITriggerZone.Zone zone, ITrigger ITriggerEnter, ITrigger ITriggerLeave) {
+    public void createSimpleTriggerZone(Zone zone, ITrigger ITriggerEnter, ITrigger ITriggerLeave) {
         this.addTriggerZone(new SimpleTriggerZone(zone, ITriggerEnter, ITriggerLeave));
+    }
+
+    public void createWater(Zone zone) {
+        this.addLiquid(new Water(zone));
+    }
+
+    public void addLiquid(ILiquid liquid) {
+        if (liquid == null) {
+            throw new GameException("Tried to pass NULL liquid in world");
+        }
+        liquid.onSpawn(this);
+        btGhostObject btCollisionObject = liquid.triggerZoneGhostCollision();
+        this.addInBulletWorld(btCollisionObject, liquid.getBodyGroup());
+        this.getLiquids().add(liquid);
     }
 
     public void addTriggerZone(ITriggerZone iTriggerZone) {
         if (iTriggerZone == null) {
             throw new GameException("Tried to pass NULL triggerZone in world");
         }
-        btGhostObject btCollisionObject = iTriggerZone.createGhostZone();
-        this.addInBulletWorld(btCollisionObject, BodyGroup.GHOST);
+        iTriggerZone.onSpawn(this);
+        btGhostObject btCollisionObject = iTriggerZone.triggerZoneGhostCollision();
+        this.addInBulletWorld(btCollisionObject, iTriggerZone.getBodyGroup());
         this.getTriggerZones().add(iTriggerZone);
     }
 
@@ -156,6 +182,11 @@ public final class World implements IWorld {
 
     public int countItems() {
         return this.getAllWorldItems().size();
+    }
+
+
+    public synchronized Set<ILiquid> getLiquids() {
+        return this.liquids;
     }
 
     public synchronized Set<CollidableWorldItem> getAllBulletItems() {

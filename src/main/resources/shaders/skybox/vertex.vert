@@ -6,6 +6,16 @@ layout (std140, binding = 0) uniform SunLight {
     float sunX;
     float sunY;
     float sunZ;
+    float sunColorR;
+    float sunColorG;
+    float sunColorB;
+};
+
+layout (std140, binding = 3) uniform Fog {
+    float fogDensity;
+    float fogColorR;
+    float fogColorG;
+    float fogColorB;
 };
 
 out vec3 out_texture;

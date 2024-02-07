@@ -5,11 +5,14 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.physics.entities.PhysEntity;
 import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
+import ru.BouH.engine.physics.liquids.ILiquid;
+import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.environment.light.PointLight;
-import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
+import ru.BouH.engine.render.scene.fabric.render.data.RenderLiquidData;
+import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.screen.Screen;
 
 public class Proxy {
@@ -29,7 +32,7 @@ public class Proxy {
     public void addItemInWorlds(WorldItem worldItem, RenderObjectData renderData) {
         try {
             this.physicsTimer.getWorld().addItem(worldItem);
-            this.screen.getRenderWorld().addItem(worldItem, renderData);
+            this.screen.getRenderWorld().addItemInQueue(worldItem, renderData);
         } catch (GameException e) {
             throw new RuntimeException(e);
         }
@@ -37,20 +40,25 @@ public class Proxy {
 
     public void addPointLight(WorldItem worldItem, PointLight light, int attachShadowScene) {
         this.addLight(worldItem, light);
-        Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
+        this.screen.getScene().getSceneRender().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
+    }
+
+    public void addPointLight(PointLight light, int attachShadowScene) {
+        this.addLight(light);
+        this.screen.getScene().getSceneRender().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
+    }
+
+    public void addLiquidInWorlds(ILiquid liquid, RenderLiquidData renderLiquidData) {
+        this.physicsTimer.getWorld().addLiquid(liquid);
+        this.screen.getRenderWorld().addLiquid(liquid, renderLiquidData);
+    }
+
+    public void addTriggerZone(ITriggerZone triggerZone) {
+        this.physicsTimer.getWorld().addTriggerZone(triggerZone);
     }
 
     public void addLight(WorldItem worldItem, Light light) {
-        try {
-            if (!worldItem.isSpawned()) {
-                throw new GameException("Couldn't attach light. Entity hasn't been spawned!");
-            }
-            Light light1 = worldItem.attachLight(light);
-            light1.enable();
-            this.screen.getRenderWorld().getEnvironment().getLightManager().addLight(light);
-        } catch (GameException e) {
-            Game.getGame().getLogManager().error(e.getMessage());
-        }
+        this.screen.getRenderWorld().addWorldItemLightInQueue(worldItem, light);
     }
 
     public void addLight(Light light) {

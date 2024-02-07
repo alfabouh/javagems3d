@@ -66,6 +66,7 @@ public class Screen {
     private void fillScene(Scene scene) {
         scene.addSceneRenderBase(new WorldRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new WorldTransparentRender(scene.getSceneRender()));
+        scene.addSceneRenderBase(new WorldRenderLiquids(scene.getSceneRender()));
         scene.addSceneRenderBase(new SkyRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new GuiRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new DebugRender(scene.getSceneRender()));

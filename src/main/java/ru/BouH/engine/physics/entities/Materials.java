@@ -7,10 +7,12 @@ public class Materials {
     public static MaterialProperties defaultMaterial = new MaterialProperties("defaultMaterial");
     public static MaterialProperties grassGround = new MaterialProperties("grassGround").setFriction(5.0d).setRestitution(0.0d);
     public static MaterialProperties brickCube = new MaterialProperties("brickCube").setFriction(7.5d).setRestitution(0.0d);
+    public static MaterialProperties liquid = new MaterialProperties("liquid").setFriction(0.0d).setRestitution(0.5d);
+    public static MaterialProperties particle = new MaterialProperties("particle").setFriction(1.0d).setRestitution(0.1d);
 
     public static class MaterialProperties {
         public static final double DEFAULT_FRICTION_X = 1.0d;
-        public static final double DEFAULT_FRICTION_Y = 0.0d;
+        public static final double DEFAULT_FRICTION_Y = 1.0d;
         public static final double DEFAULT_FRICTION_Z = 1.0d;
         public static final double DEFAULT_FRICTION = 1.0d;
         public static final double DEFAULT_LINEAR_DAMPING = 0.5d;

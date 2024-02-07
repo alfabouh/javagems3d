@@ -3,12 +3,14 @@ package ru.BouH.engine.physics.world.object;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.entities.IRemoteController;
+import ru.BouH.engine.physics.particles.ParticleFX;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public abstract class WorldItem implements IWorldObject {
     private boolean isDead;
     private boolean spawned;
     private double scale;
-    private PhysicsObjectModeled relativeRenderObject;
+    private PhysicsObject relativeRenderObject;
 
     public WorldItem(World world, double scale, @NotNull Vector3d pos, @NotNull Vector3d rot, String itemName) {
         this.itemName = itemName;
@@ -65,19 +67,23 @@ public abstract class WorldItem implements IWorldObject {
 
     public void onSpawn(IWorld iWorld) {
         this.spawnTick = ((World) iWorld).getTicks();
-        Game.getGame().getLogManager().log("Add entity in world - [ " + this + " ]");
+        if (!this.isParticle()) {
+            Game.getGame().getLogManager().log("Add entity in world - [ " + this + " ]");
+        }
         this.spawned = true;
     }
 
     public void onDestroy(IWorld iWorld) {
-        Game.getGame().getLogManager().log("Removed entity from world - [ " + this + " ]");
+        if (!this.isParticle()) {
+            Game.getGame().getLogManager().log("Removed entity from world - [ " + this + " ]");
+        }
     }
 
     public boolean isSpawned() {
         return this.spawned;
     }
 
-    public void setRelativeRenderObject(PhysicsObjectModeled relativeRenderObject) {
+    public void setRelativeRenderObject(PhysicsObject relativeRenderObject) {
         this.relativeRenderObject = relativeRenderObject;
     }
 
@@ -161,6 +167,9 @@ public abstract class WorldItem implements IWorldObject {
 
     public final Light attachLight(Light light) {
         this.attachedLights.add(light);
+        if (this.relativeRenderObject() == null) {
+            throw new GameException("Couldn't attach light to NULL render object!");
+        }
         light.setAttachedTo(this.relativeRenderObject());
         return light;
     }
@@ -189,7 +198,11 @@ public abstract class WorldItem implements IWorldObject {
         return true;
     }
 
-    private PhysicsObjectModeled relativeRenderObject() {
+    public boolean isParticle() {
+        return this instanceof ParticleFX;
+    }
+
+    private PhysicsObject relativeRenderObject() {
         return this.relativeRenderObject;
     }
 }

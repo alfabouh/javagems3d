@@ -84,19 +84,22 @@ public class LightManager implements ILightManager {
 
     private void updateSunUbo(Matrix4d viewMatrix) {
         Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunAngle(), viewMatrix, 0.0f);
-        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(5);
+        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8);
         value1Buffer.put(this.calcAmbientLight());
         value1Buffer.put(this.environment.getSky().getSunBrightness());
         value1Buffer.put(angle.x);
         value1Buffer.put(angle.y);
         value1Buffer.put(angle.z);
+        value1Buffer.put(this.environment.getSky().getSunColors().x);
+        value1Buffer.put(this.environment.getSky().getSunColors().y);
+        value1Buffer.put(this.environment.getSky().getSunColors().z);
         value1Buffer.flip();
         Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.SunLight, value1Buffer);
         MemoryUtil.memFree(value1Buffer);
     }
 
     private void updatePointLightsUbo() {
-        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(7 * LightManager.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
         List<PointLight> pointLightList = this.getActiveLights();
         int activeLights = pointLightList.size();
         for (int i = 0; i < activeLights; i++) {

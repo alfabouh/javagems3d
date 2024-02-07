@@ -4,6 +4,7 @@ import org.joml.*;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
+import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.IController;
 import ru.BouH.engine.game.resources.ResourceManager;
@@ -15,16 +16,20 @@ import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.models.mesh.ModelNode;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.game.synchronizing.SyncManger;
+import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
 import ru.BouH.engine.proxy.LocalPlayer;
-import ru.BouH.engine.render.RenderManager;
+import ru.BouH.engine.render.environment.Environment;
+import ru.BouH.engine.render.environment.fog.Fog;
+import ru.BouH.engine.render.environment.light.LightManager;
+import ru.BouH.engine.render.scene.fabric.render.RenderSceneModel;
+import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.frustum.FrustumCulling;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.programs.FBOTexture2DProgram;
-import ru.BouH.engine.render.scene.scene_render.groups.WorldTransparentRender;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.scene.world.camera.FreeCamera;
@@ -32,12 +37,8 @@ import ru.BouH.engine.render.scene.world.camera.ICamera;
 import ru.BouH.engine.render.screen.Screen;
 import ru.BouH.engine.render.screen.window.Window;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.lang.Math;
-import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +52,7 @@ public class Scene implements IScene {
     private final SceneWorld sceneWorld;
     private final FrustumCulling frustumCulling;
     private final SceneRenderConveyor sceneRenderConveyor;
+    public static float elapsedRenderTicks;
     private double elapsedTime;
     private List<SceneRenderBase> mainGroup;
     private List<SceneRenderBase> sideGroup;
@@ -119,11 +121,7 @@ public class Scene implements IScene {
         Scene.renderSceneObject(sceneObject, null);
     }
 
-    public static void renderSceneObject(IModeledSceneObject sceneObject, Material material) {
-        Scene.renderSceneObject(sceneObject, null, material);
-    }
-
-    public static void renderSceneObject(IModeledSceneObject sceneObject, Matrix4d view, Material overMaterial) {
+    public static void renderSceneObject(IModeledSceneObject sceneObject, Material overMaterial) {
         Scene scene = Game.getGame().getScreen().getScene();
         if (sceneObject != null) {
             Model<Format3D> model = sceneObject.getModel3D();
@@ -132,11 +130,7 @@ public class Scene implements IScene {
                 return;
             }
             ShaderManager shaderManager = sceneObject.getModelRenderParams().getShaderManager();
-            if (view == null) {
-                shaderManager.getUtils().passViewAndModelMatrices(model);
-            } else {
-                shaderManager.getUtils().passViewAndModelMatrices(view, model);
-            }
+            shaderManager.getUtils().passViewAndModelMatrices(TransformationManager.instance.getMainCameraViewMatrix(), model);
             shaderManager.getUtils().performConstraintsOnShader(sceneObject.getModelRenderParams());
             if (shaderManager.checkUniformInGroup("texture_scaling")) {
                 shaderManager.performUniform("texture_scaling", sceneObject.getModelRenderParams().getTextureScaling());
@@ -199,6 +193,7 @@ public class Scene implements IScene {
     }
 
     public void preRender() {
+        this.getSceneWorld().updateToAddQueue();
         this.collectRenderBases();
         ResourceManager.shaderAssets.startShaders();
         this.getSceneWorld().setFrustumCulling(this.getFrustumCulling());
@@ -237,11 +232,11 @@ public class Scene implements IScene {
         this.setRenderCamera(new AttachedCamera(worldItem));
     }
 
-    public void enableAttachedCamera(PhysicsObjectModeled physicsObject) {
+    public void enableAttachedCamera(PhysicsObject physicsObject) {
         this.setRenderCamera(new AttachedCamera(physicsObject));
     }
 
-    public boolean isCameraAttachedToItem(PhysicsObjectModeled physicsObject) {
+    public boolean isCameraAttachedToItem(PhysicsObject physicsObject) {
         return this.getCurrentCamera() instanceof AttachedCamera && ((AttachedCamera) this.getCurrentCamera()).getPhysXObject() == physicsObject;
     }
 
@@ -266,10 +261,10 @@ public class Scene implements IScene {
 
     @SuppressWarnings("all")
     public void renderSceneInterpolated(final double partialTicks) throws InterruptedException {
-        this.getFrustumCulling().refreshFrustumCullingState(RenderManager.instance.getProjectionMatrix(), RenderManager.instance.getViewMatrix());
+        this.getFrustumCulling().refreshFrustumCullingState(TransformationManager.instance.getProjectionMatrix(), TransformationManager.instance.getMainCameraViewMatrix());
         this.getSceneWorld().onWorldEntityUpdate(this.refresh, partialTicks);
         this.getCurrentCamera().updateCamera(partialTicks);
-        RenderManager.instance.updateViewMatrix(this.getCurrentCamera());
+        TransformationManager.instance.updateViewMatrix(this.getCurrentCamera());
         this.getSceneRender().onRender(partialTicks, this.mainGroup, this.sideGroup);
         this.refresh = false;
     }
@@ -351,9 +346,28 @@ public class Scene implements IScene {
             return this.CURRENT_POST_RENDER;
         }
 
+        private void updateUbo() {
+            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{ this.getRenderWorld().getElapsedRenderTicks() });
+            Environment environment = this.getRenderWorld().getEnvironment();
+            FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(4);
+            value1Buffer.put(environment.getFog().getDensity());
+            value1Buffer.put((float) environment.getFog().getColor().x);
+            value1Buffer.put((float) environment.getFog().getColor().y);
+            value1Buffer.put((float) environment.getFog().getColor().z);
+            value1Buffer.flip();
+            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Fog, value1Buffer);
+            MemoryUtil.memFree(value1Buffer);
+        }
+
         public void onRender(double partialTicks, List<SceneRenderBase> mainGroup, List<SceneRenderBase> sideGroup) {
-            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{SceneWorld.elapsedRenderTicks});
+            this.updateUbo();
             this.getRenderWorld().getEnvironment().onUpdate(this.getRenderWorld());
+
+            if (this.checkPlayerCameraInWater()) {
+                this.getRenderWorld().getEnvironment().setFog(this.getRenderWorld().getEnvironment().getWaterFog());
+            } else {
+                this.getRenderWorld().getEnvironment().setFog(this.getRenderWorld().getEnvironment().getWorldFog());
+            }
 
             Scene.getGameUboShader().bind();
             Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d), new Vector2d(this.getWindowDimensions().x, this.getWindowDimensions().y), 0);
@@ -366,6 +380,18 @@ public class Scene implements IScene {
             this.renderSideGroup(partialTicks, sideGroup);
             model.clean();
             Scene.getGameUboShader().unBind();
+        }
+
+        private boolean checkPlayerCameraInWater() {
+            for (ILiquid liquid : this.getRenderWorld().getWorld().getLiquids()) {
+                ICamera camera = Scene.this.getCurrentCamera();
+                Vector3d left = new Vector3d(liquid.getZone().getLocation()).sub(liquid.getZone().getSize().mul(0.5d));
+                Vector3d right = new Vector3d(liquid.getZone().getLocation()).add(liquid.getZone().getSize().mul(0.5d));
+                if (camera.getCamPosition().x >= left.x && camera.getCamPosition().y >= left.y && camera.getCamPosition().z >= left.z && camera.getCamPosition().x <= right.x && camera.getCamPosition().y <= right.y && camera.getCamPosition().z <= right.z) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void renderSideGroup(double partialTicks, List<SceneRenderBase> sideGroup) {

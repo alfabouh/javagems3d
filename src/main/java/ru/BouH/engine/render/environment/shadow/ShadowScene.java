@@ -8,7 +8,7 @@ import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
-import ru.BouH.engine.render.RenderManager;
+import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
@@ -52,8 +52,8 @@ public class ShadowScene {
     }
 
     private void updateCascadeShadows(List<CascadeShadow> cascadeShadows) {
-        Matrix4d view = RenderManager.instance.getViewMatrix();
-        Matrix4d projection = RenderManager.instance.getProjectionMatrix();
+        Matrix4d view = TransformationManager.instance.getMainCameraViewMatrix();
+        Matrix4d projection = TransformationManager.instance.getProjectionMatrix();
         Vector4d sunPos = new Vector4d(this.getScene().getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
 
         float[] cascadeSplitLambda = new float[] {0.85f, 0.7f, 0.95f};
@@ -122,8 +122,8 @@ public class ShadowScene {
             Vector3d lightDir = (new Vector3d(sunPos.x, sunPos.y, sunPos.z).mul(-1.0d)).normalize();
             Vector3d eye = new Vector3d(frustumCenter).sub(new Vector3d(lightDir).mul(-minExtents.z));
             Vector3d up = new Vector3d(0.0d, 1.0d, 0.0d);
-            Matrix4d lightViewMatrix = RenderManager.instance.getLookAtMatrix(eye, up, frustumCenter);
-            Matrix4d lightOrthoMatrix = RenderManager.instance.getOrthographicMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
+            Matrix4d lightViewMatrix = TransformationManager.instance.getLookAtMatrix(eye, up, frustumCenter);
+            Matrix4d lightOrthoMatrix = TransformationManager.instance.getOrthographicMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
 
             CascadeShadow cascadeShadow = cascadeShadows.get(i);
             cascadeShadow.setSplitDistance((nearClip + splitDist * clipRange) * -1.0f);
@@ -157,7 +157,7 @@ public class ShadowScene {
     }
 
     public float farCascadeClip() {
-        return RenderManager.Z_FAR;
+        return TransformationManager.Z_FAR;
     }
 
     public void renderAllModelsInShadowMap(List<IModeledSceneObject> renderModels) {

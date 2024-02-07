@@ -7,10 +7,15 @@ public enum BodyGroup {
     RIGID_BODY(100, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter),
     PLAYER(101, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter),
     BRUSH(102, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter),
-    GHOST(103, BodyGroup.GhostFilter, btBroadphaseProxy.AllFilter);
+    GHOST(103, BodyGroup.GhostFilter, btBroadphaseProxy.AllFilter),
+    PARTICLE(104, BodyGroup.GhostFilter, btBroadphaseProxy.AllFilter),
+    LIQUID(105, BodyGroup.LiquidFilter, btBroadphaseProxy.AllFilter);
 
 
-    public static final short GhostFilter = 1 << 8;
+    public static final short
+            GhostFilter = 1 << 8,
+            LiquidFilter = 1 << 9;
+
     private final int index;
     private final int group;
     private final int mask;
