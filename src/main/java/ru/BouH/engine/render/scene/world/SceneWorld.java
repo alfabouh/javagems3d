@@ -1,9 +1,9 @@
 package ru.BouH.engine.render.scene.world;
 
-import javafx.util.Pair;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.GameEvents;
 import ru.BouH.engine.game.exception.GameException;
+import ru.BouH.engine.math.Pair;
 import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.WorldItem;
@@ -13,12 +13,10 @@ import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.frustum.FrustumCulling;
 import ru.BouH.engine.render.frustum.ICullable;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderLiquidData;
+import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
-import ru.BouH.engine.render.scene.objects.IRenderObject;
 import ru.BouH.engine.render.scene.objects.items.LiquidObject;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
-import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
-import ru.BouH.engine.render.scene.world.camera.Camera;
 import ru.BouH.engine.render.scene.world.camera.ICamera;
 
 import java.util.*;
