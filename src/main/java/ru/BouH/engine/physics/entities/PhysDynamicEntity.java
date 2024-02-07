@@ -37,13 +37,6 @@ public abstract class PhysDynamicEntity extends PhysEntity implements IWorldDyna
 
     @Override
     public void onUpdate(IWorld iWorld) {
-        if (this.isValid()) {
-            this.addObjectVelocity(this.getVelocityVector());
-            this.setVelocityVector(new Vector3d(0.0d));
-            if (this.getPosition().y <= -10 || this.getPosition().y >= 500) {
-                this.setPosition(new Vector3d(0, 5, 0));
-                this.setObjectVelocity(new Vector3d(0.0d));
-            }
-        }
+        super.onUpdate(iWorld);
     }
 }

@@ -1,5 +1,6 @@
 package ru.BouH.engine.physics.world.object;
 
+import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 import org.bytedeco.bullet.BulletCollision.btCollisionShape;
 import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.bytedeco.bullet.LinearMath.btDefaultMotionState;
@@ -19,12 +20,14 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     private final RigidBodyObject.PhysProperties properties;
     private RigidBodyObject rigidBodyObject;
     private RigidBodyConstructor rigidBodyConstructor;
+    private boolean isInWater;
 
     public CollidableWorldItem(World world, RigidBodyObject.PhysProperties properties, double scale, @NotNull Vector3d startTranslation, @NotNull Vector3d startRotation, String itemName) {
         super(world, scale, startTranslation, startRotation, itemName);
         this.properties = properties;
         this.startTranslation = startTranslation;
         this.startRotation = startRotation;
+        this.isInWater = false;
     }
 
     protected abstract AbstractCollision constructCollision();
@@ -32,6 +35,14 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
         this.constructRigidBody();
+    }
+
+    public boolean isInWater() {
+        return this.isInWater;
+    }
+
+    public void setInWater(boolean inWater) {
+        isInWater = inWater;
     }
 
     public Vector3d getPosition() {
@@ -74,6 +85,11 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         this.getRigidBodyObject().setTranslation(position);
         this.getRigidBodyObject().setRotation(rotation);
         this.getRigidBodyObject().updateCollisionObjectState();
+
+        this.afterRigidBodyCreated(this.getRigidBodyObject());
+    }
+
+    protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
     }
 
     protected void addCallBacks(RigidBodyObject rigidBodyObject) {

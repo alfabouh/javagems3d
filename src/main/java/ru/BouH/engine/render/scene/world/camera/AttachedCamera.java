@@ -5,12 +5,12 @@ import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class AttachedCamera extends Camera {
-    private PhysicsObjectModeled physicsObject;
+    private PhysicsObject physicsObject;
 
-    public AttachedCamera(@NotNull PhysicsObjectModeled physicsObject) {
+    public AttachedCamera(@NotNull PhysicsObject physicsObject) {
         this.physicsObject = physicsObject;
     }
 
@@ -24,7 +24,7 @@ public class AttachedCamera extends Camera {
 
     @Override
     public void updateCamera(double partialTicks) {
-        PhysicsObjectModeled physicsObject = this.getPhysXObject();
+        PhysicsObject physicsObject = this.getPhysXObject();
         if (physicsObject != null) {
             Vector3d pos = new Vector3d(this.getPhysXObject().getRenderPosition()).add(this.cameraOffset());
             Vector3d rot = new Vector3d(this.getPhysXObject().getRenderRotation());
@@ -48,12 +48,12 @@ public class AttachedCamera extends Camera {
         }
     }
 
-    public void attachCameraToItem(PhysicsObjectModeled physicsObject) {
+    public void attachCameraToItem(PhysicsObject physicsObject) {
         Game.getGame().getLogManager().log("Attached camera to: " + physicsObject.getWorldItem().getItemName());
         this.physicsObject = physicsObject;
     }
 
-    public PhysicsObjectModeled getPhysXObject() {
+    public PhysicsObject getPhysXObject() {
         return this.physicsObject;
     }
 }

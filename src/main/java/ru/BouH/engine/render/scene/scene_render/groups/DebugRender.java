@@ -14,12 +14,13 @@ import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
+import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.scene_render.RenderGroup;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class DebugRender extends SceneRenderBase {
     private final ShaderManager debugShaders;
 
     public DebugRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(2, sceneRenderConveyor, new RenderGroup("DEBUG", true));
+        super(50, sceneRenderConveyor, new RenderGroup("DEBUG", true));
         this.debugShaders = ResourceManager.shaderAssets.debug;
     }
 
@@ -38,14 +39,12 @@ public class DebugRender extends SceneRenderBase {
             this.debugShaders.bind();
             this.renderDebugSunDirection(this);
             this.renderTriggers(partialTicks, this);
-            GL30.glEnable(GL30.GL_DEPTH_TEST);
             this.debugShaders.getUtils().performProjectionMatrix();
-            for (IModeledSceneObject entityItem : this.getSceneWorld().getFilteredEntityList()) {
-                if (entityItem instanceof PhysicsObjectModeled) {
-                    this.renderHitBox(partialTicks, this, (PhysicsObjectModeled) entityItem);
+            for (IModeledSceneObject entityItem : this.getSceneWorld().getToRenderList()) {
+                if (entityItem instanceof PhysicsObject) {
+                    this.renderHitBox(partialTicks, this, (PhysicsObject) entityItem);
                 }
             }
-            GL30.glDisable(GL30.GL_DEPTH_TEST);
             this.debugShaders.unBind();
         }
     }
@@ -74,9 +73,19 @@ public class DebugRender extends SceneRenderBase {
             Scene.renderModel(form, GL30.GL_LINES);
             form.clean();
         }
+
+        List<ILiquid> liquids = new ArrayList<>(this.getSceneWorld().getWorld().getLiquids());
+        for (ILiquid liquid : liquids) {
+            Model<Format3D> form = MeshHelper.generateWirebox3DModel(new Vector3d(liquid.getZone().getSize()).mul(-0.5f), new Vector3d(liquid.getZone().getSize()).mul(0.5f));
+            form.getFormat().setPosition(liquid.getZone().getLocation());
+            this.debugShaders.getUtils().performModelViewMatrix3d(form);
+            this.debugShaders.performUniform("colour", new Vector4f(1.0f, 0.5f, 0.5f, 1.0f));
+            Scene.renderModel(form, GL30.GL_LINES);
+            form.clean();
+        }
     }
 
-    private void renderHitBox(double partialTicks, SceneRenderBase sceneRenderBase, PhysicsObjectModeled physicsObject) {
+    private void renderHitBox(double partialTicks, SceneRenderBase sceneRenderBase, PhysicsObject physicsObject) {
         WorldItem worldItem = physicsObject.getWorldItem();
         if (worldItem instanceof JBulletEntity) {
             JBulletEntity jBulletEntity = (JBulletEntity) worldItem;

@@ -2,9 +2,8 @@ package ru.BouH.engine.render.environment.shadow;
 
 import org.joml.Matrix4d;
 import org.joml.Vector2i;
-import org.joml.Vector3d;
 import org.lwjgl.opengl.GL30;
-import ru.BouH.engine.render.RenderManager;
+import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.programs.FBOCubeMapProgram;
@@ -29,7 +28,7 @@ public class PointLightShadow {
     }
 
     public void configureMatrices() {
-        this.shadowDirections = RenderManager.instance.getAllDirectionViewSpaces(this.getPointLight().getLightPos(), this.nearPlane(), this.farPlane());
+        this.shadowDirections = TransformationManager.instance.getAllDirectionViewSpaces(this.getPointLight().getLightPos(), this.nearPlane(), this.farPlane());
     }
 
     public int getId() {

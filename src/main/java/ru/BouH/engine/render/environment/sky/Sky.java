@@ -9,16 +9,26 @@ import ru.BouH.engine.render.environment.sky.skybox.ISkyBox;
 public class Sky implements IWorldDynamic {
     private final ISkyBox skyBox;
     private Vector3f sunAngle;
+    private Vector3f sunColors;
     private float sunBrightness;
 
-    public Sky(ISkyBox skyBox, Vector3f sunAngle, float sunBrightness) {
+    public Sky(ISkyBox skyBox, Vector3f sunColors, Vector3f sunAngle, float sunBrightness) {
         this.skyBox = skyBox;
         this.setSunBrightness(sunBrightness);
         this.setSunAngle(sunAngle);
+        this.setSunColors(sunColors);
     }
 
     public ISkyBox getSkyBox() {
         return this.skyBox;
+    }
+
+    public void setSunColors(Vector3f sunColors) {
+        this.sunColors = sunColors;
+    }
+
+    public Vector3f getSunColors() {
+        return new Vector3f(this.sunColors);
     }
 
     public Vector3f getSunAngle() {

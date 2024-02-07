@@ -2,7 +2,6 @@ in vec2 texture_coordinates;
 in vec3 mv_vertex_normal;
 in vec3 mv_vertex_pos;
 in mat3 TBN;
-in vec3 out_view_position;
 in vec4 out_world_position;
 in mat4 out_view_matrix;
 
@@ -24,6 +23,7 @@ const vec3 sampleOffsetDirections[20] = vec3[]
 );
 
 const int light_opacity_code = 1 << 2;
+const int light_bright_code = 1 << 3;
 
 const int diffuse_code = 1 << 2;
 const int emissive_code = 1 << 3;
@@ -71,6 +71,9 @@ layout (std140, binding = 0) uniform SunLight {
     float sunX;
     float sunY;
     float sunZ;
+    float sunColorR;
+    float sunColorG;
+    float sunColorB;
 };
 
 layout (std140, binding = 1) uniform PointLights {
@@ -81,20 +84,31 @@ layout (std140, binding = 2) uniform Misc {
     float w_tick;
 };
 
+layout (std140, binding = 3) uniform Fog {
+    float fogDensity;
+    float fogColorR;
+    float fogColorG;
+    float fogColorB;
+};
+
 vec4 calc_sun_light(vec3, vec3, vec3);
 vec4 calc_point_light(PointLight, vec3, vec3, float, float, float, float);
 vec4 calc_light_factor(vec3, float, vec3, vec3, vec3);
 vec4 calc_light();
+vec4 calc_fog(vec3, vec4);
 
 vec2 scaled_coordinates() {
     return texture_coordinates * texture_scaling;
 }
 
 vec4 refract_cubemap(vec3 normal, float cnst) {
+    float fogFactor = fogDensity * 100;
+    float f = 1.0 - clamp(fogFactor, 0.0, 0.7);
+
     float ratio = 1.0 / cnst;
-    vec3 I = normalize(mv_vertex_pos - camera_pos);
+    vec3 I = normalize(out_world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(ambient_cubemap, R).rgb, 1.0);
+    return f * vec4(texture(ambient_cubemap, R).rgb, 1.0);
 }
 
 vec3 calc_normal_map() {
@@ -110,15 +124,15 @@ void main()
     vec4 emissive_texture = texture(emissive_map, scaled_coordinates());
     vec4 diffuse = (texturing_code & diffuse_code) != 0 ? diffuse_texture : diffuse_color;
 
-    vec4 lightFactor = (lighting_code & light_opacity_code) == 0 ? vec4(1.) : ((texturing_code & emissive_code) != 0 ? emissive_texture * vec4(4.) : calc_light());
+    vec4 lightFactor = (lighting_code & light_bright_code) != 0 ? vec4(1.5) : (lighting_code & light_opacity_code) == 0 ? vec4(1.) : ((texturing_code & emissive_code) != 0 ? emissive_texture * vec4(4.) : calc_light());
 
-    diffuse += (texturing_code & metallic_code) != 0 ? (refract_cubemap(mv_vertex_normal, 1.73) * texture2D(metallic_map, texture_coordinates)) : vec4(0.0);
+    diffuse += (texturing_code & metallic_code) != 0 ? (refract_cubemap(calc_normal_map(), 1.73) * texture2D(metallic_map, texture_coordinates)) : vec4(0.0);
 
     vec4 final = diffuse * lightFactor;
     frag_color = vec4(final.xyz, diffuse_texture.a);
 
     vec3 cascmask = vec3(1.0);
-    int cascadeIndex = int(out_view_position.z < cascade_shadow[0].split_distance) + int(out_view_position.z < cascade_shadow[1].split_distance);
+    int cascadeIndex = int(mv_vertex_pos.z < cascade_shadow[0].split_distance) + int(mv_vertex_pos.z < cascade_shadow[1].split_distance);
     switch (cascadeIndex) {
         case 0:
             cascmask = vec3(1.0f, 0.75f, 0.75f);
@@ -136,11 +150,13 @@ void main()
 
     frag_color.rgb *= (show_cascades == 1) ? cascmask : vec3(1.0);
 
+    frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
+
     float brightness = frag_color.r + frag_color.g + frag_color.b;
     float distance_to_tx = length(mv_vertex_pos);
-    brightness *= distance_to_tx <= 64. ? 1. : 0.;
+    brightness *= distance_to_tx <= 86. ? 1. : 0.;
 
-    bright_color = brightness >= 8. ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
+    bright_color = ((lighting_code & light_bright_code) != 0 || brightness >= 8.) ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
 }
 
 float per_cascade_bias_shadow[3] = float[](5.0e-7f, 5.0e-7f, 5.0e-7f);
@@ -209,7 +225,7 @@ vec4 calc_light() {
     vec4 lightFactors = vec4(0.);
     vec3 normal = normalize(mv_vertex_normal);
     vec3 sunPos = normalize(vec3(sunX, sunY, sunZ));
-    int cascadeIndex = int(out_view_position.z < cascade_shadow[0].split_distance) + int(out_view_position.z < cascade_shadow[1].split_distance);
+    int cascadeIndex = int(mv_vertex_pos.z < cascade_shadow[0].split_distance) + int(mv_vertex_pos.z < cascade_shadow[1].split_distance);
     float bias = per_cascade_bias_shadow[cascadeIndex];
     bias *= tan(acos(dot(normal, sunPos)));
     bias = clamp(bias, 0.0, 1.0e-5f);
@@ -234,7 +250,7 @@ vec4 calc_light() {
     float prgb = point_light_factor.r + point_light_factor.g + point_light_factor.b;
     lightFactors += calcSunFactor * clamp(sun_shadow + prgb, 0.0, 1.0);
     lightFactors += point_light_factor;
-    lightFactors += ambient;
+    lightFactors += vec4(vec3(sunColorR, sunColorG, sunColorB) * ambient, 0.0);
     return lightFactors;
 }
 
@@ -260,7 +276,7 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
 }
 
 vec4 calc_sun_light(vec3 sunPos, vec3 vPos, vec3 vNormal) {
-    return calc_light_factor(vec3(1., 0.97, 0.94), sunBright, vPos, normalize(sunPos), vNormal);
+    return calc_light_factor(vec3(sunColorR, sunColorG, sunColorB), sunBright, vPos, normalize(sunPos), vNormal);
 }
 
 vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, float linear, float expo, float bright) {
@@ -273,4 +289,14 @@ vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, 
     float dist = length(light_dir);
     float attenuation_factor = at_base + linear * dist + expo * pow(dist, 2);
     return light_c / attenuation_factor;
+}
+
+vec4 calc_fog(vec3 frag_pos, vec4 color) {
+    vec3 fog_color = vec3(fogColorR, fogColorG, fogColorB) * vec3(sunColorR, sunColorG, sunColorB) * sunBright;
+    float distance = length(frag_pos);
+    float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
+    fogFactor = clamp(fogFactor, 0., 1.);
+
+    vec3 result = mix(fog_color, color.xyz, fogFactor);
+    return vec4(result.xyz, color.w);
 }

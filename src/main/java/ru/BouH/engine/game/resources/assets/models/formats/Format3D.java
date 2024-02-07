@@ -7,11 +7,13 @@ public class Format3D implements IFormat {
     private final Vector3d position;
     private final Vector3d rotation;
     private final Vector3d scale;
+    private boolean isOrientedToView;
 
     public Format3D(@NotNull Vector3d position, Vector3d rotation, Vector3d scale) {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
+        this.isOrientedToView = false;
     }
 
     public Format3D(Vector3d position, Vector3d rotation) {
@@ -53,5 +55,14 @@ public class Format3D implements IFormat {
     @Override
     public IFormat copy() {
         return new Format3D(new Vector3d(this.getPosition()), new Vector3d(this.getRotation()), new Vector3d(this.getScale()));
+    }
+
+    public void setOrientedToView(boolean orientedToView) {
+        isOrientedToView = orientedToView;
+    }
+
+    @Override
+    public boolean isOrientedToViewMatrix() {
+        return this.isOrientedToView;
     }
 }

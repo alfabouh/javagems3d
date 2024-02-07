@@ -1,12 +1,12 @@
 package ru.BouH.engine.render.scene.fabric.render.base;
 
 import ru.BouH.engine.render.scene.objects.IRenderObject;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public abstract class RenderWorldItem implements IRenderFabric {
     @Override
     public void onStartRender(IRenderObject renderItem) {
-        PhysicsObjectModeled entityItem = (PhysicsObjectModeled) renderItem;
+        PhysicsObject entityItem = (PhysicsObject) renderItem;
         if (entityItem.isHasModel()) {
             entityItem.getModel3D().getFormat().getPosition().set(entityItem.getWorldItem().getPosition());
         }

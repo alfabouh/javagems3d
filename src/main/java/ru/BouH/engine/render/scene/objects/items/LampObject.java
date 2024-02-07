@@ -6,11 +6,11 @@ import ru.BouH.engine.game.resources.assets.materials.textures.ColorSample;
 import ru.BouH.engine.physics.entities.prop.PhysLightCube;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.environment.light.Light;
-import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
+import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
-public class LampObjectModeled extends EntityObjectModeled {
-    public LampObjectModeled(SceneWorld sceneWorld, WorldItem worldItem, RenderObjectData renderData) {
+public class LampObject extends EntityObject {
+    public LampObject(SceneWorld sceneWorld, WorldItem worldItem, RenderObjectData renderData) {
         super(sceneWorld, worldItem, renderData);
     }
 

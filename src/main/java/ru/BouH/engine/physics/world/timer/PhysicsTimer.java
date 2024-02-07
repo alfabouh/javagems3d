@@ -68,11 +68,6 @@ public class PhysicsTimer implements IPhysTimer {
                 }
                 this.getWorld().onWorldUpdate();
                 synchronized (PhysicsTimer.lock) {
-                    for (IWorldDynamic worldItem : this.world.getAllDynamicItems()) {
-                        WorldItem worldItem1 = (WorldItem) worldItem;
-                        ((WorldItem) worldItem).setPrevPosition(new Vector3d(worldItem1.getPosition()));
-                        worldItem.onUpdate(world1);
-                    }
                     discreteDynamicsWorld1.stepSimulation(step, explicit, step / (double) explicit);
                     SyncManger.SyncPhysicsAndRender.free();
                 }

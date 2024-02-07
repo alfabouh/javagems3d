@@ -2,6 +2,8 @@ package ru.BouH.engine.game.resources.assets.shaders;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4d;
+import org.joml.Vector3d;
+import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.Game;
@@ -12,12 +14,12 @@ import ru.BouH.engine.game.resources.assets.materials.textures.ISample;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
-import ru.BouH.engine.render.RenderManager;
+import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.shadow.CascadeShadow;
 import ru.BouH.engine.render.environment.shadow.PointLightShadow;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.scene.Scene;
-import ru.BouH.engine.render.scene.fabric.render_data.ModelRenderParams;
+import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.BouH.engine.render.scene.programs.CubeMapProgram;
 import ru.BouH.engine.render.scene.programs.ShaderProgram;
 import ru.BouH.engine.render.scene.programs.UniformBufferProgram;
@@ -239,9 +241,15 @@ public final class ShaderManager {
         }
 
         public void performConstraintsOnShader(ModelRenderParams modelRenderParams) {
+            if (!ShaderManager.this.checkUniformInGroup("lighting_code")) {
+                return;
+            }
             int lighting_code = 0;
             if (modelRenderParams.isLightOpaque()) {
                 lighting_code |= 1 << 2;
+            }
+            if (modelRenderParams.isBright()) {
+                lighting_code |= 1 << 3;
             }
             ShaderManager.this.performUniform("lighting_code", lighting_code);
         }
@@ -254,7 +262,6 @@ public final class ShaderManager {
             if (ShaderManager.this.checkUniformInGroup("show_cascades")) {
                 ShaderManager.this.performUniform("show_cascades", scene.getSceneRender().getCurrentDebugMode() == 1 ? 1 : 0);
             }
-            ShaderManager.this.performUniform("camera_pos", Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition());
             ISample diffuse = material.getDiffuse();
             IImageSample emissive = material.getEmissive();
             IImageSample metallic = material.getMetallic();
@@ -268,6 +275,8 @@ public final class ShaderManager {
                 GL30.glBindTexture(GL11.GL_TEXTURE_2D, 0);
             }
 
+            this.passCommonInfo();
+            this.passCubeMap("ambient_cubemap", cubeMapProgram);
             if (diffuse != null) {
                 if (diffuse instanceof IImageSample) {
                     final int code = 0;
@@ -310,38 +319,56 @@ public final class ShaderManager {
                 ShaderManager.this.performUniform("specular_map", code);
                 texturing_code |= 1 << 6;
             }
-            if (cubeMapProgram != null) {
-                final int code = 5;
-                Scene.activeGlTexture(code);
-                cubeMapProgram.bindCubeMap();
-                ShaderManager.this.performUniform("ambient_cubemap", code);
-            }
             if (passShadows) {
-                for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
-                    int startCode = 6;
-                    CascadeShadow cascadeShadow = scene.getSceneRender().getShadowScene().getCascadeShadows().get(i);
-                    Scene.activeGlTexture(startCode + i);
-                    scene.getSceneRender().getShadowScene().getFrameBufferObjectProgram().bindTexture(i);
-                    ShaderManager.this.performUniform("shadow_map" + i, startCode + i);
-                    ShaderManager.this.performUniform("cascade_shadow", ".split_distance", i, cascadeShadow.getSplitDistance());
-                    ShaderManager.this.performUniform("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
-                }
-                for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
-                    PointLightShadow pointLightShadow = scene.getSceneRender().getShadowScene().getPointLightShadows().get(i);
-                    final int code = 9;
-                    Scene.activeGlTexture(code + i);
-                    pointLightShadow.getPointLightCubeMap().bindCubeMap();
-                    ShaderManager.this.performUniform("far_plane", pointLightShadow.farPlane());
-                    ShaderManager.this.performUniform("point_light_cubemap", i, code + i);
-                }
+                this.passShadowsInfo();
             }
 
             ShaderManager.this.performUniform("texturing_code", texturing_code);
         }
 
+        public void passCommonInfo() {
+            Vector4d vector4d = new Vector4d(Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition(), 1.0d);
+            vector4d.mul(TransformationManager.instance.getMainCameraViewMatrix());
+            ShaderManager.this.performUniform("camera_pos", Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition());
+        }
+
+        public void passCubeMap(String name, CubeMapProgram cubeMapProgram) {
+            if (cubeMapProgram != null) {
+                final int code = 5;
+                Scene.activeGlTexture(code);
+                cubeMapProgram.bindCubeMap();
+                ShaderManager.this.performUniform(name, code);
+            }
+        }
+
+        public void passShadowsInfo() {
+            Scene scene = Game.getGame().getScreen().getScene();
+            for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+                int startCode = 6;
+                CascadeShadow cascadeShadow = scene.getSceneRender().getShadowScene().getCascadeShadows().get(i);
+                Scene.activeGlTexture(startCode + i);
+                scene.getSceneRender().getShadowScene().getFrameBufferObjectProgram().bindTexture(i);
+                ShaderManager.this.performUniform("shadow_map" + i, startCode + i);
+                ShaderManager.this.performUniform("cascade_shadow", ".split_distance", i, cascadeShadow.getSplitDistance());
+                ShaderManager.this.performUniform("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
+            }
+            for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
+                PointLightShadow pointLightShadow = scene.getSceneRender().getShadowScene().getPointLightShadows().get(i);
+                final int code = 9;
+                Scene.activeGlTexture(code + i);
+                pointLightShadow.getPointLightCubeMap().bindCubeMap();
+                ShaderManager.this.performUniform("far_plane", pointLightShadow.farPlane());
+                ShaderManager.this.performUniform("point_light_cubemap", i, code + i);
+            }
+        }
+
         public void passViewAndModelMatrices(Matrix4d viewMatrix, Model<Format3D> model) {
             if (ShaderManager.this.checkUniformInGroup("model_matrix")) {
-                this.performModelMatrix3d(model);
+                if (model.getFormat().isOrientedToViewMatrix()) {
+                    this.performToViewOrientedModelMatrix3d(model, viewMatrix, false);
+                } else {
+                    this.performModelMatrix3d(model);
+                }
             }
             if (ShaderManager.this.checkUniformInGroup("view_matrix")) {
                 this.performViewMatrix3d(viewMatrix);
@@ -352,23 +379,23 @@ public final class ShaderManager {
         }
 
         public void passViewAndModelMatrices(Model<Format3D> model) {
-            this.passViewAndModelMatrices(RenderManager.instance.getViewMatrix(), model);
+            this.passViewAndModelMatrices(TransformationManager.instance.getMainCameraViewMatrix(), model);
         }
 
         public void performProjectionMatrix() {
-            ShaderManager.this.performUniform("projection_matrix", RenderManager.instance.getProjectionMatrix());
+            ShaderManager.this.performUniform("projection_matrix", TransformationManager.instance.getProjectionMatrix());
         }
 
         public void performProjectionMatrix2d(Model<Format2D> model) {
-            ShaderManager.this.performUniform("projection_model_matrix", RenderManager.instance.getOrthographicScreenModelMatrix(model));
+            ShaderManager.this.performUniform("projection_model_matrix", TransformationManager.instance.getOrthographicScreenModelMatrix(model));
         }
 
         public void performModelViewMatrix3d(Model<Format3D> model) {
-            this.performModelViewMatrix3d(model, RenderManager.instance.getViewMatrix());
+            this.performModelViewMatrix3d(model, TransformationManager.instance.getMainCameraViewMatrix());
         }
 
         public void performModelViewMatrix3d(Model<Format3D> model, Matrix4d view) {
-            ShaderManager.this.performUniform("model_view_matrix", RenderManager.instance.getModelViewMatrix(model, view));
+            ShaderManager.this.performUniform("model_view_matrix", TransformationManager.instance.getModelViewMatrix(model, view));
         }
 
         public void performModelViewMatrix3d(Matrix4d matrix4d) {
@@ -384,7 +411,13 @@ public final class ShaderManager {
         }
 
         public void performModelMatrix3d(Model<Format3D> model, boolean invertedModel) {
-            ShaderManager.this.performUniform("model_matrix", RenderManager.instance.getModelMatrix(model, invertedModel));
+            ShaderManager.this.performUniform("model_matrix", TransformationManager.instance.getModelMatrix(model, invertedModel));
+        }
+
+        public void performToViewOrientedModelMatrix3d(Model<Format3D> model, Matrix4d view, boolean invertedModel) {
+            Matrix4d matrix4d = TransformationManager.instance.getModelMatrix(model, invertedModel);
+            view.transpose3x3(matrix4d).scale(model.getFormat().getScale());
+            ShaderManager.this.performUniform("model_matrix", matrix4d);
         }
 
         public void setCubeMapTexture(CubeMapProgram cubeMapTexture) {

@@ -4,7 +4,7 @@ import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.fabric.render.base.RenderWorldItem;
 import ru.BouH.engine.render.scene.objects.IRenderObject;
-import ru.BouH.engine.render.scene.objects.items.PhysicsObjectModeled;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class RenderObject extends RenderWorldItem {
     public RenderObject() {
@@ -12,7 +12,7 @@ public class RenderObject extends RenderWorldItem {
 
     @Override
     public void onRender(double partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
-        PhysicsObjectModeled entityObject = (PhysicsObjectModeled) renderItem;
+        PhysicsObject entityObject = (PhysicsObject) renderItem;
         if (entityObject.isHasModel()) {
             Scene.renderSceneObject(entityObject, entityObject.getRenderData().getOverObjectMaterial());
         }

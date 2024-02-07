@@ -11,19 +11,20 @@ import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.physics.brush.WorldBrush;
 import ru.BouH.engine.physics.entities.IRemoteController;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
+import ru.BouH.engine.physics.particles.ParticleFX;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.IWorldObject;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.frustum.RenderABB;
-import ru.BouH.engine.render.scene.fabric.render_data.ModelRenderParams;
+import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
-import ru.BouH.engine.render.scene.fabric.render_data.RenderObjectData;
+import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
-public abstract class PhysicsObjectModeled implements IModeledSceneObject, IWorldObject, IWorldDynamic {
+public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject, IWorldDynamic {
     private final RenderABB renderABB;
     private final SceneWorld sceneWorld;
     private final WorldItem worldItem;
@@ -38,7 +39,7 @@ public abstract class PhysicsObjectModeled implements IModeledSceneObject, IWorl
     private boolean isVisible;
     private boolean isDead;
 
-    public PhysicsObjectModeled(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull RenderObjectData renderData) {
+    public PhysicsObject(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull RenderObjectData renderData) {
         this.renderABB = new RenderABB();
         this.worldItem = worldItem;
         this.renderPosition = new Vector3d(worldItem.getPosition());
@@ -62,7 +63,9 @@ public abstract class PhysicsObjectModeled implements IModeledSceneObject, IWorl
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        Game.getGame().getLogManager().debug("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
+        if (!this.getWorldItem().isParticle()) {
+            Game.getGame().getLogManager().debug("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
+        }
         if (this.hasRender()) {
             if (this.getRenderData().getEntityModelConstructor() != null) {
                 this.setModel(new Model<>(new Format3D(), this.getRenderData().getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
@@ -83,7 +86,9 @@ public abstract class PhysicsObjectModeled implements IModeledSceneObject, IWorl
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        Game.getGame().getLogManager().debug("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
+        if (!this.getWorldItem().isParticle()) {
+            Game.getGame().getLogManager().debug("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
+        }
         if (this.hasRender()) {
             this.renderFabric().onStopRender(this);
         }

@@ -7,8 +7,7 @@ import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.models.mesh.Mesh;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
-import ru.BouH.engine.render.RenderManager;
-import ru.BouH.engine.render.environment.sky.Sky;
+import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.programs.CubeMapProgram;
@@ -56,7 +55,7 @@ public class SkyRender extends SceneRenderBase {
         GL30.glDisable(GL30.GL_CULL_FACE);
         GL30.glDepthFunc(GL30.GL_LEQUAL);
         shaderManager.getUtils().performProjectionMatrix();
-        Matrix4d matrix4d = RenderManager.instance.getModelViewMatrix(model);
+        Matrix4d matrix4d = TransformationManager.instance.getModelViewMatrix(model);
         matrix4d.m30(0);
         matrix4d.m31(0);
         matrix4d.m32(0);
