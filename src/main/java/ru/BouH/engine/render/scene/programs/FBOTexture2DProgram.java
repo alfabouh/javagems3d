@@ -48,11 +48,11 @@ public class FBOTexture2DProgram {
         if (depthBuffer) {
             this.bindRenderDepthFBO();
             if (this.msaaSamples() > 0) {
-                GL43.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, this.msaaSamples(), GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
+                GL43.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, this.msaaSamples(), GL30.GL_DEPTH_COMPONENT, size.x, size.y);
             } else {
-                GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
+                GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT, size.x, size.y);
             }
-            GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
+            GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
             this.unBindRenderDepthFBO();
         }
 
