@@ -98,7 +98,7 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture2D(normals_map, scaled_coordinates() + w_tick * 0.015).rgb;
+    vec3 normal = texture(normals_map, scaled_coordinates() + w_tick * 0.015).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;

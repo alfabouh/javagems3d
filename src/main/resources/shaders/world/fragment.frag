@@ -112,7 +112,7 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture2D(normals_map, scaled_coordinates()).rgb;
+    vec3 normal = texture(normals_map, scaled_coordinates()).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -126,7 +126,7 @@ void main()
 
     vec4 lightFactor = (lighting_code & light_bright_code) != 0 ? vec4(1.5) : (lighting_code & light_opacity_code) == 0 ? vec4(1.) : ((texturing_code & emissive_code) != 0 ? emissive_texture * vec4(4.) : calc_light());
 
-    diffuse += (texturing_code & metallic_code) != 0 ? (refract_cubemap(calc_normal_map(), 1.73) * texture2D(metallic_map, texture_coordinates)) : vec4(0.0);
+    diffuse += (texturing_code & metallic_code) != 0 ? (refract_cubemap(calc_normal_map(), 1.73) * texture(metallic_map, texture_coordinates)) : vec4(0.0);
 
     vec4 final = diffuse * lightFactor;
     frag_color = vec4(final.xyz, diffuse_texture.a);

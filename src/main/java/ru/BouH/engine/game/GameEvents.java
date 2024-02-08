@@ -108,16 +108,16 @@ public class GameEvents {
         Game.getGame().getProxy().addItemInWorlds(plane4dBrush5, ResourceManager.renderDataAssets.plane);
 
 
-        Plane4dBrush plane4dBrush6 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -75.0d), new Vector3d(25.0d, 0.0d, -75.0d), new Vector3d(-25.0d, 1.5d, -75.0d), new Vector3d(25.0d, 1.5d, -75.0d)});
+        Plane4dBrush plane4dBrush6 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -75.0d), new Vector3d(25.0d, 0.0d, -75.0d), new Vector3d(-25.0d, 1.6d, -75.0d), new Vector3d(25.0d, 1.6d, -75.0d)});
         Game.getGame().getProxy().addItemInWorlds(plane4dBrush6, ResourceManager.renderDataAssets.test);
 
-        Plane4dBrush plane4dBrush7 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -125.0d), new Vector3d(25.0d, 0.0d, -125.0d), new Vector3d(-25.0d, 1.5d, -125.0d), new Vector3d(25.0d, 1.5d, -125.0d)});
+        Plane4dBrush plane4dBrush7 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -125.0d), new Vector3d(25.0d, 0.0d, -125.0d), new Vector3d(-25.0d, 1.6d, -125.0d), new Vector3d(25.0d, 1.6d, -125.0d)});
         Game.getGame().getProxy().addItemInWorlds(plane4dBrush7, ResourceManager.renderDataAssets.test);
 
-        Plane4dBrush plane4dBrush8 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -75.0d), new Vector3d(-25.0d, 0.0d, -125.0d), new Vector3d(-25.0d, 1.5d, -75.0d), new Vector3d(-25.0d, 1.5d, -125.0d)});
+        Plane4dBrush plane4dBrush8 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(-25.0d, 0.0d, -75.0d), new Vector3d(-25.0d, 0.0d, -125.0d), new Vector3d(-25.0d, 1.6d, -75.0d), new Vector3d(-25.0d, 1.6d, -125.0d)});
         Game.getGame().getProxy().addItemInWorlds(plane4dBrush8, ResourceManager.renderDataAssets.test);
 
-        Plane4dBrush plane4dBrush9 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(25.0d, 0.0d, -75.0d), new Vector3d(25.0d, 0.0d, -125.0d), new Vector3d(25.0d, 1.5d, -75.0d), new Vector3d(25.0d, 1.5d, -125.0d)});
+        Plane4dBrush plane4dBrush9 = new Plane4dBrush(world, RigidBodyObject.PhysProperties.createProperties(Materials.brickCube), new Vector3d[]{new Vector3d(25.0d, 0.0d, -75.0d), new Vector3d(25.0d, 0.0d, -125.0d), new Vector3d(25.0d, 1.6d, -75.0d), new Vector3d(25.0d, 1.6d, -125.0d)});
         Game.getGame().getProxy().addItemInWorlds(plane4dBrush9, ResourceManager.renderDataAssets.test);
 
 
