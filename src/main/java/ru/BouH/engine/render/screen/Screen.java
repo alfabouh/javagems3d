@@ -170,13 +170,14 @@ public class Screen {
     }
 
     private void enableMSAA() {
-        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, Screen.MSAA_SAMPLES);
+        //GL.getCapabilities().GL_ARB_framebuffer_object && GL.getCapabilities().GL_EXT_framebuffer_multisample
+
+        GL11.glEnable(GL13.GL_MULTISAMPLE);
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 8);
         GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glEnable(GL13.GL_MULTISAMPLE);
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
         GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);
-        GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, 24);
     }
 
     private void updateScreen() {
@@ -253,7 +254,7 @@ public class Screen {
         return this.getWindow().getHeight();
     }
 
-    public Vector2d getDimensions() {
+    public Vector2i getDimensions() {
         return this.getWindow().getWindowDimensions();
     }
 

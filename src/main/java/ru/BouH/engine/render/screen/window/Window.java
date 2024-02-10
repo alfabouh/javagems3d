@@ -1,6 +1,7 @@
 package ru.BouH.engine.render.screen.window;
 
 import org.joml.Vector2d;
+import org.joml.Vector2i;
 import org.joml.Vector4d;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
@@ -118,12 +119,12 @@ public class Window {
         }
     }
 
-    public Vector2d getWindowDimensions() {
+    public Vector2i getWindowDimensions() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);
             GLFW.glfwGetWindowSize(this.window, width, height);
-            return new Vector2d(width.get(0), height.get(0));
+            return new Vector2i(width.get(0), height.get(0));
         }
     }
 

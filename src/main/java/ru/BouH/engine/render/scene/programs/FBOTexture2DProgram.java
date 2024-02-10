@@ -14,7 +14,7 @@ import java.util.List;
 public class FBOTexture2DProgram {
     private int frameBufferId;
     private int renderBufferId;
-    private final List<TextureProgram> texturePrograms;
+    private final List<ITextureProgram> texturePrograms;
     private final boolean drawColor;
     private final boolean aliasing;
 
@@ -24,7 +24,7 @@ public class FBOTexture2DProgram {
         this.aliasing = aliasing;
     }
 
-    public void createFrameBuffer2DTexture(Vector2i size, int[] attachments, boolean depthBuffer, int internalFormat, int textureFormat, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
+    public void createFrameBuffer2DTexture(Vector2i size, int[] attachments, boolean depthBuffer, boolean enableMsaa, int internalFormat, int textureFormat, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
         if (!Scene.isSceneActive()) {
             return;
         }
@@ -32,12 +32,22 @@ public class FBOTexture2DProgram {
         this.renderBufferId = GL30.glGenRenderbuffers();
         this.bindFBO();
 
-        for (final int attachment : attachments) {
-            TextureProgram textureProgram = new TextureProgram();
-            textureProgram.createTexture(size, internalFormat, textureFormat, filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor, this.aliasing);
-            GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_2D, textureProgram.getTextureId(), 0);
+        for (int attachment : attachments) {
+            ITextureProgram textureProgram = null;
+            if (enableMsaa) {
+                MSAATextureProgram msaaTextureProgram = new MSAATextureProgram(Screen.MSAA_SAMPLES);
+                textureProgram = msaaTextureProgram;
+                msaaTextureProgram.createTexture(size, internalFormat, filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor, this.aliasing);
+                GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL43.GL_TEXTURE_2D_MULTISAMPLE, textureProgram.getTextureId(), 0);
+            } else {
+                TextureProgram textureProgram1 = new TextureProgram();
+                textureProgram = textureProgram1;
+                textureProgram1.createTexture(size, internalFormat, textureFormat, filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor, this.aliasing);
+                GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL43.GL_TEXTURE_2D, textureProgram.getTextureId(), 0);
+            }
             this.getTexturePrograms().add(textureProgram);
         }
+
         if (!this.drawColor) {
             GL30.glDrawBuffer(GL30.GL_NONE);
             GL30.glReadBuffer(GL30.GL_NONE);
@@ -45,33 +55,41 @@ public class FBOTexture2DProgram {
             GL30.glDrawBuffers(attachments);
         }
 
-        if (depthBuffer) {
-            this.bindRenderDepthFBO();
-            if (this.msaaSamples() > 0) {
-                GL43.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, this.msaaSamples(), GL30.GL_DEPTH_COMPONENT, size.x, size.y);
+        if (depthBuffer || enableMsaa) {
+            GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);
+            if (enableMsaa) {
+                GL43.glRenderbufferStorageMultisample(GL43.GL_RENDERBUFFER, Screen.MSAA_SAMPLES, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
             } else {
-                GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT, size.x, size.y);
+                GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
             }
-            GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
-            this.unBindRenderDepthFBO();
+            GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
+            GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
         }
 
         if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            Game.getGame().getLogManager().error("Failed to create framebuffer!");
+            int errCode = GL43.glGetError();
+            Game.getGame().getLogManager().error("Failed to create framebuffer: " + Integer.toHexString(errCode));
         }
 
         this.unBindFBO();
+    }
+
+    public void copyFBOtoFBO(int fboTo, int[] attachmentsToCopy, Vector2i dimension) {
+        GL43.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, this.getFrameBufferId());
+        GL43.glBindFramebuffer(GL30.GL_DRAW_BUFFER, fboTo);
+        for (int att : attachmentsToCopy) {
+            GL43.glReadBuffer(att);
+            GL43.glDrawBuffers(att);
+            GL43.glBlitFramebuffer(0, 0, dimension.x, dimension.y, 0, 0, dimension.x, dimension.y, GL30.GL_COLOR_BUFFER_BIT, GL30.GL_NEAREST);
+        }
+        GL43.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
     }
 
     public void connectTextureToBuffer(int attachment, int i) {
         GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_2D, this.getTexturePrograms().get(i).getTextureId(), 0);
     }
 
-    public int msaaSamples() {
-        return Screen.MSAA_SAMPLES;
-    }
-
-    public List<TextureProgram> getTexturePrograms() {
+    public List<ITextureProgram> getTexturePrograms() {
         return this.texturePrograms;
     }
 
@@ -83,14 +101,6 @@ public class FBOTexture2DProgram {
         return this.frameBufferId;
     }
 
-    public void bindRenderDepthFBO() {
-        GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);
-    }
-
-    public void unBindRenderDepthFBO() {
-        GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
-    }
-
     public void bindFBO() {
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.frameBufferId);
     }
@@ -100,7 +110,7 @@ public class FBOTexture2DProgram {
     }
 
     public void bindTexture(int i) {
-        this.getTexturePrograms().get(i).bindTexture();
+        this.getTexturePrograms().get(i).bindTexture(GL30.GL_TEXTURE_2D);
     }
 
     public void unBindTexture() {
@@ -108,9 +118,7 @@ public class FBOTexture2DProgram {
     }
 
     public void clearFBO() {
-        this.unBindFBO();
-        this.unBindRenderDepthFBO();
-        for (TextureProgram textureProgram : this.getTexturePrograms()) {
+        for (ITextureProgram textureProgram : this.getTexturePrograms()) {
             textureProgram.cleanUp();
         }
         this.getTexturePrograms().clear();
