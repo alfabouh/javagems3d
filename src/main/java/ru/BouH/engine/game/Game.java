@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.Random;
 
 public class Game {
-    public static final String build = "07.02.2024";
+    public static final String build = "10.02.2024";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;

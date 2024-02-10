@@ -229,15 +229,6 @@ public final class ShaderManager {
 
     public class ShaderUtils {
         public ShaderUtils() {
-
-        }
-
-        public void disableMsaa() {
-            GL30.glDisable(GL30.GL_MULTISAMPLE);
-        }
-
-        public void enableMsaa() {
-            GL30.glEnable(GL30.GL_MULTISAMPLE);
         }
 
         public void performConstraintsOnShader(ModelRenderParams modelRenderParams) {
