@@ -2,7 +2,7 @@ package ru.BouH.engine.game.controller.binding;
 
 import org.lwjgl.glfw.GLFW;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.controller.IController;
+import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.components.FunctionalKey;
 import ru.BouH.engine.game.controller.components.IKeyAction;
 import ru.BouH.engine.game.controller.components.Key;
@@ -14,63 +14,79 @@ import ru.BouH.engine.render.screen.Screen;
 
 public class BindingList {
     public static BindingList instance = new BindingList();
-    public Key keyA = new Key(GLFW.GLFW_KEY_A);
-    public Key keyD = new Key(GLFW.GLFW_KEY_D);
-    public Key keyW = new Key(GLFW.GLFW_KEY_W);
-    public Key keyS = new Key(GLFW.GLFW_KEY_S);
-    public Key keyUp = new Key(GLFW.GLFW_KEY_SPACE);
-    public Key keyDown = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
-    public Key keyBlock1 = new Key(GLFW.GLFW_KEY_F);
-    public Key keyBlock2 = new Key(GLFW.GLFW_KEY_C);
-    public Key keyBlock3 = new Key(GLFW.GLFW_KEY_G);
-    public Key keyClear = new Key(GLFW.GLFW_KEY_X);
-
-    public Key keyEsc = new FunctionalKey(e -> {
-        if (e == IKeyAction.KeyAction.CLICK) {
-            Game.getGame().destroyGame();
-        }
-    }, GLFW.GLFW_KEY_ESCAPE);
-
-    public Key keyY = new FunctionalKey(e -> {
-        if (e == IKeyAction.KeyAction.CLICK) {
-            Scene.setScenePostRender(Scene.getPostRender() + 1);
-        }
-    }, GLFW.GLFW_KEY_Y);
-
-    public Key keyZ = new FunctionalKey(e -> {
-        if (e == IKeyAction.KeyAction.CLICK) {
-            Scene.setSceneDebugMode(Scene.getDebugMode() + 1);
-        }
-    }, GLFW.GLFW_KEY_Z);
-
-    public Key keyR = new FunctionalKey(e -> {
-        if (e == IKeyAction.KeyAction.CLICK) {
-            IController controller = Game.getGame().getScreen().getControllerDispatcher().getCurrentController();
-            ICamera camera = Game.getGame().getScreen().getCamera();
-            if (controller != null) {
-                if (camera != null) {
-                    if (camera instanceof AttachedCamera) {
-                        AttachedCamera attachedCamera = (AttachedCamera) camera;
-                        Game.getGame().getScreen().getScene().enableFreeCamera(controller, attachedCamera.getCamPosition(), attachedCamera.getCamRotation());
-                        Game.getGame().getScreen().getControllerDispatcher().detachController(controller);
-                    } else if (camera instanceof FreeCamera) {
-                        Game.getGame().getScreen().getScene().enableAttachedCamera(Game.getGame().getPlayerSP());
-                        Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(controller, Game.getGame().getPlayerSP());
-                    }
-                } else {
-                    Game.getGame().getScreen().getScene().enableAttachedCamera(Game.getGame().getPlayerSP());
-                }
-            }
-        }
-    }, GLFW.GLFW_KEY_R);
-
-    public Key keyT = new FunctionalKey(e -> {
-        if (e == IKeyAction.KeyAction.CLICK) {
-            Game.getGame().getScreen().isInFocus = !Game.getGame().getScreen().isInFocus;
-        }
-    }, GLFW.GLFW_KEY_T);
+    public final Key keyA;
+    public final Key keyD;
+    public final Key keyW;
+    public final Key keyS;
+    public final Key keyUp;
+    public final Key keyDown;
+    public final Key keyBlock1;
+    public final Key keyBlock2;
+    public final Key keyBlock3;
+    public final Key keyClear;
+    public final Key keyEsc;
+    public final Key keyY;
+    public final Key keyZ;
+    public final Key keyR;
+    public final Key keyT;
 
     public BindingList() {
+        this.keyA = new Key(GLFW.GLFW_KEY_A);
+        this.keyD = new Key(GLFW.GLFW_KEY_D);
+        this.keyW = new Key(GLFW.GLFW_KEY_W);
+        this.keyS = new Key(GLFW.GLFW_KEY_S);
+        this.keyUp = new Key(GLFW.GLFW_KEY_SPACE);
+        this.keyDown = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
+        this.keyBlock1 = new Key(GLFW.GLFW_KEY_F);
+        this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
+        this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
+        this.keyClear = new Key(GLFW.GLFW_KEY_X);
+
+        this.keyEsc = new FunctionalKey(e -> {
+            if (e == IKeyAction.KeyAction.CLICK) {
+                Game.getGame().destroyGame();
+            }
+        }, GLFW.GLFW_KEY_ESCAPE);
+
+        this.keyY = new FunctionalKey(e -> {
+            if (e == IKeyAction.KeyAction.CLICK) {
+                Scene.setScenePostRender(Scene.getPostRender() + 1);
+            }
+        }, GLFW.GLFW_KEY_Y);
+
+        this.keyZ = new FunctionalKey(e -> {
+            if (e == IKeyAction.KeyAction.CLICK) {
+                Scene.setSceneDebugMode(Scene.getDebugMode() + 1);
+            }
+        }, GLFW.GLFW_KEY_Z);
+
+        this.keyR = new FunctionalKey(e -> {
+            if (e == IKeyAction.KeyAction.CLICK) {
+                IController controller = Game.getGame().getScreen().getControllerDispatcher().getCurrentController();
+                ICamera camera = Game.getGame().getScreen().getCamera();
+                if (controller != null) {
+                    if (camera != null) {
+                        if (camera instanceof AttachedCamera) {
+                            AttachedCamera attachedCamera = (AttachedCamera) camera;
+                            Game.getGame().getScreen().getScene().enableFreeCamera(controller, attachedCamera.getCamPosition(), attachedCamera.getCamRotation());
+                            Game.getGame().getScreen().getControllerDispatcher().detachController();
+                        } else if (camera instanceof FreeCamera) {
+                            Game.getGame().getScreen().getScene().enableAttachedCamera(Game.getGame().getPlayerSP());
+                            Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(controller, Game.getGame().getPlayerSP());
+                        }
+                    } else {
+                        Game.getGame().getScreen().getScene().enableAttachedCamera(Game.getGame().getPlayerSP());
+                    }
+                }
+            }
+        }, GLFW.GLFW_KEY_R);
+
+        this.keyT = new FunctionalKey(e -> {
+            if (e == IKeyAction.KeyAction.CLICK) {
+                Game.getGame().getScreen().getWindow().setInFocus(!Screen.isInFocus());
+            }
+        }, GLFW.GLFW_KEY_T);
+
         Binding.createBinding(this.keyA, "Шаг влево");
         Binding.createBinding(this.keyD, "Шаг вправо");
         Binding.createBinding(this.keyW, "Шаг вперед");

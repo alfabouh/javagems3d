@@ -2,9 +2,9 @@ package ru.BouH.engine.physics.entities;
 
 import org.joml.Vector2d;
 import org.joml.Vector3d;
-import ru.BouH.engine.game.controller.IController;
+import ru.BouH.engine.game.controller.input.IController;
 
-public interface IRemoteController {
+public interface IControllable {
     IController currentController();
 
     void setController(IController iController);

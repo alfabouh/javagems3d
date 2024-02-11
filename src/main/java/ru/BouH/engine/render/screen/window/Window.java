@@ -9,6 +9,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import ru.BouH.engine.render.screen.Screen;
 
 import java.nio.IntBuffer;
 
@@ -16,8 +17,10 @@ public class Window {
     private final long window;
     private final WindowProperties windowProperties;
     private long currentMonitor;
+    private boolean isInFocus;
 
     public Window(WindowProperties windowProperties) {
+        this.isInFocus = true;
         this.window = GLFW.glfwCreateWindow(windowProperties.getWidth(), windowProperties.getHeight(), windowProperties.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
         this.windowProperties = windowProperties;
         GLFW.glfwSetWindowSizeCallback(this.getDescriptor(), (win, w, h) -> {
@@ -59,6 +62,18 @@ public class Window {
                 }
             }
         }
+    }
+
+    public boolean isInFocus() {
+        return Screen.isScreenActive() && this.isInFocus;
+    }
+
+    public void setInFocus(boolean inFocus) {
+        isInFocus = inFocus;
+    }
+
+    public void refreshFocusState() {
+        GLFW.glfwSetInputMode(this.getDescriptor(), GLFW.GLFW_CURSOR, !this.isInFocus() ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_HIDDEN);
     }
 
     public int monitorRefreshRate() {

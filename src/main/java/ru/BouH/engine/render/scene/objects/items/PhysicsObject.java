@@ -9,9 +9,8 @@ import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.physics.brush.WorldBrush;
-import ru.BouH.engine.physics.entities.IRemoteController;
+import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
-import ru.BouH.engine.physics.particles.ParticleFX;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.IWorldObject;
 import ru.BouH.engine.physics.world.object.WorldItem;
@@ -158,7 +157,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     }
 
     public boolean isEntityUnderUserControl() {
-        return this.getWorldItem() instanceof IRemoteController && ((IRemoteController) this.getWorldItem()).isValidController();
+        return this.getWorldItem() instanceof IControllable && ((IControllable) this.getWorldItem()).isValidController();
     }
 
     public void updateRenderPos(double partialTicks) {

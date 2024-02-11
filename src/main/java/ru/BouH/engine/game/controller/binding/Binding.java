@@ -21,6 +21,7 @@ public class Binding {
         this(null, description);
     }
 
+    @SuppressWarnings("all")
     public static Binding createBinding(Key key, String description) {
         Binding binding = new Binding(key, description);
         if (key != null) {

@@ -113,10 +113,7 @@ void main()
     vec4 final = diffuse_texture * lightFactor;
     frag_color = vec4(final.xyz, 1.0);
     frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
-
     float brightness = frag_color.r + frag_color.g + frag_color.b;
-    float distance_to_tx = length(mv_vertex_pos);
-    brightness *= distance_to_tx <= 86. ? 1. : 0.;
 
     bright_color = brightness >= 8. ? frag_color : vec4(0., 0., 0., 1.0);
 }
