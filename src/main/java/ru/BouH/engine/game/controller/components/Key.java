@@ -19,7 +19,7 @@ public class Key {
         if (press) {
             this.isClicked = !this.isPressed;
         } else {
-            this.isUnpressed = !this.isPressed;
+            this.isUnpressed = this.isPressed;
         }
         this.isPressed = press;
     }

@@ -5,7 +5,7 @@ import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.math.MathHelper;
-import ru.BouH.engine.physics.entities.IRemoteController;
+import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.particles.ParticleFX;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.proxy.IWorld;
@@ -143,7 +143,7 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public boolean isRemoteControlled() {
-        return this instanceof IRemoteController && ((IRemoteController) this).isValidController();
+        return this instanceof IControllable && ((IControllable) this).isValidController();
     }
 
     public final List<Light> getAttachedLights() {

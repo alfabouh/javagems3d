@@ -147,15 +147,10 @@ void main()
             cascmask = vec3(1.0f, 1.0f, 0.75f);
             break;
     }
-
     frag_color.rgb *= (show_cascades == 1) ? cascmask : vec3(1.0);
-
     frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
 
     float brightness = frag_color.r + frag_color.g + frag_color.b;
-    float distance_to_tx = length(mv_vertex_pos);
-    brightness *= distance_to_tx <= 86. ? 1. : 0.;
-
     bright_color = ((lighting_code & light_bright_code) != 0 || brightness >= 8.) ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
 }
 

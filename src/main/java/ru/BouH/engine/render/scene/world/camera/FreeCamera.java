@@ -4,7 +4,7 @@ import org.joml.Vector2d;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
-import ru.BouH.engine.game.controller.IController;
+import ru.BouH.engine.game.controller.input.IController;
 
 public class FreeCamera extends Camera {
     public static final double CAM_SPEED = 0.75d;
@@ -27,8 +27,8 @@ public class FreeCamera extends Camera {
     @Override
     public void updateCamera(double partialTicks) {
         if (this.getController() != null) {
-            this.moveCamera(ControllerDispatcher.getOptionedXYZVec(this.getController()));
-            this.moveCameraRot(ControllerDispatcher.getOptionedDisplayVec(this.getController()));
+            this.moveCamera(ControllerDispatcher.getOptionedPositionInput(this.getController()));
+            this.moveCameraRot(ControllerDispatcher.getOptionedRotationInput(this.getController()));
         }
     }
 

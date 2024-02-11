@@ -10,13 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.controller.IController;
+import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.collision.AbstractCollision;
 import ru.BouH.engine.physics.collision.OBB;
 import ru.BouH.engine.physics.entities.BodyGroup;
-import ru.BouH.engine.physics.entities.IRemoteController;
+import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.entities.Materials;
 import ru.BouH.engine.physics.entities.PhysEntity;
 import ru.BouH.engine.physics.entities.prop.PhysEntityCube;
@@ -24,10 +24,9 @@ import ru.BouH.engine.physics.entities.prop.PhysLightCube;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.proxy.IWorld;
-import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.environment.light.PointLight;
 
-public class EntityPlayerSP extends PhysEntity implements IRemoteController {
+public class EntityPlayerSP extends PhysEntity implements IControllable {
     private final Vector3d cameraRotation;
     private final double speedMultiplier;
     private final double eyeHeight;

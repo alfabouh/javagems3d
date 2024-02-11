@@ -1,8 +1,10 @@
 package ru.BouH.engine.game.controller.input;
 
 import org.joml.Vector2d;
+import org.joml.Vector2i;
 import org.joml.Vector3d;
-import ru.BouH.engine.game.controller.IController;
+import ru.BouH.engine.game.controller.ControllerDispatcher;
+import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.render.screen.window.Window;
 
 public class MouseKeyboardController implements IController {
@@ -10,9 +12,10 @@ public class MouseKeyboardController implements IController {
     private final Vector3d xyzInput;
     private final Keyboard keyboard;
     private final Mouse mouse;
-    private Window window;
+    private final Window window;
 
     public MouseKeyboardController(Window window) {
+        this.window = window;
         this.keyboard = new Keyboard(window);
         this.mouse = new Mouse(window);
         this.displayInput = new Vector2d(0.0d);
@@ -32,17 +35,47 @@ public class MouseKeyboardController implements IController {
     }
 
     @Override
-    public Vector2d getDisplayInput() {
+    public Vector2d getRotationInput() {
         return this.displayInput;
     }
 
     @Override
-    public Vector3d getXYZInput() {
+    public Vector3d getPositionInput() {
         return this.xyzInput;
     }
 
     @Override
     public void updateControllerState(Window window) {
         this.keyboard.updateKeys();
+        this.getPositionInput().set(0.0d);
+        this.getRotationInput().set(0.0d);
+        if (!window.isInFocus()) {
+            return;
+        }
+        MouseKeyboardController mouseKeyboardController1 = ControllerDispatcher.mouseKeyboardController;
+        Vector2i posM = new Vector2i((int) (window.getWidth() / 2.0f), (int) (window.getHeight() / 2.0f));
+        double[] xy = mouseKeyboardController1.getMouse().getCursorCoordinates();
+        double d1 = xy[0] - posM.x;
+        double d2 = xy[1] - posM.y;
+        this.getRotationInput().set(new Vector2d(d2, d1));
+        mouseKeyboardController1.getMouse().setCursorCoordinates(new double[]{posM.x, posM.y});
+        if (BindingList.instance.keyA.isPressed()) {
+            this.getPositionInput().add(-1.0f, 0.0f, 0.0f);
+        }
+        if (BindingList.instance.keyD.isPressed()) {
+            this.getPositionInput().add(1.0f, 0.0f, 0.0f);
+        }
+        if (BindingList.instance.keyW.isPressed()) {
+            this.getPositionInput().add(0.0f, 0.0f, -1.0f);
+        }
+        if (BindingList.instance.keyS.isPressed()) {
+            this.getPositionInput().add(0.0f, 0.0f, 1.0f);
+        }
+        if (BindingList.instance.keyUp.isPressed()) {
+            this.getPositionInput().add(0.0f, 1.0f, 0.0f);
+        }
+        if (BindingList.instance.keyDown.isPressed()) {
+            this.getPositionInput().add(0.0f, -1.0f, 0.0f);
+        }
     }
 }

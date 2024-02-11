@@ -30,7 +30,6 @@ public class Screen {
     public static int PHYS2_TPS;
     public static int MSAA_SAMPLES = 4;
     private final Timer timer;
-    public boolean isInFocus;
     private ControllerDispatcher controllerDispatcher;
     private Scene scene;
     private Window window;
@@ -56,7 +55,6 @@ public class Screen {
     }
 
     public void initScreen() {
-        this.isInFocus = false;
         this.scene = new Scene(this, new SceneWorld(Game.getGame().getPhysicsWorld()));
         this.fillScene(this.getScene());
         this.setWindowCallbacks();
@@ -223,17 +221,18 @@ public class Screen {
                 lastFPS = currentTime;
             }
             GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
-            GLFW.glfwSetInputMode(this.getWindow().getDescriptor(), GLFW.GLFW_CURSOR, !this.isInFocus ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_HIDDEN);
             GLFW.glfwPollEvents();
         }
     }
 
+    public static boolean isInFocus() {
+        return Game.getGame().getScreen().getWindow().isInFocus();
+    }
+
     private void inLoop(double delta) throws InterruptedException {
         if (this.getControllerDispatcher() != null) {
-            if (!Screen.isScreenActive()) {
-                this.isInFocus = false;
-            }
-            this.getControllerDispatcher().updateController(this.isInFocus, this.getWindow());
+            this.getControllerDispatcher().updateController(this.getWindow());
+            this.getWindow().refreshFocusState();
         }
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         GL30.glEnable(GL30.GL_CULL_FACE);
