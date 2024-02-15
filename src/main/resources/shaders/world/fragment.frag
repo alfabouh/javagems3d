@@ -165,7 +165,7 @@ float calcVSM(int idx, vec4 shadow_coord, vec2 offset, float bias, float linear)
     float d = shadow_coord.z - moments.x;
     float shadowPCT = smoothstep(linear, 1.0, variance / (variance + d * d));
 
-    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x ? 1.0 : shadowPCT;
+    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x + 5.0e-7f ? 1.0 : shadowPCT;
 }
 
 float calculate_shadow_no_pcf(vec4 worldPosition, int idx, float bias, float linear) {

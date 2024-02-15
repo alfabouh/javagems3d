@@ -47,12 +47,12 @@
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>bullet-platform</artifactId>
-            <version>3.25-1.5.9</version>
+            <version>3.25-1.5.10</version>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>bullet</artifactId>
-            <version>3.25-1.5.9</version>
+            <version>3.25-1.5.10</version>
         </dependency>
         <dependency>
             <groupId>io.imgui.java</groupId>

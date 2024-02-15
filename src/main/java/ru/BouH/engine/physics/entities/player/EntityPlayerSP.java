@@ -14,12 +14,14 @@ import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.collision.AbstractCollision;
+import ru.BouH.engine.physics.collision.ModelShape;
 import ru.BouH.engine.physics.collision.OBB;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.entities.Materials;
 import ru.BouH.engine.physics.entities.PhysEntity;
 import ru.BouH.engine.physics.entities.prop.PhysEntityCube;
+import ru.BouH.engine.physics.entities.prop.PhysEntityModeled;
 import ru.BouH.engine.physics.entities.prop.PhysLightCube;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
@@ -99,6 +101,9 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
             this.getRigidBodyObject().setFrictionAxes(new Vector3d(1.0d));
         }
         return v1;
+    }
+
+    protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
     }
 
     public double getSpeedMultiplier() {
@@ -228,7 +233,7 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
     @Override
     public void performController(Vector2d rotationInput, Vector3d xyzInput) {
         if (BindingList.instance.keyBlock1.isClicked()) {
-            PhysEntityCube entityPropInfo = new PhysEntityCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 1.5d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
+            PhysEntityModeled entityPropInfo = new PhysEntityModeled(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), ResourceManager.modelAssets.house, new Vector3d(1.0d), 3.5d, this.getPosition().add(this.getLookVector().mul(6.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(30.0f));
         }

@@ -1,5 +1,6 @@
 package ru.BouH.engine.physics.world.object;
 
+import org.bytedeco.bullet.BulletCollision.btBvhTriangleMeshShape;
 import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 import org.bytedeco.bullet.BulletCollision.btCollisionShape;
 import org.bytedeco.bullet.BulletDynamics.btRigidBody;
@@ -7,6 +8,7 @@ import org.bytedeco.bullet.LinearMath.btDefaultMotionState;
 import org.bytedeco.bullet.LinearMath.btMotionState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.physics.collision.AbstractCollision;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
@@ -80,12 +82,16 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     private void createRigidBody(World world, @NotNull Vector3d position, @NotNull Vector3d rotation, double scaling, RigidBodyObject.PhysProperties properties) {
         this.rigidBodyConstructor = new RigidBodyConstructor(world, startTranslation, startRotation, scaling, this.constructCollision());
         this.rigidBodyObject = this.getRigidBodyConstructor().buildRigidBody(properties);
+        if (this.getBodyIndex().isStatic()) {
+            this.getRigidBodyObject().makeStatic();
+        } else {
+            this.getRigidBodyObject().makeDynamic();
+        }
         world.addInBulletWorld(this.getRigidBodyObject(), this.getBodyIndex());
         this.getRigidBodyObject().setUserIndex2(this.getItemId());
         this.getRigidBodyObject().setTranslation(position);
         this.getRigidBodyObject().setRotation(rotation);
         this.getRigidBodyObject().updateCollisionObjectState();
-
         this.afterRigidBodyCreated(this.getRigidBodyObject());
     }
 

@@ -54,7 +54,7 @@ public class SimpleTriggerZone implements ITriggerZone {
         double d1_3 = this.getZone().getSize().z / 2.0d;
         this.collisionShape = new btBoxShape(new btVector3(d1_1, d1_2, d1_3));
         this.ghostObject.setCollisionShape(this.collisionShape);
-        this.ghostObject.setCollisionFlags(btCollisionObject.CF_NO_CONTACT_RESPONSE);
+        this.ghostObject.setCollisionFlags(btCollisionObject.CF_NO_CONTACT_RESPONSE | btCollisionObject.CF_STATIC_OBJECT);
         try (btTransform transform = this.ghostObject.getWorldTransform()) {
             transform.setOrigin(new btVector3(this.getZone().getLocation().x, this.getZone().getLocation().y, this.getZone().getLocation().z));
             this.ghostObject.setWorldTransform(transform);

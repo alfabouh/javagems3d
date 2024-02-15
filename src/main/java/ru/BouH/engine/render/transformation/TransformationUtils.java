@@ -20,13 +20,8 @@ public class TransformationUtils {
     public final Matrix4d getModelMatrix(Model<Format3D> model, boolean invertRotations) {
         Vector3d rotation = new Vector3d(model.getFormat().getRotation());
         Vector3d position = new Vector3d(model.getFormat().getPosition());
-        if (invertRotations) {
-            rotation.mul(-1);
-        }
         Matrix4d m1 = new Matrix4d();
-        Quaterniond quaterniond = new Quaterniond();
-        quaterniond.rotateXYZ(Math.toRadians(-rotation.x), Math.toRadians(-rotation.y), Math.toRadians(-rotation.z));
-        return m1.identity().translationRotateScale(position, quaterniond, model.getFormat().getScale());
+        return m1.identity().translate(position).rotateXYZ(invertRotations ? rotation.x : -rotation.x, invertRotations ? rotation.y : -rotation.y, invertRotations ? rotation.z : -rotation.z).scale(model.getFormat().getScale());
     }
 
     public final Matrix4d getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
@@ -52,7 +47,7 @@ public class TransformationUtils {
     public Matrix4d getOrthoModelMatrix(Model<Format2D> model, Matrix4d orthoMatrix) {
         Vector2d rotation = model.getFormat().getRotation();
         Matrix4d m1 = new Matrix4d();
-        m1.identity().translate(new Vector3d(model.getFormat().getPosition(), 0.0d)).rotateX(Math.toRadians(-rotation.x)).rotateY(Math.toRadians(-rotation.y)).scaleXY(model.getFormat().getScale().x, model.getFormat().getScale().y);
+        m1.identity().translate(new Vector3d(model.getFormat().getPosition(), 0.0d)).rotateX(-rotation.x).rotateY(-rotation.y).scaleXY(model.getFormat().getScale().x, model.getFormat().getScale().y);
         Matrix4d viewCurr = new Matrix4d(orthoMatrix);
         return viewCurr.mul(m1);
     }
@@ -60,7 +55,7 @@ public class TransformationUtils {
     public Matrix4d getModelViewMatrix(Model<Format3D> model, Matrix4d viewMatrix) {
         Vector3d rotation = model.getFormat().getRotation();
         Matrix4d m1 = new Matrix4d();
-        m1.identity().translate(model.getFormat().getPosition()).rotateXYZ(Math.toRadians(-rotation.x), Math.toRadians(-rotation.y), Math.toRadians(-rotation.z)).scale(model.getFormat().getScale());
+        m1.identity().translate(model.getFormat().getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(model.getFormat().getScale());
         if (model.getFormat().isOrientedToViewMatrix()) {
             viewMatrix.transpose3x3(m1);
         }

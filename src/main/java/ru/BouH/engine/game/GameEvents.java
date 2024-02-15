@@ -36,14 +36,14 @@ public class GameEvents {
         Model<Format3D> knife = new Model<>(new Format3D(), ResourceManager.modelAssets.knife);
         knife.getFormat().setScale(new Vector3d(50.0d));
         knife.getFormat().setPosition(new Vector3d(0.0d, -54.0d, 0.0d));
-        knife.getFormat().setRotation(new Vector3d(0, 20, 0));
+        knife.getFormat().setRotation(new Vector3d(0, Math.toRadians(20), 0));
         AbstractSceneObject sceneObject = new SceneObject(new RenderSceneModel(), knife, ResourceManager.shaderAssets.world);
         sceneWorld.addRenderObjectInScene(sceneObject);
 
         Model<Format3D> house = new Model<>(new Format3D(), ResourceManager.modelAssets.house);
         house.getFormat().setScale(new Vector3d(5.0d));
         house.getFormat().setPosition(new Vector3d(0.0d, 5.0d, 30.0d));
-        house.getFormat().setRotation(new Vector3d(0, 20, 0));
+        house.getFormat().setRotation(new Vector3d(0, Math.toRadians(20), 0));
         AbstractSceneObject sceneObject2 = new SceneObject(new RenderSceneModel(), house, ResourceManager.shaderAssets.world);
         sceneWorld.addRenderObjectInScene(sceneObject2);
 
@@ -53,7 +53,7 @@ public class GameEvents {
         Model<Format3D> tallgrass = new Model<>(new Format3D(), MeshHelper.generatePlane3DMesh(new Vector3d(0.0d, 0.0d, 0.0d), new Vector3d(0.0d, 1.0d, 0.0d), new Vector3d(1.0d, 1.0d, 0.0d), new Vector3d(1.0d, 0.0d, 0.0d)));
         tallgrass.getFormat().setScale(new Vector3d(5.0d));
         tallgrass.getFormat().setPosition(new Vector3d(0.0d, -1.0d, 20.0d));
-        tallgrass.getFormat().setRotation(new Vector3d(0, 20, 0));
+        tallgrass.getFormat().setRotation(new Vector3d(0, Math.toRadians(20), 0));
         AbstractSceneObject sceneObject3 = new SceneObject(new RenderSceneModel(), tallgrass, ResourceManager.shaderAssets.world).setOverObjectMaterial(grass);
         sceneObject3.getModelRenderParams().setHasTransparency(true);
         sceneObject3.getModelRenderParams().setShadowCaster(false);

@@ -21,6 +21,7 @@ import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
 import ru.BouH.engine.proxy.LocalPlayer;
 import ru.BouH.engine.render.environment.Environment;
+import ru.BouH.engine.render.scene.scene_render.groups.DebugRender;
 import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.frustum.FrustumCulling;

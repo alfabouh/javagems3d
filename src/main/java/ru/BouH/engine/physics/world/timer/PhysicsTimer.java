@@ -2,6 +2,7 @@ package ru.BouH.engine.physics.world.timer;
 
 import org.bytedeco.bullet.BulletCollision.*;
 import org.bytedeco.bullet.BulletDynamics.*;
+import org.bytedeco.bullet.LinearMath.btIDebugDraw;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
@@ -12,6 +13,7 @@ import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.WorldItem;
+import ru.BouH.engine.render.scene.bullet.JBDebugDraw;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -26,7 +28,10 @@ public class PhysicsTimer implements IPhysTimer {
     private final btDiscreteDynamicsWorld discreteDynamicsWorld;
     private final btConstraintSolver constraintSolve;
     private final btGhostPairCallback pairCallback;
+    @SuppressWarnings("all")
+    private final JBDebugDraw jbDebugDraw;
 
+    @SuppressWarnings("all")
     public PhysicsTimer() {
         this.broadcaster = new btAxisSweep3(new btVector3(PhysicThreadManager.WORLD_BORDERS.getA1(), PhysicThreadManager.WORLD_BORDERS.getA1(), PhysicThreadManager.WORLD_BORDERS.getA1()), new btVector3(PhysicThreadManager.WORLD_BORDERS.getA2(), PhysicThreadManager.WORLD_BORDERS.getA2(), PhysicThreadManager.WORLD_BORDERS.getA2()));
         this.pairCallback = new btGhostPairCallback();
@@ -37,13 +42,17 @@ public class PhysicsTimer implements IPhysTimer {
         this.constraintSolve = new btConstraintSolverPoolMt(2);
         this.discreteDynamicsWorld = new btDiscreteDynamicsWorld(this.getCollisionDispatcher(), this.getBroadcaster(), this.getConstraintSolver(), this.getCollisionConfiguration());
         this.discreteDynamicsWorld.setGravity(new btVector3(0, -9.8f, 0));
-        this.discreteDynamicsWorld.getDispatchInfo().m_deterministicOverlappingPairs(false);
+        this.discreteDynamicsWorld.getDispatchInfo().m_deterministicOverlappingPairs(true);
         this.discreteDynamicsWorld.getDispatchInfo().m_useConvexConservativeDistanceUtil(true);
+        this.discreteDynamicsWorld.getDispatchInfo().m_enableSatConvex(true);
         this.discreteDynamicsWorld.getDispatchInfo().m_useContinuous(true);
         this.discreteDynamicsWorld.getDispatchInfo().m_convexConservativeDistanceThreshold(0.01f);
         this.discreteDynamicsWorld.getDispatchInfo().m_allowedCcdPenetration(0.0d);
         this.discreteDynamicsWorld.performDiscreteCollisionDetection();
 
+        this.jbDebugDraw = new JBDebugDraw();
+        this.jbDebugDraw.setDebugMode(btIDebugDraw.DBG_DrawWireframe | btIDebugDraw.DBG_DrawAabb);
+        this.discreteDynamicsWorld.setDebugDrawer(this.jbDebugDraw);
         this.world = new World();
     }
 

@@ -173,7 +173,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
             Vector3d newRotation = new Vector3d();
             Quaterniond result = this.getQuaternionInterpolated(partialTicks);
             result.getEulerAnglesXYZ(newRotation);
-            this.renderRotation.set(new Vector3d(Math.toDegrees(newRotation.x), Math.toDegrees(newRotation.y), Math.toDegrees(newRotation.z)));
+            this.renderRotation.set(new Vector3d(newRotation.x, newRotation.y, newRotation.z));
         }
     }
 
@@ -181,8 +181,8 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
         Quaterniond start = new Quaterniond();
         Quaterniond end = new Quaterniond();
 
-        start.rotateXYZ(Math.toRadians(this.getCurrentRotState().getStartPoint().x), Math.toRadians(this.getCurrentRotState().getStartPoint().y), Math.toRadians(this.getCurrentRotState().getStartPoint().z));
-        end.rotateXYZ(Math.toRadians(this.getCurrentRotState().getEndPoint().x), Math.toRadians(this.getCurrentRotState().getEndPoint().y), Math.toRadians(this.getCurrentRotState().getEndPoint().z));
+        start.rotateXYZ(this.getCurrentRotState().getStartPoint().x, this.getCurrentRotState().getStartPoint().y, this.getCurrentRotState().getStartPoint().z);
+        end.rotateXYZ(this.getCurrentRotState().getEndPoint().x, this.getCurrentRotState().getEndPoint().y, this.getCurrentRotState().getEndPoint().z);
 
         Quaterniond res = new Quaterniond();
         end.slerp(start, partialTicks, res);

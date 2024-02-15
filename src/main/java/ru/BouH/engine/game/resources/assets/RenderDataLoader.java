@@ -48,7 +48,7 @@ public class RenderDataLoader implements IAssetsLoader {
         brickPlane.setDiffuse(ResourceManager.renderAssets.bricksTexture);
         brickPlane.setNormals(ResourceManager.renderAssets.bricksNormals);
 
-        this.entityCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
+        this.entityCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.house);
         this.entityCube2 = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
 
         this.entityLargeCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
