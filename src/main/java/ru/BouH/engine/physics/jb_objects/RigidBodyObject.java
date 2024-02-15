@@ -6,6 +6,7 @@ import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.bytedeco.bullet.LinearMath.btQuaternion;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
+import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.collision.AbstractCollision;
@@ -32,13 +33,14 @@ public class RigidBodyObject extends btRigidBody {
     }
 
     public Vector3d getRotation() {
-        try (btQuaternion quaternion = this.getOrientation()) {
-            double[] x = new double[1];
-            double[] y = new double[1];
-            double[] z = new double[1];
-            quaternion.getEulerZYX(z, y, x);
-            quaternion.deallocate();
-            return new Vector3d(Math.toDegrees(z[0]), Math.toDegrees(y[0]), Math.toDegrees(x[0])).negate();
+        try (btTransform transform = this.getWorldTransform()) {
+            double[] matrix = new double[16];
+            transform.getOpenGLMatrix(matrix);
+            double[] rotation = new double[3];
+            rotation[0] = Math.atan2(matrix[9], matrix[10]);
+            rotation[1] = Math.atan2(-matrix[8], Math.sqrt(matrix[9] * matrix[9] + matrix[10] * matrix[10]));
+            rotation[2] = Math.atan2(matrix[4], matrix[0]);
+            return new Vector3d(rotation[0], rotation[1], rotation[2]);
         }
     }
 
@@ -83,7 +85,7 @@ public class RigidBodyObject extends btRigidBody {
         btVector3 v1 = new btVector3();
         btVector3 v2 = new btVector3();
         this.getAabb(v1, v2);
-        double d1 = (v2.getY() - v1.getY()) / 10.0d;
+        double d1 = (Math.max(Math.max(v2.getY(), v2.getX()), v2.getZ()) - Math.min(Math.min(v1.getY(), v1.getX()), v1.getZ())) / 10.0d;
         v1.deallocate();
         v2.deallocate();
         return d1;
@@ -127,7 +129,6 @@ public class RigidBodyObject extends btRigidBody {
     public void setRigidBodyProperties(PhysProperties properties) {
         this.setCollisionFlags((this.getCollisionFlags() | btCollisionObject.CF_CUSTOM_MATERIAL_CALLBACK | btCollisionObject.CF_HAS_CONTACT_STIFFNESS_DAMPING) & ~btCollisionObject.CF_DISABLE_SPU_COLLISION_PROCESSING);
         this.setContactStiffnessAndDamping(RigidBodyObject.STIFFNESS, RigidBodyObject.DAMPING);
-        this.makeDynamic();
         this.setFrictionAxes(properties.getMaterialProperties().getFrictionAxes());
         this.setFriction(properties.getMaterialProperties().getFriction());
         this.setLinearAngularDamping(properties.getMaterialProperties().getL_damping(), properties.getMaterialProperties().getA_damping());
@@ -135,7 +136,6 @@ public class RigidBodyObject extends btRigidBody {
         this.setMass(properties.getMass());
         this.enableCCD(1.0e-3d, this.calcCCDRadius());
         if (properties.isRealisticInertia() && !this.isStaticObject()) {
-            System.out.println(properties.getMaterialProperties().getFrictionAxes());
             this.setRealisticInertia();
         } else {
             this.setInertia(new Vector3d(0.0d));

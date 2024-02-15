@@ -37,7 +37,6 @@ public abstract class WorldBrush extends PhysEntity {
 
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
-        this.getRigidBodyObject().makeStatic();
     }
 
     public boolean canBeDestroyed() {

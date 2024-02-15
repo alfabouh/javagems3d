@@ -20,7 +20,7 @@ public class Window {
     private boolean isInFocus;
 
     public Window(WindowProperties windowProperties) {
-        this.isInFocus = true;
+        this.isInFocus = false;
         this.window = GLFW.glfwCreateWindow(windowProperties.getWidth(), windowProperties.getHeight(), windowProperties.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
         this.windowProperties = windowProperties;
         GLFW.glfwSetWindowSizeCallback(this.getDescriptor(), (win, w, h) -> {

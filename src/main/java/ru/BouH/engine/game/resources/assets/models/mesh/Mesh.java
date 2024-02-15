@@ -212,13 +212,6 @@ public class Mesh {
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
 
-        this.indexes.clear();
-        this.attributePositions.clear();
-        this.attributeTextureCoordinates.clear();
-        this.attributeNormals.clear();
-        this.attributeTangents.clear();
-        this.attributeBitangents.clear();
-
         this.memFree(inxBuffer);
         this.memFree(posBuffer);
         this.memFree(texBuffer);
