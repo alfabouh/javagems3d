@@ -11,23 +11,23 @@ public final class Fog {
         this.color = new Vector3d(0.85d);
     }
 
-    public void setColor(Vector3d color) {
-        this.color = color;
-    }
-
     public Vector3d getColor() {
         return new Vector3d(this.color);
+    }
+
+    public void setColor(Vector3d color) {
+        this.color = color;
     }
 
     public void disable() {
         this.setDensity(-1.0f);
     }
 
-    public void setDensity(float density) {
-        this.density = density;
-    }
-
     public float getDensity() {
         return this.density;
+    }
+
+    public void setDensity(float density) {
+        this.density = density;
     }
 }

@@ -6,7 +6,6 @@ import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.bytedeco.bullet.LinearMath.btQuaternion;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
-import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.collision.AbstractCollision;
@@ -51,7 +50,7 @@ public class RigidBodyObject extends btRigidBody {
             transform.setRotation(quaternion);
             this.setWorldTransform(transform);
             this.updateCollisionObjectState();
-            this.getWorld().getBulletTimer().updateRigidBodyAabb(this);
+            this.getWorld().getBulletTimer().updateAabb(this);
         }
         this.getWorld().getDynamicsWorld().synchronizeMotionStates();
     }
@@ -67,7 +66,7 @@ public class RigidBodyObject extends btRigidBody {
             transform.setOrigin(new btVector3(pos.x, pos.y, pos.z));
             this.setWorldTransform(transform);
             this.updateCollisionObjectState();
-            this.getWorld().getBulletTimer().updateRigidBodyAabb(this);
+            this.getWorld().getBulletTimer().updateAabb(this);
         }
         this.getWorld().getDynamicsWorld().synchronizeMotionStates();
     }

@@ -8,14 +8,17 @@ public class ModelAssetsLoader implements IAssetsLoader {
     public MeshDataGroup knife;
     public MeshDataGroup cube;
     public MeshDataGroup house;
+    public MeshDataGroup ground;
 
     @Override
     public void load(GameCache gameCache) {
         this.cube = ResourceManager.createMesh("/models/cube/", "cube.obj");
         this.knife = ResourceManager.createMesh("/models/knife/", "knife.obj");
         this.house = ResourceManager.createMesh("/models/house/", "house.obj");
+        this.ground = ResourceManager.createMesh("/models/nuke/", "nuke.obj");
 
-        this.house.constructCollisionMesh(true);
+        this.ground.constructCollisionMesh();
+        this.house.constructCollisionMesh();
     }
 
     @Override

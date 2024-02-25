@@ -24,12 +24,12 @@ public class FrustumCulling {
         this.enabled = true;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public boolean isEnabled() {
         return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public void refreshFrustumCullingState(Matrix4d projection, Matrix4d view) {

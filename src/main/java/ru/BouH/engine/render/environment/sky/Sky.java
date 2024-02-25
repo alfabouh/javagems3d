@@ -23,12 +23,12 @@ public class Sky implements IWorldDynamic {
         return this.skyBox;
     }
 
-    public void setSunColors(Vector3f sunColors) {
-        this.sunColors = sunColors;
-    }
-
     public Vector3f getSunColors() {
         return new Vector3f(this.sunColors);
+    }
+
+    public void setSunColors(Vector3f sunColors) {
+        this.sunColors = sunColors;
     }
 
     public Vector3f getSunAngle() {
@@ -39,12 +39,12 @@ public class Sky implements IWorldDynamic {
         this.sunAngle = new Vector3f(sunAngle).normalize();
     }
 
-    public void setSunBrightness(float sunBrightness) {
-        this.sunBrightness = sunBrightness;
-    }
-
     public float getSunBrightness() {
         return this.sunBrightness;
+    }
+
+    public void setSunBrightness(float sunBrightness) {
+        this.sunBrightness = sunBrightness;
     }
 
     @Override

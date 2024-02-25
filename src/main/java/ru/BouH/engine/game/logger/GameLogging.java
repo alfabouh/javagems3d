@@ -4,8 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.BouH.engine.game.Game;
 
-import javax.swing.*;
-
 public class GameLogging {
     private final Logger log;
 

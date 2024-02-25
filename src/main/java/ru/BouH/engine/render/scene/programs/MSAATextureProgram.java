@@ -5,8 +5,6 @@ import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
-import java.nio.ByteBuffer;
-
 public class MSAATextureProgram implements ITextureProgram {
     private final int textureId;
     private final int msaa;

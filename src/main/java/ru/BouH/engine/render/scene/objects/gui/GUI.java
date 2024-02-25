@@ -10,7 +10,7 @@ import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
-import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
+import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.objects.gui.hud.GuiPicture;
 import ru.BouH.engine.render.scene.objects.gui.hud.GuiText;
@@ -21,7 +21,7 @@ public class GUI {
     public static void renderGUI(SceneRenderBase sceneRenderBase, double partialTicks) {
         double width = Game.getGame().getScreen().getWidth();
         double height = Game.getGame().getScreen().getHeight();
-        final EntityPlayerSP entityPlayerSP = Game.getGame().getPlayerSP();
+        final WorldItem entityPlayerSP = (WorldItem) Game.getGame().getPlayerSP();
         GUI.renderText(sceneRenderBase, partialTicks, 0, 0, "FPS: " + Screen.FPS + " | TPS: " + Screen.PHYS2_TPS, 0xffffff);
         GUI.renderText(sceneRenderBase, partialTicks, 0, 20, "entities: " + Game.getGame().getPhysicsWorld().countItems(), 0xffffff);
         GUI.renderText(sceneRenderBase, partialTicks, 0, 40, String.format("%s %s %s", (int) entityPlayerSP.getPosition().x, (int) entityPlayerSP.getPosition().y, (int) entityPlayerSP.getPosition().z), 0xffffff);
@@ -34,7 +34,7 @@ public class GUI {
                 i1 += 20;
             }
         }
-        GUI.renderText(sceneRenderBase, partialTicks, 0, i1 + 20, "speed: " + String.format("%.2f", entityPlayerSP.getObjectSpeed()), 0xffffff);
+        //GUI.renderText(sceneRenderBase, partialTicks, 0, i1 + 20, "speed: " + String.format("%.2f", entityPlayerSP.getKinematicCharacterController().getLinearVelocity().length()), 0xffffff);
 
         //Vector2d vector2d = GUI.getScaledPictureDimensions(ResourceManager.renderAssets.pngGuiPic1, 0.1f);
         //GUI.renderPicture(sceneRenderBase, partialTicks, (int) (width - vector2d.x - 2), 2, (int) vector2d.x, (int) vector2d.y, ResourceManager.renderAssets.pngGuiPic1);

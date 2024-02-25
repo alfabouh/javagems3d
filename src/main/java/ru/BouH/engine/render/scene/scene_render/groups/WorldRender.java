@@ -16,6 +16,12 @@ public class WorldRender extends SceneRenderBase {
         this.render(partialTicks, this.getSceneWorld().getFilteredEntityList());
     }
 
+    public void onStartRender() {
+    }
+
+    public void onStopRender() {
+    }
+
     private void render(double partialTicks, List<IModeledSceneObject> renderObjects) {
         for (IModeledSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
@@ -31,11 +37,5 @@ public class WorldRender extends SceneRenderBase {
                 }
             }
         }
-    }
-
-    public void onStartRender() {
-    }
-
-    public void onStopRender() {
     }
 }

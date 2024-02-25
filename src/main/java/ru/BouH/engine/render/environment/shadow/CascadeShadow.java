@@ -10,12 +10,12 @@ public class CascadeShadow {
         this.lightProjectionViewMatrix = new Matrix4d();
     }
 
-    public void setSplitDistance(float splitDistance) {
-        this.splitDistance = splitDistance;
-    }
-
     public float getSplitDistance() {
         return this.splitDistance;
+    }
+
+    public void setSplitDistance(float splitDistance) {
+        this.splitDistance = splitDistance;
     }
 
     public Matrix4d getLightProjectionViewMatrix() {

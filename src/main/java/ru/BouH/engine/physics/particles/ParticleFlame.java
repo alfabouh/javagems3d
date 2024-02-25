@@ -14,7 +14,7 @@ public class ParticleFlame extends SimpleParticle {
     @Override
     public void onUpdate(IWorld iWorld) {
         super.onUpdate(iWorld);
-        this.getRigidBodyObject().setGravity(MathHelper.convert(new Vector3d(0.0d, 2.0d, 0.0d)));
+        this.getBulletObject().setGravity(MathHelper.convert(new Vector3d(0.0d, 2.0d, 0.0d)));
     }
 
     protected int lifeTime() {

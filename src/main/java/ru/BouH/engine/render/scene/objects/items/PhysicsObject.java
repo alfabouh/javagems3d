@@ -1,5 +1,6 @@
 package ru.BouH.engine.render.scene.objects.items;
 
+import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
@@ -8,6 +9,7 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
+import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.brush.WorldBrush;
 import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
@@ -17,10 +19,10 @@ import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.frustum.RenderABB;
-import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
-import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
+import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
+import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 
 public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject, IWorldDynamic {
@@ -75,14 +77,6 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
         }
     }
 
-    public void onAddLight(Light light) {
-        Game.getGame().getLogManager().debug("Add light to: " + this.getWorldItem().getItemName());
-    }
-
-    public void onRemoveLight(Light light) {
-        Game.getGame().getLogManager().debug("Removed light from: " + this.getWorldItem().getItemName());
-    }
-
     @Override
     public void onDestroy(IWorld iWorld) {
         if (!this.getWorldItem().isParticle()) {
@@ -91,6 +85,14 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
         if (this.hasRender()) {
             this.renderFabric().onStopRender(this);
         }
+    }
+
+    public void onAddLight(Light light) {
+        Game.getGame().getLogManager().debug("Add light to: " + this.getWorldItem().getItemName());
+    }
+
+    public void onRemoveLight(Light light) {
+        Game.getGame().getLogManager().debug("Removed light from: " + this.getWorldItem().getItemName());
     }
 
     protected Vector3d calcABBSize(WorldItem worldItem) {
@@ -102,10 +104,16 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
             if (jBulletEntity.isValid()) {
                 btVector3 v1 = new btVector3();
                 btVector3 v2 = new btVector3();
-                jBulletEntity.getRigidBodyObject().getAabb(v1, v2);
+                btVector3 v3 = MathHelper.convert(this.getRenderPosition());
+                btTransform transform = new btTransform();
+                transform.setIdentity();
+                transform.setOrigin(v3);
+                jBulletEntity.getBulletObject().getCollisionShape().getAabb(transform, v1, v2);
                 Vector3d vector3d = new Vector3d(v2.getX() - v1.getX(), v2.getY() - v1.getY(), v2.getZ() - v1.getZ());
                 v1.deallocate();
                 v2.deallocate();
+                v3.deallocate();
+                transform.deallocate();
                 return vector3d;
             }
         }
@@ -113,21 +121,16 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     }
 
     @Override
-    public ModelRenderParams getModelRenderParams() {
-        return this.getRenderData().getModelRenderParams();
-    }
-
-    @Override
     public boolean canBeCulled() {
         return true;
     }
 
-    public ShaderManager getShaderManager() {
-        return this.getModelRenderParams().getShaderManager();
-    }
-
     public RenderABB getRenderABB() {
         return this.getWorldItem() instanceof WorldBrush ? null : this.renderABB;
+    }
+
+    public ShaderManager getShaderManager() {
+        return this.getModelRenderParams().getShaderManager();
     }
 
     public double getScale() {
@@ -164,9 +167,6 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
         Vector3d pos = this.getFixedPosition();
         Vector3d rot = this.getFixedRotation();
         this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(partialTicks));
-        if (!(this.getWorldItem() instanceof WorldBrush)) {
-            this.renderPosition.sub(0, 0.039f, 0);
-        }
         if (this.isEntityUnderUserControl()) {
             this.renderRotation.set(rot);
         } else {
@@ -200,14 +200,6 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
 
     private InterpolationPoints getCurrentRotState() {
         return this.currentRotationInterpolation;
-    }
-
-    public boolean isVisible() {
-        return this.isVisible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.isVisible = visible;
     }
 
     protected Vector3d getFixedPosition() {
@@ -244,6 +236,19 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
 
     public Model<Format3D> getModel3D() {
         return this.model;
+    }
+
+    @Override
+    public ModelRenderParams getModelRenderParams() {
+        return this.getRenderData().getModelRenderParams();
+    }
+
+    public boolean isVisible() {
+        return this.isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
     }
 
     @Override

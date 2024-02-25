@@ -22,6 +22,28 @@ const vec3 sampleOffsetDirections[20] = vec3[]
     vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
 );
 
+const vec2 samples[16] = vec2[](
+    vec2(0.25, 0.25),
+    vec2(0.5, 0.5),
+    vec2(0.75, 0.75),
+    vec2(1.0, 1.0),
+
+    vec2(-0.25, 0.25),
+    vec2(-0.5, 0.5),
+    vec2(-0.75, 0.75),
+    vec2(-1.0, 1.0),
+
+    vec2(0.25, -0.25),
+    vec2(0.5, -0.5),
+    vec2(0.75, -0.75),
+    vec2(1.0, -1.0),
+
+    vec2(-0.25, -0.25),
+    vec2(-0.5, -0.5),
+    vec2(-0.75, -0.75),
+    vec2(-1.0, -1.0)
+);
+
 const int light_opacity_code = 1 << 2;
 const int light_bright_code = 1 << 3;
 
@@ -31,6 +53,7 @@ const int metallic_code = 1 << 4;
 const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
 uniform int show_cascades;
+uniform float alpha_discard;
 
 uniform samplerCube ambient_cubemap;
 uniform vec2 texture_scaling;
@@ -124,6 +147,10 @@ void main()
     vec4 emissive_texture = texture(emissive_map, scaled_coordinates());
     vec4 diffuse = (texturing_code & diffuse_code) != 0 ? diffuse_texture : diffuse_color;
 
+    if (alpha_discard > 0 && diffuse.a < alpha_discard) {
+        discard;
+    }
+
     vec4 lightFactor = (lighting_code & light_bright_code) != 0 ? vec4(1.5) : (lighting_code & light_opacity_code) == 0 ? vec4(1.) : ((texturing_code & emissive_code) != 0 ? emissive_texture * vec4(4.) : calc_light());
 
     diffuse += (texturing_code & metallic_code) != 0 ? (refract_cubemap(calc_normal_map(), 1.73) * texture(metallic_map, texture_coordinates)) : vec4(0.0);
@@ -154,8 +181,8 @@ void main()
     bright_color = ((lighting_code & light_bright_code) != 0 || brightness >= 8.) ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
 }
 
-float per_cascade_bias_shadow[3] = float[](5.0e-7f, 5.0e-7f, 5.0e-7f);
-float per_cascade_linear_shadow[3] = float[](0.5, 0.5, 0.75);
+float per_cascade_bias_shadow[3] = float[](1.0e-6f, 1.0e-6f, 1.0e-6f);
+float per_cascade_linear_shadow[3] = float[](0.75, 0.75, 0.75);
 
 float calcVSM(int idx, vec4 shadow_coord, vec2 offset, float bias, float linear) {
     vec2 moments = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord.xy + offset).rg;
@@ -165,13 +192,35 @@ float calcVSM(int idx, vec4 shadow_coord, vec2 offset, float bias, float linear)
     float d = shadow_coord.z - moments.x;
     float shadowPCT = smoothstep(linear, 1.0, variance / (variance + d * d));
 
-    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x + 5.0e-7f ? 1.0 : shadowPCT;
+    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x + per_cascade_bias_shadow[0] ? 1.0 : shadowPCT;
 }
 
 float calculate_shadow_no_pcf(vec4 worldPosition, int idx, float bias, float linear) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
     return calcVSM(idx, shadow_coord, vec2(0.0), bias, linear);
+}
+
+float random(vec4 seed) {
+    float dot_product = dot(seed, vec4(12.9898,78.233,45.164,94.673));
+    return fract(sin(dot_product) * 43758.5453);
+}
+
+float calculate_shadow_poison(vec4 worldPosition, int idx, float bias, float linear) {
+    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
+    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, 0);
+    int samSize = 16;
+    int samBias = 16;
+
+    for (int i = 0; i < samSize; i++) {
+        vec2 offset = samples[i] * texelSize;
+        shadow += calcVSM(idx, shadow_coord, offset, bias, linear);
+    }
+
+    return shadow / float(samSize);
 }
 
 float calculate_shadow_blur5x5(vec4 worldPosition, int idx, float bias, float linear) {
@@ -191,7 +240,7 @@ float calculate_shadow_blur5x5(vec4 worldPosition, int idx, float bias, float li
 
     for (int i = -2; i <= 2; i++) {
         for (int j = -2; j <= 2; j++) {
-            vec2 offset = vec2(float(i), float(j)) * texelSize;
+            vec2 offset = vec2(float(i), float(j)) * texelSize * 0.25;
             shadow += calcVSM(idx, shadow_coord, offset, bias, linear) * kernel[i + 2][j + 2];
         }
     }
@@ -226,7 +275,7 @@ vec4 calc_light() {
     bias = clamp(bias, 0.0, 1.0e-5f);
 
     float linear = per_cascade_linear_shadow[cascadeIndex];
-    float sun_shadow = calculate_shadow_blur5x5(out_world_position, cascadeIndex, bias, linear);
+    float sun_shadow = calculate_shadow_poison(out_world_position, cascadeIndex, bias, linear);
 
     vec4 calcSunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, mv_vertex_pos, normal);
 

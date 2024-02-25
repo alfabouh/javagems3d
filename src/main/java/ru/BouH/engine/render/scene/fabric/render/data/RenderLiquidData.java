@@ -1,15 +1,9 @@
 package ru.BouH.engine.render.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
-import org.joml.Vector3d;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
-import ru.BouH.engine.game.resources.assets.models.Model;
-import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
-import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
-import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.render.scene.programs.CubeMapProgram;
 
 public final class RenderLiquidData {

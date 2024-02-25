@@ -30,13 +30,13 @@ public abstract class WorldBrush extends PhysEntity {
         this(world, properties, "brush_ent");
     }
 
+    public void onSpawn(IWorld iWorld) {
+        super.onSpawn(iWorld);
+    }
+
     @Override
     public BodyGroup getBodyIndex() {
         return BodyGroup.BRUSH;
-    }
-
-    public void onSpawn(IWorld iWorld) {
-        super.onSpawn(iWorld);
     }
 
     public boolean canBeDestroyed() {

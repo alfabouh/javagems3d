@@ -7,19 +7,31 @@ import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.render.screen.window.Window;
 
+import java.awt.*;
+
 public class MouseKeyboardController implements IController {
-    private final Vector2d displayInput;
+    private final Vector2d rotationInput;
     private final Vector3d xyzInput;
     private final Keyboard keyboard;
     private final Mouse mouse;
     private final Window window;
+    private final Vector2d normalizedRotationInput;
+    private final Vector3d normalizedPositionInput;
+    private final Robot robot;
 
     public MouseKeyboardController(Window window) {
         this.window = window;
         this.keyboard = new Keyboard(window);
         this.mouse = new Mouse(window);
-        this.displayInput = new Vector2d(0.0d);
+        this.rotationInput = new Vector2d();
         this.xyzInput = new Vector3d(0.0d);
+        this.normalizedRotationInput = new Vector2d();
+        this.normalizedPositionInput = new Vector3d();
+        try {
+            this.robot = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Window getWindow() {
@@ -34,14 +46,22 @@ public class MouseKeyboardController implements IController {
         return this.mouse;
     }
 
-    @Override
     public Vector2d getRotationInput() {
-        return this.displayInput;
+        return this.normalizedRotationInput;
+    }
+
+    public Vector3d getPositionInput() {
+        return this.xyzInput;
     }
 
     @Override
-    public Vector3d getPositionInput() {
-        return this.xyzInput;
+    public Vector2d getNormalizedRotationInput() {
+        return new Vector2d(this.normalizedRotationInput);
+    }
+
+    @Override
+    public Vector3d getNormalizedPositionInput() {
+        return new Vector3d(this.normalizedPositionInput);
     }
 
     @Override
@@ -49,6 +69,8 @@ public class MouseKeyboardController implements IController {
         this.keyboard.updateKeys();
         this.getPositionInput().set(0.0d);
         this.getRotationInput().set(0.0d);
+        this.normalizedPositionInput.set(0.0d);
+        this.normalizedRotationInput.set(0.0d);
         if (!window.isInFocus()) {
             return;
         }
@@ -77,5 +99,7 @@ public class MouseKeyboardController implements IController {
         if (BindingList.instance.keyDown.isPressed()) {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
+        this.normalizedPositionInput.set(new Vector3d(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
+        this.normalizedRotationInput.set(new Vector2d(this.getRotationInput()).mul(ControllerDispatcher.CAM_SENS));
     }
 }

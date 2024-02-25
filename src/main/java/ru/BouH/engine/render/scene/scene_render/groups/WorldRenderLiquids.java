@@ -1,7 +1,6 @@
 package ru.BouH.engine.render.scene.scene_render.groups;
 
 import org.lwjgl.opengl.GL30;
-import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
@@ -10,7 +9,6 @@ import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.objects.items.LiquidObject;
 import ru.BouH.engine.render.scene.scene_render.RenderGroup;
-import ru.BouH.engine.render.transformation.TransformationManager;
 
 public class WorldRenderLiquids extends SceneRenderBase {
     public WorldRenderLiquids(Scene.SceneRenderConveyor sceneRenderConveyor) {

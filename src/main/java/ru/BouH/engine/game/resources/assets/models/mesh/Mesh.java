@@ -1,5 +1,6 @@
 package ru.BouH.engine.game.resources.assets.models.mesh;
 
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.exception.GameException;
@@ -119,13 +120,13 @@ public class Mesh {
         if (this.isBaked()) {
             throw new GameException("Tried to bake model, that is already had been baked!");
         }
-        int[] index = this.reorderIntsArray(this.indexes);
+        int[] index = Mesh.reorderIntsArray(this.indexes);
 
-        float[] position = this.reorderFloatsArray(this.attributePositions);
-        float[] texCoord = this.reorderFloatsArray(this.attributeTextureCoordinates);
-        float[] normals = this.reorderFloatsArray(this.attributeNormals);
-        float[] tangent = this.reorderFloatsArray(this.attributeTangents);
-        float[] bitangent = this.reorderFloatsArray(this.attributeBitangents);
+        float[] position = Mesh.reorderFloatsArray(this.attributePositions);
+        float[] texCoord = Mesh.reorderFloatsArray(this.attributeTextureCoordinates);
+        float[] normals = Mesh.reorderFloatsArray(this.attributeNormals);
+        float[] tangent = Mesh.reorderFloatsArray(this.attributeTangents);
+        float[] bitangent = Mesh.reorderFloatsArray(this.attributeBitangents);
 
         this.totalVertices = index.length;
         FloatBuffer posBuffer = null;
@@ -296,7 +297,7 @@ public class Mesh {
         return this.attributeNormals;
     }
 
-    int[] reorderIntsArray(List<Integer> list) {
+    public static int[] reorderIntsArray(List<Integer> list) {
         if (list == null || list.isEmpty()) {
             return null;
         }
@@ -307,13 +308,26 @@ public class Mesh {
         return a;
     }
 
-    float[] reorderFloatsArray(List<Float> list) {
+    public static float[] reorderFloatsArray(List<Float> list) {
         if (list == null || list.isEmpty()) {
             return null;
         }
         float[] a = new float[list.size()];
         for (int i = 0; i < list.size(); i++) {
             a[i] = list.get(i);
+        }
+        return a;
+    }
+
+    public static float[] reorderFloats3Array(List<Vector3d> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        float[] a = new float[list.size() * 3];
+        for (int i = 0; i < list.size(); i += 3) {
+            a[i] = (float) list.get(i).x;
+            a[i + 1] = (float) list.get(i).y;
+            a[i + 2] = (float) list.get(i).z;
         }
         return a;
     }

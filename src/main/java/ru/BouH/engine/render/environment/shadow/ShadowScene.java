@@ -1,6 +1,9 @@
 package ru.BouH.engine.render.environment.shadow;
 
-import org.joml.*;
+import org.joml.Matrix4d;
+import org.joml.Vector2i;
+import org.joml.Vector3d;
+import org.joml.Vector4d;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import ru.BouH.engine.game.Game;
@@ -8,15 +11,15 @@ import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
-import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
 import ru.BouH.engine.render.scene.programs.FBOTexture2DProgram;
 import ru.BouH.engine.render.screen.Screen;
+import ru.BouH.engine.render.transformation.TransformationManager;
 
-import java.lang.Math;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ShadowScene {
@@ -32,7 +35,7 @@ public class ShadowScene {
     public ShadowScene(Scene scene) {
         this.scene = scene;
         this.FBOTexture2DProgram = new FBOTexture2DProgram(true, false);
-        this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, false, GL43.GL_RG32F, GL30.GL_RGB, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, false, GL43.GL_RG32F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.initCascades();
         this.initPointLightShadows();
     }
@@ -56,7 +59,7 @@ public class ShadowScene {
         Matrix4d projection = TransformationManager.instance.getProjectionMatrix();
         Vector4d sunPos = new Vector4d(this.getScene().getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
 
-        float[] cascadeSplitLambda = new float[] {0.85f, 0.7f, 0.95f};
+        float[] cascadeSplitLambda = new float[]{0.85f, 0.7f, 0.95f};
         float[] cascadeSplits = new float[ShadowScene.CASCADE_SPLITS];
 
         float nearClip = this.nearCascadeClip();

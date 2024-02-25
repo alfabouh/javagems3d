@@ -26,6 +26,12 @@ public class WorldTransparentRender extends SceneRenderBase {
         WorldTransparentRender.transparentRenderObjects.clear();
     }
 
+    public void onStartRender() {
+    }
+
+    public void onStopRender() {
+    }
+
     private void render(double partialTicks, List<IModeledSceneObject> renderObjects) {
         for (IModeledSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
@@ -37,11 +43,5 @@ public class WorldTransparentRender extends SceneRenderBase {
                 }
             }
         }
-    }
-
-    public void onStartRender() {
-    }
-
-    public void onStopRender() {
     }
 }

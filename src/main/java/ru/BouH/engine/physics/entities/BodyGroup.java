@@ -5,7 +5,7 @@ import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 
 public enum BodyGroup {
     RIGID_BODY(100, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter, false),
-    PLAYER(101, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter, false),
+    PLAYER(101, BodyGroup.PlayerFilter, btBroadphaseProxy.AllFilter, false),
     BRUSH(102, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter, true),
     GHOST(103, BodyGroup.GhostFilter, btBroadphaseProxy.AllFilter, true),
     PARTICLE(104, BodyGroup.GhostFilter, btBroadphaseProxy.AllFilter, false),
@@ -13,6 +13,7 @@ public enum BodyGroup {
 
 
     public static final short
+            PlayerFilter = 1 << 10,
             GhostFilter = 1 << 8,
             LiquidFilter = 1 << 9;
 

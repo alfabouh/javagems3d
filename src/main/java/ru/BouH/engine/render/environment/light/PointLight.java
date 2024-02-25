@@ -37,16 +37,21 @@ public class PointLight extends Light {
         super(physicsObject, lightColor, offset);
     }
 
-    public void setAttachedShadowSceneId(int attachedShadowSceneId) {
-        this.attachedShadowSceneId = attachedShadowSceneId;
-    }
-
     public int getAttachedShadowSceneId() {
         return this.attachedShadowSceneId;
     }
 
+    public void setAttachedShadowSceneId(int attachedShadowSceneId) {
+        this.attachedShadowSceneId = attachedShadowSceneId;
+    }
+
     public float getBrightness() {
         return this.brightness;
+    }
+
+    public PointLight setBrightness(float brightness) {
+        this.brightness = brightness;
+        return this;
     }
 
     public void disable() {
@@ -56,9 +61,9 @@ public class PointLight extends Light {
         }
     }
 
-    public PointLight setBrightness(float brightness) {
-        this.brightness = brightness;
-        return this;
+    @Override
+    public int lightCode() {
+        return Light.POINT_LIGHT;
     }
 
     @Override
@@ -66,10 +71,5 @@ public class PointLight extends Light {
         if (this.isAttached()) {
             this.setLightPos(this.getAttachedTo().getRenderPosition());
         }
-    }
-
-    @Override
-    public int lightCode() {
-        return Light.POINT_LIGHT;
     }
 }

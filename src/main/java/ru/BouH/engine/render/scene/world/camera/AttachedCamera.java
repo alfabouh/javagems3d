@@ -3,7 +3,7 @@ package ru.BouH.engine.render.scene.world.camera;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
+import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
@@ -35,8 +35,8 @@ public class AttachedCamera extends Camera {
 
     private Vector3d cameraOffset() {
         Vector3d vector3d = new Vector3d(0.0d);
-        if (this.getPhysXObject() != null && this.getPhysXObject().getWorldItem() instanceof EntityPlayerSP) {
-            EntityPlayerSP entityPlayerSP = (EntityPlayerSP) this.getPhysXObject().getWorldItem();
+        if (this.getPhysXObject() != null && this.getPhysXObject().getWorldItem() instanceof IPlayer) {
+            IPlayer entityPlayerSP = (IPlayer) this.getPhysXObject().getWorldItem();
             vector3d.add(0, entityPlayerSP.getEyeHeight(), 0);
         }
         return vector3d;

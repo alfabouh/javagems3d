@@ -68,12 +68,12 @@ public abstract class Light implements IWorldDynamic {
         this.setEnabled(false);
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public boolean isEnabled() {
         return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public boolean isAttached() {
@@ -82,9 +82,17 @@ public abstract class Light implements IWorldDynamic {
 
     public abstract int lightCode();
 
+    public Vector3d getLightColor() {
+        return new Vector3d(this.lightColor);
+    }
+
     public Light setLightColor(Vector3d lightColor) {
         this.lightColor.set(lightColor);
         return this;
+    }
+
+    public Vector3d getLightPos() {
+        return new Vector3d(this.lightPos);
     }
 
     public Light setLightPos(Vector3d lightPos) {
@@ -92,20 +100,12 @@ public abstract class Light implements IWorldDynamic {
         return this;
     }
 
+    public Vector3d getOffset() {
+        return new Vector3d(this.offset);
+    }
+
     public Light setOffset(Vector3d offset) {
         this.offset.set(offset);
         return this;
-    }
-
-    public Vector3d getLightColor() {
-        return new Vector3d(this.lightColor);
-    }
-
-    public Vector3d getLightPos() {
-        return new Vector3d(this.lightPos);
-    }
-
-    public Vector3d getOffset() {
-        return new Vector3d(this.offset);
     }
 }

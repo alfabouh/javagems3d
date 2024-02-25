@@ -8,15 +8,12 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.screen.Screen;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class FBOCubeMapProgram {
-    private int frameBufferId;
-    private int renderBufferId;
     private final CubeMapProgram cubeMapProgram;
     private final boolean drawColor;
     private final boolean aliasing;
+    private int frameBufferId;
+    private int renderBufferId;
 
     public FBOCubeMapProgram(boolean drawColor, boolean aliasing) {
         this.cubeMapProgram = new CubeMapProgram();

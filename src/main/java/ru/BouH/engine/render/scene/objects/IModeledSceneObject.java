@@ -7,6 +7,8 @@ import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 
 public interface IModeledSceneObject extends IRenderObject, ICullable {
     Model<Format3D> getModel3D();
+
     ModelRenderParams getModelRenderParams();
+
     boolean isVisible();
 }

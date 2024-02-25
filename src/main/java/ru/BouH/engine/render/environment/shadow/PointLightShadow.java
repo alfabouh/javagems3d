@@ -3,10 +3,10 @@ package ru.BouH.engine.render.environment.shadow;
 import org.joml.Matrix4d;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
-import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.programs.FBOCubeMapProgram;
+import ru.BouH.engine.render.transformation.TransformationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,10 @@ public class PointLightShadow {
         return this.getPointLight() != null;
     }
 
+    public PointLight getPointLight() {
+        return this.pointLight;
+    }
+
     public void setPointLight(PointLight pointLight) {
         if (pointLight == null) {
             if (this.getPointLight() != null) {
@@ -57,10 +61,6 @@ public class PointLightShadow {
             this.pointLight = pointLight;
             this.pointLight.setAttachedShadowSceneId(this.getId());
         }
-    }
-
-    public PointLight getPointLight() {
-        return this.pointLight;
     }
 
     public List<Matrix4d> getShadowDirections() {

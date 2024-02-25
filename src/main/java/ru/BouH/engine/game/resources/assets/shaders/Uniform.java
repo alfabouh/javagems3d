@@ -14,12 +14,12 @@ public class Uniform {
         this.arraySize = Math.max(arraySize, 1);
     }
 
-    public Set<String> getFields() {
-        return this.fields;
-    }
-
     public Uniform(String id) {
         this(id, 1);
+    }
+
+    public Set<String> getFields() {
+        return this.fields;
     }
 
     public String getId() {

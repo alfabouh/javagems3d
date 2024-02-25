@@ -4,7 +4,6 @@ import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.BulletCollision.btGhostObject;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
-import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.GameEvents;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 public final class World implements IWorld {
     private final Set<WorldItem> allWorldItems;
     private final Set<IWorldDynamic> allDynamicItems;
-    private final Set<CollidableWorldItem> allBulletItems;
+    private final Set<JBulletEntity> allBulletItems;
     private final Set<ITriggerZone> triggerZones;
     private final Set<ILiquid> liquids;
     private final Set<WorldItem> toCleanItems;
@@ -77,7 +76,7 @@ public final class World implements IWorld {
                 this.allDynamicItems.addAll(copy1.stream().filter(World::isItemDynamic).map(e -> (IWorldDynamic) e).collect(Collectors.toList()));
                 this.allDynamicItems.addAll(this.liquids);
                 this.allDynamicItems.addAll(this.triggerZones);
-                this.allBulletItems.addAll(copy1.stream().filter(World::isItemJBulletObject).map(e -> (CollidableWorldItem) e).collect(Collectors.toList()));
+                this.allBulletItems.addAll(copy1.stream().filter(World::isItemJBulletObject).map(e -> (JBulletEntity) e).collect(Collectors.toList()));
             }
             this.collectionsWaitingRefresh = false;
         }
@@ -97,6 +96,10 @@ public final class World implements IWorld {
 
     public void onWorldEnd() {
         this.getTriggerZones().forEach(e -> e.onDestroy(this));
+    }
+
+    public int getTicks() {
+        return this.ticks;
     }
 
     public void addLight(Light light) {
@@ -130,17 +133,13 @@ public final class World implements IWorld {
             worldItem.clearLights();
             if (World.isItemJBulletObject(worldItem)) {
                 JBulletEntity jbItem = (JBulletEntity) worldItem;
-                btRigidBody rigidBody = jbItem.getRigidBodyObject();
+                btCollisionObject rigidBody = jbItem.getBulletObject();
                 if (rigidBody != null) {
-                    this.getBulletTimer().removeRigidBodyFromWorld(rigidBody);
+                    this.getBulletTimer().removeCollisionObjectFromWorld(rigidBody);
                 }
             }
             this.getAllWorldItems().remove(worldItem);
         }
-    }
-
-    public int getTicks() {
-        return this.ticks;
     }
 
     public void createSimpleTriggerZone(Zone zone, ITrigger ITriggerEnter, ITrigger ITriggerLeave) {
@@ -189,7 +188,7 @@ public final class World implements IWorld {
         return this.liquids;
     }
 
-    public synchronized Set<CollidableWorldItem> getAllBulletItems() {
+    public synchronized Set<JBulletEntity> getAllBulletItems() {
         return this.allBulletItems;
     }
 
