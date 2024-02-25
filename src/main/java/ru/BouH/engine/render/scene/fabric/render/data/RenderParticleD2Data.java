@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.materials.textures.ParticleTexturePack;
-import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.BouH.engine.game.resources.assets.models.basic.constructor.IEntityModelConstructor;
 import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
@@ -14,8 +13,8 @@ import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class RenderParticleD2Data extends RenderObjectData {
-    private ParticleTexturePack particleTexturePack;
     public static final float RENDER_PARTICLE_DISTANCE = 256.0f;
+    private ParticleTexturePack particleTexturePack;
 
     public RenderParticleD2Data(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ShaderManager shaderManager, ParticleTexturePack particleTexturePack, boolean isBright) {
         super(renderFabric, aClass, shaderManager);
@@ -33,13 +32,13 @@ public class RenderParticleD2Data extends RenderObjectData {
         this.getModelRenderParams().setBright(isBright);
     }
 
+    public ParticleTexturePack getParticleTexturePack() {
+        return this.particleTexturePack;
+    }
+
     public RenderParticleD2Data setParticleTexturePack(ParticleTexturePack particleTexturePack) {
         this.particleTexturePack = particleTexturePack;
         return this;
-    }
-
-    public ParticleTexturePack getParticleTexturePack() {
-        return this.particleTexturePack;
     }
 
     @Override

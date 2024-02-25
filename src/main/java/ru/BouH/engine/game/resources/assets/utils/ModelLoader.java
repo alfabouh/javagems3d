@@ -16,15 +16,14 @@ import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
 import ru.BouH.engine.game.resources.assets.models.mesh.ModelNode;
 import ru.BouH.engine.game.resources.cache.GameCache;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ModelLoader {
-    private static PointerBuffer getAIFileMeta(long pFile) { return MemoryUtil.memPointerBuffer(MemoryUtil.memGetAddress(pFile + AIFile.USERDATA), 3); }
-
     private static final AIFileReadProc AI_FILE_READ = AIFileReadProc.create((pFile, pBuffer, size, count) -> {
         PointerBuffer meta = getAIFileMeta(pFile);
         long position = meta.get(1);
@@ -35,15 +34,11 @@ public class ModelLoader {
         meta.put(1, position + size * elements);
         return elements;
     });
-
     private static final AIFileWriteProc AI_FILE_WRITE = AIFileWriteProc.create((pFile, pBuffer, memB, count) -> {
         throw new UnsupportedOperationException();
     });
-
     private static final AIFileTellProc AI_FILE_TELL = AIFileTellProc.create(pFile -> getAIFileMeta(pFile).get(1));
-
     private static final AIFileTellProc AI_FILE_SIZE = AIFileTellProc.create(pFile -> getAIFileMeta(pFile).get(2));
-
     private static final AIFileSeek AI_FILE_SEEK = AIFileSeek.create((pFile, offset, origin) -> {
         PointerBuffer meta = getAIFileMeta(pFile);
         long limit = meta.get(2);
@@ -67,9 +62,9 @@ public class ModelLoader {
         meta.put(1, position);
         return 0;
     });
-
-    private static final AIFileFlushProc AI_FILE_FLUSH = AIFileFlushProc.create(pFile -> { throw new UnsupportedOperationException(); });
-
+    private static final AIFileFlushProc AI_FILE_FLUSH = AIFileFlushProc.create(pFile -> {
+        throw new UnsupportedOperationException();
+    });
     private static final AIFileOpenProc AI_FILE_OPEN = AIFileOpenProc.create((pFileIO, fileName, openMode) -> {
         ByteBuffer data;
         try {
@@ -83,14 +78,18 @@ public class ModelLoader {
         MemoryStack stack = MemoryStack.stackGet();
         return AIFile.calloc(stack).ReadProc(AI_FILE_READ).WriteProc(AI_FILE_WRITE).TellProc(AI_FILE_TELL).FileSizeProc(AI_FILE_SIZE).SeekProc(AI_FILE_SEEK).FlushProc(AI_FILE_FLUSH).UserData(stack.mallocPointer(3).put(0, MemoryUtil.memAddress(data)).put(1, 0L).put(2, data.remaining()).address()).address();
     });
+    private static final AIFileCloseProc AI_FILE_CLOSE = AIFileCloseProc.create((pFileIO, pFile) -> {
+    });
 
-    private static final AIFileCloseProc AI_FILE_CLOSE = AIFileCloseProc.create((pFileIO, pFile) -> {});
+    private static PointerBuffer getAIFileMeta(long pFile) {
+        return MemoryUtil.memPointerBuffer(MemoryUtil.memGetAddress(pFile + AIFile.USERDATA), 3);
+    }
 
     @SuppressWarnings("all")
     private static MeshDataGroup loadMesh(String modelPath, String modelName) {
         Game.getGame().getLogManager().debug("Loading model " + modelPath + modelName);
 
-        final int FLAGS = Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenSmoothNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_FixInfacingNormals | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
+        final int FLAGS = Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenSmoothNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
         MeshDataGroup meshDataGroup = new MeshDataGroup();
 
         if (Game.seekInJar(modelPath + modelName)) {

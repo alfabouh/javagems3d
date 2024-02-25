@@ -10,25 +10,24 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.binding.BindingList;
+import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.resources.ResourceManager;
+import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.collision.AbstractCollision;
-import ru.BouH.engine.physics.collision.ModelShape;
-import ru.BouH.engine.physics.collision.OBB;
+import ru.BouH.engine.physics.collision.Capsule;
 import ru.BouH.engine.physics.entities.BodyGroup;
-import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.entities.Materials;
 import ru.BouH.engine.physics.entities.PhysEntity;
 import ru.BouH.engine.physics.entities.prop.PhysEntityCube;
-import ru.BouH.engine.physics.entities.prop.PhysEntityModeled;
 import ru.BouH.engine.physics.entities.prop.PhysLightCube;
+import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.PointLight;
 
-public class EntityPlayerSP extends PhysEntity implements IControllable {
+public class DynamicPlayerSP extends PhysEntity implements IPlayer {
     private final Vector3d cameraRotation;
     private final double speedMultiplier;
     private final double eyeHeight;
@@ -39,7 +38,7 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
     private int ticksBeforeCanJump;
     private double speed;
 
-    public EntityPlayerSP(World world, RigidBodyObject.PhysProperties properties, @NotNull Vector3d pos, @NotNull Vector3d rot) {
+    public DynamicPlayerSP(World world, RigidBodyObject.PhysProperties properties, @NotNull Vector3d pos, @NotNull Vector3d rot) {
         super(world, "phys_playerSP", properties, 1.0d, pos, rot);
         this.inputMotion = new Vector3d(0.0d);
         this.cameraRotation = new Vector3d();
@@ -54,6 +53,7 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
         if (this.isValid()) {
             if (this.isValidController()) {
                 if (this.isOnGround()) {
+                    this.stepCheck();
                     if (this.ticksBeforeCanJump-- > 0) {
                         this.ticksBeforeCanJump -= 1;
                     } else {
@@ -65,13 +65,13 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
                     }
                     this.canJump = false;
                 }
-                this.getRigidBodyObject().activateObject();
+                this.getBulletObject().activateObject();
             }
             this.groundCheck();
             if (this.isValidController()) {
                 final Vector3d motionC = this.calcControllerMotion();
                 this.onStep(this.getStepVelocityVector(motionC));
-                if (this.isInWater()) {
+                if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
                     if (motionC.y != 0.0d) {
                         this.swim(motionC.y > 0);
                     }
@@ -94,16 +94,13 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
         if (speed > this.getSpeed() * this.getSpeedMultiplier()) {
             v1.div(speed);
         }
-        if (!this.isOnGround() && !this.isInWater()) {
-            this.getRigidBodyObject().setFrictionAxes(new Vector3d(0.0d));
+        if (!this.isOnGround() && !this.entityState().checkState(EntityState.StateType.IN_WATER)) {
+            this.getBulletObject().setFrictionAxes(new Vector3d(0.0d));
             v1.mul(0.05d);
         } else {
-            this.getRigidBodyObject().setFrictionAxes(new Vector3d(1.0d));
+            this.getBulletObject().setFrictionAxes(new Vector3d(1.0d));
         }
         return v1;
-    }
-
-    protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
     }
 
     public double getSpeedMultiplier() {
@@ -118,12 +115,45 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
         this.speed = speed;
     }
 
+    protected void stepCheck() {
+        if (new Vector3d(this.getBulletObject().getObjectLinearVelocity()).mul(1, 0, 1).length() > 0.05d) {
+            Vector3d vel = MathHelper.convert(this.getBulletObject().getLinearVelocity()).normalize();
+            btVector3 v1 = new btVector3(this.getPosition().x + vel.x(), this.getPosition().y + 32, this.getPosition().z + vel.z());
+            btVector3 v2 = new btVector3(this.getPosition().x + vel.x(), this.getPosition().y - 32, this.getPosition().z + vel.z());
+
+            btCollisionWorld.ClosestRayResultCallback rayResultCallback = new btCollisionWorld.ClosestRayResultCallback(v1, v2);
+            rayResultCallback.m_collisionFilterMask(btBroadphaseProxy.DefaultFilter & ~BodyGroup.PlayerFilter);
+            this.getWorld().getDynamicsWorld().rayTest(v1, v2, rayResultCallback);
+
+            if (rayResultCallback.hasHit()) {
+                btVector3 va1 = new btVector3();
+                btVector3 va2 = new btVector3();
+                this.getBulletObject().getAabb(va1, va2);
+
+                Vector3d hitPoint = MathHelper.convert(rayResultCallback.m_hitPointWorld());
+                double dist = hitPoint.y - va1.y();
+                btVector3 bv = new btVector3(0, 1, 0);
+                double dot = bv.dot(rayResultCallback.m_hitNormalWorld());
+                double speed = 1.0d - (0.25d * (1.0f - dot));
+                if (dist > 0.01d && dist < 0.55d) {
+                    this.setPosition(new Vector3d(this.getPosition().x + vel.x() * 0.1d, this.getPosition().y + (1.0f - dist), this.getPosition().z + vel.z() * 0.1d));
+                }
+                bv.deallocate();
+                va1.deallocate();
+                va2.deallocate();
+            }
+
+            v1.deallocate();
+            v2.deallocate();
+        }
+    }
+
     protected void groundCheck() {
         btVector3 v1 = new btVector3();
         btVector3 v2 = new btVector3();
-        this.getRigidBodyObject().getAabb(v1, v2);
+        this.getBulletObject().getAabb(v1, v2);
 
-        btTransform transform_m = this.getRigidBodyObject().getWorldTransform();
+        btTransform transform_m = this.getBulletObject().getWorldTransform();
         btTransform transform1 = new btTransform(transform_m);
         btTransform transform2 = new btTransform(transform_m);
         final double f1 = Math.min(v2.getY() - v1.getY(), 0.03f);
@@ -150,13 +180,13 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
     }
 
     public void swim(boolean up) {
-        this.getRigidBodyObject().setFrictionAxes(new Vector3d(0.0d));
+        this.getBulletObject().setFrictionAxes(new Vector3d(0.0d));
         this.addObjectVelocity(new Vector3d(0.0d, up ? 0.5d : -0.3d, 0.0d));
     }
 
     public void onJump() {
         if (this.canJump) {
-            this.getRigidBodyObject().setFrictionAxes(new Vector3d(0.0d));
+            this.getBulletObject().setFrictionAxes(new Vector3d(0.0d));
             this.addObjectVelocity(new Vector3d(0.0d, 8.0d, 0.0d));
             this.ticksBeforeCanJump = 20;
             this.canJump = false;
@@ -203,17 +233,16 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
         return false;
     }
 
-    public double getEyeHeight() {
-        return this.eyeHeight;
-    }
-
     @Override
     protected AbstractCollision constructCollision() {
-        return new OBB(new Vector3d(0.75d, 1.5d, 0.75d));
+        return new Capsule(1.0f);
     }
 
     public Vector3d getRotation() {
         return this.isValidController() ? this.getCameraRotation() : super.getRotation();
+    }
+
+    protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
     }
 
     @Override
@@ -233,7 +262,7 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
     @Override
     public void performController(Vector2d rotationInput, Vector3d xyzInput) {
         if (BindingList.instance.keyBlock1.isClicked()) {
-            PhysEntityModeled entityPropInfo = new PhysEntityModeled(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), ResourceManager.modelAssets.house, new Vector3d(1.0d), 3.5d, this.getPosition().add(this.getLookVector().mul(6.0f)), new Vector3d(0.0d));
+            PhysLightCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 2.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(30.0f));
         }
@@ -257,6 +286,10 @@ public class EntityPlayerSP extends PhysEntity implements IControllable {
         this.getCameraRotation().add(new Vector3d(rotationInput, 0.0d));
         this.inputMotion = new Vector3d(xyzInput);
         this.clampCameraRotation();
+    }
+
+    public double getEyeHeight() {
+        return this.eyeHeight;
     }
 
     private void clampCameraRotation() {

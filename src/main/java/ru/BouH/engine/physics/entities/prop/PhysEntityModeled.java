@@ -5,7 +5,6 @@ import org.joml.Vector3d;
 import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
 import ru.BouH.engine.physics.collision.AbstractCollision;
 import ru.BouH.engine.physics.collision.ModelShape;
-import ru.BouH.engine.physics.collision.OBB;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.proxy.IWorld;

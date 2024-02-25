@@ -33,6 +33,11 @@ public abstract class ParticleFX extends PhysDynamicEntity {
         return 200;
     }
 
+    @Override
+    protected AbstractCollision constructCollision() {
+        return new OBB(new Vector3d(0.05d, 0.05d, 0.05d));
+    }
+
     protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
         rigidBodyObject.setCollisionFlags(btCollisionObject.CF_NO_CONTACT_RESPONSE);
     }
@@ -40,10 +45,5 @@ public abstract class ParticleFX extends PhysDynamicEntity {
     @Override
     public BodyGroup getBodyIndex() {
         return BodyGroup.PARTICLE;
-    }
-
-    @Override
-    protected AbstractCollision constructCollision() {
-        return new OBB(new Vector3d(0.05d, 0.05d, 0.05d));
     }
 }

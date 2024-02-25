@@ -1,6 +1,5 @@
 package ru.BouH.engine.render.environment.sky.skybox;
 
-import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.scene.programs.CubeMapProgram;
 
 public class SkyBox2D implements ISkyBox {

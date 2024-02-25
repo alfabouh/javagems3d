@@ -24,13 +24,12 @@ public class ControllerDispatcher {
         return ControllerDispatcher.mouseKeyboardController;
     }
 
-    public static Vector2d getOptionedRotationInput(IController iController) {
-        return new Vector2d(iController.getRotationInput()).mul(ControllerDispatcher.CAM_SENS);
+    public static Vector2d getNormalizedRotationInput(IController iController) {
+        return iController.getNormalizedRotationInput();
     }
 
-    public static Vector3d getOptionedPositionInput(IController iController) {
-        Vector3d v = iController.getPositionInput();
-        return new Vector3d(v.x == 0 ? 0 : v.x > 0 ? 1 : -1, v.y == 0 ? 0 : v.y > 0 ? 1 : -1, v.z == 0 ? 0 : v.z > 0 ? 1 : -1);
+    public static Vector3d getNormalizedPositionInput(IController iController) {
+        return iController.getNormalizedPositionInput();
     }
 
     public void setController(IController iController) {
@@ -69,8 +68,8 @@ public class ControllerDispatcher {
     }
 
     private void performControllerToItem(IController iController, IControllable iControllable) {
-        Vector2d d1 = ControllerDispatcher.getOptionedRotationInput(iController);
-        Vector3d d2 = ControllerDispatcher.getOptionedPositionInput(iController);
+        Vector2d d1 = ControllerDispatcher.getNormalizedRotationInput(iController);
+        Vector3d d2 = ControllerDispatcher.getNormalizedPositionInput(iController);
         iControllable.performController(d1, d2);
     }
 }

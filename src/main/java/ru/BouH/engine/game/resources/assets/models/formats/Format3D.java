@@ -57,12 +57,12 @@ public class Format3D implements IFormat {
         return new Format3D(new Vector3d(this.getPosition()), new Vector3d(this.getRotation()), new Vector3d(this.getScale()));
     }
 
-    public void setOrientedToView(boolean orientedToView) {
-        isOrientedToView = orientedToView;
-    }
-
     @Override
     public boolean isOrientedToViewMatrix() {
         return this.isOrientedToView;
+    }
+
+    public void setOrientedToView(boolean orientedToView) {
+        isOrientedToView = orientedToView;
     }
 }

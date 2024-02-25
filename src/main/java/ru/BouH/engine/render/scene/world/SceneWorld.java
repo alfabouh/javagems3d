@@ -23,16 +23,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class SceneWorld implements IWorld {
-    private int ticks;
-    private float elapsedRenderTicks;
     public static final double RENDER_TICKS_UPD_RATE = 60.0d;
-    private double lastRenderTicksUpdate = Game.glfwTime();
     private final List<IModeledSceneObject> toRenderList;
     private final Set<LiquidObject> liquids;
     private final Deque<Pair<WorldItem, RenderObjectData>> toAddRenderObjectQueue;
     private final Deque<Pair<WorldItem, Light>> toAddObjectLightQueue;
     private final Environment environment;
     private final World world;
+    private int ticks;
+    private float elapsedRenderTicks;
+    private double lastRenderTicksUpdate = Game.glfwTime();
     private FrustumCulling frustumCulling;
 
     public SceneWorld(World world) {
@@ -112,10 +112,6 @@ public final class SceneWorld implements IWorld {
         }
     }
 
-    public int getTicks() {
-        return this.ticks;
-    }
-
     public void addPhysEntity(PhysicsObject physicsObject) {
         physicsObject.onSpawn(this);
         this.addRenderObjectInScene(physicsObject);
@@ -174,13 +170,17 @@ public final class SceneWorld implements IWorld {
         this.ticks += 1;
     }
 
-    public float getElapsedRenderTicks() {
-        return this.elapsedRenderTicks;
-    }
-
     @Override
     public void onWorldEnd() {
         this.removeAllEntities();
+    }
+
+    public int getTicks() {
+        return this.ticks;
+    }
+
+    public float getElapsedRenderTicks() {
+        return this.elapsedRenderTicks;
     }
 
     public void updateToAddQueue() {

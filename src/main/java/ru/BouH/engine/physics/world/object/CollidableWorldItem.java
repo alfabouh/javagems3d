@@ -1,35 +1,37 @@
 package ru.BouH.engine.physics.world.object;
 
-import org.bytedeco.bullet.BulletCollision.btBvhTriangleMeshShape;
-import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 import org.bytedeco.bullet.BulletCollision.btCollisionShape;
 import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.bytedeco.bullet.LinearMath.btDefaultMotionState;
 import org.bytedeco.bullet.LinearMath.btMotionState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
-import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.physics.collision.AbstractCollision;
 import ru.BouH.engine.physics.entities.BodyGroup;
+import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.proxy.IWorld;
 
 public abstract class CollidableWorldItem extends WorldItem implements JBulletEntity {
+    private final EntityState entityState;
     private final Vector3d startTranslation;
     private final Vector3d startRotation;
     private final RigidBodyObject.PhysProperties properties;
     private RigidBodyObject rigidBodyObject;
     private RigidBodyConstructor rigidBodyConstructor;
-    private boolean isInWater;
 
     public CollidableWorldItem(World world, RigidBodyObject.PhysProperties properties, double scale, @NotNull Vector3d startTranslation, @NotNull Vector3d startRotation, String itemName) {
         super(world, scale, startTranslation, startRotation, itemName);
         this.properties = properties;
         this.startTranslation = startTranslation;
         this.startRotation = startRotation;
-        this.isInWater = false;
+        this.entityState = new EntityState();
+    }
+
+    public EntityState entityState() {
+        return this.entityState;
     }
 
     protected abstract AbstractCollision constructCollision();
@@ -39,40 +41,32 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         this.constructRigidBody();
     }
 
-    public boolean isInWater() {
-        return this.isInWater;
-    }
-
-    public void setInWater(boolean inWater) {
-        isInWater = inWater;
-    }
-
     public Vector3d getPosition() {
-        return new Vector3d(this.getRigidBodyObject().getTranslation());
+        return new Vector3d(this.getBulletObject().getTranslation());
     }
 
     public void setPosition(Vector3d vector3d) {
-        this.getRigidBodyObject().setTranslation(vector3d);
+        this.getBulletObject().setTranslation(vector3d);
     }
 
     public Vector3d getRotation() {
-        return new Vector3d(this.getRigidBodyObject().getRotation());
+        return new Vector3d(this.getBulletObject().getRotation());
     }
 
     public void setRotation(Vector3d vector3d) {
-        this.getRigidBodyObject().setRotation(vector3d);
+        this.getBulletObject().setRotation(vector3d);
     }
 
     public void setScale(double scale) {
         super.setScale(scale);
         if (this.isValid()) {
-            this.getRigidBodyObject().setScaling(scale);
+            this.getBulletObject().setScaling(scale);
         }
     }
 
     protected void constructRigidBody() {
         this.createRigidBody(this.getWorld(), this.startTranslation, this.startRotation, this.getScale(), this.properties);
-        this.addCallBacks(this.getRigidBodyObject());
+        this.addCallBacks(this.getBulletObject());
     }
 
     protected RigidBodyConstructor getRigidBodyConstructor() {
@@ -83,16 +77,16 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         this.rigidBodyConstructor = new RigidBodyConstructor(world, startTranslation, startRotation, scaling, this.constructCollision());
         this.rigidBodyObject = this.getRigidBodyConstructor().buildRigidBody(properties);
         if (this.getBodyIndex().isStatic()) {
-            this.getRigidBodyObject().makeStatic();
+            this.getBulletObject().makeStatic();
         } else {
-            this.getRigidBodyObject().makeDynamic();
+            this.getBulletObject().makeDynamic();
         }
-        world.addInBulletWorld(this.getRigidBodyObject(), this.getBodyIndex());
-        this.getRigidBodyObject().setUserIndex2(this.getItemId());
-        this.getRigidBodyObject().setTranslation(position);
-        this.getRigidBodyObject().setRotation(rotation);
-        this.getRigidBodyObject().updateCollisionObjectState();
-        this.afterRigidBodyCreated(this.getRigidBodyObject());
+        world.addInBulletWorld(this.getBulletObject(), this.getBodyIndex());
+        this.getBulletObject().setUserIndex2(this.getItemId());
+        this.getBulletObject().setTranslation(position);
+        this.getBulletObject().setRotation(rotation);
+        this.getBulletObject().updateCollisionObjectState();
+        this.afterRigidBodyCreated(this.getBulletObject());
     }
 
     protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
@@ -101,7 +95,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     protected void addCallBacks(RigidBodyObject rigidBodyObject) {
     }
 
-    public RigidBodyObject getRigidBodyObject() {
+    public RigidBodyObject getBulletObject() {
         return this.rigidBodyObject;
     }
 
@@ -111,7 +105,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     }
 
     public void applyCentralForce(Vector3d vector3d) {
-        this.getRigidBodyObject().applyCentralForce(vector3d);
+        this.getBulletObject().applyCentralForce(vector3d);
     }
 
     public double getObjectSpeed() {
@@ -119,15 +113,15 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     }
 
     public Vector3d getObjectVelocity() {
-        return this.getRigidBodyObject().getObjectLinearVelocity();
+        return this.getBulletObject().getObjectLinearVelocity();
     }
 
     public void setObjectVelocity(Vector3d vector3d) {
-        this.getRigidBodyObject().setObjectLinearVelocity(vector3d);
+        this.getBulletObject().setObjectLinearVelocity(vector3d);
     }
 
     public void addObjectVelocity(Vector3d vector3d) {
-        this.getRigidBodyObject().addObjectLinearVelocity(vector3d);
+        this.getBulletObject().addObjectLinearVelocity(vector3d);
     }
 
     public static class RigidBodyConstructor {

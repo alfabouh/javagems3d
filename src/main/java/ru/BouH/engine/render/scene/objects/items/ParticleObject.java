@@ -19,6 +19,20 @@ public class ParticleObject extends EntityObject {
     }
 
     @Override
+    public void onSpawn(IWorld iWorld) {
+        super.onSpawn(iWorld);
+        RenderParticleD2Data renderParticleD2Data = (RenderParticleD2Data) this.getRenderData();
+        ParticleTexturePack particleTexturePack = renderParticleD2Data.getParticleTexturePack();
+        if (particleTexturePack.getAnimationRate() <= 0.0f) {
+            this.currentTexture = Game.random.nextInt(particleTexturePack.getTexturesNum());
+            Material material = new Material();
+            material.setDiffuse(particleTexturePack.getiImageSample()[this.currentTexture]);
+            renderParticleD2Data.setOverObjectMaterial(material);
+        }
+        this.getModel3D().getFormat().setOrientedToView(true);
+    }
+
+    @Override
     public void onUpdate(IWorld iWorld) {
         super.onUpdate(iWorld);
         RenderParticleD2Data renderParticleD2Data = (RenderParticleD2Data) this.getRenderData();
@@ -33,19 +47,5 @@ public class ParticleObject extends EntityObject {
                 this.lastUpdate = curr;
             }
         }
-    }
-
-    @Override
-    public void onSpawn(IWorld iWorld) {
-        super.onSpawn(iWorld);
-        RenderParticleD2Data renderParticleD2Data = (RenderParticleD2Data) this.getRenderData();
-        ParticleTexturePack particleTexturePack = renderParticleD2Data.getParticleTexturePack();
-        if (particleTexturePack.getAnimationRate() <= 0.0f) {
-            this.currentTexture = Game.random.nextInt(particleTexturePack.getTexturesNum());
-            Material material = new Material();
-            material.setDiffuse(particleTexturePack.getiImageSample()[this.currentTexture]);
-            renderParticleD2Data.setOverObjectMaterial(material);
-        }
-        this.getModel3D().getFormat().setOrientedToView(true);
     }
 }

@@ -36,6 +36,13 @@ public final class LiquidObject implements ICullable {
         } else if (size.x < size.z) {
             this.textureScaling.set(new Vector2d(1.0d, size.z / size.x));
         }
+        float sizeBound = 10.0f;
+        if (size.x > sizeBound) {
+            this.textureScaling.mul(size.x / sizeBound, 1.0f);
+        }
+        if (size.z > sizeBound) {
+            this.textureScaling.mul(1.0f, size.z / sizeBound);
+        }
         return MeshHelper.generatePlane3DModel(v1, v2, v3, v4);
     }
 

@@ -5,9 +5,9 @@ import org.joml.Vector3d;
 import ru.BouH.engine.render.screen.window.Window;
 
 public interface IController {
-    Vector2d getRotationInput();
+    Vector2d getNormalizedRotationInput();
 
-    Vector3d getPositionInput();
+    Vector3d getNormalizedPositionInput();
 
     void updateControllerState(Window window);
 }

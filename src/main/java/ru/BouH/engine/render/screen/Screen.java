@@ -54,6 +54,10 @@ public class Screen {
         GL30.glViewport(0, 0, dim.x, dim.y);
     }
 
+    public static boolean isInFocus() {
+        return Game.getGame().getScreen().getWindow().isInFocus();
+    }
+
     public void initScreen() {
         this.scene = new Scene(this, new SceneWorld(Game.getGame().getPhysicsWorld()));
         this.fillScene(this.getScene());
@@ -223,10 +227,6 @@ public class Screen {
             GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();
         }
-    }
-
-    public static boolean isInFocus() {
-        return Game.getGame().getScreen().getWindow().isInFocus();
     }
 
     private void inLoop(double delta) throws InterruptedException {

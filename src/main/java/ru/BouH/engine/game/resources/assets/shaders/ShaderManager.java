@@ -2,7 +2,6 @@ package ru.BouH.engine.game.resources.assets.shaders;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4d;
-import org.joml.Vector3d;
 import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -14,7 +13,6 @@ import ru.BouH.engine.game.resources.assets.materials.textures.ISample;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
-import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.shadow.CascadeShadow;
 import ru.BouH.engine.render.environment.shadow.PointLightShadow;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
@@ -24,6 +22,7 @@ import ru.BouH.engine.render.scene.programs.CubeMapProgram;
 import ru.BouH.engine.render.scene.programs.ShaderProgram;
 import ru.BouH.engine.render.scene.programs.UniformBufferProgram;
 import ru.BouH.engine.render.scene.programs.UniformProgram;
+import ru.BouH.engine.render.transformation.TransformationManager;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

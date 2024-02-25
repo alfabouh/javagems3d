@@ -18,13 +18,25 @@ import java.util.stream.Collectors;
 
 public class LightManager implements ILightManager {
     public static final int MAX_POINT_LIGHTS = 128;
+    private final Environment environment;
     private List<PointLight> pointLightList;
     private List<PointLight> activeLights;
-    private final Environment environment;
 
     public LightManager(Environment environment) {
         this.environment = environment;
         this.initCollections();
+    }
+
+    public static Vector3d passVectorInViewSpace(Vector3d in, Matrix4d view, double w) {
+        Vector4d aux = new Vector4d(in, w);
+        aux.mul(view);
+        return new Vector3d(aux.x, aux.y, aux.z);
+    }
+
+    public static Vector3f passVectorInViewSpace(Vector3f in, Matrix4d view, float w) {
+        Vector4d aux = new Vector4d(in, w);
+        aux.mul(view);
+        return new Vector3f((float) aux.x, (float) aux.y, (float) aux.z);
     }
 
     private void initCollections() {
@@ -60,18 +72,6 @@ public class LightManager implements ILightManager {
 
     public List<PointLight> getActiveLights() {
         return this.activeLights;
-    }
-
-    public static Vector3d passVectorInViewSpace(Vector3d in, Matrix4d view, double w) {
-        Vector4d aux = new Vector4d(in, w);
-        aux.mul(view);
-        return new Vector3d(aux.x, aux.y, aux.z);
-    }
-
-    public static Vector3f passVectorInViewSpace(Vector3f in, Matrix4d view, float w) {
-        Vector4d aux = new Vector4d(in, w);
-        aux.mul(view);
-        return new Vector3f((float) aux.x, (float) aux.y, (float) aux.z);
     }
 
     @Override

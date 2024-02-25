@@ -6,6 +6,7 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.physics.entities.BodyGroup;
+import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.CollidableWorldItem;
 import ru.BouH.engine.proxy.IWorld;
@@ -16,7 +17,7 @@ import java.util.Set;
 
 public class SimpleTriggerZone implements ITriggerZone {
     protected final Zone zone;
-    private final Set<CollidableWorldItem> btEnteredBodies;
+    private final Set<JBulletEntity> btEnteredBodies;
     private btGhostObject ghostObject;
     private btCollisionShape collisionShape;
     private ITrigger ITriggerEntering;
@@ -39,12 +40,16 @@ public class SimpleTriggerZone implements ITriggerZone {
         Game.getGame().getLogManager().log("Destroyed ITrigger zone: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
     }
 
-    public BodyGroup getBodyGroup() {
-        return BodyGroup.GHOST;
-    }
-
     public Zone getZone() {
         return this.zone;
+    }
+
+    public btGhostObject triggerZoneGhostCollision() {
+        return this.ghostObject;
+    }
+
+    public BodyGroup getBodyGroup() {
+        return BodyGroup.GHOST;
     }
 
     private void createGhostZone() {
@@ -61,42 +66,38 @@ public class SimpleTriggerZone implements ITriggerZone {
         }
     }
 
-    public btGhostObject triggerZoneGhostCollision() {
-        return this.ghostObject;
-    }
-
     public void onUpdate(IWorld iWorld) {
         World world = (World) iWorld;
-        Set<CollidableWorldItem> temp = new HashSet<>();
-        for (CollidableWorldItem collidableWorldItem : world.getAllBulletItems()) {
+        Set<JBulletEntity> temp = new HashSet<>();
+        for (JBulletEntity bullet : world.getAllBulletItems()) {
             btOverlappingPairCache btHashedOverlappingPairCache = world.getDynamicsWorld().getPairCache();
-            boolean collided = btHashedOverlappingPairCache.findPair(collidableWorldItem.getRigidBodyObject().getBroadphaseHandle(), this.ghostObject.getBroadphaseHandle()) != null;
+            boolean collided = btHashedOverlappingPairCache.findPair(bullet.getBulletObject().getBroadphaseHandle(), this.ghostObject.getBroadphaseHandle()) != null;
             if (collided) {
-                this.onEnter(collidableWorldItem);
-                temp.add(collidableWorldItem);
+                this.onEnter(bullet);
+                temp.add(bullet);
             }
             btHashedOverlappingPairCache.deallocate();
         }
         if (!this.btEnteredBodies.isEmpty()) {
-            for (CollidableWorldItem collidableWorldItem : temp) {
-                this.btEnteredBodies.remove(collidableWorldItem);
+            for (JBulletEntity bullet : temp) {
+                this.btEnteredBodies.remove(bullet);
             }
-            Iterator<CollidableWorldItem> collidableWorldItemIterator = this.btEnteredBodies.iterator();
+            Iterator<JBulletEntity> collidableWorldItemIterator = this.btEnteredBodies.iterator();
             while (collidableWorldItemIterator.hasNext()) {
-                CollidableWorldItem collidableWorldItem = collidableWorldItemIterator.next();
-                this.onLeave(collidableWorldItem);
+                JBulletEntity bullet = collidableWorldItemIterator.next();
+                this.onLeave(bullet);
                 collidableWorldItemIterator.remove();
             }
         }
         this.btEnteredBodies.addAll(temp);
     }
 
-    public void onEnter(CollidableWorldItem collidableWorldItem) {
-        this.getTriggerEntering().trigger(collidableWorldItem);
+    public void onEnter(JBulletEntity entity) {
+        this.getTriggerEntering().trigger(entity);
     }
 
-    public void onLeave(CollidableWorldItem collidableWorldItem) {
-        this.getTriggerLeaving().trigger(collidableWorldItem);
+    public void onLeave(JBulletEntity entity) {
+        this.getTriggerLeaving().trigger(entity);
     }
 
     public ITrigger getTriggerEntering() {

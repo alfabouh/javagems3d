@@ -5,8 +5,6 @@ import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
-import ru.BouH.engine.render.environment.shadow.ShadowScene;
-import ru.BouH.engine.render.scene.Scene;
 
 import java.nio.ByteBuffer;
 

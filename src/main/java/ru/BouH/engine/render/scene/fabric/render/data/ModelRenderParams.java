@@ -10,6 +10,7 @@ public final class ModelRenderParams {
     private boolean shadowCaster;
     private boolean shadowReceiver;
     private boolean hasTransparency;
+    private float alphaDiscardValue;
     private boolean isBright;
     private Vector2d textureScaling;
     private ShaderManager shaderManager;
@@ -23,6 +24,7 @@ public final class ModelRenderParams {
         this.lightOpaque = true;
         this.isBright = false;
         this.renderDistance = -1.0f;
+        this.alphaDiscardValue = 0.0f;
         this.textureScaling = new Vector2d(1.0d);
     }
 
@@ -35,21 +37,6 @@ public final class ModelRenderParams {
         return this;
     }
 
-    public ModelRenderParams setRenderDistance(float renderDistance) {
-        this.renderDistance = renderDistance;
-        return this;
-    }
-
-    public ModelRenderParams setTextureScaling(Vector2d textureScaling) {
-        this.textureScaling = textureScaling;
-        return this;
-    }
-
-    public ModelRenderParams setLightOpaque(boolean lightOpaque) {
-        this.lightOpaque = lightOpaque;
-        return this;
-    }
-
     public boolean isBright() {
         return this.isBright;
     }
@@ -59,49 +46,73 @@ public final class ModelRenderParams {
         return this;
     }
 
-    public void setShaderManager(@NotNull ShaderManager shaderManager) {
-        this.shaderManager = shaderManager;
+    public boolean isHasTransparency() {
+        return this.hasTransparency;
     }
 
     public void setHasTransparency(boolean hasTransparency) {
         this.hasTransparency = hasTransparency;
     }
 
-    public void setShadowCaster(boolean shadowCaster) {
-        this.shadowCaster = shadowCaster;
-    }
-
-    public void setShadowReceiver(boolean shadowReceiver) {
-        this.shadowReceiver = shadowReceiver;
-    }
-
-    public boolean isHasTransparency() {
-        return this.hasTransparency;
-    }
-
     public boolean isLightOpaque() {
         return this.lightOpaque;
+    }
+
+    public ModelRenderParams setLightOpaque(boolean lightOpaque) {
+        this.lightOpaque = lightOpaque;
+        return this;
     }
 
     public boolean isShadowCaster() {
         return this.shadowCaster;
     }
 
+    public void setShadowCaster(boolean shadowCaster) {
+        this.shadowCaster = shadowCaster;
+    }
+
     public boolean isShadowReceiver() {
         return this.shadowReceiver;
+    }
+
+    public void setShadowReceiver(boolean shadowReceiver) {
+        this.shadowReceiver = shadowReceiver;
     }
 
     public Vector2d getTextureScaling() {
         return new Vector2d(this.textureScaling);
     }
 
+    public ModelRenderParams setTextureScaling(Vector2d textureScaling) {
+        this.textureScaling = textureScaling;
+        return this;
+    }
+
+    public float getAlphaDiscardValue() {
+        return this.alphaDiscardValue;
+    }
+
+    public ModelRenderParams setAlphaDiscard(float f) {
+        this.alphaDiscardValue = f;
+        return this;
+    }
+
     public float getRenderDistance() {
         return this.renderDistance;
+    }
+
+    public ModelRenderParams setRenderDistance(float renderDistance) {
+        this.renderDistance = renderDistance;
+        return this;
     }
 
     @NotNull
     public ShaderManager getShaderManager() {
         return this.shaderManager;
+    }
+
+    public void setShaderManager(@NotNull ShaderManager shaderManager) {
+        this.shaderManager = shaderManager;
     }
 
     public ModelRenderParams copy() {
@@ -110,6 +121,7 @@ public final class ModelRenderParams {
         modelRenderParams.setTextureScaling(this.getTextureScaling());
         modelRenderParams.setBright(this.isBright());
         modelRenderParams.setRenderDistance(this.getRenderDistance());
+        modelRenderParams.setAlphaDiscard(this.getAlphaDiscardValue());
         return modelRenderParams;
     }
 }

@@ -8,15 +8,15 @@ import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.render.frustum.RenderABB;
-import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
+import ru.BouH.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
 
 public abstract class AbstractSceneObject implements IModeledSceneObject {
+    private final IRenderFabric renderFabric;
     private Material overObjectMaterial;
     private Model<Format3D> model;
     private ModelRenderParams modelRenderParams;
-    private final IRenderFabric renderFabric;
     private RenderABB renderABB;
     private boolean canBeCulled;
     private boolean isVisible;
@@ -31,21 +31,13 @@ public abstract class AbstractSceneObject implements IModeledSceneObject {
         this.overObjectMaterial = null;
     }
 
-    public AbstractSceneObject setOverObjectMaterial(Material overObjectMaterial) {
-        this.overObjectMaterial = overObjectMaterial;
-        return this;
-    }
-
     public Material getOverObjectMaterial() {
         return this.overObjectMaterial;
     }
 
-    public boolean isVisible() {
-        return this.isVisible;
-    }
-
-    public void setVisible(boolean visible) {
-        isVisible = visible;
+    public AbstractSceneObject setOverObjectMaterial(Material overObjectMaterial) {
+        this.overObjectMaterial = overObjectMaterial;
+        return this;
     }
 
     public void setRenderAAB(Vector3d size) {
@@ -69,10 +61,6 @@ public abstract class AbstractSceneObject implements IModeledSceneObject {
         this.getModelRenderParams().setTextureScaling(textureScaling);
     }
 
-    public ModelRenderParams getModelRenderParams() {
-        return this.modelRenderParams;
-    }
-
     public AbstractSceneObject setModelRenderConstraints(ModelRenderParams modelRenderParams) {
         this.modelRenderParams = modelRenderParams;
         return this;
@@ -85,6 +73,18 @@ public abstract class AbstractSceneObject implements IModeledSceneObject {
 
     public Model<Format3D> getModel3D() {
         return this.model;
+    }
+
+    public ModelRenderParams getModelRenderParams() {
+        return this.modelRenderParams;
+    }
+
+    public boolean isVisible() {
+        return this.isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 
     @Override

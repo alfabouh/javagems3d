@@ -1,10 +1,12 @@
 package ru.BouH.engine.game;
 
+import javassist.*;
+import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.lwjgl.glfw.GLFW;
 import ru.BouH.engine.game.jframe.ProgressBar;
 import ru.BouH.engine.game.logger.GameLogging;
 import ru.BouH.engine.game.resources.ResourceManager;
-import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
+import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
 import ru.BouH.engine.proxy.Proxy;
@@ -12,11 +14,14 @@ import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.lang.instrument.UnmodifiableClassException;
+import java.lang.reflect.Method;
 import java.util.Random;
 
 public class Game {
-    public static final String build = "10.02.2024";
+    public static final String build = "26.02.2024";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;
@@ -28,9 +33,10 @@ public class Game {
     private boolean shouldBeClosed = false;
 
     private Game() {
+        this.logManager = new GameLogging();
+        //this.hack();
         Game.rngSeed = Game.systemTime();
         Game.random = new Random(Game.rngSeed);
-        this.logManager = new GameLogging();
         this.physicThreadManager = new PhysicThreadManager(PhysicThreadManager.TICKS_PER_SECOND);
         this.screen = new Screen();
         this.proxy = new Proxy(this.getPhysicThreadManager().getPhysicsTimer(), this.getScreen());
@@ -71,6 +77,33 @@ public class Game {
         Game.getGame().getEngineSystem().startSystem();
     }
 
+    public void hack() {
+        this.logManager.log("Bytecode hacking...");
+        try {
+            this.systemHack();
+        } catch (NotFoundException | CannotCompileException | IOException | ClassNotFoundException |
+                 UnmodifiableClassException e) {
+            throw new RuntimeException(e);
+        }
+        this.logManager.log("Bytecode hacked...");
+    }
+
+    private void systemHack() throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException, UnmodifiableClassException {
+        ClassPool classPool = ClassPool.getDefault();
+
+        CtClass ctClass = classPool.get("org.bytedeco.bullet.presets.BulletCollision");
+        CtMethod ctMethod = ctClass.getDeclaredMethod("map");
+
+        ctMethod.insertAfter("System.out.println(\"F\");");
+        ctClass.toClass();
+
+        for (Method method : btCollisionWorld.ContactResultCallback.class.getMethods()) {
+            for (java.lang.annotation.Annotation annotation : method.getDeclaredAnnotations()) {
+                System.out.println(annotation);
+            }
+        }
+    }
+
     public ResourceManager getResourceManager() {
         return this.getEngineSystem().getResourceManager();
     }
@@ -96,7 +129,7 @@ public class Game {
         return this.getScreen().getRenderWorld();
     }
 
-    public EntityPlayerSP getPlayerSP() {
+    public IPlayer getPlayerSP() {
         return this.getProxy().getPlayerSP();
     }
 
@@ -185,7 +218,7 @@ public class Game {
             World world = Game.getGame().getPhysicsWorld();
             Game.getGame().getLogManager().log("Populating environment...");
             GameEvents.populate(world);
-            Game.getGame().getProxy().getLocalPlayer().addPlayerInWorlds(Game.getGame().getProxy());
+            Game.getGame().getProxy().getLocalPlayer().addPlayerInWorlds(Game.getGame().getPhysicsWorld().getDynamicsWorld());
             Game.getGame().getLogManager().log("Environment populated!");
         }
 

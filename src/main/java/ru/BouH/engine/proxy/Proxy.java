@@ -1,10 +1,9 @@
 package ru.BouH.engine.proxy;
 
 import org.joml.Vector3d;
-import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.physics.entities.PhysEntity;
-import ru.BouH.engine.physics.entities.player.EntityPlayerSP;
+import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.world.object.WorldItem;
@@ -26,7 +25,7 @@ public class Proxy {
     }
 
     public void createLocalPlayer() {
-        this.localPlayer = new LocalPlayer(this.physicsTimer.getWorld(), new Vector3d(0.0d, 1.0d, 0.0d));
+        this.localPlayer = new LocalPlayer(this.physicsTimer.getWorld(), new Vector3d(0.0d, 2.0d, 0.0d));
     }
 
     public void addItemInWorlds(WorldItem worldItem, RenderObjectData renderData) {
@@ -70,7 +69,7 @@ public class Proxy {
         return this.localPlayer;
     }
 
-    public EntityPlayerSP getPlayerSP() {
+    public IPlayer getPlayerSP() {
         return this.getLocalPlayer().getEntityPlayerSP();
     }
 

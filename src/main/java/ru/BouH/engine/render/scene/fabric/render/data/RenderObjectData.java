@@ -21,12 +21,39 @@ public class RenderObjectData {
     private Material overObjectMaterial;
     private ModelRenderParams modelRenderParams;
 
-    public RenderObjectData(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ShaderManager shaderManager) {
+    public RenderObjectData(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ShaderManager shaderManager, MeshDataGroup meshDataGroup) {
         this.aClass = aClass;
         this.renderFabric = renderFabric;
         this.overObjectMaterial = null;
         this.entityModelConstructor = null;
+        this.meshDataGroup = meshDataGroup;
         this.modelRenderParams = ModelRenderParams.defaultModelRenderConstraints(shaderManager);
+    }
+
+    public RenderObjectData(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ModelRenderParams modelRenderParams, MeshDataGroup meshDataGroup) {
+        this.aClass = aClass;
+        this.renderFabric = renderFabric;
+        this.overObjectMaterial = null;
+        this.entityModelConstructor = null;
+        this.meshDataGroup = meshDataGroup;
+        this.modelRenderParams = modelRenderParams.copy();
+    }
+
+    public RenderObjectData(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ShaderManager shaderManager) {
+        this(renderFabric, aClass, shaderManager, null);
+    }
+
+    public RenderObjectData(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ModelRenderParams modelRenderParams) {
+        this.aClass = aClass;
+        this.renderFabric = renderFabric;
+        this.overObjectMaterial = null;
+        this.entityModelConstructor = null;
+        this.meshDataGroup = null;
+        this.modelRenderParams = modelRenderParams.copy();
+    }
+
+    public RenderObjectData(@NotNull RenderObjectData renderObjectData, MeshDataGroup meshDataGroup) {
+        this(renderObjectData.getRenderFabric(), renderObjectData.getRenderClass(), renderObjectData.getModelRenderParams(), meshDataGroup);
     }
 
     public PhysicsObject constructPhysicsObject(SceneWorld sceneWorld, WorldItem worldItem) {
@@ -35,8 +62,7 @@ public class RenderObjectData {
             PhysicsObject physicsObject = this.aClass.getDeclaredConstructor(SceneWorld.class, WorldItem.class, RenderObjectData.class).newInstance(sceneWorld, worldItem, renderObjectData);
             this.onPhysicsObjectCreated(physicsObject);
             return physicsObject;
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                 InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
@@ -99,12 +125,11 @@ public class RenderObjectData {
     }
 
     protected RenderObjectData copyObject() {
-        RenderObjectData renderObjectData = new RenderObjectData(this.getRenderFabric(), this.getRenderClass(), this.getModelRenderParams().getShaderManager());
+        RenderObjectData renderObjectData = new RenderObjectData(this.getRenderFabric(), this.getRenderClass(), this.getModelRenderParams());
         renderObjectData.setMeshDataGroup(this.getMeshDataGroup());
         renderObjectData.setModelTextureScaling(this.getModelTextureScaling());
         renderObjectData.setOverObjectMaterial(this.getOverObjectMaterial());
         renderObjectData.setEntityModelConstructor(this.getEntityModelConstructor());
-        renderObjectData.setModelRenderParams(this.getModelRenderParams().copy());
         return renderObjectData;
     }
 }

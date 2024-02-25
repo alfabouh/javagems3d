@@ -2,10 +2,11 @@ package ru.BouH.engine.game.controller.binding;
 
 import org.lwjgl.glfw.GLFW;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.components.FunctionalKey;
 import ru.BouH.engine.game.controller.components.IKeyAction;
 import ru.BouH.engine.game.controller.components.Key;
+import ru.BouH.engine.game.controller.input.IController;
+import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.scene.world.camera.FreeCamera;
@@ -71,11 +72,11 @@ public class BindingList {
                             Game.getGame().getScreen().getScene().enableFreeCamera(controller, attachedCamera.getCamPosition(), attachedCamera.getCamRotation());
                             Game.getGame().getScreen().getControllerDispatcher().detachController();
                         } else if (camera instanceof FreeCamera) {
-                            Game.getGame().getScreen().getScene().enableAttachedCamera(Game.getGame().getPlayerSP());
+                            Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) Game.getGame().getPlayerSP());
                             Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(controller, Game.getGame().getPlayerSP());
                         }
                     } else {
-                        Game.getGame().getScreen().getScene().enableAttachedCamera(Game.getGame().getPlayerSP());
+                        Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) Game.getGame().getPlayerSP());
                     }
                 }
             }

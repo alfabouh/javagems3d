@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FBOTexture2DProgram {
-    private int frameBufferId;
-    private int renderBufferId;
     private final List<ITextureProgram> texturePrograms;
     private final boolean drawColor;
     private final boolean aliasing;
+    private int frameBufferId;
+    private int renderBufferId;
 
     public FBOTexture2DProgram(boolean drawColor, boolean aliasing) {
         this.texturePrograms = new ArrayList<>();

@@ -1,8 +1,10 @@
 package ru.BouH.engine.physics.entities;
 
+import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import ru.BouH.engine.physics.brush.WorldBrush;
+import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.CollidableWorldItem;
@@ -37,6 +39,14 @@ public abstract class PhysEntity extends CollidableWorldItem implements IWorldDy
         this.velocityVector.set(vector3d);
     }
 
+    public void setDebugDrawing(boolean flag) {
+        if (flag) {
+            this.getBulletObject().setCollisionFlags(this.getBulletObject().getCollisionFlags() & ~btCollisionObject.CF_DISABLE_VISUALIZE_OBJECT);
+        } else {
+            this.getBulletObject().setCollisionFlags(this.getBulletObject().getCollisionFlags() | btCollisionObject.CF_DISABLE_VISUALIZE_OBJECT);
+        }
+    }
+
     @Override
     public void onUpdate(IWorld world) {
         if (this.isValid()) {
@@ -46,10 +56,10 @@ public abstract class PhysEntity extends CollidableWorldItem implements IWorldDy
                 this.setPosition(new Vector3d(0, 5, 0));
                 this.setObjectVelocity(new Vector3d(0.0d));
             }
-            if (this.isInWater()) {
+            if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
                 if (!(this instanceof WorldBrush)) {
-                    this.getRigidBodyObject().setObjectLinearVelocity(this.getRigidBodyObject().getObjectLinearVelocity().mul(0.9f));
-                    this.getRigidBodyObject().activateObject();
+                    this.getBulletObject().setObjectLinearVelocity(this.getBulletObject().getObjectLinearVelocity().mul(0.9f));
+                    this.getBulletObject().activateObject();
                 }
             }
         }

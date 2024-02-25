@@ -1,7 +1,7 @@
 package ru.BouH.engine.physics.collision;
 
 import org.bytedeco.bullet.BulletCollision.btCollisionShape;
-import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
 
 public class ModelShape implements AbstractCollision {
@@ -9,13 +9,13 @@ public class ModelShape implements AbstractCollision {
 
     public ModelShape(MeshDataGroup meshDataGroup) {
         this.meshDataGroup = meshDataGroup;
-        if (this.meshDataGroup.getCollisionShape() == null) {
-            Game.getGame().getLogManager().error("MeshDataGroup doesn't keep collision data!");
-        }
     }
 
     @Override
     public btCollisionShape buildCollisionShape(double scale) {
+        if (this.meshDataGroup.getCollisionShape() == null || this.meshDataGroup.getCollisionShape().isNull()) {
+            throw new GameException("MeshDataGroup doesn't keep collision data!");
+        }
         btCollisionShape btCollisionShape = this.meshDataGroup.getCollisionShape();
         btCollisionShape.setLocalScaling(this.getScaling(scale));
         return btCollisionShape;

@@ -2,7 +2,6 @@ package ru.BouH.engine.game.resources.assets.models.formats;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
-import org.joml.Vector3d;
 
 public class Format2D implements IFormat {
     private final Vector2d position;
@@ -58,12 +57,12 @@ public class Format2D implements IFormat {
         return new Format2D(new Vector2d(this.getPosition()), new Vector2d(this.getRotation()), new Vector2d(this.getScale()));
     }
 
-    public void setOrientedToView(boolean orientedToView) {
-        isOrientedToView = orientedToView;
-    }
-
     @Override
     public boolean isOrientedToViewMatrix() {
         return this.isOrientedToView;
+    }
+
+    public void setOrientedToView(boolean orientedToView) {
+        isOrientedToView = orientedToView;
     }
 }

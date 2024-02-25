@@ -16,6 +16,12 @@ public class Key {
     }
 
     public void refreshState(boolean press) {
+        if (this.isClicked) {
+            this.isClicked = false;
+        }
+        if (this.isUnpressed) {
+            this.isUnpressed = false;
+        }
         if (press) {
             this.isClicked = !this.isPressed;
         } else {

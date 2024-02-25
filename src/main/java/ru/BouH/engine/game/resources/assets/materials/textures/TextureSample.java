@@ -2,7 +2,9 @@ package ru.BouH.engine.game.resources.assets.materials.textures;
 
 import com.google.common.io.ByteStreams;
 import org.joml.Vector2d;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -164,14 +166,16 @@ public class TextureSample implements IImageSample {
     }
 
     public void clear() {
-        this.isValid = false;
-        STBImage.stbi_image_free(this.getImageBuffer());
+        if (this.isValid()) {
+            STBImage.stbi_image_free(this.getImageBuffer());
+        }
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
         GL30.glDeleteTextures(this.getTextureId());
+        this.isValid = false;
     }
 
     public boolean isValid() {
-        return this.isValid;
+        return this.isValid && this.getImageBuffer() != null;
     }
 
     public ByteBuffer getImageBuffer() {

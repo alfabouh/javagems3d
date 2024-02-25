@@ -7,11 +7,11 @@ import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.models.mesh.Mesh;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
-import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.programs.CubeMapProgram;
 import ru.BouH.engine.render.scene.scene_render.RenderGroup;
+import ru.BouH.engine.render.transformation.TransformationManager;
 
 public class SkyRender extends SceneRenderBase {
     private static final float[] skyboxPos = {
@@ -44,10 +44,6 @@ public class SkyRender extends SceneRenderBase {
         SkyRender.skyBoxModel = new Model<>(new Format3D(), mesh);
     }
 
-    public void onRender(double partialTicks) {
-        SkyRender.renderCubeMapSkyBox(this.getSceneWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture());
-    }
-
     public static void renderCubeMapSkyBox(CubeMapProgram cubeMapProgram) {
         ShaderManager shaderManager = ResourceManager.shaderAssets.skybox;
         Model<Format3D> model = SkyRender.skyBoxModel;
@@ -65,6 +61,10 @@ public class SkyRender extends SceneRenderBase {
         shaderManager.unBind();
         GL30.glDepthFunc(GL30.GL_LESS);
         GL30.glEnable(GL30.GL_CULL_FACE);
+    }
+
+    public void onRender(double partialTicks) {
+        SkyRender.renderCubeMapSkyBox(this.getSceneWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture());
     }
 
     @Override

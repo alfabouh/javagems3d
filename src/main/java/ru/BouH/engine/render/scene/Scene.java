@@ -1,6 +1,8 @@
 package ru.BouH.engine.render.scene;
 
-import org.joml.*;
+import org.joml.Vector2d;
+import org.joml.Vector2i;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
@@ -21,8 +23,6 @@ import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
 import ru.BouH.engine.proxy.LocalPlayer;
 import ru.BouH.engine.render.environment.Environment;
-import ru.BouH.engine.render.scene.scene_render.groups.DebugRender;
-import ru.BouH.engine.render.transformation.TransformationManager;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.frustum.FrustumCulling;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
@@ -34,8 +34,8 @@ import ru.BouH.engine.render.scene.world.camera.FreeCamera;
 import ru.BouH.engine.render.scene.world.camera.ICamera;
 import ru.BouH.engine.render.screen.Screen;
 import ru.BouH.engine.render.screen.window.Window;
+import ru.BouH.engine.render.transformation.TransformationManager;
 
-import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,13 +44,13 @@ import java.util.stream.Collectors;
 
 public class Scene implements IScene {
     public static boolean testTrigger = false;
+    public static float elapsedRenderTicks;
     private final List<SceneRenderBase> sceneRenderBases;
     private final Screen screen;
     private final Window window;
     private final SceneWorld sceneWorld;
     private final FrustumCulling frustumCulling;
     private final SceneRenderConveyor sceneRenderConveyor;
-    public static float elapsedRenderTicks;
     private double elapsedTime;
     private List<SceneRenderBase> mainGroup;
     private List<SceneRenderBase> sideGroup;
@@ -123,7 +123,6 @@ public class Scene implements IScene {
         Scene scene = Game.getGame().getScreen().getScene();
         if (sceneObject != null) {
             Model<Format3D> model = sceneObject.getModel3D();
-
             if (model == null || model.getMeshDataGroup() == null) {
                 return;
             }
@@ -132,6 +131,12 @@ public class Scene implements IScene {
             shaderManager.getUtils().performConstraintsOnShader(sceneObject.getModelRenderParams());
             if (shaderManager.checkUniformInGroup("texture_scaling")) {
                 shaderManager.performUniform("texture_scaling", sceneObject.getModelRenderParams().getTextureScaling());
+            }
+            if (shaderManager.checkUniformInGroup("alpha_discard")) {
+                shaderManager.performUniform("alpha_discard", sceneObject.getModelRenderParams().getAlphaDiscardValue());
+            }
+            if (sceneObject.getModelRenderParams().getAlphaDiscardValue() > 0) {
+                GL30.glDisable(GL30.GL_BLEND);
             }
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
                 shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial(), sceneObject.getModelRenderParams().isShadowReceiver());
@@ -145,11 +150,16 @@ public class Scene implements IScene {
                 }
                 GL30.glBindVertexArray(0);
             }
+            GL30.glEnable(GL30.GL_BLEND);
         }
     }
 
     public static void activeGlTexture(int code) {
         GL30.glActiveTexture(GL13.GL_TEXTURE0 + code);
+    }
+
+    public static ShaderManager getGameUboShader() {
+        return ResourceManager.shaderAssets.gameUbo;
     }
 
     public void addSceneRenderBase(SceneRenderBase sceneRenderBase) {
@@ -191,12 +201,13 @@ public class Scene implements IScene {
     }
 
     public void preRender() {
+        Game.getGame().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.setupBuffers();
         this.getSceneWorld().updateToAddQueue();
         this.collectRenderBases();
         ResourceManager.shaderAssets.startShaders();
         this.getSceneWorld().setFrustumCulling(this.getFrustumCulling());
         if (LocalPlayer.VALID_PL) {
-            this.enableAttachedCamera(Game.getGame().getPlayerSP());
+            this.enableAttachedCamera((WorldItem) Game.getGame().getPlayerSP());
         }
         Game.getGame().getLogManager().log("Starting scene rendering: ");
         this.getSceneRender().onStartRender();
@@ -205,6 +216,20 @@ public class Scene implements IScene {
             sceneRenderBase.onStartRender();
             Game.getGame().getLogManager().log("Scene " + sceneRenderBase.getRenderGroup().getId() + " successfully started!");
         }
+    }
+
+    public void postRender() {
+        Game.getGame().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.cleanup();
+        Game.getGame().getLogManager().log("Stopping scene rendering: ");
+        this.getSceneRender().onStopRender();
+        for (SceneRenderBase sceneRenderBase : this.getRenderQueueContainer()) {
+            Game.getGame().getLogManager().log("Stopping " + sceneRenderBase.getRenderGroup().getId() + " scene");
+            sceneRenderBase.onStopRender();
+            Game.getGame().getLogManager().log("Scene " + sceneRenderBase.getRenderGroup().getId() + " successfully stopped!");
+        }
+        Game.getGame().getLogManager().log("Destroying resources!");
+        Game.getGame().getResourceManager().destroy();
+        Game.getGame().getLogManager().log("Scene rendering stopped");
     }
 
     public void onWindowResize(Vector2i dim) {
@@ -216,10 +241,6 @@ public class Scene implements IScene {
         if (this.getSceneRender().CURRENT_POST_RENDER > 3) {
             this.getSceneRender().CURRENT_POST_RENDER = 0;
         }
-    }
-
-    public static ShaderManager getGameUboShader() {
-        return ResourceManager.shaderAssets.gameUbo;
     }
 
     public void enableFreeCamera(IController controller, Vector3d pos, Vector3d rot) {
@@ -275,19 +296,6 @@ public class Scene implements IScene {
         return this.frustumCulling;
     }
 
-    public void postRender() {
-        Game.getGame().getLogManager().log("Stopping scene rendering: ");
-        this.getSceneRender().onStopRender();
-        for (SceneRenderBase sceneRenderBase : this.getRenderQueueContainer()) {
-            Game.getGame().getLogManager().log("Stopping " + sceneRenderBase.getRenderGroup().getId() + " scene");
-            sceneRenderBase.onStopRender();
-            Game.getGame().getLogManager().log("Scene " + sceneRenderBase.getRenderGroup().getId() + " successfully stopped!");
-        }
-        Game.getGame().getLogManager().log("Destroying resources!");
-        Game.getGame().getResourceManager().destroy();
-        Game.getGame().getLogManager().log("Scene rendering stopped");
-    }
-
     public class SceneRenderConveyor {
         private final FBOTexture2DProgram fboBlur;
         private final FBOTexture2DProgram sceneFbo;
@@ -307,7 +315,7 @@ public class Scene implements IScene {
         }
 
         private void initShaders() {
-            this.attachFBO(new Vector2i((int) this.getWindowDimensions().x, (int) this.getWindowDimensions().y));
+            this.attachFBO(new Vector2i(this.getWindowDimensions().x, this.getWindowDimensions().y));
         }
 
         private float[] blurKernels(float sigma) {
@@ -349,7 +357,7 @@ public class Scene implements IScene {
         }
 
         private void updateUbo() {
-            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{ this.getRenderWorld().getElapsedRenderTicks() });
+            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{this.getRenderWorld().getElapsedRenderTicks()});
             Environment environment = this.getRenderWorld().getEnvironment();
             FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(4);
             value1Buffer.put(environment.getFog().getDensity());
@@ -378,7 +386,7 @@ public class Scene implements IScene {
             GL30.glDisable(GL30.GL_DEPTH_TEST);
 
             this.mixFbo.bindFBO();
-            this.sceneFbo.copyFBOtoFBO(this.mixFbo.getFrameBufferId(), new int[] {GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, this.getWindowDimensions());
+            this.sceneFbo.copyFBOtoFBO(this.mixFbo.getFrameBufferId(), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, this.getWindowDimensions());
             this.mixFbo.unBindFBO();
 
             this.twoPassBlurShader(partialTicks, model);

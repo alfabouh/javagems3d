@@ -73,7 +73,7 @@ public class Window {
     }
 
     public void refreshFocusState() {
-        GLFW.glfwSetInputMode(this.getDescriptor(), GLFW.GLFW_CURSOR, !this.isInFocus() ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_HIDDEN);
+        GLFW.glfwSetInputMode(this.getDescriptor(), GLFW.GLFW_CURSOR, !this.isInFocus() ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_DISABLED);
     }
 
     public int monitorRefreshRate() {

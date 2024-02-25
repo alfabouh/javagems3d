@@ -66,7 +66,7 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public void onSpawn(IWorld iWorld) {
-        this.spawnTick = ((World) iWorld).getTicks();
+        this.spawnTick = iWorld.getTicks();
         if (!this.isParticle()) {
             Game.getGame().getLogManager().log("Add entity in world - [ " + this + " ]");
         }
