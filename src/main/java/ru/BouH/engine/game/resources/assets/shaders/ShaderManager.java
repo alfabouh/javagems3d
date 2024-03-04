@@ -6,6 +6,7 @@ import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.materials.textures.ColorSample;
 import ru.BouH.engine.game.resources.assets.materials.textures.IImageSample;
@@ -176,7 +177,7 @@ public final class ShaderManager {
         if (shaderProgram.link()) {
             Game.getGame().getLogManager().log("Shader " + this.getShaderGroup().getId() + " successfully linked");
         } else {
-            Game.getGame().getLogManager().error("Found problems in shader " + this.getShaderGroup().getId());
+            throw new GameException("Found problems in shader " + this.getShaderGroup().getId());
         }
         this.initUniforms(new UniformProgram(this.shaderProgram.getProgramId()));
     }
@@ -220,7 +221,7 @@ public final class ShaderManager {
             if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.getBinding(), uniformBufferObject.getBufferSize())) {
                 Game.getGame().getLogManager().log("[" + this.getShaderGroup().getId() + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             } else {
-                Game.getGame().getLogManager().error("[" + this.getShaderGroup().getId() + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
+                throw new GameException("[" + this.getShaderGroup().getId() + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             }
             this.uniformBufferProgramMap.put(uniformBufferObject, uniformBufferProgram);
         }

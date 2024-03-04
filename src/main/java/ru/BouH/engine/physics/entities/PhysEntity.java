@@ -52,7 +52,7 @@ public abstract class PhysEntity extends CollidableWorldItem implements IWorldDy
         if (this.isValid()) {
             this.addObjectVelocity(this.getVelocityVector());
             this.setVelocityVector(new Vector3d(0.0d));
-            if (this.getPosition().y <= -10 || this.getPosition().y >= 500) {
+            if (this.getPosition().y <= -50 || this.getPosition().y >= 500) {
                 this.setPosition(new Vector3d(0, 5, 0));
                 this.setObjectVelocity(new Vector3d(0.0d));
             }

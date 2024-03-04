@@ -2,7 +2,12 @@ package ru.BouH.engine.game;
 
 import javassist.*;
 import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
+import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL30;
+import ru.BouH.engine.audio.SoundManager;
+import ru.BouH.engine.audio.sound.data.SoundType;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.jframe.ProgressBar;
 import ru.BouH.engine.game.logger.GameLogging;
 import ru.BouH.engine.game.resources.ResourceManager;
@@ -21,10 +26,11 @@ import java.lang.reflect.Method;
 import java.util.Random;
 
 public class Game {
-    public static final String build = "26.02.2024";
+    public static final String build = "04.03.2024";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;
+    private final SoundManager soundManager;
     private final GameLogging logManager;
     private final Screen screen;
     private final PhysicThreadManager physicThreadManager;
@@ -38,8 +44,13 @@ public class Game {
         Game.rngSeed = Game.systemTime();
         Game.random = new Random(Game.rngSeed);
         this.physicThreadManager = new PhysicThreadManager(PhysicThreadManager.TICKS_PER_SECOND);
+        this.soundManager = new SoundManager();
         this.screen = new Screen();
         this.proxy = new Proxy(this.getPhysicThreadManager().getPhysicsTimer(), this.getScreen());
+    }
+
+    public synchronized SoundManager getSoundManager() {
+        return this.soundManager;
     }
 
     public static String getGamePath() {
@@ -51,7 +62,11 @@ public class Game {
     }
 
     public static InputStream loadFileJar(String path) {
-        return Game.class.getResourceAsStream(path);
+        InputStream inputStream = Game.class.getResourceAsStream(path);
+        if (inputStream == null) {
+            throw new GameException("Couldn't find: " + path);
+        }
+        return inputStream;
     }
 
     public static InputStream loadFileJar(String folder, String path) {
@@ -176,6 +191,7 @@ public class Game {
                 try {
                     Game.getGame().shouldBeClosed = false;
                     Game.getGame().getPhysicThreadManager().initService();
+                    Game.getGame().getSoundManager().createSystem();
                     this.preLoading();
                     this.postLoading();
                     Game.getGame().getScreen().startScreen();
@@ -184,6 +200,7 @@ public class Game {
                         PhysicThreadManager.locker.notifyAll();
                     }
                     Game.getGame().getPhysicThreadManager().destroy();
+                    Game.getGame().getSoundManager().destroy();
                     synchronized (EngineStarter.logicLocker) {
                         EngineStarter.logicLocker.notifyAll();
                     }

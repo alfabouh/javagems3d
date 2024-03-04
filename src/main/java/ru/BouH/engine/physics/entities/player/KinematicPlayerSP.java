@@ -1,5 +1,6 @@
 package ru.BouH.engine.physics.entities.player;
 
+import org.apache.logging.log4j.core.util.Transform;
 import org.bytedeco.bullet.BulletCollision.*;
 import org.bytedeco.bullet.BulletDynamics.btKinematicCharacterController;
 import org.bytedeco.bullet.BulletDynamics.btRigidBody;
@@ -9,6 +10,7 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
+import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.game.controller.input.IController;
@@ -26,6 +28,7 @@ import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.PointLight;
+import ru.BouH.engine.render.scene.fabric.render.RenderPlayerSP;
 
 public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEntity, IWorldDynamic {
     private final EntityState entityState;
@@ -43,6 +46,11 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     private final Vector3d walking;
     private final float walkingDamping;
     private final float walkingAcceleration;
+    private JBulletEntity currentSelectedItem;
+    private JBulletEntity wantsToSelect;
+    private boolean wantsToGrab;
+    private final double stepHeight = 0.3f;
+    private final double maxSlope = Math.toRadians(45.0f);
 
     public KinematicPlayerSP(World world, @NotNull Vector3d pos, @NotNull Vector3d rot) {
         super(world, pos, rot, "player_sp");
@@ -50,10 +58,13 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.inputMotion = new Vector3d();
         this.walking = new Vector3d();
         this.stepSpeed = 0.01f;
-        this.jumpHeight = 10.0f;
-        this.walkingDamping = 0.6f;
+        this.jumpHeight = 7.5f;
+        this.walkingDamping = 0.75f;
         this.currentAcceleration = 1.0f;
-        this.walkingAcceleration = 0.1f;
+        this.walkingAcceleration = 0.125f;
+        this.currentSelectedItem = null;
+        this.wantsToSelect = null;
+        this.wantsToGrab = false;
         this.entityState = new EntityState();
     }
 
@@ -67,16 +78,14 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     public void createPlayer() {
         this.chachingGhostObject = new btPairCachingGhostObject();
-        this.collisionShape = new btCapsuleShape(0.3d, 1.0d);
-        this.collisionShape2 = new btCapsuleShape(0.4d, 1.0d);
+        this.collisionShape = new btCapsuleShape(0.4d, 0.6d);
+        this.collisionShape2 = new btCapsuleShape(0.25d, 0.6d);
         this.chachingGhostObject.setCollisionShape(this.collisionShape2);
         this.chachingGhostObject.setCollisionFlags(btCollisionObject.CF_CHARACTER_OBJECT | btCollisionObject.CF_CUSTOM_MATERIAL_CALLBACK | btCollisionObject.CF_HAS_CONTACT_STIFFNESS_DAMPING);
         this.chachingGhostObject.setContactStiffnessAndDamping(RigidBodyObject.STIFFNESS, RigidBodyObject.DAMPING);
-        this.chachingGhostObject.setCcdMotionThreshold(1.0e-6f);
-        this.chachingGhostObject.setCcdSweptSphereRadius(0.3f);
-        this.kinematicCharacterController = new btKinematicCharacterController(this.chachingGhostObject, this.collisionShape, 0.3d, new btVector3(0.0f, 1.0f, 0.0f));
-        this.getKinematicCharacterController().setMaxSlope(Math.toRadians(45.0f));
-        this.getKinematicCharacterController().setMaxPenetrationDepth(0.2d);
+        this.kinematicCharacterController = new btKinematicCharacterController(this.chachingGhostObject, this.collisionShape, this.stepHeight, new btVector3(0.0f, 1.0f, 0.0f));
+        this.getKinematicCharacterController().setMaxSlope(this.maxSlope);
+        this.getKinematicCharacterController().setMaxPenetrationDepth(0.0d);
         this.getKinematicCharacterController().setWalkDirection(new btVector3(0, 0, 0));
         this.getBulletObject().setUserIndex2(this.getItemId());
         this.setCollisionTranslation(position);
@@ -166,10 +175,17 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.jumpCd = jumpCd;
     }
 
+    private void playStepSound() {
+        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_step[Game.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.0f, 0.5f);
+    }
+
     private btVector3 getWalkingSpeed(Vector3d motion) {
         float step = this.getStepSpeed();
         step *= !this.kinematicCharacterController.onGround() ? 0.75f : 1.0f;
         if (new Vector3d(motion.x, 0, motion.z).length() > 0) {
+            if (this.kinematicCharacterController.onGround() && this.getTicksExisted() % 15 == 0) {
+                this.playStepSound();
+            }
             this.walking.set(motion);
             this.walking.normalize();
             this.walking.mul(step, 0.0f, step);
@@ -189,13 +205,29 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     @Override
     public void onUpdate(IWorld iWorld) {
+        Vector3d look = MathHelper.calcLookVector(this.getRotation());
+        this.getKinematicCharacterController().setStepHeight(this.kinematicCharacterController.onGround() ? this.stepHeight : 0.0f);
+        this.getKinematicCharacterController().setMaxSlope(this.kinematicCharacterController.onGround() ? this.maxSlope : 0.0d);
         if (this.getPosition().y <= -50 || this.getPosition().y >= 500) {
             this.setCollisionTranslation(new Vector3d(0, 5, 0));
         }
-
         Vector3d cVector = this.calcControllerMotion();
         btVector3 walking = this.getWalkingSpeed(cVector);
-
+        this.grabTest(look);
+        if (this.currentSelectedItem != null) {
+            if (this.currentSelectedItem != this.wantsToSelect) {
+                this.currentSelectedItem.entityState().removeState(EntityState.StateType.SELECTED_BY_PLAYER);
+                this.currentSelectedItem = null;
+            } else if (this.wantsToGrab) {
+                btRigidBody rigidBody = btRigidBody.upcast(this.currentSelectedItem.getBulletObject());
+                rigidBody.activate();
+                Vector3d impulse = new Vector3d(look).normalize().mul(50.0f);
+                rigidBody.applyCentralImpulse(MathHelper.convert(impulse));
+            }
+        } else if (this.wantsToSelect != null) {
+            this.currentSelectedItem = this.wantsToSelect;
+            this.currentSelectedItem.entityState().setState(EntityState.StateType.SELECTED_BY_PLAYER);
+        }
         if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
             this.getKinematicCharacterController().setGravity(new btVector3(0, -4.0f * 3.0f, 0));
             walking.multiplyPut(0.65d);
@@ -225,9 +257,10 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 rayResultCallback.deallocate();
             }
         } else {
-            this.getKinematicCharacterController().setGravity(new btVector3(0, -9.8f * 3.0f, 0));
+            this.getKinematicCharacterController().setGravity(new btVector3(0, -9.8f * 2.0f, 0));
             if (this.jumpCd-- <= 0) {
                 if (cVector.y > 0 && this.kinematicCharacterController.onGround()) {
+                    this.playStepSound();
                     this.getKinematicCharacterController().jump(new btVector3(0, this.getJumpHeight(), 0));
                     this.jumpCd = 40;
                 }
@@ -235,6 +268,30 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         }
         this.getKinematicCharacterController().setWalkDirection(walking);
         walking.deallocate();
+    }
+
+    private void grabTest(Vector3d look) {
+        this.wantsToSelect = null;
+        look.normalize().mul(5.75f);
+        btVector3 va1 = new btVector3();
+        btVector3 va2 = new btVector3();
+        this.getBulletObject().getCollisionShape().getAabb(this.getBulletObject().getWorldTransform(), va1, va2);
+        btVector3 v1 = new btVector3(this.getPosition().x, this.getPosition().y + this.getEyeHeight(), this.getPosition().z);
+        btVector3 v2 = new btVector3(this.getPosition().x + look.x, this.getPosition().y + this.getEyeHeight() + look.y, this.getPosition().z + look.z);
+        btCollisionWorld.ClosestRayResultCallback rayResultCallback = new btCollisionWorld.ClosestRayResultCallback(v1, v2);
+        rayResultCallback.m_collisionFilterMask(btBroadphaseProxy.DefaultFilter & ~BodyGroup.PlayerFilter & ~BodyGroup.LiquidFilter & ~BodyGroup.GhostFilter);
+        this.getWorld().getDynamicsWorld().rayTest(v1, v2, rayResultCallback);
+        if (rayResultCallback.hasHit()) {
+            if ((rayResultCallback.m_collisionObject().getCollisionFlags() & btCollisionObject.CF_STATIC_OBJECT) == 0) {
+                int id = rayResultCallback.m_collisionObject().getUserIndex2();
+                WorldItem worldItem = this.getWorld().getItemByID(id);
+                this.wantsToSelect = (JBulletEntity) worldItem;
+            }
+        }
+        va1.deallocate();
+        va2.deallocate();
+        v1.deallocate();
+        v2.deallocate();
     }
 
     @Override
@@ -248,8 +305,9 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     @Override
     public void performController(Vector2d rotationInput, Vector3d xyzInput) {
+        this.wantsToGrab = BindingList.instance.keySelection.isPressed();
         if (BindingList.instance.keyBlock1.isClicked()) {
-            PhysLightCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 2.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
+            PhysLightCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 1.25d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(30.0f));
         }
@@ -263,7 +321,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(20.0f));
         }
         if (BindingList.instance.keyBlock3.isClicked()) {
-            PhysEntityCube entityPropInfo = new PhysEntityCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.3d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
+            PhysEntityCube entityPropInfo = new PhysEntityCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube2);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(50.0f));
         }
@@ -297,7 +355,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     @Override
     public double getEyeHeight() {
-        return 0.7d;
+        return 0.45d + Math.sin(RenderPlayerSP.stepBobbing * 0.2f) * 0.1f;
     }
 
     public Vector3d getCameraRotation() {

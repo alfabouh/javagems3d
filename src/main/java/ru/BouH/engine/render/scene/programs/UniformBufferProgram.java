@@ -3,6 +3,7 @@ package ru.BouH.engine.render.scene.programs;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -17,7 +18,7 @@ public class UniformBufferProgram {
         this.uboBlock = GL20.glGenBuffers();
         this.shaderId = shaderId;
         if (this.getUboBlock() == 0) {
-            Game.getGame().getLogManager().error("Could not create uniform-buffer program!");
+            throw new GameException("Could not create uniform-buffer program!");
         }
         this.name = name;
     }

@@ -420,7 +420,7 @@ public class Scene implements IScene {
             this.getShadowScene().renderAllModelsInShadowMap(this.getRenderWorld().getToRenderList());
             Screen.setViewport(Scene.this.getWindowDimensions());
             this.sceneFbo.bindFBO();
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
             GL30.glEnable(GL30.GL_BLEND);
             GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
             this.renderMainScene(partialTicks, mainList);

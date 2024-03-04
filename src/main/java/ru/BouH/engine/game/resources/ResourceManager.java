@@ -1,5 +1,6 @@
 package ru.BouH.engine.game.resources;
 
+import ru.BouH.engine.audio.sound.SoundBuffer;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.assets.*;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
@@ -18,12 +19,17 @@ public class ResourceManager {
     public static ShaderAssetsLoader shaderAssets = null;
     public static ModelAssetsLoader modelAssets = null;
     public static RenderDataLoader renderDataAssets = null;
+    public static SoundAssetsLoader soundAssetsLoader = null;
     private final List<IAssetsLoader> assetsObjects;
     private final GameCache gameCache;
 
     public ResourceManager() {
         this.gameCache = new GameCache();
         this.assetsObjects = new ArrayList<>();
+    }
+
+    public static SoundBuffer createSoundBuffer(String soundName, int soundFormat) {
+        return SoundBuffer.createSoundBuffer(Game.getGame().getResourceManager().getGameCache(), soundName, soundFormat);
     }
 
     public static MeshDataGroup createMesh(String modelPath, String modelName) {
@@ -63,10 +69,12 @@ public class ResourceManager {
         ResourceManager.shaderAssets = new ShaderAssetsLoader();
         ResourceManager.modelAssets = new ModelAssetsLoader();
         ResourceManager.renderDataAssets = new RenderDataLoader();
+        ResourceManager.soundAssetsLoader = new SoundAssetsLoader();
         this.addAssetLoader(ResourceManager.renderAssets);
         this.addAssetLoader(ResourceManager.shaderAssets);
         this.addAssetLoader(ResourceManager.modelAssets);
         this.addAssetLoader(ResourceManager.renderDataAssets);
+        this.addAssetLoader(ResourceManager.soundAssetsLoader);
     }
 
     public void destroy() {
@@ -87,7 +95,6 @@ public class ResourceManager {
     }
 
     private Set<Thread> initAssets() {
-        final Window window = Game.getGame().getScreen().getWindow();
         Set<Thread> set = new HashSet<>();
         Iterator<IAssetsLoader> assetsIterator = this.assetsObjects.iterator();
         while (assetsIterator.hasNext()) {

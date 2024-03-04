@@ -5,6 +5,7 @@ import org.bytedeco.bullet.BulletCollision.btCollisionShape;
 
 public class Capsule implements AbstractCollision {
     private final double size;
+    private btCollisionShape shape;
 
     public Capsule(double size) {
         this.size = size;
@@ -12,7 +13,7 @@ public class Capsule implements AbstractCollision {
 
     @Override
     public btCollisionShape buildCollisionShape(double scale) {
-        btCollisionShape shape = new btCapsuleShape(this.size / 2.0f, this.size);
+        this.shape = new btCapsuleShape(this.size / 2.0f, this.size);
         shape.setLocalScaling(this.getScaling(scale));
         return shape;
     }

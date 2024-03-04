@@ -6,6 +6,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4d;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.render.environment.Environment;
 import ru.BouH.engine.render.scene.Scene;
@@ -51,8 +52,7 @@ public class LightManager implements ILightManager {
         if ((light.lightCode() & Light.POINT_LIGHT) != 0) {
             int i = getActiveLights().size();
             if (i >= LightManager.MAX_POINT_LIGHTS) {
-                Game.getGame().getLogManager().error("Reached point lights limit: " + LightManager.MAX_POINT_LIGHTS);
-                return;
+                throw new GameException("Reached point lights limit: " + LightManager.MAX_POINT_LIGHTS);
             }
             this.getPointLightList().set(i, (PointLight) light);
         }

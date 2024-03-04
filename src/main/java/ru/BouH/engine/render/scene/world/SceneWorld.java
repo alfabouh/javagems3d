@@ -108,7 +108,7 @@ public final class SceneWorld implements IWorld {
             light1.enable();
             this.getEnvironment().getLightManager().addLight(light);
         } catch (GameException e) {
-            Game.getGame().getLogManager().error(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 

@@ -1,6 +1,7 @@
 package ru.BouH.engine.game.resources.assets.models.mesh;
 
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.exception.GameException;
@@ -11,7 +12,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mesh {
+public final class Mesh {
     private final List<Integer> indexes;
     private final List<Integer> attributePointers;
     private final List<Float> attributePositions;
@@ -26,6 +27,7 @@ public class Mesh {
     private int positionVbo;
     private int textureCoordinatesVbo;
     private int normalsVbo;
+    private int avaragedNormalsVbo;
     private int tangentsVbo;
     private int bitangentsVbo;
 
@@ -39,6 +41,7 @@ public class Mesh {
         this.attributePointers = new ArrayList<>();
         this.totalVertices = 0;
         this.vao = 0;
+        this.avaragedNormalsVbo = 0;
         this.indexVbo = 0;
         this.positionVbo = 0;
         this.textureCoordinatesVbo = 0;
@@ -127,13 +130,16 @@ public class Mesh {
         float[] normals = Mesh.reorderFloatsArray(this.attributeNormals);
         float[] tangent = Mesh.reorderFloatsArray(this.attributeTangents);
         float[] bitangent = Mesh.reorderFloatsArray(this.attributeBitangents);
+        float[] avaragedNormals = null;
 
         this.totalVertices = index.length;
+
         FloatBuffer posBuffer = null;
         FloatBuffer texBuffer = null;
         FloatBuffer normalsBuffer = null;
         FloatBuffer tangentBuffer = null;
         FloatBuffer bitangentBuffer = null;
+        FloatBuffer avaragedNormalsBuffer = null;
 
         IntBuffer inxBuffer = MemoryUtil.memAllocInt(index.length);
         inxBuffer.put(index).flip();
@@ -149,6 +155,10 @@ public class Mesh {
         }
 
         if (normals != null) {
+            avaragedNormals = this.avaragedNormals(normals);
+            avaragedNormalsBuffer = MemoryUtil.memAllocFloat(avaragedNormals.length);
+            avaragedNormalsBuffer.put(avaragedNormals).flip();
+
             normalsBuffer = MemoryUtil.memAllocFloat(normals.length);
             normalsBuffer.put(normals).flip();
         }
@@ -186,6 +196,14 @@ public class Mesh {
             this.attributePointers.add(1);
         }
 
+        if (avaragedNormalsBuffer != null) {
+            this.avaragedNormalsVbo = GL30.glGenBuffers();
+            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getAvaragedNormalsVbo());
+            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, avaragedNormalsBuffer, GL30.GL_STATIC_DRAW);
+            GL30.glVertexAttribPointer(5, 3, GL30.GL_FLOAT, false, 0, 0);
+            this.attributePointers.add(5);
+        }
+
         if (normals != null) {
             this.normalsVbo = GL30.glGenBuffers();
             GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getNormalsVbo());
@@ -213,6 +231,7 @@ public class Mesh {
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
 
+        this.memFree(avaragedNormalsBuffer);
         this.memFree(inxBuffer);
         this.memFree(posBuffer);
         this.memFree(texBuffer);
@@ -235,6 +254,47 @@ public class Mesh {
         GL30.glDeleteVertexArrays(this.getVao());
     }
 
+    @SuppressWarnings("all")
+    private float[] avaragedNormals(float[] normals) {
+        int vertexCount = this.getAttributePositions().size() / 3;
+        float[] newArray = new float[vertexCount * 3];
+        List<Vector3f> averagedNormals = new ArrayList<>(vertexCount);
+
+        for (int i = 0; i < vertexCount; i++) {
+            float posX1 = this.getAttributePositions().get(i * 3);
+            float posY1 = this.getAttributePositions().get(i * 3 + 1);
+            float posZ1 = this.getAttributePositions().get(i * 3 + 2);
+            Vector3f vector3f = new Vector3f(0.0f);
+            int normalCount = 0;
+
+            for (int j = 0; j < vertexCount; j++) {
+                float posX2 = this.getAttributePositions().get(j * 3);
+                float posY2 = this.getAttributePositions().get(j * 3 + 1);
+                float posZ2 = this.getAttributePositions().get(j * 3 + 2);
+                float epsilon = 0.0001f;
+                if (Math.abs(posX1 - posX2) < epsilon && Math.abs(posY1 - posY2) < epsilon && Math.abs(posZ1 - posZ2) < epsilon) {
+                    vector3f.add(normals[j * 3], normals[j * 3 + 1], normals[j * 3 + 2]);
+                    normalCount++;
+                }
+            }
+
+            if (normalCount > 0) {
+                vector3f.div(normalCount);
+                vector3f.normalize();
+                averagedNormals.add(vector3f);
+            }
+        }
+
+        for (int i = 0; i < vertexCount; i++) {
+            Vector3f vector3f = averagedNormals.get(i);
+            newArray[i * 3] = vector3f.x;
+            newArray[i * 3 + 1] = vector3f.y;
+            newArray[i * 3 + 2] = vector3f.z;
+        }
+
+        return newArray;
+    }
+
     void memFree(Buffer buffer) {
         if (buffer != null) {
             MemoryUtil.memFree(buffer);
@@ -255,6 +315,10 @@ public class Mesh {
 
     public int getTextureCoordinatesVbo() {
         return this.textureCoordinatesVbo;
+    }
+
+    public int getAvaragedNormalsVbo() {
+        return this.avaragedNormalsVbo;
     }
 
     public int getNormalsVbo() {

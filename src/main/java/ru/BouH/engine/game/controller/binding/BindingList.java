@@ -30,6 +30,7 @@ public class BindingList {
     public final Key keyZ;
     public final Key keyR;
     public final Key keyT;
+    public final Key keySelection;
 
     public BindingList() {
         this.keyA = new Key(GLFW.GLFW_KEY_A);
@@ -42,6 +43,7 @@ public class BindingList {
         this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
         this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
         this.keyClear = new Key(GLFW.GLFW_KEY_X);
+        this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 
         this.keyEsc = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
@@ -103,5 +105,6 @@ public class BindingList {
         Binding.createBinding(this.keyBlock1, "Куб статичный");
         Binding.createBinding(this.keyBlock2, "Куб-фонарь");
         Binding.createBinding(this.keyBlock3, "Куб реалистичный");
+        Binding.createBinding(this.keySelection, "Выбрать объект");
     }
 }

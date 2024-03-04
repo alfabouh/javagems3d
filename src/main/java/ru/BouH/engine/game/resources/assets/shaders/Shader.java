@@ -62,7 +62,7 @@ public class Shader {
                 throw new IOException("Couldn't read shader: " + shaderName);
             }
         } catch (IOException ex) {
-            Game.getGame().getLogManager().error(ex.getMessage());
+            System.err.println(ex.getMessage());
         }
     }
 
@@ -97,7 +97,7 @@ public class Shader {
                 throw new IOException("Couldn't read shader: " + shaderName);
             }
         } catch (IOException ex) {
-            Game.getGame().getLogManager().error(ex.getMessage());
+            System.err.println(ex.getMessage());
         }
         return shaderSource.toString();
     }

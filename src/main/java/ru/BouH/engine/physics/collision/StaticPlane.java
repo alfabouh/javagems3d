@@ -7,6 +7,7 @@ import org.joml.Vector3d;
 
 public class StaticPlane implements AbstractCollision {
     private final Vector3d normal;
+    private btCollisionShape btCollisionShape;
 
     public StaticPlane(Vector3d normal) {
         this.normal = normal;
@@ -14,7 +15,7 @@ public class StaticPlane implements AbstractCollision {
 
     @Override
     public btCollisionShape buildCollisionShape(double scale) {
-        btCollisionShape btCollisionShape = new btStaticPlaneShape(new btVector3(normal.x, normal.y, normal.z), 0.0f);
+        this.btCollisionShape = new btStaticPlaneShape(new btVector3(normal.x, normal.y, normal.z), 0.0f);
         btCollisionShape.setLocalScaling(this.getScaling(scale));
         return btCollisionShape;
     }

@@ -120,7 +120,7 @@ public class ModelLoader {
                         throw new RuntimeException();
                     }
                 } catch (RuntimeException e) {
-                    Game.getGame().getLogManager().error("Error, while loading " + modelPath);
+                    System.err.println("Error, while loading " + modelPath);
                     return null;
                 }
             }
@@ -153,6 +153,7 @@ public class ModelLoader {
             int totalElements = (positions.length / 3) * 2;
             textureCoordinates = new float[totalElements];
         }
+
         Mesh mesh = new Mesh();
         mesh.putIndexValues(vertices);
         mesh.putPositionValues(positions);

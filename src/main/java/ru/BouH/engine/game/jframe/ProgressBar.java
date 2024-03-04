@@ -21,7 +21,7 @@ public class ProgressBar {
         this.frame.add(this.jProgressBar);
         this.frame.setSize(600, 60);
         this.frame.setResizable(false);
-        this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.frame.setLocationRelativeTo(null);
         this.frame.setVisible(true);
     }

@@ -83,13 +83,13 @@ public class PhysicsTimer implements IPhysTimer {
                 Game.EngineStarter.logicLocker.wait();
             }
             while (!Game.getGame().isShouldBeClosed()) {
+                Game.getGame().getSoundManager().update();
                 synchronized (PhysicThreadManager.locker) {
                     PhysicThreadManager.locker.wait();
                 }
                 this.getWorld().onWorldUpdate();
                 synchronized (PhysicsTimer.lock) {
                     discreteDynamicsWorld1.stepSimulation(step, explicit, step / (double) explicit);
-                    //this.pairsTick(discreteDynamicsWorld1);
                     SyncManger.SyncPhysicsAndRender.free();
                 }
 
@@ -213,22 +213,4 @@ public class PhysicsTimer implements IPhysTimer {
         return this.collisionDispatcher;
     }
 
-    public static class OverlapFilterCallback extends Pointer {
-        static {
-            Loader.load();
-        }
-
-        /**
-         * Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}.
-         */
-        public OverlapFilterCallback(Pointer p) {
-            super(p);
-        }
-
-        // return true when pairs need collision
-        public @Cast("bool") boolean needBroadphaseCollision(btBroadphaseProxy proxy0, btBroadphaseProxy proxy1) {
-            System.out.println("F");
-            return true;
-        }
-    }
 }

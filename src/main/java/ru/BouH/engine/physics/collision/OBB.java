@@ -7,6 +7,7 @@ import org.joml.Vector3d;
 
 public class OBB implements AbstractCollision {
     private final Vector3d size;
+    private btCollisionShape shape;
 
     public OBB(Vector3d size) {
         this.size = size;
@@ -19,7 +20,7 @@ public class OBB implements AbstractCollision {
     @Override
     public btCollisionShape buildCollisionShape(double scale) {
         Vector3d vector3d = this.getSize();
-        btCollisionShape shape = new btBoxShape(new btVector3(vector3d.x / 2.0f, vector3d.y / 2.0f, vector3d.z / 2.0f));
+        this.shape = new btBoxShape(new btVector3(vector3d.x / 2.0f, vector3d.y / 2.0f, vector3d.z / 2.0f));
         shape.setLocalScaling(this.getScaling(scale));
         return shape;
     }

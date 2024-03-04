@@ -10,28 +10,20 @@ import ru.BouH.engine.render.screen.window.Window;
 import java.awt.*;
 
 public class MouseKeyboardController implements IController {
-    private final Vector2d rotationInput;
     private final Vector3d xyzInput;
     private final Keyboard keyboard;
     private final Mouse mouse;
     private final Window window;
     private final Vector2d normalizedRotationInput;
     private final Vector3d normalizedPositionInput;
-    private final Robot robot;
 
     public MouseKeyboardController(Window window) {
         this.window = window;
         this.keyboard = new Keyboard(window);
         this.mouse = new Mouse(window);
-        this.rotationInput = new Vector2d();
         this.xyzInput = new Vector3d(0.0d);
         this.normalizedRotationInput = new Vector2d();
         this.normalizedPositionInput = new Vector3d();
-        try {
-            this.robot = new Robot();
-        } catch (AWTException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public Window getWindow() {
