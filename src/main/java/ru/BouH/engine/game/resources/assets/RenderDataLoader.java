@@ -10,13 +10,11 @@ import ru.BouH.engine.game.resources.cache.GameCache;
 import ru.BouH.engine.physics.brush.Plane4dBrush;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.fabric.render.RenderObject;
+import ru.BouH.engine.render.scene.fabric.render.RenderPlayerSP;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderLiquidData;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderParticleD2Data;
-import ru.BouH.engine.render.scene.objects.items.EntityObject;
-import ru.BouH.engine.render.scene.objects.items.LampObject;
-import ru.BouH.engine.render.scene.objects.items.ParticleObject;
-import ru.BouH.engine.render.scene.objects.items.WorldItemObject;
+import ru.BouH.engine.render.scene.objects.items.*;
 
 public class RenderDataLoader implements IAssetsLoader {
     public RenderObjectData entityCube;
@@ -55,13 +53,13 @@ public class RenderDataLoader implements IAssetsLoader {
 
         this.entityLargeCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
         this.entityLamp = new RenderObjectData(new RenderObject(), LampObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
-        this.player = new RenderObjectData(null, WorldItemObject.class, ResourceManager.shaderAssets.world);
+        this.player = new RenderObjectData(new RenderPlayerSP(), PlayerSPObject.class, ResourceManager.shaderAssets.world);
         this.test = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.simple).setEntityModelConstructor(entityModelConstructor);
         this.plane = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setEntityModelConstructor(entityModelConstructor).setModelTextureScaling(new Vector2d(64.0d, 4.0d));
         this.planeGround = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setEntityModelConstructor(entityModelConstructor).setModelTextureScaling(new Vector2d(128.0d));
 
         this.ground = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world);
-        this.ground.getModelRenderParams().setAlphaDiscard(0.75f);
+        this.ground.getModelRenderParams().setAlphaDiscard(0.25f);
 
         this.particleFlame = new RenderParticleD2Data(new RenderObject(), ParticleObject.class, ResourceManager.shaderAssets.world, ResourceManager.renderAssets.particleTexturePack, true);
 

@@ -5,9 +5,11 @@ import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.BulletCollision.btGhostObject;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
 import org.joml.Vector3d;
+import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.GameEvents;
 import ru.BouH.engine.game.exception.GameException;
+import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.liquids.ILiquid;
@@ -65,6 +67,15 @@ public final class World implements IWorld {
         Game.getGame().getLogManager().log("Creating local player");
         Game.getGame().getProxy().createLocalPlayer();
         Game.getGame().getLogManager().log("Local player created!");
+    }
+
+    public WorldItem getItemByID(int id) {
+        Optional<WorldItem> worldItem = this.getAllWorldItems().stream().filter(e -> e.getItemId() == id).findFirst();
+        if (worldItem.isPresent()) {
+            return worldItem.get();
+        }
+        Game.getGame().getLogManager().warn("Couldn't find item with id: " + id);
+        return null;
     }
 
     public void onWorldUpdate() {

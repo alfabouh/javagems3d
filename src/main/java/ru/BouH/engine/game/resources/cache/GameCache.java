@@ -1,5 +1,6 @@
 package ru.BouH.engine.game.resources.cache;
 
+import ru.BouH.engine.audio.sound.SoundBuffer;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
@@ -16,6 +17,7 @@ public class GameCache {
 
     public void cleanCache() {
         this.cache.forEach((o, e) -> e.onCleaningCache(this));
+        Game.getGame().getLogManager().log("Cleaned cache");
     }
 
     public void addObjectInBuffer(CacheResource cacheResource) {
@@ -32,6 +34,15 @@ public class GameCache {
         }
         Game.getGame().getLogManager().log("Put object " + key + " in game cache");
         this.cache.put(key, object);
+    }
+
+    public SoundBuffer getCachedSound(String key) {
+        ICached cached = this.getCachedObject(key);
+        if (cached != null && !(cached instanceof SoundBuffer)) {
+            Game.getGame().getLogManager().warn("Object " + key + " is not a SoundBuffer2 in game cache!");
+            return null;
+        }
+        return (SoundBuffer) cached;
     }
 
     public TextureSample getCachedTexture(String key) {

@@ -3,6 +3,7 @@ package ru.BouH.engine.render.scene.programs;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderGroup;
 
 public class ShaderProgram {
@@ -14,7 +15,7 @@ public class ShaderProgram {
     public ShaderProgram() {
         this.programId = GL20.glCreateProgram();
         if (this.programId == 0) {
-            Game.getGame().getLogManager().error("Could not create shader program!");
+            throw new GameException("Could not create shader program!");
         }
     }
 
@@ -45,13 +46,13 @@ public class ShaderProgram {
     private int createShader(String shader, int type) {
         int id = GL20.glCreateShader(type);
         if (id == 0) {
-            Game.getGame().getLogManager().error("Could not create Shader: " + type);
+            throw new GameException("Could not create Shader: " + type);
         }
         GL20.glShaderSource(id, shader);
         GL20.glCompileShader(id);
         if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == 0) {
-            Game.getGame().getLogManager().error("Compile shader error: " + GL20.glGetShaderInfoLog(id, 4096));
             Game.getGame().getLogManager().debug(shader);
+            throw new GameException("Compile shader error: " + GL20.glGetShaderInfoLog(id, 4096));
         }
         GL20.glAttachShader(this.programId, id);
         return id;

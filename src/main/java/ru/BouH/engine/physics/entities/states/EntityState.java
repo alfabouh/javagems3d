@@ -24,11 +24,12 @@ public class EntityState {
     }
 
     public boolean checkState(StateType stateBit) {
-        return (this.getStateBits() & stateBits) != 0;
+        return (this.getStateBits() & stateBit.getState()) != 0;
     }
 
     public enum StateType {
-        IN_WATER(1 << 2);
+        IN_WATER(1 << 2),
+        SELECTED_BY_PLAYER(1 << 3);
 
         private final int state;
         StateType(int i) {

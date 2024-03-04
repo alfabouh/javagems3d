@@ -6,6 +6,7 @@ import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
 
 public class ModelShape implements AbstractCollision {
     private final MeshDataGroup meshDataGroup;
+    private btCollisionShape btCollisionShape;
 
     public ModelShape(MeshDataGroup meshDataGroup) {
         this.meshDataGroup = meshDataGroup;
@@ -16,7 +17,7 @@ public class ModelShape implements AbstractCollision {
         if (this.meshDataGroup.getCollisionShape() == null || this.meshDataGroup.getCollisionShape().isNull()) {
             throw new GameException("MeshDataGroup doesn't keep collision data!");
         }
-        btCollisionShape btCollisionShape = this.meshDataGroup.getCollisionShape();
+        this.btCollisionShape = this.meshDataGroup.getCollisionShape();
         btCollisionShape.setLocalScaling(this.getScaling(scale));
         return btCollisionShape;
     }

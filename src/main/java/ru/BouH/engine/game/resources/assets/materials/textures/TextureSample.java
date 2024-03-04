@@ -9,6 +9,7 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.cache.GameCache;
 
 import java.io.IOException;
@@ -193,7 +194,7 @@ public class TextureSample implements IImageSample {
 
     public void bindTexture() {
         if (!this.isValid()) {
-            Game.getGame().getLogManager().error("Tried to bind invalid texture");
+            throw new GameException("Tried to bind invalid texture");
         }
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, this.getTextureId());
     }

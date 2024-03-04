@@ -15,7 +15,7 @@ public class ModelAssetsLoader implements IAssetsLoader {
         this.cube = ResourceManager.createMesh("/models/cube/", "cube.obj");
         this.knife = ResourceManager.createMesh("/models/knife/", "knife.obj");
         this.house = ResourceManager.createMesh("/models/house/", "house.obj");
-        this.ground = ResourceManager.createMesh("/models/nuke/", "nuke.obj");
+        this.ground = ResourceManager.createMesh("/models/nuke/", "Nuke.obj");
 
         this.ground.constructCollisionMesh();
         this.house.constructCollisionMesh();

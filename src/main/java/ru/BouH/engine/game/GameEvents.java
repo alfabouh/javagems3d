@@ -1,6 +1,7 @@
 package ru.BouH.engine.game;
 
 import org.joml.Vector3d;
+import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.models.Model;
@@ -89,6 +90,8 @@ public class GameEvents {
     }
 
     public static void addBrushes(World world) {
+        Game.getGame().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.map_ambience1, SoundType.WORLD_AMBIENT_SOUND, 1.25f, 15.0f, 1.0f, new Vector3d(100.0d, 15.0d, 30.0d));
+
         WorldModeledBrush worldModeledBrush = new WorldModeledBrush(world, ResourceManager.modelAssets.ground, RigidBodyObject.PhysProperties.createProperties(Materials.grassGround), "grass");
         Game.getGame().getProxy().addItemInWorlds(worldModeledBrush, new RenderObjectData(ResourceManager.renderDataAssets.ground, ResourceManager.modelAssets.ground));
         worldModeledBrush.setDebugDrawing(false);

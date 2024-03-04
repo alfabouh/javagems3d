@@ -29,13 +29,6 @@ public class GameLogging {
         this.log.error("****************************************");
     }
 
-    public void error(String message, Object... objects) {
-        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-        StringBuilder stringBuilder = this.getStringBuilder(message, objects, trace);
-        this.log.fatal(stringBuilder.toString());
-        Game.getGame().destroyGame();
-    }
-
     private StringBuilder getStringBuilder(String message, Object[] objects, StackTraceElement[] trace) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\n");

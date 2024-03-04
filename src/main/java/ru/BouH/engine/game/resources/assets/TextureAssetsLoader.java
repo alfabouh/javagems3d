@@ -22,6 +22,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
     public ParticleTexturePack particleTexturePack;
     public CubeMapProgram skyboxCubeMap;
     public FontTexture standardFont;
+    public TextureSample crosshair;
 
     public void load(GameCache gameCache) {
         this.standardFont = new FontTexture(new Font("Cambria", Font.PLAIN, 18), FontCode.Window);
@@ -35,6 +36,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
         this.grassSpecular = ResourceManager.createTexture("/textures/normals/specular_grass.png");
         this.tallGrass = ResourceManager.createTexture("/textures/props/tallgrass.png");
         this.waterTexture = ResourceManager.createTexture("/textures/liquids/water.jpg");
+        this.crosshair = ResourceManager.createTexture("/textures/gui/crosshair.png");
         this.particleTexturePack = new ParticleTexturePack("/textures/particles/flame/flame", ".png", 4, 0.25f);
 
         this.skyboxCubeMap = new CubeMapProgram();

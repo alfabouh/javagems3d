@@ -31,6 +31,7 @@ public class ShaderAssetsLoader implements IAssetsLoader {
     public final ShaderManager liquid;
     public final ShaderManager depth_plight;
     public final ShaderManager debug;
+    public final ShaderManager world_selected;
 
     public ShaderAssetsLoader() {
         this.SunLight = this.createUBO("SunLight", 0, 32);
@@ -48,6 +49,7 @@ public class ShaderAssetsLoader implements IAssetsLoader {
 
         this.simple = this.createShaderManager("simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_sun = this.createShaderManager("depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_selected = this.createShaderManager("world_selected", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_plight = this.createShaderManager("depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT | Shader.ShaderType.GEOMETRIC_BIT);
 
         this.gameUbo = this.createShaderManager("gameubo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);

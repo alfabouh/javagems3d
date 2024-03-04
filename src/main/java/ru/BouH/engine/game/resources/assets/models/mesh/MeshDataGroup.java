@@ -17,6 +17,7 @@ public class MeshDataGroup implements ICached {
     private btTriangleMesh triangleMesh;
     private btCollisionShape btCollisionShape;
     private btTriangleInfoMap btTriangleInfoMap;
+    private btBvhTriangleMeshShape btBvhTriangleMeshShape;
 
     public MeshDataGroup() {
         this.modelNodeList = new ArrayList<>();
@@ -38,7 +39,7 @@ public class MeshDataGroup implements ICached {
         this.triangleMesh.m_weldingThreshold(0.001f);
         for (ModelNode modelNode : this.getModelNodeList()) {
             List<Float> floats = modelNode.getMesh().getAttributePositions();
-            for (int i = 0; i < modelNode.getMesh().getIndexes().size(); i += 3) {
+            for (int i = 0; i < modelNode.getMesh().getTotalVertices(); i += 3) {
                 int i1 = modelNode.getMesh().getIndexes().get(i) * 3;
                 int i2 = modelNode.getMesh().getIndexes().get(i + 1) * 3;
                 int i3 = modelNode.getMesh().getIndexes().get(i + 2) * 3;
@@ -46,10 +47,9 @@ public class MeshDataGroup implements ICached {
             }
         }
         this.btTriangleInfoMap = new btTriangleInfoMap();
-        btBvhTriangleMeshShape btBvhTriangleMeshShape = new btBvhTriangleMeshShape(this.triangleMesh, true, true);
+        this.btBvhTriangleMeshShape = new btBvhTriangleMeshShape(this.triangleMesh, true, true);
         btBvhTriangleMeshShape.recalcLocalAabb();
         BulletCollision.btGenerateInternalEdgeInfo(btBvhTriangleMeshShape, btTriangleInfoMap);
-        this.btTriangleInfoMap.m_edgeDistanceThreshold(1.975f);
         btBvhTriangleMeshShape.setTriangleInfoMap(btTriangleInfoMap);
         this.btCollisionShape = btBvhTriangleMeshShape;
     }

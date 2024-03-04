@@ -11,6 +11,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
 import ru.BouH.engine.proxy.LocalPlayer;
 import ru.BouH.engine.render.scene.Scene;
@@ -19,6 +20,7 @@ import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.scene.world.camera.ICamera;
 import ru.BouH.engine.render.screen.timer.Timer;
 import ru.BouH.engine.render.screen.window.Window;
+import ru.BouH.engine.render.transformation.TransformationManager;
 
 import java.nio.IntBuffer;
 
@@ -79,7 +81,7 @@ public class Screen {
             GL.createCapabilities();
             Game.getGame().getLogManager().log("Screen built successful");
         } else {
-            Game.getGame().getLogManager().error("Screen build error!");
+            throw new GameException("Screen build error!");
         }
     }
 
@@ -116,7 +118,7 @@ public class Screen {
     private boolean tryToBuildScreen() {
         GLFWErrorCallback.createPrint(System.err).set();
         if (!GLFW.glfwInit()) {
-            Game.getGame().getLogManager().error("Error, while initializing GLFW");
+            throw new GameException("Error, while initializing GLFW");
         }
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
@@ -129,8 +131,7 @@ public class Screen {
         this.window = new Window(new Window.WindowProperties(Screen.defaultW, Screen.defaultH, "Build " + Game.build));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
-            Game.getGame().getLogManager().error("Failed to create the GLFW window");
-            return false;
+            throw new GameException("Failed to create the GLFW window");
         }
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
@@ -176,7 +177,6 @@ public class Screen {
 
         GL11.glEnable(GL13.GL_MULTISAMPLE);
         GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 8);
-        GL11.glEnable(GL11.GL_POLYGON_SMOOTH);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
         GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);
@@ -234,11 +234,12 @@ public class Screen {
             this.getControllerDispatcher().updateController(this.getWindow());
             this.getWindow().refreshFocusState();
         }
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
         GL30.glEnable(GL30.GL_CULL_FACE);
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);
         this.getScene().renderScene(delta);
+        Game.getGame().getSoundManager().getSoundListener().updateOrientationAndPosition(TransformationManager.instance.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
     }
 
     public ControllerDispatcher getControllerDispatcher() {

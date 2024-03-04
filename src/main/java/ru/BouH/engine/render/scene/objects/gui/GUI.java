@@ -1,23 +1,30 @@
 package ru.BouH.engine.render.scene.objects.gui;
 
+import org.bytedeco.bullet.BulletDynamics.btKinematicCharacterController;
 import org.joml.Vector2d;
+import org.joml.Vector3d;
 import org.joml.Vector4d;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.binding.Binding;
 import ru.BouH.engine.game.controller.input.Keyboard;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.assets.models.Model;
+import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.BouH.engine.game.resources.assets.models.formats.Format2D;
+import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
+import ru.BouH.engine.physics.entities.player.KinematicPlayerSP;
 import ru.BouH.engine.physics.world.object.WorldItem;
+import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.objects.gui.hud.GuiPicture;
 import ru.BouH.engine.render.scene.objects.gui.hud.GuiText;
+import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
 
 public class GUI {
-
     public static void renderGUI(SceneRenderBase sceneRenderBase, double partialTicks) {
         double width = Game.getGame().getScreen().getWidth();
         double height = Game.getGame().getScreen().getHeight();
@@ -34,10 +41,13 @@ public class GUI {
                 i1 += 20;
             }
         }
-        //GUI.renderText(sceneRenderBase, partialTicks, 0, i1 + 20, "speed: " + String.format("%.2f", entityPlayerSP.getKinematicCharacterController().getLinearVelocity().length()), 0xffffff);
+        if (entityPlayerSP instanceof KinematicPlayerSP) {
+            GUI.renderText(sceneRenderBase, partialTicks, 0, i1 + 20, "speed: " + String.format("%.4f", ((KinematicPlayerSP) entityPlayerSP).getKinematicCharacterController().getLinearVelocity().length()), 0xffffff);
+        }
+        GUI.renderText(sceneRenderBase, partialTicks, 0, i1 + 40, "tick: " + sceneRenderBase.getSceneWorld().getTicks(), 0xffffff);
 
-        //Vector2d vector2d = GUI.getScaledPictureDimensions(ResourceManager.renderAssets.pngGuiPic1, 0.1f);
-        //GUI.renderPicture(sceneRenderBase, partialTicks, (int) (width - vector2d.x - 2), 2, (int) vector2d.x, (int) vector2d.y, ResourceManager.renderAssets.pngGuiPic1);
+        Vector2d vector2d = GUI.getScaledPictureDimensions(ResourceManager.renderAssets.crosshair, 0.0625f);
+        GUI.renderPicture(sceneRenderBase, partialTicks, (int) (width / 2.0d) - 8, (int) (height / 2.0d) - 8, (int) vector2d.x, (int) vector2d.y, ResourceManager.renderAssets.crosshair);
     }
 
     private static Vector2d getScaledPictureDimensions(TextureSample textureSample, float scale) {
@@ -52,21 +62,17 @@ public class GUI {
     }
 
     private static void renderPicture(SceneRenderBase sceneRenderBase, double partialTicks, int x, int y, int w, int h, TextureSample textureSample) {
-        if (textureSample == null || !textureSample.isValid()) {
-            return;
-        }
-        GuiPicture guiPicture = new GuiPicture(textureSample, ResourceManager.shaderAssets.guiShader, x, y, w, h);
-        Model<Format2D> model2D = guiPicture.getModel2DInfo();
-        if (model2D != null) {
-            guiPicture.getShaderManager().bind();
-            guiPicture.getShaderManager().getUtils().performProjectionMatrix2d(guiPicture.getModel2DInfo());
-            guiPicture.getShaderManager().performUniform("colour", new Vector4d(1.0f, 1.0f, 1.0f, 1.0f));
-            guiPicture.renderFabric().onRender(partialTicks, sceneRenderBase, guiPicture);
-            guiPicture.getShaderManager().unBind();
-            guiPicture.getModel2DInfo().clean();
-        } else {
-            Game.getGame().getLogManager().warn("Invalid Texture!");
-        }
+        GL30.glDisable(GL30.GL_DEPTH_TEST);
+        Model<Format2D> model = MeshHelper.generatePlane2DModel(new Vector2d(x, y), new Vector2d(x + w, y + h), 0);
+        ResourceManager.shaderAssets.guiShader.bind();
+        ResourceManager.shaderAssets.guiShader.performUniform("texture_sampler", 0);
+        GL30.glActiveTexture(GL30.GL_TEXTURE0);
+        textureSample.bindTexture();
+        ResourceManager.shaderAssets.guiShader.getUtils().performProjectionMatrix2d(model);
+        Scene.renderModel(model, GL30.GL_TRIANGLES);
+        ResourceManager.shaderAssets.guiShader.unBind();
+        model.clean();
+        GL30.glEnable(GL30.GL_DEPTH_TEST);
     }
 
     private static void renderText(SceneRenderBase sceneRenderBase, double partialTicks, int x, int y, String s, int HEX) {

@@ -7,6 +7,7 @@ import org.joml.Vector3d;
 
 public class ConvexShape implements AbstractCollision {
     private final Vector3d[] points;
+    private btConvexHullShape convexHullShape;
 
     public ConvexShape(Vector3d[] points) {
         this.points = points;
@@ -18,7 +19,7 @@ public class ConvexShape implements AbstractCollision {
 
     @Override
     public btCollisionShape buildCollisionShape(double scale) {
-        btConvexHullShape convexHullShape = new btConvexHullShape();
+        this.convexHullShape = new btConvexHullShape();
         for (Vector3d vector3d : this.points) {
             convexHullShape.addPoint(new btVector3(vector3d.x, vector3d.y, vector3d.z));
         }

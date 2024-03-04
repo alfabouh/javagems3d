@@ -58,7 +58,7 @@ public class FontTexture {
             byteArrayOutputStream.flush();
             inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
-            Game.getGame().getLogManager().error(e.getMessage());
+            System.err.println(e.getMessage());
         }
         this.texture = TextureSample.createTextureIS("font", inputStream);
     }

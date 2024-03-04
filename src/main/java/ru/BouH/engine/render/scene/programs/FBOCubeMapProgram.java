@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL43;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.screen.Screen;
 
@@ -51,7 +52,7 @@ public class FBOCubeMapProgram {
         }
 
         if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            Game.getGame().getLogManager().error("Failed to create framebuffer!");
+            throw new GameException("Failed to create framebuffer!");
         }
 
         this.unBindFBO();

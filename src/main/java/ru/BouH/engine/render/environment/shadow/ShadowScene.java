@@ -186,8 +186,10 @@ public class ShadowScene {
             this.getSunShadowShader().performUniform("projection_view_matrix", new Matrix4d(cascadeShadow.getLightProjectionViewMatrix()));
             GL30.glCullFace(GL30.GL_BACK);
             for (Model<Format3D> model : modelList) {
-                this.getSunShadowShader().getUtils().performModelMatrix3d(model, false);
-                Scene.renderModel(model, GL30.GL_TRIANGLES);
+                if (model.getMeshDataGroup() != null) {
+                    this.getSunShadowShader().getUtils().performModelMatrix3d(model, false);
+                    Scene.renderModel(model, GL30.GL_TRIANGLES);
+                }
             }
         }
 

@@ -18,6 +18,9 @@ public class Keyboard {
     }
 
     public boolean isKeyPressed(int keyCode) {
+        if (keyCode == GLFW.GLFW_MOUSE_BUTTON_LEFT || keyCode == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            return GLFW.glfwGetMouseButton(this.getWindow().getDescriptor(), keyCode) == GLFW.GLFW_PRESS;
+        }
         return GLFW.glfwGetKey(this.getWindow().getDescriptor(), keyCode) == GLFW.GLFW_PRESS;
     }
 
