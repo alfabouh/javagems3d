@@ -5,18 +5,18 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.assets.*;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
+import ru.BouH.engine.game.resources.assets.shaders.loader.ShaderLoader;
 import ru.BouH.engine.game.resources.assets.utils.ModelLoader;
 import ru.BouH.engine.game.resources.cache.GameCache;
 import ru.BouH.engine.game.resources.cache.ICached;
-import ru.BouH.engine.render.screen.window.Window;
 
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResourceManager {
+    public static ShaderLoader shaderAssets = null;
     public static TextureAssetsLoader renderAssets = null;
-    public static ShaderAssetsLoader shaderAssets = null;
     public static ModelAssetsLoader modelAssets = null;
     public static RenderDataLoader renderDataAssets = null;
     public static SoundAssetsLoader soundAssetsLoader = null;
@@ -26,6 +26,7 @@ public class ResourceManager {
     public ResourceManager() {
         this.gameCache = new GameCache();
         this.assetsObjects = new ArrayList<>();
+        ResourceManager.shaderAssets = new ShaderLoader();
     }
 
     public static SoundBuffer createSoundBuffer(String soundName, int soundFormat) {
@@ -36,20 +37,20 @@ public class ResourceManager {
         return ModelLoader.createMesh(Game.getGame().getResourceManager().getGameCache(), modelPath, modelName);
     }
 
-    public static TextureSample createTextureOutsideJar(String fullPath) {
-        return TextureSample.createTextureOutsideJar(Game.getGame().getResourceManager().getGameCache(), fullPath);
+    public static TextureSample createTextureOutsideJar(String fullPath, boolean interpolate) {
+        return TextureSample.createTextureOutsideJar(Game.getGame().getResourceManager().getGameCache(), fullPath, interpolate);
     }
 
-    public static TextureSample createTexture(String path) {
-        return TextureSample.createTexture(Game.getGame().getResourceManager().getGameCache(), path);
+    public static TextureSample createTexture(String path, boolean interpolate) {
+        return TextureSample.createTexture(Game.getGame().getResourceManager().getGameCache(), path, interpolate);
     }
 
-    public static TextureSample createTextureIS(String id, InputStream inputStream) {
-        return TextureSample.createTextureIS(id, inputStream);
+    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate) {
+        return TextureSample.createTextureIS(id, inputStream, interpolate);
     }
 
-    public static TextureSample createTextureIS(InputStream inputStream) {
-        return TextureSample.createTextureIS("#inputstream", inputStream);
+    public static TextureSample createTextureIS(InputStream inputStream, boolean interpolate) {
+        return TextureSample.createTextureIS("#inputstream", inputStream, interpolate);
     }
 
     public static ICached getResource(String key) {
@@ -66,12 +67,10 @@ public class ResourceManager {
 
     public void init() {
         ResourceManager.renderAssets = new TextureAssetsLoader();
-        ResourceManager.shaderAssets = new ShaderAssetsLoader();
         ResourceManager.modelAssets = new ModelAssetsLoader();
         ResourceManager.renderDataAssets = new RenderDataLoader();
         ResourceManager.soundAssetsLoader = new SoundAssetsLoader();
         this.addAssetLoader(ResourceManager.renderAssets);
-        this.addAssetLoader(ResourceManager.shaderAssets);
         this.addAssetLoader(ResourceManager.modelAssets);
         this.addAssetLoader(ResourceManager.renderDataAssets);
         this.addAssetLoader(ResourceManager.soundAssetsLoader);

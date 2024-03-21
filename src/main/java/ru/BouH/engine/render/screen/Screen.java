@@ -2,6 +2,7 @@ package ru.BouH.engine.render.screen;
 
 import org.joml.Vector2d;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -9,12 +10,20 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import ru.BouH.engine.audio.sound.SoundListener;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.exception.GameException;
+import ru.BouH.engine.game.resources.ResourceManager;
+import ru.BouH.engine.game.resources.assets.shaders.Shader;
+import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
-import ru.BouH.engine.proxy.LocalPlayer;
+import ru.BouH.engine.game.LocalPlayer;
 import ru.BouH.engine.render.scene.Scene;
+import ru.BouH.engine.render.scene.gui.MainMenuGUI;
+import ru.BouH.engine.render.scene.gui.font.FontCode;
+import ru.BouH.engine.render.scene.gui.font.GuiFont;
+import ru.BouH.engine.render.scene.gui.ui.TextUI;
 import ru.BouH.engine.render.scene.scene_render.groups.*;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.scene.world.camera.ICamera;
@@ -22,7 +31,9 @@ import ru.BouH.engine.render.screen.timer.Timer;
 import ru.BouH.engine.render.screen.window.Window;
 import ru.BouH.engine.render.transformation.TransformationManager;
 
+import java.awt.*;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 public class Screen {
     public static final int defaultW = 1280;
@@ -35,9 +46,11 @@ public class Screen {
     private ControllerDispatcher controllerDispatcher;
     private Scene scene;
     private Window window;
+    private GameLoadingScreen gameLoadingScreen;
 
     public Screen() {
         this.timer = new Timer();
+        this.gameLoadingScreen = null;
     }
 
     public static boolean isScreenActive() {
@@ -61,10 +74,24 @@ public class Screen {
     }
 
     public void initScreen() {
+        this.initShaders();
         this.scene = new Scene(this, new SceneWorld(Game.getGame().getPhysicsWorld()));
         this.fillScene(this.getScene());
         this.setWindowCallbacks();
         this.createControllerDispatcher(this.getWindow());
+    }
+
+    public void addLineInLoadingScreen(String s) {
+        if (this.gameLoadingScreen == null) {
+            Game.getGame().getLogManager().warn("Loading screen is NULL");
+            return;
+        }
+        this.gameLoadingScreen.addText(s);
+    }
+
+    private void initShaders() {
+        ResourceManager.shaderAssets.loadAllShaders();
+        ResourceManager.shaderAssets.startShaders();
     }
 
     private void fillScene(Scene scene) {
@@ -72,7 +99,7 @@ public class Screen {
         scene.addSceneRenderBase(new WorldTransparentRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new WorldRenderLiquids(scene.getSceneRender()));
         scene.addSceneRenderBase(new SkyRender(scene.getSceneRender()));
-        scene.addSceneRenderBase(new GuiRender(scene.getSceneRender()));
+        scene.addSceneRenderBase(new InventoryRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new DebugRender(scene.getSceneRender()));
     }
 
@@ -156,8 +183,10 @@ public class Screen {
     }
 
     public void showWindow() {
+        this.gameLoadingScreen = new GameLoadingScreen();
         GLFW.glfwShowWindow(this.getWindow().getDescriptor());
         GLFW.glfwFocusWindow(this.getWindow().getDescriptor());
+        this.gameLoadingScreen.updateScreen();
     }
 
     public Timer getTimer() {
@@ -173,8 +202,6 @@ public class Screen {
     }
 
     private void enableMSAA() {
-        //GL.getCapabilities().GL_ARB_framebuffer_object && GL.getCapabilities().GL_EXT_framebuffer_multisample
-
         GL11.glEnable(GL13.GL_MULTISAMPLE);
         GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 8);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
@@ -186,9 +213,6 @@ public class Screen {
         GL11.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
         this.getRenderWorld().onWorldStart();
         this.getScene().preRender();
-        if (LocalPlayer.VALID_PL) {
-            this.controllerDispatcher.attachControllerTo(ControllerDispatcher.mouseKeyboardController, Game.getGame().getPlayerSP());
-        }
         try {
             this.renderLoop();
         } catch (InterruptedException e) {
@@ -198,10 +222,17 @@ public class Screen {
         this.getRenderWorld().onWorldEnd();
     }
 
+    private void showMainMenu() {
+        this.getScene().setGui(new MainMenuGUI());
+    }
+
     private void renderLoop() throws InterruptedException {
         this.enableMSAA();
         int fps = 0;
         double lastFPS = Game.glfwTime();
+        this.gameLoadingScreen.clean();
+        this.gameLoadingScreen = null;
+        this.showMainMenu();
         while (!Game.getGame().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
                 Game.getGame().destroyGame();
@@ -238,8 +269,11 @@ public class Screen {
         GL30.glEnable(GL30.GL_CULL_FACE);
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);
+        Game.getGame().getSoundManager().update();
         this.getScene().renderScene(delta);
-        Game.getGame().getSoundManager().getSoundListener().updateOrientationAndPosition(TransformationManager.instance.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
+        if (Game.getGame().isValidPlayer()) {
+            SoundListener.updateOrientationAndPosition(TransformationManager.instance.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
+        }
     }
 
     public ControllerDispatcher getControllerDispatcher() {
@@ -264,5 +298,39 @@ public class Screen {
 
     public Window getWindow() {
         return this.window;
+    }
+
+    public class GameLoadingScreen {
+        private final GuiFont guiFont;
+        private final ArrayList<String> lines;
+
+        public GameLoadingScreen() {
+            Game.getGame().getLogManager().log("Loading screen");
+            this.guiFont = new GuiFont(new Font("Cambria", Font.PLAIN, 24), FontCode.Window);
+            this.lines = new ArrayList<>();
+            this.lines.add("Loading game...");
+        }
+
+        public void updateScreen() {
+            GL11.glClearColor(0.0f, 0.0f, 0.25f, 1.0f);
+            int strokes = 0;
+            for (String s : this.lines) {
+                TextUI textUI = new TextUI(s, this.guiFont, 0x00ff00, new Vector3f(0.0f, (strokes++) * 40.0f, 0.5f));
+                textUI.render(0.0f);
+                textUI.clear();
+            }
+            GLFW.glfwSwapBuffers(Screen.this.getWindow().getDescriptor());
+            GLFW.glfwPollEvents();
+        }
+
+        private void addText(String s) {
+            this.lines.add(s);
+            this.updateScreen();
+        }
+
+        public void clean() {
+            this.guiFont.cleanUp();
+            this.lines.clear();
+        }
     }
 }

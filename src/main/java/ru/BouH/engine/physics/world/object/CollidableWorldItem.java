@@ -12,7 +12,7 @@ import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 
 public abstract class CollidableWorldItem extends WorldItem implements JBulletEntity {
     private final EntityState entityState;

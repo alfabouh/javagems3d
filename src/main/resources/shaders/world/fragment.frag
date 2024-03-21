@@ -85,7 +85,7 @@ struct PointLight
     float plG;
     float plB;
     float brightness;
-    int shadowMapId;
+    float shadowMapId;
 };
 
 layout (std140, binding = 0) uniform SunLight {
@@ -151,7 +151,7 @@ void main()
         discard;
     }
 
-    diffuse += vec4(1.0 - diffuse.a) * alpha_discard;
+    diffuse += vec4(1.0 - diffuse.a) * alpha_discard + vec4(1.0 - diffuse.a) * diffuse;
 
     vec4 lightFactor = (lighting_code & light_bright_code) != 0 ? vec4(1.5) : (lighting_code & light_opacity_code) == 0 ? vec4(1.) : ((texturing_code & emissive_code) != 0 ? emissive_texture * vec4(4.) : calc_light());
 
@@ -194,7 +194,7 @@ float calcVSM(int idx, vec4 shadow_coord, vec2 offset, float bias, float linear)
     float d = shadow_coord.z - moments.x;
     float shadowPCT = smoothstep(linear, 1.0, variance / (variance + d * d));
 
-    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x + per_cascade_bias_shadow[0] ? 1.0 : shadowPCT;
+    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x + per_cascade_bias_shadow[idx] ? 1.0 : shadowPCT;
 }
 
 float calculate_shadow_no_pcf(vec4 worldPosition, int idx, float bias, float linear) {
@@ -227,19 +227,14 @@ float calculate_shadow_poison(vec4 worldPosition, int idx, float bias, float lin
 
 float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos)
 {
-    float shadow = 0.0;
-    float bias = 0.1;
-    float samples = 9;
-    float viewDistance = length(camera_pos - fragPosition);
-    float diskRadius = 0.075;
     vec3 fragToLight = fragPosition - lightPos;
+    vec3 pos = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
+
+    float bias = max(0.05 * (1.0 - dot(mv_vertex_normal, pos)), 0.005);
     float currentDepth = length(fragToLight);
-    for (int i = 0; i < samples; i++) {
-        float closestDepth = texture(cubemap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
-        closestDepth *= far_plane;
-        shadow += currentDepth - bias > closestDepth ? 0.0 : 1.0;
-    }
-    return shadow / float(samples);
+    float closestDepth = texture(cubemap, fragToLight).r;
+    closestDepth *= far_plane;
+    return currentDepth - bias > closestDepth ? 0.0 : 1.0;
 }
 
 vec4 calc_light() {
@@ -264,7 +259,8 @@ vec4 calc_light() {
         float at_base = 1.8 / (bright * 0.5);
         float linear = 2.25 / (bright * 2.75);
         float expo = 0.6 / (bright * 0.25f);
-        vec4 shadow = p.shadowMapId >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[p.shadowMapId], out_world_position.xyz, vec3(p.plPosX, p.plPosY, p.plPosZ))) : vec4(1.0);
+        float p_id = p.shadowMapId;
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[int(p_id)], out_world_position.xyz, vec3(p.plPosX, p.plPosY, p.plPosZ))) : vec4(1.0);
         point_light_factor += calc_point_light(p, mv_vertex_pos, normal, at_base, linear, expo, bright) * shadow;
     }
 

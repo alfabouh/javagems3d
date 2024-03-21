@@ -16,7 +16,7 @@ import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.IWorldObject;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.frustum.RenderABB;
 import ru.BouH.engine.render.scene.fabric.render.base.IRenderFabric;
@@ -117,7 +117,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
                 return vector3d;
             }
         }
-        return new Vector3d(worldItem.getScale() + 1.0d);
+        return this.getModelRenderParams().getCustomCullingAABSize() != null ? this.getModelRenderParams().getCustomCullingAABSize() : new Vector3d(worldItem.getScale() + 1.0d);
     }
 
     @Override
@@ -166,14 +166,19 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     public void updateRenderPos(double partialTicks) {
         Vector3d pos = this.getFixedPosition();
         Vector3d rot = this.getFixedRotation();
-        this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(partialTicks));
-        if (this.isEntityUnderUserControl()) {
-            this.renderRotation.set(rot);
+        if (this.getModelRenderParams().isShouldInterpolateMovement()) {
+            this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(partialTicks));
+            if (this.isEntityUnderUserControl()) {
+                this.renderRotation.set(rot);
+            } else {
+                Vector3d newRotation = new Vector3d();
+                Quaterniond result = this.getQuaternionInterpolated(partialTicks);
+                result.getEulerAnglesXYZ(newRotation);
+                this.renderRotation.set(new Vector3d(newRotation.x, newRotation.y, newRotation.z));
+            }
         } else {
-            Vector3d newRotation = new Vector3d();
-            Quaterniond result = this.getQuaternionInterpolated(partialTicks);
-            result.getEulerAnglesXYZ(newRotation);
-            this.renderRotation.set(new Vector3d(newRotation.x, newRotation.y, newRotation.z));
+            this.renderPosition.set(pos);
+            this.renderRotation.set(rot);
         }
     }
 

@@ -1,10 +1,13 @@
 package ru.BouH.engine.audio.sound;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.EXTEfx;
 import ru.BouH.engine.audio.SoundManager;
 import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.physics.world.object.WorldItem;
+import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class GameSound {
     private final SoundType soundType;
@@ -12,9 +15,9 @@ public class GameSound {
     private int source;
     private boolean hasStarted;
     private boolean wantsToBeCleared;
-    private WorldItem attachedTo;
+    private PhysicsObject attachedTo;
 
-    private GameSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
+    private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, PhysicsObject attachedTo) {
         this.hasStarted = false;
         this.soundBuffer = soundBuffer;
         this.soundType = soundType;
@@ -23,7 +26,7 @@ public class GameSound {
         this.setupSoundOptions(pitch, gain, rollOff);
     }
 
-    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
+    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, PhysicsObject attachedTo) {
         return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, attachedTo);
     }
 
@@ -33,14 +36,16 @@ public class GameSound {
 
     private void setupSoundOptions(float pitch, float gain, float rollOff) {
         this.source = AL10.alGenSources();
+        SoundManager.checkALonErrors();
         AL10.alSourcei(this.source, AL10.AL_SOURCE_RELATIVE, this.getSoundType().getSoundData().isLocatedInWorld() ? AL10.AL_FALSE : AL10.AL_TRUE);
         AL10.alSourcei(this.source, AL10.AL_LOOPING, this.getSoundType().getSoundData().isLooped() ? AL10.AL_TRUE : AL10.AL_FALSE);
         AL10.alSourcei(this.source, AL10.AL_BUFFER, this.getSoundBuffer().getBuffer());
+        SoundManager.checkALonErrors();
         AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(gain * 2.0f, 1.0f));
         AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, rollOff);
-        SoundManager.checkALonErrors();
+
         if (this.getAttachedTo() != null) {
-            this.setPosition(this.getAttachedTo().getPosition());
+            this.setPosition(this.getAttachedTo().getRenderPosition());
         } else {
             this.setPosition(new Vector3d(0.0d));
         }
@@ -53,7 +58,7 @@ public class GameSound {
     public void updateSound() {
         SoundManager.checkALonErrors();
         if (this.getAttachedTo() != null) {
-            this.setPosition(this.getAttachedTo().getPosition());
+            this.setPosition(this.getAttachedTo().getRenderPosition());
             if (this.getAttachedTo().isDead()) {
                 this.stopSound();
                 return;
@@ -104,7 +109,7 @@ public class GameSound {
     }
 
     public void playSound() {
-        AL10.alSourcePlay(this.source);
+        //AL10.alSourcePlay(this.source);
         this.hasStarted = true;
     }
 
@@ -126,11 +131,11 @@ public class GameSound {
         return this.wantsToBeCleared;
     }
 
-    public void setAttachedTo(WorldItem attachedTo) {
+    public void setAttachedTo(PhysicsObject attachedTo) {
         this.attachedTo = attachedTo;
     }
 
-    public WorldItem getAttachedTo() {
+    public PhysicsObject getAttachedTo() {
         return this.attachedTo;
     }
 

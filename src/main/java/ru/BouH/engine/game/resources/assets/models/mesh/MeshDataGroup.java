@@ -55,7 +55,7 @@ public class MeshDataGroup implements ICached {
     }
 
     public org.bytedeco.bullet.BulletCollision.btCollisionShape getCollisionShape() {
-        return new btCollisionShape(this.btCollisionShape);
+        return this.btCollisionShape;
     }
 
     public void putNode(ModelNode modelNode) {

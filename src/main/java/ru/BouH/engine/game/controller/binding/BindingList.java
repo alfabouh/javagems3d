@@ -2,12 +2,16 @@ package ru.BouH.engine.game.controller.binding;
 
 import org.lwjgl.glfw.GLFW;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.components.FunctionalKey;
 import ru.BouH.engine.game.controller.components.IKeyAction;
 import ru.BouH.engine.game.controller.components.Key;
 import ru.BouH.engine.game.controller.input.IController;
+import ru.BouH.engine.game.controller.input.MouseKeyboardController;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.Scene;
+import ru.BouH.engine.render.scene.gui.InGameGUI;
+import ru.BouH.engine.render.scene.gui.PauseMenuGUI;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.scene.world.camera.FreeCamera;
 import ru.BouH.engine.render.scene.world.camera.ICamera;
@@ -47,7 +51,24 @@ public class BindingList {
 
         this.keyEsc = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                Game.getGame().destroyGame();
+                if (Game.getGame().isCurrentMapIsValid()) {
+                    if (Game.getGame().getEngineState().isPaused()) {
+                        if (Game.getGame().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
+                            ControllerDispatcher.mouseKeyboardController.setCursorInCenter();
+                            ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptLMB();
+                            ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptRMB();
+                            ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptMMB();
+                        }
+                        Game.getGame().unPauseGame();
+                        Game.getGame().getScreen().getWindow().setInFocus(true);
+                        Game.getGame().showGui(new InGameGUI());
+                    } else {
+                        Game.getGame().pauseGame();
+                        Game.getGame().getScreen().getWindow().setInFocus(false);
+                        Game.getGame().showGui(new PauseMenuGUI());
+                    }
+                }
+                //Game.getGame().destroyGame();
             }
         }, GLFW.GLFW_KEY_ESCAPE);
 

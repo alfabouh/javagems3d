@@ -5,7 +5,6 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4d;
 import org.lwjgl.system.MemoryUtil;
-import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.render.environment.Environment;
@@ -14,6 +13,7 @@ import ru.BouH.engine.render.scene.world.SceneWorld;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +21,6 @@ public class LightManager implements ILightManager {
     public static final int MAX_POINT_LIGHTS = 128;
     private final Environment environment;
     private List<PointLight> pointLightList;
-    private List<PointLight> activeLights;
 
     public LightManager(Environment environment) {
         this.environment = environment;
@@ -42,44 +41,33 @@ public class LightManager implements ILightManager {
 
     private void initCollections() {
         this.pointLightList = new ArrayList<>(LightManager.MAX_POINT_LIGHTS);
-        this.activeLights = new ArrayList<>();
-        for (int i = 0; i < LightManager.MAX_POINT_LIGHTS; i++) {
-            this.getPointLightList().add(new PointLight());
-        }
     }
 
     public void addLight(Light light) {
         if ((light.lightCode() & Light.POINT_LIGHT) != 0) {
-            int i = getActiveLights().size();
-            if (i >= LightManager.MAX_POINT_LIGHTS) {
+            if (this.getPointLightList().size() >= LightManager.MAX_POINT_LIGHTS) {
                 throw new GameException("Reached point lights limit: " + LightManager.MAX_POINT_LIGHTS);
             }
-            this.getPointLightList().set(i, (PointLight) light);
+            this.getPointLightList().add((PointLight) light);
         }
     }
 
     public void removeLight(Light light) {
-        light.disable();
+        light.stop();
     }
 
     public float calcAmbientLight() {
-        return Math.max(0.5f * this.environment.getSky().getSunBrightness(), 5.0e-2f);
+        return Math.max(0.5f * this.environment.getSky().getSunBrightness(), 1.5e-2f);
     }
 
     public List<PointLight> getPointLightList() {
         return this.pointLightList;
     }
-
-    public List<PointLight> getActiveLights() {
-        return this.activeLights;
-    }
-
     @Override
     public void updateBuffers(SceneWorld sceneWorld, Matrix4d viewMatrix) {
-        this.getActiveLights().forEach(e -> e.onUpdate(sceneWorld));
+        this.getPointLightList().forEach(e -> e.onUpdate(sceneWorld));
         this.updateSunUbo(viewMatrix);
         this.updatePointLightsUbo();
-        this.activeLights = this.getPointLightList().stream().filter(Light::isEnabled).collect(Collectors.toList());
     }
 
     private void updateSunUbo(Matrix4d viewMatrix) {
@@ -99,18 +87,17 @@ public class LightManager implements ILightManager {
     }
 
     private void updatePointLightsUbo() {
+        this.getPointLightList().sort(Comparator.comparingDouble(e -> e.getBrightness() * -1));
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
-        List<PointLight> pointLightList = this.getActiveLights();
-        int activeLights = pointLightList.size();
-        for (int i = 0; i < activeLights; i++) {
-            PointLight pointLight = pointLightList.get(i);
+        for (int i = 0; i < this.getPointLightList().size(); i++) {
+            PointLight pointLight = this.getPointLightList().get(i);
             value1Buffer.put((float) pointLight.getLightPos().x);
             value1Buffer.put((float) pointLight.getLightPos().y);
             value1Buffer.put((float) pointLight.getLightPos().z);
             value1Buffer.put((float) pointLight.getLightColor().x);
             value1Buffer.put((float) pointLight.getLightColor().y);
             value1Buffer.put((float) pointLight.getLightColor().z);
-            value1Buffer.put(!pointLight.isEnabled() ? -1.0f : pointLight.getBrightness());
+            value1Buffer.put(pointLight.getBrightness());
             value1Buffer.put(pointLight.getAttachedShadowSceneId());
             value1Buffer.flip();
             Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);

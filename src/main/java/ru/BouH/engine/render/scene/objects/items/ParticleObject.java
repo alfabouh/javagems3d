@@ -4,7 +4,7 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.materials.textures.ParticleTexturePack;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderParticleD2Data;
 import ru.BouH.engine.render.scene.world.SceneWorld;

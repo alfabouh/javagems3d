@@ -20,11 +20,11 @@ public class SoundBuffer implements ICached {
     }
 
     public static SoundBuffer createSoundBuffer(GameCache gameCache, String soundName, int soundFormat) {
-        if (gameCache.checkObjectInCache(soundName)) {
-            return gameCache.getCachedSound(soundName);
-        }
-        SoundBuffer soundBuffer = new SoundBuffer(soundName, soundFormat);
-        gameCache.addObjectInBuffer(soundName, soundBuffer);
+       if (gameCache.checkObjectInCache(soundName)) {
+           return gameCache.getCachedSound(soundName);
+       }
+       SoundBuffer soundBuffer = new SoundBuffer(soundName, soundFormat);
+       gameCache.addObjectInBuffer(soundName, soundBuffer);
         return soundBuffer;
     }
 

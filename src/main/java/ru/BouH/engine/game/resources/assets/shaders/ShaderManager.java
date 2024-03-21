@@ -199,7 +199,6 @@ public final class ShaderManager {
         for (Uniform uniform : this.getShaderGroup().getUniformsFullSet()) {
             if (uniform.getArraySize() > 1) {
                 for (int i = 0; i < uniform.getArraySize(); i++) {
-                    String uni = uniform.getId() + "[" + i + "]";
                     if (!uniform.getFields().isEmpty()) {
                         for (String field : uniform.getFields()) {
                             this.tryCreateUniform(uniform.getId() + "[" + i + "]." + field);
@@ -345,11 +344,11 @@ public final class ShaderManager {
             }
             for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRender().getShadowScene().getPointLightShadows().get(i);
-                final int code = 9;
-                Scene.activeGlTexture(code + i);
+                final int code = 9 + i;
+                Scene.activeGlTexture(code);
                 pointLightShadow.getPointLightCubeMap().bindCubeMap();
                 ShaderManager.this.performUniform("far_plane", pointLightShadow.farPlane());
-                ShaderManager.this.performUniform("point_light_cubemap", i, code + i);
+                ShaderManager.this.performUniform("point_light_cubemap", i, code);
             }
         }
 
@@ -403,6 +402,10 @@ public final class ShaderManager {
 
         public void performModelMatrix3d(Model<Format3D> model, boolean invertedModel) {
             ShaderManager.this.performUniform("model_matrix", TransformationManager.instance.getModelMatrix(model, invertedModel));
+        }
+
+        public void performModelMatrix3d(Matrix4d model) {
+            ShaderManager.this.performUniform("model_matrix", model);
         }
 
         public void performToViewOrientedModelMatrix3d(Model<Format3D> model, Matrix4d view, boolean invertedModel) {

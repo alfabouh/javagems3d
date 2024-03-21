@@ -5,7 +5,7 @@ import org.joml.Vector3d;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 
 public abstract class PhysDynamicEntity extends PhysEntity implements IWorldDynamic {
     private final Vector3d velocityVector;

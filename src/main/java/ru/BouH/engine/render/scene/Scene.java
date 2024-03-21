@@ -21,13 +21,17 @@ import ru.BouH.engine.game.synchronizing.SyncManger;
 import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
-import ru.BouH.engine.proxy.LocalPlayer;
+import ru.BouH.engine.game.LocalPlayer;
 import ru.BouH.engine.render.environment.Environment;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.frustum.FrustumCulling;
+import ru.BouH.engine.render.scene.gui.base.GUI;
+import ru.BouH.engine.render.scene.gui.base.GameGUI;
+import ru.BouH.engine.render.scene.gui.font.GuiFont;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.programs.FBOTexture2DProgram;
+import ru.BouH.engine.render.scene.scene_render.groups.GuiRender;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.scene.world.camera.FreeCamera;
@@ -43,8 +47,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Scene implements IScene {
-    public static boolean testTrigger = false;
-    public static float elapsedRenderTicks;
     private final List<SceneRenderBase> sceneRenderBases;
     private final Screen screen;
     private final Window window;
@@ -56,6 +58,8 @@ public class Scene implements IScene {
     private List<SceneRenderBase> sideGroup;
     private boolean refresh;
     private ICamera currentCamera;
+    private final GameGUI gui;
+    private GuiRender guiRender;
 
     public Scene(Screen screen, SceneWorld sceneWorld) {
         this.sceneWorld = sceneWorld;
@@ -66,6 +70,7 @@ public class Scene implements IScene {
         this.frustumCulling = new FrustumCulling();
         this.sceneRenderBases = new ArrayList<>();
         this.sceneRenderConveyor = new SceneRenderConveyor();
+        this.gui = new GameGUI();
         this.currentCamera = null;
     }
 
@@ -79,6 +84,18 @@ public class Scene implements IScene {
 
     public static int getDebugMode() {
         return Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode();
+    }
+
+    public void setGui(GUI gui) {
+        this.getGui().setCurrentGui(gui);
+    }
+
+    public void removeGui() {
+        this.getGui().setCurrentGui(null);
+    }
+
+    public GameGUI getGui() {
+        return this.gui;
     }
 
     public void setDebugMode(int a) {
@@ -200,17 +217,18 @@ public class Scene implements IScene {
         this.sideGroup = this.getRenderQueueContainer().stream().filter(e -> !e.getRenderGroup().isMainSceneGroup()).sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
     }
 
+    public GuiRender getGuiRender() {
+        return this.guiRender;
+    }
+
     public void preRender() {
         Game.getGame().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.setupBuffers();
-        this.getSceneWorld().updateToAddQueue();
         this.collectRenderBases();
-        ResourceManager.shaderAssets.startShaders();
         this.getSceneWorld().setFrustumCulling(this.getFrustumCulling());
-        if (LocalPlayer.VALID_PL) {
-            this.enableAttachedCamera((WorldItem) Game.getGame().getPlayerSP());
-        }
         Game.getGame().getLogManager().log("Starting scene rendering: ");
         this.getSceneRender().onStartRender();
+        this.guiRender = new GuiRender(this.getSceneRender());
+        this.getGuiRender().onStartRender();
         for (SceneRenderBase sceneRenderBase : this.sceneRenderBases) {
             Game.getGame().getLogManager().log("Starting " + sceneRenderBase.getRenderGroup().getId() + " scene");
             sceneRenderBase.onStartRender();
@@ -222,12 +240,15 @@ public class Scene implements IScene {
         Game.getGame().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.cleanup();
         Game.getGame().getLogManager().log("Stopping scene rendering: ");
         this.getSceneRender().onStopRender();
+        this.getGuiRender().onStopRender();
         for (SceneRenderBase sceneRenderBase : this.getRenderQueueContainer()) {
             Game.getGame().getLogManager().log("Stopping " + sceneRenderBase.getRenderGroup().getId() + " scene");
             sceneRenderBase.onStopRender();
             Game.getGame().getLogManager().log("Scene " + sceneRenderBase.getRenderGroup().getId() + " successfully stopped!");
         }
         Game.getGame().getLogManager().log("Destroying resources!");
+        this.removeGui();
+        GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
         Game.getGame().getResourceManager().destroy();
         Game.getGame().getLogManager().log("Scene rendering stopped");
     }
@@ -262,6 +283,7 @@ public class Scene implements IScene {
     @SuppressWarnings("all")
     public void renderScene(double deltaTime) throws InterruptedException {
         if (Scene.isSceneActive()) {
+            Screen.setViewport(this.getWindowDimensions());
             if (this.getCurrentCamera() != null) {
                 this.elapsedTime += deltaTime / PhysicThreadManager.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
@@ -275,6 +297,7 @@ public class Scene implements IScene {
                 SyncManger.SyncPhysicsAndRender.blockCurrentThread();
                 this.renderSceneInterpolated(this.elapsedTime);
             }
+            this.getGuiRender().onRender(deltaTime);
         }
     }
 
@@ -451,7 +474,7 @@ public class Scene implements IScene {
             this.getPostProcessingShader().bind();
             this.getPostProcessingShader().performUniform("texture_sampler", 0);
             this.getPostProcessingShader().performUniform("blur_sampler", 1);
-            this.getPostProcessingShader().performUniform("post_mode", Scene.testTrigger ? 1 : this.getCurrentRenderPostMode());
+            this.getPostProcessingShader().performUniform("post_mode", this.getCurrentRenderPostMode());
             GL30.glActiveTexture(GL30.GL_TEXTURE1);
             this.fboBlur.bindTexture(0);
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
@@ -464,24 +487,24 @@ public class Scene implements IScene {
         private void renderDebugScreen(double partialTicks) {
             if (this.getCurrentDebugMode() == 1) {
                 Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d), new Vector2d(400.0d, 300.0d), 0);
-                ResourceManager.shaderAssets.guiShader.bind();
+                ResourceManager.shaderAssets.gui_image.bind();
                 this.getBlurShader().performUniform("texture_sampler", 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 this.mixFbo.bindTexture(1);
-                ResourceManager.shaderAssets.guiShader.getUtils().performProjectionMatrix2d(model);
+                ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
                 Scene.renderModel(model, GL30.GL_TRIANGLES);
-                ResourceManager.shaderAssets.guiShader.unBind();
+                ResourceManager.shaderAssets.gui_image.unBind();
                 model.clean();
 
                 model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d, 350.0d), new Vector2d(400.0d, 650.0d), 0);
-                ResourceManager.shaderAssets.guiShader.bind();
-                ResourceManager.shaderAssets.guiShader.performUniform("texture_sampler", 0);
+                ResourceManager.shaderAssets.gui_image.bind();
+                ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 this.getShadowScene().getFrameBufferObjectProgram().bindTexture(0);
-                ResourceManager.shaderAssets.guiShader.getUtils().performProjectionMatrix2d(model);
+                ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
                 Scene.renderModel(model, GL30.GL_TRIANGLES);
                 this.getShadowScene().getFrameBufferObjectProgram().unBindTexture();
-                ResourceManager.shaderAssets.guiShader.unBind();
+                ResourceManager.shaderAssets.gui_image.unBind();
                 model.clean();
             }
         }

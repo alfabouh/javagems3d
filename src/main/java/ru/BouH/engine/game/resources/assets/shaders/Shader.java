@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Shader {
-    public static final String VERSION = "#version 460\n\n";
+    public static final String VERSION = "#version 460 core\n\n";
     private final Map<String, Set<String>> structs;
     private final List<Uniform> uniforms;
     private final String shaderName;
@@ -36,31 +36,27 @@ public class Shader {
 
     private void loadStructs() {
         try (InputStream inputStream = Game.loadFileJar("shaders", shaderName + this.getShaderType().getFile())) {
-            if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                String line;
-                String structName = null;
-                Set<String> args = new HashSet<>();
-                while ((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    String[] subStrings = line.split(" ");
-                    if (structName != null && subStrings.length > 1) {
-                        String getSubStr = subStrings[1];
-                        args.add(getSubStr.replace(";", ""));
-                    }
-                    if (subStrings[0].equals("struct")) {
-                        structName = subStrings[1];
-                    }
-                    if (structName != null && line.contains("}")) {
-                        this.structs.put(structName, new HashSet<>(args));
-                        structName = null;
-                        args.clear();
-                    }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            String line;
+            String structName = null;
+            Set<String> args = new HashSet<>();
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                String[] subStrings = line.split(" ");
+                if (structName != null && subStrings.length > 1) {
+                    String getSubStr = subStrings[1];
+                    args.add(getSubStr.replace(";", ""));
                 }
-                reader.close();
-            } else {
-                throw new IOException("Couldn't read shader: " + shaderName);
+                if (subStrings[0].equals("struct")) {
+                    structName = subStrings[1];
+                }
+                if (structName != null && line.contains("}")) {
+                    this.structs.put(structName, new HashSet<>(args));
+                    structName = null;
+                    args.clear();
+                }
             }
+            reader.close();
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
@@ -69,33 +65,29 @@ public class Shader {
     private String loadStream(String shaderName) {
         StringBuilder shaderSource = new StringBuilder();
         try (InputStream inputStream = Game.loadFileJar("shaders", shaderName + this.getShaderType().getFile())) {
-            if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    String[] subStrings = line.split(" ");
-                    if (subStrings.length > 0 && subStrings[0].equals("uniform")) {
-                        String arg = subStrings[2].replace(";", "");
-                        if (arg.contains("[")) {
-                            String name = arg.substring(0, arg.indexOf('['));
-                            String cut = arg.substring(arg.indexOf('[') + 1).replace("]", "");
-                            Uniform uni = new Uniform(name, Integer.parseInt(cut));
-                            Set<String> fields = this.structs.get(subStrings[1]);
-                            if (fields != null) {
-                                uni.getFields().addAll(fields);
-                            }
-                            this.getUniforms().add(uni);
-                        } else {
-                            this.getUniforms().add(new Uniform(subStrings[2].replace(";", ""), 1));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                String[] subStrings = line.split(" ");
+                if (subStrings.length > 0 && subStrings[0].equals("uniform")) {
+                    String arg = subStrings[2].replace(";", "");
+                    if (arg.contains("[")) {
+                        String name = arg.substring(0, arg.indexOf('['));
+                        String cut = arg.substring(arg.indexOf('[') + 1).replace("]", "");
+                        Uniform uni = new Uniform(name, Integer.parseInt(cut));
+                        Set<String> fields = this.structs.get(subStrings[1]);
+                        if (fields != null) {
+                            uni.getFields().addAll(fields);
                         }
+                        this.getUniforms().add(uni);
+                    } else {
+                        this.getUniforms().add(new Uniform(subStrings[2].replace(";", ""), 1));
                     }
-                    shaderSource.append(line).append("\n");
                 }
-                reader.close();
-            } else {
-                throw new IOException("Couldn't read shader: " + shaderName);
+                shaderSource.append(line).append("\n");
             }
+            reader.close();
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }

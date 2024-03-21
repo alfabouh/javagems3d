@@ -10,7 +10,7 @@ import ru.BouH.engine.physics.entities.Materials;
 import ru.BouH.engine.physics.entities.PhysDynamicEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 
 public abstract class ParticleFX extends PhysDynamicEntity {
     protected int lifeTime;

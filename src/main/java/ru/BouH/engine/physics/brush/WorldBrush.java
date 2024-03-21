@@ -6,7 +6,7 @@ import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.PhysEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 
 public abstract class WorldBrush extends PhysEntity {
 

@@ -58,6 +58,12 @@ public class MouseKeyboardController implements IController {
 
     @Override
     public void updateControllerState(Window window) {
+        this.getMouse().update();
+        if (this.getMouse().scrollUpdate) {
+            this.getMouse().scrollUpdate = false;
+        } else {
+            this.getMouse().scrollVector = 0;
+        }
         this.keyboard.updateKeys();
         this.getPositionInput().set(0.0d);
         this.getRotationInput().set(0.0d);
@@ -66,13 +72,12 @@ public class MouseKeyboardController implements IController {
         if (!window.isInFocus()) {
             return;
         }
-        MouseKeyboardController mouseKeyboardController1 = ControllerDispatcher.mouseKeyboardController;
         Vector2i posM = new Vector2i((int) (window.getWidth() / 2.0f), (int) (window.getHeight() / 2.0f));
-        double[] xy = mouseKeyboardController1.getMouse().getCursorCoordinates();
+        double[] xy = this.getMouse().getCursorCoordinates();
         double d1 = xy[0] - posM.x;
         double d2 = xy[1] - posM.y;
         this.getRotationInput().set(new Vector2d(d2, d1));
-        mouseKeyboardController1.getMouse().setCursorCoordinates(new double[]{posM.x, posM.y});
+        this.setCursorInCenter();
         if (BindingList.instance.keyA.isPressed()) {
             this.getPositionInput().add(-1.0f, 0.0f, 0.0f);
         }
@@ -93,5 +98,10 @@ public class MouseKeyboardController implements IController {
         }
         this.normalizedPositionInput.set(new Vector3d(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
         this.normalizedRotationInput.set(new Vector2d(this.getRotationInput()).mul(ControllerDispatcher.CAM_SENS));
+    }
+
+    public void setCursorInCenter() {
+        Vector2i posM = new Vector2i((int) (window.getWidth() / 2.0f), (int) (window.getHeight() / 2.0f));
+        this.getMouse().setCursorCoordinates(new double[]{posM.x, posM.y});
     }
 }

@@ -2,7 +2,7 @@ package ru.BouH.engine.render.environment.light;
 
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class PointLight extends Light {
@@ -46,7 +46,7 @@ public class PointLight extends Light {
     }
 
     public float getBrightness() {
-        return this.brightness;
+        return !this.isEnabled() ? -1.0f : this.brightness;
     }
 
     public PointLight setBrightness(float brightness) {
@@ -54,11 +54,15 @@ public class PointLight extends Light {
         return this;
     }
 
-    public void disable() {
-        super.disable();
+    public void stop() {
+        super.stop();
         if (this.getAttachedShadowSceneId() >= 0) {
             Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().unBindPointLightFromShadowScene(this);
         }
+    }
+
+    public void start() {
+        super.start();
     }
 
     @Override

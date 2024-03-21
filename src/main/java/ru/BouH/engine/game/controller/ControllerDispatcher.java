@@ -7,6 +7,7 @@ import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.input.MouseKeyboardController;
 import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.world.object.WorldItem;
+import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.screen.window.Window;
 
 public class ControllerDispatcher {
@@ -61,15 +62,17 @@ public class ControllerDispatcher {
     public void updateController(Window window) {
         if (this.getCurrentController() != null) {
             this.getCurrentController().updateControllerState(window);
-            if (this.getCurrentControlledItem() != null) {
-                this.performControllerToItem(this.getCurrentController(), this.getCurrentControlledItem());
+            if (!Game.getGame().getEngineState().isPaused()) {
+                if (this.getCurrentControlledItem() != null) {
+                    this.performControllerToItem(window, this.getCurrentController(), this.getCurrentControlledItem());
+                }
             }
         }
     }
 
-    private void performControllerToItem(IController iController, IControllable iControllable) {
+    private void performControllerToItem(Window window, IController iController, IControllable iControllable) {
         Vector2d d1 = ControllerDispatcher.getNormalizedRotationInput(iController);
         Vector3d d2 = ControllerDispatcher.getNormalizedPositionInput(iController);
-        iControllable.performController(d1, d2);
+        iControllable.performController(d1, d2, window.isInFocus());
     }
 }

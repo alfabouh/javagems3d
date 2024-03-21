@@ -2,13 +2,14 @@ package ru.BouH.engine.physics.world.object;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
+import ru.BouH.engine.audio.sound.GameSound;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.particles.ParticleFX;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
@@ -74,6 +75,7 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public void onDestroy(IWorld iWorld) {
+        this.clearLights();
         if (!this.isParticle()) {
             Game.getGame().getLogManager().log("Removed entity from world - [ " + this + " ]");
         }
@@ -155,12 +157,12 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public final void disableLight(int i) {
-        this.getAttachedLights().get(i).disable();
+        this.getAttachedLights().get(i).stop();
     }
 
     public final void clearLights() {
         for (Light light : this.attachedLights) {
-            light.disable();
+            light.stop();
         }
         this.attachedLights.clear();
     }
@@ -188,6 +190,14 @@ public abstract class WorldItem implements IWorldObject {
 
     public String getItemName() {
         return this.itemName;
+    }
+
+    public boolean tryAttachSoundTo(GameSound sound) {
+        if (this.relativeRenderObject() == null) {
+            return false;
+        }
+        sound.setAttachedTo(this.relativeRenderObject());
+        return true;
     }
 
     public boolean tryAttachRenderCamera(AttachedCamera attachedCamera) {

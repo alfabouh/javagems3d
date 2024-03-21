@@ -186,10 +186,11 @@ public class ShadowScene {
             this.getSunShadowShader().performUniform("projection_view_matrix", new Matrix4d(cascadeShadow.getLightProjectionViewMatrix()));
             GL30.glCullFace(GL30.GL_BACK);
             for (Model<Format3D> model : modelList) {
-                if (model.getMeshDataGroup() != null) {
-                    this.getSunShadowShader().getUtils().performModelMatrix3d(model, false);
-                    Scene.renderModel(model, GL30.GL_TRIANGLES);
+                if (model == null || model.getMeshDataGroup() == null) {
+                    continue;
                 }
+                this.getSunShadowShader().getUtils().performModelMatrix3d(model, false);
+                Scene.renderModel(model, GL30.GL_TRIANGLES);
             }
         }
 
@@ -202,7 +203,7 @@ public class ShadowScene {
         Screen.setViewport(new Vector2i(ShadowScene.SHADOW_PLIGHT_MAP_SIZE));
         for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
-            if (pointLightShadow.isAttachedToLight()) {
+            if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {
                 pointLightShadow.getPointLightCubeMap().bindFBO();
                 pointLightShadow.configureMatrices();
                 GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
@@ -211,7 +212,11 @@ public class ShadowScene {
                 }
                 this.getPointLightShadowShader().performUniform("far_plane", pointLightShadow.farPlane());
                 this.getPointLightShadowShader().performUniform("lightPos", pointLightShadow.getPointLight().getLightPos());
+                GL30.glCullFace(GL30.GL_BACK);
                 for (Model<Format3D> model : modelList) {
+                    if (model == null || model.getMeshDataGroup() == null) {
+                        continue;
+                    }
                     this.getPointLightShadowShader().getUtils().performModelMatrix3d(model, false);
                     Scene.renderModel(model, GL30.GL_TRIANGLES);
                 }

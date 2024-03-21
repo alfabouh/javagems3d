@@ -2,19 +2,17 @@ package ru.BouH.engine.game;
 
 import javassist.*;
 import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
-import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.audio.SoundManager;
-import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.jframe.ProgressBar;
 import ru.BouH.engine.game.logger.GameLogging;
+import ru.BouH.engine.game.map.loader.IMapLoader;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
-import ru.BouH.engine.proxy.Proxy;
+import ru.BouH.engine.render.scene.gui.base.GUI;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
 
@@ -26,7 +24,7 @@ import java.lang.reflect.Method;
 import java.util.Random;
 
 public class Game {
-    public static final String build = "04.03.2024";
+    public static final String build = "22.03.2024";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;
@@ -35,18 +33,18 @@ public class Game {
     private final Screen screen;
     private final PhysicThreadManager physicThreadManager;
     private final Proxy proxy;
-    private EngineStarter engineStarter;
-    private boolean shouldBeClosed = false;
+    private GameSystem gameSystem;
+    private boolean shouldBeClosed;
 
     private Game() {
         this.logManager = new GameLogging();
-        //this.hack();
         Game.rngSeed = Game.systemTime();
         Game.random = new Random(Game.rngSeed);
         this.physicThreadManager = new PhysicThreadManager(PhysicThreadManager.TICKS_PER_SECOND);
         this.soundManager = new SoundManager();
         this.screen = new Screen();
         this.proxy = new Proxy(this.getPhysicThreadManager().getPhysicsTimer(), this.getScreen());
+        this.shouldBeClosed = false;
     }
 
     public synchronized SoundManager getSoundManager() {
@@ -73,6 +71,14 @@ public class Game {
         return Game.loadFileJar("/" + folder + "/" + path);
     }
 
+    public void pauseGame() {
+        this.gameSystem.pauseGame();
+    }
+
+    public void unPauseGame() {
+        this.gameSystem.unPauseGame();
+    }
+
     public static long systemTime() {
         return System.nanoTime();
     }
@@ -85,46 +91,43 @@ public class Game {
         return Game.startScreen;
     }
 
+    public void showGui(GUI gui) {
+        this.getScreen().getScene().setGui(gui);
+    }
+
+    public void removeGui() {
+        this.getScreen().getScene().removeGui();
+    }
+
+    public GameSystem.EngineState getEngineState() {
+        return this.getEngineSystem().getEngineState();
+    }
+
+    public boolean isCurrentMapIsValid() {
+        return this.getEngineSystem().getMapLoader() != null;
+    }
+
+    public void loadMap(IMapLoader mapLoader) {
+        this.getEngineSystem().loadMap(mapLoader);
+    }
+
+    public void destroyMap() {
+        this.getEngineSystem().destroyMap();
+    }
+
     public static void main(String[] args) throws InterruptedException {
         Game.startScreen = new Game();
         Game.getGame().getLogManager().log("Starting game!");
-        Game.getGame().engineStarter = new EngineStarter();
+        Game.getGame().gameSystem = new GameSystem();
         Game.getGame().getEngineSystem().startSystem();
-    }
-
-    public void hack() {
-        this.logManager.log("Bytecode hacking...");
-        try {
-            this.systemHack();
-        } catch (NotFoundException | CannotCompileException | IOException | ClassNotFoundException |
-                 UnmodifiableClassException e) {
-            throw new RuntimeException(e);
-        }
-        this.logManager.log("Bytecode hacked...");
-    }
-
-    private void systemHack() throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException, UnmodifiableClassException {
-        ClassPool classPool = ClassPool.getDefault();
-
-        CtClass ctClass = classPool.get("org.bytedeco.bullet.presets.BulletCollision");
-        CtMethod ctMethod = ctClass.getDeclaredMethod("map");
-
-        ctMethod.insertAfter("System.out.println(\"F\");");
-        ctClass.toClass();
-
-        for (Method method : btCollisionWorld.ContactResultCallback.class.getMethods()) {
-            for (java.lang.annotation.Annotation annotation : method.getDeclaredAnnotations()) {
-                System.out.println(annotation);
-            }
-        }
     }
 
     public ResourceManager getResourceManager() {
         return this.getEngineSystem().getResourceManager();
     }
 
-    public EngineStarter getEngineSystem() {
-        return this.engineStarter;
+    public GameSystem getEngineSystem() {
+        return this.gameSystem;
     }
 
     public void destroyGame() {
@@ -144,8 +147,12 @@ public class Game {
         return this.getScreen().getRenderWorld();
     }
 
+    public boolean isValidPlayer() {
+        return this.getEngineSystem().getLocalPlayer() != null && this.getPlayerSP() != null;
+    }
+
     public IPlayer getPlayerSP() {
-        return this.getProxy().getPlayerSP();
+        return this.getEngineSystem().getLocalPlayer().getEntityPlayerSP();
     }
 
     public GameLogging getLogManager() {
@@ -162,87 +169,5 @@ public class Game {
 
     public Proxy getProxy() {
         return this.proxy;
-    }
-
-    public static class EngineStarter implements IEngine {
-        public static final Object logicLocker = new Object();
-        private final ResourceManager resourceManager;
-        private Thread thread;
-        private boolean threadHasStarted;
-
-        public EngineStarter() {
-            this.thread = null;
-            this.threadHasStarted = false;
-            this.resourceManager = new ResourceManager();
-        }
-
-        public ResourceManager getResourceManager() {
-            return this.resourceManager;
-        }
-
-        @SuppressWarnings("all")
-        public void startSystem() {
-            if (this.threadHasStarted) {
-                Game.getGame().getLogManager().warn("Engine thread is currently running!");
-                return;
-            }
-            this.resourceManager.init();
-            this.thread = new Thread(() -> {
-                try {
-                    Game.getGame().shouldBeClosed = false;
-                    Game.getGame().getPhysicThreadManager().initService();
-                    Game.getGame().getSoundManager().createSystem();
-                    this.preLoading();
-                    this.postLoading();
-                    Game.getGame().getScreen().startScreen();
-                } finally {
-                    synchronized (PhysicThreadManager.locker) {
-                        PhysicThreadManager.locker.notifyAll();
-                    }
-                    Game.getGame().getPhysicThreadManager().destroy();
-                    Game.getGame().getSoundManager().destroy();
-                    synchronized (EngineStarter.logicLocker) {
-                        EngineStarter.logicLocker.notifyAll();
-                    }
-                }
-            });
-            this.thread.setName("game");
-            this.thread.start();
-        }
-
-        private void preLoading() {
-            ProgressBar progressBar = new ProgressBar();
-            progressBar.setProgress(0);
-            progressBar.showBar();
-            Game.getGame().getScreen().buildScreen();
-            this.preLoadingResources();
-            progressBar.setProgress(50);
-            Game.getGame().getScreen().initScreen();
-            this.populateEnvironment();
-            progressBar.setProgress(100);
-            Game.getGame().getScreen().showWindow();
-            progressBar.hideBar();
-        }
-
-        private void postLoading() {
-            synchronized (EngineStarter.logicLocker) {
-                EngineStarter.logicLocker.notifyAll();
-            }
-            this.threadHasStarted = true;
-        }
-
-        private void populateEnvironment() {
-            World world = Game.getGame().getPhysicsWorld();
-            Game.getGame().getLogManager().log("Populating environment...");
-            GameEvents.populate(world);
-            Game.getGame().getProxy().getLocalPlayer().addPlayerInWorlds(Game.getGame().getPhysicsWorld().getDynamicsWorld());
-            Game.getGame().getLogManager().log("Environment populated!");
-        }
-
-        private void preLoadingResources() {
-            Game.getGame().getLogManager().log("Loading rendering resources...");
-            Game.getGame().getResourceManager().loadAllAssets();
-            Game.getGame().getLogManager().log("Rendering resources loaded!");
-        }
     }
 }

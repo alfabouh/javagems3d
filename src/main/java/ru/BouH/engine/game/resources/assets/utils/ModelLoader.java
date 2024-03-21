@@ -265,7 +265,7 @@ public class ModelLoader {
             if (diffuse != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + diffuse);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + diffuse);
+                    textureSample = ResourceManager.createTexture(fullPath + diffuse, true);
                 }
                 if (textureSample.isValid()) {
                     material.setDiffuse(textureSample);
@@ -276,7 +276,7 @@ public class ModelLoader {
             if (normals != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + normals);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + normals);
+                    textureSample = ResourceManager.createTexture(fullPath + normals, true);
                 }
                 if (textureSample.isValid()) {
                     material.setNormals(textureSample);
@@ -285,7 +285,7 @@ public class ModelLoader {
             if (emissive != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + emissive);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + emissive);
+                    textureSample = ResourceManager.createTexture(fullPath + emissive, true);
                 }
                 if (textureSample.isValid()) {
                     material.setEmissive(textureSample);
@@ -294,7 +294,7 @@ public class ModelLoader {
             if (metallic != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + metallic);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + metallic);
+                    textureSample = ResourceManager.createTexture(fullPath + metallic, true);
                 }
                 if (textureSample.isValid()) {
                     material.setMetallic(textureSample);
@@ -303,7 +303,7 @@ public class ModelLoader {
             if (specular != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + specular);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + specular);
+                    textureSample = ResourceManager.createTexture(fullPath + specular, true);
                 }
                 if (textureSample.isValid()) {
                     material.setSpecular(textureSample);

@@ -2,6 +2,7 @@ package ru.BouH.engine.render.scene.scene_render.groups;
 
 import org.joml.Matrix4d;
 import org.lwjgl.opengl.GL30;
+import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
@@ -57,6 +58,7 @@ public class SkyRender extends SceneRenderBase {
         matrix4d.m32(0);
         shaderManager.getUtils().performModelViewMatrix3d(matrix4d);
         shaderManager.getUtils().setCubeMapTexture(cubeMapProgram);
+        //shaderManager.getUtils().setCubeMapTexture(Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(1).getPointLightCubeMap().getCubeMapProgram());
         Scene.renderModel(model, GL30.GL_TRIANGLES);
         shaderManager.unBind();
         GL30.glDepthFunc(GL30.GL_LESS);

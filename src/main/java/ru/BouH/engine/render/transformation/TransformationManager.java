@@ -30,6 +30,10 @@ public class TransformationManager {
         return TransformationManager.instance.getTransform().getProjectionMatrix(TransformationManager.FOV, Game.getGame().getScreen().getWidth(), Game.getGame().getScreen().getHeight(), TransformationManager.Z_NEAR, TransformationManager.Z_FAR);
     }
 
+    public Matrix4d getProjectionMatrixFpv() {
+        return TransformationManager.instance.getTransform().getProjectionMatrix(TransformationManager.FOV, Game.getGame().getScreen().getWidth(), Game.getGame().getScreen().getHeight(), 0.01f, 10.0f);
+    }
+
     public Matrix4d buildViewMatrix(ICamera camera, Vector3d offset) {
         return TransformationManager.instance.getTransform().buildViewMatrix(camera, offset);
     }
@@ -52,6 +56,10 @@ public class TransformationManager {
 
     public Matrix4d getModelMatrix(Model<Format3D> model, boolean invertRotations) {
         return TransformationManager.instance.getTransform().getModelMatrix(model, invertRotations);
+    }
+
+    public Matrix4d getModelMatrix(Format3D format3D, boolean invertRotations) {
+        return TransformationManager.instance.getTransform().getModelMatrix(format3D, invertRotations);
     }
 
     public void updateViewMatrix(ICamera camera) {
@@ -79,12 +87,12 @@ public class TransformationManager {
         List<Matrix4d> directions = new ArrayList<>();
         Matrix4d perspective = new Matrix4d().perspective((float) Math.toRadians(90.0f), 1.0f, near, far);
 
-        Matrix4d projectionViewMatrix1 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(1.0d, 0.0d, 0.0d)));
-        Matrix4d projectionViewMatrix2 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(-1.0d, 0.0d, 0.0d)));
-        Matrix4d projectionViewMatrix3 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, 0.0d, 1.0d), pos.add(0.0d, 1.0d, 0.0d)));
-        Matrix4d projectionViewMatrix4 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, 0.0d, -1.0d), pos.add(0.0d, -1.0d, 0.0d)));
-        Matrix4d projectionViewMatrix5 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(0.0d, 0.0d, 1.0d)));
-        Matrix4d projectionViewMatrix6 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), pos.add(0.0d, 0.0d, -1.0d)));
+        Matrix4d projectionViewMatrix1 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), new Vector3d(pos).add(1.0d, 0.0d, 0.0d)));
+        Matrix4d projectionViewMatrix2 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), new Vector3d(pos).add(-1.0d, 0.0d, 0.0d)));
+        Matrix4d projectionViewMatrix3 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, 0.0d, 1.0d), new Vector3d(pos).add(0.0d, 1.0d, 0.0d)));
+        Matrix4d projectionViewMatrix4 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, 0.0d, -1.0d), new Vector3d(pos).add(0.0d, -1.0d, 0.0d)));
+        Matrix4d projectionViewMatrix5 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), new Vector3d(pos).add(0.0d, 0.0d, 1.0d)));
+        Matrix4d projectionViewMatrix6 = new Matrix4d(perspective).mul(TransformationManager.instance.getLookAtMatrix(pos, new Vector3d(0.0d, -1.0d, 0.0d), new Vector3d(pos).add(0.0d, 0.0d, -1.0d)));
 
         directions.add(projectionViewMatrix1);
         directions.add(projectionViewMatrix2);

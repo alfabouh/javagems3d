@@ -24,7 +24,7 @@ public class PointLightShadow {
         this.shadowDirections = new ArrayList<>();
         this.pointLight = null;
         this.pointLightCubeMap = new FBOCubeMapProgram(false, false);
-        this.pointLightCubeMap.createFrameBufferCubeMap(new Vector2i(ShadowScene.SHADOW_PLIGHT_MAP_SIZE), false, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_DEPTH_COMPONENT, GL30.GL_DEPTH_COMPONENT, GL30.GL_NEAREST, GL30.GL_CLAMP_TO_EDGE);
+        this.pointLightCubeMap.createFrameBufferCubeMap(new Vector2i(ShadowScene.SHADOW_PLIGHT_MAP_SIZE), false, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_DEPTH_COMPONENT, GL30.GL_DEPTH_COMPONENT, GL30.GL_LINEAR, GL30.GL_CLAMP_TO_EDGE);
     }
 
     public void configureMatrices() {

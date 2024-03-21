@@ -9,14 +9,14 @@ import ru.BouH.engine.game.resources.assets.models.mesh.Mesh;
 public class PlaneModel2D implements BasicMesh<Format2D> {
     private final Vector2d v1;
     private final Vector2d v2;
-    private final int zLevel;
+    private final float zLevel;
     private final boolean inverted;
 
-    public PlaneModel2D(Vector2d v1, Vector2d v2, int zLevel) {
+    public PlaneModel2D(Vector2d v1, Vector2d v2, float zLevel) {
         this(false, v1, v2, zLevel);
     }
 
-    public PlaneModel2D(boolean inverted, Vector2d v1, Vector2d v2, int zLevel) {
+    public PlaneModel2D(boolean inverted, Vector2d v1, Vector2d v2, float zLevel) {
         this.v1 = v1;
         this.v2 = v2;
         this.zLevel = zLevel;

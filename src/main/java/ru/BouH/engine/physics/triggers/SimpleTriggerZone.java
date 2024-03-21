@@ -8,8 +8,7 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.physics.world.object.CollidableWorldItem;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,16 +16,18 @@ import java.util.Set;
 
 public class SimpleTriggerZone implements ITriggerZone {
     protected final Zone zone;
-    private final Set<JBulletEntity> btEnteredBodies;
+    protected final Set<JBulletEntity> btEnteredBodies;
     private btGhostObject ghostObject;
     private btCollisionShape collisionShape;
     private ITrigger ITriggerEntering;
     private ITrigger ITriggerLeaving;
+    private int filter;
 
     public SimpleTriggerZone(Zone zone, ITrigger ITriggerEntering, ITrigger ITriggerLeaving) {
         this.ITriggerEntering = ITriggerEntering;
         this.ITriggerLeaving = ITriggerLeaving;
         this.zone = zone;
+        this.filter = 0;
         this.btEnteredBodies = new HashSet<>();
     }
 
@@ -37,7 +38,16 @@ public class SimpleTriggerZone implements ITriggerZone {
 
     public void onDestroy(IWorld iWorld) {
         this.collisionShape.deallocate();
+        this.ghostObject = null;
         Game.getGame().getLogManager().log("Destroyed ITrigger zone: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
+    }
+
+    public int getFilter() {
+        return this.filter;
+    }
+
+    public void setFilter(int filter) {
+        this.filter = filter;
     }
 
     public Zone getZone() {
@@ -72,8 +82,10 @@ public class SimpleTriggerZone implements ITriggerZone {
         for (JBulletEntity bullet : world.getAllBulletItems()) {
             btOverlappingPairCache btHashedOverlappingPairCache = world.getDynamicsWorld().getPairCache();
             boolean collided = btHashedOverlappingPairCache.findPair(bullet.getBulletObject().getBroadphaseHandle(), this.ghostObject.getBroadphaseHandle()) != null;
-            if (collided) {
-                this.onEnter(bullet);
+            if (collided && ((bullet.getBodyIndex().getGroup() & this.getFilter()) != 0)) {
+                if (this.getTriggerEntering() != null) {
+                    this.onEnter(bullet);
+                }
                 temp.add(bullet);
             }
             btHashedOverlappingPairCache.deallocate();
@@ -85,7 +97,9 @@ public class SimpleTriggerZone implements ITriggerZone {
             Iterator<JBulletEntity> collidableWorldItemIterator = this.btEnteredBodies.iterator();
             while (collidableWorldItemIterator.hasNext()) {
                 JBulletEntity bullet = collidableWorldItemIterator.next();
-                this.onLeave(bullet);
+                if (this.getTriggerLeaving() != null) {
+                    this.onLeave(bullet);
+                }
                 collidableWorldItemIterator.remove();
             }
         }
