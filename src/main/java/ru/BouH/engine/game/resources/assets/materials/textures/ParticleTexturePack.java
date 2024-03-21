@@ -34,7 +34,7 @@ public class ParticleTexturePack {
     private void loadTextures() {
         Game.getGame().getLogManager().log("Loading particle texture pack: " + this.path);
         for (int i = 0; i < this.texturesNum; i++) {
-            this.iImageSample[i] = ResourceManager.createTexture(this.path + i + this.format);
+            this.iImageSample[i] = ResourceManager.createTexture(this.path + i + this.format, true);
         }
     }
 }

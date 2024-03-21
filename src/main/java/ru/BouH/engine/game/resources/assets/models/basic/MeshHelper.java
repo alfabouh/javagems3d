@@ -1,6 +1,7 @@
 package ru.BouH.engine.game.resources.assets.models.basic;
 
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.basic.forms.D2.PlaneModel2D;
@@ -18,12 +19,17 @@ public class MeshHelper {
         return vectorModel2D.generateModel();
     }
 
-    public static Model<Format2D> generatePlane2DModel(Vector2d v1, Vector2d v2, int zLevel) {
+    public static Model<Format2D> generatePlane2DModel(Vector2f v1, Vector2f v2, float zLevel) {
+        PlaneModel2D planeModel2D = new PlaneModel2D(new Vector2d(v1), new Vector2d(v2), zLevel);
+        return planeModel2D.generateModel();
+    }
+
+    public static Model<Format2D> generatePlane2DModel(Vector2d v1, Vector2d v2, float zLevel) {
         PlaneModel2D planeModel2D = new PlaneModel2D(v1, v2, zLevel);
         return planeModel2D.generateModel();
     }
 
-    public static Model<Format2D> generatePlane2DModelInverted(Vector2d v1, Vector2d v2, int zLevel) {
+    public static Model<Format2D> generatePlane2DModelInverted(Vector2d v1, Vector2d v2, float zLevel) {
         PlaneModel2D planeModel2D = new PlaneModel2D(true, v1, v2, zLevel);
         return planeModel2D.generateModel();
     }
@@ -48,12 +54,12 @@ public class MeshHelper {
         return vectorModel2D.generateMesh();
     }
 
-    public static Mesh generatePlane2DMesh(Vector2d v1, Vector2d v2, int zLevel) {
+    public static Mesh generatePlane2DMesh(Vector2d v1, Vector2d v2, float zLevel) {
         PlaneModel2D planeModel2D = new PlaneModel2D(v1, v2, zLevel);
         return planeModel2D.generateMesh();
     }
 
-    public static Mesh generatePlane2DMeshInverted(Vector2d v1, Vector2d v2, int zLevel) {
+    public static Mesh generatePlane2DMeshInverted(Vector2d v1, Vector2d v2, float zLevel) {
         PlaneModel2D planeModel2D = new PlaneModel2D(true, v1, v2, zLevel);
         return planeModel2D.generateMesh();
     }

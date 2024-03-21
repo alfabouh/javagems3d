@@ -13,6 +13,7 @@ public abstract class Light implements IWorldDynamic {
     private final Vector3d lightPos;
     private PhysicsObject attachedTo;
     private boolean enabled;
+    private boolean isActive;
 
     public Light() {
         this(new Vector3d(0.0d), new Vector3d(0.0d), new Vector3d(0.0d));
@@ -30,7 +31,8 @@ public abstract class Light implements IWorldDynamic {
         this.lightColor = new Vector3d(lightColor);
         this.lightPos = new Vector3d(lightPos);
         this.offset = new Vector3d(offset);
-        this.enabled = false;
+        this.enabled = true;
+        this.isActive = false;
         this.attachedTo = null;
     }
 
@@ -54,22 +56,26 @@ public abstract class Light implements IWorldDynamic {
         this.attachedTo = attachedTo;
     }
 
-    public void enable() {
+    public void start() {
         if (this.isAttached()) {
             this.attachedTo.onAddLight(this);
         }
-        this.setEnabled(true);
+        this.isActive = true;
     }
 
-    public void disable() {
+    public void stop() {
         if (this.isAttached()) {
             this.attachedTo.onRemoveLight(this);
         }
-        this.setEnabled(false);
+        this.isActive = false;
+    }
+
+    public boolean isActive() {
+        return this.isActive;
     }
 
     public boolean isEnabled() {
-        return this.enabled;
+        return this.isActive() && this.enabled;
     }
 
     public void setEnabled(boolean enabled) {

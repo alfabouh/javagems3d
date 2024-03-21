@@ -5,11 +5,9 @@ import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.BulletCollision.btGhostObject;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
 import org.joml.Vector3d;
-import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.GameEvents;
 import ru.BouH.engine.game.exception.GameException;
-import ru.BouH.engine.game.resources.ResourceManager;
+import ru.BouH.engine.graph.Graph;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.liquids.ILiquid;
@@ -18,17 +16,16 @@ import ru.BouH.engine.physics.triggers.ITrigger;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.triggers.SimpleTriggerZone;
 import ru.BouH.engine.physics.triggers.Zone;
-import ru.BouH.engine.physics.world.object.CollidableWorldItem;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
-import ru.BouH.engine.proxy.IWorld;
 import ru.BouH.engine.render.environment.light.Light;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public final class World implements IWorld {
+    private Graph graph;
     private final Set<WorldItem> allWorldItems;
     private final Set<IWorldDynamic> allDynamicItems;
     private final Set<JBulletEntity> allBulletItems;
@@ -39,6 +36,7 @@ public final class World implements IWorld {
     private int ticks;
 
     public World() {
+        this.graph = null;
         this.allWorldItems = new HashSet<>();
         this.allDynamicItems = new HashSet<>();
         this.toCleanItems = new HashSet<>();
@@ -64,9 +62,14 @@ public final class World implements IWorld {
     }
 
     public void onWorldStart() {
-        Game.getGame().getLogManager().log("Creating local player");
-        Game.getGame().getProxy().createLocalPlayer();
-        Game.getGame().getLogManager().log("Local player created!");
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
+    public Graph getGraph() {
+        return this.graph;
     }
 
     public WorldItem getItemByID(int id) {
@@ -101,16 +104,23 @@ public final class World implements IWorld {
         }
         this.clearItemsCollection(this.toCleanItems);
         this.toCleanItems.clear();
-        GameEvents.worldUpdateEvent(this);
         this.ticks += 1;
     }
 
     public void onWorldEnd() {
         this.getTriggerZones().forEach(e -> e.onDestroy(this));
+        this.getLiquids().forEach(e -> e.onDestroy(this));
+        this.getTriggerZones().clear();
+        this.getLiquids().clear();
     }
 
     public int getTicks() {
         return this.ticks;
+    }
+
+    @Override
+    public void cleaUp() {
+        this.clearItemsCollection(this.getAllWorldItems());
     }
 
     public void addLight(Light light) {
@@ -141,7 +151,6 @@ public final class World implements IWorld {
         for (WorldItem worldItem : collection) {
             this.collectionsWaitingRefresh = true;
             worldItem.onDestroy(this);
-            worldItem.clearLights();
             if (World.isItemJBulletObject(worldItem)) {
                 JBulletEntity jbItem = (JBulletEntity) worldItem;
                 btCollisionObject rigidBody = jbItem.getBulletObject();
@@ -171,14 +180,28 @@ public final class World implements IWorld {
         this.getLiquids().add(liquid);
     }
 
+    public void removeTriggerZone(ITriggerZone iTriggerZone) {
+        if (iTriggerZone == null) {
+            throw new GameException("Tried to pass NULL triggerZone in world");
+        }
+        btGhostObject btCollisionObject = iTriggerZone.triggerZoneGhostCollision();
+        if (btCollisionObject != null) {
+            this.getDynamicsWorld().removeCollisionObject(btCollisionObject);
+            iTriggerZone.onDestroy(this);
+            this.getTriggerZones().remove(iTriggerZone);
+        }
+    }
+
     public void addTriggerZone(ITriggerZone iTriggerZone) {
         if (iTriggerZone == null) {
             throw new GameException("Tried to pass NULL triggerZone in world");
         }
         iTriggerZone.onSpawn(this);
         btGhostObject btCollisionObject = iTriggerZone.triggerZoneGhostCollision();
-        this.addInBulletWorld(btCollisionObject, iTriggerZone.getBodyGroup());
-        this.getTriggerZones().add(iTriggerZone);
+        if (btCollisionObject != null) {
+            this.addInBulletWorld(btCollisionObject, iTriggerZone.getBodyGroup());
+            this.getTriggerZones().add(iTriggerZone);
+        }
     }
 
     private void addItemInWorld(WorldItem worldItem) throws GameException {

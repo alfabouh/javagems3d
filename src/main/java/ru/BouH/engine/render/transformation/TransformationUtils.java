@@ -17,10 +17,14 @@ public class TransformationUtils {
     }
 
     public final Matrix4d getModelMatrix(Model<Format3D> model, boolean invertRotations) {
-        Vector3d rotation = new Vector3d(model.getFormat().getRotation());
-        Vector3d position = new Vector3d(model.getFormat().getPosition());
+        return this.getModelMatrix(model.getFormat(), invertRotations);
+    }
+
+    public final Matrix4d getModelMatrix(Format3D format3D, boolean invertRotations) {
+        Vector3d rotation = new Vector3d(format3D.getRotation());
+        Vector3d position = new Vector3d(format3D.getPosition());
         Matrix4d m1 = new Matrix4d();
-        return m1.identity().translate(position).rotateXYZ(invertRotations ? rotation.x : -rotation.x, invertRotations ? rotation.y : -rotation.y, invertRotations ? rotation.z : -rotation.z).scale(model.getFormat().getScale());
+        return m1.identity().translate(position).rotateXYZ(invertRotations ? rotation.x : -rotation.x, invertRotations ? rotation.y : -rotation.y, invertRotations ? rotation.z : -rotation.z).scale(format3D.getScale());
     }
 
     public final Matrix4d getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {

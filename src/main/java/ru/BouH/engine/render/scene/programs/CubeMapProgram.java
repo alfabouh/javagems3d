@@ -83,7 +83,7 @@ public class CubeMapProgram {
                 builder.append("_");
                 builder.append(i + 1);
                 builder.append(format);
-                this.textures[i] = ResourceManager.createTexture(builder.toString());
+                this.textures[i] = ResourceManager.createTexture(builder.toString(), true);
             }
         }
 

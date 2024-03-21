@@ -4,7 +4,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.environment.fog.Fog;
 import ru.BouH.engine.render.environment.light.LightManager;
 import ru.BouH.engine.render.environment.sky.Sky;

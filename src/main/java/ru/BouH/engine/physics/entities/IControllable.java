@@ -9,7 +9,7 @@ public interface IControllable {
 
     void setController(IController iController);
 
-    void performController(Vector2d rotationInput, Vector3d xyzInput);
+    void performController(Vector2d rotationInput, Vector3d xyzInput, boolean isFocused);
 
     default boolean isValidController() {
         return this.currentController() != null;

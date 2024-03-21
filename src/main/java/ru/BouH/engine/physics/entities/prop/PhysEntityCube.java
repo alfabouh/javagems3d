@@ -6,7 +6,7 @@ import ru.BouH.engine.physics.collision.AbstractCollision;
 import ru.BouH.engine.physics.collision.OBB;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 
 public class PhysEntityCube extends PhysEntityProp {
 

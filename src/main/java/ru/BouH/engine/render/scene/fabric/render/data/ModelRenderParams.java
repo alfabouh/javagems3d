@@ -2,6 +2,7 @@ package ru.BouH.engine.render.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
+import org.joml.Vector3d;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 
 @SuppressWarnings("all")
@@ -13,8 +14,10 @@ public final class ModelRenderParams {
     private float alphaDiscardValue;
     private boolean isBright;
     private Vector2d textureScaling;
+    private Vector3d customCullingAABSize;
     private ShaderManager shaderManager;
     private float renderDistance;
+    private boolean shouldInterpolateMovement;
 
     public ModelRenderParams(boolean shadowCaster, boolean shadowReceiver, boolean hasTransparency, @NotNull ShaderManager shaderManager) {
         this.shadowCaster = shadowCaster;
@@ -26,10 +29,30 @@ public final class ModelRenderParams {
         this.renderDistance = -1.0f;
         this.alphaDiscardValue = 0.0f;
         this.textureScaling = new Vector2d(1.0d);
+        this.shouldInterpolateMovement = true;
+        this.customCullingAABSize = null;
     }
 
     public static ModelRenderParams defaultModelRenderConstraints(@NotNull ShaderManager shaderManager) {
         return new ModelRenderParams(true, true, false, shaderManager);
+    }
+
+    public ModelRenderParams setShouldInterpolateMovement(boolean shouldInterpolateMovement) {
+        this.shouldInterpolateMovement = shouldInterpolateMovement;
+        return this;
+    }
+
+    public boolean isShouldInterpolateMovement() {
+        return this.shouldInterpolateMovement;
+    }
+
+    public Vector3d getCustomCullingAABSize() {
+        return this.customCullingAABSize;
+    }
+
+    public ModelRenderParams setCustomCullingAABSize(Vector3d customCullingAABSize) {
+        this.customCullingAABSize = customCullingAABSize;
+        return this;
     }
 
     public ModelRenderParams invertTextureCoordinates() {
@@ -67,16 +90,18 @@ public final class ModelRenderParams {
         return this.shadowCaster;
     }
 
-    public void setShadowCaster(boolean shadowCaster) {
+    public ModelRenderParams setShadowCaster(boolean shadowCaster) {
         this.shadowCaster = shadowCaster;
+        return this;
     }
 
     public boolean isShadowReceiver() {
         return this.shadowReceiver;
     }
 
-    public void setShadowReceiver(boolean shadowReceiver) {
+    public ModelRenderParams setShadowReceiver(boolean shadowReceiver) {
         this.shadowReceiver = shadowReceiver;
+        return this;
     }
 
     public Vector2d getTextureScaling() {
@@ -122,6 +147,8 @@ public final class ModelRenderParams {
         modelRenderParams.setBright(this.isBright());
         modelRenderParams.setRenderDistance(this.getRenderDistance());
         modelRenderParams.setAlphaDiscard(this.getAlphaDiscardValue());
+        modelRenderParams.setCustomCullingAABSize(this.getCustomCullingAABSize());
+        modelRenderParams.setShouldInterpolateMovement(this.isShouldInterpolateMovement());
         return modelRenderParams;
     }
 }

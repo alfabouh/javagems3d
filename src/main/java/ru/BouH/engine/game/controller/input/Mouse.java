@@ -8,10 +8,57 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Mouse {
     private final Window window;
     private boolean isInWindowBounds;
+    public boolean scrollUpdate;
+    public int scrollVector;
+    private boolean flag1;
+    private boolean flag2;
+    private boolean flag3;
+    private boolean forceInterruptLMB;
+    private boolean forceInterruptRMB;
+    private boolean forceInterruptMMB;
 
     public Mouse(Window window) {
         this.window = window;
         GLFW.glfwSetCursorEnterCallback(window.getDescriptor(), (getWindow, entered) -> this.isInWindowBounds = entered);
+        GLFW.glfwSetScrollCallback(window.getDescriptor(), (getWindow, x, y) -> {
+            if (y > 0) {
+                this.scrollVector = 1;
+            }
+            if (y < 0) {
+                this.scrollVector = -1;
+            }
+            this.scrollUpdate = true;
+        });
+    }
+
+    public void update() {
+        this.flag1 = GLFW.glfwGetMouseButton(this.window.getDescriptor(), GLFW.GLFW_MOUSE_BUTTON_1) == GLFW.GLFW_PRESS;
+        this.flag2 = GLFW.glfwGetMouseButton(this.window.getDescriptor(), GLFW.GLFW_MOUSE_BUTTON_2) == GLFW.GLFW_PRESS;
+        this.flag3 = GLFW.glfwGetMouseButton(this.window.getDescriptor(), GLFW.GLFW_MOUSE_BUTTON_3) == GLFW.GLFW_PRESS;
+
+        if (this.forceInterruptLMB) {
+            if (!this.flag1) {
+                this.forceInterruptLMB = false;
+            } else {
+                this.flag1 = false;
+            }
+        }
+
+        if (this.forceInterruptRMB) {
+            if (!this.flag2) {
+                this.forceInterruptRMB = false;
+            } else {
+                this.flag2 = false;
+            }
+        }
+
+        if (this.forceInterruptMMB) {
+            if (!this.flag3) {
+                this.forceInterruptMMB = false;
+            } else {
+                this.flag3 = false;
+            }
+        }
     }
 
     public Window getWindow() {
@@ -26,32 +73,34 @@ public class Mouse {
     }
 
     public void setCursorCoordinates(double[] xy) {
-        GLFW.glfwSetCursorPos(window.getDescriptor(), xy[0], xy[1]);
+        GLFW.glfwSetCursorPos(this.window.getDescriptor(), xy[0], xy[1]);
     }
 
     public boolean isCursorInWindowBounds() {
         return this.isInWindowBounds;
     }
 
+    public void forceInterruptLMB() {
+        this.forceInterruptLMB = true;
+    }
+
+    public void forceInterruptRMB() {
+        this.forceInterruptRMB = true;
+    }
+
+    public void forceInterruptMMB() {
+        this.forceInterruptMMB = true;
+    }
+
     public boolean isLeftKeyPressed() {
-        return this.isMouseKeyPressed(GLFW.GLFW_MOUSE_BUTTON_1);
+        return this.flag1;
     }
 
     public boolean isRightKeyPressed() {
-        return this.isMouseKeyPressed(GLFW.GLFW_MOUSE_BUTTON_2);
+        return this.flag2;
     }
 
     public boolean isMiddleKeyPressed() {
-        return this.isMouseKeyPressed(GLFW.GLFW_MOUSE_BUTTON_3);
-    }
-
-    public boolean isMouseKeyPressed(int code) {
-        AtomicBoolean flag = new AtomicBoolean(false);
-        GLFW.glfwSetMouseButtonCallback(this.getWindow().getDescriptor(), (getWindow, button, action, mode) -> {
-            if (button == code && action == GLFW.GLFW_PRESS) {
-                flag.set(true);
-            }
-        });
-        return flag.get();
+        return this.flag3;
     }
 }

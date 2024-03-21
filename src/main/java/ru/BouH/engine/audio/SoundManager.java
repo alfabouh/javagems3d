@@ -5,11 +5,9 @@ import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.audio.sound.GameSound;
 import ru.BouH.engine.audio.sound.SoundBuffer;
-import ru.BouH.engine.audio.sound.SoundListener;
 import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
-import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.world.object.WorldItem;
 
 import java.nio.ByteBuffer;
@@ -20,7 +18,6 @@ import java.util.Set;
 
 public final class SoundManager {
     private final Set<GameSound> sounds;
-    private SoundListener soundListener;
     private boolean isSystemCreated;
     private long device;
     private long context;
@@ -45,8 +42,8 @@ public final class SoundManager {
         AL.createCapabilities(alcCapabilities);
         this.isSystemCreated = true;
         Game.getGame().getLogManager().log("OpenAL system successfully created!");
-        this.soundListener = new SoundListener(this);
         AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
+        SoundManager.checkALonErrors();
     }
 
     public static void checkALonErrors() {
@@ -86,22 +83,25 @@ public final class SoundManager {
     }
 
     public GameSound playLocalSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain) {
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, 1.0f, null);
-        gameSound.playSound();
-        this.sounds.add(gameSound);
-        return gameSound;
+        //GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, 1.0f, null);
+        //gameSound.playSound();
+        //this.sounds.add(gameSound);
+        return null;
     }
 
     public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, Vector3d position) {
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
-        gameSound.setPosition(position);
-        gameSound.playSound();
-        this.sounds.add(gameSound);
-        return gameSound;
+        //GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
+        //gameSound.setPosition(position);
+        //gameSound.playSound();
+        //this.sounds.add(gameSound);
+        return null;
     }
 
     public GameSound playSoundAtEntity(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem worldItem) {
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, worldItem);
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
+        if (!worldItem.tryAttachSoundTo(gameSound)) {
+            Game.getGame().getLogManager().warn("Couldn't attach sound to: " + worldItem);
+        }
         gameSound.setPosition(worldItem.getPosition());
         gameSound.playSound();
         this.sounds.add(gameSound);
@@ -122,10 +122,6 @@ public final class SoundManager {
             }
         }
         SoundManager.checkALonErrors();
-    }
-
-    public SoundListener getSoundListener() {
-        return this.soundListener;
     }
 
     public long getContext() {

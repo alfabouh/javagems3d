@@ -24,7 +24,7 @@ import ru.BouH.engine.physics.entities.prop.PhysLightCube;
 import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.environment.light.PointLight;
 
 public class DynamicPlayerSP extends PhysEntity implements IPlayer {
@@ -260,7 +260,7 @@ public class DynamicPlayerSP extends PhysEntity implements IPlayer {
     }
 
     @Override
-    public void performController(Vector2d rotationInput, Vector3d xyzInput) {
+    public void performController(Vector2d rotationInput, Vector3d xyzInput, boolean isFocused) {
         if (BindingList.instance.keyBlock1.isClicked()) {
             PhysLightCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 2.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);

@@ -3,7 +3,7 @@ package ru.BouH.engine.render.environment.sky;
 
 import org.joml.Vector3f;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
-import ru.BouH.engine.proxy.IWorld;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.environment.sky.skybox.ISkyBox;
 
 public class Sky implements IWorldDynamic {
