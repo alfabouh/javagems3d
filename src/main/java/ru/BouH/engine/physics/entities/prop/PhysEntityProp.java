@@ -7,18 +7,19 @@ import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.world.World;
 
 public abstract class PhysEntityProp extends PhysDynamicEntity {
-    private final Vector3d size;
+    public PhysEntityProp(World world, String name, RigidBodyObject.PhysProperties properties, double scale, @NotNull Vector3d pos, @NotNull Vector3d rot) {
+        super(world, name, properties, scale, pos, rot);
+    }
 
-    public PhysEntityProp(World world, RigidBodyObject.PhysProperties properties, Vector3d size, double scale, @NotNull Vector3d pos, @NotNull Vector3d rot) {
+    public PhysEntityProp(World world, String name, RigidBodyObject.PhysProperties properties, @NotNull Vector3d pos, @NotNull Vector3d rot) {
+        super(world, name, properties, pos, rot);
+    }
+
+    public PhysEntityProp(World world, RigidBodyObject.PhysProperties properties, double scale, @NotNull Vector3d pos, @NotNull Vector3d rot) {
         super(world, properties, scale, pos, rot);
-        this.size = new Vector3d(size);
     }
 
-    public PhysEntityProp(World world, RigidBodyObject.PhysProperties properties, Vector3d size, @NotNull Vector3d pos, @NotNull Vector3d rot) {
-        this(world, properties, size, 1.0d, pos, rot);
-    }
-
-    public Vector3d getSize() {
-        return this.size;
+    public PhysEntityProp(World world, RigidBodyObject.PhysProperties properties, @NotNull Vector3d pos, @NotNull Vector3d rot) {
+        super(world, properties, pos, rot);
     }
 }

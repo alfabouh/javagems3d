@@ -1,7 +1,6 @@
 package ru.BouH.engine.physics.world.timer;
 
 import org.jetbrains.annotations.NotNull;
-import ru.BouH.engine.math.IntPair;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

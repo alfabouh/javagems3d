@@ -15,7 +15,6 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LightManager implements ILightManager {
     public static final int MAX_POINT_LIGHTS = 128;
@@ -63,6 +62,7 @@ public class LightManager implements ILightManager {
     public List<PointLight> getPointLightList() {
         return this.pointLightList;
     }
+
     @Override
     public void updateBuffers(SceneWorld sceneWorld, Matrix4d viewMatrix) {
         this.getPointLightList().forEach(e -> e.onUpdate(sceneWorld));

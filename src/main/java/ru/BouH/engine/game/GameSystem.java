@@ -1,19 +1,17 @@
 package ru.BouH.engine.game;
 
 import ru.BouH.engine.game.controller.ControllerDispatcher;
-import ru.BouH.engine.game.map.Map01;
 import ru.BouH.engine.game.map.loader.IMapLoader;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
-import ru.BouH.engine.render.scene.gui.InGameGUI;
 
 public class GameSystem implements IEngine {
     private final ResourceManager resourceManager;
+    private final EngineState engineState;
     private Thread thread;
     private IMapLoader mapLoader;
-    private final EngineState engineState;
     private LocalPlayer localPlayer;
 
     public GameSystem() {
@@ -49,10 +47,12 @@ public class GameSystem implements IEngine {
             Game.getGame().getLogManager().warn("Engine thread is not ready to load map!");
             return;
         }
+        this.startWorlds();
         Game.getGame().getLogManager().log("Loading map " + this.currentMapName());
         World world = Game.getGame().getPhysicThreadManager().getPhysicsTimer().getWorld();
         this.localPlayer = new LocalPlayer(world);
         this.getLocalPlayer().addPlayerInWorlds(this.getMapLoader().levelInfo().getPlayerStartPos());
+
         Game.getGame().getLogManager().log("Created player");
         Game.getGame().getLogManager().log(this.currentMapName() + ": Adding brushes!");
         this.getMapLoader().addBrushes(world);
@@ -64,9 +64,12 @@ public class GameSystem implements IEngine {
         this.getMapLoader().addEntities(world);
         Game.getGame().getLogManager().log(this.currentMapName() + ": Adding sounds!");
         this.getMapLoader().addSounds(world);
+        Game.getGame().getLogManager().log(this.currentMapName() + ": Reading Nav Mesh!");
+        this.getMapLoader().readNavMesh(world);
 
         Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(ControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayerSP());
         Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayerSP());
+        this.unPauseGame();
     }
 
     public LocalPlayer getLocalPlayer() {
@@ -74,8 +77,9 @@ public class GameSystem implements IEngine {
     }
 
     public void destroyMap() {
-        this.mapLoader = null;
+        this.pauseGame();
         this.clean();
+        this.mapLoader = null;
     }
 
     public void pauseGame() {
@@ -87,14 +91,27 @@ public class GameSystem implements IEngine {
     }
 
     public void clean() {
+        if (this.mapLoader == null) {
+            return;
+        }
         if (!this.engineState().isEngineIsReady()) {
             Game.getGame().getLogManager().warn("Engine thread is not ready to be cleaned!");
             return;
         }
+        Game.getGame().getSoundManager().cleanAllSounds();
         Game.getGame().getLogManager().warn("Cleaning worlds!");
-        Game.getGame().getPhysicThreadManager().getPhysicsTimer().getWorld().cleaUp();
-        Game.getGame().getScreen().getScene().getSceneWorld().cleaUp();
+        this.endWorlds();
         this.localPlayer = null;
+    }
+
+    private void startWorlds() {
+        Game.getGame().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldStart();
+        Game.getGame().getScreen().getScene().getSceneWorld().onWorldStart();
+    }
+
+    private void endWorlds() {
+        Game.getGame().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldEnd();
+        Game.getGame().getScreen().getScene().getSceneWorld().onWorldEnd();
     }
 
     public ResourceManager getResourceManager() {
@@ -118,6 +135,7 @@ public class GameSystem implements IEngine {
                 this.engineState().engineIsReady = true;
                 Game.getGame().getScreen().startScreen();
             } finally {
+                this.destroyMap();
                 Game.getGame().destroyGame();
                 synchronized (PhysicThreadManager.locker) {
                     PhysicThreadManager.locker.notifyAll();
@@ -152,7 +170,7 @@ public class GameSystem implements IEngine {
 
         public EngineState() {
             this.gameResourcesLoaded = false;
-            this.paused = false;
+            this.paused = true;
             this.engineIsReady = false;
         }
 

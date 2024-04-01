@@ -1,9 +1,7 @@
 package ru.BouH.engine.game;
 
-import org.joml.Vector3d;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.physics.entities.PhysEntity;
-import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.world.object.WorldItem;
@@ -63,9 +61,5 @@ public class Proxy {
 
     public void removeEntityFromWorlds(PhysEntity physEntity) {
         this.physicsTimer.getWorld().removeItem(physEntity);
-    }
-
-    public void clearEntities() {
-        this.physicsTimer.getWorld().clearAllItems();
     }
 }

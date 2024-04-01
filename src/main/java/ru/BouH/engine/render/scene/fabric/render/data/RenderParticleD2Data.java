@@ -1,7 +1,7 @@
 package ru.BouH.engine.render.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.materials.textures.ParticleTexturePack;
 import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
@@ -18,7 +18,7 @@ public class RenderParticleD2Data extends RenderObjectData {
 
     public RenderParticleD2Data(IRenderFabric renderFabric, @NotNull Class<? extends PhysicsObject> aClass, @NotNull ShaderManager shaderManager, ParticleTexturePack particleTexturePack, boolean isBright) {
         super(renderFabric, aClass, shaderManager);
-        IEntityModelConstructor<WorldItem> particleModelConstructor = e -> new MeshDataGroup(MeshHelper.generatePlane3DMesh(new Vector3d(-0.05d, -0.05d, 0.0d), new Vector3d(-0.05d, 0.05d, 0.0d), new Vector3d(0.05d, -0.05d, 0.0d), new Vector3d(0.05d, 0.05d, 0.0d)));
+        IEntityModelConstructor<WorldItem> particleModelConstructor = e -> new MeshDataGroup(MeshHelper.generatePlane3DMesh(new Vector3f(-0.05f, -0.05f, 0.0f), new Vector3f(-0.05f, 0.05f, 0.0f), new Vector3f(0.05f, -0.05f, 0.0f), new Vector3f(0.05f, 0.05f, 0.0f)));
         this.setEntityModelConstructor(particleModelConstructor);
         this.particleTexturePack = particleTexturePack;
         Material material = new Material();

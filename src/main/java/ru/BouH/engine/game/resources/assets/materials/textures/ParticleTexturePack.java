@@ -1,5 +1,6 @@
 package ru.BouH.engine.game.resources.assets.materials.textures;
 
+import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.ResourceManager;
 
@@ -34,7 +35,7 @@ public class ParticleTexturePack {
     private void loadTextures() {
         Game.getGame().getLogManager().log("Loading particle texture pack: " + this.path);
         for (int i = 0; i < this.texturesNum; i++) {
-            this.iImageSample[i] = ResourceManager.createTexture(this.path + i + this.format, true);
+            this.iImageSample[i] = ResourceManager.createTexture(this.path + i + this.format, true, GL30.GL_REPEAT);
         }
     }
 }

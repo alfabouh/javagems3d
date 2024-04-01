@@ -2,7 +2,6 @@ package ru.BouH.engine.game.logger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.BouH.engine.game.Game;
 
 public class GameLogging {
     private final Logger log;

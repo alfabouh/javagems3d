@@ -3,8 +3,8 @@ package ru.BouH.engine.physics.particles;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import ru.BouH.engine.math.MathHelper;
-import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.IWorld;
+import ru.BouH.engine.physics.world.World;
 
 public class ParticleFlame extends SimpleParticle {
     public ParticleFlame(World world, double scale, @NotNull Vector3d pos, @NotNull Vector3d rot) {

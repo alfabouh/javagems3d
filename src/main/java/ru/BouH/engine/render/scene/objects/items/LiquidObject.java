@@ -2,6 +2,7 @@ package ru.BouH.engine.render.scene.objects.items;
 
 import org.joml.Vector2d;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
@@ -27,10 +28,10 @@ public final class LiquidObject implements ICullable {
         Vector3d location = liquid.getZone().getLocation();
         Vector3d size = new Vector3d(liquid.getZone().getSize()).mul(0.5d);
         double y = location.y + size.y;
-        Vector3d v1 = new Vector3d(location.x - size.x, y, location.z - size.z);
-        Vector3d v2 = new Vector3d(location.x - size.x, y, location.z + size.z);
-        Vector3d v3 = new Vector3d(location.x + size.x, y, location.z - size.z);
-        Vector3d v4 = new Vector3d(location.x + size.x, y, location.z + size.z);
+        Vector3f v1 = new Vector3f((float) (location.x - size.x), (float) y, (float) (location.z - size.z));
+        Vector3f v2 = new Vector3f((float) (location.x - size.x), (float) y, (float) (location.z + size.z));
+        Vector3f v3 = new Vector3f((float) (location.x + size.x), (float) y, (float) (location.z - size.z));
+        Vector3f v4 = new Vector3f((float) (location.x + size.x), (float) y, (float) (location.z + size.z));
         if (size.x > size.z) {
             this.textureScaling.set(new Vector2d(size.x / size.z, 1.0d));
         } else if (size.x < size.z) {

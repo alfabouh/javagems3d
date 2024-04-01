@@ -8,6 +8,7 @@ import ru.BouH.engine.game.controller.components.IKeyAction;
 import ru.BouH.engine.game.controller.components.Key;
 import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.input.MouseKeyboardController;
+import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.gui.InGameGUI;
@@ -30,6 +31,7 @@ public class BindingList {
     public final Key keyBlock3;
     public final Key keyClear;
     public final Key keyEsc;
+    public final Key keyV;
     public final Key keyY;
     public final Key keyZ;
     public final Key keyR;
@@ -48,6 +50,12 @@ public class BindingList {
         this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
         this.keyClear = new Key(GLFW.GLFW_KEY_X);
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+
+        this.keyV = new FunctionalKey(e -> {
+            ResourceManager.shaderAssets.destroyShaders();
+            ResourceManager.reloadShaders();
+            ResourceManager.shaderAssets.startShaders();
+        }, GLFW.GLFW_KEY_V);
 
         this.keyEsc = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
@@ -111,6 +119,7 @@ public class BindingList {
             }
         }, GLFW.GLFW_KEY_T);
 
+        Binding.createBinding(this.keyV, "Reload shaders");
         Binding.createBinding(this.keyA, "Шаг влево");
         Binding.createBinding(this.keyD, "Шаг вправо");
         Binding.createBinding(this.keyW, "Шаг вперед");

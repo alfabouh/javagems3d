@@ -1,4 +1,5 @@
 package ru.BouH.engine.graph.pathfind;
+
 import ru.BouH.engine.graph.Graph;
 
 import java.util.*;
@@ -29,7 +30,7 @@ public class AStar {
             Graph.GVertex current = openList.poll();
 
             if (current.equals(this.end)) {
-                return buildPath(current);
+                return this.buildPath(current);
             }
 
             closedList.add(current);

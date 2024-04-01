@@ -8,8 +8,8 @@ import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.particles.ParticleFX;
-import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.IWorld;
+import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
@@ -139,9 +139,13 @@ public abstract class WorldItem implements IWorldObject {
 
     public void setDead() {
         if (this.canBeDestroyed()) {
-            this.isDead = true;
-            this.getWorld().removeItem(this);
+            this.destroy();
         }
+    }
+
+    public void destroy() {
+        this.isDead = true;
+        this.getWorld().removeItem(this);
     }
 
     public boolean isRemoteControlled() {

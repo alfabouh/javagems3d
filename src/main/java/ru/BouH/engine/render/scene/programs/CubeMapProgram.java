@@ -9,7 +9,7 @@ import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import java.nio.ByteBuffer;
 
 public class CubeMapProgram {
-    public static final String folder = "/textures/cubemaps/";
+    public static final String folder = "/assets/textures/cubemaps/";
 
     private int textureId;
 
@@ -83,7 +83,7 @@ public class CubeMapProgram {
                 builder.append("_");
                 builder.append(i + 1);
                 builder.append(format);
-                this.textures[i] = ResourceManager.createTexture(builder.toString(), true);
+                this.textures[i] = ResourceManager.createTexture(builder.toString(), true, GL30.GL_REPEAT);
             }
         }
 

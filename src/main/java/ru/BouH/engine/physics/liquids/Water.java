@@ -8,8 +8,8 @@ import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.triggers.Zone;
-import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.IWorld;
+import ru.BouH.engine.physics.world.World;
 
 public class Water implements ILiquid {
     private final Zone zone;

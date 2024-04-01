@@ -6,6 +6,8 @@ import ru.BouH.engine.render.scene.fabric.render.data.inventory.RenderInventoryI
 
 public interface IRenderInventoryItem {
     void onRender(double partialTicks, SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData);
+
     void preRender(SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData);
+
     void postRender(SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData);
 }

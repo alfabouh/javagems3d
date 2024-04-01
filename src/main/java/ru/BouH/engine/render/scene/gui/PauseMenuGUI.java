@@ -5,14 +5,13 @@ import org.joml.Vector3f;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.input.MouseKeyboardController;
-import ru.BouH.engine.game.map.Map01;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.render.scene.gui.base.GUI;
 import ru.BouH.engine.render.scene.gui.ui.ButtonUI;
 import ru.BouH.engine.render.screen.window.Window;
 
 public class PauseMenuGUI implements GUI {
-    private boolean isVisible;
+    private final boolean isVisible;
     private ButtonUI playButton;
     private ButtonUI exitButton;
 
@@ -35,17 +34,15 @@ public class PauseMenuGUI implements GUI {
         this.playButton.setOnClick(() -> {
             if (Game.getGame().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
                 ControllerDispatcher.mouseKeyboardController.setCursorInCenter();
-                ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptLMB();
-                ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptRMB();
-                ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptMMB();
             }
             Game.getGame().unPauseGame();
             Game.getGame().getScreen().getWindow().setInFocus(true);
             Game.getGame().showGui(new InGameGUI());
         });
-        this.exitButton = new ButtonUI("Exit", ResourceManager.renderAssets.buttonFont, new Vector3f(0.0f, 0.0f, 0.5f), new Vector2f(300.0f, 60.0f));
+        this.exitButton = new ButtonUI("Menu", ResourceManager.renderAssets.buttonFont, new Vector3f(0.0f, 0.0f, 0.5f), new Vector2f(300.0f, 60.0f));
         this.exitButton.setOnClick(() -> {
-            Game.getGame().destroyGame();
+            Game.getGame().destroyMap();
+            Game.getGame().showGui(new MainMenuGUI());
         });
     }
 

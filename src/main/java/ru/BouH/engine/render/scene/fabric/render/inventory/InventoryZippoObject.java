@@ -1,6 +1,7 @@
 package ru.BouH.engine.render.scene.fabric.render.inventory;
 
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.materials.Material;
@@ -19,7 +20,7 @@ public class InventoryZippoObject extends InventoryItemObject {
     private final MeshDataGroup model2;
 
     public InventoryZippoObject() {
-        Mesh mesh = MeshHelper.generatePlane3DMesh(new Vector3d(0.0d), new Vector3d(0.0d, 1.0d, 0.0d), new Vector3d(1.0d, 1.0d, 0.0d), new Vector3d(1.0d, 0.0d, 0.0d));
+        Mesh mesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
         Material material1 = Material.createDefault();
         Material material2 = Material.createDefault();
         material1.setDiffuse(ResourceManager.renderAssets.zippo1);
@@ -36,6 +37,7 @@ public class InventoryZippoObject extends InventoryItemObject {
         ItemZippo itemZippo = (ItemZippo) inventoryItem;
         double d1 = Math.cos(RenderPlayerSP.stepBobbing * 0.1f) * 0.051f;
         super.performTransformations(new Vector3d(0.1f, -1.0f + d1, -1.4f), new Vector3d(0.0f, Math.toRadians(20.0f), 0.0f), new Vector3d(1.0d), renderInventoryItemData);
+        renderInventoryItemData.getShaderManager().performUniform("use_emission", itemZippo.isOpened() ? 1 : 0);
         super.renderInventoryModel(itemZippo.isOpened() ? this.model1 : this.model2, renderInventoryItemData.getShaderManager());
     }
 

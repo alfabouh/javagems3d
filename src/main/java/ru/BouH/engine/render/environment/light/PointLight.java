@@ -54,15 +54,15 @@ public class PointLight extends Light {
         return this;
     }
 
+    public void start() {
+        super.start();
+    }
+
     public void stop() {
         super.stop();
         if (this.getAttachedShadowSceneId() >= 0) {
             Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().unBindPointLightFromShadowScene(this);
         }
-    }
-
-    public void start() {
-        super.start();
     }
 
     @Override

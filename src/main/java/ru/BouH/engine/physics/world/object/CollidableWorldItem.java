@@ -11,8 +11,8 @@ import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
-import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.IWorld;
+import ru.BouH.engine.physics.world.World;
 
 public abstract class CollidableWorldItem extends WorldItem implements JBulletEntity {
     private final EntityState entityState;
@@ -30,11 +30,13 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         this.entityState = new EntityState();
     }
 
-    public EntityState entityState() {
-        return this.entityState;
-    }
-
     protected abstract AbstractCollision constructCollision();
+
+    @Override
+    public void onDestroy(IWorld iWorld) {
+        super.onDestroy(iWorld);
+        ((World) iWorld).getBulletTimer().removeCollisionObjectFromWorld(this.getBulletObject());
+    }
 
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
@@ -102,6 +104,10 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     @Override
     public BodyGroup getBodyIndex() {
         return BodyGroup.RIGID_BODY;
+    }
+
+    public EntityState entityState() {
+        return this.entityState;
     }
 
     public void applyCentralForce(Vector3d vector3d) {

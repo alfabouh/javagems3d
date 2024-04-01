@@ -205,12 +205,12 @@ public class RigidBodyObject extends btRigidBody {
         this.setDamping(v1, v2);
     }
 
-    protected void enableCCD(double d1, double d2) {
+    public void enableCCD(double d1, double d2) {
         this.setCcdMotionThreshold((float) d1);
         this.setCcdSweptSphereRadius((float) d2);
     }
 
-    protected void disableCCD() {
+    public void disableCCD() {
         this.setCcdMotionThreshold(0.0d);
         this.setCcdSweptSphereRadius(0.0d);
     }

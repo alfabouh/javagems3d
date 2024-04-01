@@ -1,11 +1,8 @@
 package ru.BouH.engine.game;
 
-import javassist.*;
-import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.lwjgl.glfw.GLFW;
 import ru.BouH.engine.audio.SoundManager;
 import ru.BouH.engine.game.exception.GameException;
-import ru.BouH.engine.game.jframe.ProgressBar;
 import ru.BouH.engine.game.logger.GameLogging;
 import ru.BouH.engine.game.map.loader.IMapLoader;
 import ru.BouH.engine.game.resources.ResourceManager;
@@ -17,14 +14,11 @@ import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.instrument.UnmodifiableClassException;
-import java.lang.reflect.Method;
 import java.util.Random;
 
 public class Game {
-    public static final String build = "22.03.2024";
+    public static final String build = "01.04.2024";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;
@@ -47,10 +41,6 @@ public class Game {
         this.shouldBeClosed = false;
     }
 
-    public synchronized SoundManager getSoundManager() {
-        return this.soundManager;
-    }
-
     public static String getGamePath() {
         return new File(Game.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
     }
@@ -67,16 +57,12 @@ public class Game {
         return inputStream;
     }
 
+    public static InputStream loadFileJarSilently(String path) {
+        return Game.class.getResourceAsStream(path);
+    }
+
     public static InputStream loadFileJar(String folder, String path) {
-        return Game.loadFileJar("/" + folder + "/" + path);
-    }
-
-    public void pauseGame() {
-        this.gameSystem.pauseGame();
-    }
-
-    public void unPauseGame() {
-        this.gameSystem.unPauseGame();
+        return Game.loadFileJar(folder + "/" + path);
     }
 
     public static long systemTime() {
@@ -91,6 +77,27 @@ public class Game {
         return Game.startScreen;
     }
 
+    public static void main(String[] args) throws InterruptedException {
+        Game.startScreen = new Game();
+        Game.getGame().getLogManager().log("Starting game!");
+        Game.getGame().gameSystem = new GameSystem();
+        Game.getGame().getEngineSystem().startSystem();
+    }
+
+    public synchronized SoundManager getSoundManager() {
+        return this.soundManager;
+    }
+
+    public void pauseGame() {
+        this.gameSystem.pauseGame();
+        this.getSoundManager().pauseAllSounds();
+    }
+
+    public void unPauseGame() {
+        this.gameSystem.unPauseGame();
+        this.getSoundManager().resumeAllSounds();
+    }
+
     public void showGui(GUI gui) {
         this.getScreen().getScene().setGui(gui);
     }
@@ -103,7 +110,7 @@ public class Game {
         return this.getEngineSystem().getEngineState();
     }
 
-    public boolean isCurrentMapIsValid() {
+    public synchronized boolean isCurrentMapIsValid() {
         return this.getEngineSystem().getMapLoader() != null;
     }
 
@@ -113,13 +120,7 @@ public class Game {
 
     public void destroyMap() {
         this.getEngineSystem().destroyMap();
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        Game.startScreen = new Game();
-        Game.getGame().getLogManager().log("Starting game!");
-        Game.getGame().gameSystem = new GameSystem();
-        Game.getGame().getEngineSystem().startSystem();
+        Game.getGame().getScreen().getScene().setRenderCamera(null);
     }
 
     public ResourceManager getResourceManager() {
@@ -169,5 +170,9 @@ public class Game {
 
     public Proxy getProxy() {
         return this.proxy;
+    }
+
+    public boolean isPaused() {
+        return this.getEngineState().isPaused();
     }
 }

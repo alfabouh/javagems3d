@@ -10,7 +10,7 @@ import ru.BouH.engine.render.scene.gui.ui.ButtonUI;
 import ru.BouH.engine.render.screen.window.Window;
 
 public class MainMenuGUI implements GUI {
-    private boolean isVisible;
+    private final boolean isVisible;
     private ButtonUI playButton;
     private ButtonUI exitButton;
 

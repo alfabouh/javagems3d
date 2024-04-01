@@ -37,13 +37,13 @@ public final class ModelRenderParams {
         return new ModelRenderParams(true, true, false, shaderManager);
     }
 
+    public boolean isShouldInterpolateMovement() {
+        return this.shouldInterpolateMovement;
+    }
+
     public ModelRenderParams setShouldInterpolateMovement(boolean shouldInterpolateMovement) {
         this.shouldInterpolateMovement = shouldInterpolateMovement;
         return this;
-    }
-
-    public boolean isShouldInterpolateMovement() {
-        return this.shouldInterpolateMovement;
     }
 
     public Vector3d getCustomCullingAABSize() {

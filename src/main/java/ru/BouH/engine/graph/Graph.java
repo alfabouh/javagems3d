@@ -3,15 +3,45 @@ package ru.BouH.engine.graph;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 
+import java.io.*;
 import java.util.*;
 
-public class Graph {
+public class Graph implements Serializable {
     private final Map<GVertex, List<GEdge>> graph;
     private GVertex start;
 
     public Graph() {
         this.graph = new HashMap<>();
         this.start = null;
+    }
+
+    public static void saveInFile(Graph graph, String name) {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(name + ".nmesh");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(graph);
+            fileOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Graph readFromFile(String name) {
+        String path = "/assets/map/" + name + ".nmesh";
+        InputStream inputStream = Game.loadFileJarSilently(path);
+        if (inputStream == null) {
+            Game.getGame().getLogManager().warn("Couldn't find file " + path);
+            return null;
+        }
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            Graph graph1 = (Graph) objectInputStream.readObject();
+            objectInputStream.close();
+            inputStream.close();
+            return graph1;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public GVertex getStart() {
@@ -61,7 +91,7 @@ public class Graph {
         return set.stream().skip(Game.getGame().random.nextInt(set.size() - 1)).findFirst().get();
     }
 
-    public static class GEdge {
+    public static class GEdge implements Serializable {
         private final GVertex target;
         private final double weight;
 
@@ -83,7 +113,7 @@ public class Graph {
         }
     }
 
-    public static class GVertex {
+    public static class GVertex implements Serializable {
         private final double x;
         private final double y;
         private final double z;
@@ -108,28 +138,28 @@ public class Graph {
             return this.g;
         }
 
-        public double getH() {
-            return this.h;
-        }
-
-        public double getF() {
-            return this.f;
-        }
-
-        public GVertex getParent() {
-            return this.parent;
-        }
-
         public void setG(double g) {
             this.g = g;
+        }
+
+        public double getH() {
+            return this.h;
         }
 
         public void setH(double h) {
             this.h = h;
         }
 
+        public double getF() {
+            return this.f;
+        }
+
         public void setF(double f) {
             this.f = f;
+        }
+
+        public GVertex getParent() {
+            return this.parent;
         }
 
         public void setParent(GVertex parent) {
@@ -149,22 +179,22 @@ public class Graph {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o)  {
-                return true;
-            }
-            if (!(o instanceof GVertex))  {
-                return false;
-            }
-            GVertex vertex = (GVertex) o;
-            return (int) this.x == (int) vertex.x && (int) this.y == (int) vertex.y && (int) this.z == (int) vertex.z;
-        }
-
-        @Override
         public int hashCode() {
             double result = this.x;
             result = 31 * result + this.y + 28 * this.z;
             return (int) result;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof GVertex)) {
+                return false;
+            }
+            GVertex vertex = (GVertex) o;
+            return Double.doubleToLongBits(this.x) == Double.doubleToLongBits(vertex.x) && Double.doubleToLongBits(this.y) == Double.doubleToLongBits(vertex.y) && Double.doubleToLongBits(this.z) == Double.doubleToLongBits(vertex.z);
         }
 
         public String toString() {

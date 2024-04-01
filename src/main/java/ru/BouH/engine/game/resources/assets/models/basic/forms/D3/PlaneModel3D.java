@@ -1,7 +1,6 @@
 package ru.BouH.engine.game.resources.assets.models.basic.forms.D3;
 
 import org.joml.Vector2d;
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 import ru.BouH.engine.game.resources.assets.materials.Material;
 import ru.BouH.engine.game.resources.assets.models.Model;
@@ -14,30 +13,30 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PlaneModel3D implements BasicMesh<Format3D> {
-    private final Vector3d v1;
-    private final Vector3d v2;
-    private final Vector3d v3;
-    private final Vector3d v4;
+    private final Vector3f v1;
+    private final Vector3f v2;
+    private final Vector3f v3;
+    private final Vector3f v4;
 
-    public PlaneModel3D(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4) {
+    public PlaneModel3D(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4) {
         this.v1 = v1;
         this.v2 = v2;
         this.v3 = v3;
         this.v4 = v4;
     }
 
-    private List<Vector3d> reorderPositions(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4) {
-        List<Vector3d> vertices = new ArrayList<>(Arrays.asList(v1, v2, v3, v4));
+    private List<Vector3f> reorderPositions(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4) {
+        List<Vector3f> vertices = new ArrayList<>(Arrays.asList(v1, v2, v3, v4));
 
-        Vector3d center = new Vector3d();
-        for (Vector3d vector3d : vertices) {
-            center.add(vector3d);
+        Vector3f center = new Vector3f();
+        for (Vector3f Vector3f : vertices) {
+            center.add(Vector3f);
         }
         center.div(vertices.size());
 
         vertices.sort((e1, e2) -> {
-            Vector3d vec1 = new Vector3d(e1).sub(center);
-            Vector3d vec2 = new Vector3d(e2).sub(center);
+            Vector3f vec1 = new Vector3f(e1).sub(center);
+            Vector3f vec2 = new Vector3f(e2).sub(center);
             return Double.compare(Math.atan2(vec1.y, vec1.z), Math.atan2(vec2.y, vec2.x));
         });
 
@@ -56,59 +55,59 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
     @Override
     public Mesh generateMesh() {
         Mesh mesh = new Mesh();
-        List<Vector3d> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
+        List<Vector3f> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
 
-        Vector3d v1 = list.get(0);
-        Vector3d v2 = list.get(1);
-        Vector3d v3 = list.get(2);
-        Vector3d v4 = list.get(3);
+        Vector3f v1 = list.get(0);
+        Vector3f v2 = list.get(1);
+        Vector3f v3 = list.get(2);
+        Vector3f v4 = list.get(3);
 
-        mesh.putPositionValue((float) v1.x);
-        mesh.putPositionValue((float) v1.y);
-        mesh.putPositionValue((float) v1.z);
+        mesh.putPositionValue(v1.x);
+        mesh.putPositionValue(v1.y);
+        mesh.putPositionValue(v1.z);
         mesh.putTextureCoordinateValue(0.0f);
         mesh.putTextureCoordinateValue(0.0f);
 
-        mesh.putPositionValue((float) v2.x);
-        mesh.putPositionValue((float) v2.y);
-        mesh.putPositionValue((float) v2.z);
+        mesh.putPositionValue(v2.x);
+        mesh.putPositionValue(v2.y);
+        mesh.putPositionValue(v2.z);
         mesh.putTextureCoordinateValue(1.0f);
         mesh.putTextureCoordinateValue(0.0f);
 
-        mesh.putPositionValue((float) v3.x);
-        mesh.putPositionValue((float) v3.y);
-        mesh.putPositionValue((float) v3.z);
+        mesh.putPositionValue(v3.x);
+        mesh.putPositionValue(v3.y);
+        mesh.putPositionValue(v3.z);
         mesh.putTextureCoordinateValue(1.0f);
         mesh.putTextureCoordinateValue(1.0f);
 
-        mesh.putPositionValue((float) v4.x);
-        mesh.putPositionValue((float) v4.y);
-        mesh.putPositionValue((float) v4.z);
+        mesh.putPositionValue(v4.x);
+        mesh.putPositionValue(v4.y);
+        mesh.putPositionValue(v4.z);
         mesh.putTextureCoordinateValue(0.0f);
         mesh.putTextureCoordinateValue(1.0f);
 
 
-        mesh.putPositionValue((float) v4.x);
-        mesh.putPositionValue((float) v4.y);
-        mesh.putPositionValue((float) v4.z);
+        mesh.putPositionValue(v4.x);
+        mesh.putPositionValue(v4.y);
+        mesh.putPositionValue(v4.z);
         mesh.putTextureCoordinateValue(0.0f);
         mesh.putTextureCoordinateValue(1.0f);
 
-        mesh.putPositionValue((float) v3.x);
-        mesh.putPositionValue((float) v3.y);
-        mesh.putPositionValue((float) v3.z);
+        mesh.putPositionValue(v3.x);
+        mesh.putPositionValue(v3.y);
+        mesh.putPositionValue(v3.z);
         mesh.putTextureCoordinateValue(1.0f);
         mesh.putTextureCoordinateValue(1.0f);
 
-        mesh.putPositionValue((float) v2.x);
-        mesh.putPositionValue((float) v2.y);
-        mesh.putPositionValue((float) v2.z);
+        mesh.putPositionValue(v2.x);
+        mesh.putPositionValue(v2.y);
+        mesh.putPositionValue(v2.z);
         mesh.putTextureCoordinateValue(1.0f);
         mesh.putTextureCoordinateValue(0.0f);
 
-        mesh.putPositionValue((float) v1.x);
-        mesh.putPositionValue((float) v1.y);
-        mesh.putPositionValue((float) v1.z);
+        mesh.putPositionValue(v1.x);
+        mesh.putPositionValue(v1.y);
+        mesh.putPositionValue(v1.z);
         mesh.putTextureCoordinateValue(0.0f);
         mesh.putTextureCoordinateValue(0.0f);
 
@@ -142,8 +141,8 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
             mesh.putNormalValue(-vN.z);
         }
 
-        Vector3d edge1 = new Vector3d(v2).sub(v1);
-        Vector3d edge2 = new Vector3d(v3).sub(v1);
+        Vector3f edge1 = new Vector3f(v2).sub(v1);
+        Vector3f edge2 = new Vector3f(v3).sub(v1);
         Vector2d deltaUV1 = new Vector2d(1.0f, 0.0f).sub(new Vector2d(0.0f, 0.0f));
         Vector2d deltaUV2 = new Vector2d(1.0f, 1.0f).sub(new Vector2d(0.0f, 0.0f));
 
@@ -156,8 +155,8 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
         float biTan1y = (float) (f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y));
         float biTan1z = (float) (f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z));
 
-        Vector3d edge3 = new Vector3d(v3).sub(v1);
-        Vector3d edge4 = new Vector3d(v4).sub(v1);
+        Vector3f edge3 = new Vector3f(v3).sub(v1);
+        Vector3f edge4 = new Vector3f(v4).sub(v1);
         Vector2d deltaUV3 = new Vector2d(1.0f, 1.0f).sub(new Vector2d(0.0f, 0.0f));
         Vector2d deltaUV4 = new Vector2d(0.0f, 1.0f).sub(new Vector2d(0.0f, 0.0f));
 

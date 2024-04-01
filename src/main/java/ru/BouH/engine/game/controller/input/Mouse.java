@@ -3,13 +3,11 @@ package ru.BouH.engine.game.controller.input;
 import org.lwjgl.glfw.GLFW;
 import ru.BouH.engine.render.screen.window.Window;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class Mouse {
     private final Window window;
-    private boolean isInWindowBounds;
     public boolean scrollUpdate;
     public int scrollVector;
+    private boolean isInWindowBounds;
     private boolean flag1;
     private boolean flag2;
     private boolean flag3;

@@ -14,16 +14,18 @@ import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.gui.font.GuiFont;
 
 public class TextUI implements BasicUI {
+    private final TextModel textModel;
     private String text;
     private int hexColor;
     private Vector3f position;
-    private final TextModel textModel;
     private boolean isVisible;
+    private ShaderManager shaderManager;
 
     public TextUI(String text, GuiFont fontTexture, int hexColor, Vector3f position) {
         this.text = text;
         this.hexColor = hexColor;
         this.position = position;
+        this.shaderManager = ResourceManager.shaderAssets.gui_text;
         this.textModel = new TextModel(fontTexture);
         this.isVisible = true;
     }
@@ -74,24 +76,15 @@ public class TextUI implements BasicUI {
 
     @Override
     public ShaderManager getCurrentShader() {
-        return ResourceManager.shaderAssets.gui_text;
+        return this.shaderManager;
+    }
+
+    public void setShaderManager(ShaderManager shaderManager) {
+        this.shaderManager = shaderManager;
     }
 
     public void setVisible(boolean visible) {
         isVisible = visible;
-    }
-
-    public void setPosition(Vector3f position) {
-        this.position = position;
-    }
-
-    public void setHexColor(int hexColor) {
-        this.hexColor = hexColor;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-        this.getTextModel().refresh();
     }
 
     public float getTextWidth() {
@@ -110,19 +103,32 @@ public class TextUI implements BasicUI {
         return this.position;
     }
 
+    public void setPosition(Vector3f position) {
+        this.position = position;
+    }
+
     public int getHexColor() {
         return this.hexColor;
+    }
+
+    public void setHexColor(int hexColor) {
+        this.hexColor = hexColor;
     }
 
     public String getText() {
         return this.text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+        this.getTextModel().refresh();
+    }
+
     public class TextModel {
+        private final GuiFont fontTexture;
         private Model<Format2D> model;
         private float width;
         private float height;
-        private final GuiFont fontTexture;
 
         public TextModel(GuiFont fontTexture) {
             this.fontTexture = fontTexture;
