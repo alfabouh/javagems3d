@@ -7,7 +7,6 @@ import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.input.MouseKeyboardController;
 import ru.BouH.engine.physics.entities.IControllable;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.screen.window.Window;
 
 public class ControllerDispatcher {

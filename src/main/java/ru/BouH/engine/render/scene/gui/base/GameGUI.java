@@ -1,8 +1,5 @@
 package ru.BouH.engine.render.scene.gui.base;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class GameGUI {
     private GUI currentGui;
 
@@ -16,6 +13,10 @@ public class GameGUI {
         }
     }
 
+    public GUI getCurrentGui() {
+        return this.currentGui;
+    }
+
     public void setCurrentGui(GUI currentGui) {
         if (this.getCurrentGui() != null) {
             this.getCurrentGui().onStopRender();
@@ -24,9 +25,5 @@ public class GameGUI {
             currentGui.onStartRender();
         }
         this.currentGui = currentGui;
-    }
-
-    public GUI getCurrentGui() {
-        return this.currentGui;
     }
 }

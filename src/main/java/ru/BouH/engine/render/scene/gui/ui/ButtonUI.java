@@ -63,30 +63,9 @@ public class ButtonUI extends InteractiveUI {
     }
 
     @Override
-    public void clear() {
-        this.textUI.clear();
-        this.buttonModel.clean();
-    }
-
-    public void setOnEntered(Action onEntered) {
-        this.onEntered = onEntered;
-    }
-
-    public void setOnClick(Action onClick) {
-        this.onClick = onClick;
-    }
-
-    public void setOnInside(Action onInside) {
-        this.onInside = onInside;
-    }
-
-    public void setOnLeft(Action onLeft) {
-        this.onLeft = onLeft;
-    }
-
-    @Override
-    public ShaderManager getCurrentShader() {
-        return ResourceManager.shaderAssets.gui_button;
+    public void setSize(Vector2f size) {
+        super.setSize(size);
+        this.fontOffset = this.getFontPos(text, size);
     }
 
     @Override
@@ -118,9 +97,30 @@ public class ButtonUI extends InteractiveUI {
     }
 
     @Override
-    public void setSize(Vector2f size) {
-        super.setSize(size);
-        this.fontOffset = this.getFontPos(text, size);
+    public void clear() {
+        this.textUI.clear();
+        this.buttonModel.clean();
+    }
+
+    @Override
+    public ShaderManager getCurrentShader() {
+        return ResourceManager.shaderAssets.gui_button;
+    }
+
+    public void setOnEntered(Action onEntered) {
+        this.onEntered = onEntered;
+    }
+
+    public void setOnClick(Action onClick) {
+        this.onClick = onClick;
+    }
+
+    public void setOnInside(Action onInside) {
+        this.onInside = onInside;
+    }
+
+    public void setOnLeft(Action onLeft) {
+        this.onLeft = onLeft;
     }
 
     public String getText() {

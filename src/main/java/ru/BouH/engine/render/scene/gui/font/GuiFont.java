@@ -1,7 +1,9 @@
 package ru.BouH.engine.render.scene.gui.font;
 
+import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
+import ru.BouH.engine.game.resources.cache.GameCache;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,16 +19,24 @@ import java.util.Set;
 
 public class GuiFont {
     public static Set<GuiFont> allCreatedFonts = new HashSet<>();
+    private static int globalFonts = 0;
     private final FontCode fontCode;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
     private TextureSample texture;
     private int height;
     private int width;
 
-    public GuiFont(Font font, FontCode fontCode) {
+    public GuiFont(GameCache gameCache, Font font, FontCode fontCode) {
         this.fontCode = fontCode;
         this.initFontTexture(font);
         GuiFont.allCreatedFonts.add(this);
+        if (gameCache != null) {
+            gameCache.addObjectInBuffer("font" + GuiFont.globalFonts++, this.getTexture());
+        }
+    }
+
+    public GuiFont(Font font, FontCode fontCode) {
+        this(null, font, fontCode);
     }
 
     private void initFontTexture(Font font) {
@@ -61,7 +71,7 @@ public class GuiFont {
         } catch (IOException e) {
             throw new GameException(e.getMessage());
         }
-        this.texture = TextureSample.createTextureIS("font", inputStream, true);
+        this.texture = TextureSample.createTextureIS("font", inputStream, true, GL30.GL_CLAMP_TO_EDGE);
     }
 
     protected void setFontParams(Graphics2D graphics2D) {

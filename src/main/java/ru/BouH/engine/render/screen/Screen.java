@@ -15,10 +15,7 @@ import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.ResourceManager;
-import ru.BouH.engine.game.resources.assets.shaders.Shader;
-import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
-import ru.BouH.engine.game.LocalPlayer;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.gui.MainMenuGUI;
 import ru.BouH.engine.render.scene.gui.font.FontCode;
@@ -211,7 +208,6 @@ public class Screen {
 
     private void updateScreen() {
         GL11.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
-        this.getRenderWorld().onWorldStart();
         this.getScene().preRender();
         try {
             this.renderLoop();
@@ -219,7 +215,6 @@ public class Screen {
             throw new RuntimeException(e);
         }
         this.getScene().postRender();
-        this.getRenderWorld().onWorldEnd();
     }
 
     private void showMainMenu() {

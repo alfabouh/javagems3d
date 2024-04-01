@@ -1,6 +1,5 @@
 package ru.BouH.engine.render.scene.fabric.render;
 
-import org.joml.Vector3d;
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.models.Model;
@@ -29,7 +28,7 @@ public class RenderObject extends RenderWorldItem {
             GL30.glStencilMask(0xFF);
             if (World.isItemJBulletObject(entityObject.getWorldItem())) {
                 JBulletEntity jBulletEntity = (JBulletEntity) entityObject.getWorldItem();
-                if (jBulletEntity.entityState().checkState(EntityState.StateType.SELECTED_BY_PLAYER)) {
+                if (jBulletEntity.entityState().checkState(EntityState.StateType.IS_SELECTED_BY_PLAYER)) {
                     GL30.glStencilOp(GL30.GL_KEEP, GL30.GL_REPLACE, GL30.GL_REPLACE);
                     GL30.glEnable(GL30.GL_STENCIL_TEST);
                     GL30.glStencilMask(0xFF);

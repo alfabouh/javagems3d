@@ -14,8 +14,8 @@ import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.liquids.Water;
 import ru.BouH.engine.physics.triggers.ITrigger;
 import ru.BouH.engine.physics.triggers.ITriggerZone;
-import ru.BouH.engine.physics.triggers.SimpleTriggerZone;
 import ru.BouH.engine.physics.triggers.Zone;
+import ru.BouH.engine.physics.triggers.zones.SimpleTriggerZone;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
@@ -25,13 +25,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class World implements IWorld {
-    private Graph graph;
     private final Set<WorldItem> allWorldItems;
     private final Set<IWorldDynamic> allDynamicItems;
     private final Set<JBulletEntity> allBulletItems;
     private final Set<ITriggerZone> triggerZones;
     private final Set<ILiquid> liquids;
     private final Set<WorldItem> toCleanItems;
+    private Graph graph;
     private boolean collectionsWaitingRefresh;
     private int ticks;
 
@@ -62,23 +62,7 @@ public final class World implements IWorld {
     }
 
     public void onWorldStart() {
-    }
-
-    public void setGraph(Graph graph) {
-        this.graph = graph;
-    }
-
-    public Graph getGraph() {
-        return this.graph;
-    }
-
-    public WorldItem getItemByID(int id) {
-        Optional<WorldItem> worldItem = this.getAllWorldItems().stream().filter(e -> e.getItemId() == id).findFirst();
-        if (worldItem.isPresent()) {
-            return worldItem.get();
-        }
-        Game.getGame().getLogManager().warn("Couldn't find item with id: " + id);
-        return null;
+        this.ticks = 0;
     }
 
     public void onWorldUpdate() {
@@ -108,19 +92,31 @@ public final class World implements IWorld {
     }
 
     public void onWorldEnd() {
-        this.getTriggerZones().forEach(e -> e.onDestroy(this));
-        this.getLiquids().forEach(e -> e.onDestroy(this));
-        this.getTriggerZones().clear();
-        this.getLiquids().clear();
+        this.cleanAll();
     }
 
     public int getTicks() {
         return this.ticks;
     }
 
-    @Override
-    public void cleaUp() {
-        this.clearItemsCollection(this.getAllWorldItems());
+    public synchronized Graph getGraph() {
+        return this.graph;
+    }
+
+    public void setGraph(Graph graph) {
+        if (graph == null) {
+            Game.getGame().getLogManager().warn("Map Nav Mesh is NULL");
+        }
+        this.graph = graph;
+    }
+
+    public WorldItem getItemByID(int id) {
+        Optional<WorldItem> worldItem = this.getAllWorldItems().stream().filter(e -> e.getItemId() == id).findFirst();
+        if (worldItem.isPresent()) {
+            return worldItem.get();
+        }
+        Game.getGame().getLogManager().warn("Couldn't find item with id: " + id);
+        return null;
     }
 
     public void addLight(Light light) {
@@ -147,17 +143,41 @@ public final class World implements IWorld {
         return this.getBulletTimer().getCollisionWorld();
     }
 
+    private void cleanAll() {
+        Iterator<WorldItem> worldItemIterator = this.getAllWorldItems().iterator();
+        while (worldItemIterator.hasNext()) {
+            WorldItem worldItem = worldItemIterator.next();
+            worldItem.onDestroy(this);
+            worldItemIterator.remove();
+        }
+
+        Iterator<ITriggerZone> triggerZoneIterator = this.getTriggerZones().iterator();
+        while (triggerZoneIterator.hasNext()) {
+            ITriggerZone triggerZone = triggerZoneIterator.next();
+            btGhostObject btCollisionObject = triggerZone.triggerZoneGhostCollision();
+            if (btCollisionObject != null) {
+                this.getDynamicsWorld().removeCollisionObject(btCollisionObject);
+                triggerZone.onDestroy(this);
+                triggerZoneIterator.remove();
+            }
+        }
+
+        Iterator<ILiquid> liquidIterator = this.getLiquids().iterator();
+        while (liquidIterator.hasNext()) {
+            ILiquid liquid = liquidIterator.next();
+            btGhostObject btCollisionObject = liquid.triggerZoneGhostCollision();
+            if (btCollisionObject != null) {
+                this.getDynamicsWorld().removeCollisionObject(btCollisionObject);
+                liquid.onDestroy(this);
+                liquidIterator.remove();
+            }
+        }
+    }
+
     private void clearItemsCollection(Collection<? extends WorldItem> collection) {
         for (WorldItem worldItem : collection) {
             this.collectionsWaitingRefresh = true;
             worldItem.onDestroy(this);
-            if (World.isItemJBulletObject(worldItem)) {
-                JBulletEntity jbItem = (JBulletEntity) worldItem;
-                btCollisionObject rigidBody = jbItem.getBulletObject();
-                if (rigidBody != null) {
-                    this.getBulletTimer().removeCollisionObjectFromWorld(rigidBody);
-                }
-            }
             this.getAllWorldItems().remove(worldItem);
         }
     }
@@ -168,6 +188,18 @@ public final class World implements IWorld {
 
     public void createWater(Zone zone) {
         this.addLiquid(new Water(zone));
+    }
+
+    public void removeLiquid(ILiquid liquid) {
+        if (liquid == null) {
+            throw new GameException("Tried to pass NULL liquid in world");
+        }
+        btGhostObject btCollisionObject = liquid.triggerZoneGhostCollision();
+        if (btCollisionObject != null) {
+            this.getDynamicsWorld().removeCollisionObject(btCollisionObject);
+            liquid.onDestroy(this);
+            this.getLiquids().remove(liquid);
+        }
     }
 
     public void addLiquid(ILiquid liquid) {

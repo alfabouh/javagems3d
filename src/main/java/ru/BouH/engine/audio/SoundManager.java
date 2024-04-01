@@ -18,32 +18,15 @@ import java.util.Set;
 
 public final class SoundManager {
     private final Set<GameSound> sounds;
+    private final Set<GameSound> tempSet;
     private boolean isSystemCreated;
     private long device;
     private long context;
 
     public SoundManager() {
         this.sounds = new HashSet<>();
+        this.tempSet = new HashSet<>();
         this.isSystemCreated = false;
-    }
-
-    public void createSystem() {
-        Game.getGame().getLogManager().log("Creating sound OpenAL system!");
-        this.device = ALC10.alcOpenDevice((ByteBuffer) null);
-        if (this.getDevice() == MemoryUtil.NULL) {
-            throw new GameException("Failed to create OpenAL device!");
-        }
-        ALCCapabilities alcCapabilities = ALC.createCapabilities(this.getDevice());
-        this.context = ALC10.alcCreateContext(this.getDevice(), (IntBuffer) null);
-        if (this.getContext() == MemoryUtil.NULL) {
-            throw new GameException("Failed to create OpenAL context!");
-        }
-        ALC10.alcMakeContextCurrent(this.getContext());
-        AL.createCapabilities(alcCapabilities);
-        this.isSystemCreated = true;
-        Game.getGame().getLogManager().log("OpenAL system successfully created!");
-        AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
-        SoundManager.checkALonErrors();
     }
 
     public static void checkALonErrors() {
@@ -72,6 +55,50 @@ public final class SoundManager {
         }
     }
 
+    public void createSystem() {
+        Game.getGame().getLogManager().log("Creating sound OpenAL system!");
+        this.device = ALC10.alcOpenDevice((ByteBuffer) null);
+        if (this.getDevice() == MemoryUtil.NULL) {
+            throw new GameException("Failed to create OpenAL device!");
+        }
+        ALCCapabilities alcCapabilities = ALC.createCapabilities(this.getDevice());
+        this.context = ALC10.alcCreateContext(this.getDevice(), (IntBuffer) null);
+        if (this.getContext() == MemoryUtil.NULL) {
+            throw new GameException("Failed to create OpenAL context!");
+        }
+        ALC10.alcMakeContextCurrent(this.getContext());
+        AL.createCapabilities(alcCapabilities);
+        this.isSystemCreated = true;
+        Game.getGame().getLogManager().log("OpenAL system successfully created!");
+        AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
+        SoundManager.checkALonErrors();
+    }
+
+    public void cleanAllSounds() {
+        for (GameSound gameSound : this.sounds) {
+            gameSound.stopSound();
+        }
+        this.sounds.clear();
+    }
+
+    public void pauseAllSounds() {
+        for (GameSound gameSound : this.sounds) {
+            if (gameSound.isPlaying()) {
+                gameSound.pauseSound();
+                this.tempSet.add(gameSound);
+            }
+        }
+    }
+
+    public void resumeAllSounds() {
+        Iterator<GameSound> gameSoundIterator = this.tempSet.iterator();
+        while (gameSoundIterator.hasNext()) {
+            GameSound sound = gameSoundIterator.next();
+            sound.playSound();
+            gameSoundIterator.remove();
+        }
+    }
+
     public void destroy() {
         for (GameSound gameSound : this.sounds) {
             gameSound.stopSound();
@@ -82,18 +109,24 @@ public final class SoundManager {
         ALC.destroy();
     }
 
+    public GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff) {
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
+        this.sounds.add(gameSound);
+        return gameSound;
+    }
+
     public GameSound playLocalSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain) {
-        //GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, 1.0f, null);
-        //gameSound.playSound();
-        //this.sounds.add(gameSound);
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, 1.0f, null);
+        gameSound.playSound();
+        this.sounds.add(gameSound);
         return null;
     }
 
     public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, Vector3d position) {
-        //GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
-        //gameSound.setPosition(position);
-        //gameSound.playSound();
-        //this.sounds.add(gameSound);
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
+        gameSound.setPosition(position);
+        gameSound.playSound();
+        this.sounds.add(gameSound);
         return null;
     }
 

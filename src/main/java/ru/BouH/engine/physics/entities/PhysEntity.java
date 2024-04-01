@@ -6,10 +6,10 @@ import org.joml.Vector3d;
 import ru.BouH.engine.physics.brush.WorldBrush;
 import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.CollidableWorldItem;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
-import ru.BouH.engine.physics.world.IWorld;
 
 public abstract class PhysEntity extends CollidableWorldItem implements IWorldDynamic {
     private final Vector3d velocityVector;

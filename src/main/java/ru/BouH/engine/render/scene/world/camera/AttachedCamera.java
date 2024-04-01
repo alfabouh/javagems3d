@@ -5,7 +5,6 @@ import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.render.scene.fabric.render.RenderPlayerSP;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class AttachedCamera extends Camera {

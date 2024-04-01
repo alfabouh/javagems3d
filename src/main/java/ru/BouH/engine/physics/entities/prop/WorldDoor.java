@@ -2,17 +2,17 @@ package ru.BouH.engine.physics.entities.prop;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
-import ru.BouH.engine.physics.triggers.DoorTriggerZone;
 import ru.BouH.engine.physics.triggers.Zone;
+import ru.BouH.engine.physics.triggers.zones.DoorTriggerZone;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.physics.world.IWorld;
 
 public class WorldDoor extends WorldItem implements IWorldDynamic {
-    private DoorTriggerZone doorTriggerZone;
     private final Vector3d startingRotation;
     private final Vector3d startingPosition;
+    private DoorTriggerZone doorTriggerZone;
 
     public WorldDoor(World world, @NotNull Vector3d pos, @NotNull Vector3d rot, String itemName) {
         super(world, pos, rot, itemName);
@@ -31,6 +31,10 @@ public class WorldDoor extends WorldItem implements IWorldDynamic {
         this.getWorld().removeTriggerZone(this.getDoorTriggerZone());
     }
 
+    public boolean canBeDestroyed() {
+        return false;
+    }
+
     @Override
     public void onUpdate(IWorld iWorld) {
         if (this.isOpened()) {
@@ -44,10 +48,6 @@ public class WorldDoor extends WorldItem implements IWorldDynamic {
 
     public boolean isOpened() {
         return !this.getDoorTriggerZone().isActive();
-    }
-
-    public boolean canBeDestroyed() {
-        return false;
     }
 
     public DoorTriggerZone getDoorTriggerZone() {

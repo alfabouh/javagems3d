@@ -1,6 +1,6 @@
 package ru.BouH.engine.render.scene;
 
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL13;
@@ -21,7 +21,6 @@ import ru.BouH.engine.game.synchronizing.SyncManger;
 import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
-import ru.BouH.engine.game.LocalPlayer;
 import ru.BouH.engine.render.environment.Environment;
 import ru.BouH.engine.render.environment.shadow.ShadowScene;
 import ru.BouH.engine.render.frustum.FrustumCulling;
@@ -53,12 +52,12 @@ public class Scene implements IScene {
     private final SceneWorld sceneWorld;
     private final FrustumCulling frustumCulling;
     private final SceneRenderConveyor sceneRenderConveyor;
+    private final GameGUI gui;
     private double elapsedTime;
     private List<SceneRenderBase> mainGroup;
     private List<SceneRenderBase> sideGroup;
     private boolean refresh;
     private ICamera currentCamera;
-    private final GameGUI gui;
     private GuiRender guiRender;
 
     public Scene(Screen screen, SceneWorld sceneWorld) {
@@ -84,18 +83,6 @@ public class Scene implements IScene {
 
     public static int getDebugMode() {
         return Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode();
-    }
-
-    public void setGui(GUI gui) {
-        this.getGui().setCurrentGui(gui);
-    }
-
-    public void removeGui() {
-        this.getGui().setCurrentGui(null);
-    }
-
-    public GameGUI getGui() {
-        return this.gui;
     }
 
     public void setDebugMode(int a) {
@@ -177,6 +164,18 @@ public class Scene implements IScene {
 
     public static ShaderManager getGameUboShader() {
         return ResourceManager.shaderAssets.gameUbo;
+    }
+
+    public void removeGui() {
+        this.getGui().setCurrentGui(null);
+    }
+
+    public GameGUI getGui() {
+        return this.gui;
+    }
+
+    public void setGui(GUI gui) {
+        this.getGui().setCurrentGui(gui);
     }
 
     public void addSceneRenderBase(SceneRenderBase sceneRenderBase) {
@@ -403,7 +402,7 @@ public class Scene implements IScene {
             }
 
             Scene.getGameUboShader().bind();
-            Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d), new Vector2d(this.getWindowDimensions().x, this.getWindowDimensions().y), 0);
+            Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y), 0);
             GL30.glEnable(GL30.GL_DEPTH_TEST);
             this.renderSceneInFbo(partialTicks, mainGroup);
             GL30.glDisable(GL30.GL_DEPTH_TEST);
@@ -486,7 +485,7 @@ public class Scene implements IScene {
 
         private void renderDebugScreen(double partialTicks) {
             if (this.getCurrentDebugMode() == 1) {
-                Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d), new Vector2d(400.0d, 300.0d), 0);
+                Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(400.0f, 300.0f), 0);
                 ResourceManager.shaderAssets.gui_image.bind();
                 this.getBlurShader().performUniform("texture_sampler", 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
@@ -496,7 +495,7 @@ public class Scene implements IScene {
                 ResourceManager.shaderAssets.gui_image.unBind();
                 model.clean();
 
-                model = MeshHelper.generatePlane2DModelInverted(new Vector2d(0.0d, 350.0d), new Vector2d(400.0d, 650.0d), 0);
+                model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 350.0f), new Vector2f(400.0f, 650.0f), 0);
                 ResourceManager.shaderAssets.gui_image.bind();
                 ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);

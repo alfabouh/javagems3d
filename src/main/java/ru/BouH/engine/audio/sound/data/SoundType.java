@@ -7,6 +7,7 @@ public enum SoundType {
     BACKGROUND_SOUND(new SoundData(false, false));
 
     private final SoundData soundData;
+
     SoundType(SoundData soundData) {
         this.soundData = soundData;
     }

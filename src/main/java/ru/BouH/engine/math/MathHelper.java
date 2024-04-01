@@ -3,6 +3,7 @@ package ru.BouH.engine.math;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.joml.Math;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 public class MathHelper {
     private static final int BF_SIN_BITS = 12;
@@ -77,6 +78,14 @@ public class MathHelper {
 
     public static double max(double d1, double d2) {
         return Math.max(d1, d2);
+    }
+
+    public static Vector3f convertV3DV3F(Vector3d vector3d) {
+        return new Vector3f((float) vector3d.x, (float) vector3d.y, (float) vector3d.z);
+    }
+
+    public static Vector3d convertV3FV3D(Vector3f vector3d) {
+        return new Vector3d(vector3d.x, vector3d.y, vector3d.z);
     }
 
     public static Vector3d calcLookVector(Vector3d rotations) {

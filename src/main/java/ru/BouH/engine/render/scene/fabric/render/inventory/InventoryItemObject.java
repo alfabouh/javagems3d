@@ -2,9 +2,7 @@ package ru.BouH.engine.render.scene.fabric.render.inventory;
 
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL30;
-import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.assets.materials.textures.IImageSample;
-import ru.BouH.engine.game.resources.assets.materials.textures.ISample;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.models.mesh.MeshDataGroup;
 import ru.BouH.engine.game.resources.assets.models.mesh.ModelNode;

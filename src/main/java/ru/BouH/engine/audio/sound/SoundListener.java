@@ -12,7 +12,7 @@ public class SoundListener {
         cameraMatrix.positiveZ(at).negate();
         Vector3d up = new Vector3d();
         cameraMatrix.positiveY(up);
-        float[] data = new float[] {(float) at.x, (float) at.y, (float) at.z, (float) up.x, (float) up.y, (float) up.z};
+        float[] data = new float[]{(float) at.x, (float) at.y, (float) at.z, (float) up.x, (float) up.y, (float) up.z};
         AL10.alListenerfv(AL10.AL_ORIENTATION, data);
         SoundManager.checkALonErrors();
     }

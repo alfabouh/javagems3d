@@ -5,8 +5,8 @@ import org.joml.Vector3d;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.PhysEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
-import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.IWorld;
+import ru.BouH.engine.physics.world.World;
 
 public abstract class WorldBrush extends PhysEntity {
 

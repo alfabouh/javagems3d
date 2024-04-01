@@ -7,8 +7,6 @@ import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.render.screen.window.Window;
 
-import java.awt.*;
-
 public class MouseKeyboardController implements IController {
     private final Vector3d xyzInput;
     private final Keyboard keyboard;

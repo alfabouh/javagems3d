@@ -2,7 +2,6 @@ package ru.BouH.engine.render.scene.scene_render.groups;
 
 import org.joml.Matrix4d;
 import org.lwjgl.opengl.GL30;
-import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;

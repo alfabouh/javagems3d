@@ -17,20 +17,21 @@ import ru.BouH.engine.game.controller.input.MouseKeyboardController;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.inventory.IHasInventory;
 import ru.BouH.engine.inventory.Inventory;
-import ru.BouH.engine.inventory.items.ItemZippo;
+import ru.BouH.engine.inventory.items.ItemCrowbar;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.Materials;
-import ru.BouH.engine.physics.entities.prop.PhysEntityCube;
+import ru.BouH.engine.physics.entities.prop.PhysCube;
 import ru.BouH.engine.physics.entities.prop.PhysLightCube;
 import ru.BouH.engine.physics.entities.states.EntityState;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.physics.world.World;
+import ru.BouH.engine.physics.world.object.CollidableWorldItem;
 import ru.BouH.engine.physics.world.object.IWorldDynamic;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
-import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.fabric.render.RenderPlayerSP;
 
@@ -40,8 +41,15 @@ import java.util.Deque;
 public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEntity, IWorldDynamic, IHasInventory {
     private final EntityState entityState;
     private final Vector3d cameraRotation;
-    private IController controller;
     private final Deque<Vector3d> inputMotion;
+    private final Vector3d walking;
+    private final float walkingDamping;
+    private final float walkingAcceleration;
+    private final double stepHeight = 0.3f;
+    private final double maxSlope = Math.toRadians(45.0f);
+    private final float runAcceleration;
+    private final Vector3d currentHitScanCoordinate;
+    private IController controller;
     private btKinematicCharacterController kinematicCharacterController;
     private btConvexShape collisionShape;
     private btConvexShape collisionShape2;
@@ -50,22 +58,22 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     private float jumpHeight;
     private float jumpCd;
     private float currentAcceleration;
-    private final Vector3d walking;
-    private final float walkingDamping;
-    private final float walkingAcceleration;
     private JBulletEntity currentSelectedItem;
     private JBulletEntity wantsToSelect;
     private boolean wantsToGrab;
-    private final double stepHeight = 0.3f;
-    private final double maxSlope = Math.toRadians(45.0f);
     private Inventory inventory;
+    private boolean isRunning;
+    private float stamina;
+    private float mind;
+    private int staminaCd;
 
     public KinematicPlayerSP(World world, @NotNull Vector3d pos, @NotNull Vector3d rot) {
         super(world, pos, rot, "player_sp");
         this.cameraRotation = new Vector3d();
         this.inputMotion = new ArrayDeque<>();
         this.walking = new Vector3d();
-        this.stepSpeed = 0.01f;
+        this.currentHitScanCoordinate = new Vector3d(0.0d);
+        this.stepSpeed = 0.008f;
         this.jumpHeight = 7.5f;
         this.walkingDamping = 0.865f;
         this.currentAcceleration = 1.0f;
@@ -74,11 +82,12 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.wantsToSelect = null;
         this.wantsToGrab = false;
         this.entityState = new EntityState();
-        this.inventory = new Inventory(4);
-    }
-
-    public EntityState entityState() {
-        return this.entityState;
+        this.runAcceleration = 1.25f;
+        this.isRunning = false;
+        this.stamina = 1.0f;
+        this.mind = 1.0f;
+        this.staminaCd = 0;
+        this.inventory = new Inventory(this, 4);
     }
 
     public btKinematicCharacterController getKinematicCharacterController() {
@@ -101,6 +110,10 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.setCollisionRotation(rotation);
     }
 
+    public float getScalarSpeed() {
+        return (float) this.getKinematicCharacterController().getLinearVelocity().length();
+    }
+
     public float getWalkingDamping() {
         return this.walkingDamping;
     }
@@ -115,20 +128,20 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         }
     }
 
-    public void setCollisionRotation(Vector3d angles) {
+    public void setCollisionTranslation(Vector3d pos) {
         try (btTransform transform = this.getBulletObject().getWorldTransform()) {
-            btQuaternion quaternion = new btQuaternion();
-            quaternion.setEulerZYX(angles.z, angles.y, angles.x);
-            transform.setRotation(quaternion);
+            transform.setOrigin(new btVector3(pos.x, pos.y, pos.z));
             this.getBulletObject().setWorldTransform(transform);
             this.getBulletObject().activate();
         }
         this.getWorld().getDynamicsWorld().synchronizeMotionStates();
     }
 
-    public void setCollisionTranslation(Vector3d pos) {
+    public void setCollisionRotation(Vector3d angles) {
         try (btTransform transform = this.getBulletObject().getWorldTransform()) {
-            transform.setOrigin(new btVector3(pos.x, pos.y, pos.z));
+            btQuaternion quaternion = new btQuaternion();
+            quaternion.setEulerZYX(angles.z, angles.y, angles.x);
+            transform.setRotation(quaternion);
             this.getBulletObject().setWorldTransform(transform);
             this.getBulletObject().activate();
         }
@@ -144,8 +157,15 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         return BodyGroup.PLAYER;
     }
 
+    public EntityState entityState() {
+        return this.entityState;
+    }
+
     public void onDestroy(IWorld iWorld) {
         super.onDestroy(iWorld);
+        World world = (World) iWorld;
+        world.getBulletTimer().removeCollisionObjectFromWorld(this.getBulletObject());
+        world.getBulletTimer().removeActionObjectFromWorld(this.getKinematicCharacterController());
     }
 
     public Vector3d getPosition() {
@@ -172,16 +192,24 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         return this.jumpCd;
     }
 
-    public void setJumpHeight(float jumpHeight) {
-        this.jumpHeight = jumpHeight;
+    public void setJumpCd(float jumpCd) {
+        this.jumpCd = jumpCd;
     }
 
     public float getJumpHeight() {
         return this.jumpHeight;
     }
 
-    public void setJumpCd(float jumpCd) {
-        this.jumpCd = jumpCd;
+    public void setJumpHeight(float jumpHeight) {
+        this.jumpHeight = jumpHeight;
+    }
+
+    public float getMind() {
+        return this.mind;
+    }
+
+    public float getStamina() {
+        return this.stamina;
     }
 
     private void playStepSound() {
@@ -189,10 +217,10 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     }
 
     private btVector3 getWalkingSpeed(Vector3d motion) {
-        float step = this.getStepSpeed();
+        float step = this.getStepSpeed() * ((this.isRunning()) ? this.runAcceleration : 1.0f);
         step *= !this.kinematicCharacterController.onGround() ? 0.75f : 1.0f;
         if (new Vector3d(motion.x, 0, motion.z).length() > 0) {
-            if (this.kinematicCharacterController.onGround() && this.getTicksExisted() % 15 == 0) {
+            if (this.kinematicCharacterController.onGround() && this.getTicksExisted() % (this.isRunning ? 15 : 20) == 0) {
                 this.playStepSound();
             }
             this.walking.set(motion);
@@ -234,17 +262,22 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         return flag;
     }
 
-    ItemZippo itemZippo = null;
-
     @Override
     public void onUpdate(IWorld iWorld) {
-        if (itemZippo == null) {
-            itemZippo = new ItemZippo(this);
+        this.inventory().updateInventory(iWorld);
+        float staminaDelta = 0.0025f;
+        this.staminaCd -= 1;
+        if (this.isRunning()) {
+            this.stamina -= staminaDelta;
+            if (this.stamina <= 0.0f) {
+                this.staminaCd = 80;
+            }
+        } else {
+            this.stamina = Math.min(this.stamina + staminaDelta * 0.5f, 1.0f);
         }
-        this.inventory().updateInventory(this, iWorld);
-        this.inventory().setSlotItem(0, itemZippo);
         boolean flag = !this.groundCheck();
         Vector3d look = MathHelper.calcLookVector(this.getRotation());
+        this.hitScan(look);
         this.getKinematicCharacterController().setStepHeight(this.kinematicCharacterController.onGround() ? this.stepHeight : 0.01f);
         this.getKinematicCharacterController().setMaxSlope(flag ? this.maxSlope : 0.01d);
         if (this.getPosition().y <= -50 || this.getPosition().y >= 500) {
@@ -255,17 +288,20 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.grabTest(look);
         if (this.currentSelectedItem != null) {
             if (this.currentSelectedItem != this.wantsToSelect) {
-                this.currentSelectedItem.entityState().removeState(EntityState.StateType.SELECTED_BY_PLAYER);
+                this.currentSelectedItem.entityState().removeState(EntityState.StateType.IS_SELECTED_BY_PLAYER);
                 this.currentSelectedItem = null;
-            } else if (this.wantsToGrab) {
+            } else if (this.wantsToGrab && (this.inventory().getCurrentItem() instanceof ItemCrowbar)) {
+                CollidableWorldItem collidableWorldItem = (CollidableWorldItem) this.currentSelectedItem;
+                collidableWorldItem.entityState().setCanBeSelectedByPlayer(false);
+                collidableWorldItem.getBulletObject().makeDynamic();
                 btRigidBody rigidBody = btRigidBody.upcast(this.currentSelectedItem.getBulletObject());
                 rigidBody.activate();
-                Vector3d impulse = new Vector3d(look).normalize().mul(50.0f);
+                Vector3d impulse = new Vector3d(look).normalize().mul(6.0f + Game.random.nextFloat());
                 rigidBody.applyCentralImpulse(MathHelper.convert(impulse));
             }
         } else if (this.wantsToSelect != null) {
             this.currentSelectedItem = this.wantsToSelect;
-            this.currentSelectedItem.entityState().setState(EntityState.StateType.SELECTED_BY_PLAYER);
+            this.currentSelectedItem.entityState().setState(EntityState.StateType.IS_SELECTED_BY_PLAYER);
         }
         if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
             this.getKinematicCharacterController().setGravity(new btVector3(0, -4.0f * 3.0f, 0));
@@ -312,9 +348,12 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         walking.deallocate();
     }
 
-    private void grabTest(Vector3d look) {
-        this.wantsToSelect = null;
-        look.normalize().mul(5.75f);
+    public Vector3d getCurrentHitScanCoordinate() {
+        return this.currentHitScanCoordinate;
+    }
+
+    private void hitScan(Vector3d look) {
+        look.normalize().mul(30.0f);
         btVector3 va1 = new btVector3();
         btVector3 va2 = new btVector3();
         this.getBulletObject().getCollisionShape().getAabb(this.getBulletObject().getWorldTransform(), va1, va2);
@@ -324,10 +363,37 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         rayResultCallback.m_collisionFilterMask(btBroadphaseProxy.DefaultFilter & ~BodyGroup.PlayerFilter & ~BodyGroup.LiquidFilter & ~BodyGroup.GhostFilter);
         this.getWorld().getDynamicsWorld().rayTest(v1, v2, rayResultCallback);
         if (rayResultCallback.hasHit()) {
-            if ((rayResultCallback.m_collisionObject().getCollisionFlags() & btCollisionObject.CF_STATIC_OBJECT) == 0) {
-                int id = rayResultCallback.m_collisionObject().getUserIndex2();
-                WorldItem worldItem = this.getWorld().getItemByID(id);
-                this.wantsToSelect = (JBulletEntity) worldItem;
+            btVector3 btVector3 = rayResultCallback.m_hitPointWorld();
+            this.currentHitScanCoordinate.set(btVector3.x(), btVector3.y(), btVector3.z());
+        } else {
+            this.currentHitScanCoordinate.set(0.0d);
+        }
+        va1.deallocate();
+        va2.deallocate();
+        v1.deallocate();
+        v2.deallocate();
+        rayResultCallback.deallocate();
+    }
+
+    private void grabTest(Vector3d look) {
+        this.wantsToSelect = null;
+        look.normalize().mul(1.0f);
+        btVector3 va1 = new btVector3();
+        btVector3 va2 = new btVector3();
+        this.getBulletObject().getCollisionShape().getAabb(this.getBulletObject().getWorldTransform(), va1, va2);
+        btVector3 v1 = new btVector3(this.getPosition().x, this.getPosition().y + this.getEyeHeight(), this.getPosition().z);
+        btVector3 v2 = new btVector3(this.getPosition().x + look.x, this.getPosition().y + this.getEyeHeight() + look.y, this.getPosition().z + look.z);
+        btCollisionWorld.ClosestRayResultCallback rayResultCallback = new btCollisionWorld.ClosestRayResultCallback(v1, v2);
+        rayResultCallback.m_collisionFilterMask(btBroadphaseProxy.DefaultFilter & ~BodyGroup.PlayerFilter & ~BodyGroup.LiquidFilter & ~BodyGroup.GhostFilter);
+        this.getWorld().getDynamicsWorld().rayTest(v1, v2, rayResultCallback);
+        if (rayResultCallback.hasHit()) {
+            int id = rayResultCallback.m_collisionObject().getUserIndex2();
+            WorldItem worldItem = this.getWorld().getItemByID(id);
+            if (worldItem instanceof JBulletEntity) {
+                JBulletEntity jBulletEntity = (JBulletEntity) worldItem;
+                if (jBulletEntity.entityState().isCanBeSelectedByPlayer()) {
+                    this.wantsToSelect = jBulletEntity;
+                }
             }
         }
         va1.deallocate();
@@ -335,6 +401,10 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         v1.deallocate();
         v2.deallocate();
         rayResultCallback.deallocate();
+    }
+
+    public JBulletEntity getCurrentSelectedItem() {
+        return this.currentSelectedItem;
     }
 
     @Override
@@ -351,12 +421,12 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         if (this.currentController() instanceof MouseKeyboardController) {
             MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) this.currentController();
             if (mouseKeyboardController.getMouse().isLeftKeyPressed()) {
-                this.inventory().onMouseLeftClick(this, this.getWorld());
+                this.inventory().onMouseLeftClick(this.getWorld());
             }
             if (mouseKeyboardController.getMouse().isRightKeyPressed()) {
-                this.inventory().onMouseRightClick(this, this.getWorld());
+                this.inventory().onMouseRightClick(this.getWorld());
             }
-            this.inventory().scrollInventory(mouseKeyboardController.getMouse().scrollVector);
+            this.inventory().scrollInventoryToNotNullItem(mouseKeyboardController.getMouse().scrollVector);
         }
         this.wantsToGrab = BindingList.instance.keySelection.isPressed();
         if (BindingList.instance.keyBlock1.isClicked()) {
@@ -365,7 +435,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(30.0f));
         }
         if (BindingList.instance.keyBlock2.isClicked()) {
-            PhysEntityCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, false, 1.0d), new Vector3d(1.0d), 0.25d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
+            PhysCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, false, 1.0d), new Vector3d(1.0d), 0.25d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             int a = Game.random.nextInt(3);
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityLamp);
             PointLight pointLight = (PointLight) new PointLight().setLightColor(new Vector3d(a == 0 ? 1.0d : Game.random.nextFloat(), a == 1 ? 1.0d : Game.random.nextFloat(), a == 2 ? 1.0d : Game.random.nextFloat()));
@@ -374,8 +444,8 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(20.0f));
         }
         if (BindingList.instance.keyBlock3.isClicked()) {
-            PhysEntityCube entityPropInfo = new PhysEntityCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
-            Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube2);
+            PhysCube entityPropInfo = new PhysCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
+            Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(50.0f));
         }
         if (BindingList.instance.keyClear.isClicked()) {
@@ -383,9 +453,19 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         }
         this.getCameraRotation().add(new Vector3d(rotationInput, 0.0d));
         if (this.inputMotion.size() < PhysicThreadManager.TICKS_PER_SECOND * 10) {
+            this.setRunning(false);
+            if (xyzInput.y < 0) {
+                this.setRunning(true);
+                xyzInput.y = 0;
+            }
             this.inputMotion.addFirst(new Vector3d(xyzInput));
         }
         this.clampCameraRotation();
+    }
+
+    @Override
+    public double getEyeHeight() {
+        return 0.45d + Math.sin(RenderPlayerSP.stepBobbing * 0.2f) * 0.1f;
     }
 
     private Vector3d calcControllerMotion() {
@@ -412,9 +492,16 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         return new Vector3d(motion[0], motion[1], motion[2]);
     }
 
-    @Override
-    public double getEyeHeight() {
-        return 0.45d + Math.sin(RenderPlayerSP.stepBobbing * 0.2f) * 0.1f;
+    public boolean canRun() {
+        return this.staminaCd <= 0 && this.stamina > 0;
+    }
+
+    public boolean isRunning() {
+        return this.isRunning && this.canRun();
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 
     public Vector3d getCameraRotation() {

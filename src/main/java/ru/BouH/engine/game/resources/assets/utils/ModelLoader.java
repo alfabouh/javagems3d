@@ -4,6 +4,7 @@ import com.google.common.io.ByteStreams;
 import org.joml.Vector4d;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.game.Game;
@@ -265,7 +266,7 @@ public class ModelLoader {
             if (diffuse != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + diffuse);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + diffuse, true);
+                    textureSample = ResourceManager.createTexture(fullPath + diffuse, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setDiffuse(textureSample);
@@ -276,7 +277,7 @@ public class ModelLoader {
             if (normals != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + normals);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + normals, true);
+                    textureSample = ResourceManager.createTexture(fullPath + normals, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setNormals(textureSample);
@@ -285,7 +286,7 @@ public class ModelLoader {
             if (emissive != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + emissive);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + emissive, true);
+                    textureSample = ResourceManager.createTexture(fullPath + emissive, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setEmissive(textureSample);
@@ -294,7 +295,7 @@ public class ModelLoader {
             if (metallic != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + metallic);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + metallic, true);
+                    textureSample = ResourceManager.createTexture(fullPath + metallic, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setMetallic(textureSample);
@@ -303,7 +304,7 @@ public class ModelLoader {
             if (specular != null) {
                 TextureSample textureSample = ResourceManager.getTextureResource(fullPath + specular);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + specular, true);
+                    textureSample = ResourceManager.createTexture(fullPath + specular, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setSpecular(textureSample);

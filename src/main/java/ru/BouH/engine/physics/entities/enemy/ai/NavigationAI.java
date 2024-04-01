@@ -3,6 +3,7 @@ package ru.BouH.engine.physics.entities.enemy.ai;
 import org.joml.Vector3d;
 import ru.BouH.engine.graph.Graph;
 import ru.BouH.engine.physics.world.IWorld;
+import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.WorldItem;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class NavigationAI implements AI {
-    private final Graph graph;
+    private final World world;
     private final WorldItem worldItem;
     private double currentPosDelta;
     private Graph.GVertex currentVertex;
@@ -18,9 +19,9 @@ public class NavigationAI implements AI {
     private List<Graph.GVertex> pathToVertex;
     private double speed;
 
-    public NavigationAI(double speed, WorldItem worldItem, Graph mapGraph) {
+    public NavigationAI(double speed, WorldItem worldItem, World world) {
         this.speed = speed;
-        this.graph = mapGraph;
+        this.world = world;
         this.worldItem = worldItem;
         this.currentPosDelta = 0.0d;
         this.currentVertex = null;
@@ -40,6 +41,11 @@ public class NavigationAI implements AI {
         return this.currentVertex;
     }
 
+    public void setCurrentVertex(Graph.GVertex currentVertex) {
+        this.target().setPosition(new Vector3d(currentVertex.getX(), currentVertex.getY(), currentVertex.getZ()));
+        this.currentVertex = currentVertex;
+    }
+
     public Graph.GVertex getNextVertex() {
         return this.nextVertex;
     }
@@ -53,7 +59,7 @@ public class NavigationAI implements AI {
         Iterator<Graph.GVertex> gVertexIterator = this.pathToVertex.iterator();
         while (gVertexIterator.hasNext()) {
             Graph.GVertex c = gVertexIterator.next();
-            if (!c.equals(this.getCurrentVertex())) {
+            if (c != null && this.getCurrentVertex() != null && !c.equals(this.getCurrentVertex())) {
                 gVertexIterator.remove();
             } else {
                 break;
@@ -63,8 +69,11 @@ public class NavigationAI implements AI {
 
     @Override
     public void onUpdate(IWorld iWorld) {
+        if (this.getWorld().getGraph() == null) {
+            return;
+        }
         if (this.getCurrentVertex() == null) {
-            this.setCurrentVertex(this.getGraph().getStart());
+            this.setCurrentVertex(this.getWorld().getGraph().getRandomVertex());
         }
         List<Graph.GVertex> path = this.getPathToVertex();
         if (path != null && !path.isEmpty()) {
@@ -72,7 +81,7 @@ public class NavigationAI implements AI {
                 if (this.getCurrentVertex().equals(path.get(0))) {
                     path.remove(0);
                 }
-                if (!path.isEmpty()){
+                if (!path.isEmpty()) {
                     this.nextVertex = path.get(0);
                 }
             }
@@ -98,13 +107,8 @@ public class NavigationAI implements AI {
         this.currentPosDelta %= 1.0d;
     }
 
-    public void setCurrentVertex(Graph.GVertex currentVertex) {
-        this.target().setPosition(new Vector3d(currentVertex.getX(), currentVertex.getY(), currentVertex.getZ()));
-        this.currentVertex = currentVertex;
-    }
-
-    public Graph getGraph() {
-        return this.graph;
+    public World getWorld() {
+        return this.world;
     }
 
     @Override

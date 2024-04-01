@@ -1,6 +1,5 @@
 package ru.BouH.engine.render.scene.gui;
 
-import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -11,9 +10,10 @@ import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.inventory.Inventory;
 import ru.BouH.engine.physics.entities.player.KinematicPlayerSP;
 import ru.BouH.engine.physics.world.object.WorldItem;
+import ru.BouH.engine.render.scene.fabric.render.data.inventory.RenderInventoryItemData;
 import ru.BouH.engine.render.scene.gui.base.GUI;
-import ru.BouH.engine.render.scene.gui.ui.BasicUI;
-import ru.BouH.engine.render.scene.gui.ui.ImageUI;
+import ru.BouH.engine.render.scene.gui.ui.ImageSizedUI;
+import ru.BouH.engine.render.scene.gui.ui.ImageStaticUI;
 import ru.BouH.engine.render.scene.gui.ui.TextUI;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
@@ -26,7 +26,13 @@ public class InGameGUI implements GUI {
     private TextUI info1;
     private TextUI speed;
     private TextUI tick;
-    private ImageUI crosshair;
+    private TextUI staminaText;
+    private TextUI mindText;
+    private ImageSizedUI crosshair;
+    private ImageStaticUI stamina_over;
+    private ImageStaticUI stamina_real;
+    private ImageStaticUI mind_over;
+    private ImageStaticUI mind_real;
 
     public InGameGUI() {
         this.isVisible = true;
@@ -38,12 +44,82 @@ public class InGameGUI implements GUI {
         this.renderImagesOnScreen(partialTicks);
     }
 
+    @Override
+    public void onStartRender() {
+        this.fps = new TextUI(ResourceManager.renderAssets.standardFont);
+        this.entities = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 20.0f, 0.5f));
+        this.coordinates = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 40.0f, 0.5f));
+
+        this.info1 = new TextUI("Управление LCTRL", ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 60.0f, 0.5f));
+        this.staminaText = new TextUI("[Stamina]", ResourceManager.renderAssets.standardFont, new Vector3f(00.0f, 0.0f, 0.5f));
+        this.staminaText.setShaderManager(ResourceManager.shaderAssets.gui_noised);
+
+        this.mindText = new TextUI("[Mind]", ResourceManager.renderAssets.standardFont, new Vector3f(00.0f, 0.0f, 0.5f));
+        this.mindText.setShaderManager(ResourceManager.shaderAssets.gui_noised);
+
+        this.speed = new TextUI(ResourceManager.renderAssets.standardFont);
+        this.tick = new TextUI(ResourceManager.renderAssets.standardFont);
+
+        this.crosshair = new ImageSizedUI(ResourceManager.renderAssets.crosshair, new Vector3f(0.0f), new Vector2f(16.0f));
+        this.crosshair.setNormalizeByScreen(true);
+
+        this.stamina_over = new ImageStaticUI(ResourceManager.renderAssets.gui1, new Vector3f(0.0f), new Vector2f(0.0f), new Vector2f(101.0f, 6.0f));
+        this.stamina_over.setShaderManager(ResourceManager.shaderAssets.gui_noised);
+        this.stamina_over.setScaling(2.0f);
+        this.stamina_over.setNormalizeByScreen(true);
+
+        this.stamina_real = new ImageStaticUI(ResourceManager.renderAssets.gui1, new Vector3f(0.0f), new Vector2f(0.0f, 6.0f), new Vector2f(101.0f, 6.0f));
+        this.stamina_real.setShaderManager(ResourceManager.shaderAssets.gui_noised);
+        this.stamina_real.setScaling(2.0f);
+        this.stamina_real.setNormalizeByScreen(true);
+
+        this.mind_over = new ImageStaticUI(ResourceManager.renderAssets.gui1, new Vector3f(0.0f), new Vector2f(0.0f), new Vector2f(101.0f, 6.0f));
+        this.mind_over.setShaderManager(ResourceManager.shaderAssets.gui_noised);
+        this.mind_over.setScaling(2.0f);
+        this.mind_over.setNormalizeByScreen(true);
+
+        this.mind_real = new ImageStaticUI(ResourceManager.renderAssets.gui1, new Vector3f(0.0f), new Vector2f(0.0f, 6.0f), new Vector2f(101.0f, 6.0f));
+        this.mind_real.setShaderManager(ResourceManager.shaderAssets.gui_noised);
+        this.mind_real.setScaling(2.0f);
+        this.mind_real.setNormalizeByScreen(true);
+    }
+
+    @Override
+    public void onStopRender() {
+        this.fps.clear();
+        this.entities.clear();
+        this.coordinates.clear();
+        this.info1.clear();
+        this.speed.clear();
+        this.tick.clear();
+        this.crosshair.clear();
+    }
+
+    @Override
+    public boolean isVisible() {
+        return this.isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
+
     private void renderTextOnScreen(double partialTicks) {
+        double width = Game.getGame().getScreen().getWidth();
+        double height = Game.getGame().getScreen().getHeight();
         SceneWorld sceneWorld = Game.getGame().getSceneWorld();
         final WorldItem entityPlayerSP = (WorldItem) Game.getGame().getPlayerSP();
         this.fps.setText("FPS: " + Screen.FPS + " | TPS: " + Screen.PHYS2_TPS);
         this.entities.setText("entities: " + Game.getGame().getPhysicsWorld().countItems());
-        this.coordinates.setText(String.format("%s %s %s", (int) entityPlayerSP.getPosition().x, (int) entityPlayerSP.getPosition().y, (int) entityPlayerSP.getPosition().z));
+
+        if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 1) {
+            if (entityPlayerSP instanceof KinematicPlayerSP) {
+                KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
+                this.coordinates.setText(String.format("%s %s %s | %s %s %s", (float) entityPlayerSP.getPosition().x, (float) entityPlayerSP.getPosition().y, (float) entityPlayerSP.getPosition().z, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().x, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().y, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().z));
+            }
+        } else {
+            this.coordinates.setText(String.format("%s %s %s", (int) entityPlayerSP.getPosition().x, (int) entityPlayerSP.getPosition().y, (int) entityPlayerSP.getPosition().z));
+        }
 
         this.fps.render(partialTicks);
         this.entities.render(partialTicks);
@@ -62,14 +138,22 @@ public class InGameGUI implements GUI {
         }
 
         if (entityPlayerSP instanceof KinematicPlayerSP) {
-            this.speed.setText("speed: " + String.format("%.4f", ((KinematicPlayerSP) entityPlayerSP).getKinematicCharacterController().getLinearVelocity().length()));
+            KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
+            this.speed.setText("speed: " + String.format("%.4f", kinematicPlayerSP.getScalarSpeed()));
             this.speed.setPosition(new Vector3f(0.0f, i1 + 20.0f, 0.0f));
             this.speed.render(partialTicks);
-            KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
             Inventory inventory = kinematicPlayerSP.inventory();
             int j = 0;
             for (Inventory.Slot slot : inventory.getInventorySlots()) {
-                TextUI textUI = new TextUI(slot.getInventoryItem() == null ? "null" : slot.getInventoryItem().getName(), ResourceManager.renderAssets.standardFont, inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0x00ff00, new Vector3f(0.0f, i1 + 100 + (j++) * 20, 0.0f));
+                if (slot.getInventoryItem() == null) {
+                    continue;
+                }
+                RenderInventoryItemData renderInventoryItemData = ResourceManager.renderDataAssets.inventoryItemRenderTable.getMap().get(slot.getInventoryItem().getClass());
+                ImageSizedUI imageSizedUI = new ImageSizedUI(renderInventoryItemData.getInventoryIcon(), new Vector3f(64.0f + (96.0f) * j++, (float) (height - 96.0d), 0.0f), new Vector2f(96.0f, 96.0f));
+                imageSizedUI.render(partialTicks);
+                imageSizedUI.clear();
+
+                TextUI textUI = new TextUI("[" + j + "]", ResourceManager.renderAssets.standardFont, inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0xffffff, new Vector3f((96.0f) * j, (float) (height - 112.0d), 0.0f));
                 textUI.render(partialTicks);
                 textUI.clear();
             }
@@ -77,47 +161,35 @@ public class InGameGUI implements GUI {
         this.tick.setText("tick: " + sceneWorld.getTicks());
         this.tick.setPosition(new Vector3f(0.0f, i1 + 40.0f, 0.0f));
         this.tick.render(partialTicks);
+
+        this.staminaText.setPosition(new Vector3f(20.0f, (float) (height - 180.0f), 0.0f));
+        this.staminaText.render(partialTicks);
+
+        this.mindText.setPosition(new Vector3f(20.0f, (float) (height - 240.0f), 0.0f));
+        this.mindText.render(partialTicks);
     }
 
     private void renderImagesOnScreen(double partialTicks) {
         double width = Game.getGame().getScreen().getWidth();
         double height = Game.getGame().getScreen().getHeight();
+        float stamina = ((KinematicPlayerSP) Game.getGame().getPlayerSP()).getStamina();
+        float mind = ((KinematicPlayerSP) Game.getGame().getPlayerSP()).getMind();
 
-        Vector2d vector2d = BasicUI.getScaledPictureDimensions(ResourceManager.renderAssets.crosshair, 0.0625f);
-        this.crosshair.setSize(new Vector2f((float) vector2d.x, (float) vector2d.y));
-        this.crosshair.setPosition(new Vector3f((int) (width / 2.0d) - 8, (int) (height / 2.0d) - 8, 0.0f));
+        this.stamina_over.setPosition(new Vector3f(20.0f, (float) (height - 160.0f), 0.0f));
+        this.stamina_over.render(partialTicks);
+
+        this.stamina_real.setTextureWH(new Vector2f(101.0f * stamina, 6.0f));
+        this.stamina_real.setPosition(new Vector3f(20.0f, (float) (height - 160.0f), 0.0f));
+        this.stamina_real.render(partialTicks);
+
+        this.mind_over.setPosition(new Vector3f(20.0f, (float) (height - 220.0f), 0.0f));
+        this.mind_over.render(partialTicks);
+
+        this.mind_real.setTextureWH(new Vector2f(101.0f * mind, 6.0f));
+        this.mind_real.setPosition(new Vector3f(20.0f, (float) (height - 220.0f), 0.0f));
+        this.mind_real.render(partialTicks);
+
+        this.crosshair.setPosition(new Vector3f((int) (width / 2.0d) - this.crosshair.getSize().x / 2.0f, (int) (height / 2.0d) - this.crosshair.getSize().y / 2.0f, 0.0f));
         this.crosshair.render(partialTicks);
-    }
-
-    @Override
-    public void onStartRender() {
-        this.fps = new TextUI(ResourceManager.renderAssets.standardFont);
-        this.entities = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 20.0f, 0.5f));
-        this.coordinates = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 40.0f, 0.5f));
-        this.info1 = new TextUI("Управление LCTRL", ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 60.0f, 0.5f));
-        this.speed = new TextUI(ResourceManager.renderAssets.standardFont);
-        this.tick = new TextUI(ResourceManager.renderAssets.standardFont);
-
-        this.crosshair = new ImageUI(ResourceManager.renderAssets.crosshair, new Vector3f(0.0f), new Vector2f(0.0f));
-    }
-
-    @Override
-    public void onStopRender() {
-        this.fps.clear();
-        this.entities.clear();
-        this.coordinates.clear();
-        this.info1.clear();
-        this.speed.clear();
-        this.tick.clear();
-        this.crosshair.clear();
-    }
-
-    public void setVisible(boolean visible) {
-        isVisible = visible;
-    }
-
-    @Override
-    public boolean isVisible() {
-        return this.isVisible;
     }
 }

@@ -3,11 +3,10 @@ package ru.BouH.engine.render.scene.world;
 import ru.BouH.engine.audio.sound.GameSound;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
-import ru.BouH.engine.math.Pair;
 import ru.BouH.engine.physics.liquids.ILiquid;
+import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.WorldItem;
-import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.render.environment.Environment;
 import ru.BouH.engine.render.environment.light.Light;
 import ru.BouH.engine.render.frustum.FrustumCulling;
@@ -129,15 +128,14 @@ public final class SceneWorld implements IWorld {
         return this.liquids;
     }
 
-    public List<PhysicsObject> getPhysicsObjects() {
-        return this.getToRenderList().stream().filter(e -> e instanceof PhysicsObject).map(e -> (PhysicsObject) e).collect(Collectors.toList());
-    }
-
-    public void removeAllEntities() {
-        Iterator<PhysicsObject> iterator = this.getPhysicsObjects().iterator();
+    private void cleanAll() {
+        Iterator<IModeledSceneObject> iterator = this.getToRenderList().iterator();
         while (iterator.hasNext()) {
-            PhysicsObject physicsObject = iterator.next();
-            physicsObject.onDestroy(this);
+            IModeledSceneObject modeledSceneObject = iterator.next();
+            if (modeledSceneObject instanceof PhysicsObject) {
+                PhysicsObject physicsObject = (PhysicsObject) modeledSceneObject;
+                physicsObject.onDestroy(this);
+            }
             iterator.remove();
         }
     }
@@ -157,9 +155,13 @@ public final class SceneWorld implements IWorld {
     @Override
     public void onWorldStart() {
         this.getEnvironment().init(this);
+        this.ticks = 0;
     }
 
     public void onWorldUpdate() {
+        //((SkyBox2D) this.getEnvironment().getSky().getSkyBox()).setCubeMapTexture(ResourceManager.renderAssets.skyboxCubeMap2);
+        //this.getEnvironment().getSky().setSunBrightness(0.002f);
+        //this.getEnvironment().getSky().setSunColors(new Vector3f(0.0f, 0.0f, 1.0f));
         double curr = Game.glfwTime();
         if (curr - this.lastRenderTicksUpdate > 1.0d / RENDER_TICKS_UPD_RATE) {
             this.elapsedRenderTicks += 0.01f;
@@ -170,16 +172,11 @@ public final class SceneWorld implements IWorld {
 
     @Override
     public void onWorldEnd() {
-        this.removeAllEntities();
+        this.cleanAll();
     }
 
     public int getTicks() {
         return this.ticks;
-    }
-
-    @Override
-    public void cleaUp() {
-        this.removeAllEntities();
     }
 
     public float getElapsedRenderTicks() {

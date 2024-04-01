@@ -5,7 +5,6 @@ import ru.BouH.engine.game.resources.assets.shaders.Shader;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderGroup;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.game.resources.assets.shaders.UniformBufferObject;
-import ru.BouH.engine.game.resources.cache.GameCache;
 import ru.BouH.engine.render.environment.light.LightManager;
 
 import java.util.ArrayList;
@@ -15,28 +14,34 @@ public class ShaderLoader {
     public static final List<ShaderManager> allShaders = new ArrayList<>();
     public static final List<UniformBufferObject> allUniformBuffers = new ArrayList<>();
 
-    public final UniformBufferObject SunLight;
-    public final UniformBufferObject PointLights;
-    public final UniformBufferObject Misc;
-    public final UniformBufferObject Fog;
+    public UniformBufferObject SunLight;
+    public UniformBufferObject PointLights;
+    public UniformBufferObject Misc;
+    public UniformBufferObject Fog;
 
-    public final ShaderManager gameUbo;
-    public final ShaderManager gui_text;
-    public final ShaderManager gui_image;
-    public final ShaderManager gui_button;
-    public final ShaderManager post_blur;
-    public final ShaderManager post_render_1;
-    public final ShaderManager skybox;
-    public final ShaderManager world;
-    public final ShaderManager simple;
-    public final ShaderManager depth_sun;
-    public final ShaderManager liquid;
-    public final ShaderManager depth_plight;
-    public final ShaderManager debug;
-    public final ShaderManager world_selected;
-    public final ShaderManager inventory_zippo;
+    public ShaderManager gameUbo;
+    public ShaderManager gui_text;
+    public ShaderManager gui_noised;
+    public ShaderManager gui_image;
+    public ShaderManager gui_button;
+    public ShaderManager post_blur;
+    public ShaderManager post_render_1;
+    public ShaderManager skybox;
+    public ShaderManager world;
+    public ShaderManager simple;
+    public ShaderManager depth_sun;
+    public ShaderManager liquid;
+    public ShaderManager depth_plight;
+    public ShaderManager debug;
+    public ShaderManager world_selected;
+    public ShaderManager inventory_zippo;
+    public ShaderManager inventory_common_item;
 
     public ShaderLoader() {
+        this.loadAll();
+    }
+
+    private void loadAll() {
         this.SunLight = this.createUBO("SunLight", 0, 32);
         this.PointLights = this.createUBO("PointLights", 1, 32 * LightManager.MAX_POINT_LIGHTS);
         this.Misc = this.createUBO("Misc", 2, 4);
@@ -44,6 +49,8 @@ public class ShaderLoader {
 
         this.debug = this.createShaderManager("debug", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.gui_text = this.createShaderManager("gui_text", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.gui_noised = this.createShaderManager("gui_noised", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+
         this.gui_button = this.createShaderManager("gui_button", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.gui_image = this.createShaderManager("gui_image", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.post_blur = this.createShaderManager("post_blur", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
@@ -53,6 +60,8 @@ public class ShaderLoader {
         this.liquid = this.createShaderManager("liquid", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
 
         this.inventory_zippo = this.createShaderManager("inventory_zippo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.inventory_common_item = this.createShaderManager("inventory_common_item", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+
         this.simple = this.createShaderManager("simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_sun = this.createShaderManager("depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.world_selected = this.createShaderManager("world_selected", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);

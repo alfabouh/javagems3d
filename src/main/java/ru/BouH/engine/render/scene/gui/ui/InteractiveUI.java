@@ -4,6 +4,7 @@ import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.input.MouseKeyboardController;
 
@@ -11,7 +12,7 @@ public abstract class InteractiveUI implements BasicUI {
     private int mouseState;
     private Vector3f position;
     private Vector2f size;
-    private boolean isVisible;
+    private final boolean isVisible;
     private boolean selected;
 
     public InteractiveUI(Vector3f position, Vector2f size) {
@@ -46,14 +47,13 @@ public abstract class InteractiveUI implements BasicUI {
             if (this.mouseState == 0) {
                 if (mouseKeyboardController.getMouse().isLeftKeyPressed()) {
                     this.onClicked();
+                    ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptLMB();
+                    ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptRMB();
+                    ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptMMB();
                 }
                 this.onMouseInside();
             }
         }
-    }
-
-    public boolean isSelected() {
-        return this.selected;
     }
 
     @Override
@@ -61,8 +61,16 @@ public abstract class InteractiveUI implements BasicUI {
         return this.isVisible;
     }
 
+    public boolean isSelected() {
+        return this.selected;
+    }
+
     public Vector2f getSize() {
         return this.size;
+    }
+
+    public void setSize(Vector2f size) {
+        this.size = size;
     }
 
     public Vector3f getPosition() {
@@ -73,12 +81,11 @@ public abstract class InteractiveUI implements BasicUI {
         this.position = position;
     }
 
-    public void setSize(Vector2f size) {
-        this.size = size;
-    }
-
     public abstract void onMouseInside();
+
     public abstract void onMouseEntered();
+
     public abstract void onMouseLeft();
+
     public abstract void onClicked();
 }

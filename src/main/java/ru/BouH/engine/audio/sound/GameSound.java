@@ -3,10 +3,8 @@ package ru.BouH.engine.audio.sound;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.EXTEfx;
 import ru.BouH.engine.audio.SoundManager;
 import ru.BouH.engine.audio.sound.data.SoundType;
-import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class GameSound {
@@ -49,6 +47,7 @@ public class GameSound {
         } else {
             this.setPosition(new Vector3d(0.0d));
         }
+
         this.setVelocity(new Vector3d(0.0d, 0.0d, 0.0d));
         this.setPitch(pitch);
         this.setGain(gain);
@@ -80,20 +79,20 @@ public class GameSound {
         AL10.alSource3f(this.source, AL10.AL_VELOCITY, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z);
     }
 
-    public void setGain(float gain) {
-        AL10.alSourcef(this.source, AL10.AL_GAIN, gain);
-    }
-
-    public void setPitch(float pitch) {
-        AL10.alSourcef(this.source, AL10.AL_PITCH, pitch);
-    }
-
     public float getGain() {
         return AL10.alGetSourcef(this.source, AL10.AL_GAIN);
     }
 
+    public void setGain(float gain) {
+        AL10.alSourcef(this.source, AL10.AL_GAIN, gain);
+    }
+
     public float getPitch() {
         return AL10.alGetSourcef(this.source, AL10.AL_PITCH);
+    }
+
+    public void setPitch(float pitch) {
+        AL10.alSourcef(this.source, AL10.AL_PITCH, pitch);
     }
 
     public boolean isPaused() {
@@ -109,7 +108,7 @@ public class GameSound {
     }
 
     public void playSound() {
-        //AL10.alSourcePlay(this.source);
+        AL10.alSourcePlay(this.source);
         this.hasStarted = true;
     }
 
@@ -131,12 +130,12 @@ public class GameSound {
         return this.wantsToBeCleared;
     }
 
-    public void setAttachedTo(PhysicsObject attachedTo) {
-        this.attachedTo = attachedTo;
-    }
-
     public PhysicsObject getAttachedTo() {
         return this.attachedTo;
+    }
+
+    public void setAttachedTo(PhysicsObject attachedTo) {
+        this.attachedTo = attachedTo;
     }
 
     public SoundBuffer getSoundBuffer() {

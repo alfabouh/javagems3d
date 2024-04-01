@@ -1,6 +1,7 @@
 package ru.BouH.engine.render.scene.scene_render.groups;
 
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.BouH.engine.game.Game;
@@ -49,13 +50,13 @@ public class DebugRender extends SceneRenderBase {
             if (Game.getGame().getScreen().getCamera().getCamPosition().distance(new Vector3d(vertex.getX(), vertex.getY() + 0.1d, vertex.getZ())) > 10.0f) {
                 continue;
             }
-            Model<Format3D> model0 = MeshHelper.generateVector3DModel(new Vector3d(vertex.getX(), vertex.getY(), vertex.getZ()), new Vector3d(vertex.getX(), vertex.getY() + 1.0d, vertex.getZ()));
+            Model<Format3D> model0 = MeshHelper.generateVector3DModel(new Vector3f((float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ()), new Vector3f((float) vertex.getX(), (float) (vertex.getY() + 1.0d), (float) vertex.getZ()));
             this.debugShaders.getUtils().performViewMatrix3d(TransformationManager.instance.getMainCameraViewMatrix());
             this.debugShaders.performUniform("colour", new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
             Scene.renderModel(model0, GL30.GL_LINES);
             model0.clean();
             for (Graph.GEdge edge : sceneRenderBase.getSceneWorld().getWorld().getGraph().getNeighbors(vertex)) {
-                Model<Format3D> model = MeshHelper.generateVector3DModel(new Vector3d(vertex.getX(), vertex.getY() + 0.1d, vertex.getZ()), new Vector3d(edge.getTarget().getX(), edge.getTarget().getY() + 0.1d, edge.getTarget().getZ()));
+                Model<Format3D> model = MeshHelper.generateVector3DModel(new Vector3f((float) vertex.getX(), (float) (vertex.getY() + 0.1f), (float) vertex.getZ()), new Vector3f((float) edge.getTarget().getX(), (float) (edge.getTarget().getY() + 0.1f), (float) edge.getTarget().getZ()));
                 this.debugShaders.getUtils().performViewMatrix3d(TransformationManager.instance.getMainCameraViewMatrix());
                 this.debugShaders.performUniform("colour", new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
                 if (Map01.entityManiac.getNavigationAI().getPathToVertex() != null && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(vertex) && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(edge.getTarget())) {
@@ -65,7 +66,7 @@ public class DebugRender extends SceneRenderBase {
                 model.clean();
             }
         }
-        Model<Format3D> model = MeshHelper.generateVector3DModel(new Vector3d(0.0d), new Vector3d(sceneRenderBase.getSceneWorld().getEnvironment().getSky().getSunAngle()).mul(1000.0f));
+        Model<Format3D> model = MeshHelper.generateVector3DModel(new Vector3f(0.0f), new Vector3f(sceneRenderBase.getSceneWorld().getEnvironment().getSky().getSunAngle()).mul(1000.0f));
         this.debugShaders.getUtils().performViewMatrix3d(TransformationManager.instance.getMainCameraViewMatrix());
         this.debugShaders.performUniform("colour", new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
         Scene.renderModel(model, GL30.GL_LINES);

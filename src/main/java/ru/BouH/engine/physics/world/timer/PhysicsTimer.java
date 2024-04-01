@@ -7,20 +7,17 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.bytedeco.bullet.global.BulletCollision;
 import org.jetbrains.annotations.NotNull;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.GameSystem;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.synchronizing.SyncManger;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.world.World;
-import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.bullet.JBDebugDraw;
-
-import java.util.Iterator;
-import java.util.Set;
 
 public class PhysicsTimer implements IPhysTimer {
     public static final Object lock = new Object();
     public static int TPS;
+    @SuppressWarnings("all")
+    public final JBDebugDraw jbDebugDraw;
     private final World world;
     private final btBroadphaseInterface broadcaster;
     private final btCollisionConfiguration collisionConfiguration;
@@ -28,8 +25,6 @@ public class PhysicsTimer implements IPhysTimer {
     private final btDiscreteDynamicsWorld discreteDynamicsWorld;
     private final btConstraintSolver constraintSolve;
     private final btGhostPairCallback pairCallback;
-    @SuppressWarnings("all")
-    public final JBDebugDraw jbDebugDraw;
     //private final btOverlapFilterCallback btOverlapFilterCallback;
 
     @SuppressWarnings("all")
@@ -75,7 +70,6 @@ public class PhysicsTimer implements IPhysTimer {
         }
         try {
             Game.getGame().getLogManager().debug("Starting physics!");
-            this.getWorld().onWorldStart();
             while (!Game.getGame().isShouldBeClosed()) {
                 synchronized (PhysicThreadManager.locker) {
                     PhysicThreadManager.locker.wait();
@@ -91,7 +85,6 @@ public class PhysicsTimer implements IPhysTimer {
                 }
                 PhysicsTimer.TPS += 1;
             }
-            this.getWorld().onWorldEnd();
             Game.getGame().getLogManager().debug("Stopping physics!");
         } catch (InterruptedException | GameException e) {
             throw new RuntimeException(e);
@@ -173,6 +166,12 @@ public class PhysicsTimer implements IPhysTimer {
     public void removeCollisionObjectFromWorld(@NotNull btCollisionObject collisionObject) {
         synchronized (PhysicsTimer.lock) {
             this.getDiscreteDynamicsWorld().removeCollisionObject(collisionObject);
+        }
+    }
+
+    public void removeActionObjectFromWorld(@NotNull btActionInterface actionInterface) {
+        synchronized (PhysicsTimer.lock) {
+            this.getDiscreteDynamicsWorld().removeAction(actionInterface);
         }
     }
 

@@ -8,5 +8,4 @@ public interface IWorld {
     void onWorldEnd();
 
     int getTicks();
-    void cleaUp();
 }

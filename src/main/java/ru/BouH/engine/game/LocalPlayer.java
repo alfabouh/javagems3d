@@ -1,12 +1,12 @@
 package ru.BouH.engine.game;
 
 import org.bytedeco.bullet.BulletCollision.btBroadphaseProxy;
-import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.entities.player.KinematicPlayerSP;
 import ru.BouH.engine.physics.world.World;
+import ru.BouH.engine.physics.world.timer.PhysicsTimer;
 
 public class LocalPlayer {
     private final IPlayer entityPlayerSP;
@@ -23,8 +23,10 @@ public class LocalPlayer {
         KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) this.getEntityPlayerSP();
         kinematicPlayerSP.createPlayer();
         KinematicPlayerSP physPlayerSP = (KinematicPlayerSP) this.entityPlayerSP;
-        kinematicPlayerSP.getWorld().getDynamicsWorld().addCollisionObject(physPlayerSP.getBulletObject(), btBroadphaseProxy.CharacterFilter, btBroadphaseProxy.AllFilter);
-        kinematicPlayerSP.getWorld().getDynamicsWorld().addAction(kinematicPlayerSP.getKinematicCharacterController());
+        synchronized (PhysicsTimer.lock) {
+            kinematicPlayerSP.getWorld().getDynamicsWorld().addCollisionObject(physPlayerSP.getBulletObject(), btBroadphaseProxy.CharacterFilter, btBroadphaseProxy.AllFilter);
+            kinematicPlayerSP.getWorld().getDynamicsWorld().addAction(kinematicPlayerSP.getKinematicCharacterController());
+        }
         Game.getGame().getProxy().addItemInWorlds(physPlayerSP, ResourceManager.renderDataAssets.player);
         physPlayerSP.setPosition(position);
     }

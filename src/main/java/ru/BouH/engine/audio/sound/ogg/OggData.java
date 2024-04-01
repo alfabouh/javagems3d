@@ -17,8 +17,8 @@ import java.nio.ShortBuffer;
 
 public class OggData {
     private final ShortBuffer pcm;
-    private int format;
     private final int sampleRate;
+    private int format;
 
     private OggData(String path) {
         try (STBVorbisInfo info = STBVorbisInfo.malloc()) {
@@ -31,12 +31,12 @@ public class OggData {
         }
     }
 
-    public int getSampleRate() {
-        return this.sampleRate;
-    }
-
     public static OggData create(String path) {
         return new OggData(path);
+    }
+
+    public int getSampleRate() {
+        return this.sampleRate;
     }
 
     public ShortBuffer getPcm() {

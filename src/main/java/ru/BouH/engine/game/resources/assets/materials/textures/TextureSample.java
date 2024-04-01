@@ -25,7 +25,7 @@ public class TextureSample implements IImageSample {
     private int textureId;
     private boolean isValid;
 
-    private TextureSample(boolean inJar, String fullPath, boolean interpolate) {
+    private TextureSample(boolean inJar, String fullPath, boolean interpolate, int wrapping) {
         this.isValid = true;
         this.scaling = new Vector2d(1.0d);
         Game.getGame().getLogManager().debug("Loading " + fullPath);
@@ -33,7 +33,7 @@ public class TextureSample implements IImageSample {
             try (InputStream inputStream = Game.loadFileJar(fullPath)) {
                 this.imageBuffer = this.readTextureFromMemory(fullPath, inputStream);
                 if (this.imageBuffer != null) {
-                    this.createTexture(fullPath, interpolate);
+                    this.createTexture(fullPath, interpolate, wrapping);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -41,12 +41,12 @@ public class TextureSample implements IImageSample {
         } else {
             this.imageBuffer = this.readTextureOutsideJar(fullPath);
             if (this.imageBuffer != null) {
-                this.createTexture(fullPath, interpolate);
+                this.createTexture(fullPath, interpolate, wrapping);
             }
         }
     }
 
-    private TextureSample(String id, InputStream inputStream, boolean interpolate) {
+    private TextureSample(String id, InputStream inputStream, boolean interpolate, int wrapping) {
         this.isValid = true;
         this.scaling = new Vector2d(1.0d);
         if (inputStream == null) {
@@ -55,35 +55,35 @@ public class TextureSample implements IImageSample {
         } else {
             this.imageBuffer = this.readTextureFromMemory(id, inputStream);
             if (this.imageBuffer != null) {
-                this.createTexture(id, interpolate);
+                this.createTexture(id, interpolate, wrapping);
             }
         }
     }
 
-    public static TextureSample createTextureOutsideJar(GameCache gameCache, String fullPath, boolean interpolate) {
+    public static TextureSample createTextureOutsideJar(GameCache gameCache, String fullPath, boolean interpolate, int wrapping) {
         if (gameCache.checkObjectInCache(fullPath)) {
             return gameCache.getCachedTexture(fullPath);
         }
-        TextureSample textureSample = new TextureSample(false, fullPath, interpolate);
+        TextureSample textureSample = new TextureSample(false, fullPath, interpolate, wrapping);
         if (textureSample.isValid()) {
             gameCache.addObjectInBuffer(fullPath, textureSample);
         }
         return textureSample;
     }
 
-    public static TextureSample createTexture(GameCache gameCache, String fullPath, boolean interpolate) {
+    public static TextureSample createTexture(GameCache gameCache, String fullPath, boolean interpolate, int wrapping) {
         if (gameCache.checkObjectInCache(fullPath)) {
             return gameCache.getCachedTexture(fullPath);
         }
-        TextureSample textureSample = new TextureSample(true, fullPath, interpolate);
+        TextureSample textureSample = new TextureSample(true, fullPath, interpolate, wrapping);
         if (textureSample.isValid()) {
             gameCache.addObjectInBuffer(fullPath, textureSample);
         }
         return textureSample;
     }
 
-    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate) {
-        return new TextureSample(id, inputStream, interpolate);
+    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
+        return new TextureSample(id, inputStream, interpolate, wrapping);
     }
 
     private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) {
@@ -133,7 +133,7 @@ public class TextureSample implements IImageSample {
         return null;
     }
 
-    private void createTexture(String name, boolean interpolate) {
+    private void createTexture(String name, boolean interpolate, int wrapping) {
         this.textureId = GL20.glGenTextures();
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
         GL20.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
@@ -141,8 +141,8 @@ public class TextureSample implements IImageSample {
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, interpolate ? GL30.GL_LINEAR_MIPMAP_LINEAR : GL30.GL_NEAREST);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, interpolate ? GL30.GL_LINEAR : GL30.GL_NEAREST);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 11);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, GL30.GL_REPEAT);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, GL30.GL_REPEAT);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, wrapping);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, wrapping);
         GL30.glTexParameterf(GL30.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL30.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
         GL30.glGenerateMipmap(GL20.GL_TEXTURE_2D);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
