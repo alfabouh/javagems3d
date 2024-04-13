@@ -17,6 +17,7 @@ public class ItemZippo extends InventoryItem {
     public ItemZippo() {
         super("zippo");
         this.openCd = 0;
+        this.setDescription("[Light]");
     }
 
     @Override
@@ -40,7 +41,11 @@ public class ItemZippo extends InventoryItem {
         this.openCd -= 1;
         if (!isCurrent) {
             if (this.isOpened()) {
-                this.close();
+                this.pointLight.setEnabled(false);
+            }
+        } else {
+            if (this.isOpened()) {
+                this.pointLight.setEnabled(true);
             }
         }
     }
@@ -48,7 +53,7 @@ public class ItemZippo extends InventoryItem {
     public void onAddInInventory(IHasInventory hasInventory) {
         super.onAddInInventory(hasInventory);
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3d(1.0d, 0.475f, 0.375f));
-        pointLight.setBrightness(5.0f);
+        pointLight.setBrightness(7.5f);
         Game.getGame().getProxy().addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
     }

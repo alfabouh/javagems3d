@@ -31,7 +31,7 @@ public class Environment implements IEnvironment, IWorldDynamic {
 
     @Override
     public void init(SceneWorld sceneWorld) {
-        this.sky = new Sky(new SkyBox2D(ResourceManager.renderAssets.skyboxCubeMap), new Vector3f(0.95f, 1.0f, 0.98f), new Vector3f(0.0f, 1.0f, -1.0f), 1.0f);
+        this.sky = new Sky(new SkyBox2D(ResourceManager.renderAssets.skyboxCubeMap2), new Vector3f(0.95f, 1.0f, 0.98f), new Vector3f(0.0f, 1.0f, -1.0f), 1.0f);
         this.lightManager = new LightManager(this);
         this.getWaterFog().setDensity(0.5f);
         this.getWaterFog().setColor(new Vector3d(0.05f, 0.1f, 0.6f));

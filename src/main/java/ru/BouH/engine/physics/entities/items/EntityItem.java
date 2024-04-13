@@ -30,7 +30,7 @@ public class EntityItem extends WorldItem {
                                                                        IHasInventory inventory = (IHasInventory) e;
                                                                        if (inventory.inventory().addItemInInventory(this.getInventoryItem())) {
                                                                            Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pick, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
-                                                                           Game.getGame().getLogManager().log("Item " + this.getInventoryItem().getName() + " was picked up!");
+                                                                           Game.getGame().getLogManager().log("Put " + this.getInventoryItem().getName() + " in inventory!");
                                                                            this.setDead();
                                                                        }
                                                                    }

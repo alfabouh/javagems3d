@@ -23,7 +23,7 @@ public class DebugRender extends SceneRenderBase {
     private int vbo;
 
     public DebugRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(50, sceneRenderConveyor, new RenderGroup("DEBUG", true));
+        super(50, sceneRenderConveyor, new RenderGroup("DEBUG"));
         this.debugShaders = ResourceManager.shaderAssets.debug;
     }
 
@@ -31,6 +31,7 @@ public class DebugRender extends SceneRenderBase {
         if (this.getSceneRenderConveyor().getCurrentDebugMode() == 1) {
             this.debugShaders.bind();
             this.renderDebugSunDirection(this);
+            this.renderNavMesh(this);
             this.debugShaders.getUtils().performProjectionMatrix();
             this.debugShaders.unBind();
             if (!Game.getGame().getPhysicsWorld().getDynamicsWorld().isNull()) {
@@ -45,9 +46,9 @@ public class DebugRender extends SceneRenderBase {
     public void onStopRender() {
     }
 
-    private void renderDebugSunDirection(SceneRenderBase sceneRenderBase) {
+    private void renderNavMesh(SceneRenderBase sceneRenderBase) {
         for (Graph.GVertex vertex : sceneRenderBase.getSceneWorld().getWorld().getGraph().getGraphContainer().keySet()) {
-            if (Game.getGame().getScreen().getCamera().getCamPosition().distance(new Vector3d(vertex.getX(), vertex.getY() + 0.1d, vertex.getZ())) > 10.0f) {
+            if (Game.getGame().getScreen().getCamera().getCamPosition().distance(new Vector3d(vertex.getX(), vertex.getY() + 0.1d, vertex.getZ())) > 5.0f) {
                 continue;
             }
             Model<Format3D> model0 = MeshHelper.generateVector3DModel(new Vector3f((float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ()), new Vector3f((float) vertex.getX(), (float) (vertex.getY() + 1.0d), (float) vertex.getZ()));
@@ -59,13 +60,16 @@ public class DebugRender extends SceneRenderBase {
                 Model<Format3D> model = MeshHelper.generateVector3DModel(new Vector3f((float) vertex.getX(), (float) (vertex.getY() + 0.1f), (float) vertex.getZ()), new Vector3f((float) edge.getTarget().getX(), (float) (edge.getTarget().getY() + 0.1f), (float) edge.getTarget().getZ()));
                 this.debugShaders.getUtils().performViewMatrix3d(TransformationManager.instance.getMainCameraViewMatrix());
                 this.debugShaders.performUniform("colour", new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
-                if (Map01.entityManiac.getNavigationAI().getPathToVertex() != null && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(vertex) && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(edge.getTarget())) {
-                    this.debugShaders.performUniform("colour", new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
-                }
+                //if (Map01.entityManiac != null && Map01.entityManiac.getNavigationAI().getPathToVertex() != null && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(vertex) && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(edge.getTarget())) {
+                //    this.debugShaders.performUniform("colour", new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+                //}
                 Scene.renderModel(model, GL30.GL_LINES);
                 model.clean();
             }
         }
+    }
+
+    private void renderDebugSunDirection(SceneRenderBase sceneRenderBase) {
         Model<Format3D> model = MeshHelper.generateVector3DModel(new Vector3f(0.0f), new Vector3f(sceneRenderBase.getSceneWorld().getEnvironment().getSky().getSunAngle()).mul(1000.0f));
         this.debugShaders.getUtils().performViewMatrix3d(TransformationManager.instance.getMainCameraViewMatrix());
         this.debugShaders.performUniform("colour", new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));

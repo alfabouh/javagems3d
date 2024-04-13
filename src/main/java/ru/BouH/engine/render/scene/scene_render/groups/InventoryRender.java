@@ -13,7 +13,7 @@ import ru.BouH.engine.render.scene.world.camera.FreeCamera;
 
 public class InventoryRender extends SceneRenderBase {
     public InventoryRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(100, sceneRenderConveyor, new RenderGroup("INVENTORY", true));
+        super(100, sceneRenderConveyor, new RenderGroup("INVENTORY"));
     }
 
     public void onRender(double partialTicks) {
@@ -23,9 +23,11 @@ public class InventoryRender extends SceneRenderBase {
             InventoryItem current = hasInventory.inventory().getCurrentItem();
             if (hasInventory.inventory().getCurrentItem() != null && ResourceManager.renderDataAssets.inventoryItemRenderTable.hasRender(current)) {
                 RenderInventoryItemData renderInventoryItemData = ResourceManager.renderDataAssets.inventoryItemRenderTable.getMap().get(current.getClass());
-                renderInventoryItemData.getRenderFabric().preRender(this, current, renderInventoryItemData);
-                renderInventoryItemData.getRenderFabric().onRender(partialTicks, this, current, renderInventoryItemData);
-                renderInventoryItemData.getRenderFabric().postRender(this, current, renderInventoryItemData);
+                if (renderInventoryItemData.getRenderFabric() != null) {
+                    renderInventoryItemData.getRenderFabric().preRender(this, current, renderInventoryItemData);
+                    renderInventoryItemData.getRenderFabric().onRender(partialTicks, this, current, renderInventoryItemData);
+                    renderInventoryItemData.getRenderFabric().postRender(this, current, renderInventoryItemData);
+                }
             }
         }
     }

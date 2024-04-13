@@ -10,13 +10,23 @@ public class Sky implements IWorldDynamic {
     private final ISkyBox skyBox;
     private Vector3f sunAngle;
     private Vector3f sunColors;
+    private boolean coveredByFog;
     private float sunBrightness;
 
     public Sky(ISkyBox skyBox, Vector3f sunColors, Vector3f sunAngle, float sunBrightness) {
         this.skyBox = skyBox;
+        this.coveredByFog = true;
         this.setSunBrightness(sunBrightness);
         this.setSunAngle(sunAngle);
         this.setSunColors(sunColors);
+    }
+
+    public void setCoveredByFog(boolean coveredByFog) {
+        this.coveredByFog = coveredByFog;
+    }
+
+    public boolean isCoveredByFog() {
+        return this.coveredByFog;
     }
 
     public ISkyBox getSkyBox() {

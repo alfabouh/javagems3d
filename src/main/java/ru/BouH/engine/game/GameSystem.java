@@ -1,24 +1,32 @@
 package ru.BouH.engine.game;
 
+import org.joml.Vector3d;
+import org.joml.Vector4d;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.map.loader.IMapLoader;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
+import ru.BouH.engine.render.environment.Environment;
 
 public class GameSystem implements IEngine {
+    public static final String ENG_NAME = "Xaelum3d";
+    public static final String ENG_VER = "0.1a";
+
     private final ResourceManager resourceManager;
     private final EngineState engineState;
     private Thread thread;
     private IMapLoader mapLoader;
     private LocalPlayer localPlayer;
+    private boolean lockedUnPausing;
 
     public GameSystem() {
         this.thread = null;
         this.engineState = new EngineState();
         this.resourceManager = new ResourceManager();
         this.mapLoader = null;
+        this.lockedUnPausing = false;
     }
 
     public EngineState getEngineState() {
@@ -31,6 +39,14 @@ public class GameSystem implements IEngine {
 
     public IMapLoader getMapLoader() {
         return this.mapLoader;
+    }
+
+    public void setLockedUnPausing(boolean lockedUnPausing) {
+        this.lockedUnPausing = lockedUnPausing;
+    }
+
+    public boolean isLockedUnPausing() {
+        return this.lockedUnPausing;
     }
 
     public void loadMap(IMapLoader mapLoader) {
@@ -69,6 +85,17 @@ public class GameSystem implements IEngine {
 
         Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(ControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayerSP());
         Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayerSP());
+
+        Environment environment = Game.getGame().getSceneWorld().getEnvironment();
+        Vector4d fog1 = this.mapLoader.levelInfo().getFog();
+        if (this.mapLoader.levelInfo().getFog() != null) {
+            environment.getWorldFog().setColor(new Vector3d(fog1.x, fog1.y, fog1.z));
+            environment.getWorldFog().setDensity((float) fog1.w);
+            environment.getSky().setCoveredByFog(this.mapLoader.levelInfo().isSkyCoveredByFog());
+        }
+        environment.getSky().setSunColors(this.mapLoader.levelInfo().getSunColor());
+        environment.getSky().setSunBrightness(this.mapLoader.levelInfo().getSunBrightness());
+
         this.unPauseGame();
     }
 
@@ -87,7 +114,9 @@ public class GameSystem implements IEngine {
     }
 
     public void unPauseGame() {
-        this.engineState().paused = false;
+        if (!this.isLockedUnPausing()) {
+            this.engineState().paused = false;
+        }
     }
 
     public void clean() {
@@ -98,7 +127,7 @@ public class GameSystem implements IEngine {
             Game.getGame().getLogManager().warn("Engine thread is not ready to be cleaned!");
             return;
         }
-        Game.getGame().getSoundManager().cleanAllSounds();
+        Game.getGame().getSoundManager().stopAllSounds();
         Game.getGame().getLogManager().warn("Cleaning worlds!");
         this.endWorlds();
         this.localPlayer = null;

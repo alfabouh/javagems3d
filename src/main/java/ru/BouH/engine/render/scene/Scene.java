@@ -1,12 +1,16 @@
 package ru.BouH.engine.render.scene;
 
+import org.checkerframework.checker.units.qual.K;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3d;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
+import ru.BouH.engine.audio.sound.GameSound;
+import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.resources.ResourceManager;
@@ -18,6 +22,7 @@ import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.models.mesh.ModelNode;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
 import ru.BouH.engine.game.synchronizing.SyncManger;
+import ru.BouH.engine.physics.entities.player.KinematicPlayerSP;
 import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
@@ -31,6 +36,7 @@ import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 import ru.BouH.engine.render.scene.programs.FBOTexture2DProgram;
 import ru.BouH.engine.render.scene.scene_render.groups.GuiRender;
+import ru.BouH.engine.render.scene.scene_render.groups.InventoryRender;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.scene.world.camera.AttachedCamera;
 import ru.BouH.engine.render.scene.world.camera.FreeCamera;
@@ -55,16 +61,16 @@ public class Scene implements IScene {
     private final GameGUI gui;
     private double elapsedTime;
     private List<SceneRenderBase> mainGroup;
-    private List<SceneRenderBase> sideGroup;
     private boolean refresh;
     private ICamera currentCamera;
     private GuiRender guiRender;
+    private InventoryRender inventoryRender;
+    private boolean requestDestroyMap;
 
     public Scene(Screen screen, SceneWorld sceneWorld) {
         this.sceneWorld = sceneWorld;
         this.screen = screen;
         this.mainGroup = new ArrayList<>();
-        this.sideGroup = new ArrayList<>();
         this.window = this.getScreen().getWindow();
         this.frustumCulling = new FrustumCulling();
         this.sceneRenderBases = new ArrayList<>();
@@ -92,16 +98,8 @@ public class Scene implements IScene {
         }
     }
 
-    public static int getPostRender() {
-        return Game.getGame().getScreen().getScene().getSceneRender().getCurrentRenderPostMode();
-    }
-
     public static void setSceneDebugMode(int a) {
         Game.getGame().getScreen().getScene().setDebugMode(a);
-    }
-
-    public static void setScenePostRender(int a) {
-        Game.getGame().getScreen().getScene().setRenderPostMode(a);
     }
 
     @SuppressWarnings("all")
@@ -212,22 +210,28 @@ public class Scene implements IScene {
 
     private void collectRenderBases() {
         Game.getGame().getLogManager().log("Creating render groups...");
-        this.mainGroup = this.getRenderQueueContainer().stream().filter(e -> e.getRenderGroup().isMainSceneGroup()).sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
-        this.sideGroup = this.getRenderQueueContainer().stream().filter(e -> !e.getRenderGroup().isMainSceneGroup()).sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
+        this.mainGroup = this.getRenderQueueContainer().stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
     }
 
     public GuiRender getGuiRender() {
         return this.guiRender;
     }
 
+    public InventoryRender getInventoryRender() {
+        return this.inventoryRender;
+    }
+
     public void preRender() {
+        this.getGui().initMainMenu();
         Game.getGame().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.setupBuffers();
         this.collectRenderBases();
         this.getSceneWorld().setFrustumCulling(this.getFrustumCulling());
         Game.getGame().getLogManager().log("Starting scene rendering: ");
         this.getSceneRender().onStartRender();
         this.guiRender = new GuiRender(this.getSceneRender());
+        this.inventoryRender = new InventoryRender(this.getSceneRender());
         this.getGuiRender().onStartRender();
+        this.getInventoryRender().onStartRender();
         for (SceneRenderBase sceneRenderBase : this.sceneRenderBases) {
             Game.getGame().getLogManager().log("Starting " + sceneRenderBase.getRenderGroup().getId() + " scene");
             sceneRenderBase.onStartRender();
@@ -245,6 +249,8 @@ public class Scene implements IScene {
             sceneRenderBase.onStopRender();
             Game.getGame().getLogManager().log("Scene " + sceneRenderBase.getRenderGroup().getId() + " successfully stopped!");
         }
+        this.getInventoryRender().onStopRender();
+        this.getGuiRender().onStopRender();
         Game.getGame().getLogManager().log("Destroying resources!");
         this.removeGui();
         GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
@@ -254,13 +260,6 @@ public class Scene implements IScene {
 
     public void onWindowResize(Vector2i dim) {
         this.getSceneRender().onWindowResize(dim);
-    }
-
-    public void setRenderPostMode(int a) {
-        this.getSceneRender().CURRENT_POST_RENDER = a;
-        if (this.getSceneRender().CURRENT_POST_RENDER > 3) {
-            this.getSceneRender().CURRENT_POST_RENDER = 0;
-        }
     }
 
     public void enableFreeCamera(IController controller, Vector3d pos, Vector3d rot) {
@@ -284,6 +283,11 @@ public class Scene implements IScene {
         if (Scene.isSceneActive()) {
             Screen.setViewport(this.getWindowDimensions());
             if (this.getCurrentCamera() != null) {
+                if (this.requestDestroyMap) {
+                    Game.getGame().destroyMap();
+                    this.requestDestroyMap = false;
+                    return;
+                }
                 this.elapsedTime += deltaTime / PhysicThreadManager.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
                     SyncManger.SyncPhysicsAndRender.mark();
@@ -295,9 +299,14 @@ public class Scene implements IScene {
                 }
                 SyncManger.SyncPhysicsAndRender.blockCurrentThread();
                 this.renderSceneInterpolated(this.elapsedTime);
+            } else {
+                this.getGuiRender().onRender(deltaTime);
             }
-            this.getGuiRender().onRender(deltaTime);
         }
+    }
+
+    public void requestDestroyMap() {
+        this.requestDestroyMap = true;
     }
 
     @SuppressWarnings("all")
@@ -306,7 +315,7 @@ public class Scene implements IScene {
         this.getSceneWorld().onWorldEntityUpdate(this.refresh, partialTicks);
         this.getCurrentCamera().updateCamera(partialTicks);
         TransformationManager.instance.updateViewMatrix(this.getCurrentCamera());
-        this.getSceneRender().onRender(partialTicks, this.mainGroup, this.sideGroup);
+        this.getSceneRender().onRender(partialTicks, this.mainGroup);
         this.refresh = false;
     }
 
@@ -319,18 +328,20 @@ public class Scene implements IScene {
     }
 
     public class SceneRenderConveyor {
+        private final FBOTexture2DProgram fboPsx;
         private final FBOTexture2DProgram fboBlur;
         private final FBOTexture2DProgram sceneFbo;
         private final FBOTexture2DProgram mixFbo;
         private final ShadowScene shadowScene;
         private final float[] blurKernel;
-        private int CURRENT_POST_RENDER = 0;
         private int CURRENT_DEBUG_MODE;
+        private int oldPanic;
 
         public SceneRenderConveyor() {
             this.shadowScene = new ShadowScene(Scene.this);
             this.fboBlur = new FBOTexture2DProgram(true, false);
             this.sceneFbo = new FBOTexture2DProgram(true, false);
+            this.fboPsx = new FBOTexture2DProgram(true, false);
             this.mixFbo = new FBOTexture2DProgram(true, false);
             this.blurKernel = this.blurKernels(8.0f);
             this.initShaders();
@@ -361,9 +372,12 @@ public class Scene implements IScene {
             this.fboBlur.clearFBO();
             this.sceneFbo.clearFBO();
             this.mixFbo.clearFBO();
-            this.fboBlur.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0}, false, false, GL30.GL_SRGB_ALPHA, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-            this.sceneFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, true, true, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-            this.mixFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, false, false, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+            this.fboPsx.clearFBO();
+
+            this.fboPsx.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, false, GL30.GL_RGBA16F, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+            this.fboBlur.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0}, false, false, GL30.GL_SRGB_ALPHA, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+            this.sceneFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, true, true, GL43.GL_RGB16F, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+            this.mixFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, false, false, GL43.GL_RGB16F, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         }
 
         public void onWindowResize(Vector2i dim) {
@@ -374,15 +388,11 @@ public class Scene implements IScene {
             return this.CURRENT_DEBUG_MODE;
         }
 
-        public int getCurrentRenderPostMode() {
-            return this.CURRENT_POST_RENDER;
-        }
-
         private void updateUbo() {
-            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{this.getRenderWorld().getElapsedRenderTicks()});
+            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{ Game.getGame().getScreen().getRenderTicks() });
             Environment environment = this.getRenderWorld().getEnvironment();
             FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(4);
-            value1Buffer.put(environment.getFog().getDensity());
+            value1Buffer.put(Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 0 ? environment.getFog().getDensity() : 0.0f);
             value1Buffer.put((float) environment.getFog().getColor().x);
             value1Buffer.put((float) environment.getFog().getColor().y);
             value1Buffer.put((float) environment.getFog().getColor().z);
@@ -391,7 +401,7 @@ public class Scene implements IScene {
             MemoryUtil.memFree(value1Buffer);
         }
 
-        public void onRender(double partialTicks, List<SceneRenderBase> mainGroup, List<SceneRenderBase> sideGroup) {
+        public void onRender(double partialTicks, List<SceneRenderBase> mainGroup) {
             this.updateUbo();
             this.getRenderWorld().getEnvironment().onUpdate(this.getRenderWorld());
 
@@ -411,13 +421,88 @@ public class Scene implements IScene {
             this.sceneFbo.copyFBOtoFBO(this.mixFbo.getFrameBufferId(), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, this.getWindowDimensions());
             this.mixFbo.unBindFBO();
 
-            this.twoPassBlurShader(partialTicks, model);
-            this.renderMixedScene(partialTicks, model);
-            this.renderDebugScreen(partialTicks);
-            this.renderSideGroup(partialTicks, sideGroup);
+            this.blurShader(partialTicks, model);
+
+            if (this.getCurrentDebugMode() == 0) {
+                GL30.glEnable(GL30.GL_BLEND);
+                GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+                this.fboPsx.bindFBO();
+                this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 0);
+                this.renderMixedScene(partialTicks, model);
+                this.renderDebugScreen(partialTicks);
+
+                this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 2);
+                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                Scene.this.getInventoryRender().onRender(partialTicks);
+
+                this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 1);
+                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                Scene.this.getGuiRender().onRender(partialTicks);
+
+                this.fboPsx.unBindFBO();
+
+                if (Scene.this.getCurrentCamera() != null) {
+                    this.renderPsx(model);
+                }
+
+                GL30.glDisable(GL30.GL_BLEND);
+            } else {
+                this.renderMixedScene(partialTicks, model);
+                this.renderDebugScreen(partialTicks);
+                Scene.this.getInventoryRender().onRender(partialTicks);
+                Scene.this.getGuiRender().onRender(partialTicks);
+            }
 
             model.clean();
             Scene.getGameUboShader().unBind();
+        }
+
+        private void renderPsx(Model<Format2D> model) {
+            KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) Game.getGame().getPlayerSP();
+
+            this.getPostProcessingShader2().bind();
+            this.getPostProcessingShader2().performUniform("texture_sampler", 0);
+            this.getPostProcessingShader2().performUniform("texture_sampler_gui", 1);
+            this.getPostProcessingShader2().performUniform("texture_sampler_inventory", 2);
+            this.getPostProcessingShader2().performUniform("texture_screen", 3);
+            this.getPostProcessingShader2().performUniform("texture_blood", 4);
+            this.getPostProcessingShader2().performUniform("kill", kinematicPlayerSP.isKilled());
+            this.getPostProcessingShader2().performUniform("victory", kinematicPlayerSP.isVictory());
+
+            this.getPostProcessingShader2().performUniform("resolution", new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y));
+            this.getPostProcessingShader2().performUniform("e_lsd", 0);
+            this.getPostProcessingShader2().performUniform("psx_gui_shake", Game.getGame().isPaused() ? 0 : 1);
+
+            float panic = 1.0f - kinematicPlayerSP.getMind();
+            int panic_i = (int) (Math.floor(panic * 10.0f));
+            float panic_normalized = (panic_i) * 0.1f;
+
+            if (panic_i > this.oldPanic) {
+                Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.crackling, SoundType.BACKGROUND_SOUND, 1.0f + panic_normalized * 0.5f, 1.0f);
+            }
+
+            this.oldPanic = panic_i;
+
+            this.getPostProcessingShader2().performUniform("panic", panic_normalized);
+            this.getPostProcessingShader2().performUniform("offset", 80.0f);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.fboPsx.bindTexture(0);
+            GL30.glActiveTexture(GL30.GL_TEXTURE1);
+            this.fboPsx.bindTexture(1);
+            GL30.glActiveTexture(GL30.GL_TEXTURE2);
+            this.fboPsx.bindTexture(2);
+
+            GL30.glActiveTexture(GL30.GL_TEXTURE3);
+            ResourceManager.renderAssets.screen.bindTexture();
+
+            GL30.glActiveTexture(GL30.GL_TEXTURE4);
+            ResourceManager.renderAssets.blood.bindTexture();
+
+            this.getPostProcessingShader2().getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
+            this.getPostProcessingShader2().unBind();
         }
 
         private boolean checkPlayerCameraInWater() {
@@ -430,12 +515,6 @@ public class Scene implements IScene {
                 }
             }
             return false;
-        }
-
-        private void renderSideGroup(double partialTicks, List<SceneRenderBase> sideGroup) {
-            for (SceneRenderBase sceneRenderBase : sideGroup) {
-                sceneRenderBase.onRender(partialTicks);
-            }
         }
 
         private void renderSceneInFbo(double partialTicks, List<SceneRenderBase> mainList) {
@@ -456,7 +535,7 @@ public class Scene implements IScene {
             }
         }
 
-        private void twoPassBlurShader(double partialTicks, Model<Format2D> model) {
+        private void blurShader(double partialTicks, Model<Format2D> model) {
             this.fboBlur.bindFBO();
             this.getBlurShader().bind();
             this.getBlurShader().performArrayUniform("kernel", this.blurKernel);
@@ -473,7 +552,6 @@ public class Scene implements IScene {
             this.getPostProcessingShader().bind();
             this.getPostProcessingShader().performUniform("texture_sampler", 0);
             this.getPostProcessingShader().performUniform("blur_sampler", 1);
-            this.getPostProcessingShader().performUniform("post_mode", this.getCurrentRenderPostMode());
             GL30.glActiveTexture(GL30.GL_TEXTURE1);
             this.fboBlur.bindTexture(0);
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
@@ -526,6 +604,8 @@ public class Scene implements IScene {
         public void onStopRender() {
             this.fboBlur.clearFBO();
             this.sceneFbo.clearFBO();
+            this.mixFbo.clearFBO();
+            this.fboPsx.clearFBO();
         }
 
         public ShaderManager getBlurShader() {
@@ -534,6 +614,10 @@ public class Scene implements IScene {
 
         public ShaderManager getPostProcessingShader() {
             return ResourceManager.shaderAssets.post_render_1;
+        }
+
+        public ShaderManager getPostProcessingShader2() {
+            return ResourceManager.shaderAssets.post_psx;
         }
     }
 }

@@ -14,7 +14,7 @@ public class WorldTransparentRender extends SceneRenderBase {
     public static List<IModeledSceneObject> transparentRenderObjects;
 
     public WorldTransparentRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(99, sceneRenderConveyor, new RenderGroup("WORLD_TRANSPARENT", true));
+        super(99, sceneRenderConveyor, new RenderGroup("WORLD_TRANSPARENT"));
         WorldTransparentRender.transparentRenderObjects = new ArrayList<>();
     }
 

@@ -11,7 +11,7 @@ public class EntityManiac extends EntityWithAI {
 
     public EntityManiac(World world, Vector3d pos) {
         super(world, pos, "maniac");
-        this.navigationAI = new NavigationToPlayerAI(0.1d, this, world);
+        this.navigationAI = new NavigationToPlayerAI(0.01d, this, world);
         this.navigationAI.setPlayer(Game.getGame().getPlayerSP());
         this.addAI(this.navigationAI);
     }

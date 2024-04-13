@@ -12,12 +12,12 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.audio.sound.SoundListener;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.GameSystem;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.world.timer.PhysicsTimer;
 import ru.BouH.engine.render.scene.Scene;
-import ru.BouH.engine.render.scene.gui.MainMenuGUI;
 import ru.BouH.engine.render.scene.gui.font.FontCode;
 import ru.BouH.engine.render.scene.gui.font.GuiFont;
 import ru.BouH.engine.render.scene.gui.ui.TextUI;
@@ -33,10 +33,11 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 public class Screen {
+    public static final double RENDER_TICKS_UPD_RATE = 60.0d;
     public static final int defaultW = 1280;
     public static final int defaultH = 720;
     public static int FPS;
-    public static int PHYS1_TPS;
+    public static boolean lastFrame;
     public static int PHYS2_TPS;
     public static int MSAA_SAMPLES = 4;
     private final Timer timer;
@@ -44,10 +45,14 @@ public class Screen {
     private Scene scene;
     private Window window;
     private GameLoadingScreen gameLoadingScreen;
+    private double lastRenderTicksUpdate;
+    private float renderTicks;
 
     public Screen() {
         this.timer = new Timer();
         this.gameLoadingScreen = null;
+        this.lastRenderTicksUpdate = Game.glfwTime();
+        this.renderTicks = 0.0f;
     }
 
     public static boolean isScreenActive() {
@@ -96,7 +101,6 @@ public class Screen {
         scene.addSceneRenderBase(new WorldTransparentRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new WorldRenderLiquids(scene.getSceneRender()));
         scene.addSceneRenderBase(new SkyRender(scene.getSceneRender()));
-        scene.addSceneRenderBase(new InventoryRender(scene.getSceneRender()));
         scene.addSceneRenderBase(new DebugRender(scene.getSceneRender()));
     }
 
@@ -152,27 +156,62 @@ public class Screen {
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL20.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
-        this.window = new Window(new Window.WindowProperties(Screen.defaultW, Screen.defaultH, "Build " + Game.build));
+        this.window = new Window(new Window.WindowProperties(Screen.defaultW, Screen.defaultH, Game.getGame().toString()));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new GameException("Failed to create the GLFW window");
         }
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer width = stack.mallocInt(1);
-            IntBuffer height = stack.mallocInt(1);
-            GLFW.glfwGetWindowSize(window, width, height);
-            GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-            if (vidMode != null) {
-                int x = (vidMode.width() - width.get(0)) / 2;
-                int y = (vidMode.height() - height.get(0)) / 2;
-                GLFW.glfwSetWindowPos(window, x, y);
-            } else {
-                return false;
-            }
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        if (vidMode != null) {
+            int x = (vidMode.width() - Screen.defaultW) / 2;
+            int y = (vidMode.height() - Screen.defaultH) / 2;
+            GLFW.glfwSetWindowPos(window, x, y);
+        } else {
+            return false;
         }
         GLFW.glfwMakeContextCurrent(window);
-        GLFW.glfwSwapInterval(1);
+        this.enableVSync();
         return true;
+    }
+
+    public void enableVSync() {
+        GLFW.glfwSwapInterval(1);
+    }
+
+    public void disableVSync() {
+        GLFW.glfwSwapInterval(0);
+    }
+
+    public void switchScreenMode() {
+        long monitor = GLFW.glfwGetWindowMonitor(this.getWindow().getDescriptor());
+        if (monitor != 0) {
+            this.removeFullScreen();
+        } else {
+            this.makeFullScreen();
+        }
+        this.enableVSync();
+    }
+
+    public void makeFullScreen() {
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        if (vidMode != null) {
+            GLFW.glfwSetWindowMonitor(this.getWindow().getDescriptor(), GLFW.glfwGetPrimaryMonitor(), 0, 0, vidMode.width(), vidMode.height(), GLFW.GLFW_DONT_CARE);
+            Game.getGame().getLogManager().log("FullScreen mode");
+        } else {
+            throw new GameException("Monitor None");
+        }
+    }
+
+    public void removeFullScreen() {
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        if (vidMode != null) {
+            int x = (vidMode.width() - Screen.defaultW) / 2;
+            int y = (vidMode.height() - Screen.defaultH) / 2;
+            GLFW.glfwSetWindowMonitor(this.getWindow().getDescriptor(), 0, x, y, Screen.defaultW, Screen.defaultH, GLFW.GLFW_DONT_CARE);
+            Game.getGame().getLogManager().log("DefaultScreen mode");
+        } else {
+            throw new GameException("Monitor None");
+        }
     }
 
     public void hideWindow() {
@@ -201,9 +240,9 @@ public class Screen {
     private void enableMSAA() {
         GL11.glEnable(GL13.GL_MULTISAMPLE);
         GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 8);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);
+        //GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        //GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+        //GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST);
     }
 
     private void updateScreen() {
@@ -212,21 +251,23 @@ public class Screen {
         try {
             this.renderLoop();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new GameException(e);
         }
         this.getScene().postRender();
     }
 
-    private void showMainMenu() {
-        this.getScene().setGui(new MainMenuGUI());
+    public void showMainMenu() {
+        this.getScene().getGui().showMainMenu();
     }
 
     private void renderLoop() throws InterruptedException {
         this.enableMSAA();
         int fps = 0;
         double lastFPS = Game.glfwTime();
+
         this.gameLoadingScreen.clean();
         this.gameLoadingScreen = null;
+
         this.showMainMenu();
         while (!Game.getGame().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
@@ -260,15 +301,34 @@ public class Screen {
             this.getControllerDispatcher().updateController(this.getWindow());
             this.getWindow().refreshFocusState();
         }
+
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
         GL30.glEnable(GL30.GL_CULL_FACE);
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);
-        Game.getGame().getSoundManager().update();
+
+        Screen.lastFrame = false;
         this.getScene().renderScene(delta);
+        Screen.lastFrame = true;
+
+        double curr = Game.glfwTime();
+        if (curr - this.lastRenderTicksUpdate > 1.0d / Screen.RENDER_TICKS_UPD_RATE) {
+            this.renderTicks += 0.01f;
+            this.lastRenderTicksUpdate = curr;
+        }
+
+        Game.getGame().getSoundManager().update();
         if (Game.getGame().isValidPlayer()) {
             SoundListener.updateOrientationAndPosition(TransformationManager.instance.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
         }
+    }
+
+    public void zeroRenderTick() {
+        this.renderTicks = 0.0f;
+    }
+
+    public float getRenderTicks() {
+        return this.renderTicks;
     }
 
     public ControllerDispatcher getControllerDispatcher() {
@@ -301,8 +361,11 @@ public class Screen {
 
         public GameLoadingScreen() {
             Game.getGame().getLogManager().log("Loading screen");
-            this.guiFont = new GuiFont(new Font("Cambria", Font.PLAIN, 24), FontCode.Window);
+            Font gameFont = ResourceManager.createFontFromJAR("gamefont.ttf");
+            this.guiFont = new GuiFont(gameFont.deriveFont(Font.BOLD, 20), FontCode.Window);
             this.lines = new ArrayList<>();
+            this.lines.add(GameSystem.ENG_NAME + " : " + GameSystem.ENG_VER);
+            this.lines.add("...");
             this.lines.add("Loading game...");
         }
 

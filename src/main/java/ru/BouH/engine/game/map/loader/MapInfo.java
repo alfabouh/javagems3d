@@ -1,18 +1,32 @@
 package ru.BouH.engine.game.map.loader;
 
 import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.Vector4d;
 
 public final class MapInfo {
+    private final Vector4d fog;
     private final Vector3d playerStartPos;
-    private final double sunBrightness;
-    private final Vector3d sunColor;
+    private final float sunBrightness;
+    private final Vector3f sunColor;
     private final String levelName;
+    private final boolean skyCoveredByFog;
 
-    public MapInfo(Vector3d playerStartPos, double sunBrightness, Vector3d sunColor, String levelName) {
+    public MapInfo(Vector4d fog, boolean skyCoveredByFog, Vector3d playerStartPos, float sunBrightness, Vector3f sunColor, String levelName) {
         this.playerStartPos = playerStartPos;
+        this.fog = fog;
         this.sunBrightness = sunBrightness;
+        this.skyCoveredByFog = skyCoveredByFog;
         this.sunColor = sunColor;
         this.levelName = levelName;
+    }
+
+    public boolean isSkyCoveredByFog() {
+        return this.skyCoveredByFog;
+    }
+
+    public Vector4d getFog() {
+        return this.fog;
     }
 
     public Vector3d getPlayerStartPos() {
@@ -23,11 +37,11 @@ public final class MapInfo {
         return this.levelName;
     }
 
-    public Vector3d getSunColor() {
+    public Vector3f getSunColor() {
         return this.sunColor;
     }
 
-    public double getSunBrightness() {
+    public float getSunBrightness() {
         return this.sunBrightness;
     }
 }

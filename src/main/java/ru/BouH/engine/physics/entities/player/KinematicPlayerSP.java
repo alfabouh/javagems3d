@@ -9,15 +9,18 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
+import ru.BouH.engine.audio.sound.GameSound;
 import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.controller.binding.BindingList;
+import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.input.MouseKeyboardController;
+import ru.BouH.engine.game.map.Map01;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.inventory.IHasInventory;
 import ru.BouH.engine.inventory.Inventory;
 import ru.BouH.engine.inventory.items.ItemCrowbar;
+import ru.BouH.engine.inventory.items.ItemRadio;
 import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.Materials;
@@ -49,6 +52,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     private final double maxSlope = Math.toRadians(45.0f);
     private final float runAcceleration;
     private final Vector3d currentHitScanCoordinate;
+    private boolean canPlayerJump;
     private IController controller;
     private btKinematicCharacterController kinematicCharacterController;
     private btConvexShape collisionShape;
@@ -61,11 +65,25 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     private JBulletEntity currentSelectedItem;
     private JBulletEntity wantsToSelect;
     private boolean wantsToGrab;
+    private boolean hasSoda;
     private Inventory inventory;
     private boolean isRunning;
     private float stamina;
     private float mind;
+    private int mindCd;
     private int staminaCd;
+    private final GameSound gameSound;
+
+    private int pickedCds;
+    private int prickedCassettes;
+    private final int maxCds;
+    private final int maxCassettes;
+    private GameSound horror2;
+
+    private boolean killed;
+    private int killedCd;
+    private boolean victory;
+    private int victoryCd;
 
     public KinematicPlayerSP(World world, @NotNull Vector3d pos, @NotNull Vector3d rot) {
         super(world, pos, rot, "player_sp");
@@ -73,7 +91,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.inputMotion = new ArrayDeque<>();
         this.walking = new Vector3d();
         this.currentHitScanCoordinate = new Vector3d(0.0d);
-        this.stepSpeed = 0.008f;
+        this.stepSpeed = 0.005f;
         this.jumpHeight = 7.5f;
         this.walkingDamping = 0.865f;
         this.currentAcceleration = 1.0f;
@@ -82,12 +100,66 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.wantsToSelect = null;
         this.wantsToGrab = false;
         this.entityState = new EntityState();
-        this.runAcceleration = 1.25f;
+        this.canPlayerJump = true;
+        this.runAcceleration = 1.5f;
         this.isRunning = false;
+        this.hasSoda = false;
         this.stamina = 1.0f;
         this.mind = 1.0f;
+        this.gameSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.noise, SoundType.BACKGROUND_AMBIENT_SOUND, 0.5f, 0.0f, 1.0f);
+        this.mindCd = 0;
         this.staminaCd = 0;
         this.inventory = new Inventory(this, 4);
+
+        this.pickedCds = 0;
+        this.prickedCassettes = 0;
+
+        this.maxCds = 3;
+        this.maxCassettes = 7;
+
+        this.killed = false;
+        this.killedCd = 0;
+        this.victoryCd = 0;
+    }
+
+    public boolean isKilled() {
+        return this.killed;
+    }
+
+    public boolean isVictory() {
+        return this.victory;
+    }
+
+    public void setPrickedCassettes(int prickedCassettes) {
+        this.prickedCassettes = prickedCassettes;
+    }
+
+    public void setPickedCds(int pickedCds) {
+        this.pickedCds = pickedCds;
+    }
+
+    public int getPrickedCassettes() {
+        return this.prickedCassettes;
+    }
+
+    public int getPickedCds() {
+        return this.pickedCds;
+    }
+
+    public int getMaxCds() {
+        return this.maxCds;
+    }
+
+    public int getMaxCassettes() {
+        return this.maxCassettes;
+    }
+
+    public boolean isCanPlayerJump() {
+        return this.canPlayerJump;
+    }
+
+    public void setCanPlayerJump(boolean canPlayerJump) {
+        this.canPlayerJump = canPlayerJump;
     }
 
     public btKinematicCharacterController getKinematicCharacterController() {
@@ -108,6 +180,15 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.getBulletObject().setUserIndex2(this.getItemId());
         this.setCollisionTranslation(position);
         this.setCollisionRotation(rotation);
+        this.gameSound.playSound();
+    }
+
+    @Override
+    public void onSpawn(IWorld world) {
+        super.onSpawn(world);
+        this.horror2 = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f, 1.0f);
+        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.horror, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f);
+        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.crackling, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
     }
 
     public float getScalarSpeed() {
@@ -213,6 +294,9 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     }
 
     private void playStepSound() {
+        if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
+            Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_slosh[Game.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 0.5f, 0.25f);
+        }
         Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_step[Game.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.0f, 0.5f);
     }
 
@@ -223,7 +307,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             if (this.kinematicCharacterController.onGround() && this.getTicksExisted() % (this.isRunning ? 15 : 20) == 0) {
                 this.playStepSound();
             }
-            this.walking.set(motion);
+            this.walking.set(new Vector3d(motion).mul(1, 0, 1));
             this.walking.normalize();
             this.walking.mul(step, 0.0f, step);
             this.walking.mul(Math.min(this.currentAcceleration, 1.0f));
@@ -262,15 +346,142 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         return flag;
     }
 
+    private boolean canPlayerSeeEnemy() {
+        btVector3 va1 = new btVector3(Map01.entityManiac.getPosition().x, Map01.entityManiac.getPosition().y, Map01.entityManiac.getPosition().z);
+        btVector3 va2 = new btVector3(this.getPosition().x, this.getPosition().y + this.getEyeHeight(), this.getPosition().z);
+
+        boolean flag = true;
+
+        btCollisionWorld.ClosestRayResultCallback rayResultCallback = new btCollisionWorld.ClosestRayResultCallback(va1, va2);
+        rayResultCallback.m_collisionFilterMask(btBroadphaseProxy.DefaultFilter & ~BodyGroup.PlayerFilter & ~BodyGroup.LiquidFilter & ~BodyGroup.GhostFilter);
+        this.getWorld().getDynamicsWorld().rayTest(va1, va2, rayResultCallback);
+
+        if (rayResultCallback.hasHit()) {
+            flag = false;
+        }
+
+        va1.deallocate();
+        va2.deallocate();
+        rayResultCallback.deallocate();
+
+        return flag;
+    }
+
+    private void checkEnemy() {
+        if (Map01.entityManiac == null) {
+            return;
+        }
+        boolean isRadioActive = this.inventory().getCurrentItem() instanceof ItemRadio && ((ItemRadio) this.inventory().getCurrentItem()).isOpened();
+        boolean canSee = this.canPlayerSeeEnemy();
+        double dist = this.getPosition().distance(Map01.entityManiac.getPosition());
+        int maxDist = 60;
+        int level = MathHelper.clamp((int) ((maxDist - dist) / 10.0f), 0, 5);
+        if (level > 0) {
+            float max = 1.0f;
+            float delta = 0.0f;
+            switch (level) {
+                case 1: {
+                    max = 0.9f;
+                    delta = 0.0001f;
+                    break;
+                }
+                case 2: {
+                    max = 0.75f;
+                    delta = 0.0003f;
+                    break;
+                }
+                case 3: {
+                    max = 0.5f;
+                    delta = 0.00075f;
+                    break;
+                }
+                case 4: {
+                    max = 0.25f;
+                    delta = 0.0025f;
+                    break;
+                }
+                case 5: {
+                    max = 0.0f;
+                    delta = 0.005f;
+                    break;
+                }
+            }
+            this.mindCd = 100;
+            if (!canSee) {
+                max = max + (1.0f - max) / 2.0f;
+                delta *= 0.5f;
+            }
+            if (isRadioActive) {
+                max += 0.05f;
+                delta *= 0.5f;
+            }
+            if (Math.abs(Map01.entityManiac.getPosition().y - this.getPosition().y) >= 3.0f) {
+                max = Math.min(max * 1.3f, 1.0f);
+                delta *= 0.5f;
+            }
+            if (this.mind > max) {
+                this.mind = Math.max(this.mind - delta, 0.0f);
+            } else {
+                this.mind = Math.min(this.mind + (isRadioActive ? 0.0016f : 0.0008f), max);
+            }
+        } else {
+            if (this.mindCd-- <= 0) {
+                this.mind = Math.min(this.mind + (isRadioActive ? 0.005f : 0.002f), 1.0f);
+            }
+        }
+        this.gameSound.setPitch(1.0f + (0.7f - this.mind) * 0.1f);
+        this.gameSound.setGain((0.7f - this.mind) * 0.25f);
+    }
+
+    private void kill() {
+        if (!this.isKilled()) {
+            Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.meat, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
+            this.killed = true;
+        }
+    }
+
+    private void victory() {
+        if (!this.isVictory()) {
+            Map01.entityManiac.destroy();
+            Game.getGame().getScreen().zeroRenderTick();
+            Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.victory, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+            this.victory = true;
+        }
+    }
+
     @Override
     public void onUpdate(IWorld iWorld) {
-        this.inventory().updateInventory(iWorld);
+        if (this.getPickedCds() + this.getPrickedCassettes() >= this.getMaxCds() + this.getMaxCassettes()) {
+            this.victory();
+        }
+
+        if (this.isVictory() && this.victoryCd++ >= 400) {
+            Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().showBlood = false;
+            Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().victory = true;
+            Game.getGame().destroyMap();
+        }
+
+        if (this.isKilled() && this.killedCd++ >= 150) {
+            Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().showBlood = true;
+            Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().victory = false;
+            Game.getGame().destroyMap();
+        }
+
+        if ((this.getPrickedCassettes() + this.getPickedCds()) >= 5) {
+            if (!this.horror2.isPlaying()) {
+                this.horror2.playSound();
+            }
+        }
+        if (this.getPosition().distance(Map01.entityManiac.getPosition()) <= 1.5d) {
+            this.kill();
+        }
+        this.checkEnemy();
         float staminaDelta = 0.0025f;
         this.staminaCd -= 1;
         if (this.isRunning()) {
             this.stamina -= staminaDelta;
             if (this.stamina <= 0.0f) {
-                this.staminaCd = 80;
+                this.staminaCd = 160;
             }
         } else {
             this.stamina = Math.min(this.stamina + staminaDelta * 0.5f, 1.0f);
@@ -295,9 +506,11 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 collidableWorldItem.entityState().setCanBeSelectedByPlayer(false);
                 collidableWorldItem.getBulletObject().makeDynamic();
                 btRigidBody rigidBody = btRigidBody.upcast(this.currentSelectedItem.getBulletObject());
+                rigidBody.getBroadphaseProxy().m_collisionFilterMask(rigidBody.getBroadphaseProxy().m_collisionFilterMask() & ~BodyGroup.PlayerFilter);
                 rigidBody.activate();
-                Vector3d impulse = new Vector3d(look).normalize().mul(6.0f + Game.random.nextFloat());
-                rigidBody.applyCentralImpulse(MathHelper.convert(impulse));
+                Vector3d impulse = new Vector3d(look).normalize().mul(4.0f + Game.random.nextFloat() * 3.0f);
+                rigidBody.applyImpulse(MathHelper.convert(impulse), MathHelper.convert(this.getCurrentHitScanCoordinate().normalize().mul(0.05d + Game.random.nextFloat() * 0.05f)));
+                Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.wood_break, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
             }
         } else if (this.wantsToSelect != null) {
             this.currentSelectedItem = this.wantsToSelect;
@@ -305,7 +518,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         }
         if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
             this.getKinematicCharacterController().setGravity(new btVector3(0, -4.0f * 3.0f, 0));
-            walking.multiplyPut(0.65d);
+            walking.multiplyPut(0.785d);
             if (cVector.y > 0) {
                 btVector3 v1 = new btVector3(this.getPosition().x, this.getPosition().y + 1.0f, this.getPosition().z);
                 btVector3 v2 = new btVector3(this.getPosition().x, this.getPosition().y - 0.5f, this.getPosition().z);
@@ -331,15 +544,6 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 v2.deallocate();
                 rayResultCallback.deallocate();
             }
-        } else {
-            this.getKinematicCharacterController().setGravity(new btVector3(0, -9.8f * 2.0f, 0));
-            if (this.jumpCd-- <= 0 && flag) {
-                if (cVector.y > 0 && this.kinematicCharacterController.onGround()) {
-                    this.playStepSound();
-                    this.getKinematicCharacterController().jump(new btVector3(0, this.getJumpHeight(), 0));
-                    this.jumpCd = 40;
-                }
-            }
         }
         if (!this.isValidController()) {
             walking.multiplyPut(0.0d);
@@ -349,7 +553,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     }
 
     public Vector3d getCurrentHitScanCoordinate() {
-        return this.currentHitScanCoordinate;
+        return new Vector3d(this.currentHitScanCoordinate);
     }
 
     private void hitScan(Vector3d look) {
@@ -377,7 +581,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     private void grabTest(Vector3d look) {
         this.wantsToSelect = null;
-        look.normalize().mul(1.0f);
+        look.normalize().mul(1.5f);
         btVector3 va1 = new btVector3();
         btVector3 va2 = new btVector3();
         this.getBulletObject().getCollisionShape().getAabb(this.getBulletObject().getWorldTransform(), va1, va2);
@@ -403,6 +607,14 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         rayResultCallback.deallocate();
     }
 
+    public void setHasSoda(boolean hasSoda) {
+        this.hasSoda = hasSoda;
+    }
+
+    public boolean isHasSoda() {
+        return this.hasSoda;
+    }
+
     public JBulletEntity getCurrentSelectedItem() {
         return this.currentSelectedItem;
     }
@@ -418,23 +630,40 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     @Override
     public void performController(Vector2d rotationInput, Vector3d xyzInput, boolean isFocused) {
+        if (this.isKilled() || this.isVictory()) {
+            this.inputMotion.clear();
+            return;
+        }
         if (this.currentController() instanceof MouseKeyboardController) {
             MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) this.currentController();
             if (mouseKeyboardController.getMouse().isLeftKeyPressed()) {
                 this.inventory().onMouseLeftClick(this.getWorld());
             }
             if (mouseKeyboardController.getMouse().isRightKeyPressed()) {
+                double x = Math.floor(this.getCurrentHitScanCoordinate().x * 100) / 100f;
+                double y = Math.floor(this.getCurrentHitScanCoordinate().y * 100) / 100f + 0.5d;
+                double z = Math.floor(this.getCurrentHitScanCoordinate().z * 100) / 100f;
+                System.out.println("new Vector3d(" + x + ", " + y + ", " + z + ")");
                 this.inventory().onMouseRightClick(this.getWorld());
             }
             this.inventory().scrollInventoryToNotNullItem(mouseKeyboardController.getMouse().scrollVector);
         }
-        this.wantsToGrab = BindingList.instance.keySelection.isPressed();
-        if (BindingList.instance.keyBlock1.isClicked()) {
+        this.wantsToGrab = ControllerDispatcher.bindings.keySelection.isPressed();
+        if (ControllerDispatcher.bindings.keyX.isClicked() && this.isHasSoda()) {
+            if (this.mind < 0.9f || this.stamina < 0.9f) {
+                Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.soda, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+                this.stamina = 1.0f;
+                this.mind = Math.min(this.mind + 0.15f, 1.0f);
+                this.staminaCd = 0;
+                this.setHasSoda(false);
+            }
+        }
+        if (ControllerDispatcher.bindings.keyBlock1.isClicked()) {
             PhysLightCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 1.25d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(30.0f));
         }
-        if (BindingList.instance.keyBlock2.isClicked()) {
+        if (ControllerDispatcher.bindings.keyBlock2.isClicked()) {
             PhysCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, false, 1.0d), new Vector3d(1.0d), 0.25d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             int a = Game.random.nextInt(3);
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityLamp);
@@ -443,18 +672,18 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             Game.getGame().getProxy().addLight(entityPropInfo, pointLight);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(20.0f));
         }
-        if (BindingList.instance.keyBlock3.isClicked()) {
+        if (ControllerDispatcher.bindings.keyBlock3.isClicked()) {
             PhysCube entityPropInfo = new PhysCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(50.0f));
         }
-        if (BindingList.instance.keyClear.isClicked()) {
+        if (ControllerDispatcher.bindings.keyClear.isClicked()) {
             this.getWorld().clearAllItems();
         }
         this.getCameraRotation().add(new Vector3d(rotationInput, 0.0d));
         if (this.inputMotion.size() < PhysicThreadManager.TICKS_PER_SECOND * 10) {
             this.setRunning(false);
-            if (xyzInput.y < 0) {
+            if (new Vector3d(xyzInput).mul(1, 0, 1).length() > 0 && xyzInput.y < 0) {
                 this.setRunning(true);
                 xyzInput.y = 0;
             }

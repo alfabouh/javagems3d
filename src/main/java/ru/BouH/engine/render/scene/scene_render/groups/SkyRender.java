@@ -7,6 +7,7 @@ import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.formats.Format3D;
 import ru.BouH.engine.game.resources.assets.models.mesh.Mesh;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
+import ru.BouH.engine.render.environment.sky.Sky;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.SceneRenderBase;
 import ru.BouH.engine.render.scene.programs.CubeMapProgram;
@@ -36,7 +37,7 @@ public class SkyRender extends SceneRenderBase {
     public static Model<Format3D> skyBoxModel;
 
     public SkyRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(0, sceneRenderConveyor, new RenderGroup("SKYBOX", true));
+        super(0, sceneRenderConveyor, new RenderGroup("SKYBOX"));
         Mesh mesh = new Mesh();
         mesh.putPositionValues(SkyRender.skyboxPos);
         mesh.putIndexValues(SkyRender.skyboxInd);
@@ -44,7 +45,8 @@ public class SkyRender extends SceneRenderBase {
         SkyRender.skyBoxModel = new Model<>(new Format3D(), mesh);
     }
 
-    public static void renderCubeMapSkyBox(CubeMapProgram cubeMapProgram) {
+    private void renderCubeMapSkyBox() {
+        Sky sky = this.getSceneWorld().getEnvironment().getSky();
         ShaderManager shaderManager = ResourceManager.shaderAssets.skybox;
         Model<Format3D> model = SkyRender.skyBoxModel;
         shaderManager.bind();
@@ -55,8 +57,9 @@ public class SkyRender extends SceneRenderBase {
         matrix4d.m30(0);
         matrix4d.m31(0);
         matrix4d.m32(0);
+        shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog() ? 1 : 0);
         shaderManager.getUtils().performModelViewMatrix3d(matrix4d);
-        shaderManager.getUtils().setCubeMapTexture(cubeMapProgram);
+        shaderManager.getUtils().setCubeMapTexture(sky.getSkyBox().cubeMapTexture());
         //shaderManager.getUtils().setCubeMapTexture(Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(1).getPointLightCubeMap().getCubeMapProgram());
         Scene.renderModel(model, GL30.GL_TRIANGLES);
         shaderManager.unBind();
@@ -65,7 +68,7 @@ public class SkyRender extends SceneRenderBase {
     }
 
     public void onRender(double partialTicks) {
-        SkyRender.renderCubeMapSkyBox(this.getSceneWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture());
+        this.renderCubeMapSkyBox();
     }
 
     @Override

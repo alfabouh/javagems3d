@@ -9,7 +9,7 @@ import java.util.List;
 
 public class WorldRender extends SceneRenderBase {
     public WorldRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(1, sceneRenderConveyor, new RenderGroup("WORLD", true));
+        super(1, sceneRenderConveyor, new RenderGroup("WORLD"));
     }
 
     public void onRender(double partialTicks) {

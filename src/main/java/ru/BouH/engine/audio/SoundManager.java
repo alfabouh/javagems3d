@@ -74,18 +74,22 @@ public final class SoundManager {
         SoundManager.checkALonErrors();
     }
 
-    public void cleanAllSounds() {
+    public void stopAllSounds() {
         for (GameSound gameSound : this.sounds) {
-            gameSound.stopSound();
+            if (gameSound.getSoundType() != SoundType.SYSTEM) {
+                gameSound.stopSound();
+                gameSound.cleanUp();
+            }
         }
-        this.sounds.clear();
     }
 
     public void pauseAllSounds() {
         for (GameSound gameSound : this.sounds) {
             if (gameSound.isPlaying()) {
-                gameSound.pauseSound();
-                this.tempSet.add(gameSound);
+                if (gameSound.getSoundType() != SoundType.SYSTEM) {
+                    gameSound.pauseSound();
+                    this.tempSet.add(gameSound);
+                }
             }
         }
     }
@@ -100,9 +104,9 @@ public final class SoundManager {
     }
 
     public void destroy() {
-        for (GameSound gameSound : this.sounds) {
-            gameSound.stopSound();
-        }
+        this.isSystemCreated = false;
+        this.stopAllSounds();
+        this.sounds.clear();
         ALC10.alcMakeContextCurrent(MemoryUtil.NULL);
         ALC10.alcCloseDevice(this.getDevice());
         ALC10.alcDestroyContext(this.getContext());
@@ -110,12 +114,18 @@ public final class SoundManager {
     }
 
     public GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff) {
+        if (!this.isSystemCreated()) {
+            return null;
+        }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
         this.sounds.add(gameSound);
         return gameSound;
     }
 
     public GameSound playLocalSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain) {
+        if (!this.isSystemCreated()) {
+            return null;
+        }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, 1.0f, null);
         gameSound.playSound();
         this.sounds.add(gameSound);
@@ -123,6 +133,9 @@ public final class SoundManager {
     }
 
     public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, Vector3d position) {
+        if (!this.isSystemCreated()) {
+            return null;
+        }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
         gameSound.setPosition(position);
         gameSound.playSound();
@@ -131,6 +144,9 @@ public final class SoundManager {
     }
 
     public GameSound playSoundAtEntity(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem worldItem) {
+        if (!this.isSystemCreated()) {
+            return null;
+        }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
         if (!worldItem.tryAttachSoundTo(gameSound)) {
             Game.getGame().getLogManager().warn("Couldn't attach sound to: " + worldItem);
@@ -143,15 +159,15 @@ public final class SoundManager {
 
     public void update() {
         if (!this.isSystemCreated()) {
-            Game.getGame().getLogManager().warn("Tried to update the sound system before initialization!");
             return;
         }
         Iterator<GameSound> iterator = this.sounds.iterator();
         while (iterator.hasNext()) {
             GameSound gameSound = iterator.next();
-            gameSound.updateSound();
-            if (gameSound.isWantsToBeCleared()) {
+            if (!gameSound.isValid() || gameSound.isStopped()) {
                 iterator.remove();
+            } else {
+                gameSound.updateSound();
             }
         }
         SoundManager.checkALonErrors();

@@ -5,6 +5,8 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4d;
 import org.lwjgl.opengl.GL30;
+import ru.BouH.engine.audio.sound.data.SoundType;
+import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.game.resources.assets.models.Model;
 import ru.BouH.engine.game.resources.assets.models.basic.MeshHelper;
@@ -14,8 +16,8 @@ import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.gui.font.GuiFont;
 
 public class ButtonUI extends InteractiveUI {
-    private final String text;
-    private final TextUI textUI;
+    private String text;
+    private TextUI textUI;
     private final Model<Format2D> buttonModel;
     private final GuiFont guiFont;
     private Vector2f fontOffset;
@@ -23,11 +25,13 @@ public class ButtonUI extends InteractiveUI {
     private Action onLeft;
     private Action onClick;
     private Action onInside;
+    private final Vector2f size;
 
     public ButtonUI(String text, GuiFont guiFont, Vector3f position, Vector2f size) {
         super(position, size);
         this.text = text;
         this.guiFont = guiFont;
+        this.size = size;
         this.buttonModel = MeshHelper.generatePlane2DModel(new Vector2f(0.0f), new Vector2f(size.x, size.y), this.getPosition().z);
         this.textUI = new TextUI(text, guiFont, 0xffffff, new Vector3f(0.0f, 0.0f, this.getPosition().z + 0.1f));
         this.fontOffset = this.getFontPos(text, size);
@@ -63,6 +67,18 @@ public class ButtonUI extends InteractiveUI {
     }
 
     @Override
+    public Vector2f getSize() {
+        return new Vector2f(this.size);
+    }
+
+    public void setText(String text) {
+        this.textUI.clear();
+        this.text = text;
+        this.textUI = new TextUI(text, guiFont, 0xffffff, new Vector3f(0.0f, 0.0f, this.getPosition().z + 0.1f));
+        this.fontOffset = this.getFontPos(text, this.getSize());
+    }
+
+    @Override
     public void setSize(Vector2f size) {
         super.setSize(size);
         this.fontOffset = this.getFontPos(text, size);
@@ -92,6 +108,7 @@ public class ButtonUI extends InteractiveUI {
     @Override
     public void onClicked() {
         if (this.onClick != null) {
+            Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
             this.onClick.action();
         }
     }

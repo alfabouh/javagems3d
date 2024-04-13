@@ -51,7 +51,7 @@ public class ShaderProgram {
         GL20.glShaderSource(id, shader);
         GL20.glCompileShader(id);
         if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == 0) {
-            Game.getGame().getLogManager().debug(shader);
+            Game.getGame().getLogManager().warn(shader);
             throw new GameException("Compile shader error: " + GL20.glGetShaderInfoLog(id, 4096));
         }
         GL20.glAttachShader(this.programId, id);

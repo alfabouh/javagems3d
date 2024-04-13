@@ -48,6 +48,6 @@ public abstract class EntityWithAI extends WorldItem implements IWorldDynamic {
     }
 
     public void onUpdate(IWorld iWorld) {
-        this.getAiList().forEach(e -> e.onUpdate(iWorld));
+        this.getAiList().stream().filter(AI::isActive).forEach(e -> e.onUpdate(iWorld));
     }
 }

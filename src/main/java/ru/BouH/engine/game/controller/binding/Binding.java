@@ -38,7 +38,7 @@ public class Binding {
     }
 
     public static List<Binding> getBindingList() {
-        return new ArrayList<>(bindingList);
+        return new ArrayList<>(Binding.bindingList);
     }
 
     public void setKeyToBinding(Key key) {

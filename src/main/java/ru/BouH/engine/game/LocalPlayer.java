@@ -24,10 +24,11 @@ public class LocalPlayer {
         kinematicPlayerSP.createPlayer();
         KinematicPlayerSP physPlayerSP = (KinematicPlayerSP) this.entityPlayerSP;
         synchronized (PhysicsTimer.lock) {
-            kinematicPlayerSP.getWorld().getDynamicsWorld().addCollisionObject(physPlayerSP.getBulletObject(), btBroadphaseProxy.CharacterFilter, btBroadphaseProxy.AllFilter);
+            kinematicPlayerSP.getWorld().addInBulletWorld(physPlayerSP.getBulletObject(), kinematicPlayerSP.getBodyIndex());
             kinematicPlayerSP.getWorld().getDynamicsWorld().addAction(kinematicPlayerSP.getKinematicCharacterController());
         }
+        kinematicPlayerSP.setCanPlayerJump(false);
         Game.getGame().getProxy().addItemInWorlds(physPlayerSP, ResourceManager.renderDataAssets.player);
-        physPlayerSP.setPosition(position);
+        physPlayerSP.setCollisionTranslation(position);
     }
 }

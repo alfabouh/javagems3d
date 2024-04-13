@@ -8,7 +8,7 @@ import ru.BouH.engine.render.scene.scene_render.RenderGroup;
 
 public class GuiRender extends SceneRenderBase {
     public GuiRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(3, sceneRenderConveyor, new RenderGroup("GUI", false));
+        super(3, sceneRenderConveyor, new RenderGroup("GUI"));
     }
 
     public void onRender(double partialTicks) {

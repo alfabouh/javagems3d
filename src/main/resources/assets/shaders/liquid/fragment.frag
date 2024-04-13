@@ -10,6 +10,8 @@ layout (location = 1) out vec4 bright_color;
 
 uniform vec3 camera_pos;
 
+uniform int use_cubemap;
+uniform int use_normals;
 uniform int texturing_code;
 uniform int lighting_code;
 
@@ -130,10 +132,10 @@ void main()
 {
     vec4 lightFactor = calc_light();
     vec4 diffuse_texture = texture(diffuse_map, scaled_coordinates());
-    diffuse_texture += refract_cubemap(calc_normal_map(), 1.1);
+    diffuse_texture += (use_cubemap == 1 ? refract_cubemap(calc_normal_map(), 1.1) : vec4(0.0));
 
     vec4 final = diffuse_texture * lightFactor;
-    frag_color = vec4(final.xyz, 1.0);
+    frag_color = vec4(final.rgb, 1.0);
     frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
     float brightness = frag_color.r + frag_color.g + frag_color.b;
 
@@ -185,19 +187,14 @@ float calculate_shadow_poison(vec4 worldPosition, int idx, float bias, float lin
 
 float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos)
 {
-    float shadow = 0.0;
-    float bias = 0.1;
-    float samples = 9;
-    float viewDistance = length(camera_pos - fragPosition);
-    float diskRadius = 0.075;
     vec3 fragToLight = fragPosition - lightPos;
+    vec3 pos = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
+
+    float bias = max(0.05 * (1.0 - dot(mv_vertex_normal, pos)), 0.005);
     float currentDepth = length(fragToLight);
-    for (int i = 0; i < samples; i++) {
-        float closestDepth = texture(cubemap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
-        closestDepth *= far_plane;
-        shadow += currentDepth - bias > closestDepth ? 0.0 : 1.0;
-    }
-    return shadow / float(samples);
+    float closestDepth = texture(cubemap, fragToLight).r;
+    closestDepth *= far_plane;
+    return currentDepth - bias > closestDepth ? 0.0 : 1.0;
 }
 
 vec4 calc_light() {
@@ -234,7 +231,7 @@ vec4 calc_light() {
 }
 
 vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal) {
-    vec3 new_normal = calc_normal_map();
+    vec3 new_normal = use_normals == 1 ? calc_normal_map() : mv_vertex_normal;
     vec4 diffuseC = vec4(0.);
     vec4 specularC = vec4(0.);
 

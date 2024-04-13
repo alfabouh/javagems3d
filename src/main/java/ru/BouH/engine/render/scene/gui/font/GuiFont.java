@@ -71,7 +71,7 @@ public class GuiFont {
         } catch (IOException e) {
             throw new GameException(e.getMessage());
         }
-        this.texture = TextureSample.createTextureIS("font", inputStream, true, GL30.GL_CLAMP_TO_EDGE);
+        this.texture = TextureSample.createTextureIS("font", inputStream, false, GL30.GL_CLAMP_TO_EDGE);
     }
 
     protected void setFontParams(Graphics2D graphics2D) {

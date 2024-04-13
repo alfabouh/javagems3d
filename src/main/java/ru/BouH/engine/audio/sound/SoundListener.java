@@ -3,10 +3,15 @@ package ru.BouH.engine.audio.sound;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC10;
+import org.lwjgl.system.MemoryUtil;
 import ru.BouH.engine.audio.SoundManager;
 
 public class SoundListener {
     public static void updateOrientationAndPosition(Matrix4d cameraMatrix, Vector3d position) {
+        if (ALC10.alcGetCurrentContext() == MemoryUtil.NULL) {
+            return;
+        }
         AL10.alListener3f(AL10.AL_POSITION, (float) position.x, (float) position.y, (float) position.z);
         Vector3d at = new Vector3d();
         cameraMatrix.positiveZ(at).negate();

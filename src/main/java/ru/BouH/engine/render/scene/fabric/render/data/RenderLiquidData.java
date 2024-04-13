@@ -1,6 +1,7 @@
 package ru.BouH.engine.render.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
+import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.BouH.engine.game.resources.assets.shaders.ShaderManager;
@@ -10,20 +11,24 @@ public final class RenderLiquidData {
     private final TextureSample liquidTexture;
     private final TextureSample liquidNormals;
     private final ShaderManager shaderManager;
-    private final CubeMapProgram ambient;
+    private final boolean reflections;
 
-    public RenderLiquidData(@NotNull TextureSample liquidNormals, @NotNull TextureSample liquidTexture, @NotNull CubeMapProgram ambient, ShaderManager shaderManager) {
+    public RenderLiquidData(TextureSample liquidNormals, @NotNull TextureSample liquidTexture, boolean reflections, ShaderManager shaderManager) {
         this.liquidTexture = liquidTexture;
-        if (!liquidNormals.isValid() || !liquidTexture.isValid()) {
+        if ((liquidNormals != null && !liquidNormals.isValid()) || !liquidTexture.isValid()) {
             throw new GameException("Wrong liquid textures!");
         }
         this.liquidNormals = liquidNormals;
         this.shaderManager = shaderManager;
-        this.ambient = ambient;
+        this.reflections = reflections;
+    }
+
+    public boolean reflections() {
+        return this.reflections;
     }
 
     public CubeMapProgram getAmbient() {
-        return this.ambient;
+        return Game.getGame().getScreen().getRenderWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture();
     }
 
     public ShaderManager getShaderManager() {

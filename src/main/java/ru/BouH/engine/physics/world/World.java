@@ -8,6 +8,7 @@ import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.graph.Graph;
+import ru.BouH.engine.inventory.IHasInventory;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.jb_objects.JBulletEntity;
 import ru.BouH.engine.physics.liquids.ILiquid;
@@ -82,6 +83,9 @@ public final class World implements IWorld {
         for (IWorldDynamic iWorldDynamic : toUpdate) {
             if (iWorldDynamic instanceof WorldItem) {
                 WorldItem worldItem1 = (WorldItem) iWorldDynamic;
+                if (worldItem1 instanceof IHasInventory) {
+                    ((IHasInventory) worldItem1).inventory().updateInventory(this);
+                }
                 worldItem1.setPrevPosition(new Vector3d(worldItem1.getPosition()));
             }
             iWorldDynamic.onUpdate(this);
@@ -112,11 +116,7 @@ public final class World implements IWorld {
 
     public WorldItem getItemByID(int id) {
         Optional<WorldItem> worldItem = this.getAllWorldItems().stream().filter(e -> e.getItemId() == id).findFirst();
-        if (worldItem.isPresent()) {
-            return worldItem.get();
-        }
-        Game.getGame().getLogManager().warn("Couldn't find item with id: " + id);
-        return null;
+        return worldItem.orElse(null);
     }
 
     public void addLight(Light light) {

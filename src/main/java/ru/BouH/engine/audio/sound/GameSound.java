@@ -5,22 +5,20 @@ import org.joml.Vector3d;
 import org.lwjgl.openal.AL10;
 import ru.BouH.engine.audio.SoundManager;
 import ru.BouH.engine.audio.sound.data.SoundType;
+import ru.BouH.engine.game.Game;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class GameSound {
     private final SoundType soundType;
     private final SoundBuffer soundBuffer;
     private int source;
-    private boolean hasStarted;
-    private boolean wantsToBeCleared;
     private PhysicsObject attachedTo;
 
     private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, PhysicsObject attachedTo) {
-        this.hasStarted = false;
         this.soundBuffer = soundBuffer;
         this.soundType = soundType;
         this.attachedTo = attachedTo;
-        this.wantsToBeCleared = false;
+        this.source = AL10.AL_NONE;
         this.setupSoundOptions(pitch, gain, rollOff);
     }
 
@@ -39,8 +37,8 @@ public class GameSound {
         AL10.alSourcei(this.source, AL10.AL_LOOPING, this.getSoundType().getSoundData().isLooped() ? AL10.AL_TRUE : AL10.AL_FALSE);
         AL10.alSourcei(this.source, AL10.AL_BUFFER, this.getSoundBuffer().getBuffer());
         SoundManager.checkALonErrors();
-        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(gain * 2.0f, 1.0f));
-        AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, rollOff);
+        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(Math.max(gain, 0.0f) * 2.0f, 1.0f));
+        AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, Math.max(rollOff, 0.0f));
 
         if (this.getAttachedTo() != null) {
             this.setPosition(this.getAttachedTo().getRenderPosition());
@@ -49,13 +47,16 @@ public class GameSound {
         }
 
         this.setVelocity(new Vector3d(0.0d, 0.0d, 0.0d));
-        this.setPitch(pitch);
-        this.setGain(gain);
+        this.setPitch(Math.max(pitch, 0.0f));
+        this.setGain(Math.max(gain, 0.0f));
         SoundManager.checkALonErrors();
     }
 
     public void updateSound() {
         SoundManager.checkALonErrors();
+        if (this.isPaused() || this.isStopped()) {
+            return;
+        }
         if (this.getAttachedTo() != null) {
             this.setPosition(this.getAttachedTo().getRenderPosition());
             if (this.getAttachedTo().isDead()) {
@@ -63,12 +64,12 @@ public class GameSound {
                 return;
             }
         }
-        if (this.hasStarted) {
-            if (this.isStopped()) {
-                this.cleanUp();
-            }
-        }
         SoundManager.checkALonErrors();
+    }
+
+    @Override
+    protected void finalize() {
+        this.cleanUp();
     }
 
     public void setPosition(Vector3d vector3d) {
@@ -84,7 +85,7 @@ public class GameSound {
     }
 
     public void setGain(float gain) {
-        AL10.alSourcef(this.source, AL10.AL_GAIN, gain);
+        AL10.alSourcef(this.source, AL10.AL_GAIN, Math.max(gain, 0f));
     }
 
     public float getPitch() {
@@ -92,7 +93,7 @@ public class GameSound {
     }
 
     public void setPitch(float pitch) {
-        AL10.alSourcef(this.source, AL10.AL_PITCH, pitch);
+        AL10.alSourcef(this.source, AL10.AL_PITCH, Math.max(pitch, 0f));
     }
 
     public boolean isPaused() {
@@ -108,26 +109,30 @@ public class GameSound {
     }
 
     public void playSound() {
+        if (!this.isValid()) {
+            Game.getGame().getLogManager().warn("Tried to play invalid sound!");
+            return;
+        }
         AL10.alSourcePlay(this.source);
-        this.hasStarted = true;
     }
 
     public void pauseSound() {
-        AL10.alSourcePause(this.source);
+        if (this.isValid()) {
+            AL10.alSourcePause(this.source);
+        }
     }
 
     public void stopSound() {
-        AL10.alSourceStop(this.source);
-        this.cleanUp();
+        if (this.isValid()) {
+            AL10.alSourceStop(this.source);
+        }
     }
 
     public void cleanUp() {
-        AL10.alDeleteSources(this.source);
-        this.wantsToBeCleared = true;
-    }
-
-    public boolean isWantsToBeCleared() {
-        return this.wantsToBeCleared;
+        if (this.isValid()) {
+            AL10.alDeleteSources(this.source);
+            this.source = AL10.AL_NONE;
+        }
     }
 
     public PhysicsObject getAttachedTo() {
@@ -144,5 +149,9 @@ public class GameSound {
 
     public SoundType getSoundType() {
         return this.soundType;
+    }
+
+    public boolean isValid() {
+        return this.source != AL10.AL_NONE;
     }
 }

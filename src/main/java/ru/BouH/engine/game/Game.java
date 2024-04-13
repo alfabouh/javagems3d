@@ -1,6 +1,7 @@
 package ru.BouH.engine.game;
 
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
 import ru.BouH.engine.audio.SoundManager;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.logger.GameLogging;
@@ -9,6 +10,7 @@ import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.physics.entities.player.IPlayer;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
+import ru.BouH.engine.render.scene.gui.MainMenuGUI;
 import ru.BouH.engine.render.scene.gui.base.GUI;
 import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
@@ -18,7 +20,7 @@ import java.io.InputStream;
 import java.util.Random;
 
 public class Game {
-    public static final String build = "01.04.2024";
+    public static final String GAME_NAME = "Tenebrae";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;
@@ -39,6 +41,10 @@ public class Game {
         this.screen = new Screen();
         this.proxy = new Proxy(this.getPhysicThreadManager().getPhysicsTimer(), this.getScreen());
         this.shouldBeClosed = false;
+    }
+
+    public String toString() {
+        return GameSystem.ENG_NAME + ": " + GameSystem.ENG_VER + " - " + Game.GAME_NAME;
     }
 
     public static String getGamePath() {
@@ -88,14 +94,28 @@ public class Game {
         return this.soundManager;
     }
 
-    public void pauseGame() {
+    public void pauseGameAndLockUnPausing(boolean pauseSounds) {
+        this.pauseGame(pauseSounds);
+        this.gameSystem.setLockedUnPausing(true);
+    }
+
+    public void unPauseGameAndUnLockUnPausing() {
+        this.unPauseGame();
+        this.gameSystem.setLockedUnPausing(false);
+    }
+
+    public void pauseGame(boolean pauseSounds) {
         this.gameSystem.pauseGame();
-        this.getSoundManager().pauseAllSounds();
+        if (pauseSounds) {
+            this.getSoundManager().pauseAllSounds();
+        }
     }
 
     public void unPauseGame() {
         this.gameSystem.unPauseGame();
-        this.getSoundManager().resumeAllSounds();
+        if (!this.gameSystem.isLockedUnPausing()) {
+            this.getSoundManager().resumeAllSounds();
+        }
     }
 
     public void showGui(GUI gui) {
@@ -118,16 +138,26 @@ public class Game {
         this.getEngineSystem().loadMap(mapLoader);
     }
 
+    public void showMainMenu() {
+        Game.getGame().getScreen().showMainMenu();
+    }
+
     public void destroyMap() {
-        this.getEngineSystem().destroyMap();
+        if (GLFW.glfwGetCurrentContext() == 0L) {
+            Game.getGame().getScreen().getScene().requestDestroyMap();
+            return;
+        }
+        Game.getGame().showMainMenu();
         Game.getGame().getScreen().getScene().setRenderCamera(null);
+        Game.getGame().getScreen().getWindow().setInFocus(false);
+        this.getEngineSystem().destroyMap();
     }
 
     public ResourceManager getResourceManager() {
         return this.getEngineSystem().getResourceManager();
     }
 
-    public GameSystem getEngineSystem() {
+    public synchronized GameSystem getEngineSystem() {
         return this.gameSystem;
     }
 
