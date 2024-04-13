@@ -25,5 +25,6 @@ public class PhysPlank extends PhysEntityProp {
     protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
         this.getBulletObject().makeStatic();
         this.entityState().setCanBeSelectedByPlayer(true);
+        this.getBulletObject().disableCCD();
     }
 }

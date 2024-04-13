@@ -12,7 +12,7 @@ import ru.BouH.engine.render.scene.scene_render.RenderGroup;
 
 public class WorldRenderLiquids extends SceneRenderBase {
     public WorldRenderLiquids(Scene.SceneRenderConveyor sceneRenderConveyor) {
-        super(10, sceneRenderConveyor, new RenderGroup("LIQUIDS", true));
+        super(10, sceneRenderConveyor, new RenderGroup("LIQUIDS"));
     }
 
     public void onRender(double partialTicks) {
@@ -26,16 +26,22 @@ public class WorldRenderLiquids extends SceneRenderBase {
             shaderManager.getUtils().passViewAndModelMatrices(model);
             shaderManager.getUtils().passShadowsInfo();
             shaderManager.getUtils().passCommonInfo();
-            shaderManager.getUtils().passCubeMap("ambient_cubemap", liquidObject.getRenderLiquidData().getAmbient());
             shaderManager.performUniform("texture_scaling", liquidObject.getTextureScaling());
+            shaderManager.getUtils().passCubeMap("ambient_cubemap", liquidObject.getRenderLiquidData().getAmbient());
+            shaderManager.performUniform("use_cubemap", liquidObject.getRenderLiquidData().reflections() ? 1 : 0);
 
             Scene.activeGlTexture(0);
             liquidObject.getRenderLiquidData().getLiquidTexture().bindTexture();
             shaderManager.performUniform("diffuse_map", 0);
 
-            Scene.activeGlTexture(1);
-            liquidObject.getRenderLiquidData().getLiquidNormals().bindTexture();
-            shaderManager.performUniform("normals_map", 1);
+            if (liquidObject.getRenderLiquidData().getLiquidNormals() != null) {
+                Scene.activeGlTexture(1);
+                liquidObject.getRenderLiquidData().getLiquidNormals().bindTexture();
+                shaderManager.performUniform("normals_map", 1);
+                shaderManager.performUniform("use_normals", 1);
+            } else {
+                shaderManager.performUniform("use_normals", 0);
+            }
 
             Scene.renderModel(model, GL30.GL_TRIANGLES);
             shaderManager.unBind();
@@ -46,6 +52,5 @@ public class WorldRenderLiquids extends SceneRenderBase {
     }
 
     public void onStopRender() {
-        this.getSceneWorld().getLiquids().forEach(e -> e.getModel().clean());
     }
 }

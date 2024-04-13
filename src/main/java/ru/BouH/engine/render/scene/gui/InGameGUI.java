@@ -12,6 +12,7 @@ import ru.BouH.engine.physics.entities.player.KinematicPlayerSP;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.fabric.render.data.inventory.RenderInventoryItemData;
 import ru.BouH.engine.render.scene.gui.base.GUI;
+import ru.BouH.engine.render.scene.gui.ui.BasicUI;
 import ru.BouH.engine.render.scene.gui.ui.ImageSizedUI;
 import ru.BouH.engine.render.scene.gui.ui.ImageStaticUI;
 import ru.BouH.engine.render.scene.gui.ui.TextUI;
@@ -28,6 +29,9 @@ public class InGameGUI implements GUI {
     private TextUI tick;
     private TextUI staminaText;
     private TextUI mindText;
+    private TextUI itemDescText;
+    private TextUI cdText;
+    private TextUI cassetteText;
     private ImageSizedUI crosshair;
     private ImageStaticUI stamina_over;
     private ImageStaticUI stamina_real;
@@ -46,7 +50,11 @@ public class InGameGUI implements GUI {
 
     @Override
     public void onStartRender() {
+        this.cdText = new TextUI(ResourceManager.renderAssets.standardFont);
+        this.cassetteText = new TextUI(ResourceManager.renderAssets.standardFont);
+        
         this.fps = new TextUI(ResourceManager.renderAssets.standardFont);
+        this.itemDescText = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(20.0f, 20.0f, 0.5f));
         this.entities = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 20.0f, 0.5f));
         this.coordinates = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 40.0f, 0.5f));
 
@@ -120,52 +128,89 @@ public class InGameGUI implements GUI {
         } else {
             this.coordinates.setText(String.format("%s %s %s", (int) entityPlayerSP.getPosition().x, (int) entityPlayerSP.getPosition().y, (int) entityPlayerSP.getPosition().z));
         }
-
         this.fps.render(partialTicks);
-        this.entities.render(partialTicks);
-        this.coordinates.render(partialTicks);
+        if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 1) {
 
-        int i1 = 60;
-        if (!Keyboard.isPressedKey(GLFW.GLFW_KEY_LEFT_CONTROL)) {
-            this.info1.render(partialTicks);
-        } else {
-            for (Binding keyBinding : Binding.getBindingList()) {
-                TextUI textUI = new TextUI(keyBinding.toString(), ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, i1, 0.0f));
-                textUI.render(partialTicks);
-                textUI.clear();
-                i1 += 20;
+            this.entities.render(partialTicks);
+            this.coordinates.render(partialTicks);
+
+            int i1 = 60;
+            if (!Keyboard.isPressedKey(GLFW.GLFW_KEY_LEFT_CONTROL)) {
+                this.info1.render(partialTicks);
+            } else {
+                for (Binding keyBinding : Binding.getBindingList()) {
+                    TextUI textUI = new TextUI(keyBinding.toString(), ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, i1, 0.0f));
+                    textUI.render(partialTicks);
+                    textUI.clear();
+                    i1 += 30;
+                }
             }
+
+            if (entityPlayerSP instanceof KinematicPlayerSP) {
+                KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
+                this.speed.setText("speed: " + String.format("%.4f", kinematicPlayerSP.getScalarSpeed()));
+                this.speed.setPosition(new Vector3f(0.0f, i1 + 20.0f, 0.0f));
+                this.speed.render(partialTicks);
+            }
+
+            this.tick.setText("tick: " + sceneWorld.getTicks());
+            this.tick.setPosition(new Vector3f(0.0f, i1 + 40.0f, 0.0f));
+            this.tick.render(partialTicks);
         }
 
         if (entityPlayerSP instanceof KinematicPlayerSP) {
             KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
-            this.speed.setText("speed: " + String.format("%.4f", kinematicPlayerSP.getScalarSpeed()));
-            this.speed.setPosition(new Vector3f(0.0f, i1 + 20.0f, 0.0f));
-            this.speed.render(partialTicks);
             Inventory inventory = kinematicPlayerSP.inventory();
             int j = 0;
+
+            String cdText = "[" + kinematicPlayerSP.getPickedCds() + " / " + kinematicPlayerSP.getMaxCds() + "] Disks";
+            String cassetteText = "[" + kinematicPlayerSP.getPrickedCassettes() + " / " + kinematicPlayerSP.getMaxCassettes() + "] Cassettes";
+            this.cdText.setPosition(new Vector3f((float) (width - BasicUI.getTextWidth(this.cdText.getFont(), cassetteText)) - 20.0f, 200.0f, 0.0f));
+            this.cdText.setText(cdText);
+            this.cdText.setHexColor(0xffee22);
+            this.cdText.render(partialTicks);
+
+            this.cassetteText.setPosition(new Vector3f((float) (width - BasicUI.getTextWidth(this.cdText.getFont(), cassetteText)) - 20.0f, 240.0f, 0.0f));
+            this.cassetteText.setText(cassetteText);
+            this.cassetteText.setHexColor(0xffee22);
+            this.cassetteText.render(partialTicks);
+
+            if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 0) {
+                if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
+                    this.itemDescText.setText(inventory.getCurrentItem().getDescription());
+                    this.itemDescText.render(partialTicks);
+                }
+            }
+
             for (Inventory.Slot slot : inventory.getInventorySlots()) {
                 if (slot.getInventoryItem() == null) {
                     continue;
                 }
                 RenderInventoryItemData renderInventoryItemData = ResourceManager.renderDataAssets.inventoryItemRenderTable.getMap().get(slot.getInventoryItem().getClass());
-                ImageSizedUI imageSizedUI = new ImageSizedUI(renderInventoryItemData.getInventoryIcon(), new Vector3f(64.0f + (96.0f) * j++, (float) (height - 96.0d), 0.0f), new Vector2f(96.0f, 96.0f));
+                ImageSizedUI imageSizedUI = new ImageSizedUI(renderInventoryItemData.getInventoryIcon(), new Vector3f(64.0f + (96.0f) * j++, (float) (height - 112.0d), 0.0f), new Vector2f(96.0f, 96.0f));
                 imageSizedUI.render(partialTicks);
                 imageSizedUI.clear();
 
-                TextUI textUI = new TextUI("[" + j + "]", ResourceManager.renderAssets.standardFont, inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0xffffff, new Vector3f((96.0f) * j, (float) (height - 112.0d), 0.0f));
+                TextUI textUI = new TextUI("[" + j + "]", ResourceManager.renderAssets.standardFont, inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0xffffff, new Vector3f((94.0f) * j, (float) (height - 132.0d), 0.0f));
+                textUI.render(partialTicks);
+                textUI.clear();
+            }
+
+            if (kinematicPlayerSP.isHasSoda()) {
+                ImageSizedUI imageSizedUI = new ImageSizedUI(ResourceManager.renderAssets.soda_inventory, new Vector3f((float) (width - 120.0f), 50.0f, 0.0f), new Vector2f(96.0f, 96.0f));
+                imageSizedUI.render(partialTicks);
+                imageSizedUI.clear();
+
+                TextUI textUI = new TextUI("[Press X]", ResourceManager.renderAssets.standardFont, 0xffffff, new Vector3f((float) (width - 140.0f), 26.0f, 0.0f));
                 textUI.render(partialTicks);
                 textUI.clear();
             }
         }
-        this.tick.setText("tick: " + sceneWorld.getTicks());
-        this.tick.setPosition(new Vector3f(0.0f, i1 + 40.0f, 0.0f));
-        this.tick.render(partialTicks);
 
-        this.staminaText.setPosition(new Vector3f(20.0f, (float) (height - 180.0f), 0.0f));
+        this.staminaText.setPosition(new Vector3f(42.0f, (float) (height - 190.0f), 0.0f));
         this.staminaText.render(partialTicks);
 
-        this.mindText.setPosition(new Vector3f(20.0f, (float) (height - 240.0f), 0.0f));
+        this.mindText.setPosition(new Vector3f(42.0f, (float) (height - 250.0f), 0.0f));
         this.mindText.render(partialTicks);
     }
 
@@ -175,18 +220,18 @@ public class InGameGUI implements GUI {
         float stamina = ((KinematicPlayerSP) Game.getGame().getPlayerSP()).getStamina();
         float mind = ((KinematicPlayerSP) Game.getGame().getPlayerSP()).getMind();
 
-        this.stamina_over.setPosition(new Vector3f(20.0f, (float) (height - 160.0f), 0.0f));
+        this.stamina_over.setPosition(new Vector3f(42.0f, (float) (height - 160.0f), 0.0f));
         this.stamina_over.render(partialTicks);
 
         this.stamina_real.setTextureWH(new Vector2f(101.0f * stamina, 6.0f));
-        this.stamina_real.setPosition(new Vector3f(20.0f, (float) (height - 160.0f), 0.0f));
+        this.stamina_real.setPosition(new Vector3f(42.0f, (float) (height - 160.0f), 0.0f));
         this.stamina_real.render(partialTicks);
 
-        this.mind_over.setPosition(new Vector3f(20.0f, (float) (height - 220.0f), 0.0f));
+        this.mind_over.setPosition(new Vector3f(42.0f, (float) (height - 220.0f), 0.0f));
         this.mind_over.render(partialTicks);
 
         this.mind_real.setTextureWH(new Vector2f(101.0f * mind, 6.0f));
-        this.mind_real.setPosition(new Vector3f(20.0f, (float) (height - 220.0f), 0.0f));
+        this.mind_real.setPosition(new Vector3f(42.0f, (float) (height - 220.0f), 0.0f));
         this.mind_real.render(partialTicks);
 
         this.crosshair.setPosition(new Vector3f((int) (width / 2.0d) - this.crosshair.getSize().x / 2.0f, (int) (height / 2.0d) - this.crosshair.getSize().y / 2.0f, 0.0f));

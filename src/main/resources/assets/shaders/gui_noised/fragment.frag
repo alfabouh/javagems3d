@@ -10,7 +10,7 @@ layout (std140, binding = 2) uniform Misc {
 
 float rand(vec2 co)
 {
-    return fract(sin(dot(co.xy + w_tick, vec2(12.9898, 78.233) + w_tick)) * 43758.5453 + w_tick);
+    return fract(sin(dot(co.xy + tan(w_tick), vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 void main()

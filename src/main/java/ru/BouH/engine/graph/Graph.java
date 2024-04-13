@@ -91,6 +91,17 @@ public class Graph implements Serializable {
         return set.stream().skip(Game.getGame().random.nextInt(set.size() - 1)).findFirst().get();
     }
 
+    @SuppressWarnings("all")
+    public GVertex getClosestVertex(Vector3d pos) {
+        GVertex minVer = this.getGraphContainer().keySet().stream().findFirst().get();
+        for (GVertex vertex : this.getGraphContainer().keySet()) {
+            if (vertex.distanceTo(pos) < minVer.distanceTo(pos)) {
+                minVer = vertex;
+            }
+        }
+        return minVer;
+    }
+
     public static class GEdge implements Serializable {
         private final GVertex target;
         private final double weight;
@@ -132,6 +143,10 @@ public class Graph implements Serializable {
 
         public double distanceTo(GVertex vertex) {
             return new Vector3d(this.getX(), this.getY(), this.getZ()).distance(vertex.getX(), vertex.getY(), vertex.getZ());
+        }
+
+        public double distanceTo(Vector3d vector3d) {
+            return new Vector3d(this.getX(), this.getY(), this.getZ()).distance(vector3d);
         }
 
         public double getG() {

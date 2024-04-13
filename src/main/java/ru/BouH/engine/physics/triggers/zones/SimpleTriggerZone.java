@@ -12,6 +12,7 @@ import ru.BouH.engine.physics.triggers.ITriggerZone;
 import ru.BouH.engine.physics.triggers.Zone;
 import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.physics.world.World;
+import ru.BouH.engine.physics.world.object.WorldItem;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ import java.util.Set;
 public class SimpleTriggerZone implements ITriggerZone {
     protected final Zone zone;
     protected final Set<JBulletEntity> btEnteredBodies;
-    private btGhostObject ghostObject;
+    private btPairCachingGhostObject ghostObject;
     private btCollisionShape collisionShape;
     private ITrigger ITriggerEntering;
     private ITrigger ITriggerLeaving;
@@ -57,7 +58,7 @@ public class SimpleTriggerZone implements ITriggerZone {
         return this.zone;
     }
 
-    public btGhostObject triggerZoneGhostCollision() {
+    public btPairCachingGhostObject triggerZoneGhostCollision() {
         return this.ghostObject;
     }
 
@@ -66,13 +67,14 @@ public class SimpleTriggerZone implements ITriggerZone {
     }
 
     private void createGhostZone() {
-        this.ghostObject = new btGhostObject();
+        this.ghostObject = new btPairCachingGhostObject();
+
         double d1_1 = this.getZone().getSize().x / 2.0d;
         double d1_2 = this.getZone().getSize().y / 2.0d;
         double d1_3 = this.getZone().getSize().z / 2.0d;
         this.collisionShape = new btBoxShape(new btVector3(d1_1, d1_2, d1_3));
         this.ghostObject.setCollisionShape(this.collisionShape);
-        this.ghostObject.setCollisionFlags(btCollisionObject.CF_NO_CONTACT_RESPONSE | btCollisionObject.CF_STATIC_OBJECT);
+        this.ghostObject.setCollisionFlags(btCollisionObject.CF_NO_CONTACT_RESPONSE | btCollisionObject.CF_STATIC_OBJECT | btCollisionObject.CF_ANISOTROPIC_FRICTION_DISABLED);
         try (btTransform transform = this.ghostObject.getWorldTransform()) {
             transform.setOrigin(new btVector3(this.getZone().getLocation().x, this.getZone().getLocation().y, this.getZone().getLocation().z));
             this.ghostObject.setWorldTransform(transform);
@@ -82,16 +84,19 @@ public class SimpleTriggerZone implements ITriggerZone {
     public void onUpdate(IWorld iWorld) {
         World world = (World) iWorld;
         Set<JBulletEntity> temp = new HashSet<>();
-        for (JBulletEntity bullet : world.getAllBulletItems()) {
-            btOverlappingPairCache btHashedOverlappingPairCache = world.getDynamicsWorld().getPairCache();
-            boolean collided = btHashedOverlappingPairCache.findPair(bullet.getBulletObject().getBroadphaseHandle(), this.ghostObject.getBroadphaseHandle()) != null;
-            if (collided && ((bullet.getBodyIndex().getGroup() & this.getFilter()) != 0)) {
-                if (this.getTriggerEntering() != null) {
-                    this.onEnter(bullet);
+        int num = this.triggerZoneGhostCollision().getOverlappingPairCache().getNumOverlappingPairs();
+        for (int i = 0; i < num; i++) {
+            btCollisionObject btCollisionObject = this.triggerZoneGhostCollision().getOverlappingPairs().get(i);
+            WorldItem worldItem = world.getItemByID(btCollisionObject.getUserIndex2());
+            if (worldItem instanceof JBulletEntity) {
+                JBulletEntity bullet = (JBulletEntity) worldItem;
+                if ((bullet.getBodyIndex().getGroup() & this.getFilter()) != 0) {
+                    if (this.getTriggerEntering() != null) {
+                        this.onEnter(bullet);
+                    }
+                    temp.add(bullet);
                 }
-                temp.add(bullet);
             }
-            btHashedOverlappingPairCache.deallocate();
         }
         if (!this.btEnteredBodies.isEmpty()) {
             for (JBulletEntity bullet : temp) {

@@ -1,5 +1,6 @@
 package ru.BouH.engine.render.scene.objects.items;
 
+import org.bytedeco.bullet.LinearMath.btQuaternion;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +66,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     @Override
     public void onSpawn(IWorld iWorld) {
         if (!this.getWorldItem().isParticle()) {
-            Game.getGame().getLogManager().debug("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
+            Game.getGame().getLogManager().log("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
         }
         if (this.hasRender()) {
             if (this.getRenderData().getEntityModelConstructor() != null) {
@@ -80,7 +81,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     @Override
     public void onDestroy(IWorld iWorld) {
         if (!this.getWorldItem().isParticle()) {
-            Game.getGame().getLogManager().debug("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
+            Game.getGame().getLogManager().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
         }
         if (this.hasRender()) {
             this.renderFabric().onStopRender(this);
@@ -88,11 +89,11 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     }
 
     public void onAddLight(Light light) {
-        Game.getGame().getLogManager().debug("Add light to: " + this.getWorldItem().getItemName());
+        Game.getGame().getLogManager().log("Add light to: " + this.getWorldItem().getItemName());
     }
 
     public void onRemoveLight(Light light) {
-        Game.getGame().getLogManager().debug("Removed light from: " + this.getWorldItem().getItemName());
+        Game.getGame().getLogManager().log("Removed light from: " + this.getWorldItem().getItemName());
     }
 
     protected Vector3d calcABBSize(WorldItem worldItem) {
@@ -104,16 +105,10 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
             if (jBulletEntity.isValid()) {
                 btVector3 v1 = new btVector3();
                 btVector3 v2 = new btVector3();
-                btVector3 v3 = MathHelper.convert(this.getRenderPosition());
-                btTransform transform = new btTransform();
-                transform.setIdentity();
-                transform.setOrigin(v3);
-                jBulletEntity.getBulletObject().getCollisionShape().getAabb(transform, v1, v2);
+                jBulletEntity.getBulletObject().getCollisionShape().getAabb(jBulletEntity.getBulletObject().getWorldTransform(), v1, v2);
                 Vector3d vector3d = new Vector3d(v2.getX() - v1.getX(), v2.getY() - v1.getY(), v2.getZ() - v1.getZ());
                 v1.deallocate();
                 v2.deallocate();
-                v3.deallocate();
-                transform.deallocate();
                 return vector3d;
             }
         }

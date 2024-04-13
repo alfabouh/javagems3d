@@ -21,7 +21,8 @@ public class OBB implements AbstractCollision {
     public btCollisionShape buildCollisionShape(double scale) {
         Vector3d vector3d = this.getSize();
         this.shape = new btBoxShape(new btVector3(vector3d.x / 2.0f, vector3d.y / 2.0f, vector3d.z / 2.0f));
-        shape.setLocalScaling(this.getScaling(scale));
+        this.shape.setLocalScaling(this.getScaling(scale));
+        System.out.println(scale);
         return shape;
     }
 }

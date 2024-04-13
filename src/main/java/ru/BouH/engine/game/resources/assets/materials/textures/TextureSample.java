@@ -28,7 +28,7 @@ public class TextureSample implements IImageSample {
     private TextureSample(boolean inJar, String fullPath, boolean interpolate, int wrapping) {
         this.isValid = true;
         this.scaling = new Vector2d(1.0d);
-        Game.getGame().getLogManager().debug("Loading " + fullPath);
+        Game.getGame().getLogManager().log("Loading " + fullPath);
         if (inJar) {
             try (InputStream inputStream = Game.loadFileJar(fullPath)) {
                 this.imageBuffer = this.readTextureFromMemory(fullPath, inputStream);

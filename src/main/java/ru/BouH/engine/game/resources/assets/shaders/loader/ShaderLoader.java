@@ -19,6 +19,7 @@ public class ShaderLoader {
     public UniformBufferObject Misc;
     public UniformBufferObject Fog;
 
+    public ShaderManager menu;
     public ShaderManager gameUbo;
     public ShaderManager gui_text;
     public ShaderManager gui_noised;
@@ -26,6 +27,7 @@ public class ShaderLoader {
     public ShaderManager gui_button;
     public ShaderManager post_blur;
     public ShaderManager post_render_1;
+    public ShaderManager post_psx;
     public ShaderManager skybox;
     public ShaderManager world;
     public ShaderManager simple;
@@ -54,10 +56,14 @@ public class ShaderLoader {
         this.gui_button = this.createShaderManager("gui_button", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.gui_image = this.createShaderManager("gui_image", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.post_blur = this.createShaderManager("post_blur", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.post_render_1 = this.createShaderManager("post_render_1", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
+        this.post_render_1 = this.createShaderManager("post_render_1", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.post_psx = this.createShaderManager("post_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
+
         this.skybox = this.createShaderManager("skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight);
         this.world = this.createShaderManager("world", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
         this.liquid = this.createShaderManager("liquid", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
+
+        this.menu = this.createShaderManager("menu", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.inventory_zippo = this.createShaderManager("inventory_zippo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.inventory_common_item = this.createShaderManager("inventory_common_item", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);

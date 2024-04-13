@@ -4,7 +4,6 @@ import org.joml.Vector2d;
 import org.joml.Vector2i;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.controller.ControllerDispatcher;
-import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.render.screen.window.Window;
 
 public class MouseKeyboardController implements IController {
@@ -76,22 +75,22 @@ public class MouseKeyboardController implements IController {
         double d2 = xy[1] - posM.y;
         this.getRotationInput().set(new Vector2d(d2, d1));
         this.setCursorInCenter();
-        if (BindingList.instance.keyA.isPressed()) {
+        if (ControllerDispatcher.bindings.keyA.isPressed()) {
             this.getPositionInput().add(-1.0f, 0.0f, 0.0f);
         }
-        if (BindingList.instance.keyD.isPressed()) {
+        if (ControllerDispatcher.bindings.keyD.isPressed()) {
             this.getPositionInput().add(1.0f, 0.0f, 0.0f);
         }
-        if (BindingList.instance.keyW.isPressed()) {
+        if (ControllerDispatcher.bindings.keyW.isPressed()) {
             this.getPositionInput().add(0.0f, 0.0f, -1.0f);
         }
-        if (BindingList.instance.keyS.isPressed()) {
+        if (ControllerDispatcher.bindings.keyS.isPressed()) {
             this.getPositionInput().add(0.0f, 0.0f, 1.0f);
         }
-        if (BindingList.instance.keyUp.isPressed()) {
+        if (ControllerDispatcher.bindings.keyUp.isPressed()) {
             this.getPositionInput().add(0.0f, 1.0f, 0.0f);
         }
-        if (BindingList.instance.keyDown.isPressed()) {
+        if (ControllerDispatcher.bindings.keyDown.isPressed()) {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
         this.normalizedPositionInput.set(new Vector3d(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));

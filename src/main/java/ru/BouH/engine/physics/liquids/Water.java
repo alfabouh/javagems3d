@@ -13,7 +13,7 @@ import ru.BouH.engine.physics.world.World;
 
 public class Water implements ILiquid {
     private final Zone zone;
-    private btGhostObject ghostObject;
+    private btPairCachingGhostObject ghostObject;
     private btCollisionShape collisionShape;
 
     public Water(Zone zone) {
@@ -21,7 +21,7 @@ public class Water implements ILiquid {
     }
 
     private void createGhostZone() {
-        this.ghostObject = new btGhostObject();
+        this.ghostObject = new btPairCachingGhostObject();
         double d1_1 = this.getZone().getSize().x / 2.0d - 0.1f;
         double d1_2 = this.getZone().getSize().y / 2.0d - 0.25d;
         double d1_3 = this.getZone().getSize().z / 2.0d - 0.1f;
@@ -55,7 +55,7 @@ public class Water implements ILiquid {
     }
 
     @Override
-    public btGhostObject triggerZoneGhostCollision() {
+    public btPairCachingGhostObject triggerZoneGhostCollision() {
         return this.ghostObject;
     }
 

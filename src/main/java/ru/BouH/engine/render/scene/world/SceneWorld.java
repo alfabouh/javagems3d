@@ -1,16 +1,24 @@
 package ru.BouH.engine.render.scene.world;
 
+import org.checkerframework.checker.units.qual.K;
+import org.joml.Vector3f;
 import ru.BouH.engine.audio.sound.GameSound;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
+import ru.BouH.engine.game.resources.ResourceManager;
+import ru.BouH.engine.physics.entities.player.IPlayer;
+import ru.BouH.engine.physics.entities.player.KinematicPlayerSP;
 import ru.BouH.engine.physics.liquids.ILiquid;
 import ru.BouH.engine.physics.world.IWorld;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.environment.Environment;
 import ru.BouH.engine.render.environment.light.Light;
+import ru.BouH.engine.render.environment.light.PointLight;
+import ru.BouH.engine.render.environment.sky.skybox.SkyBox2D;
 import ru.BouH.engine.render.frustum.FrustumCulling;
 import ru.BouH.engine.render.frustum.ICullable;
+import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderLiquidData;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.scene.objects.IModeledSceneObject;
@@ -22,14 +30,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class SceneWorld implements IWorld {
-    public static final double RENDER_TICKS_UPD_RATE = 60.0d;
     private final List<IModeledSceneObject> toRenderList;
     private final Set<LiquidObject> liquids;
     private final Environment environment;
     private final World world;
     private int ticks;
-    private float elapsedRenderTicks;
-    private double lastRenderTicksUpdate = Game.glfwTime();
     private FrustumCulling frustumCulling;
 
     public SceneWorld(World world) {
@@ -129,6 +134,7 @@ public final class SceneWorld implements IWorld {
     }
 
     private void cleanAll() {
+        this.getEnvironment().getLightManager().removeAllLights();
         Iterator<IModeledSceneObject> iterator = this.getToRenderList().iterator();
         while (iterator.hasNext()) {
             IModeledSceneObject modeledSceneObject = iterator.next();
@@ -137,6 +143,13 @@ public final class SceneWorld implements IWorld {
                 physicsObject.onDestroy(this);
             }
             iterator.remove();
+        }
+
+        Iterator<LiquidObject> iterator1 = this.getLiquids().iterator();
+        while (iterator1.hasNext()) {
+            LiquidObject liquidObject = iterator1.next();
+            liquidObject.getModel().clean();
+            iterator1.remove();
         }
     }
 
@@ -154,19 +167,12 @@ public final class SceneWorld implements IWorld {
 
     @Override
     public void onWorldStart() {
+        Game.getGame().getScreen().zeroRenderTick();
         this.getEnvironment().init(this);
         this.ticks = 0;
     }
 
     public void onWorldUpdate() {
-        //((SkyBox2D) this.getEnvironment().getSky().getSkyBox()).setCubeMapTexture(ResourceManager.renderAssets.skyboxCubeMap2);
-        //this.getEnvironment().getSky().setSunBrightness(0.002f);
-        //this.getEnvironment().getSky().setSunColors(new Vector3f(0.0f, 0.0f, 1.0f));
-        double curr = Game.glfwTime();
-        if (curr - this.lastRenderTicksUpdate > 1.0d / RENDER_TICKS_UPD_RATE) {
-            this.elapsedRenderTicks += 0.01f;
-            this.lastRenderTicksUpdate = curr;
-        }
         this.ticks += 1;
     }
 
@@ -177,10 +183,6 @@ public final class SceneWorld implements IWorld {
 
     public int getTicks() {
         return this.ticks;
-    }
-
-    public float getElapsedRenderTicks() {
-        return this.elapsedRenderTicks;
     }
 
     public void onWorldEntityUpdate(boolean refresh, double partialTicks) {

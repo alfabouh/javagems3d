@@ -19,11 +19,11 @@ import ru.BouH.engine.render.scene.world.camera.ICamera;
 import ru.BouH.engine.render.screen.Screen;
 
 public class BindingList {
-    public static BindingList instance = new BindingList();
     public final Key keyA;
     public final Key keyD;
     public final Key keyW;
     public final Key keyS;
+    public final Key keyX;
     public final Key keyUp;
     public final Key keyDown;
     public final Key keyBlock1;
@@ -32,10 +32,10 @@ public class BindingList {
     public final Key keyClear;
     public final Key keyEsc;
     public final Key keyV;
-    public final Key keyY;
     public final Key keyZ;
     public final Key keyR;
     public final Key keyT;
+    public final Key keyF11;
     public final Key keySelection;
 
     public BindingList() {
@@ -48,7 +48,8 @@ public class BindingList {
         this.keyBlock1 = new Key(GLFW.GLFW_KEY_F);
         this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
         this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
-        this.keyClear = new Key(GLFW.GLFW_KEY_X);
+        this.keyClear = new Key(GLFW.GLFW_KEY_B);
+        this.keyX = new Key(GLFW.GLFW_KEY_X);
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 
         this.keyV = new FunctionalKey(e -> {
@@ -71,7 +72,7 @@ public class BindingList {
                         Game.getGame().getScreen().getWindow().setInFocus(true);
                         Game.getGame().showGui(new InGameGUI());
                     } else {
-                        Game.getGame().pauseGame();
+                        Game.getGame().pauseGame(true);
                         Game.getGame().getScreen().getWindow().setInFocus(false);
                         Game.getGame().showGui(new PauseMenuGUI());
                     }
@@ -80,11 +81,11 @@ public class BindingList {
             }
         }, GLFW.GLFW_KEY_ESCAPE);
 
-        this.keyY = new FunctionalKey(e -> {
+        this.keyF11 = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                Scene.setScenePostRender(Scene.getPostRender() + 1);
+                Game.getGame().getScreen().switchScreenMode();
             }
-        }, GLFW.GLFW_KEY_Y);
+        }, GLFW.GLFW_KEY_F11);
 
         this.keyZ = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
@@ -129,9 +130,10 @@ public class BindingList {
         Binding.createBinding(this.keyUp, "Лететь вверх");
         Binding.createBinding(this.keyDown, "Лететь вниз");
         Binding.createBinding(this.keyR, "Режим камеры");
-        Binding.createBinding(this.keyY, "Переключить пост-обработку");
         Binding.createBinding(this.keyZ, "Режим отладки");
+        Binding.createBinding(this.keyX, "X");
         Binding.createBinding(this.keyClear, "Очистка");
+        Binding.createBinding(this.keyF11, "FullScreen");
         Binding.createBinding(this.keyBlock1, "Куб статичный");
         Binding.createBinding(this.keyBlock2, "Куб-фонарь");
         Binding.createBinding(this.keyBlock3, "Куб реалистичный");

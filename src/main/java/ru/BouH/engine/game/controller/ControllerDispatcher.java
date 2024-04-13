@@ -3,6 +3,7 @@ package ru.BouH.engine.game.controller;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.controller.input.MouseKeyboardController;
 import ru.BouH.engine.physics.entities.IControllable;
@@ -12,10 +13,12 @@ import ru.BouH.engine.render.screen.window.Window;
 public class ControllerDispatcher {
     public static final float CAM_SENS = 0.1f;
     public static MouseKeyboardController mouseKeyboardController = null;
+    public static BindingList bindings;
     private IController currentController;
     private IControllable currentControlledItem;
 
     public ControllerDispatcher(Window window) {
+        ControllerDispatcher.bindings = new BindingList();
         ControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window);
         this.setController(ControllerDispatcher.defaultController());
     }

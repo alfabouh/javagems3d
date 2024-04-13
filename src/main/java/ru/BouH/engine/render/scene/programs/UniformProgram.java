@@ -25,7 +25,10 @@ public class UniformProgram {
     }
 
     public boolean setUniform(String uniformName, Object value) {
-        if (value instanceof Vector2d) {
+        if (value instanceof Vector2f) {
+            this.setUniform(uniformName, (Vector2f) value);
+            return true;
+        } else if (value instanceof Vector2d) {
             this.setUniform(uniformName, (Vector2d) value);
             return true;
         } else if (value instanceof Vector4d) {
@@ -50,7 +53,7 @@ public class UniformProgram {
             this.setUniform(uniformName, (Vector3f) value);
             return true;
         } else if (value instanceof Boolean) {
-            this.setUniform(uniformName, (Boolean) value ? 1 : 0);
+            this.setUniform(uniformName, ((Boolean) value) ? 1 : 0);
             return true;
         }
         return false;
@@ -62,6 +65,10 @@ public class UniformProgram {
             value.get(floatBuffer);
             GL20.glUniformMatrix4fv(this.uniforms.get(uniformName), false, floatBuffer);
         }
+    }
+
+    public void setUniform(String uniformName, Vector2f value) {
+        GL20.glUniform2f(this.uniforms.get(uniformName), value.x, value.y);
     }
 
     public void setUniform(String uniformName, Vector2d value) {

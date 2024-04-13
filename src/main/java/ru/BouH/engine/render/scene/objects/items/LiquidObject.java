@@ -27,7 +27,7 @@ public final class LiquidObject implements ICullable {
     private Model<Format3D> constructModel(ILiquid liquid) {
         Vector3d location = liquid.getZone().getLocation();
         Vector3d size = new Vector3d(liquid.getZone().getSize()).mul(0.5d);
-        double y = location.y + size.y;
+        double y = location.y + size.y / 2.0f;
         Vector3f v1 = new Vector3f((float) (location.x - size.x), (float) y, (float) (location.z - size.z));
         Vector3f v2 = new Vector3f((float) (location.x - size.x), (float) y, (float) (location.z + size.z));
         Vector3f v3 = new Vector3f((float) (location.x + size.x), (float) y, (float) (location.z - size.z));

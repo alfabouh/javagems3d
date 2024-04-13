@@ -5,6 +5,7 @@ import ru.BouH.engine.physics.world.IWorld;
 public class ItemCrowbar extends InventoryItem {
     public ItemCrowbar() {
         super("crowbar");
+        this.setDescription("[Plank Removal Tool]");
     }
 
     @Override

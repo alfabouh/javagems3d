@@ -5,12 +5,11 @@ import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 
 public enum BodyGroup {
     RIGID_BODY(100, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter, false),
-    RIGID_BODY2(106, BodyGroup.DefaultByPassNavChecks, btBroadphaseProxy.AllFilter, false),
     PLAYER(101, BodyGroup.PlayerFilter, btBroadphaseProxy.AllFilter, false),
     BRUSH(102, btBroadphaseProxy.DefaultFilter, btBroadphaseProxy.AllFilter, true),
-    GHOST(103, BodyGroup.GhostFilter, btBroadphaseProxy.AllFilter, true),
+    GHOST(103, BodyGroup.GhostFilter, BodyGroup.PlayerFilter, true),
     PARTICLE(104, BodyGroup.GhostFilter, btBroadphaseProxy.AllFilter, false),
-    LIQUID(105, BodyGroup.LiquidFilter, btBroadphaseProxy.AllFilter, true);
+    LIQUID(105, BodyGroup.LiquidFilter, BodyGroup.PlayerFilter, true);
 
 
     public static final short

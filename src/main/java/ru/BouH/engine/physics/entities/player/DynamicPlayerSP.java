@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import ru.BouH.engine.game.Game;
-import ru.BouH.engine.game.controller.binding.BindingList;
+import ru.BouH.engine.game.controller.ControllerDispatcher;
 import ru.BouH.engine.game.controller.input.IController;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.math.MathHelper;
@@ -261,12 +261,12 @@ public class DynamicPlayerSP extends PhysEntity implements IPlayer {
 
     @Override
     public void performController(Vector2d rotationInput, Vector3d xyzInput, boolean isFocused) {
-        if (BindingList.instance.keyBlock1.isClicked()) {
+        if (ControllerDispatcher.bindings.keyBlock1.isClicked()) {
             PhysLightCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 2.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(30.0f));
         }
-        if (BindingList.instance.keyBlock2.isClicked()) {
+        if (ControllerDispatcher.bindings.keyBlock2.isClicked()) {
             PhysCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, false, 1.0d), new Vector3d(1.0d), 0.25d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             int a = Game.random.nextInt(3);
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityLamp);
@@ -275,12 +275,12 @@ public class DynamicPlayerSP extends PhysEntity implements IPlayer {
             Game.getGame().getProxy().addLight(entityPropInfo, pointLight);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(20.0f));
         }
-        if (BindingList.instance.keyBlock3.isClicked()) {
+        if (ControllerDispatcher.bindings.keyBlock3.isClicked()) {
             PhysCube entityPropInfo = new PhysCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.3d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
             Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(50.0f));
         }
-        if (BindingList.instance.keyClear.isClicked()) {
+        if (ControllerDispatcher.bindings.keyClear.isClicked()) {
             this.getWorld().clearAllItems();
         }
         this.getCameraRotation().add(new Vector3d(rotationInput, 0.0d));

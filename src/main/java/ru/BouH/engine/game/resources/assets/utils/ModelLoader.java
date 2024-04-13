@@ -88,9 +88,9 @@ public class ModelLoader {
 
     @SuppressWarnings("all")
     private static MeshDataGroup loadMesh(String modelPath, String modelName) {
-        Game.getGame().getLogManager().debug("Loading model " + modelPath + modelName);
+        Game.getGame().getLogManager().log("Loading model " + modelPath + modelName);
 
-        final int FLAGS = Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenSmoothNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
+        final int FLAGS = Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
         MeshDataGroup meshDataGroup = new MeshDataGroup();
 
         if (Game.seekInJar(modelPath + modelName)) {

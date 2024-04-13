@@ -15,6 +15,7 @@ public class ItemRadio extends InventoryItem {
         super("radio");
         this.openCd = 0;
         this.music = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.music, SoundType.BACKGROUND_AMBIENT_SOUND, 2.0f, 1.0f, 1.0f);
+        this.setDescription("[Calms the mind. Be careful]");
     }
 
     @Override

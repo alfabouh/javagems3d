@@ -7,10 +7,20 @@ import ru.BouH.engine.physics.world.IWorld;
 public abstract class InventoryItem {
     private final String name;
     private IHasInventory itemOwner;
+    private String description;
 
     public InventoryItem(String name) {
         this.name = name;
         this.itemOwner = null;
+        this.description = null;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public abstract void onLeftClick(IWorld world);

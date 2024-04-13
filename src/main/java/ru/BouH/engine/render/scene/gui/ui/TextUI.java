@@ -1,6 +1,7 @@
 package ru.BouH.engine.render.scene.gui.ui;
 
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL13;
@@ -20,8 +21,10 @@ public class TextUI implements BasicUI {
     private Vector3f position;
     private boolean isVisible;
     private ShaderManager shaderManager;
+    private final GuiFont font;
 
     public TextUI(String text, GuiFont fontTexture, int hexColor, Vector3f position) {
+        this.font = fontTexture;
         this.text = text;
         this.hexColor = hexColor;
         this.position = position;
@@ -34,6 +37,14 @@ public class TextUI implements BasicUI {
         this(text, fontTexture, 0xffffff, position);
     }
 
+    public TextUI(String text, GuiFont fontTexture, int hexColor) {
+        this(text, fontTexture, hexColor, new Vector3f(0.0f, 0.0f, 0.5f));
+    }
+
+    public TextUI(GuiFont fontTexture, int hexColor) {
+        this("", fontTexture, hexColor, new Vector3f(0.0f, 0.0f, 0.5f));
+    }
+
     public TextUI(String text, GuiFont fontTexture) {
         this(text, fontTexture, 0xffffff, new Vector3f(0.0f, 0.0f, 0.5f));
     }
@@ -44,6 +55,10 @@ public class TextUI implements BasicUI {
 
     public TextUI(GuiFont fontTexture, Vector3f position) {
         this("", fontTexture, 0xffffff, position);
+    }
+
+    public GuiFont getFont() {
+        return this.font;
     }
 
     @Override

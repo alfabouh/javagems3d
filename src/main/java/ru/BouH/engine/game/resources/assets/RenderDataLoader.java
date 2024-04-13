@@ -16,6 +16,7 @@ import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.fabric.Render2D3DObject;
 import ru.BouH.engine.render.scene.fabric.render.RenderObject;
 import ru.BouH.engine.render.scene.fabric.render.RenderPlayerSP;
+import ru.BouH.engine.render.scene.fabric.render.data.RenderLiquidData;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderParticleD2Data;
 import ru.BouH.engine.render.scene.fabric.render.data.inventory.RenderInventoryItemData;
@@ -40,7 +41,12 @@ public class RenderDataLoader implements IAssetsLoader {
     public RenderObjectData radio_world;
     public RenderObjectData emp_world;
     public RenderObjectData crowbar_world;
+    public RenderObjectData soda_world;
     public RenderObjectData plank;
+    public RenderLiquidData water;
+
+    public RenderObjectData cd_world;
+    public RenderObjectData cassette_world;
 
     public RenderDataLoader() {
         this.inventoryItemRenderTable = new InventoryItemRenderTable();
@@ -80,11 +86,28 @@ public class RenderDataLoader implements IAssetsLoader {
         Material rdMat = new Material();
         rdMat.setDiffuse(ResourceManager.renderAssets.radio_world);
 
+        Material sdMat = new Material();
+        sdMat.setDiffuse(ResourceManager.renderAssets.soda_world);
+
+        Material cdMat = new Material();
+        cdMat.setDiffuse(ResourceManager.renderAssets.cd_world);
+
+        Material csMat = new Material();
+        csMat.setDiffuse(ResourceManager.renderAssets.cassette_world);
+
+        this.water = new RenderLiquidData(ResourceManager.renderAssets.waterNormals, ResourceManager.renderAssets.waterTexture, false, ResourceManager.shaderAssets.liquid);
+
         this.enemy = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world);
         this.enemy.getModelRenderParams().setCustomCullingAABSize(new Vector3d(5.0d));
         this.enemy.setEntityModelConstructor(enemyModelConstructor);
         this.enemy.getModelRenderParams().invertTextureCoordinates().setShadowReceiver(false).setShadowCaster(false).setHasTransparency(true);
         this.enemy.setOverObjectMaterial(enMat);
+
+        this.soda_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world);
+        this.soda_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.soda_world.setEntityModelConstructor(itemPickUpModelConstructor);
+        this.soda_world.getModelRenderParams().invertTextureCoordinates().setLightOpaque(false).setShadowReceiver(false).setShadowCaster(false).setHasTransparency(true);
+        this.soda_world.setOverObjectMaterial(sdMat);
 
         this.radio_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world);
         this.radio_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
@@ -110,9 +133,21 @@ public class RenderDataLoader implements IAssetsLoader {
         this.crowbar_world.getModelRenderParams().invertTextureCoordinates().setLightOpaque(false).setShadowReceiver(false).setShadowCaster(false).setHasTransparency(true);
         this.crowbar_world.setOverObjectMaterial(cwMat);
 
+        this.cd_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world);
+        this.cd_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.cd_world.setEntityModelConstructor(itemPickUpModelConstructor);
+        this.cd_world.getModelRenderParams().invertTextureCoordinates().setLightOpaque(false).setShadowReceiver(false).setShadowCaster(false).setHasTransparency(true);
+        this.cd_world.setOverObjectMaterial(cdMat);
+
+        this.cassette_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world);
+        this.cassette_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.cassette_world.setEntityModelConstructor(itemPickUpModelConstructor);
+        this.cassette_world.getModelRenderParams().invertTextureCoordinates().setLightOpaque(false).setShadowReceiver(false).setShadowCaster(false).setHasTransparency(true);
+        this.cassette_world.setOverObjectMaterial(csMat);
+
         this.plank = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.plank);
 
-        this.door1 = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.door1);
+        this.door1 = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.door2);
         this.door1.getModelRenderParams().setShouldInterpolateMovement(false).setCustomCullingAABSize(new Vector3d(5.0d));
 
         this.entityCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);

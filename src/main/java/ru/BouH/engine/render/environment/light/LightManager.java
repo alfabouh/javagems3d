@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4d;
 import org.lwjgl.system.MemoryUtil;
+import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.exception.GameException;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.render.environment.Environment;
@@ -73,8 +74,8 @@ public class LightManager implements ILightManager {
     private void updateSunUbo(Matrix4d viewMatrix) {
         Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunAngle(), viewMatrix, 0.0f);
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8);
-        value1Buffer.put(this.calcAmbientLight());
-        value1Buffer.put(this.environment.getSky().getSunBrightness());
+        value1Buffer.put(Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 0 ? this.calcAmbientLight() : 1.0f);
+        value1Buffer.put(Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 0 ? this.environment.getSky().getSunBrightness() : 1.0f);
         value1Buffer.put(angle.x);
         value1Buffer.put(angle.y);
         value1Buffer.put(angle.z);
@@ -99,6 +100,23 @@ public class LightManager implements ILightManager {
             value1Buffer.put((float) pointLight.getLightColor().z);
             value1Buffer.put(pointLight.getBrightness());
             value1Buffer.put(pointLight.getAttachedShadowSceneId());
+            value1Buffer.flip();
+            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
+        }
+        MemoryUtil.memFree(value1Buffer);
+    }
+
+    public void removeAllLights() {
+        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
+        for (int i = 0; i < this.getPointLightList().size(); i++) {
+            value1Buffer.put(0.0f);
+            value1Buffer.put(0.0f);
+            value1Buffer.put(0.0f);
+            value1Buffer.put(0.0f);
+            value1Buffer.put(0.0f);
+            value1Buffer.put(0.0f);
+            value1Buffer.put(-1);
+            value1Buffer.put(-1);
             value1Buffer.flip();
             Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
         }

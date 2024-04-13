@@ -49,7 +49,7 @@ public class TerrainGraphGenerator {
 
     public Graph.GVertex startPos(double x, double y, double z) {
         btVector3 va1 = new btVector3(x, y, z);
-        btVector3 va2 = new btVector3(x, y - 5.0d, z);
+        btVector3 va2 = new btVector3(x, y - 100.0d, z);
         btVector3 hit = null;
 
         btCollisionWorld.ClosestRayResultCallback rayResultCallback = new btCollisionWorld.ClosestRayResultCallback(va1, va2);

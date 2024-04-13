@@ -5,4 +5,5 @@ import ru.BouH.engine.physics.world.object.WorldItem;
 
 public interface AI extends IWorldDynamic {
     WorldItem target();
+    boolean isActive();
 }

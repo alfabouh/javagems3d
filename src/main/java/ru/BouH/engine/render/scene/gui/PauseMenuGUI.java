@@ -22,9 +22,9 @@ public class PauseMenuGUI implements GUI {
     @Override
     public void onRender(double partialTicks) {
         Window window = Game.getGame().getScreen().getWindow();
-        this.playButton.setPosition(new Vector3f(window.getWidth() / 2.0f - this.playButton.getSize().x / 2.0f, window.getHeight() / 2.0f - this.playButton.getSize().y / 2.0f, 0.5f));
+        this.playButton.setPosition(new Vector3f(window.getWidth() / 2.0f - this.playButton.getSize().x / 2.0f, window.getHeight() / 2.0f - this.playButton.getSize().y / 2.0f - 40.0f, 0.5f));
         this.playButton.render(partialTicks);
-        this.exitButton.setPosition(new Vector3f(window.getWidth() / 2.0f - this.playButton.getSize().x / 2.0f, window.getHeight() / 2.0f - this.playButton.getSize().y / 2.0f + 70.0f, 0.5f));
+        this.exitButton.setPosition(new Vector3f(window.getWidth() / 2.0f - this.playButton.getSize().x / 2.0f, window.getHeight() / 2.0f - this.playButton.getSize().y / 2.0f + 40.0f, 0.5f));
         this.exitButton.render(partialTicks);
     }
 
@@ -41,14 +41,16 @@ public class PauseMenuGUI implements GUI {
         });
         this.exitButton = new ButtonUI("Menu", ResourceManager.renderAssets.buttonFont, new Vector3f(0.0f, 0.0f, 0.5f), new Vector2f(300.0f, 60.0f));
         this.exitButton.setOnClick(() -> {
+            Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().showBlood = false;
+            Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().victory = false;
             Game.getGame().destroyMap();
-            Game.getGame().showGui(new MainMenuGUI());
         });
     }
 
     @Override
     public void onStopRender() {
         this.playButton.clear();
+        this.exitButton.clear();
     }
 
     @Override

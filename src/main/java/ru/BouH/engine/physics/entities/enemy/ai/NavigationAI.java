@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class NavigationAI implements AI {
+    private boolean isActive;
     private final World world;
     private final WorldItem worldItem;
     private double currentPosDelta;
@@ -26,7 +27,16 @@ public class NavigationAI implements AI {
         this.currentPosDelta = 0.0d;
         this.currentVertex = null;
         this.nextVertex = null;
+        this.isActive = true;
         this.pathToVertex = new ArrayList<>();
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public synchronized boolean isActive() {
+        return this.isActive;
     }
 
     public double getSpeed() {
@@ -73,7 +83,7 @@ public class NavigationAI implements AI {
             return;
         }
         if (this.getCurrentVertex() == null) {
-            this.setCurrentVertex(this.getWorld().getGraph().getRandomVertex());
+            this.setCurrentVertex(this.getWorld().getGraph().getClosestVertex(this.target().getPosition()));
         }
         List<Graph.GVertex> path = this.getPathToVertex();
         if (path != null && !path.isEmpty()) {

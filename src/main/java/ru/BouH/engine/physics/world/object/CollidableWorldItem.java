@@ -4,8 +4,10 @@ import org.bytedeco.bullet.BulletCollision.btCollisionShape;
 import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.bytedeco.bullet.LinearMath.btDefaultMotionState;
 import org.bytedeco.bullet.LinearMath.btMotionState;
+import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
+import ru.BouH.engine.math.MathHelper;
 import ru.BouH.engine.physics.collision.AbstractCollision;
 import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.states.EntityState;
@@ -76,7 +78,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     }
 
     private void createRigidBody(World world, @NotNull Vector3d position, @NotNull Vector3d rotation, double scaling, RigidBodyObject.PhysProperties properties) {
-        this.rigidBodyConstructor = new RigidBodyConstructor(world, startTranslation, startRotation, scaling, this.constructCollision());
+        this.rigidBodyConstructor = new RigidBodyConstructor(world, scaling, this.constructCollision());
         this.rigidBodyObject = this.getRigidBodyConstructor().buildRigidBody(properties);
         if (this.getBodyIndex().isStatic()) {
             this.getBulletObject().makeStatic();
@@ -89,6 +91,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         this.getBulletObject().setRotation(rotation);
         this.getBulletObject().updateCollisionObjectState();
         this.afterRigidBodyCreated(this.getBulletObject());
+        world.getDynamicsWorld().updateSingleAabb(this.getBulletObject());
     }
 
     protected void afterRigidBodyCreated(RigidBodyObject rigidBodyObject) {
@@ -136,7 +139,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         private final World world;
         private btRigidBody.btRigidBodyConstructionInfo btRigidBodyConstructionInfo;
 
-        public RigidBodyConstructor(World world, @NotNull Vector3d position, @NotNull Vector3d rotation, double scaling, AbstractCollision abstractCollision) {
+        public RigidBodyConstructor(World world, double scaling, AbstractCollision abstractCollision) {
             this.btCollisionShape = abstractCollision.buildCollisionShape(scaling);
             this.motionState = new btDefaultMotionState();
             this.world = world;

@@ -25,7 +25,6 @@ public class PhysicsTimer implements IPhysTimer {
     private final btDiscreteDynamicsWorld discreteDynamicsWorld;
     private final btConstraintSolver constraintSolve;
     private final btGhostPairCallback pairCallback;
-    //private final btOverlapFilterCallback btOverlapFilterCallback;
 
     @SuppressWarnings("all")
     public PhysicsTimer() {
@@ -44,17 +43,9 @@ public class PhysicsTimer implements IPhysTimer {
         this.discreteDynamicsWorld.getDispatchInfo().m_useContinuous(true);
         this.discreteDynamicsWorld.getDispatchInfo().m_convexConservativeDistanceThreshold(0.01f);
         this.discreteDynamicsWorld.getDispatchInfo().m_allowedCcdPenetration(0.0d);
-        //this.btOverlapFilterCallback = new btOverlapFilterCallback(this.discreteDynamicsWorld.getPairCache().getOverlapFilterCallback()) {
-        //    @Override
-        //    public @Cast("bool") boolean needBroadphaseCollision(btBroadphaseProxy proxy0, btBroadphaseProxy proxy1) {
-        //        System.out.println("FWE");
-        //        return false;
-        //    }
-        //};
-        //this.discreteDynamicsWorld.getPairCache().setOverlapFilterCallback(new btOverlapFilterCallback(new btOverlapFilterCallback(this.discreteDynamicsWorld.getPairCache().getOverlapFilterCallback())));
 
         this.jbDebugDraw = new JBDebugDraw();
-        this.jbDebugDraw.setDebugMode(btIDebugDraw.DBG_DrawWireframe);
+        this.jbDebugDraw.setDebugMode(btIDebugDraw.DBG_DrawWireframe | btIDebugDraw.DBG_DrawAabb);
         this.discreteDynamicsWorld.setDebugDrawer(this.jbDebugDraw);
         this.world = new World();
     }
@@ -69,7 +60,7 @@ public class PhysicsTimer implements IPhysTimer {
             throw new GameException("Current Dynamics World is NULL!");
         }
         try {
-            Game.getGame().getLogManager().debug("Starting physics!");
+            Game.getGame().getLogManager().log("Starting physics!");
             while (!Game.getGame().isShouldBeClosed()) {
                 synchronized (PhysicThreadManager.locker) {
                     PhysicThreadManager.locker.wait();
@@ -85,10 +76,11 @@ public class PhysicsTimer implements IPhysTimer {
                 }
                 PhysicsTimer.TPS += 1;
             }
-            Game.getGame().getLogManager().debug("Stopping physics!");
+            Game.getGame().getLogManager().log("Stopping physics!");
         } catch (InterruptedException | GameException e) {
             throw new RuntimeException(e);
         } finally {
+            Game.getGame().destroyGame();
             this.cleanResources();
         }
     }
