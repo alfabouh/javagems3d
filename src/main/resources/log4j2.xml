@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
+    <Properties>
+        <Property name="log-path">${sys:user.home}/.xaetrix3d/tenebrae/log</Property>
+        <Property name="log-file">${date:yyyy-MM-dd_HH-mm-ss}_log.log</Property>
+    </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n"/>
         </Console>
+        <File name="File" fileName="${log-path}/${log-file}">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n"/>
+        </File>
     </Appenders>
     <Loggers>
-        <Logger name="ru.BouH.engine.game.logger.GameLogging" level="debug" additivity="true">
+        <Logger name="ru.alfabouh.engine.game.logger.GameLogging" level="debug" additivity="true">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Logger>
         <Root level="all">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Root>
     </Loggers>
 </Configuration>

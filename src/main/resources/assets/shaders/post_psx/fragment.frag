@@ -49,13 +49,13 @@ vec4 psx() {
     distortedCoord.y += sin(pixelCoords.x * 16.0) * cos(w_tick * panic_val * 50.0) * (panic_val * 0.1);
 
     vec2 distortedCoordGui = texCoords;
-    distortedCoordGui.x += (sin(pixelCoords.y * 8.0) * sin(w_tick * panic_val * 50.0) * (panic_val * 0.1)) * (psx_gui_shake == 1 ? 1.0 : 0.0);
-    distortedCoordGui.y += (sin(pixelCoords.x * 16.0) * cos(w_tick * panic_val * 50.0) * (panic_val * 0.1)) * (psx_gui_shake == 1 ? 1.0 : 0.0);
+    distortedCoordGui.x += (sin(pixelCoords.y * 8.0) * sin(w_tick * panic_val * 50.0) * (panic_val * 0.1));
+    distortedCoordGui.y += (sin(pixelCoords.x * 16.0) * cos(w_tick * panic_val * 50.0) * (panic_val * 0.1));
 
     vec4 screen_over = texture(texture_screen, texCoords * vec2(5.0));
     vec4 blood_over = kill == 1 ? texture(texture_blood, distortedCoord) : vec4(0.0);
 
-    vec4 gui_t1 = texture(texture_sampler_gui, distortedCoordGui);
+    vec4 gui_t1 = texture(texture_sampler_gui, psx_gui_shake == 1 ? distortedCoordGui : gl_FragCoord.xy / resolution);
     vec4 gui_t2 = texture(texture_sampler_gui, distortedCoordGui + vec2(panic_val * 0.01, panic_val * 0.01));
     gui_t2.g *= 0;
     gui_t2.b *= 0;

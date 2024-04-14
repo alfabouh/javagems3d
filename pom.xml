@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.BouH</groupId>
-    <artifactId>engine1</artifactId>
-    <version>test</version>
+    <groupId>ru.alfabouh</groupId>
+    <artifactId>xaetrix3d_game</artifactId>
+    <version>alpha</version>
 
     <build>
         <plugins>
@@ -15,7 +15,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ru.BouH.engine.game.Game</mainClass>
+                            <mainClass>ru.alfabouh.engine.game.Game</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -33,7 +33,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>ru.BouH.engine.game.Game</mainClass>
+                    <mainClass>ru.alfabouh.engine.game.Game</mainClass>
                     <arguments>
                         <argument>--add-exports</argument>
                         <argument>java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
