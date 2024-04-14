@@ -5,7 +5,9 @@ import java.nio.charset.CharsetEncoder;
 
 public enum FontCode {
     Window("Windows-1251"),
-    Utf("UTF-8");
+    Utf8("UTF-8"),
+    ASCII("US-ASCII"),
+    LATIN("ISO-8859-1");
 
     private final String getChars;
 

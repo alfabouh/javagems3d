@@ -28,7 +28,10 @@ public class LocalPlayer {
             kinematicPlayerSP.getWorld().getDynamicsWorld().addAction(kinematicPlayerSP.getKinematicCharacterController());
         }
         kinematicPlayerSP.setCanPlayerJump(false);
-        Game.getGame().getProxy().addItemInWorlds(physPlayerSP, ResourceManager.renderDataAssets.player);
+
+        kinematicPlayerSP.getWorld().addItem(kinematicPlayerSP);
+        Game.getGame().getScreen().getRenderWorld().addItem(kinematicPlayerSP, ResourceManager.renderDataAssets.player);
+
         physPlayerSP.setCollisionTranslation(position);
     }
 }

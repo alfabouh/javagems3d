@@ -27,6 +27,10 @@ public abstract class InteractiveUI implements BasicUI {
         if (!this.isVisible()) {
             return;
         }
+        this.handleInput();
+    }
+
+    protected void handleInput() {
         IController controller = Game.getGame().getScreen().getControllerDispatcher().getCurrentController();
         if (controller instanceof MouseKeyboardController) {
             MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controller;
@@ -42,18 +46,26 @@ public abstract class InteractiveUI implements BasicUI {
                     this.selected = false;
                     this.onMouseLeft();
                 }
-                this.mouseState = -1;
             }
             if (this.mouseState == 0) {
                 if (mouseKeyboardController.getMouse().isLeftKeyPressed()) {
-                    this.onClicked();
-                    ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptLMB();
-                    ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptRMB();
-                    ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptMMB();
+                    this.onClicked(new Vector2d(mouseCoordinates));
+                    if (this.interruptMouseAfterClick()) {
+                        ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptLMB();
+                        ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptRMB();
+                        ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptMMB();
+                    }
+                } else {
+                    this.onUnClicked(new Vector2d(mouseCoordinates));
+                    this.mouseState = -1;
                 }
-                this.onMouseInside();
+                this.onMouseInside(new Vector2d(mouseCoordinates));
             }
         }
+    }
+
+    protected boolean interruptMouseAfterClick() {
+        return true;
     }
 
     @Override
@@ -66,7 +78,7 @@ public abstract class InteractiveUI implements BasicUI {
     }
 
     public Vector2f getSize() {
-        return this.size;
+        return new Vector2f(this.size);
     }
 
     public void setSize(Vector2f size) {
@@ -81,11 +93,12 @@ public abstract class InteractiveUI implements BasicUI {
         this.position = position;
     }
 
-    public abstract void onMouseInside();
+    public abstract void onMouseInside(Vector2d mouseCoordinates);
 
     public abstract void onMouseEntered();
 
     public abstract void onMouseLeft();
 
-    public abstract void onClicked();
+    public abstract void onClicked(Vector2d mouseCoordinates);
+    public abstract void onUnClicked(Vector2d mouseCoordinates);
 }

@@ -19,6 +19,8 @@ public class ShaderLoader {
     public UniformBufferObject Misc;
     public UniformBufferObject Fog;
 
+    public ShaderManager world_enemy;
+    public ShaderManager world_pickable;
     public ShaderManager menu;
     public ShaderManager gameUbo;
     public ShaderManager gui_text;
@@ -49,6 +51,8 @@ public class ShaderLoader {
         this.Misc = this.createUBO("Misc", 2, 4);
         this.Fog = this.createUBO("Fog", 3, 16);
 
+        this.world_enemy = this.createShaderManager("world_enemy", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_pickable = this.createShaderManager("world_pickable", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.debug = this.createShaderManager("debug", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.gui_text = this.createShaderManager("gui_text", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.gui_noised = this.createShaderManager("gui_noised", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);

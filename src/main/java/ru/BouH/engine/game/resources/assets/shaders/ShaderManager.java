@@ -120,8 +120,26 @@ public final class ShaderManager {
         }
     }
 
+    public void performUniformNoWarn(String uniform, String postfix, int arrayPos, Object o) {
+        if (this.checkUniformInGroup(uniform)) {
+            this.performUniform(uniform, postfix, arrayPos, o);
+        }
+    }
+
     public void performUniform(String uniform, int arrayPos, Object o) {
         this.performUniform(uniform, "", arrayPos, o);
+    }
+
+    public void performUniformNoWarn(String uniform, int arrayPos, Object o) {
+        if (this.checkUniformInGroup(uniform)) {
+            this.performUniform(uniform, "", arrayPos, o);
+        }
+    }
+
+    public void performUniformNoWarn(String uniform, Object o) {
+        if (this.checkUniformInGroup(uniform)) {
+            this.performUniform(uniform, -1, o);
+        }
     }
 
     public void performArrayUniform(String uniform, float[] objects) {
@@ -249,9 +267,9 @@ public final class ShaderManager {
             if (material == null) {
                 return;
             }
-            if (ShaderManager.this.checkUniformInGroup("show_cascades")) {
-                ShaderManager.this.performUniform("show_cascades", scene.getSceneRender().getCurrentDebugMode() == 1 ? 1 : 0);
-            }
+
+            ShaderManager.this.performUniformNoWarn("show_cascades", scene.getSceneRender().getCurrentDebugMode());
+
             ISample diffuse = material.getDiffuse();
             IImageSample emissive = material.getEmissive();
             IImageSample metallic = material.getMetallic();
@@ -273,11 +291,11 @@ public final class ShaderManager {
                     IImageSample imageSample = ((IImageSample) diffuse);
                     Scene.activeGlTexture(code);
                     imageSample.bindTexture();
-                    ShaderManager.this.performUniform("diffuse_map", code);
+                    ShaderManager.this.performUniformNoWarn("diffuse_map", code);
                     texturing_code |= 1 << 2;
                 } else {
                     if (diffuse instanceof ColorSample) {
-                        ShaderManager.this.performUniform("diffuse_color", ((ColorSample) diffuse).getColor());
+                        ShaderManager.this.performUniformNoWarn("diffuse_color", ((ColorSample) diffuse).getColor());
                     }
                 }
             }
@@ -285,41 +303,41 @@ public final class ShaderManager {
                 final int code = 1;
                 Scene.activeGlTexture(code);
                 emissive.bindTexture();
-                ShaderManager.this.performUniform("emissive_map", code);
+                ShaderManager.this.performUniformNoWarn("emissive_map", code);
                 texturing_code |= 1 << 3;
             }
             if (metallic != null) {
                 final int code = 2;
                 Scene.activeGlTexture(code);
                 metallic.bindTexture();
-                ShaderManager.this.performUniform("metallic_map", code);
+                ShaderManager.this.performUniformNoWarn("metallic_map", code);
                 texturing_code |= 1 << 4;
             }
             if (normals != null) {
                 final int code = 3;
                 Scene.activeGlTexture(code);
                 normals.bindTexture();
-                ShaderManager.this.performUniform("normals_map", code);
+                ShaderManager.this.performUniformNoWarn("normals_map", code);
                 texturing_code |= 1 << 5;
             }
             if (specular != null) {
                 final int code = 4;
                 Scene.activeGlTexture(code);
                 specular.bindTexture();
-                ShaderManager.this.performUniform("specular_map", code);
+                ShaderManager.this.performUniformNoWarn("specular_map", code);
                 texturing_code |= 1 << 6;
             }
             if (passShadows) {
                 this.passShadowsInfo();
             }
 
-            ShaderManager.this.performUniform("texturing_code", texturing_code);
+            ShaderManager.this.performUniformNoWarn("texturing_code", texturing_code);
         }
 
         public void passCommonInfo() {
             Vector4d vector4d = new Vector4d(Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition(), 1.0d);
             vector4d.mul(TransformationManager.instance.getMainCameraViewMatrix());
-            ShaderManager.this.performUniform("camera_pos", Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition());
+            ShaderManager.this.performUniformNoWarn("camera_pos", Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition());
         }
 
         public void passCubeMap(String name, CubeMapProgram cubeMapProgram) {
@@ -327,7 +345,7 @@ public final class ShaderManager {
                 final int code = 5;
                 Scene.activeGlTexture(code);
                 cubeMapProgram.bindCubeMap();
-                ShaderManager.this.performUniform(name, code);
+                ShaderManager.this.performUniformNoWarn(name, code);
             }
         }
 
@@ -338,17 +356,17 @@ public final class ShaderManager {
                 CascadeShadow cascadeShadow = scene.getSceneRender().getShadowScene().getCascadeShadows().get(i);
                 Scene.activeGlTexture(startCode + i);
                 scene.getSceneRender().getShadowScene().getFrameBufferObjectProgram().bindTexture(i);
-                ShaderManager.this.performUniform("shadow_map" + i, startCode + i);
-                ShaderManager.this.performUniform("cascade_shadow", ".split_distance", i, cascadeShadow.getSplitDistance());
-                ShaderManager.this.performUniform("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
+                ShaderManager.this.performUniformNoWarn("shadow_map" + i, startCode + i);
+                ShaderManager.this.performUniformNoWarn("cascade_shadow", ".split_distance", i, cascadeShadow.getSplitDistance());
+                ShaderManager.this.performUniformNoWarn("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
             }
             for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRender().getShadowScene().getPointLightShadows().get(i);
                 final int code = 9 + i;
                 Scene.activeGlTexture(code);
                 pointLightShadow.getPointLightCubeMap().bindCubeMap();
-                ShaderManager.this.performUniform("far_plane", pointLightShadow.farPlane());
-                ShaderManager.this.performUniform("point_light_cubemap", i, code);
+                ShaderManager.this.performUniformNoWarn("far_plane", pointLightShadow.farPlane());
+                ShaderManager.this.performUniformNoWarn("point_light_cubemap", i, code);
             }
         }
 

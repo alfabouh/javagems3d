@@ -147,11 +147,7 @@ public final class SoundManager {
         if (!this.isSystemCreated()) {
             return null;
         }
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
-        if (!worldItem.tryAttachSoundTo(gameSound)) {
-            Game.getGame().getLogManager().warn("Couldn't attach sound to: " + worldItem);
-        }
-        gameSound.setPosition(worldItem.getPosition());
+        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, worldItem);
         gameSound.playSound();
         this.sounds.add(gameSound);
         return gameSound;

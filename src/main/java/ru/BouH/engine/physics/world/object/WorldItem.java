@@ -196,14 +196,6 @@ public abstract class WorldItem implements IWorldObject {
         return this.itemName;
     }
 
-    public boolean tryAttachSoundTo(GameSound sound) {
-        if (this.relativeRenderObject() == null) {
-            return false;
-        }
-        sound.setAttachedTo(this.relativeRenderObject());
-        return true;
-    }
-
     public boolean tryAttachRenderCamera(AttachedCamera attachedCamera) {
         if (this.relativeRenderObject() == null) {
             return false;

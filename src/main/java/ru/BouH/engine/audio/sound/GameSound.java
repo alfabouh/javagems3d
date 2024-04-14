@@ -6,15 +6,16 @@ import org.lwjgl.openal.AL10;
 import ru.BouH.engine.audio.SoundManager;
 import ru.BouH.engine.audio.sound.data.SoundType;
 import ru.BouH.engine.game.Game;
+import ru.BouH.engine.physics.world.object.WorldItem;
 import ru.BouH.engine.render.scene.objects.items.PhysicsObject;
 
 public class GameSound {
     private final SoundType soundType;
     private final SoundBuffer soundBuffer;
     private int source;
-    private PhysicsObject attachedTo;
+    private WorldItem attachedTo;
 
-    private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, PhysicsObject attachedTo) {
+    private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
         this.soundBuffer = soundBuffer;
         this.soundType = soundType;
         this.attachedTo = attachedTo;
@@ -22,7 +23,7 @@ public class GameSound {
         this.setupSoundOptions(pitch, gain, rollOff);
     }
 
-    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, PhysicsObject attachedTo) {
+    public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
         return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, attachedTo);
     }
 
@@ -41,7 +42,7 @@ public class GameSound {
         AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, Math.max(rollOff, 0.0f));
 
         if (this.getAttachedTo() != null) {
-            this.setPosition(this.getAttachedTo().getRenderPosition());
+            this.setPosition(this.getAttachedTo().getPosition());
         } else {
             this.setPosition(new Vector3d(0.0d));
         }
@@ -58,7 +59,7 @@ public class GameSound {
             return;
         }
         if (this.getAttachedTo() != null) {
-            this.setPosition(this.getAttachedTo().getRenderPosition());
+            this.setPosition(this.getAttachedTo().getPosition());
             if (this.getAttachedTo().isDead()) {
                 this.stopSound();
                 return;
@@ -135,11 +136,11 @@ public class GameSound {
         }
     }
 
-    public PhysicsObject getAttachedTo() {
+    public WorldItem getAttachedTo() {
         return this.attachedTo;
     }
 
-    public void setAttachedTo(PhysicsObject attachedTo) {
+    public void setAttachedTo(WorldItem attachedTo) {
         this.attachedTo = attachedTo;
     }
 

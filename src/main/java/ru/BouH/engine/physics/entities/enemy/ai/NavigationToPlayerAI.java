@@ -57,6 +57,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                     } else {
                         this.setSpeed(!this.getAtomicBoolean().get() ? Math.min(maxSpeed * 2.0d, 0.2d) : maxSpeed);
                     }
+
                     AStar aStar = new AStar(worldItem.getWorld().getGraph(), this.getCurrentSyncVertex(), this.getAtomicBoolean().get() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : randomVertex);
                     List<Graph.GVertex> path = aStar.findPath();
                     this.getQueuePath().clear();
@@ -116,6 +117,7 @@ public class NavigationToPlayerAI extends NavigationAI {
             if (this.rageCd > 0) {
                 this.getAtomicBoolean().set(true);
             }
+
             this.updateNavOnAggression(player);
         }
     }
