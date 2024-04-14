@@ -1,13 +1,9 @@
 package ru.alfabouh.engine.audio.sound.wave;
 
-import com.sun.media.sound.WaveFileReader;
+import javax.sound.sampled.*;
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.engine.game.Game;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,9 +24,8 @@ public class WaveData {
     }
 
     public static WaveData create(URL path) {
-        try {
-            WaveFileReader wfr = new WaveFileReader();
-            return create(wfr.getAudioInputStream(new BufferedInputStream(path.openStream())));
+        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(path)) {
+            return WaveData.create(inputStream);
         } catch (Exception e) {
             Game.getGame().getLogManager().warn("Unable to create from: " + path + ", " + e.getMessage());
             return null;
@@ -42,9 +37,8 @@ public class WaveData {
     }
 
     public static WaveData create(InputStream is) {
-        try {
-            return create(
-                    AudioSystem.getAudioInputStream(is));
+        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(is)) {
+            return WaveData.create(inputStream);
         } catch (Exception e) {
             Game.getGame().getLogManager().warn("Unable to create from inputstream, " + e.getMessage());
             return null;
@@ -52,10 +46,8 @@ public class WaveData {
     }
 
     public static WaveData create(byte[] buffer) {
-        try {
-            return create(
-                    AudioSystem.getAudioInputStream(
-                            new BufferedInputStream(new ByteArrayInputStream(buffer))));
+        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(buffer))) {
+            return WaveData.create(inputStream);
         } catch (Exception e) {
             Game.getGame().getLogManager().warn("Unable to create from byte array, " + e.getMessage());
             return null;
@@ -63,16 +55,8 @@ public class WaveData {
     }
 
     public static WaveData create(ByteBuffer buffer) {
-        try {
-            byte[] bytes = null;
-
-            if (buffer.hasArray()) {
-                bytes = buffer.array();
-            } else {
-                bytes = new byte[buffer.capacity()];
-                buffer.get(bytes);
-            }
-            return create(bytes);
+        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(buffer.array()))) {
+            return WaveData.create(inputStream);
         } catch (Exception e) {
             Game.getGame().getLogManager().warn("Unable to create from ByteBuffer, " + e.getMessage());
             return null;
@@ -80,72 +64,61 @@ public class WaveData {
     }
 
     public static WaveData create(AudioInputStream ais) {
-        AudioFormat audioformat = ais.getFormat();
+        AudioFormat audioFormat = ais.getFormat();
 
-        int channels = 0;
-        if (audioformat.getChannels() == 1) {
-            if (audioformat.getSampleSizeInBits() == 8) {
+        int channels;
+        if (audioFormat.getChannels() == 1) {
+            if (audioFormat.getSampleSizeInBits() == 8) {
                 channels = AL10.AL_FORMAT_MONO8;
-            } else if (audioformat.getSampleSizeInBits() == 16) {
+            } else if (audioFormat.getSampleSizeInBits() == 16) {
                 channels = AL10.AL_FORMAT_MONO16;
             } else {
                 assert false : "Illegal sample size";
+                return null;
             }
-        } else if (audioformat.getChannels() == 2) {
-            if (audioformat.getSampleSizeInBits() == 8) {
+        } else if (audioFormat.getChannels() == 2) {
+            if (audioFormat.getSampleSizeInBits() == 8) {
                 channels = AL10.AL_FORMAT_STEREO8;
-            } else if (audioformat.getSampleSizeInBits() == 16) {
+            } else if (audioFormat.getSampleSizeInBits() == 16) {
                 channels = AL10.AL_FORMAT_STEREO16;
             } else {
                 assert false : "Illegal sample size";
+                return null;
             }
         } else {
             assert false : "Only mono or stereo is supported";
-        }
-
-        ByteBuffer buffer = null;
-        try {
-            int available = ais.available();
-            if (available <= 0) {
-                available = ais.getFormat().getChannels() * (int) ais.getFrameLength() * ais.getFormat().getSampleSizeInBits() / 8;
-            }
-            byte[] buf = new byte[ais.available()];
-            int read = 0, total = 0;
-            while ((read = ais.read(buf, total, buf.length - total)) != -1
-                    && total < buf.length) {
-                total += read;
-            }
-            buffer = convertAudioBytes(buf, audioformat.getSampleSizeInBits() == 16, audioformat.isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-        } catch (IOException ioe) {
             return null;
         }
 
-        WaveData wavedata = new WaveData(buffer, channels, (int) audioformat.getSampleRate());
-
+        ByteBuffer buffer;
         try {
-            ais.close();
-        } catch (IOException ioe) {
+            byte[] audioBytes = new byte[ais.available()];
+            ais.read(audioBytes);
+            buffer = convertAudioBytes(audioBytes, audioFormat.getSampleSizeInBits() == 16, audioFormat.isBigEndian());
+        } catch (IOException e) {
+            Game.getGame().getLogManager().warn("Unable to read audio input stream, " + e.getMessage());
+            return null;
         }
 
-        return wavedata;
+        WaveData waveData = new WaveData(buffer, channels, (int) audioFormat.getSampleRate());
+
+        return waveData;
     }
 
-    private static ByteBuffer convertAudioBytes(byte[] audio_bytes, boolean two_bytes_data, ByteOrder order) {
-        ByteBuffer dest = ByteBuffer.allocateDirect(audio_bytes.length);
-        dest.order(ByteOrder.nativeOrder());
-        ByteBuffer src = ByteBuffer.wrap(audio_bytes);
-        src.order(order);
-        if (two_bytes_data) {
-            ShortBuffer dest_short = dest.asShortBuffer();
-            ShortBuffer src_short = src.asShortBuffer();
-            while (src_short.hasRemaining())
-                dest_short.put(src_short.get());
-        } else {
-            while (src.hasRemaining())
-                dest.put(src.get());
+    private static ByteBuffer convertAudioBytes(byte[] audioBytes, boolean twoBytesData, boolean bigEndian) {
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(audioBytes.length);
+        byteBuffer.order(ByteOrder.nativeOrder());
+
+        ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
+        for (int i = 0; i < audioBytes.length / 2; i++) {
+            int b1 = audioBytes[i * 2] & 0xff;
+            int b2 = audioBytes[i * 2 + 1] & 0xff;
+            short s = (short) (bigEndian ? (b1 << 8) | b2 : (b2 << 8) | b1);
+            shortBuffer.put(s);
         }
-        dest.rewind();
-        return dest;
+
+        byteBuffer.position(0);
+        return byteBuffer;
     }
 
     public void dispose() {
