@@ -472,7 +472,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 this.horror2.playSound();
             }
         }
-        if (this.getPosition().distance(Map01.entityManiac.getPosition()) <= 1.5d) {
+        if (Map01.entityManiac != null && this.getPosition().distance(Map01.entityManiac.getPosition()) <= 1.5d) {
             this.kill();
         }
         this.checkEnemy();
@@ -643,7 +643,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 double x = Math.floor(this.getCurrentHitScanCoordinate().x * 100) / 100f;
                 double y = Math.floor(this.getCurrentHitScanCoordinate().y * 100) / 100f + 0.5d;
                 double z = Math.floor(this.getCurrentHitScanCoordinate().z * 100) / 100f;
-                System.out.println("new Vector3d(" + x + ", " + y + ", " + z + ")");
+                //System.out.println("new Vector3d(" + x + ", " + y + ", " + z + ")");
                 this.inventory().onMouseRightClick(this.getWorld());
             }
             this.inventory().scrollInventoryToNotNullItem(mouseKeyboardController.getMouse().scrollVector);

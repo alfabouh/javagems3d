@@ -91,17 +91,6 @@ public final class SceneWorld implements IWorld {
         worldItem.setRelativeRenderObject(physicsObject);
     }
 
-    private void addWorldItemSound(WorldItem worldItem, GameSound gameSound) {
-        try {
-            if (!worldItem.isSpawned()) {
-                throw new GameException("Couldn't attach light. Entity hasn't been spawned!");
-            }
-            worldItem.tryAttachSoundTo(gameSound);
-        } catch (GameException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
     private void addWorldItemLight(WorldItem worldItem, Light light) {
         try {
             if (!worldItem.isSpawned()) {

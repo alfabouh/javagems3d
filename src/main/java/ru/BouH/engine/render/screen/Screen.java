@@ -297,6 +297,8 @@ public class Screen {
     }
 
     private void inLoop(double delta) throws InterruptedException {
+        Game.getGame().getProxy().update();
+
         if (this.getControllerDispatcher() != null) {
             this.getControllerDispatcher().updateController(this.getWindow());
             this.getWindow().refreshFocusState();
@@ -362,7 +364,7 @@ public class Screen {
         public GameLoadingScreen() {
             Game.getGame().getLogManager().log("Loading screen");
             Font gameFont = ResourceManager.createFontFromJAR("gamefont.ttf");
-            this.guiFont = new GuiFont(gameFont.deriveFont(Font.BOLD, 20), FontCode.Window);
+            this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(GameSystem.ENG_NAME + " : " + GameSystem.ENG_VER);
             this.lines.add("...");

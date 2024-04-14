@@ -24,14 +24,13 @@ public class ButtonUI extends InteractiveUI {
     private Action onEntered;
     private Action onLeft;
     private Action onClick;
+    private Action onUnClick;
     private Action onInside;
-    private final Vector2f size;
 
     public ButtonUI(String text, GuiFont guiFont, Vector3f position, Vector2f size) {
         super(position, size);
         this.text = text;
         this.guiFont = guiFont;
-        this.size = size;
         this.buttonModel = MeshHelper.generatePlane2DModel(new Vector2f(0.0f), new Vector2f(size.x, size.y), this.getPosition().z);
         this.textUI = new TextUI(text, guiFont, 0xffffff, new Vector3f(0.0f, 0.0f, this.getPosition().z + 0.1f));
         this.fontOffset = this.getFontPos(text, size);
@@ -39,6 +38,7 @@ public class ButtonUI extends InteractiveUI {
         this.onEntered = null;
         this.onLeft = null;
         this.onClick = null;
+        this.onUnClick = null;
         this.onInside = null;
     }
 
@@ -66,11 +66,6 @@ public class ButtonUI extends InteractiveUI {
         this.textUI.render(partialTicks);
     }
 
-    @Override
-    public Vector2f getSize() {
-        return new Vector2f(this.size);
-    }
-
     public void setText(String text) {
         this.textUI.clear();
         this.text = text;
@@ -85,7 +80,7 @@ public class ButtonUI extends InteractiveUI {
     }
 
     @Override
-    public void onMouseInside() {
+    public void onMouseInside(Vector2d mouseCoordinates) {
         if (this.onInside != null) {
             this.onInside.action();
         }
@@ -106,10 +101,17 @@ public class ButtonUI extends InteractiveUI {
     }
 
     @Override
-    public void onClicked() {
+    public void onClicked(Vector2d mouseCoordinates) {
         if (this.onClick != null) {
             Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
             this.onClick.action();
+        }
+    }
+
+    @Override
+    public void onUnClicked(Vector2d mouseCoordinates) {
+        if (this.onUnClick != null) {
+            this.onUnClick.action();
         }
     }
 
@@ -122,6 +124,10 @@ public class ButtonUI extends InteractiveUI {
     @Override
     public ShaderManager getCurrentShader() {
         return ResourceManager.shaderAssets.gui_button;
+    }
+
+    public void setOnUnClick(Action onUnClick) {
+        this.onUnClick = onUnClick;
     }
 
     public void setOnEntered(Action onEntered) {

@@ -67,6 +67,8 @@ public final class World implements IWorld {
     }
 
     public void onWorldUpdate() {
+        Game.getGame().getEngineSystem().getMapLoader().onMapUpdate(this);
+
         List<WorldItem> copy1 = new ArrayList<>(this.getAllWorldItems());
         if (this.collectionsWaitingRefresh) {
             synchronized (PhysicsTimer.lock) {

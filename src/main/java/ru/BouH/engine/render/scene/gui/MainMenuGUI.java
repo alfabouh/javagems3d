@@ -15,6 +15,7 @@ import ru.BouH.engine.physics.world.timer.PhysicThreadManager;
 import ru.BouH.engine.render.scene.Scene;
 import ru.BouH.engine.render.scene.gui.base.GUI;
 import ru.BouH.engine.render.scene.gui.ui.ButtonUI;
+import ru.BouH.engine.render.scene.gui.ui.OptionSliderUI;
 import ru.BouH.engine.render.scene.gui.ui.TextUI;
 import ru.BouH.engine.render.screen.window.Window;
 
@@ -28,15 +29,18 @@ public class MainMenuGUI implements GUI {
     private final TextUI gameVictory;
     private final TextUI gameVer;
     private final GameSound horror;
+    private final OptionSliderUI optionSliderUI;
 
     public MainMenuGUI(boolean showBlood) {
         this.isVisible = true;
         this.showBlood = showBlood;
-        this.gameOver = new TextUI(ResourceManager.renderAssets.standardFont2, 0xff3333);
-        this.gameVictory = new TextUI(ResourceManager.renderAssets.standardFont2, 0x33ff33);
-        this.gameVer = new TextUI(Game.GAME_NAME, ResourceManager.renderAssets.standardFont2, 0x00ff00);
+        this.gameOver = new TextUI(ResourceManager.renderAssets.standardFont, 0xff3333);
+        this.gameVictory = new TextUI(ResourceManager.renderAssets.standardFont, 0x33ff33);
+        this.gameVer = new TextUI(Game.GAME_NAME, ResourceManager.renderAssets.standardFont, 0x00ff00);
 
         this.horror = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f, 1.0f);
+
+        this.optionSliderUI = new OptionSliderUI(new Vector3f(20.0f, 20.0f, 0.5f), 1.0f);
     }
 
     public void startMusic() {
@@ -91,6 +95,8 @@ public class MainMenuGUI implements GUI {
         this.gameVer.setText(Game.getGame().toString());
         this.gameVer.setPosition(new Vector3f(10.0f, window.getHeight() - this.gameVer.getTextHeight() - 5.0f, 0.5f));
         this.gameVer.render(partialTicks);
+
+        this.optionSliderUI.render(partialTicks);
     }
 
     @Override

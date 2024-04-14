@@ -55,9 +55,9 @@ public class TextureAssetsLoader implements IAssetsLoader {
     public void load(GameCache gameCache) {
         Game.getGame().getScreen().addLineInLoadingScreen("Loading textures...");
         Font gameFont = ResourceManager.createFontFromJAR("gamefont.ttf");
-        this.standardFont2 = new GuiFont(gameCache, gameFont.deriveFont(Font.BOLD, 18), FontCode.Window);
-        this.standardFont = new GuiFont(gameCache, gameFont.deriveFont(Font.BOLD, 24), FontCode.Window);
-        this.buttonFont = new GuiFont(gameCache, gameFont.deriveFont(Font.BOLD, 24), FontCode.Window);
+        this.standardFont2 = new GuiFont(gameCache, gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);
+        this.standardFont = new GuiFont(gameCache, gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
+        this.buttonFont = new GuiFont(gameCache, gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
 
         this.zippo_inventory = ResourceManager.createTexture("/assets/textures/items/zippo/zippo_inventory.png", false, GL30.GL_CLAMP_TO_EDGE);
         this.emp_inventory = ResourceManager.createTexture("/assets/textures/items/emp/emp_inventory.png", false, GL30.GL_CLAMP_TO_EDGE);

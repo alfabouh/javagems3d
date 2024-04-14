@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import ru.BouH.engine.game.Game;
 import ru.BouH.engine.game.controller.binding.Binding;
+import ru.BouH.engine.game.controller.binding.BindingList;
 import ru.BouH.engine.game.controller.input.Keyboard;
 import ru.BouH.engine.game.resources.ResourceManager;
 import ru.BouH.engine.inventory.Inventory;
@@ -20,6 +21,9 @@ import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
 
 public class InGameGUI implements GUI {
+    public static boolean show_wasd = true;
+    public static boolean show_shift = true;
+
     private boolean isVisible;
     private TextUI fps;
     private TextUI entities;
@@ -119,6 +123,28 @@ public class InGameGUI implements GUI {
         final WorldItem entityPlayerSP = (WorldItem) Game.getGame().getPlayerSP();
         this.fps.setText("FPS: " + Screen.FPS + " | TPS: " + Screen.PHYS2_TPS);
         this.entities.setText("entities: " + Game.getGame().getPhysicsWorld().countItems());
+
+        if (InGameGUI.show_wasd) {
+            if (Game.getGame().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput().mul(1, 0, 1).length() > 0) {
+                InGameGUI.show_wasd = false;
+            }
+
+            TextUI textUI = new TextUI("[W A S D] MOVE", ResourceManager.renderAssets.standardFont, new Vector3f(0.0f));
+            textUI.setPosition(new Vector3f((float) (width / 2.0f - textUI.getTextWidth() / 2.0f), (float) (height / 2.0f - textUI.getTextHeight() / 2.0f - 100.0f), 0.5f));
+            textUI.render(partialTicks);
+            textUI.clear();
+        }
+
+        if (InGameGUI.show_shift) {
+            if (Game.getGame().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput().y < 0) {
+                InGameGUI.show_shift = false;
+            }
+
+            TextUI textUI = new TextUI("[LEFT SHIFT] RUN", ResourceManager.renderAssets.standardFont, new Vector3f(0.0f));
+            textUI.setPosition(new Vector3f((float) (width / 2.0f - textUI.getTextWidth() / 2.0f), (float) (height / 2.0f - textUI.getTextHeight() / 2.0f - 130.0f), 0.5f));
+            textUI.render(partialTicks);
+            textUI.clear();
+        }
 
         if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 1) {
             if (entityPlayerSP instanceof KinematicPlayerSP) {

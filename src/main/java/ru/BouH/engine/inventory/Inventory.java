@@ -17,7 +17,7 @@ public class Inventory {
         this.maxSlots = maxSlots;
         this.currentItem = null;
         this.owner = owner;
-        this.scrollMaxCd = 4;
+        this.scrollMaxCd = 2;
         this.scrollCd = 0;
         this.initSlots();
     }

@@ -16,7 +16,11 @@ import ru.BouH.engine.render.scene.world.SceneWorld;
 import ru.BouH.engine.render.screen.Screen;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 public class Game {
@@ -32,7 +36,7 @@ public class Game {
     private GameSystem gameSystem;
     private boolean shouldBeClosed;
 
-    private Game() {
+    private Game() throws IOException {
         this.logManager = new GameLogging();
         Game.rngSeed = Game.systemTime();
         Game.random = new Random(Game.rngSeed);
@@ -41,6 +45,17 @@ public class Game {
         this.screen = new Screen();
         this.proxy = new Proxy(this.getPhysicThreadManager().getPhysicsTimer(), this.getScreen());
         this.shouldBeClosed = false;
+
+        if (!Files.exists(this.getGameFilesFolder())) {
+            Files.createDirectories(this.getGameFilesFolder());
+            this.getLogManager().log("Created game folder");
+        }
+    }
+
+    public Path getGameFilesFolder() {
+        String appdataPath = System.getenv("APPDATA");
+        String folderPath = ".xaetrix3d//" + Game.GAME_NAME.toLowerCase();
+        return Paths.get(appdataPath, folderPath);
     }
 
     public String toString() {
@@ -83,11 +98,16 @@ public class Game {
         return Game.startScreen;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        Game.startScreen = new Game();
-        Game.getGame().getLogManager().log("Starting game!");
-        Game.getGame().gameSystem = new GameSystem();
-        Game.getGame().getEngineSystem().startSystem();
+    public static void main(String[] args) {
+        try {
+            Game.startScreen = new Game();
+            Game.getGame().getLogManager().log("Starting game!");
+            Game.getGame().gameSystem = new GameSystem();
+            Game.getGame().getEngineSystem().startSystem();
+        } catch (Exception e) {
+            System.out.println("FFF");
+            System.err.println(e);
+        }
     }
 
     public synchronized SoundManager getSoundManager() {

@@ -15,6 +15,7 @@ import ru.BouH.engine.inventory.items.ItemEmp;
 import ru.BouH.engine.inventory.items.ItemRadio;
 import ru.BouH.engine.inventory.items.ItemZippo;
 import ru.BouH.engine.physics.brush.WorldModeledBrush;
+import ru.BouH.engine.physics.entities.BodyGroup;
 import ru.BouH.engine.physics.entities.Materials;
 import ru.BouH.engine.physics.entities.enemy.EntityManiac;
 import ru.BouH.engine.physics.entities.items.EntityCassetteItem;
@@ -28,9 +29,11 @@ import ru.BouH.engine.physics.entities.prop.WorldDoor;
 import ru.BouH.engine.physics.jb_objects.RigidBodyObject;
 import ru.BouH.engine.physics.liquids.Water;
 import ru.BouH.engine.physics.triggers.Zone;
+import ru.BouH.engine.physics.triggers.zones.SimpleTriggerZone;
 import ru.BouH.engine.physics.world.World;
 import ru.BouH.engine.render.environment.light.PointLight;
 import ru.BouH.engine.render.scene.fabric.render.data.RenderObjectData;
+import ru.BouH.engine.render.scene.gui.InGameGUI;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,8 +43,11 @@ import java.util.Set;
 public class Map01 implements IMapLoader {
     public static EntityManiac entityManiac;
     private final List<Vector3d> randomCassetteSpawnPoints;
+    private int spawnEnemyCd;
 
     public Map01() {
+        this.spawnEnemyCd = 500;
+
         this.randomCassetteSpawnPoints = new ArrayList<Vector3d>() {{
             add(new Vector3d(10.85, -9.91, -17.24));
             add(new Vector3d(-13.95, -9.9, 2.14));
@@ -61,7 +67,14 @@ public class Map01 implements IMapLoader {
 
     @Override
     public void onMapUpdate(World world) {
+        if (this.spawnEnemyCd-- == 0) {
+            Map01.entityManiac = new EntityManiac(world, new Vector3d(-21.0d, -9.7d, -44.0d));
+            Map01.entityManiac.getNavigationAI().setActive(true);
+            Game.getGame().getProxy().addItemInWorlds(entityManiac, ResourceManager.renderDataAssets.enemy);
 
+            Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 5.0f, 4.0f, entityManiac);
+            Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.creepy, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 1.0f, 2.0f, entityManiac);
+        }
     }
 
     @Override
@@ -167,13 +180,6 @@ public class Map01 implements IMapLoader {
 
         PhysPlank plank12 = new PhysPlank(world, RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, true, 5.0d), 1.5d, new Vector3d(8.03f, -9.55f, 2.38f), new Vector3d(0.0d, Math.toRadians(90.0f), 0.0d));
         Game.getGame().getProxy().addItemInWorlds(plank12, ResourceManager.renderDataAssets.plank);
-
-        Map01.entityManiac = new EntityManiac(world, new Vector3d(-25.0d, -9.0d, -25.0d));
-        Map01.entityManiac.getNavigationAI().setActive(true);
-        Game.getGame().getProxy().addItemInWorlds(entityManiac, ResourceManager.renderDataAssets.enemy);
-
-        Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 5.0f, 4.0f, entityManiac);
-        Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.creepy, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 1.0f, 2.0f, entityManiac);
     }
 
     @Override
@@ -214,7 +220,6 @@ public class Map01 implements IMapLoader {
 
     @Override
     public void addTriggers(World world) {
-
     }
 
     @Override

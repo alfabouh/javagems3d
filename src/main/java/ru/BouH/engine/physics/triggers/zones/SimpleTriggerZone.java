@@ -114,6 +114,10 @@ public class SimpleTriggerZone implements ITriggerZone {
         this.btEnteredBodies.addAll(temp);
     }
 
+    public void destroy(World world) {
+        world.removeTriggerZone(this);
+    }
+
     public void onEnter(JBulletEntity entity) {
         this.getTriggerEntering().trigger(entity);
     }
