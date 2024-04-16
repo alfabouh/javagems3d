@@ -51,7 +51,7 @@ public class GameLogging {
             }
         });
 
-        JOptionPane.showOptionDialog(null, msg, GameSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton);
+        JOptionPane.showOptionDialog(null, "[" + Thread.currentThread().getName() + "]: " + msg, GameSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton);
     }
 
     private StringBuilder getStringBuilder(String message, Object[] objects, StackTraceElement[] trace) {

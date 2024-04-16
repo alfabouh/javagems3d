@@ -41,7 +41,7 @@ public class Map01 implements IMapLoader {
     private int spawnEnemyCd;
 
     public Map01() {
-        this.spawnEnemyCd = 500;
+        this.spawnEnemyCd = 600;
 
         this.randomCassetteSpawnPoints = new ArrayList<Vector3d>() {{
             add(new Vector3d(10.85, -9.91, -17.24));
@@ -205,7 +205,6 @@ public class Map01 implements IMapLoader {
         //Graph.GVertex vertex = terrainGraphGenerator.startPos(65.0d, -1.5d, -25.0d);
         //terrainGraphGenerator.generate(vertex);
         //Graph.saveInFile(graph, this.levelInfo().getLevelName());
-
     }
 
     @Override

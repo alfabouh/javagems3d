@@ -1,6 +1,8 @@
 package ru.alfabouh.engine.physics.world.timer;
 
 import org.jetbrains.annotations.NotNull;
+import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.game.logger.GameLogging;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +38,12 @@ public class PhysicThreadManager {
 
     public void initService() {
         this.getExecutorService().execute(() -> {
-            this.getPhysicsTimer().updateTimer(this.getTps());
+            try {
+                this.getPhysicsTimer().updateTimer(this.getTps());
+            } catch (Exception e) {
+                Game.getGame().getLogManager().error(e);
+                GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
+            }
         });
     }
 

@@ -50,15 +50,16 @@ public class GameSound {
 
         this.setVelocity(new Vector3d(0.0d, 0.0d, 0.0d));
         this.setPitch(Math.max(pitch, 0.0f));
-
-        AL10.alSourcef(this.source, AL10.AL_GAIN, Math.max(gain, 0f));
         this.setGain(Math.max(gain, 0.0f));
+
+        AL10.alSourcef(this.source, AL10.AL_GAIN, this.getGain() * Game.getGame().getGameSettings().soundGain.getValue());
 
         SoundManager.checkALonErrors();
     }
 
     public void updateSound() {
         SoundManager.checkALonErrors();
+        AL10.alSourcef(this.source, AL10.AL_GAIN, Math.max(this.getGain() * Game.getGame().getGameSettings().soundGain.getValue(), 0.0f));
         if (this.isPaused() || this.isStopped()) {
             return;
         }
@@ -69,7 +70,7 @@ public class GameSound {
                 return;
             }
         }
-        AL10.alSourcef(this.source, AL10.AL_GAIN, Math.max(this.getGain() * Game.getGame().getGameSettings().soundGain.getValue(), 0.0f));
+
         SoundManager.checkALonErrors();
     }
 

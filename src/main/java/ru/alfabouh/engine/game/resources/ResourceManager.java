@@ -3,6 +3,7 @@ package ru.alfabouh.engine.game.resources;
 import ru.alfabouh.engine.audio.sound.SoundBuffer;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.game.logger.GameLogging;
 import ru.alfabouh.engine.game.resources.assets.*;
 import ru.alfabouh.engine.game.resources.assets.materials.textures.TextureSample;
 import ru.alfabouh.engine.game.resources.assets.models.mesh.MeshDataGroup;
@@ -119,7 +120,14 @@ public class ResourceManager {
         while (assetsIterator.hasNext()) {
             IAssetsLoader assets = assetsIterator.next();
             if (assets.loadMode() == IAssetsLoader.LoadMode.PARALLEL) {
-                Thread thread = new Thread(() -> assets.load(this.getGameCache()));
+                Thread thread = new Thread(() -> {
+                    try {
+                        assets.load(this.getGameCache());
+                    } catch (Exception e) {
+                        Game.getGame().getLogManager().error(e);
+                        GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
+                    }
+                });
                 set.add(thread);
                 assetsIterator.remove();
             }

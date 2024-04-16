@@ -103,15 +103,20 @@ public class Game {
     }
 
     public static void main(String[] args) throws IOException {
-        Game.startScreen = new Game();
-        Game.getGame().getLogManager().log("Loading settings from file...");
-        Game.getGame().getGameSettings().loadOptions();
+        try {
+            Game.startScreen = new Game();
+            Game.getGame().getLogManager().log("Loading settings from file...");
+            Game.getGame().getGameSettings().loadOptions();
 
-        Game.getGame().checkArgs(args);
+            Game.getGame().checkArgs(args);
 
-        Game.getGame().getLogManager().log("Starting game! Date: " + Game.date());
-        Game.getGame().gameSystem = new GameSystem();
-        Game.getGame().getEngineSystem().startSystem();
+            Game.getGame().getLogManager().log("Starting game! Date: " + Game.date());
+            Game.getGame().gameSystem = new GameSystem();
+            Game.getGame().getEngineSystem().startSystem();
+        } catch (Exception e) {
+            Game.getGame().getLogManager().error(e);
+            GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
+        }
     }
 
     public void checkArgs(String[] args) {
