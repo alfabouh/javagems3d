@@ -61,7 +61,11 @@ public class ShaderProgram {
     public boolean link() {
         GL20.glLinkProgram(this.programId);
         if (GL20.glGetProgrami(this.programId, GL20.GL_LINK_STATUS) == 0) {
-            Game.getGame().getLogManager().warn("Could not link Shader " + GL20.glGetShaderInfoLog(this.programId, 4096));
+            String err = GL20.glGetShaderInfoLog(this.programId, 4096);
+            if (err.isEmpty()) {
+                err = "UNKNOWN ERR";
+            }
+            Game.getGame().getLogManager().warn("Could not link shader: " + err);
             return false;
         }
         if (this.vertexShaderId != 0) {
@@ -75,8 +79,11 @@ public class ShaderProgram {
         }
         GL20.glValidateProgram(this.programId);
         if (GL20.glGetProgrami(this.programId, GL20.GL_VALIDATE_STATUS) == 0) {
-            Game.getGame().getLogManager().warn("Could not validate Shader " + GL20.glGetShaderInfoLog(this.programId, 4096));
-            return false;
+            String err = GL20.glGetShaderInfoLog(this.programId, 4096);
+            if (!err.isEmpty()) {
+                Game.getGame().getLogManager().warn("Could not validate shader " + err);
+                return false;
+            }
         }
         return true;
     }

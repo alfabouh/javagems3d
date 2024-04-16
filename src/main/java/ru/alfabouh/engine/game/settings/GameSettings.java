@@ -16,6 +16,7 @@ public class GameSettings {
     public SettingTrueFalse fullScreen;
     public SettingTrueFalse anisotropicFiltering;
     public SettingTrueFalse textureFiltering;
+    public SettingTrueFalse vSync;
 
     public GameSettings() {
         this.settingObjectSet = new HashSet<>();
@@ -23,10 +24,11 @@ public class GameSettings {
         this.optionsFile = new File(Game.getGameFilesFolder().toFile(), "settings.txt");
         this.soundGain = new SettingFloatBar("sound_gain", 1.0f);
         this.msaa = new SettingFloatBar("msaa", 0.0f);
-        this.shadowQuality = new SettingFloatBar("shadowQuality", 3.0f);
+        this.shadowQuality = new SettingFloatBar("shadowQuality", 2.0f);
         this.fullScreen = new SettingTrueFalse("fullscreen", true);
         this.anisotropicFiltering = new SettingTrueFalse("anisotropicFiltering", false);
         this.textureFiltering = new SettingTrueFalse("textureFiltering", false);
+        this.vSync = new SettingTrueFalse("vSync", true);
 
         this.addSetting(this.soundGain);
         this.addSetting(this.msaa);
@@ -34,6 +36,7 @@ public class GameSettings {
         this.addSetting(this.fullScreen);
         this.addSetting(this.anisotropicFiltering);
         this.addSetting(this.textureFiltering);
+        this.addSetting(this.vSync);
     }
 
     public File getOptionsFile() {

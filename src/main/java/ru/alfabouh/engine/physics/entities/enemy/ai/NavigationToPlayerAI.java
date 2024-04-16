@@ -6,6 +6,7 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.joml.Vector3d;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.game.logger.GameLogging;
 import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.graph.pathfind.AStar;
 import ru.alfabouh.engine.inventory.items.ItemRadio;
@@ -41,38 +42,43 @@ public class NavigationToPlayerAI extends NavigationAI {
         this.atomicBoolean = new AtomicBoolean(false);
         this.playerPos = new Vector3d(0.0d);
         Thread seekPathThread = new Thread(() -> {
-            int i = 0;
-            Graph.GVertex randomVertex = world.getGraph() == null ? null : world.getGraph().getRandomVertex();
-            while (Game.getGame().isCurrentMapIsValid()) {
-                try {
-                    if (worldItem.getWorld().getGraph() == null || this.getCurrentSyncVertex() == null || !this.isActive()) {
-                        continue;
-                    }
-                    if (randomVertex == null) {
-                        randomVertex = worldItem.getWorld().getGraph().getRandomVertex();
-                    }
-                    if (this.rageCd > 0) {
-                        this.setSpeed(Math.min(maxSpeed * 1.5d, 0.2d));
-                    } else {
-                        this.setSpeed(!this.getAtomicBoolean().get() ? Math.min(maxSpeed * 2.0d, 0.2d) : maxSpeed);
-                    }
+            try {
+                int i = 0;
+                Graph.GVertex randomVertex = world.getGraph() == null ? null : world.getGraph().getRandomVertex();
+                while (Game.getGame().isCurrentMapIsValid()) {
+                    try {
+                        if (worldItem.getWorld().getGraph() == null || this.getCurrentSyncVertex() == null || !this.isActive()) {
+                            continue;
+                        }
+                        if (randomVertex == null) {
+                            randomVertex = worldItem.getWorld().getGraph().getRandomVertex();
+                        }
+                        if (this.rageCd > 0) {
+                            this.setSpeed(Math.min(maxSpeed * 1.5d, 0.2d));
+                        } else {
+                            this.setSpeed(!this.getAtomicBoolean().get() ? Math.min(maxSpeed * 2.0d, 0.2d) : maxSpeed);
+                        }
 
-                    AStar aStar = new AStar(worldItem.getWorld().getGraph(), this.getCurrentSyncVertex(), this.getAtomicBoolean().get() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : randomVertex);
-                    List<Graph.GVertex> path = aStar.findPath();
-                    this.getQueuePath().clear();
-                    if (path != null) {
-                        this.getQueuePath().addAll(path);
-                    } else {
-                        Game.getGame().getLogManager().warn("Nav pathfind problems!");
+                        AStar aStar = new AStar(worldItem.getWorld().getGraph(), this.getCurrentSyncVertex(), this.getAtomicBoolean().get() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : randomVertex);
+                        List<Graph.GVertex> path = aStar.findPath();
+                        this.getQueuePath().clear();
+                        if (path != null) {
+                            this.getQueuePath().addAll(path);
+                        } else {
+                            Game.getGame().getLogManager().warn("Nav pathfind problems!");
+                        }
+                        if (i++ >= 200 && Game.random.nextBoolean()) {
+                            randomVertex = worldItem.getWorld().getGraph().getRandomVertex();
+                            i = 0;
+                        }
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        throw new GameException(e);
                     }
-                    if (i++ >= 200 && Game.random.nextBoolean()) {
-                        randomVertex = worldItem.getWorld().getGraph().getRandomVertex();
-                        i = 0;
-                    }
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    throw new GameException(e);
                 }
+            } catch (Exception e) {
+                Game.getGame().getLogManager().error(e);
+                GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
             }
         });
         seekPathThread.setDaemon(true);

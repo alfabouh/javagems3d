@@ -162,23 +162,16 @@ float calculate_shadow_no_pcf(vec4 worldPosition, int idx, float bias, float lin
     return calcVSM(idx, shadow_coord, vec2(0.0), bias, linear);
 }
 
-float random(vec4 seed) {
-    float dot_product = dot(seed, vec4(12.9898,78.233,45.164,94.673));
-    return fract(sin(dot_product) * 43758.5453);
-}
-
-float calculate_shadow_poison(vec4 worldPosition, int idx, float bias, float linear) {
+float calculate_shadow_pcf(vec4 worldPosition, int idx, float bias, float linear) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, 0);
-    int samSize = 16;
-    int samBias = 16;
+    int samSize = 8;
 
     for (int i = 0; i < samSize; i++) {
-        int index = int(float(samBias) * random(vec4(worldPosition.xyz * 128.0, i))) % samBias;
-        vec2 offset = samples[index] * texelSize;
+        vec2 offset = samples[i] * texelSize * 0.5;
         shadow += calcVSM(idx, shadow_coord, offset, bias, linear);
     }
 
@@ -207,7 +200,7 @@ vec4 calc_light() {
     bias = clamp(bias, 0.0, 1.0e-5f);
 
     float linear = per_cascade_linear_shadow[cascadeIndex];
-    float sun_shadow = calculate_shadow_poison(out_world_position, cascadeIndex, bias, linear);
+    float sun_shadow = cascadeIndex == 0 ? calculate_shadow_pcf(out_world_position, cascadeIndex, bias, linear) : calculate_shadow_no_pcf(out_world_position, cascadeIndex, bias, linear);
 
     vec4 calcSunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, mv_vertex_pos, normal);
 

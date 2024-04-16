@@ -13,7 +13,7 @@ import ru.alfabouh.engine.render.environment.Environment;
 
 public class GameSystem implements IEngine {
     public static final String ENG_NAME = "Xaelum3d";
-    public static final String ENG_VER = "0.1a";
+    public static final String ENG_VER = "0.11a";
 
     private final ResourceManager resourceManager;
     private final EngineState engineState;
