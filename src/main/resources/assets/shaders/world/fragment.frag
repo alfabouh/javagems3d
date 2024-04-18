@@ -13,37 +13,6 @@ uniform vec3 camera_pos;
 uniform int texturing_code;
 uniform int lighting_code;
 
-const vec3 sampleOffsetDirections[20] = vec3[]
-(
-    vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1),
-    vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
-    vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
-    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
-);
-
-const vec2 samples[16] = vec2[](
-    vec2(0.25, 0.25),
-    vec2(0.5, 0.5),
-    vec2(0.75, 0.75),
-    vec2(1.0, 1.0),
-
-    vec2(-0.25, 0.25),
-    vec2(-0.5, 0.5),
-    vec2(-0.75, 0.75),
-    vec2(-1.0, 1.0),
-
-    vec2(0.25, -0.25),
-    vec2(0.5, -0.5),
-    vec2(0.75, -0.75),
-    vec2(1.0, -1.0),
-
-    vec2(-0.25, -0.25),
-    vec2(-0.5, -0.5),
-    vec2(-0.75, -0.75),
-    vec2(-1.0, -1.0)
-);
-
 const int light_opacity_code = 1 << 2;
 const int light_bright_code = 1 << 3;
 
@@ -52,6 +21,7 @@ const int emissive_code = 1 << 3;
 const int metallic_code = 1 << 4;
 const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
+
 uniform int show_cascades;
 uniform float alpha_discard;
 
@@ -238,8 +208,8 @@ vec4 calc_light() {
         point_light_factor += calc_point_light(p, mv_vertex_pos, normal, at_base, linear, expo, bright) * shadow;
     }
 
-    float prgb = point_light_factor.r + point_light_factor.g + point_light_factor.b;
-    lightFactors += calcSunFactor * clamp(sun_shadow + prgb, 0.0, 1.0);
+    float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 3.0;
+    lightFactors += calcSunFactor * clamp(sun_shadow + brightness, 0.0, 1.0);
     lightFactors += point_light_factor;
     lightFactors += vec4(vec3(sunColorR, sunColorG, sunColorB) * ambient, 0.0);
     return lightFactors;

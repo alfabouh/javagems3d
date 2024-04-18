@@ -89,6 +89,40 @@ public class Scene implements IScene {
         return Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode();
     }
 
+    public static void checkGLErrors() {
+        int errorCode;
+        while ((errorCode = GL11.glGetError()) != GL11.GL_NO_ERROR) {
+            String error;
+            switch (errorCode) {
+                case GL11.GL_INVALID_ENUM:
+                    error = "INVALID_ENUM";
+                    break;
+                case GL11.GL_INVALID_VALUE:
+                    error = "INVALID_VALUE";
+                    break;
+                case GL11.GL_INVALID_OPERATION:
+                    error = "INVALID_OPERATION";
+                    break;
+                case GL11.GL_STACK_OVERFLOW:
+                    error = "STACK_OVERFLOW";
+                    break;
+                case GL11.GL_STACK_UNDERFLOW:
+                    error = "STACK_UNDERFLOW";
+                    break;
+                case GL11.GL_OUT_OF_MEMORY:
+                    error = "OUT_OF_MEMORY";
+                    break;
+                case GL30.GL_INVALID_FRAMEBUFFER_OPERATION:
+                    error = "INVALID_FRAMEBUFFER_OPERATION";
+                    break;
+                default:
+                    error = "UNKNOWN";
+                    break;
+            }
+            System.out.println("GL ERROR: " + error);
+        }
+    }
+
     public void setDebugMode(int a) {
         this.getSceneRender().CURRENT_DEBUG_MODE = a;
         if (this.getSceneRender().CURRENT_DEBUG_MODE > 1) {
@@ -353,10 +387,10 @@ public class Scene implements IScene {
             this.mixFbo.clearFBO();
             this.fboPsx.clearFBO();
 
-            this.fboPsx.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, false, GL30.GL_RGBA, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
-            this.fboBlur.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0}, false, false, GL30.GL_RGB, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-            this.sceneFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, true, true, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-            this.mixFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, false, false, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+            this.fboPsx.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL30.GL_RGBA, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+            this.fboBlur.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0}, false, GL30.GL_RGB, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+            this.sceneFbo.createFrameBuffer2DTextureMSAA(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, GL43.GL_RGB16F);
+            this.mixFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, false, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         }
 
         public void onWindowResize(Vector2i dim) {
@@ -396,12 +430,9 @@ public class Scene implements IScene {
             this.renderSceneInFbo(partialTicks, mainGroup);
             GL30.glDisable(GL30.GL_DEPTH_TEST);
 
-            this.mixFbo.bindFBO();
             this.sceneFbo.copyFBOtoFBO(this.mixFbo.getFrameBufferId(), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, this.getWindowDimensions());
-            this.mixFbo.unBindFBO();
 
             this.blurShader(partialTicks, model);
-
             if (this.getCurrentDebugMode() == 0) {
                 GL30.glEnable(GL30.GL_BLEND);
                 GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
@@ -553,7 +584,7 @@ public class Scene implements IScene {
             if (this.getCurrentDebugMode() == 1) {
                 Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(400.0f, 300.0f), 0);
                 ResourceManager.shaderAssets.gui_image.bind();
-                this.getBlurShader().performUniform("texture_sampler", 0);
+                ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 this.mixFbo.bindTexture(1);
                 ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);

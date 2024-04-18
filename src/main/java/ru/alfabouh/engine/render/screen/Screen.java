@@ -155,7 +155,9 @@ public class Screen {
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL20.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
+        if (Game.DEBUG_MODE) {
+            GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
+        }
         this.window = new Window(new Window.WindowProperties(Screen.defaultW, Screen.defaultH, Game.getGame().toString()));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
@@ -337,6 +339,7 @@ public class Screen {
         if (Game.getGame().isValidPlayer()) {
             SoundListener.updateOrientationAndPosition(TransformationManager.instance.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
         }
+        Scene.checkGLErrors();
     }
 
     public void zeroRenderTick() {
