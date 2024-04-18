@@ -36,7 +36,7 @@ public class ShadowScene {
     public ShadowScene(Scene scene) {
         this.scene = scene;
         this.FBOTexture2DProgram = new FBOTexture2DProgram(true, false);
-        this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, false, GL43.GL_RG32F, GL30.GL_RG, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL43.GL_RG32F, GL30.GL_RG, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.initCascades();
         this.initPointLightShadows();
     }
@@ -65,7 +65,7 @@ public class ShadowScene {
         Matrix4d projection = TransformationManager.instance.getProjectionMatrix();
         Vector4d sunPos = new Vector4d(this.getScene().getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
 
-        float[] cascadeSplitLambda = new float[]{0.85f, 0.7f, 0.95f};
+        float[] cascadeSplitLambda = new float[]{0.5f, 0.5f, 0.5f};
         float[] cascadeSplits = new float[ShadowScene.CASCADE_SPLITS];
 
         float nearClip = this.nearCascadeClip();
