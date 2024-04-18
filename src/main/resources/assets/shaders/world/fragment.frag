@@ -228,7 +228,7 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     vec3 from_light = light_dir;
     vec3 reflectionF = normalize(from_light + camDir);
     specularF = max(dot(new_normal, reflectionF), 0.);
-    specularF = pow(specularF, 12.0);
+    specularF = pow(specularF, 8.0);
     specularC = brightness * specularF * vec4(colors, 1.);
 
     vec4 specularMap = (texturing_code & specular_code) != 0 ? texture(specular_map, texture_coordinates) : vec4(1.);
