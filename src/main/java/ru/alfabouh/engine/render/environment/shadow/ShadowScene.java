@@ -1,14 +1,13 @@
 package ru.alfabouh.engine.render.environment.shadow;
 
-import org.joml.Matrix4d;
-import org.joml.Vector2i;
-import org.joml.Vector3d;
-import org.joml.Vector4d;
+import org.joml.*;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
+import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
+import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.math.MathHelper;
@@ -19,13 +18,14 @@ import ru.alfabouh.engine.render.scene.programs.FBOTexture2DProgram;
 import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ShadowScene {
     public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
-    public static final int SHADOW_SUN_MAP_SIZE = (int) (4096 * ShadowScene.qualityMultiplier());
+    public static final int SHADOW_SUN_MAP_SIZE = (int) (2048 * ShadowScene.qualityMultiplier());
     public static final int SHADOW_PLIGHT_MAP_SIZE = (int) (1024 * ShadowScene.qualityMultiplier());
     public static final int CASCADE_SPLITS = 3;
     private final Scene scene;
@@ -36,7 +36,7 @@ public class ShadowScene {
     public ShadowScene(Scene scene) {
         this.scene = scene;
         this.FBOTexture2DProgram = new FBOTexture2DProgram(true, false);
-        this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, false, GL43.GL_RG32F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, false, GL43.GL_RG32F, GL30.GL_RG, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.initCascades();
         this.initPointLightShadows();
     }
@@ -199,9 +199,28 @@ public class ShadowScene {
                 Scene.renderModel(model, GL30.GL_TRIANGLES);
             }
         }
-
         this.getFrameBufferObjectProgram().unBindFBO();
         this.getSunShadowShader().unBind();
+
+        /*
+        ShaderManager blurShader = ResourceManager.shaderAssets.blur13;
+        Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(ShadowScene.SHADOW_SUN_MAP_SIZE), 0);
+        blurShader.bind();
+        blurShader.performUniform("resolution", new Vector2f(Game.getGame().getScreen().getDimensions()));
+        this.getFrameBufferObjectProgram().bindFBO();
+        for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+            this.getFrameBufferObjectProgram().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.getFrameBufferObjectProgram().bindTexture(0);
+            blurShader.performUniform("texture_sampler", 0);
+            blurShader.performUniform("direction", new Vector2f(1.0f, 1.0f));
+            blurShader.getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
+        }
+        this.getFrameBufferObjectProgram().unBindFBO();
+        blurShader.unBind();
+        model.clean();
+         */
     }
 
     private void pointLightsScene(List<Model<Format3D>> modelList) {

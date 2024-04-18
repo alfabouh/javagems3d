@@ -173,12 +173,14 @@ public class Screen {
         if (Game.getGame().getGameSettings().fullScreen.isFlag()) {
             this.makeFullScreen();
         }
+        this.disableVSync();
         return true;
     }
 
     private void checkVSync() {
         if (Game.getGame().getGameSettings().vSync.isFlag()) {
-            this.enableVSync();
+            //this.enableVSync();
+            this.disableVSync();
         } else {
             this.disableVSync();
         }

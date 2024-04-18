@@ -6,5 +6,5 @@ void main()
     float dx = dFdx(d);
     float dy = dFdy(d);
     float moment2 = d * d + 0.25 * (dx * dx + dy * dy);
-    frag_color0 = vec4(d, moment2, 0.0, 0.0);
+    frag_color0 = vec4(d, moment2, d, 0.0);
 }

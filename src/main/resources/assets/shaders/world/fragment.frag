@@ -179,44 +179,29 @@ void main()
     frag_color.rgb *= (show_cascades == 1) ? cascmask : vec3(1.0);
     frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
 
-    float brightness = frag_color.r + frag_color.g + frag_color.b;
-    bright_color = ((lighting_code & light_bright_code) != 0 || brightness >= 8.) ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
+    float brightness = dot(frag_color.rgb, vec3(0.2126, 0.7152, 0.0722));
+    bright_color = brightness > 2.5 ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
 }
 
-float per_cascade_bias_shadow[3] = float[](1.0e-6f, 1.0e-6f, 1.0e-6f);
-float per_cascade_linear_shadow[3] = float[](0.75, 0.75, 0.75);
-
-float calcVSM(int idx, vec4 shadow_coord, vec2 offset, float bias, float linear) {
-    vec2 moments = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord.xy + offset).rg;
-    float variance = moments.y - (moments.x * moments.x);
-
-    variance = max(variance, bias);
-    float d = shadow_coord.z - moments.x;
-    float shadowPCT = smoothstep(linear, 1.0, variance / (variance + d * d));
-
-    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x + per_cascade_bias_shadow[idx] ? 1.0 : shadowPCT;
+float vsmFixLightBleed(float pMax, float amount)
+{
+    return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
 }
 
-float calculate_shadow_no_pcf(vec4 worldPosition, int idx, float bias, float linear) {
+float calcVSM(int idx, vec4 shadow_coord, float bias) {
+    vec4 tex = shadow_coord / shadow_coord.w;
+    vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, tex.xy);
+    float mu = vsm.x;
+    float s2 = max(vsm.y - mu * mu, bias);
+    float pmax = s2 / (s2 + (tex.z - mu) * (tex.z - mu));
+
+    return tex.z >= vsm.x ? vsmFixLightBleed(pmax, 0.7) : 1.0;
+}
+
+float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    return calcVSM(idx, shadow_coord, vec2(0.0), bias, linear);
-}
-
-float calculate_shadow_pcf(vec4 worldPosition, int idx, float bias, float linear) {
-    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
-    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, 0);
-    int samSize = 8;
-
-    for (int i = 0; i < samSize; i++) {
-        vec2 offset = samples[i] * texelSize * 0.5;
-        shadow += calcVSM(idx, shadow_coord, offset, bias, linear);
-    }
-
-    return shadow / float(samSize);
+    return calcVSM(idx, shadow_coord, bias);
 }
 
 float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos)
@@ -224,7 +209,7 @@ float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 
     vec3 fragToLight = fragPosition - lightPos;
     vec3 pos = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
 
-    float bias = max(0.05 * (1.0 - dot(mv_vertex_normal, pos)), 0.005);
+    float bias = 0.05;
     float currentDepth = length(fragToLight);
     float closestDepth = texture(cubemap, fragToLight).r;
     closestDepth *= far_plane;
@@ -236,12 +221,7 @@ vec4 calc_light() {
     vec3 normal = normalize(mv_vertex_normal);
     vec3 sunPos = normalize(vec3(sunX, sunY, sunZ));
     int cascadeIndex = int(mv_vertex_pos.z < cascade_shadow[0].split_distance) + int(mv_vertex_pos.z < cascade_shadow[1].split_distance);
-    float bias = per_cascade_bias_shadow[cascadeIndex];
-    bias *= tan(acos(dot(normal, sunPos)));
-    bias = clamp(bias, 0.0, 1.0e-5f);
-
-    float linear = per_cascade_linear_shadow[cascadeIndex];
-    float sun_shadow = cascadeIndex == 0 ? calculate_shadow_pcf(out_world_position, cascadeIndex, bias, linear) : calculate_shadow_no_pcf(out_world_position, cascadeIndex, bias, linear);
+    float sun_shadow = calculate_shadow_vsm(out_world_position, cascadeIndex, 1.0e-7f);
 
     vec4 calcSunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, mv_vertex_pos, normal);
 
