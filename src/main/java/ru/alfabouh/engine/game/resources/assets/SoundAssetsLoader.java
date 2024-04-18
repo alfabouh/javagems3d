@@ -17,12 +17,10 @@ public class SoundAssetsLoader implements IAssetsLoader {
     public SoundBuffer wood_break;
     public SoundBuffer turn;
     public SoundBuffer soda;
-    public SoundBuffer horror;
     public SoundBuffer horror2;
     public SoundBuffer button;
     public SoundBuffer noise;
     public SoundBuffer crackling;
-    public SoundBuffer creepy;
     public SoundBuffer drips;
     public SoundBuffer meat;
     public SoundBuffer victory;
@@ -47,11 +45,9 @@ public class SoundAssetsLoader implements IAssetsLoader {
         this.door = ResourceManager.createSoundBuffer("door.wav", AL10.AL_FORMAT_MONO16);
         this.meat = ResourceManager.createSoundBuffer("meat.wav", AL10.AL_FORMAT_MONO16);
         this.noise = ResourceManager.createSoundBuffer("noise.wav", AL10.AL_FORMAT_MONO16);
-        this.horror = ResourceManager.createSoundBuffer("horror.wav", AL10.AL_FORMAT_MONO16);
         this.horror2 = ResourceManager.createSoundBuffer("horror2.wav", AL10.AL_FORMAT_MONO16);
         this.victory = ResourceManager.createSoundBuffer("victory.wav", AL10.AL_FORMAT_MONO16);
         this.crackling = ResourceManager.createSoundBuffer("crackling.wav", AL10.AL_FORMAT_MONO16);
-        this.creepy = ResourceManager.createSoundBuffer("creepy.wav", AL10.AL_FORMAT_MONO16);
         this.wood_break = ResourceManager.createSoundBuffer("wood_break.wav", AL10.AL_FORMAT_MONO16);
         this.drips = ResourceManager.createSoundBuffer("drips.wav", AL10.AL_FORMAT_MONO16);
         this.button = ResourceManager.createSoundBuffer("button.wav", AL10.AL_FORMAT_MONO16);

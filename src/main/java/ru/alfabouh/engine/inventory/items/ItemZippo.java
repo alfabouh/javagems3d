@@ -53,7 +53,7 @@ public class ItemZippo extends InventoryItem {
     public void onAddInInventory(IHasInventory hasInventory) {
         super.onAddInInventory(hasInventory);
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3d(1.0d, 0.475f, 0.375f));
-        pointLight.setBrightness(7.5f);
+        pointLight.setBrightness(6.0f);
         Game.getGame().getProxy().addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
     }

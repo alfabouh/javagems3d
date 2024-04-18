@@ -17,7 +17,12 @@ public class GameCache {
 
     public void cleanCache() {
         this.cache.forEach((o, e) -> e.onCleaningCache(this));
+        this.cache.clear();
         Game.getGame().getLogManager().log("Cleaned cache");
+    }
+
+    public Map<String, ICached> getCache() {
+        return this.cache;
     }
 
     public void addObjectInBuffer(CacheResource cacheResource) {

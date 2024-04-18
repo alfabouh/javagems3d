@@ -18,44 +18,47 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class TextureSample implements IImageSample {
-    private final ByteBuffer imageBuffer;
-    private final Vector2d scaling;
+    private ByteBuffer imageBuffer;
     private int width;
     private int height;
     private int textureId;
-    private boolean isValid;
+    private final String name;
+    private final boolean interpolate;
+    private final int wrapping;
 
     private TextureSample(boolean inJar, String fullPath, boolean interpolate, int wrapping) {
-        this.isValid = true;
-        this.scaling = new Vector2d(1.0d);
-        Game.getGame().getLogManager().log("Loading " + fullPath);
+        this.name = fullPath;
+        this.interpolate = interpolate;
+        this.wrapping = wrapping;
+        Game.getGame().getLogManager().log("Loading " + this.getName());
         if (inJar) {
-            try (InputStream inputStream = Game.loadFileJar(fullPath)) {
-                this.imageBuffer = this.readTextureFromMemory(fullPath, inputStream);
+            try (InputStream inputStream = Game.loadFileJar(this.getName())) {
+                this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
                 if (this.imageBuffer != null) {
-                    this.createTexture(fullPath, interpolate, wrapping);
+                    this.createTexture();
                 }
             } catch (IOException e) {
                 throw new GameException(e);
             }
         } else {
-            this.imageBuffer = this.readTextureOutsideJar(fullPath);
+            this.imageBuffer = this.readTextureOutsideJar(this.getName());
             if (this.imageBuffer != null) {
-                this.createTexture(fullPath, interpolate, wrapping);
+                this.createTexture();
             }
         }
     }
 
     private TextureSample(String id, InputStream inputStream, boolean interpolate, int wrapping) {
-        this.isValid = true;
-        this.scaling = new Vector2d(1.0d);
+        this.name = id + "_inputStream";
+        this.interpolate = interpolate;
+        this.wrapping = wrapping;
         if (inputStream == null) {
             Game.getGame().getLogManager().warn("Error, while loading texture " + id + " InputStream is NULL");
             this.imageBuffer = null;
         } else {
             this.imageBuffer = this.readTextureFromMemory(id, inputStream);
             if (this.imageBuffer != null) {
-                this.createTexture(id, interpolate, wrapping);
+                this.createTexture();
             }
         }
     }
@@ -67,6 +70,8 @@ public class TextureSample implements IImageSample {
         TextureSample textureSample = new TextureSample(false, fullPath, interpolate, wrapping);
         if (textureSample.isValid()) {
             gameCache.addObjectInBuffer(fullPath, textureSample);
+        } else {
+            throw new GameException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
     }
@@ -78,8 +83,22 @@ public class TextureSample implements IImageSample {
         TextureSample textureSample = new TextureSample(true, fullPath, interpolate, wrapping);
         if (textureSample.isValid()) {
             gameCache.addObjectInBuffer(fullPath, textureSample);
+        } else {
+            throw new GameException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
+    }
+
+    public int getWrapping() {
+        return this.wrapping;
+    }
+
+    public boolean isInterpolate() {
+        return this.interpolate;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
@@ -101,7 +120,6 @@ public class TextureSample implements IImageSample {
             if (imageBuffer == null) {
                 Game.getGame().getLogManager().warn("Couldn't create texture " + name);
                 Game.getGame().getLogManager().bigWarn(STBImage.stbi_failure_reason());
-                this.isValid = false;
             } else {
                 this.width = width.get();
                 this.height = height.get();
@@ -123,7 +141,6 @@ public class TextureSample implements IImageSample {
             if (imageBuffer == null) {
                 Game.getGame().getLogManager().warn("Couldn't create texture " + path);
                 Game.getGame().getLogManager().bigWarn(STBImage.stbi_failure_reason());
-                this.isValid = false;
             } else {
                 this.width = width.get();
                 this.height = height.get();
@@ -133,22 +150,31 @@ public class TextureSample implements IImageSample {
         return null;
     }
 
-    private void createTexture(String name, boolean interpolate, int wrapping) {
+    private void createTexture() {
+        boolean linear = Game.getGame().getGameSettings().texturesFiltering.getValue() == 1;
+        boolean anisotropic = Game.getGame().getGameSettings().anisotropic.getValue() == 1;
+
         this.textureId = GL20.glGenTextures();
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
         GL20.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
         GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA, this.getWidth(), this.getHeight(), 0, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, this.getImageBuffer());
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, (Game.getGame().getGameSettings().textureFiltering.isFlag() && interpolate) ? GL30.GL_LINEAR_MIPMAP_LINEAR : GL30.GL_NEAREST);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, (Game.getGame().getGameSettings().textureFiltering.isFlag() && interpolate) ? GL30.GL_LINEAR : GL30.GL_NEAREST);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 11);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, wrapping);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, wrapping);
-        if (Game.getGame().getGameSettings().anisotropicFiltering.isFlag()) {
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, (linear && this.isInterpolate()) ? GL30.GL_LINEAR_MIPMAP_LINEAR : GL30.GL_NEAREST_MIPMAP_NEAREST);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, (linear && this.isInterpolate()) ? GL30.GL_LINEAR : GL30.GL_NEAREST);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_BASE_LEVEL, 0);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 6);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, this.getWrapping());
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, this.getWrapping());
+        if (anisotropic) {
             GL30.glTexParameterf(GL30.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL30.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
         }
         GL30.glGenerateMipmap(GL20.GL_TEXTURE_2D);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
-        Game.getGame().getLogManager().log("Texture " + name + " successfully created!");
+        Game.getGame().getLogManager().log("Texture " + this.getName() + " successfully created!");
+    }
+
+    public void recreateTexture() {
+        GL30.glDeleteTextures(this.getTextureId());
+        this.createTexture();
     }
 
     public int getHeight() {
@@ -166,27 +192,18 @@ public class TextureSample implements IImageSample {
     public void clear() {
         if (this.isValid()) {
             STBImage.stbi_image_free(this.getImageBuffer());
+            this.imageBuffer = null;
         }
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
         GL30.glDeleteTextures(this.getTextureId());
-        this.isValid = false;
     }
 
     public boolean isValid() {
-        return this.isValid && this.getImageBuffer() != null;
+        return this.getImageBuffer() != null;
     }
 
     public ByteBuffer getImageBuffer() {
         return this.imageBuffer;
-    }
-
-    public void setScaling(Vector2d vector2d) {
-        this.scaling.set(vector2d);
-    }
-
-    @Override
-    public Vector2d scaling() {
-        return new Vector2d(this.scaling);
     }
 
     public void bindTexture() {

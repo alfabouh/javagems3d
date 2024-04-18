@@ -2,6 +2,8 @@ package ru.alfabouh.engine.render.scene.gui.ui;
 
 import org.joml.Vector2f;
 import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.game.controller.ControllerDispatcher;
+import ru.alfabouh.engine.game.controller.input.IController;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.render.scene.gui.font.GuiFont;
 import ru.alfabouh.engine.render.screen.Screen;
@@ -46,4 +48,8 @@ public interface BasicUI {
     boolean isVisible();
 
     ShaderManager getCurrentShader();
+
+    default IController getController() {
+        return Game.getGame().getScreen().getControllerDispatcher().getCurrentController();
+    }
 }

@@ -10,7 +10,8 @@ import ru.alfabouh.engine.game.controller.input.MouseKeyboardController;
 
 public abstract class InteractiveUI implements BasicUI {
     private final boolean isVisible;
-    private int mouseState;
+    private boolean isMLKPressedOutsideButton;
+    private boolean wasClickedButton;
     private Vector3f position;
     private Vector2f size;
     private boolean selected;
@@ -18,7 +19,8 @@ public abstract class InteractiveUI implements BasicUI {
     public InteractiveUI(Vector3f position, Vector2f size) {
         this.position = position;
         this.size = size;
-        this.mouseState = -1;
+        this.isMLKPressedOutsideButton = false;
+        this.wasClickedButton = false;
         this.isVisible = true;
         this.selected = false;
     }
@@ -36,39 +38,48 @@ public abstract class InteractiveUI implements BasicUI {
     }
 
     protected void handleInput() {
-        IController controller = Game.getGame().getScreen().getControllerDispatcher().getCurrentController();
+        IController controller = this.getController();
         if (controller instanceof MouseKeyboardController) {
             MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controller;
+            boolean flag = mouseKeyboardController.getMouse().isLeftKeyPressed();
+            if (!flag) {
+                this.isMLKPressedOutsideButton = false;
+            }
+
             Vector2d mouseCoordinates = new Vector2d(mouseKeyboardController.getMouse().getCursorCoordinates()[0], mouseKeyboardController.getMouse().getCursorCoordinates()[1]);
             if (mouseCoordinates.x >= this.getPosition().x && mouseCoordinates.x <= this.getPosition().x + this.getSize().x && mouseCoordinates.y >= this.getPosition().y && mouseCoordinates.y <= this.getPosition().y + this.getSize().y) {
-                if (this.mouseState == -1) {
-                    this.selected = true;
-                    this.onMouseEntered();
-                }
-                this.mouseState = 0;
+                this.selected = true;
+                this.onMouseEntered();
+                this.onMouseInside(new Vector2d(mouseCoordinates));
             } else {
-                if (this.mouseState == -1) {
-                    this.selected = false;
+                if (flag) {
+                    this.isMLKPressedOutsideButton = true;
                 }
-                if (this.mouseState == 0) {
+                if (this.selected) {
+                    this.selected = false;
                     this.onMouseLeft();
                 }
             }
-            if (this.mouseState == 0) {
-                if (mouseKeyboardController.getMouse().isLeftKeyPressed()) {
+
+            if (flag) {
+                if (!this.isMLKPressedOutsideButton || (this.wasClickedButton && this.handleClickOutsideBorder())) {
                     this.onClicked(new Vector2d(mouseCoordinates));
+                    this.wasClickedButton = true;
                     if (this.interruptMouseAfterClick()) {
                         ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptLMB();
                         ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptRMB();
                         ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptMMB();
                     }
-                } else {
-                    this.onUnClicked(new Vector2d(mouseCoordinates));
-                    this.mouseState = -1;
                 }
-                this.onMouseInside(new Vector2d(mouseCoordinates));
+            } else if (this.wasClickedButton) {
+                this.onUnClicked(new Vector2d(mouseCoordinates));
+                this.wasClickedButton = false;
             }
         }
+    }
+
+    protected boolean handleClickOutsideBorder() {
+        return false;
     }
 
     protected boolean interruptMouseAfterClick() {

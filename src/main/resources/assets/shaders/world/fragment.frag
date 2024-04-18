@@ -186,6 +186,24 @@ float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 
     return currentDepth - bias > closestDepth ? 0.0 : 1.0;
 }
 
+/*
+float calcVSM(samplerCube cubemap, vec3 fragToLight, float bias) {
+    vec4 vsm = texture(cubemap, fragToLight);
+    float mu = vsm.x;
+    float s2 = max(vsm.y - mu * mu, bias);
+    float pmax = s2 / (s2 + (length(fragToLight) - mu) * (length(fragToLight) - mu));
+
+    return length(fragToLight) >= mu ? vsmFixLightBleed(pmax, 0.7) : 1.0;
+}
+
+float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos) {
+    vec3 fragToLight = normalize(fragPosition - lightPos);
+    float bias = 0.05;
+
+    return calcVSM(cubemap, fragToLight, bias);
+}
+*/
+
 vec4 calc_light() {
     vec4 lightFactors = vec4(0.);
     vec3 normal = normalize(mv_vertex_normal);
@@ -228,7 +246,7 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     vec3 from_light = light_dir;
     vec3 reflectionF = normalize(from_light + camDir);
     specularF = max(dot(new_normal, reflectionF), 0.);
-    specularF = pow(specularF, 12.0);
+    specularF = pow(specularF, 8.0);
     specularC = brightness * specularF * vec4(colors, 1.);
 
     vec4 specularMap = (texturing_code & specular_code) != 0 ? texture(specular_map, texture_coordinates) : vec4(1.);

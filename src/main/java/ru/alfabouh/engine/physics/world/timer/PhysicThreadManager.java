@@ -13,13 +13,12 @@ public class PhysicThreadManager {
     public static final Object locker = new Object();
     public static final int TICKS_PER_SECOND = 50;
     public static final int PHYS_THREADS = 1;
-    private final ExecutorService executorService;
+    private Thread thread;
     private final PhysicsTimer physicsTimer;
     private final int tps;
 
     public PhysicThreadManager(int tps) {
         this.tps = tps;
-        this.executorService = Executors.newFixedThreadPool(PhysicThreadManager.PHYS_THREADS, new GamePhysicsThreadFactory("physics"));
         this.physicsTimer = new PhysicsTimer();
     }
 
@@ -31,13 +30,8 @@ public class PhysicThreadManager {
         return 1000L / TPS;
     }
 
-    public boolean checkActivePhysics() {
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) this.getExecutorService();
-        return executor.getActiveCount() > 0;
-    }
-
     public void initService() {
-        this.getExecutorService().execute(() -> {
+        this.thread = new Thread(() -> {
             try {
                 this.getPhysicsTimer().updateTimer(this.getTps());
             } catch (Exception e) {
@@ -45,10 +39,12 @@ public class PhysicThreadManager {
                 GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
             }
         });
+        this.thread.setName("physics");
+        this.thread.start();
     }
 
-    public void destroy() {
-        this.getExecutorService().shutdown();
+    public Thread getThread() {
+        return this.thread;
     }
 
     public int getTps() {
@@ -57,24 +53,5 @@ public class PhysicThreadManager {
 
     public final PhysicsTimer getPhysicsTimer() {
         return this.physicsTimer;
-    }
-
-    public final ExecutorService getExecutorService() {
-        return this.executorService;
-    }
-
-    private static class GamePhysicsThreadFactory implements ThreadFactory {
-        private final String threadName;
-
-        public GamePhysicsThreadFactory(String threadName) {
-            this.threadName = threadName;
-        }
-
-        @Override
-        public Thread newThread(@NotNull Runnable r) {
-            Thread thread = new Thread(r);
-            thread.setName(this.threadName);
-            return thread;
-        }
     }
 }

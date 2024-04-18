@@ -277,7 +277,6 @@ public final class Mesh {
     }
 
     public void clean() {
-        GL30.glDisableVertexAttribArray(0);
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glDeleteBuffers(this.getIndexVbo());
         GL30.glDeleteBuffers(this.getPositionVbo());

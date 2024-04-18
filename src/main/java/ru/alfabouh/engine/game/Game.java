@@ -7,6 +7,7 @@ import ru.alfabouh.engine.game.logger.GameLogging;
 import ru.alfabouh.engine.game.map.loader.IMapLoader;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.settings.GameSettings;
+import ru.alfabouh.engine.game.synchronizing.SyncManger;
 import ru.alfabouh.engine.physics.entities.player.IPlayer;
 import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
@@ -38,8 +39,10 @@ public class Game {
     private GameSystem gameSystem;
     private final GameSettings gameSettings;
     private boolean shouldBeClosed;
+    private final String[] startArgs;
 
-    private Game() throws IOException {
+    private Game(String[] startArgs) throws IOException {
+        this.startArgs = startArgs;
         this.logManager = new GameLogging();
         Game.rngSeed = Game.systemTime();
         Game.random = new Random(Game.rngSeed);
@@ -55,6 +58,10 @@ public class Game {
         }
 
         this.gameSettings = new GameSettings();
+    }
+
+    public String[] getStartArgs() {
+        return this.startArgs;
     }
 
     public static String date() {
@@ -103,13 +110,15 @@ public class Game {
     }
 
     public static void main(String[] args) throws IOException {
+        Game.startScreen = new Game(args);
+        Game.start();
+    }
+
+    private static void start() {
         try {
-            Game.startScreen = new Game();
             Game.getGame().getLogManager().log("Loading settings from file...");
             Game.getGame().getGameSettings().loadOptions();
-
-            Game.getGame().checkArgs(args);
-
+            Game.getGame().checkArgs(Game.getGame().getStartArgs());
             Game.getGame().getLogManager().log("Starting game! Date: " + Game.date());
             Game.getGame().gameSystem = new GameSystem();
             Game.getGame().getEngineSystem().startSystem();
@@ -130,7 +139,7 @@ public class Game {
 
     public static Path getGameFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = ".xaetrix3d//" + Game.GAME_NAME.toLowerCase();
+        String folderPath = "." + GameSystem.ENG_NAME.toLowerCase() + "//" + Game.GAME_NAME.toLowerCase();
         return Paths.get(appdataPath, folderPath);
     }
 
@@ -195,10 +204,10 @@ public class Game {
             Game.getGame().getScreen().getScene().requestDestroyMap();
             return;
         }
-        Game.getGame().showMainMenu();
         Game.getGame().getScreen().getScene().setRenderCamera(null);
         Game.getGame().getScreen().getWindow().setInFocus(false);
         this.getEngineSystem().destroyMap();
+        Game.getGame().showMainMenu();
     }
 
     public ResourceManager getResourceManager() {
@@ -209,8 +218,12 @@ public class Game {
         return this.gameSystem;
     }
 
-    public void destroyGame() {
+    public synchronized void destroyGame() {
         Game.getGame().shouldBeClosed = true;
+        SyncManger.freeAll();
+        synchronized (PhysicThreadManager.locker) {
+            PhysicThreadManager.locker.notifyAll();
+        }
     }
 
     @SuppressWarnings("all")

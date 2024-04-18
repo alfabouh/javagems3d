@@ -1,8 +1,10 @@
 package ru.alfabouh.engine.audio.sound;
 
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC;
 import ru.alfabouh.engine.audio.SoundManager;
 import ru.alfabouh.engine.audio.sound.wave.WaveData;
+import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.game.resources.cache.GameCache;
 import ru.alfabouh.engine.game.resources.cache.ICached;
@@ -60,5 +62,6 @@ public class SoundBuffer implements ICached {
     @Override
     public void onCleaningCache(GameCache gameCache) {
         AL10.alDeleteBuffers(this.getBuffer());
+        SoundManager.checkALonErrors();
     }
 }

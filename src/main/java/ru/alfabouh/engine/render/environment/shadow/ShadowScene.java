@@ -25,20 +25,32 @@ import java.util.stream.Collectors;
 
 public class ShadowScene {
     public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
-    public static final int SHADOW_SUN_MAP_SIZE = (int) (2048 * ShadowScene.qualityMultiplier());
-    public static final int SHADOW_PLIGHT_MAP_SIZE = (int) (1024 * ShadowScene.qualityMultiplier());
     public static final int CASCADE_SPLITS = 3;
     private final Scene scene;
+    private Vector2i shadowDimensions;
     private final FBOTexture2DProgram FBOTexture2DProgram;
     private List<CascadeShadow> cascadeShadows;
     private List<PointLightShadow> pointLightShadows;
 
     public ShadowScene(Scene scene) {
         this.scene = scene;
-        this.FBOTexture2DProgram = new FBOTexture2DProgram(true, false);
-        this.FBOTexture2DProgram.createFrameBuffer2DTexture(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL43.GL_RG32F, GL30.GL_RG, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.FBOTexture2DProgram = new FBOTexture2DProgram(true);
         this.initCascades();
         this.initPointLightShadows();
+
+        this.createFBO();
+    }
+
+    public void createFBO() {
+        this.shadowDimensions = new Vector2i((int) (2048 * ShadowScene.qualityMultiplier()));
+
+        this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
+        this.FBOTexture2DProgram.clearFBO();
+        this.FBOTexture2DProgram.createFrameBuffer2DTexture(this.getShadowDim(), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL43.GL_RG32F, GL30.GL_RG, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+    }
+
+    private Vector2i getShadowDim() {
+        return this.shadowDimensions;
     }
 
     private static float qualityMultiplier() {
@@ -61,6 +73,8 @@ public class ShadowScene {
     }
 
     private void updateCascadeShadows(List<CascadeShadow> cascadeShadows) {
+        final int dimensions = this.getShadowDim().x;
+
         Matrix4d view = TransformationManager.instance.getMainCameraViewMatrix();
         Matrix4d projection = TransformationManager.instance.getProjectionMatrix();
         Vector4d sunPos = new Vector4d(this.getScene().getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
@@ -140,12 +154,12 @@ public class ShadowScene {
             Matrix4d shadowMatrix = new Matrix4d(lightOrthoMatrix.mul(lightViewMatrix));
             Vector4d shadowOrigin = new Vector4d(0.0d, 0.0d, 0.0d, 1.0d);
             shadowOrigin.mul(shadowMatrix, shadowOrigin);
-            shadowOrigin.mul(ShadowScene.SHADOW_SUN_MAP_SIZE).div(2.0f);
+            shadowOrigin.mul(dimensions).div(2.0f);
 
             Vector4d roundedOrigin = new Vector4d();
             shadowOrigin.round(roundedOrigin);
             Vector4d roundOffset = new Vector4d(roundedOrigin).sub(shadowOrigin);
-            roundOffset.mul(2.0d).div(ShadowScene.SHADOW_SUN_MAP_SIZE);
+            roundOffset.mul(2.0d).div(dimensions);
             roundOffset.z = 0.0d;
             roundOffset.w = 0.0d;
 
@@ -183,7 +197,7 @@ public class ShadowScene {
     private void sunScene(List<Model<Format3D>> modelList) {
         this.getSunShadowShader().bind();
         this.getFrameBufferObjectProgram().bindFBO();
-        Screen.setViewport(new Vector2i(ShadowScene.SHADOW_SUN_MAP_SIZE));
+        Screen.setViewport(this.getShadowDim());
 
         for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
             CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
@@ -225,7 +239,7 @@ public class ShadowScene {
 
     private void pointLightsScene(List<Model<Format3D>> modelList) {
         this.getPointLightShadowShader().bind();
-        Screen.setViewport(new Vector2i(ShadowScene.SHADOW_PLIGHT_MAP_SIZE));
+        Screen.setViewport(this.getShadowDim());
         for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {

@@ -46,6 +46,9 @@ public class DebugRender extends SceneRenderBase {
     }
 
     private void renderNavMesh(SceneRenderBase sceneRenderBase) {
+        if (sceneRenderBase.getSceneWorld().getWorld().getGraph() == null) {
+            return;
+        }
         for (Graph.GVertex vertex : sceneRenderBase.getSceneWorld().getWorld().getGraph().getGraphContainer().keySet()) {
             if (Game.getGame().getScreen().getCamera().getCamPosition().distance(new Vector3d(vertex.getX(), vertex.getY() + 0.1d, vertex.getZ())) > 5.0f) {
                 continue;

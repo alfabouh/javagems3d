@@ -4,24 +4,21 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL43;
+import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.screen.Screen;
 
 public class FBOCubeMapProgram {
     private final CubeMapProgram cubeMapProgram;
-    private final boolean drawColor;
-    private final boolean aliasing;
     private int frameBufferId;
     private int renderBufferId;
 
-    public FBOCubeMapProgram(boolean drawColor, boolean aliasing) {
+    public FBOCubeMapProgram() {
         this.cubeMapProgram = new CubeMapProgram();
-        this.drawColor = drawColor;
-        this.aliasing = aliasing;
     }
 
-    public void createFrameBufferCubeMap(Vector2i size, boolean depthBuffer, int attachment, int internalFormat, int textureFormat, int filtering, int clamp) {
+    public void createFrameBufferCubeMapDepth(Vector2i size, int filtering, int clamp) {
         if (!Scene.isSceneActive()) {
             return;
         }
@@ -29,25 +26,36 @@ public class FBOCubeMapProgram {
         this.renderBufferId = GL30.glGenRenderbuffers();
         this.bindFBO();
 
-        this.getCubeMapProgram().createCubeMap(size, internalFormat, textureFormat, filtering, clamp, this.aliasing);
-        GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, attachment, this.getCubeMapProgram().getTextureId(), 0);
+        this.getCubeMapProgram().createCubeMap(size, GL30.GL_DEPTH_COMPONENT, GL30.GL_DEPTH_COMPONENT, filtering, clamp);
+        GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, this.getCubeMapProgram().getTextureId(), 0);
 
-        if (!this.drawColor) {
-            GL30.glDrawBuffer(GL30.GL_NONE);
-            GL30.glReadBuffer(GL30.GL_NONE);
-        } else {
-            GL30.glDrawBuffer(attachment);
+        GL30.glDrawBuffer(GL30.GL_NONE);
+        GL30.glReadBuffer(GL30.GL_NONE);
+
+        if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
+            throw new GameException("Failed to create framebuffer!");
         }
 
+        this.unBindFBO();
+    }
+
+    public void createFrameBufferCubeMapColor(Vector2i size, boolean depthBuffer, int internalFormat, int textureFormat, int filtering, int clamp) {
+        if (!Scene.isSceneActive()) {
+            return;
+        }
+
+        this.frameBufferId = GL30.glGenFramebuffers();
+        this.renderBufferId = GL30.glGenRenderbuffers();
+        this.bindFBO();
+
+        this.getCubeMapProgram().createCubeMap(size, internalFormat, textureFormat, filtering, clamp);
+        GL30.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
+
         if (depthBuffer) {
-            this.bindRenderDepthFBO();
-            if (this.msaaSamples() > 0) {
-                GL43.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, this.msaaSamples(), GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
-            } else {
-                GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
-            }
+            GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);
+            GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
             GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
-            this.unBindRenderDepthFBO();
+            GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
         }
 
         if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
@@ -59,10 +67,6 @@ public class FBOCubeMapProgram {
 
     public void connectCubeMapToBuffer(int attachment, int j) {
         GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
-    }
-
-    public int msaaSamples() {
-        return Screen.MSAA_SAMPLES;
     }
 
     public CubeMapProgram getCubeMapProgram() {

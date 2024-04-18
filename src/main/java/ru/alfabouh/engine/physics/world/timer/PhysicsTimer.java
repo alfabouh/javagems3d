@@ -81,7 +81,6 @@ public class PhysicsTimer implements IPhysTimer {
             throw new GameException(e);
         } finally {
             Game.getGame().destroyGame();
-            this.cleanResources();
         }
     }
 

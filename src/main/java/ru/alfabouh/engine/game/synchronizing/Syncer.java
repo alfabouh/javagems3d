@@ -1,5 +1,6 @@
 package ru.alfabouh.engine.game.synchronizing;
 
+import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,6 +22,9 @@ public final class Syncer {
     }
 
     public void blockCurrentThread() {
+        if (Game.getGame().isShouldBeClosed()) {
+            return;
+        }
         if (this.atomicBoolean.get()) {
             try {
                 Thread thread = new Thread(() -> {

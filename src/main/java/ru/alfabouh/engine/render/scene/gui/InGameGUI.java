@@ -9,6 +9,7 @@ import ru.alfabouh.engine.game.controller.input.Keyboard;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.inventory.Inventory;
 import ru.alfabouh.engine.physics.entities.player.KinematicPlayerSP;
+import ru.alfabouh.engine.physics.entities.prop.PhysPlank;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.render.scene.fabric.render.data.inventory.RenderInventoryItemData;
 import ru.alfabouh.engine.render.scene.gui.base.GUI;
@@ -16,7 +17,7 @@ import ru.alfabouh.engine.render.scene.gui.ui.*;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.screen.Screen;
 
-public class InGameGUI implements GUI {
+public class InGameGUI extends AbstractGUI {
     public static boolean show_wasd = true;
     public static boolean show_shift = true;
 
@@ -39,6 +40,7 @@ public class InGameGUI implements GUI {
     private ImageStaticUI mind_real;
 
     public InGameGUI() {
+        super(null);
         this.isVisible = true;
     }
 
@@ -54,7 +56,7 @@ public class InGameGUI implements GUI {
         this.cassetteText = new TextUI(ResourceManager.renderAssets.standardFont);
 
         this.fps = new TextUI(ResourceManager.renderAssets.standardFont);
-        this.itemDescText = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(20.0f, 20.0f, 0.5f));
+        this.itemDescText = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(80.0f, 80.0f, 0.5f));
         this.entities = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 20.0f, 0.5f));
         this.coordinates = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 40.0f, 0.5f));
 
@@ -150,7 +152,11 @@ public class InGameGUI implements GUI {
         } else {
             this.coordinates.setText(String.format("%s %s %s", (int) entityPlayerSP.getPosition().x, (int) entityPlayerSP.getPosition().y, (int) entityPlayerSP.getPosition().z));
         }
-        this.fps.render(partialTicks);
+
+        if (Game.DEBUG_MODE) {
+            this.fps.render(partialTicks);
+        }
+
         if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 1) {
 
             this.entities.render(partialTicks);
@@ -182,6 +188,14 @@ public class InGameGUI implements GUI {
 
         if (entityPlayerSP instanceof KinematicPlayerSP) {
             KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
+
+            if (kinematicPlayerSP.getCurrentSelectedItem() instanceof PhysPlank) {
+                TextUI textUI = new TextUI("[Use crowbar to break it]", ResourceManager.renderAssets.standardFont, 0xffc8c8);
+                textUI.setPosition(new Vector3f((float) width / 2.0f - textUI.getTextWidth() / 2.0f, (float) height / 2.0f - textUI.getTextHeight() / 2.0f - 100.0f, 0.5f));
+                textUI.render(partialTicks);
+                textUI.clear();
+            }
+
             Inventory inventory = kinematicPlayerSP.inventory();
             int j = 0;
 
