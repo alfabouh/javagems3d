@@ -63,12 +63,12 @@ public class Map01 implements IMapLoader {
     @Override
     public void onMapUpdate(World world) {
         if (this.spawnEnemyCd-- == 0) {
-            Map01.entityManiac = new EntityManiac(world, new Vector3d(-21.0d, -9.7d, -44.0d));
-            Map01.entityManiac.getNavigationAI().setActive(true);
-            Game.getGame().getProxy().addItemInWorlds(entityManiac, ResourceManager.renderDataAssets.enemy);
+            //Map01.entityManiac = new EntityManiac(world, new Vector3d(-21.0d, -9.7d, -44.0d));
+            //Map01.entityManiac.getNavigationAI().setActive(true);
+            //Game.getGame().getProxy().addItemInWorlds(entityManiac, ResourceManager.renderDataAssets.enemy);
 
-            Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 5.0f, 4.0f, entityManiac);
-            Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.creepy, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 1.0f, 2.0f, entityManiac);
+            //Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 5.0f, 4.0f, entityManiac);
+            //Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.creepy, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 1.0f, 2.0f, entityManiac);
         }
     }
 
@@ -230,6 +230,6 @@ public class Map01 implements IMapLoader {
 
     @Override
     public MapInfo levelInfo() {
-        return new MapInfo(new Vector4d(0.0d, 0.0d, 0.0d, 0.1375d), true, new Vector3d(65.0d, -7.5d, -25.0d), 0.05f, new Vector3f(0.5f, 0.5f, 1.0f), "map01");
+        return new MapInfo(new Vector4d(0.0d, 0.0d, 0.0d, 0.1375d), false, new Vector3d(65.0d, -7.5d, -25.0d), 0.05f, new Vector3f(0.5f, 0.5f, 1.0f), "map01");
     }
 }

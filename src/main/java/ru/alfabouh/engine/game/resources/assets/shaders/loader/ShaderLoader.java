@@ -27,8 +27,10 @@ public class ShaderLoader {
     public ShaderManager gui_noised;
     public ShaderManager gui_image;
     public ShaderManager gui_button;
-    public ShaderManager post_blur;
-    public ShaderManager post_render_1;
+    public ShaderManager blur5;
+    public ShaderManager blur9;
+    public ShaderManager blur13;
+    public ShaderManager hdr;
     public ShaderManager post_psx;
     public ShaderManager skybox;
     public ShaderManager world;
@@ -59,8 +61,12 @@ public class ShaderLoader {
 
         this.gui_button = this.createShaderManager("gui_button", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.gui_image = this.createShaderManager("gui_image", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.post_blur = this.createShaderManager("post_blur", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.post_render_1 = this.createShaderManager("post_render_1", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+
+        this.blur5 = this.createShaderManager("blur5", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.blur9 = this.createShaderManager("blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.blur13 = this.createShaderManager("blur13", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+
+        this.hdr = this.createShaderManager("hdr", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.post_psx = this.createShaderManager("post_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
 
         this.skybox = this.createShaderManager("skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight);

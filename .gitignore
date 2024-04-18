@@ -24,7 +24,11 @@ target/
 .sts4-cache
 
 ### NetBeans ###
-/assets/
+/assets/textures/
+/assets/models/
+/assets/map/
+/assets/sounds/
+*.ttf
 /nbproject/private/
 /nbbuild/
 /dist/

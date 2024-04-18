@@ -2,16 +2,20 @@ package ru.alfabouh.engine.game.resources.assets.shaders;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4d;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.resources.assets.materials.Material;
 import ru.alfabouh.engine.game.resources.assets.materials.textures.ColorSample;
 import ru.alfabouh.engine.game.resources.assets.materials.textures.IImageSample;
 import ru.alfabouh.engine.game.resources.assets.materials.textures.ISample;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
+import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.render.environment.shadow.CascadeShadow;
@@ -23,6 +27,7 @@ import ru.alfabouh.engine.render.scene.programs.CubeMapProgram;
 import ru.alfabouh.engine.render.scene.programs.ShaderProgram;
 import ru.alfabouh.engine.render.scene.programs.UniformBufferProgram;
 import ru.alfabouh.engine.render.scene.programs.UniformProgram;
+import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 import java.nio.ByteBuffer;
