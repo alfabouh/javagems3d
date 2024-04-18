@@ -17,14 +17,13 @@ import java.util.Iterator;
 import java.util.Set;
 
 public final class SoundManager {
-    private final Set<GameSound> sounds;
+    public static final Set<GameSound> sounds = new HashSet<>();
     private final Set<GameSound> tempSet;
     private boolean isSystemCreated;
     private long device;
     private long context;
 
     public SoundManager() {
-        this.sounds = new HashSet<>();
         this.tempSet = new HashSet<>();
         this.isSystemCreated = false;
     }
@@ -75,16 +74,18 @@ public final class SoundManager {
     }
 
     public void stopAllSounds() {
-        for (GameSound gameSound : this.sounds) {
-            if (gameSound.getSoundType() != SoundType.SYSTEM) {
-                gameSound.stopSound();
-                gameSound.cleanUp();
-            }
+        Iterator<GameSound> gameSoundIterator = SoundManager.sounds.iterator();
+        while (gameSoundIterator.hasNext()) {
+            GameSound gameSound = gameSoundIterator.next();
+            gameSound.stopSound();
+            gameSound.cleanUp();
+            gameSoundIterator.remove();
         }
+        this.tempSet.clear();
     }
 
     public void pauseAllSounds() {
-        for (GameSound gameSound : this.sounds) {
+        for (GameSound gameSound : SoundManager.sounds) {
             if (gameSound.isPlaying()) {
                 if (gameSound.getSoundType() != SoundType.SYSTEM) {
                     gameSound.pauseSound();
@@ -105,8 +106,7 @@ public final class SoundManager {
 
     public void destroy() {
         this.isSystemCreated = false;
-        this.stopAllSounds();
-        this.sounds.clear();
+        SoundManager.sounds.clear();
         ALC10.alcMakeContextCurrent(MemoryUtil.NULL);
         ALC10.alcCloseDevice(this.getDevice());
         ALC10.alcDestroyContext(this.getContext());
@@ -117,9 +117,7 @@ public final class SoundManager {
         if (!this.isSystemCreated()) {
             return null;
         }
-        GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
-        this.sounds.add(gameSound);
-        return gameSound;
+        return GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
     }
 
     public GameSound playLocalSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain) {
@@ -128,7 +126,6 @@ public final class SoundManager {
         }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, 1.0f, null);
         gameSound.playSound();
-        this.sounds.add(gameSound);
         return null;
     }
 
@@ -139,7 +136,6 @@ public final class SoundManager {
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
         gameSound.setPosition(position);
         gameSound.playSound();
-        this.sounds.add(gameSound);
         return null;
     }
 
@@ -149,7 +145,6 @@ public final class SoundManager {
         }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, worldItem);
         gameSound.playSound();
-        this.sounds.add(gameSound);
         return gameSound;
     }
 
@@ -157,13 +152,18 @@ public final class SoundManager {
         if (!this.isSystemCreated()) {
             return;
         }
-        Iterator<GameSound> iterator = this.sounds.iterator();
-        while (iterator.hasNext()) {
-            GameSound gameSound = iterator.next();
-            if (!gameSound.isValid() || gameSound.isStopped()) {
-                iterator.remove();
+        Iterator<GameSound> gameSoundIterator = SoundManager.sounds.iterator();
+        while (gameSoundIterator.hasNext()) {
+            GameSound gameSound = gameSoundIterator.next();
+            if (gameSound.isValid()) {
+                if (!gameSound.isStopped()) {
+                    gameSound.updateSound();
+                } else {
+                    gameSound.cleanUp();
+                    gameSoundIterator.remove();
+                }
             } else {
-                gameSound.updateSound();
+                gameSoundIterator.remove();
             }
         }
         SoundManager.checkALonErrors();

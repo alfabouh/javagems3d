@@ -16,6 +16,4 @@ public abstract class SettingObject {
     public Object[] getDefaultValue() {
         return this.defaultValue;
     }
-
-    public abstract void performSetting(Object... objects);
 }

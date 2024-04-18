@@ -4,36 +4,37 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL43;
+import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.screen.Screen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FBOTexture2DProgram {
     private final List<ITextureProgram> texturePrograms;
     private final boolean drawColor;
-    private final boolean aliasing;
     private int frameBufferId;
     private int renderBufferId;
 
-    public FBOTexture2DProgram(boolean drawColor, boolean aliasing) {
+    public FBOTexture2DProgram(boolean drawColor) {
         this.texturePrograms = new ArrayList<>();
         this.drawColor = drawColor;
-        this.aliasing = aliasing;
     }
 
     public void createFrameBuffer2DTextureMSAA(Vector2i size, int[] attachments, int internalFormat) {
         if (!Scene.isSceneActive()) {
             return;
         }
+        int msaaLevel = (int) Math.pow(2, Game.getGame().getGameSettings().msaa.getValue());
         this.frameBufferId = GL30.glGenFramebuffers();
         this.renderBufferId = GL30.glGenRenderbuffers();
         this.bindFBO();
 
         for (int attachment : attachments) {
-            MSAATextureProgram msaaTextureProgram = new MSAATextureProgram(Screen.MSAA_SAMPLES);
+            MSAATextureProgram msaaTextureProgram = new MSAATextureProgram(msaaLevel);
             msaaTextureProgram.createTexture(size, internalFormat);
             GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL43.GL_TEXTURE_2D_MULTISAMPLE, ((ITextureProgram) msaaTextureProgram).getTextureId(), 0);
             this.getTexturePrograms().add(msaaTextureProgram);
@@ -43,11 +44,11 @@ public class FBOTexture2DProgram {
             GL30.glDrawBuffer(GL30.GL_NONE);
             GL30.glReadBuffer(GL30.GL_NONE);
         } else {
-            GL30.glDrawBuffers(attachments);
+            GL30.glDrawBuffers(Arrays.stream(attachments).distinct().toArray());
         }
 
         GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);
-        GL43.glRenderbufferStorageMultisample(GL43.GL_RENDERBUFFER, Screen.MSAA_SAMPLES, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
+        GL43.glRenderbufferStorageMultisample(GL43.GL_RENDERBUFFER, msaaLevel, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
         GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
         GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
 
@@ -69,7 +70,7 @@ public class FBOTexture2DProgram {
 
         for (int attachment : attachments) {
             TextureProgram textureProgram1 = new TextureProgram();
-            textureProgram1.createTexture(size, internalFormat, textureFormat, filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor, this.aliasing);
+            textureProgram1.createTexture(size, internalFormat, textureFormat, filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor);
             GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL43.GL_TEXTURE_2D, ((ITextureProgram) textureProgram1).getTextureId(), 0);
             this.getTexturePrograms().add(textureProgram1);
         }
@@ -78,7 +79,7 @@ public class FBOTexture2DProgram {
             GL30.glDrawBuffer(GL30.GL_NONE);
             GL30.glReadBuffer(GL30.GL_NONE);
         } else {
-            GL30.glDrawBuffers(attachments);
+            GL30.glDrawBuffers(Arrays.stream(attachments).distinct().toArray());
         }
 
         if (depthBuffer) {

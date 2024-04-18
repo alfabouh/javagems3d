@@ -16,11 +16,5 @@ public class SettingTrueFalse extends SettingObject {
 
     public void setFlag(boolean flag) {
         this.flag = flag;
-        this.performSetting();
-    }
-
-    @Override
-    public void performSetting(Object... objects) {
-        Game.getGame().getGameSettings().saveOptions();
     }
 }

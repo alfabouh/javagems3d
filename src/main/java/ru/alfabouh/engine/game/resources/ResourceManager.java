@@ -11,6 +11,7 @@ import ru.alfabouh.engine.game.resources.assets.shaders.loader.ShaderLoader;
 import ru.alfabouh.engine.game.resources.assets.utils.ModelLoader;
 import ru.alfabouh.engine.game.resources.cache.GameCache;
 import ru.alfabouh.engine.game.resources.cache.ICached;
+import ru.alfabouh.engine.render.scene.gui.font.GuiFont;
 
 import java.awt.*;
 import java.io.IOException;
@@ -98,8 +99,17 @@ public class ResourceManager {
     }
 
     public void destroy() {
+        GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
         ResourceManager.shaderAssets.destroyShaders();
         this.getGameCache().cleanCache();
+    }
+
+    public void recreateTexturesInCache() {
+        for (ICached cached : this.getGameCache().getCache().values()) {
+            if (cached instanceof TextureSample) {
+                ((TextureSample) cached).recreateTexture();
+            }
+        }
     }
 
     public GameCache getGameCache() {
@@ -116,9 +126,7 @@ public class ResourceManager {
 
     private Set<Thread> initAssets() {
         Set<Thread> set = new HashSet<>();
-        Iterator<IAssetsLoader> assetsIterator = this.assetsObjects.iterator();
-        while (assetsIterator.hasNext()) {
-            IAssetsLoader assets = assetsIterator.next();
+        for (IAssetsLoader assets : this.assetsObjects) {
             if (assets.loadMode() == IAssetsLoader.LoadMode.PARALLEL) {
                 Thread thread = new Thread(() -> {
                     try {
@@ -128,14 +136,15 @@ public class ResourceManager {
                         GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
                     }
                 });
+                thread.setDaemon(true);
                 set.add(thread);
-                assetsIterator.remove();
             }
         }
         return set;
     }
 
     public void loadAllAssets() {
+        Game.getGame().getLogManager().log("Loading rendering resources...");
         this.assetsObjects.sort(Comparator.comparingInt(IAssetsLoader::loadOrder));
         Set<Thread> threads = this.initAssets();
         threads.forEach(Thread::start);
@@ -154,5 +163,6 @@ public class ResourceManager {
         for (IAssetsLoader assets : postLoad) {
             assets.load(this.getGameCache());
         }
+        Game.getGame().getLogManager().log("Rendering resources loaded!");
     }
 }

@@ -27,11 +27,13 @@ public class ShaderLoader {
     public ShaderManager gui_noised;
     public ShaderManager gui_image;
     public ShaderManager gui_button;
+    public ShaderManager gui_image_selectable;
     public ShaderManager blur5;
     public ShaderManager blur9;
     public ShaderManager blur13;
     public ShaderManager hdr;
     public ShaderManager post_psx;
+    public ShaderManager menu_psx;
     public ShaderManager skybox;
     public ShaderManager world;
     public ShaderManager simple;
@@ -61,6 +63,7 @@ public class ShaderLoader {
 
         this.gui_button = this.createShaderManager("gui_button", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.gui_image = this.createShaderManager("gui_image", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.gui_image_selectable = this.createShaderManager("gui_image_selectable", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.blur5 = this.createShaderManager("blur5", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur9 = this.createShaderManager("blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
@@ -74,6 +77,7 @@ public class ShaderLoader {
         this.liquid = this.createShaderManager("liquid", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
 
         this.menu = this.createShaderManager("menu", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.menu_psx = this.createShaderManager("menu_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.inventory_zippo = this.createShaderManager("inventory_zippo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.inventory_common_item = this.createShaderManager("inventory_common_item", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);

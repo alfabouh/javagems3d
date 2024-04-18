@@ -9,19 +9,27 @@ import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 
+import java.nio.IntBuffer;
+
 public class GameSound {
     private final SoundType soundType;
     private final SoundBuffer soundBuffer;
     private int source;
     private WorldItem attachedTo;
     private float gain;
+    private float pitch;
+    private float rollOff;
 
     private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
         this.soundBuffer = soundBuffer;
         this.soundType = soundType;
         this.attachedTo = attachedTo;
         this.source = AL10.AL_NONE;
-        this.setupSoundOptions(pitch, gain, rollOff);
+
+        this.setGain(gain);
+        this.setPitch(pitch);
+        this.setRollOff(rollOff);
+        this.setupSound();
     }
 
     public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
@@ -32,15 +40,15 @@ public class GameSound {
         return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, null);
     }
 
-    private void setupSoundOptions(float pitch, float gain, float rollOff) {
+    private void setupSound() {
         this.source = AL10.alGenSources();
+
         SoundManager.checkALonErrors();
         AL10.alSourcei(this.source, AL10.AL_SOURCE_RELATIVE, this.getSoundType().getSoundData().isLocatedInWorld() ? AL10.AL_FALSE : AL10.AL_TRUE);
         AL10.alSourcei(this.source, AL10.AL_LOOPING, this.getSoundType().getSoundData().isLooped() ? AL10.AL_TRUE : AL10.AL_FALSE);
         AL10.alSourcei(this.source, AL10.AL_BUFFER, this.getSoundBuffer().getBuffer());
+        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(Math.max(this.getGain(), 0.0f) * 2.0f, 1.0f));
         SoundManager.checkALonErrors();
-        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(Math.max(gain, 0.0f) * 2.0f, 1.0f));
-        AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, Math.max(rollOff, 0.0f));
 
         if (this.getAttachedTo() != null) {
             this.setPosition(this.getAttachedTo().getPosition());
@@ -49,17 +57,23 @@ public class GameSound {
         }
 
         this.setVelocity(new Vector3d(0.0d, 0.0d, 0.0d));
-        this.setPitch(Math.max(pitch, 0.0f));
-        this.setGain(Math.max(gain, 0.0f));
 
+        SoundManager.checkALonErrors();
+        this.updateParams();
+        SoundManager.checkALonErrors();
+        SoundManager.sounds.add(this);
+    }
+
+    private void updateParams() {
+        AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, this.getRollOff());
         AL10.alSourcef(this.source, AL10.AL_GAIN, this.getGain() * Game.getGame().getGameSettings().soundGain.getValue());
-
+        AL10.alSourcef(this.source, AL10.AL_PITCH, this.getPitch());
         SoundManager.checkALonErrors();
     }
 
     public void updateSound() {
         SoundManager.checkALonErrors();
-        AL10.alSourcef(this.source, AL10.AL_GAIN, Math.max(this.getGain() * Game.getGame().getGameSettings().soundGain.getValue(), 0.0f));
+        this.updateParams();
         if (this.isPaused() || this.isStopped()) {
             return;
         }
@@ -70,7 +84,6 @@ public class GameSound {
                 return;
             }
         }
-
         SoundManager.checkALonErrors();
     }
 
@@ -87,20 +100,28 @@ public class GameSound {
         AL10.alSource3f(this.source, AL10.AL_VELOCITY, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z);
     }
 
+    public float getRollOff() {
+        return Math.max(this.rollOff, 0.0f);
+    }
+
     public float getGain() {
-        return this.gain;
+        return Math.max(this.gain, 0.0f);
+    }
+
+    public float getPitch() {
+        return Math.max(this.pitch, 0.0f);
     }
 
     public void setGain(float gain) {
         this.gain = gain;
     }
 
-    public float getPitch() {
-        return AL10.alGetSourcef(this.source, AL10.AL_PITCH);
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
     }
 
-    public void setPitch(float pitch) {
-        AL10.alSourcef(this.source, AL10.AL_PITCH, Math.max(pitch, 0f));
+    public void setRollOff(float rollOff) {
+        this.rollOff = rollOff;
     }
 
     public boolean isPaused() {
@@ -117,8 +138,8 @@ public class GameSound {
 
     public void playSound() {
         if (!this.isValid()) {
-            Game.getGame().getLogManager().warn("Tried to play invalid sound!");
-            return;
+            this.setupSound();
+            SoundManager.checkALonErrors();
         }
         AL10.alSourcePlay(this.source);
     }
@@ -137,8 +158,15 @@ public class GameSound {
 
     public void cleanUp() {
         if (this.isValid()) {
+            int bufferProcessed = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
+            while (bufferProcessed-- > 0) {
+                IntBuffer buffer = IntBuffer.allocate(1);
+                AL10.alSourceUnqueueBuffers(this.source, buffer);
+            }
+            AL10.alSourcei(this.source, AL10.AL_BUFFER, AL10.AL_NONE);
             AL10.alDeleteSources(this.source);
             this.source = AL10.AL_NONE;
+            SoundManager.checkALonErrors();
         }
     }
 

@@ -17,9 +17,4 @@ public class SettingFloatBar extends SettingObject {
     public void setValue(float value) {
         this.value = value;
     }
-
-    @Override
-    public void performSetting(Object... objects) {
-        Game.getGame().getGameSettings().saveOptions();
-    }
 }

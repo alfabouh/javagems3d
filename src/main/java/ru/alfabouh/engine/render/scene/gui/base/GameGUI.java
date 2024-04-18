@@ -1,5 +1,6 @@
 package ru.alfabouh.engine.render.scene.gui.base;
 
+import org.joml.Vector2i;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.resources.ResourceManager;
@@ -54,5 +55,11 @@ public class GameGUI {
             currentGui.onStartRender();
         }
         this.currentGui = currentGui;
+    }
+
+    public void onWindowResize(Vector2i dim) {
+        if (this.getCurrentGui() != null) {
+            this.getCurrentGui().onWindowResize(dim);
+        }
     }
 }

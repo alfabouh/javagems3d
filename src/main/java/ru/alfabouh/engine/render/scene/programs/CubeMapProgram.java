@@ -17,7 +17,7 @@ public class CubeMapProgram {
     public CubeMapProgram() {
     }
 
-    public void createCubeMap(Vector2i size, int internalFormat, int textureFormat, int filter, int clamp, boolean aliasing) {
+    public void createCubeMap(Vector2i size, int internalFormat, int textureFormat, int filter, int clamp) {
         this.textureId = GL30.glGenTextures();
 
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, this.textureId);
@@ -26,11 +26,7 @@ public class CubeMapProgram {
         GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_T, clamp);
         GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_S, clamp);
         GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_R, clamp);
-        if (aliasing) {
-            if (Game.getGame().getGameSettings().anisotropicFiltering.isFlag()) {
-                GL30.glTexParameterf(GL30.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL30.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-            }
-        }
+
         for (int i = 0; i < 6; i++) {
             GL30.glTexImage2D(GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, size.x, size.y, 0, textureFormat, GL30.GL_FLOAT, (ByteBuffer) null);
         }

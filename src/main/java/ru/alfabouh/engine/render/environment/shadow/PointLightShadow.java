@@ -3,6 +3,7 @@ package ru.alfabouh.engine.render.environment.shadow;
 import org.joml.Matrix4d;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL43;
 import ru.alfabouh.engine.render.environment.light.PointLight;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.programs.FBOCubeMapProgram;
@@ -23,8 +24,13 @@ public class PointLightShadow {
         this.scene = scene;
         this.shadowDirections = new ArrayList<>();
         this.pointLight = null;
-        this.pointLightCubeMap = new FBOCubeMapProgram(false, false);
-        this.pointLightCubeMap.createFrameBufferCubeMap(new Vector2i(ShadowScene.SHADOW_PLIGHT_MAP_SIZE), false, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_DEPTH_COMPONENT, GL30.GL_DEPTH_COMPONENT, GL30.GL_LINEAR, GL30.GL_CLAMP_TO_EDGE);
+        this.pointLightCubeMap = new FBOCubeMapProgram();
+    }
+
+    public void createFBO(Vector2i dim) {
+        this.pointLightCubeMap.clearFBO();
+        //this.pointLightCubeMap.createFrameBufferCubeMapColor(new Vector2i(dim), true, GL30.GL_RG32F, GL30.GL_RG, GL30.GL_LINEAR, GL30.GL_CLAMP_TO_EDGE);
+        this.pointLightCubeMap.createFrameBufferCubeMapDepth(new Vector2i(dim), GL30.GL_NEAREST, GL30.GL_CLAMP_TO_EDGE);
     }
 
     public void configureMatrices() {

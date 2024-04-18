@@ -77,7 +77,6 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     private int staminaCd;
     private int pickedCds;
     private int prickedCassettes;
-    private GameSound horror2;
 
     private boolean killed;
     private int killedCd;
@@ -185,8 +184,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     @Override
     public void onSpawn(IWorld world) {
         super.onSpawn(world);
-        this.horror2 = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f, 1.0f);
-        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.horror, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f);
+        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f);
         Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.crackling, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
     }
 
@@ -464,12 +462,6 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().showBlood = true;
             Game.getGame().getScreen().getScene().getGui().getMainMenuGUI().victory = false;
             Game.getGame().destroyMap();
-        }
-
-        if ((this.getPrickedCassettes() + this.getPickedCds()) >= 5) {
-            if (!this.horror2.isPlaying()) {
-                this.horror2.playSound();
-            }
         }
         if (Map01.entityManiac != null && this.getPosition().distance(Map01.entityManiac.getPosition()) <= 1.5d) {
             this.kill();

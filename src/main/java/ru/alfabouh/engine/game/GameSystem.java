@@ -6,13 +6,15 @@ import ru.alfabouh.engine.game.controller.ControllerDispatcher;
 import ru.alfabouh.engine.game.logger.GameLogging;
 import ru.alfabouh.engine.game.map.loader.IMapLoader;
 import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.game.synchronizing.SyncManger;
 import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
 import ru.alfabouh.engine.render.environment.Environment;
+import ru.alfabouh.engine.render.scene.gui.InGameGUI;
 
 public class GameSystem implements IEngine {
-    public static final String ENG_NAME = "Xaelum3d";
+    public static final String ENG_NAME = "Krieger3d";
     public static final String ENG_VER = "0.11a";
 
     private final ResourceManager resourceManager;
@@ -59,6 +61,10 @@ public class GameSystem implements IEngine {
         this.initMap();
     }
 
+    public Thread getThread() {
+        return this.thread;
+    }
+
     private void initMap() {
         if (!this.engineState().isEngineIsReady()) {
             Game.getGame().getLogManager().warn("Engine thread is not ready to load map!");
@@ -87,6 +93,7 @@ public class GameSystem implements IEngine {
         Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(ControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayerSP());
         Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayerSP());
         Game.getGame().getScreen().getWindow().setInFocus(true);
+        Game.getGame().showGui(new InGameGUI());
 
         Environment environment = Game.getGame().getSceneWorld().getEnvironment();
         Vector4d fog1 = this.mapLoader.levelInfo().getFog();
@@ -172,16 +179,20 @@ public class GameSystem implements IEngine {
                 GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
                 badExit = false;
             } finally {
-                this.destroyMap();
-                Game.getGame().destroyGame();
-                synchronized (PhysicThreadManager.locker) {
-                    PhysicThreadManager.locker.notifyAll();
-                }
-                Game.getGame().getPhysicThreadManager().destroy();
-                Game.getGame().getSoundManager().destroy();
-                Game.getGame().getLogManager().log("Engine-Off");
-                if (badExit) {
-                    GameLogging.showExceptionDialog("The program closed in a strange way. Open the logs folder to find out the details.");
+                try {
+                    this.destroyMap();
+                    Game.getGame().destroyGame();
+                    Game.getGame().getSoundManager().stopAllSounds();
+                    Game.getGame().getResourceManager().destroy();
+                    Game.getGame().getSoundManager().destroy();
+                    Game.getGame().getPhysicThreadManager().getPhysicsTimer().cleanResources();
+                    Game.getGame().getLogManager().log("Engine-Off");
+                    if (badExit) {
+                        GameLogging.showExceptionDialog("The program closed in a strange way. Open the logs folder to find out the details.");
+                    }
+                } catch (Exception e) {
+                    Game.getGame().getLogManager().error(e);
+                    GameLogging.showExceptionDialog("An exception occurred on game closing. Open the logs folder for details.");
                 }
             }
         });
@@ -198,9 +209,7 @@ public class GameSystem implements IEngine {
         Game.getGame().getScreen().buildScreen();
         Game.getGame().getScreen().initScreen();
         Game.getGame().getScreen().showWindow();
-        Game.getGame().getLogManager().log("Loading rendering resources...");
         Game.getGame().getResourceManager().loadAllAssets();
-        Game.getGame().getLogManager().log("Rendering resources loaded!");
     }
 
     public static class EngineState {

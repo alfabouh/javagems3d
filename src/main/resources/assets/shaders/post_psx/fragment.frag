@@ -10,7 +10,6 @@ uniform int e_lsd;
 uniform int psx_gui_shake;
 uniform int kill;
 uniform int victory;
-uniform vec2 resolution;
 uniform float panic;
 uniform float offset;
 
@@ -34,29 +33,47 @@ void main()
     frag_color = psx() * vec4(vec3(min(w_tick, 1.0)), 1.0);
 }
 
+vec2 curveUV(vec2 inVec, float factor) {
+    vec2 curveUV = inVec;
+    curveUV = curveUV * 2.0 - 1.0;
+
+    float dist = length(curveUV);
+    float curve = (1.0 + factor * 1.5) - dist * dist * factor;
+
+    curveUV *= curve;
+    curveUV = curveUV * 0.5 + 0.5;
+
+    return curveUV;
+}
+
 vec4 psx() {
+    const float panic_val = (victory == 1 || kill == 1) ? 0.05 : panic + 0.05;
+
     float pixelSize = e_lsd == 0 ? 0.008 : 0.004;
     float pixelSize2 = 0.002;
-    float panic_val = victory == 1 ? 0.1 : kill == 1 ? 1.5 : panic + 0.1;
-
-    vec2 texCoords = (gl_FragCoord.xy - (offset / 2.0)) / (resolution - offset);
+    vec2 offres = vec2(offset / textureSize(texture_sampler, 0));
+    vec2 texCoords = (out_texture / (1.0 - offres)) - offres / 2.0;
 
     vec2 pixelCoords = floor(texCoords / pixelSize) * pixelSize;
     vec2 pixelCoords2 = floor(texCoords / pixelSize2) * pixelSize2;
 
-    vec2 distortedCoord = pixelCoords;
-    distortedCoord.x += sin(pixelCoords.y * 8.0) * sin(w_tick * panic_val * 50.0) * (panic_val * 0.1);
-    distortedCoord.y += sin(pixelCoords.x * 16.0) * cos(w_tick * panic_val * 50.0) * (panic_val * 0.1);
+    vec2 distortedCoord = curveUV(pixelCoords, panic_val * 0.5);
 
-    vec2 distortedCoordGui = texCoords;
-    distortedCoordGui.x += (sin(pixelCoords.y * 8.0) * sin(w_tick * panic_val * 50.0) * (panic_val * 0.1));
-    distortedCoordGui.y += (sin(pixelCoords.x * 16.0) * cos(w_tick * panic_val * 50.0) * (panic_val * 0.1));
+    const float C1 = w_tick * 10.0 + panic_val;
+    const float C2 = panic_val * 0.1;
+
+    distortedCoord.x += sin(pixelCoords.y * 8.0) * sin(C1) * C2;
+    distortedCoord.y += sin(pixelCoords.x * 16.0) * cos(C1) * C2;
+
+    vec2 distortedCoordGui = curveUV(texCoords, panic_val * 0.5);
+    distortedCoordGui.x += sin(pixelCoords.y * 8.0) * sin(C1) * C2;
+    distortedCoordGui.y += sin(pixelCoords.x * 16.0) * cos(C1) * C2;
 
     vec4 screen_over = texture(texture_screen, texCoords * vec2(5.0));
 
     vec4 blood_over = kill == 1 ? texture(texture_blood, distortedCoord) : vec4(0.0);
 
-    vec4 gui_t1 = texture(texture_sampler_gui, psx_gui_shake == 1 ? distortedCoordGui : gl_FragCoord.xy / resolution);
+    vec4 gui_t1 = texture(texture_sampler_gui, psx_gui_shake == 1 ? distortedCoordGui : out_texture);
     vec4 gui_t2 = texture(texture_sampler_gui, distortedCoordGui + vec2(panic_val * 0.01));
     gui_t2.g *= 0;
     gui_t2.b *= 0;
@@ -65,9 +82,9 @@ vec4 psx() {
     gui_t3.g *= 0;
     vec4 t2 = psx_gui_shake == 1 ? mix(gui_t1, gui_t2 + gui_t3, 1.0 - gui_t1.a) : gui_t1;
 
-    vec2 distortedCoordInventory = pixelCoords2;
-    distortedCoordInventory.x += sin(pixelCoords2.y * 8.0) * sin(w_tick * panic_val * 50.0) * (panic_val * 0.1);
-    distortedCoordInventory.y += sin(pixelCoords2.x * 16.0) * cos(w_tick * panic_val * 50.0) * (panic_val * 0.1);
+    vec2 distortedCoordInventory = curveUV(pixelCoords2, panic_val * 0.5);
+    distortedCoordInventory.x += sin(pixelCoords2.y * 8.0) * sin(C1) * C2;
+    distortedCoordInventory.y += sin(pixelCoords2.x * 16.0) * cos(C1) * C2;
 
     vec4 inv_t = texture(texture_sampler_inventory, distortedCoordInventory);
     inv_t.r = texture(texture_sampler_inventory, distortedCoordInventory + vec2((0.002 + panic * 0.01))).r;
@@ -91,7 +108,7 @@ vec4 vinnette(vec4 txt, vec2 textCoords) {
 }
 
 vec4 lsd(vec4 txt) {
-    vec2 texCoords = gl_FragCoord.xy / textureSize(texture_sampler, 0);
+    vec2 texCoords = out_texture;
     vec3 color = txt.rgb;
 
     const int pallette = 8;
@@ -116,16 +133,16 @@ vec4 lsd(vec4 txt) {
 
 vec4 crt(vec4 txt) {
     vec3 color = txt.rgb;
-    float sharpness = 0.4;
+    float sharpness = 0.25;
     color = pow(color, vec3(sharpness));
-    return vec4(color * 0.3, 1.0);
+    return vec4(color * 0.2, 1.0);
 }
 
 vec4 random_noise(vec4 txtr) {
     float pixelSize = 0.0035;
-    vec2 tex = gl_FragCoord.xy / resolution;
+    vec2 tex = out_texture;
     vec2 pixelCoords = floor(tex / pixelSize) * pixelSize;
     vec4 colors = txtr;
-    float grain = clamp(rand(pixelCoords) * (0.035 + panic * 0.1), 0.0, 1.0);
+    float grain = clamp(rand(pixelCoords) * (0.04 + panic * 0.125), 0.0, 1.0);
     return txtr + grain;
 }

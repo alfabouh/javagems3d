@@ -63,12 +63,11 @@ public class Map01 implements IMapLoader {
     @Override
     public void onMapUpdate(World world) {
         if (this.spawnEnemyCd-- == 0) {
-            //Map01.entityManiac = new EntityManiac(world, new Vector3d(-21.0d, -9.7d, -44.0d));
-            //Map01.entityManiac.getNavigationAI().setActive(true);
-            //Game.getGame().getProxy().addItemInWorlds(entityManiac, ResourceManager.renderDataAssets.enemy);
+            Map01.entityManiac = new EntityManiac(world, new Vector3d(-21.0d, -9.7d, -44.0d));
+            Map01.entityManiac.getNavigationAI().setActive(true);
+            Game.getGame().getProxy().addItemInWorlds(Map01.entityManiac, ResourceManager.renderDataAssets.enemy);
 
-            //Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 5.0f, 4.0f, entityManiac);
-            //Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.creepy, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 1.0f, 2.0f, entityManiac);
+            Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 2.0f, 2.0f, Map01.entityManiac);
         }
     }
 
@@ -77,10 +76,10 @@ public class Map01 implements IMapLoader {
         EntityCdItem entityCdItem1 = new EntityCdItem(world, new Vector3d(0.45, -18.2f, -26.92), "cd_world");
         Game.getGame().getProxy().addItemInWorlds(entityCdItem1, ResourceManager.renderDataAssets.cd_world);
 
-        EntityCdItem entityCdItem2 = new EntityCdItem(world, new Vector3d(33.0d, -8.3f, -7.3d), "cd_world");
+        EntityCdItem entityCdItem2 = new EntityCdItem(world, new Vector3d(41.0d, -15.1f, -58.5d), "cd_world");
         Game.getGame().getProxy().addItemInWorlds(entityCdItem2, ResourceManager.renderDataAssets.cd_world);
 
-        EntityCdItem entityCdItem3 = new EntityCdItem(world, new Vector3d(-57.51, -9.9, -27.94), "cd_world");
+        EntityCdItem entityCdItem3 = new EntityCdItem(world, new Vector3d(-42.5, -9.9, -27.94), "cd_world");
         Game.getGame().getProxy().addItemInWorlds(entityCdItem3, ResourceManager.renderDataAssets.cd_world);
 
         int maxI = 8;
@@ -92,7 +91,7 @@ public class Map01 implements IMapLoader {
             Game.getGame().getProxy().addItemInWorlds(entityCassette, ResourceManager.renderDataAssets.cassette_world);
         }
 
-        EntityItem entityItem1 = new EntityItem(world, new ItemZippo(), new Vector3d(62.0d, -8.3f, -14.0d), "zippo_world");
+        EntityItem entityItem1 = new EntityItem(world, new ItemZippo(), new Vector3d(29.0d, -8.3f, -10.65d), "zippo_world");
         Game.getGame().getProxy().addItemInWorlds(entityItem1, ResourceManager.renderDataAssets.zippo_world);
 
         EntityItem entityItem2 = new EntityItem(world, new ItemEmp(), new Vector3d(new Vector3d(-7.7d, -9.1f, -28.0d)), "emp_world");
@@ -103,9 +102,6 @@ public class Map01 implements IMapLoader {
 
         EntityItem entityItem4 = new EntityItem(world, new ItemRadio(), new Vector3d(-5.18, -18.61, -54.62), "radio_world");
         Game.getGame().getProxy().addItemInWorlds(entityItem4, ResourceManager.renderDataAssets.radio_world);
-
-        EntitySodaItem entitySodaItem1 = new EntitySodaItem(world, new Vector3d(29.0d, -8.3f, -10.65d), "soda_world");
-        Game.getGame().getProxy().addItemInWorlds(entitySodaItem1, ResourceManager.renderDataAssets.soda_world);
 
         EntitySodaItem entitySodaItem2 = new EntitySodaItem(world, new Vector3d(-24.75d, -15.5f, -45.4d), "soda_world");
         Game.getGame().getProxy().addItemInWorlds(entitySodaItem2, ResourceManager.renderDataAssets.soda_world);
@@ -121,9 +117,6 @@ public class Map01 implements IMapLoader {
 
         EntitySodaItem entitySodaItem6 = new EntitySodaItem(world, new Vector3d(-23.6d, -9.9f, -47.5d), "soda_world");
         Game.getGame().getProxy().addItemInWorlds(entitySodaItem6, ResourceManager.renderDataAssets.soda_world);
-
-        EntitySodaItem entitySodaItem7 = new EntitySodaItem(world, new Vector3d(-73.2d, -9.1f, -27.2d), "soda_world");
-        Game.getGame().getProxy().addItemInWorlds(entitySodaItem7, ResourceManager.renderDataAssets.soda_world);
 
         EntitySodaItem entitySodaItem8 = new EntitySodaItem(world, new Vector3d(-22.45d, -9.9f, -31.8d), "soda_world");
         Game.getGame().getProxy().addItemInWorlds(entitySodaItem8, ResourceManager.renderDataAssets.soda_world);
@@ -166,15 +159,6 @@ public class Map01 implements IMapLoader {
 
         PhysPlank plank9 = new PhysPlank(world, RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, true, 5.0d), 1.5d, new Vector3d(0.575f, -18.55f, -25.96f), new Vector3d(0.0d, 0.0d, 0.0d));
         Game.getGame().getProxy().addItemInWorlds(plank9, ResourceManager.renderDataAssets.plank);
-
-        PhysPlank plank10 = new PhysPlank(world, RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, true, 5.0d), 1.5d, new Vector3d(33.0f, -7.9f, -8.03f), new Vector3d(0.0d, 0.0d, 0.0d));
-        Game.getGame().getProxy().addItemInWorlds(plank10, ResourceManager.renderDataAssets.plank);
-
-        PhysPlank plank11 = new PhysPlank(world, RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, true, 5.0d), 1.5d, new Vector3d(8.03f, -9.1f, 2.24f), new Vector3d(0.0d, Math.toRadians(90.0f), 0.0d));
-        Game.getGame().getProxy().addItemInWorlds(plank11, ResourceManager.renderDataAssets.plank);
-
-        PhysPlank plank12 = new PhysPlank(world, RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, true, 5.0d), 1.5d, new Vector3d(8.03f, -9.55f, 2.38f), new Vector3d(0.0d, Math.toRadians(90.0f), 0.0d));
-        Game.getGame().getProxy().addItemInWorlds(plank12, ResourceManager.renderDataAssets.plank);
     }
 
     @Override
@@ -200,11 +184,11 @@ public class Map01 implements IMapLoader {
         pointLight3.setBrightness(3.0f);
         Game.getGame().getProxy().addLight(pointLight3);
 
-        //Graph graph = new Graph();
-        //TerrainGraphGenerator terrainGraphGenerator = new TerrainGraphGenerator(world.getDynamicsWorld(), graph);
-        //Graph.GVertex vertex = terrainGraphGenerator.startPos(65.0d, -1.5d, -25.0d);
-        //terrainGraphGenerator.generate(vertex);
-        //Graph.saveInFile(graph, this.levelInfo().getLevelName());
+        Graph graph = new Graph();
+        TerrainGraphGenerator terrainGraphGenerator = new TerrainGraphGenerator(world.getDynamicsWorld(), graph);
+        Graph.GVertex vertex = terrainGraphGenerator.startPos(65.0d, -1.5d, -25.0d);
+        terrainGraphGenerator.generate(vertex);
+        Graph.saveInFile(graph, this.levelInfo().getLevelName());
     }
 
     @Override
@@ -230,6 +214,6 @@ public class Map01 implements IMapLoader {
 
     @Override
     public MapInfo levelInfo() {
-        return new MapInfo(new Vector4d(0.0d, 0.0d, 0.0d, 0.1375d), false, new Vector3d(65.0d, -7.5d, -25.0d), 0.05f, new Vector3f(0.5f, 0.5f, 1.0f), "map01");
+        return new MapInfo(new Vector4d(0.0d, 0.0d, 0.0d, 0.1375d), false, new Vector3d(43.0d, -7.5d, -10.0d), 0.15f, new Vector3f(0.5f, 0.5f, 1.0f), "map01");
     }
 }

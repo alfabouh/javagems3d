@@ -38,7 +38,6 @@ public class Screen {
     public static int FPS;
     public static boolean lastFrame;
     public static int PHYS2_TPS;
-    public static int MSAA_SAMPLES = 4;
     private final Timer timer;
     private ControllerDispatcher controllerDispatcher;
     private Scene scene;
@@ -75,7 +74,6 @@ public class Screen {
     }
 
     public void initScreen() {
-        this.initShaders();
         this.scene = new Scene(this, new SceneWorld(Game.getGame().getPhysicsWorld()));
         this.fillScene(this.getScene());
         this.setWindowCallbacks();
@@ -106,6 +104,8 @@ public class Screen {
     public void buildScreen() {
         if (this.tryToBuildScreen()) {
             GL.createCapabilities();
+            this.initShaders();
+            this.showGameLoadingScreen();
             Game.getGame().getLogManager().log("Screen built successful");
         } else {
             throw new GameException("Screen build error!");
@@ -172,17 +172,19 @@ public class Screen {
             return false;
         }
         GLFW.glfwMakeContextCurrent(window);
-        if (Game.getGame().getGameSettings().fullScreen.isFlag()) {
-            this.makeFullScreen();
-        }
-        this.disableVSync();
+        this.checkScreenMode();
+        this.checkVSync();
         return true;
     }
 
-    private void checkVSync() {
-        if (Game.getGame().getGameSettings().vSync.isFlag()) {
-            //this.enableVSync();
-            this.disableVSync();
+    public void reloadFBOs() {
+        this.getScene().getSceneRender().createFBOs(this.getDimensions());
+        this.getScene().getSceneRender().getShadowScene().createFBO();
+    }
+
+    public void checkVSync() {
+        if (Game.getGame().getGameSettings().vSync.getValue() == 1) {
+            this.enableVSync();
         } else {
             this.disableVSync();
         }
@@ -196,16 +198,28 @@ public class Screen {
         GLFW.glfwSwapInterval(0);
     }
 
+    public void checkScreenMode() {
+        if (Game.getGame().getGameSettings().windowMode.getValue() == 0) {
+            if (!this.isFullScreen()) {
+                this.makeFullScreen();
+            }
+        } else {
+            if (this.isFullScreen()) {
+                this.removeFullScreen();
+            }
+        }
+    }
+
+    public boolean isFullScreen() {
+        return GLFW.glfwGetWindowMonitor(this.getWindow().getDescriptor()) != 0;
+    }
+
     public void switchScreenMode() {
-        long monitor = GLFW.glfwGetWindowMonitor(this.getWindow().getDescriptor());
-        if (monitor != 0) {
+        if (this.isFullScreen()) {
             this.removeFullScreen();
-            Game.getGame().getGameSettings().fullScreen.setFlag(false);
         } else {
             this.makeFullScreen();
-            Game.getGame().getGameSettings().fullScreen.setFlag(true);
         }
-        this.enableVSync();
     }
 
     public void makeFullScreen() {
@@ -238,10 +252,18 @@ public class Screen {
 
     public void showWindow() {
         Screen.setViewport(this.getDimensions());
-        this.gameLoadingScreen = new GameLoadingScreen();
         GLFW.glfwShowWindow(this.getWindow().getDescriptor());
         GLFW.glfwFocusWindow(this.getWindow().getDescriptor());
+    }
+
+    public void showGameLoadingScreen() {
+        this.gameLoadingScreen = new GameLoadingScreen();
         this.gameLoadingScreen.updateScreen();
+    }
+
+    public void removeLoadingScreen() {
+        this.gameLoadingScreen.clean();
+        this.gameLoadingScreen = null;
     }
 
     public Timer getTimer() {
@@ -262,7 +284,7 @@ public class Screen {
     }
 
     private void updateScreen() {
-        GL11.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+        GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         try {
             this.renderLoop();
@@ -281,9 +303,7 @@ public class Screen {
         int fps = 0;
         double lastFPS = Game.glfwTime();
 
-        this.gameLoadingScreen.clean();
-        this.gameLoadingScreen = null;
-
+        this.removeLoadingScreen();
         this.showMainMenu();
         while (!Game.getGame().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
@@ -307,6 +327,7 @@ public class Screen {
                 fps = 0;
                 lastFPS = currentTime;
             }
+
             GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();
         }
@@ -389,7 +410,8 @@ public class Screen {
         }
 
         public void updateScreen() {
-            GL11.glClearColor(0.0f, 0.0f, 0.25f, 1.0f);
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+            GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             int strokes = 0;
             for (String s : this.lines) {
                 TextUI textUI = new TextUI(s, this.guiFont, 0x00ff00, new Vector3f(0.0f, (strokes++) * 40.0f, 0.5f));

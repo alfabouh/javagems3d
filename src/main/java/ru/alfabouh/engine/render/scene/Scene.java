@@ -29,7 +29,6 @@ import ru.alfabouh.engine.render.environment.shadow.ShadowScene;
 import ru.alfabouh.engine.render.frustum.FrustumCulling;
 import ru.alfabouh.engine.render.scene.gui.base.GUI;
 import ru.alfabouh.engine.render.scene.gui.base.GameGUI;
-import ru.alfabouh.engine.render.scene.gui.font.GuiFont;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
 import ru.alfabouh.engine.render.scene.objects.items.PhysicsObject;
 import ru.alfabouh.engine.render.scene.programs.FBOTexture2DProgram;
@@ -50,6 +49,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Scene implements IScene {
+    public static float PSX_SCREEN_OFFSET = 160.0f;
+
     private final List<SceneRenderBase> sceneRenderBases;
     private final Screen screen;
     private final Window window;
@@ -119,7 +120,7 @@ public class Scene implements IScene {
                     error = "UNKNOWN";
                     break;
             }
-            System.out.println("GL ERROR: " + error);
+            Game.getGame().getLogManager().warn("GL ERROR: " + error);
         }
     }
 
@@ -168,9 +169,9 @@ public class Scene implements IScene {
             }
             if (shaderManager.checkUniformInGroup("alpha_discard")) {
                 shaderManager.performUniform("alpha_discard", sceneObject.getModelRenderParams().getAlphaDiscardValue());
-            }
-            if (sceneObject.getModelRenderParams().getAlphaDiscardValue() > 0) {
-                GL30.glDisable(GL30.GL_BLEND);
+                if (sceneObject.getModelRenderParams().getAlphaDiscardValue() > 0) {
+                    GL30.glDisable(GL30.GL_BLEND);
+                }
             }
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
                 shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial(), sceneObject.getModelRenderParams().isShadowReceiver());
@@ -285,13 +286,12 @@ public class Scene implements IScene {
         this.getGuiRender().onStopRender();
         Game.getGame().getLogManager().log("Destroying resources!");
         this.removeGui();
-        GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
-        Game.getGame().getResourceManager().destroy();
         Game.getGame().getLogManager().log("Scene rendering stopped");
     }
 
     public void onWindowResize(Vector2i dim) {
         this.getSceneRender().onWindowResize(dim);
+        this.getGui().onWindowResize(dim);
     }
 
     public void enableFreeCamera(IController controller, Vector3d pos, Vector3d rot) {
@@ -366,22 +366,19 @@ public class Scene implements IScene {
         private final FBOTexture2DProgram mixFbo;
         private final ShadowScene shadowScene;
         private int CURRENT_DEBUG_MODE;
-        private int oldPanic;
 
         public SceneRenderConveyor() {
             this.shadowScene = new ShadowScene(Scene.this);
-            this.fboBlur = new FBOTexture2DProgram(true, false);
-            this.sceneFbo = new FBOTexture2DProgram(true, false);
-            this.fboPsx = new FBOTexture2DProgram(true, false);
-            this.mixFbo = new FBOTexture2DProgram(true, false);
-            this.initShaders();
+            this.fboBlur = new FBOTexture2DProgram(true);
+            this.sceneFbo = new FBOTexture2DProgram(true);
+            this.fboPsx = new FBOTexture2DProgram(true);
+            this.mixFbo = new FBOTexture2DProgram(true);
+            this.createFBOs(new Vector2i(this.getWindowDimensions().x, this.getWindowDimensions().y));
         }
 
-        private void initShaders() {
-            this.attachFBO(new Vector2i(this.getWindowDimensions().x, this.getWindowDimensions().y));
-        }
+        public void createFBOs(Vector2i dim) {
+            boolean msaa = Game.getGame().getGameSettings().msaa.getValue() != 0;
 
-        private void attachFBO(Vector2i dim) {
             this.fboBlur.clearFBO();
             this.sceneFbo.clearFBO();
             this.mixFbo.clearFBO();
@@ -389,12 +386,16 @@ public class Scene implements IScene {
 
             this.fboPsx.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL30.GL_RGBA, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
             this.fboBlur.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0}, false, GL30.GL_RGB, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-            this.sceneFbo.createFrameBuffer2DTextureMSAA(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, GL43.GL_RGB16F);
+            if (msaa) {
+                this.sceneFbo.createFrameBuffer2DTextureMSAA(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, GL43.GL_RGB16F);
+            } else {
+                this.sceneFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, true, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+            }
             this.mixFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, false, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         }
 
         public void onWindowResize(Vector2i dim) {
-            this.attachFBO(dim);
+            this.createFBOs(dim);
         }
 
         public int getCurrentDebugMode() {
@@ -431,24 +432,24 @@ public class Scene implements IScene {
             GL30.glDisable(GL30.GL_DEPTH_TEST);
 
             this.sceneFbo.copyFBOtoFBO(this.mixFbo.getFrameBufferId(), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, this.getWindowDimensions());
+            this.bloom(partialTicks, model);
 
-            this.blurShader(partialTicks, model);
             if (this.getCurrentDebugMode() == 0) {
+                GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
                 GL30.glEnable(GL30.GL_BLEND);
                 GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
                 this.fboPsx.bindFBO();
                 this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 0);
                 this.renderMixedScene(partialTicks, model);
-                this.renderDebugScreen(partialTicks);
 
                 this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 2);
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
                 Scene.this.getInventoryRender().onRender(partialTicks);
 
                 this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 1);
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
                 Scene.this.getGuiRender().onRender(partialTicks);
 
                 this.fboPsx.unBindFBO();
@@ -481,22 +482,13 @@ public class Scene implements IScene {
             this.getPostProcessingShader2().performUniform("kill", kinematicPlayerSP.isKilled());
             this.getPostProcessingShader2().performUniform("victory", kinematicPlayerSP.isVictory());
 
-            this.getPostProcessingShader2().performUniform("resolution", new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y));
             this.getPostProcessingShader2().performUniform("e_lsd", 0);
             this.getPostProcessingShader2().performUniform("psx_gui_shake", Game.getGame().isPaused() ? 0 : 1);
 
             float panic = 1.0f - kinematicPlayerSP.getMind();
-            int panic_i = (int) (Math.floor(panic * 10.0f));
-            float panic_normalized = (panic_i) * 0.1f;
 
-            if (panic_i > this.oldPanic) {
-                Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.crackling, SoundType.BACKGROUND_SOUND, 1.0f + panic_normalized * 0.5f, 1.0f);
-            }
-
-            this.oldPanic = panic_i;
-
-            this.getPostProcessingShader2().performUniform("panic", panic_normalized);
-            this.getPostProcessingShader2().performUniform("offset", 80.0f);
+            this.getPostProcessingShader2().performUniform("panic", panic);
+            this.getPostProcessingShader2().performUniform("offset", Scene.PSX_SCREEN_OFFSET);
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
             this.fboPsx.bindTexture(0);
             GL30.glActiveTexture(GL30.GL_TEXTURE1);
@@ -545,7 +537,13 @@ public class Scene implements IScene {
             }
         }
 
-        private void blurShader(double partialTicks, Model<Format2D> model) {
+        private void bloom(double partialTicks, Model<Format2D> model) {
+            if (Game.getGame().getGameSettings().bloom.getValue() == 0) {
+                this.fboBlur.bindFBO();
+                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                this.fboBlur.unBindFBO();
+                return;
+            }
             FBOTexture2DProgram startFbo = this.mixFbo;
             int startBinding = 1;
             int steps = 12;
