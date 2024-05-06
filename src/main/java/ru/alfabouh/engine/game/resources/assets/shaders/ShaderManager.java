@@ -22,6 +22,7 @@ import ru.alfabouh.engine.render.environment.shadow.CascadeShadow;
 import ru.alfabouh.engine.render.environment.shadow.PointLightShadow;
 import ru.alfabouh.engine.render.environment.shadow.ShadowScene;
 import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.fabric.render.data.ModelRenderParams;
 import ru.alfabouh.engine.render.scene.programs.CubeMapProgram;
 import ru.alfabouh.engine.render.scene.programs.ShaderProgram;
@@ -273,7 +274,7 @@ public final class ShaderManager {
                 return;
             }
 
-            ShaderManager.this.performUniformNoWarn("show_cascades", scene.getSceneRender().getCurrentDebugMode());
+            ShaderManager.this.performUniformNoWarn("show_cascades", SceneRender.CURRENT_DEBUG_MODE);
 
             ISample diffuse = material.getDiffuse();
             IImageSample emissive = material.getEmissive();

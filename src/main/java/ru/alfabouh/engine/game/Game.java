@@ -26,8 +26,8 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 public class Game {
-    public static boolean DEBUG_MODE = false;
-    public static final String GAME_NAME = "Tenebrae";
+    public static boolean DEBUG_MODE = true;
+    public static final String GAME_NAME = "Abandoned horror game";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;

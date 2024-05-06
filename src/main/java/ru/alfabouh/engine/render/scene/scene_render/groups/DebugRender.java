@@ -12,27 +12,27 @@ import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 public class DebugRender extends SceneRenderBase {
     private final ShaderManager debugShaders;
-    private int vao;
-    private int vbo;
 
-    public DebugRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
+    public DebugRender(SceneRender sceneRenderConveyor) {
         super(50, sceneRenderConveyor, new RenderGroup("DEBUG"));
         this.debugShaders = ResourceManager.shaderAssets.debug;
     }
 
     public void onRender(double partialTicks) {
-        if (this.getSceneRenderConveyor().getCurrentDebugMode() == 1) {
+        if (SceneRender.CURRENT_DEBUG_MODE == 1) {
             this.debugShaders.bind();
             this.renderDebugSunDirection(this);
             this.renderNavMesh(this);
             this.debugShaders.getUtils().performProjectionMatrix();
             this.debugShaders.unBind();
+
             if (!Game.getGame().getPhysicsWorld().getDynamicsWorld().isNull()) {
                 Game.getGame().getPhysicsWorld().getDynamicsWorld().debugDrawWorld();
             }
@@ -40,9 +40,11 @@ public class DebugRender extends SceneRenderBase {
     }
 
     public void onStartRender() {
+        super.onStartRender();
     }
 
     public void onStopRender() {
+        super.onStopRender();
     }
 
     private void renderNavMesh(SceneRenderBase sceneRenderBase) {

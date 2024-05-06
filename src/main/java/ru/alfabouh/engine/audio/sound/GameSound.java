@@ -66,7 +66,7 @@ public class GameSound {
 
     private void updateParams() {
         AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, this.getRollOff());
-        AL10.alSourcef(this.source, AL10.AL_GAIN, this.getGain() * Game.getGame().getGameSettings().soundGain.getValue());
+        AL10.alSourcef(this.source, AL10.AL_GAIN, this.getGain());
         AL10.alSourcef(this.source, AL10.AL_PITCH, this.getPitch());
         SoundManager.checkALonErrors();
     }
@@ -125,14 +125,23 @@ public class GameSound {
     }
 
     public boolean isPaused() {
+        if (!this.isValid()) {
+            return false;
+        }
         return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PAUSED;
     }
 
     public boolean isStopped() {
+        if (!this.isValid()) {
+            return false;
+        }
         return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED;
     }
 
     public boolean isPlaying() {
+        if (!this.isValid()) {
+            return false;
+        }
         return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
     }
 

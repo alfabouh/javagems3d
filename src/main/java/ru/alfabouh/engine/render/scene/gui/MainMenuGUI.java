@@ -16,6 +16,7 @@ import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
 import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
 import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.gui.base.GUI;
 import ru.alfabouh.engine.render.scene.gui.ui.ButtonUI;
 import ru.alfabouh.engine.render.scene.gui.ui.OptionSliderUI;
@@ -73,7 +74,7 @@ public class MainMenuGUI extends AbstractGUI {
         ResourceManager.shaderAssets.menu_psx.bind();
         ResourceManager.shaderAssets.menu_psx.performUniform("w_tick", Game.getGame().getScreen().getRenderTicks());
         ResourceManager.shaderAssets.menu_psx.performUniform("texture_sampler", 0);
-        ResourceManager.shaderAssets.menu_psx.performUniform("offset", Scene.PSX_SCREEN_OFFSET);
+        ResourceManager.shaderAssets.menu_psx.performUniform("offset", SceneRender.PSX_SCREEN_OFFSET);
         ResourceManager.shaderAssets.menu_psx.getUtils().performProjectionMatrix2d(model);
 
         GL30.glActiveTexture(GL30.GL_TEXTURE0);

@@ -15,6 +15,7 @@ import ru.alfabouh.engine.render.environment.light.PointLight;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
 import ru.alfabouh.engine.render.scene.programs.FBOTexture2DProgram;
+import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
@@ -26,14 +27,14 @@ import java.util.stream.Collectors;
 public class ShadowScene {
     public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
     public static final int CASCADE_SPLITS = 3;
-    private final Scene scene;
+    private final SceneWorld sceneWorld;
     private Vector2i shadowDimensions;
     private final FBOTexture2DProgram FBOTexture2DProgram;
     private List<CascadeShadow> cascadeShadows;
     private List<PointLightShadow> pointLightShadows;
 
-    public ShadowScene(Scene scene) {
-        this.scene = scene;
+    public ShadowScene(SceneWorld sceneWorld) {
+        this.sceneWorld = sceneWorld;
         this.FBOTexture2DProgram = new FBOTexture2DProgram(true);
         this.initCascades();
         this.initPointLightShadows();
@@ -61,7 +62,7 @@ public class ShadowScene {
     private void initPointLightShadows() {
         this.pointLightShadows = new ArrayList<>(ShadowScene.MAX_POINT_LIGHTS_SHADOWS);
         for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
-            this.pointLightShadows.add(new PointLightShadow(i, this.getScene()));
+            this.pointLightShadows.add(new PointLightShadow(i, this.getSceneWorld()));
         }
     }
 
@@ -77,7 +78,7 @@ public class ShadowScene {
 
         Matrix4d view = TransformationManager.instance.getMainCameraViewMatrix();
         Matrix4d projection = TransformationManager.instance.getProjectionMatrix();
-        Vector4d sunPos = new Vector4d(this.getScene().getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
+        Vector4d sunPos = new Vector4d(this.getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
 
         float[] cascadeSplitLambda = new float[]{0.5f, 0.5f, 0.5f};
         float[] cascadeSplits = new float[ShadowScene.CASCADE_SPLITS];
@@ -294,8 +295,8 @@ public class ShadowScene {
         return this.FBOTexture2DProgram;
     }
 
-    public Scene getScene() {
-        return this.scene;
+    public SceneWorld getSceneWorld() {
+        return this.sceneWorld;
     }
 
     public ShaderManager getSunShadowShader() {

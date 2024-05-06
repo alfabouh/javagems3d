@@ -6,6 +6,7 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.engine.audio.SoundManager;
+import ru.alfabouh.engine.game.Game;
 
 public class SoundListener {
     public static void updateOrientationAndPosition(Matrix4d cameraMatrix, Vector3d position) {
@@ -19,6 +20,7 @@ public class SoundListener {
         cameraMatrix.positiveY(up);
         float[] data = new float[]{(float) at.x, (float) at.y, (float) at.z, (float) up.x, (float) up.y, (float) up.z};
         AL10.alListenerfv(AL10.AL_ORIENTATION, data);
+        AL10.alListenerf(AL10.AL_GAIN, Game.getGame().getGameSettings().soundGain.getValue());
         SoundManager.checkALonErrors();
     }
 }

@@ -17,14 +17,16 @@ public class SoundAssetsLoader implements IAssetsLoader {
     public SoundBuffer wood_break;
     public SoundBuffer turn;
     public SoundBuffer soda;
+    public SoundBuffer horror;
     public SoundBuffer horror2;
     public SoundBuffer button;
-    public SoundBuffer noise;
     public SoundBuffer crackling;
+    public SoundBuffer glitch;
     public SoundBuffer drips;
     public SoundBuffer meat;
     public SoundBuffer victory;
     public SoundBuffer menu;
+    public SoundBuffer en_steps;
     public SoundBuffer[] pl_step;
     public SoundBuffer[] pl_slosh;
 
@@ -33,6 +35,7 @@ public class SoundAssetsLoader implements IAssetsLoader {
         this.pl_step = new SoundBuffer[4];
         this.pl_slosh = new SoundBuffer[4];
 
+        this.glitch = ResourceManager.createSoundBuffer("glitch.wav", AL10.AL_FORMAT_MONO16);
         this.map_ambience1 = ResourceManager.createSoundBuffer("valley_night.wav", AL10.AL_FORMAT_MONO16);
         this.saw = ResourceManager.createSoundBuffer("saw.wav", AL10.AL_FORMAT_MONO16);
         this.zippo_o = ResourceManager.createSoundBuffer("zippo_o.wav", AL10.AL_FORMAT_MONO16);
@@ -44,7 +47,7 @@ public class SoundAssetsLoader implements IAssetsLoader {
         this.soda = ResourceManager.createSoundBuffer("soda.wav", AL10.AL_FORMAT_MONO16);
         this.door = ResourceManager.createSoundBuffer("door.wav", AL10.AL_FORMAT_MONO16);
         this.meat = ResourceManager.createSoundBuffer("meat.wav", AL10.AL_FORMAT_MONO16);
-        this.noise = ResourceManager.createSoundBuffer("noise.wav", AL10.AL_FORMAT_MONO16);
+        this.horror = ResourceManager.createSoundBuffer("horror.wav", AL10.AL_FORMAT_MONO16);
         this.horror2 = ResourceManager.createSoundBuffer("horror2.wav", AL10.AL_FORMAT_MONO16);
         this.victory = ResourceManager.createSoundBuffer("victory.wav", AL10.AL_FORMAT_MONO16);
         this.crackling = ResourceManager.createSoundBuffer("crackling.wav", AL10.AL_FORMAT_MONO16);
@@ -52,6 +55,7 @@ public class SoundAssetsLoader implements IAssetsLoader {
         this.drips = ResourceManager.createSoundBuffer("drips.wav", AL10.AL_FORMAT_MONO16);
         this.button = ResourceManager.createSoundBuffer("button.wav", AL10.AL_FORMAT_MONO16);
         this.menu = ResourceManager.createSoundBuffer("menu.wav", AL10.AL_FORMAT_MONO16);
+        this.en_steps = ResourceManager.createSoundBuffer("en_steps.wav", AL10.AL_FORMAT_MONO16);
 
         for (int i = 0; i < 4; i++) {
             this.pl_step[i] = ResourceManager.createSoundBuffer("pl_step" + (i + 1) + ".wav", AL10.AL_FORMAT_STEREO16);

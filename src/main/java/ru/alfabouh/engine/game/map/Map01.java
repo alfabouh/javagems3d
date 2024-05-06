@@ -66,13 +66,14 @@ public class Map01 implements IMapLoader {
             Map01.entityManiac = new EntityManiac(world, new Vector3d(-21.0d, -9.7d, -44.0d));
             Map01.entityManiac.getNavigationAI().setActive(true);
             Game.getGame().getProxy().addItemInWorlds(Map01.entityManiac, ResourceManager.renderDataAssets.enemy);
-
-            Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 2.0f, 2.0f, Map01.entityManiac);
+            Game.getGame().getSoundManager().playSoundAtEntity(ResourceManager.soundAssetsLoader.en_steps, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 2.0f, 3.0f, Map01.entityManiac);
         }
     }
 
     @Override
     public void addEntities(World world) {
+        Map01.entityManiac = null;
+
         EntityCdItem entityCdItem1 = new EntityCdItem(world, new Vector3d(0.45, -18.2f, -26.92), "cd_world");
         Game.getGame().getProxy().addItemInWorlds(entityCdItem1, ResourceManager.renderDataAssets.cd_world);
 
@@ -83,7 +84,7 @@ public class Map01 implements IMapLoader {
         Game.getGame().getProxy().addItemInWorlds(entityCdItem3, ResourceManager.renderDataAssets.cd_world);
 
         int maxI = 8;
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             int r = Game.random.nextInt(maxI--);
             Vector3d v3 = this.randomCassetteSpawnPoints.get(r);
             this.randomCassetteSpawnPoints.remove(r);
@@ -184,11 +185,11 @@ public class Map01 implements IMapLoader {
         pointLight3.setBrightness(3.0f);
         Game.getGame().getProxy().addLight(pointLight3);
 
-        Graph graph = new Graph();
-        TerrainGraphGenerator terrainGraphGenerator = new TerrainGraphGenerator(world.getDynamicsWorld(), graph);
-        Graph.GVertex vertex = terrainGraphGenerator.startPos(65.0d, -1.5d, -25.0d);
-        terrainGraphGenerator.generate(vertex);
-        Graph.saveInFile(graph, this.levelInfo().getLevelName());
+        //Graph graph = new Graph();
+        //TerrainGraphGenerator terrainGraphGenerator = new TerrainGraphGenerator(world.getDynamicsWorld(), graph);
+        //Graph.GVertex vertex = terrainGraphGenerator.startPos(65.0d, -1.5d, -25.0d);
+        //terrainGraphGenerator.generate(vertex);
+        //Graph.saveInFile(graph, this.levelInfo().getLevelName());
     }
 
     @Override
@@ -204,6 +205,7 @@ public class Map01 implements IMapLoader {
     @Override
     public void addSounds(World world) {
         Game.getGame().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.drips, SoundType.WORLD_AMBIENT_SOUND, 1.0f, 5.0f, 4.0f, new Vector3d(-1.5d, -19.0d, -23.0d));
+        Game.getGame().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.map_ambience1, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 3.0f, 3.0f, new Vector3d(20.5d, 10.0d, -25.0d));
     }
 
     @Override

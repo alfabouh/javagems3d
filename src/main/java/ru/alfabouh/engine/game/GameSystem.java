@@ -14,7 +14,7 @@ import ru.alfabouh.engine.render.environment.Environment;
 import ru.alfabouh.engine.render.scene.gui.InGameGUI;
 
 public class GameSystem implements IEngine {
-    public static final String ENG_NAME = "Krieger3d";
+    public static final String ENG_NAME = "JVertex3d";
     public static final String ENG_VER = "0.11a";
 
     private final ResourceManager resourceManager;

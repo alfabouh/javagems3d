@@ -26,14 +26,23 @@ public class GameSettings {
         this.optionsFile = new File(Game.getGameFilesFolder().toFile(), "settings.txt");
         this.soundGain = new SettingFloatBar("sound_gain", 1.0f);
 
+        //this.windowMode = new SettingIntSlots("windowMode", 0, 0, 1);
+        //this.shadowQuality = new SettingIntSlots("shadowQuality", 1, 0, 2);
+        //this.vSync = new SettingIntSlots("vSync", 1, 0, 1);
+        //this.anisotropic = new SettingIntSlots("anisotropic", 1, 0, 1);
+        //this.msaa = new SettingIntSlots("msaa", 2, 0, 3);
+        //this.texturesQuality = new SettingIntSlots("texturesQuality", 2, 0, 2);
+        //this.bloom = new SettingIntSlots("bloom", 1, 0, 1);
+        //this.texturesFiltering = new SettingIntSlots("texturesFiltering", 1, 0, 1);
+
         this.windowMode = new SettingIntSlots("windowMode", 0, 0, 1);
-        this.shadowQuality = new SettingIntSlots("shadowQuality", 1, 0, 2);
+        this.shadowQuality = new SettingIntSlots("shadowQuality", 0, 0, 2);
         this.vSync = new SettingIntSlots("vSync", 1, 0, 1);
-        this.anisotropic = new SettingIntSlots("anisotropic", 1, 0, 1);
-        this.msaa = new SettingIntSlots("msaa", 2, 0, 3);
-        this.texturesQuality = new SettingIntSlots("texturesQuality", 2, 0, 2);
-        this.bloom = new SettingIntSlots("bloom", 1, 0, 1);
-        this.texturesFiltering = new SettingIntSlots("texturesFiltering", 1, 0, 1);
+        this.anisotropic = new SettingIntSlots("anisotropic", 0, 0, 1);
+        this.msaa = new SettingIntSlots("msaa", 0, 0, 3);
+        this.texturesQuality = new SettingIntSlots("texturesQuality", 0, 0, 2);
+        this.bloom = new SettingIntSlots("bloom", 0, 0, 1);
+        this.texturesFiltering = new SettingIntSlots("texturesFiltering", 0, 0, 1);
 
         this.texturesFiltering.addName(0, "Off");
         this.texturesFiltering.addName(1, "On");

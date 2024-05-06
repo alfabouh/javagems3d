@@ -8,9 +8,9 @@ import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 public abstract class SceneRenderBase {
     private final int renderPriority;
     private final RenderGroup renderGroup;
-    private final Scene.SceneRenderConveyor sceneRenderConveyor;
+    private final SceneRender sceneRenderConveyor;
 
-    protected SceneRenderBase(int renderPriority, Scene.SceneRenderConveyor sceneRenderConveyor, RenderGroup renderGroup) {
+    protected SceneRenderBase(int renderPriority, SceneRender sceneRenderConveyor, RenderGroup renderGroup) {
         this.renderPriority = renderPriority;
         this.renderGroup = renderGroup;
         this.sceneRenderConveyor = sceneRenderConveyor;
@@ -23,9 +23,13 @@ public abstract class SceneRenderBase {
 
     public abstract void onRender(double partialTicks);
 
-    public abstract void onStartRender();
+    public void onStartRender() {
+        Game.getGame().getLogManager().log("Scene " + this.getRenderGroup().getId() + ": render start!");
+    }
 
-    public abstract void onStopRender();
+    public void onStopRender() {
+        Game.getGame().getLogManager().log("Scene " + this.getRenderGroup().getId() + ": render stop!");
+    }
 
     public int getRenderPriority() {
         return this.renderPriority;
@@ -35,11 +39,7 @@ public abstract class SceneRenderBase {
         return this.renderGroup;
     }
 
-    public Scene.SceneRenderConveyor getSceneRenderConveyor() {
-        return this.sceneRenderConveyor;
-    }
-
     public SceneWorld getSceneWorld() {
-        return this.getSceneRenderConveyor().getRenderWorld();
+        return this.sceneRenderConveyor.getShadowScene().getSceneWorld();
     }
 }

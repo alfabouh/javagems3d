@@ -52,7 +52,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     private final double maxSlope = Math.toRadians(45.0f);
     private final float runAcceleration;
     private final Vector3d currentHitScanCoordinate;
-    private final GameSound gameSound;
+    private final GameSound noiseSound;
     private final int maxCds;
     private final int maxCassettes;
     private boolean canPlayerJump;
@@ -104,7 +104,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.hasSoda = false;
         this.stamina = 1.0f;
         this.mind = 1.0f;
-        this.gameSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.noise, SoundType.BACKGROUND_AMBIENT_SOUND, 0.5f, 0.0f, 1.0f);
+        this.noiseSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror, SoundType.BACKGROUND_AMBIENT_SOUND, 2.0f, 0.0f, 1.0f);
         this.mindCd = 0;
         this.staminaCd = 0;
         this.inventory = new Inventory(this, 4);
@@ -178,7 +178,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.getBulletObject().setUserIndex2(this.getItemId());
         this.setCollisionTranslation(position);
         this.setCollisionRotation(rotation);
-        this.gameSound.playSound();
+        this.noiseSound.playSound();
     }
 
     @Override
@@ -197,6 +197,11 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     public Vector3d getPosition() {
         return new Vector3d(this.getCollisionTranslation());
+    }
+
+    @Override
+    public void setRotation(Vector3d vector3d) {
+        this.cameraRotation.set(vector3d);
     }
 
     public Vector3d getRotation() {
@@ -371,8 +376,8 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         boolean isRadioActive = this.inventory().getCurrentItem() instanceof ItemRadio && ((ItemRadio) this.inventory().getCurrentItem()).isOpened();
         boolean canSee = this.canPlayerSeeEnemy();
         double dist = this.getPosition().distance(Map01.entityManiac.getPosition());
-        int maxDist = 60;
-        int level = MathHelper.clamp((int) ((maxDist - dist) / 10.0f), 0, 5);
+        int maxDist = 52;
+        int level = (int) (((maxDist - Math.min(dist, maxDist)) / maxDist) * 6);
         if (level > 0) {
             float max = 1.0f;
             float delta = 0.0f;
@@ -409,8 +414,8 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 delta *= 0.5f;
             }
             if (isRadioActive) {
-                max += 0.05f;
-                delta *= 0.5f;
+                max = Math.max(max, 0.4f);
+                delta *= 0.4f;
             }
             if (Math.abs(Map01.entityManiac.getPosition().y - this.getPosition().y) >= 3.0f) {
                 max = Math.min(max * 1.3f, 1.0f);
@@ -426,8 +431,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 this.mind = Math.min(this.mind + (isRadioActive ? 0.005f : 0.002f), 1.0f);
             }
         }
-        this.gameSound.setPitch(1.0f + (0.7f - this.mind) * 0.1f);
-        this.gameSound.setGain((0.7f - this.mind) * 0.25f);
+        this.noiseSound.setGain((0.7f - this.mind));
     }
 
     private void kill() {
@@ -467,7 +471,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             this.kill();
         }
         this.checkEnemy();
-        float staminaDelta = 0.0025f;
+        float staminaDelta = 0.002f;
         this.staminaCd -= 1;
         if (this.isRunning()) {
             this.stamina -= staminaDelta;
@@ -475,7 +479,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 this.staminaCd = 160;
             }
         } else {
-            this.stamina = Math.min(this.stamina + staminaDelta * 0.5f, 1.0f);
+            this.stamina = Math.min(this.stamina + staminaDelta * 0.75f, 1.0f);
         }
         boolean flag = !this.groundCheck();
         Vector3d look = MathHelper.calcLookVector(this.getRotation());

@@ -2,7 +2,6 @@ package ru.alfabouh.engine.render.scene.scene_render.groups;
 
 import org.joml.Matrix4d;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
@@ -10,6 +9,7 @@ import ru.alfabouh.engine.game.resources.assets.models.mesh.Mesh;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.render.environment.sky.Sky;
 import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
@@ -36,7 +36,7 @@ public class SkyRender extends SceneRenderBase {
 
     public static Model<Format3D> skyBoxModel;
 
-    public SkyRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
+    public SkyRender(SceneRender sceneRenderConveyor) {
         super(12, sceneRenderConveyor, new RenderGroup("SKYBOX"));
         Mesh mesh = new Mesh();
         mesh.putPositionValues(SkyRender.skyboxPos);
@@ -71,11 +71,11 @@ public class SkyRender extends SceneRenderBase {
         this.renderCubeMapSkyBox();
     }
 
-    @Override
     public void onStartRender() {
+        super.onStartRender();
     }
 
-    @Override
     public void onStopRender() {
+        super.onStopRender();
     }
 }
