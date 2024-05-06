@@ -48,9 +48,9 @@ public class TransformationUtils {
     }
 
     public Matrix4d getOrthoModelMatrix(Model<Format2D> model, Matrix4d orthoMatrix) {
-        Vector2d rotation = model.getFormat().getRotation();
+        double rotation = model.getFormat().getRotation();
         Matrix4d m1 = new Matrix4d();
-        m1.identity().translate(new Vector3d(model.getFormat().getPosition(), 0.0d)).rotateX(-rotation.x).rotateY(-rotation.y).scaleXY(model.getFormat().getScale().x, model.getFormat().getScale().y);
+        m1.identity().translate(new Vector3d(model.getFormat().getPosition(), 0.0d)).rotateZ(-rotation).scaleXY(model.getFormat().getScale().x, model.getFormat().getScale().y);
         Matrix4d viewCurr = new Matrix4d(orthoMatrix);
         return viewCurr.mul(m1);
     }

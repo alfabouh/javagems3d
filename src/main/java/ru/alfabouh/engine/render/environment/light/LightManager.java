@@ -10,6 +10,7 @@ import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.render.environment.Environment;
 import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 
 import java.nio.FloatBuffer;
@@ -74,8 +75,8 @@ public class LightManager implements ILightManager {
     private void updateSunUbo(Matrix4d viewMatrix) {
         Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunAngle(), viewMatrix, 0.0f);
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8);
-        value1Buffer.put(Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 0 ? this.calcAmbientLight() : 1.0f);
-        value1Buffer.put(Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 0 ? this.environment.getSky().getSunBrightness() : 1.0f);
+        value1Buffer.put(SceneRender.CURRENT_DEBUG_MODE == 0 ? this.calcAmbientLight() : 1.0f);
+        value1Buffer.put(SceneRender.CURRENT_DEBUG_MODE == 0 ? this.environment.getSky().getSunBrightness() : 1.0f);
         value1Buffer.put(angle.x);
         value1Buffer.put(angle.y);
         value1Buffer.put(angle.z);
@@ -83,7 +84,7 @@ public class LightManager implements ILightManager {
         value1Buffer.put(this.environment.getSky().getSunColors().y);
         value1Buffer.put(this.environment.getSky().getSunColors().z);
         value1Buffer.flip();
-        Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.SunLight, value1Buffer);
+        SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.SunLight, value1Buffer);
         MemoryUtil.memFree(value1Buffer);
     }
 
@@ -101,7 +102,7 @@ public class LightManager implements ILightManager {
             value1Buffer.put(pointLight.getBrightness());
             value1Buffer.put(pointLight.getAttachedShadowSceneId());
             value1Buffer.flip();
-            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
+            SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
         }
         MemoryUtil.memFree(value1Buffer);
     }
@@ -118,7 +119,7 @@ public class LightManager implements ILightManager {
             value1Buffer.put(-1);
             value1Buffer.put(-1);
             value1Buffer.flip();
-            Scene.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
+            SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
         }
         MemoryUtil.memFree(value1Buffer);
     }

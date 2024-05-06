@@ -5,14 +5,14 @@ import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.inventory.IHasInventory;
 import ru.alfabouh.engine.inventory.items.InventoryItem;
 import ru.alfabouh.engine.physics.entities.player.IPlayer;
-import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.fabric.render.data.inventory.RenderInventoryItemData;
 import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 import ru.alfabouh.engine.render.scene.world.camera.FreeCamera;
 
 public class InventoryRender extends SceneRenderBase {
-    public InventoryRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
+    public InventoryRender(SceneRender sceneRenderConveyor) {
         super(100, sceneRenderConveyor, new RenderGroup("INVENTORY"));
     }
 
@@ -33,8 +33,10 @@ public class InventoryRender extends SceneRenderBase {
     }
 
     public void onStartRender() {
+        super.onStartRender();
     }
 
     public void onStopRender() {
+        super.onStopRender();
     }
 }

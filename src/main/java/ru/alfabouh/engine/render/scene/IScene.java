@@ -6,6 +6,4 @@ import java.util.List;
 
 public interface IScene {
     SceneWorld getSceneWorld();
-
-    List<SceneRenderBase> getRenderQueueContainer();
 }

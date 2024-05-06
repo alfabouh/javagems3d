@@ -48,6 +48,13 @@ public class NavigationAI implements AI {
         this.currentVertex = currentVertex;
     }
 
+    public synchronized boolean reachedDestination() {
+        if (this.getPathToVertex() == null) {
+            return false;
+        }
+        return this.getPathToVertex().size() <= 1;
+    }
+
     public Graph.GVertex getNextVertex() {
         return this.nextVertex;
     }
@@ -57,15 +64,12 @@ public class NavigationAI implements AI {
     }
 
     public void setPathToVertex(List<Graph.GVertex> pathToVertex) {
+        if (pathToVertex == null || pathToVertex.isEmpty()) {
+            return;
+        }
         this.pathToVertex = new ArrayList<>(pathToVertex);
-        Iterator<Graph.GVertex> gVertexIterator = this.pathToVertex.iterator();
-        while (gVertexIterator.hasNext()) {
-            Graph.GVertex c = gVertexIterator.next();
-            if (c != null && this.getCurrentVertex() != null && !c.equals(this.getCurrentVertex())) {
-                gVertexIterator.remove();
-            } else {
-                break;
-            }
+        if (this.getNextVertex() != null) {
+            this.reachedVertex();
         }
     }
 

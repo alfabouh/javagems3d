@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL43;
 import ru.alfabouh.engine.render.environment.light.PointLight;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.programs.FBOCubeMapProgram;
+import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 import java.util.ArrayList;
@@ -15,13 +16,13 @@ import java.util.List;
 public class PointLightShadow {
     private final FBOCubeMapProgram pointLightCubeMap;
     private final int id;
-    private final Scene scene;
+    private final SceneWorld sceneWorld;
     private PointLight pointLight;
     private List<Matrix4d> shadowDirections;
 
-    public PointLightShadow(int id, Scene scene) {
+    public PointLightShadow(int id, SceneWorld sceneWorld) {
         this.id = id;
-        this.scene = scene;
+        this.sceneWorld = sceneWorld;
         this.shadowDirections = new ArrayList<>();
         this.pointLight = null;
         this.pointLightCubeMap = new FBOCubeMapProgram();
@@ -73,8 +74,8 @@ public class PointLightShadow {
         return this.shadowDirections;
     }
 
-    public Scene getScene() {
-        return this.scene;
+    public SceneWorld getSceneWorld() {
+        return this.sceneWorld;
     }
 
     public FBOCubeMapProgram getPointLightCubeMap() {

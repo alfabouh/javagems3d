@@ -30,7 +30,7 @@ public class LocalPlayer {
 
         kinematicPlayerSP.getWorld().addItem(kinematicPlayerSP);
         Game.getGame().getScreen().getRenderWorld().addItem(kinematicPlayerSP, ResourceManager.renderDataAssets.player);
-
         physPlayerSP.setCollisionTranslation(position);
+        physPlayerSP.setRotation(new Vector3d(0.0f, -90.0f, 0.0f));
     }
 }

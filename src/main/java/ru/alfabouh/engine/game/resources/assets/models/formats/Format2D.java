@@ -5,27 +5,27 @@ import org.joml.Vector2d;
 
 public class Format2D implements IFormat {
     private final Vector2d position;
-    private final Vector2d rotation;
+    private double rotation;
     private final Vector2d scale;
     private boolean isOrientedToView;
 
-    public Format2D(@NotNull Vector2d position, Vector2d rotation, Vector2d scale) {
+    public Format2D(@NotNull Vector2d position, double rotation, Vector2d scale) {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
         this.isOrientedToView = false;
     }
 
-    public Format2D(Vector2d position, Vector2d rotation) {
+    public Format2D(Vector2d position, float rotation) {
         this(position, rotation, new Vector2d(1.0d));
     }
 
     public Format2D(Vector2d position) {
-        this(position, new Vector2d(0.0d), new Vector2d(1.0d));
+        this(position, 0.0d, new Vector2d(1.0d));
     }
 
     public Format2D() {
-        this(new Vector2d(0.0d), new Vector2d(0.0d), new Vector2d(1.0d));
+        this(new Vector2d(0.0d),0.0d, new Vector2d(1.0d));
     }
 
     public Vector2d getPosition() {
@@ -36,12 +36,12 @@ public class Format2D implements IFormat {
         this.getPosition().set(position);
     }
 
-    public Vector2d getRotation() {
+    public double getRotation() {
         return this.rotation;
     }
 
-    public void setRotation(Vector2d rotation) {
-        this.getRotation().set(rotation);
+    public void setRotation(double rotation) {
+        this.rotation = rotation;
     }
 
     public Vector2d getScale() {
@@ -54,7 +54,7 @@ public class Format2D implements IFormat {
 
     @Override
     public IFormat copy() {
-        return new Format2D(new Vector2d(this.getPosition()), new Vector2d(this.getRotation()), new Vector2d(this.getScale()));
+        return new Format2D(new Vector2d(this.getPosition()), this.getRotation(), new Vector2d(this.getScale()));
     }
 
     @Override

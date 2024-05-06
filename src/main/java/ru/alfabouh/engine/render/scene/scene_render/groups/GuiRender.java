@@ -2,12 +2,12 @@ package ru.alfabouh.engine.render.scene.scene_render.groups;
 
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 
 public class GuiRender extends SceneRenderBase {
-    public GuiRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
+    public GuiRender(SceneRender sceneRenderConveyor) {
         super(3, sceneRenderConveyor, new RenderGroup("GUI"));
     }
 
@@ -20,11 +20,11 @@ public class GuiRender extends SceneRenderBase {
         GL30.glEnable(GL30.GL_DEPTH_TEST);
     }
 
-    @Override
     public void onStartRender() {
+        super.onStartRender();
     }
 
-    @Override
     public void onStopRender() {
+        super.onStopRender();
     }
 }

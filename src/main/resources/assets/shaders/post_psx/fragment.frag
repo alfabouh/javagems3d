@@ -10,6 +10,7 @@ uniform int e_lsd;
 uniform int psx_gui_shake;
 uniform int kill;
 uniform int victory;
+uniform int glitch_tick;
 uniform float panic;
 uniform float offset;
 
@@ -47,12 +48,14 @@ vec2 curveUV(vec2 inVec, float factor) {
 }
 
 vec4 psx() {
+    vec2 texIn = glitch_tick > 0 ? 1.0 - out_texture : out_texture;
+
     const float panic_val = (victory == 1 || kill == 1) ? 0.05 : panic + 0.05;
 
     float pixelSize = e_lsd == 0 ? 0.008 : 0.004;
-    float pixelSize2 = 0.002;
+    float pixelSize2 = 0.004;
     vec2 offres = vec2(offset / textureSize(texture_sampler, 0));
-    vec2 texCoords = (out_texture / (1.0 - offres)) - offres / 2.0;
+    vec2 texCoords = (texIn / (1.0 - offres)) - offres / 2.0;
 
     vec2 pixelCoords = floor(texCoords / pixelSize) * pixelSize;
     vec2 pixelCoords2 = floor(texCoords / pixelSize2) * pixelSize2;
@@ -73,7 +76,7 @@ vec4 psx() {
 
     vec4 blood_over = kill == 1 ? texture(texture_blood, distortedCoord) : vec4(0.0);
 
-    vec4 gui_t1 = texture(texture_sampler_gui, psx_gui_shake == 1 ? distortedCoordGui : out_texture);
+    vec4 gui_t1 = texture(texture_sampler_gui, psx_gui_shake == 1 ? distortedCoordGui : texIn);
     vec4 gui_t2 = texture(texture_sampler_gui, distortedCoordGui + vec2(panic_val * 0.01));
     gui_t2.g *= 0;
     gui_t2.b *= 0;
@@ -97,6 +100,7 @@ vec4 psx() {
     vec4 vic = victory == 1 ? vec4(w_tick * 0.5) : vec4(0.);
 
     vec4 result = mix(mix(crt(lsd(res)), t2, t2.a), t3, t3.a);
+    result = glitch_tick > 0 ? 1.0 - result : result;
     return vinnette(random_noise(result), texCoords) + blood_over + vic;
 }
 
@@ -144,5 +148,5 @@ vec4 random_noise(vec4 txtr) {
     vec2 pixelCoords = floor(tex / pixelSize) * pixelSize;
     vec4 colors = txtr;
     float grain = clamp(rand(pixelCoords) * (0.04 + panic * 0.125), 0.0, 1.0);
-    return txtr + grain;
+    return txtr + (glitch_tick > 0 ? grain * 2.0f : grain);
 }

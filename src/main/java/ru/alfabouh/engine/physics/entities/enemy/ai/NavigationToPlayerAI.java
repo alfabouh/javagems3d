@@ -3,10 +3,14 @@ package ru.alfabouh.engine.physics.entities.enemy.ai;
 import org.bytedeco.bullet.BulletCollision.btBroadphaseProxy;
 import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.LinearMath.btVector3;
+import org.checkerframework.checker.units.qual.A;
 import org.joml.Vector3d;
+import ru.alfabouh.engine.audio.sound.GameSound;
+import ru.alfabouh.engine.audio.sound.data.SoundType;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.game.logger.GameLogging;
+import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.graph.pathfind.AStar;
 import ru.alfabouh.engine.inventory.items.ItemRadio;
@@ -18,6 +22,7 @@ import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,51 +31,54 @@ public class NavigationToPlayerAI extends NavigationAI {
     private final List<Graph.GVertex> queuePath;
     private final AtomicBoolean atomicBoolean;
     private IPlayer player;
+
+    private float maxSpeed;
+    private int currentMemory;
+    private int currentChasingTicks;
+    private int chasingBlockTicks;
+    private int maxMemory;
+    private float maxSeekDist;
     private int ticksBeforeRefreshPath;
-    private int memory;
-    private double maxSpeed;
-    private int forceSeekPlayerCd;
-    private int maxPlayerChasingTicks;
-    private int chasingTicks;
-    private int penalty;
-    private int rageCd;
-    private boolean canRage;
+    private float randomPlayerChasePercent;
+
+    private final GameSound chasingSound;
 
     public NavigationToPlayerAI(double speed, WorldItem worldItem, final World world) {
         super(speed, worldItem, world);
         this.queuePath = new ArrayList<>();
         this.atomicBoolean = new AtomicBoolean(false);
         this.playerPos = new Vector3d(0.0d);
+        this.chasingSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 4.0f, 4.0f);
+
+        if (this.chasingSound != null) {
+            this.chasingSound.setAttachedTo(worldItem);
+        }
+
         Thread seekPathThread = new Thread(() -> {
             try {
-                int i = 0;
                 Graph.GVertex randomVertex = world.getGraph() == null ? null : world.getGraph().getRandomVertex();
                 while (Game.getGame().isCurrentMapIsValid()) {
                     try {
                         if (worldItem.getWorld().getGraph() == null || this.getCurrentSyncVertex() == null || !this.isActive()) {
                             continue;
                         }
-                        if (randomVertex == null) {
-                            randomVertex = worldItem.getWorld().getGraph().getRandomVertex();
-                        }
-                        if (this.rageCd > 0) {
-                            this.setSpeed(Math.min(maxSpeed * 1.5d, 0.2d));
-                        } else {
-                            this.setSpeed(!this.getAtomicBoolean().get() ? Math.min(maxSpeed * 2.0d, 0.2d) : maxSpeed);
+
+                        this.setSpeed(this.getAtomicBoolean().get() ? this.getMaxSpeed() : 0.115f);
+
+                        if (!this.getAtomicBoolean().get() && this.reachedDestination()) {
+                            randomVertex = Game.random.nextFloat() <= this.getRandomPlayerChasePercent() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : world.getGraph().getRandomVertex();
                         }
 
                         AStar aStar = new AStar(worldItem.getWorld().getGraph(), this.getCurrentSyncVertex(), this.getAtomicBoolean().get() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : randomVertex);
                         List<Graph.GVertex> path = aStar.findPath();
                         this.getQueuePath().clear();
+
                         if (path != null) {
                             this.getQueuePath().addAll(path);
                         } else {
                             Game.getGame().getLogManager().warn("Nav pathfind problems!");
                         }
-                        if (i++ >= 200 && Game.random.nextBoolean()) {
-                            randomVertex = worldItem.getWorld().getGraph().getRandomVertex();
-                            i = 0;
-                        }
+
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
                         throw new GameException(e);
@@ -86,183 +94,127 @@ public class NavigationToPlayerAI extends NavigationAI {
         seekPathThread.start();
     }
 
+    private void refreshPath() {
+        if (this.getQueuePath() != null && this.getNextVertex() == null) {
+            ArrayList<Graph.GVertex> gVertices = new ArrayList<>(this.getQueuePath());
+            if (!gVertices.isEmpty()) {
+                if (!gVertices.get(0).equals(this.getCurrentVertex())) {
+                    Iterator<Graph.GVertex> gVertexIterator = gVertices.iterator();
+                    while (gVertexIterator.hasNext()) {
+                        Graph.GVertex vertex = gVertexIterator.next();
+                        if (!vertex.equals(this.getCurrentVertex())) {
+                            gVertexIterator.remove();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                this.setPathToVertex(gVertices);
+            }
+        }
+    }
+
     @Override
     public void onUpdate(IWorld iWorld) {
         super.onUpdate(iWorld);
+        this.refreshPath();
         if (this.getPlayer() != null) {
             WorldItem player = (WorldItem) this.getPlayer();
-            if (this.getAtomicBoolean().get()) {
-                //System.out.println(this.chasingTicks + " " + this.maxPlayerChasingTicks);
-                if (this.penalty <= 0 && this.chasingTicks++ >= this.maxPlayerChasingTicks) {
-                    this.penalty = 300;
-                    this.chasingTicks = 0;
-                }
-            } else {
-                this.chasingTicks = 0;
-            }
+            double distToPlayer = this.distanceToPlayer(player);
 
-            if (this.ticksBeforeRefreshPath++ >= Math.min(this.distanceToPlayer(player), 30)) {
+            if (this.ticksBeforeRefreshPath++ >= Math.min(distToPlayer, 30)) {
                 this.getPlayerPos().set(player.getPosition());
                 this.ticksBeforeRefreshPath = 0;
             }
 
-            if (this.penalty-- > 0) {
-                if (this.distanceToPlayer(player) > 8.0d) {
-                    this.canRage = true;
+            if (this.currentChasingTicks >= this.getMaxMemory() * 2.5f) {
+                this.chasingBlockTicks = (int) (250 - (50 * this.getRandomPlayerChasePercent()));
+            }
+
+            double seekDist = this.getMaxSeekDist();
+            if (((KinematicPlayerSP) player).getScalarSpeed() <= 0.0f) {
+                seekDist *= 0.75f;
+            }
+
+            double yDelta = Math.abs(player.getPosition().y - this.target().getPosition().y);
+
+            if (this.chasingBlockTicks-- > 0) {
+                this.currentMemory = 0;
+                if (this.canSeePlayer(player) && distToPlayer <= seekDist / 2.5f && yDelta <= 4.0f) {
+                    this.getAtomicBoolean().set(true);
+                    this.chasingBlockTicks = 0;
+                } else {
                     this.getAtomicBoolean().set(false);
-                    this.maxSpeed = 0;
-                    this.penalty = 0;
-                    return;
-                } else if (this.canRage) {
-                    this.rageCd = 100;
                 }
             } else {
-                this.canRage = false;
+                this.getAtomicBoolean().set(this.currentMemory-- > 0);
+                if ((distToPlayer <= seekDist / 2.0f || (this.canSeePlayer(player) && distToPlayer <= seekDist)) && yDelta <= 4.0f) {
+                    this.getAtomicBoolean().set(true);
+                    this.currentMemory = this.getMaxMemory();
+                }
             }
-            if (this.rageCd > 0) {
-                this.getAtomicBoolean().set(true);
+
+            if (this.getAtomicBoolean().get()) {
+                if (!this.chasingSound.isPlaying()) {
+                    this.chasingSound.playSound();
+                }
+                this.currentChasingTicks += 1;
+            } else {
+                this.currentChasingTicks = 0;
+                this.chasingSound.stopSound();
             }
 
             this.updateNavOnAggression(player);
         }
     }
 
-    protected void reachedVertex() {
-        super.reachedVertex();
-        this.setPathToVertex(this.getQueuePath());
-    }
-
     private void updateNavOnAggression(WorldItem worldItem) {
-        int aggression = 9;
+        float aggressionPercent = 1.0f;
         boolean hasEnabledRadio = false;
+
+        final float minSeekDist = 18.0f;
+        final float minSpeed = 0.09f;
+        final int minMemory = 200;
+
+        final float maxSeekDist = 52.0f;
+        final float maxSpeed = 0.125f;
+        final int maxMemory = 600;
+
         if (worldItem instanceof KinematicPlayerSP) {
             KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) worldItem;
-            aggression = (int) ((double) (kinematicPlayerSP.getPickedCds() + kinematicPlayerSP.getPrickedCassettes()) / (kinematicPlayerSP.getMaxCds() + kinematicPlayerSP.getMaxCassettes()) * 10.0f);
+            aggressionPercent = (float) (kinematicPlayerSP.getPickedCds() + kinematicPlayerSP.getPrickedCassettes()) / (kinematicPlayerSP.getMaxCds() + kinematicPlayerSP.getMaxCassettes());
             hasEnabledRadio = (kinematicPlayerSP.inventory().getCurrentItem() instanceof ItemRadio) && ((ItemRadio) kinematicPlayerSP.inventory().getCurrentItem()).isOpened();
         }
+        aggressionPercent = (float) Math.min(aggressionPercent + (hasEnabledRadio ? 0.1f : 0.0f), 1.0);
 
-        double maxDist = 8.0d;
-        double maxXrayVision = 4.0d;
-        int maxMemory = 20;
-        double speed = 0.08d;
-        int maxForceSeekPlayerCd = -1;
-        int maxChasingTicks = 350;
+        this.setRandomPlayerChasePercent(0.375f * aggressionPercent);
+        this.maxMemory = (int) (minMemory + (maxMemory - minMemory) * aggressionPercent);
+        this.setMaxSpeed((minSpeed + (maxSpeed - minSpeed) * aggressionPercent));
+        this.maxSeekDist = (minSeekDist + (maxSeekDist - minSeekDist) * aggressionPercent);
+    }
 
-        switch (aggression) {
-            case 1: {
-                speed = 0.1d;
-                maxMemory = 300;
-                maxDist = 16.0d;
-                maxXrayVision = 8.0d;
-                break;
-            }
-            case 2: {
-                speed = 0.1d;
-                maxMemory = 320;
-                maxDist = 20.0d;
-                maxXrayVision = 10.0d;
-                maxForceSeekPlayerCd = 500;
-                maxChasingTicks = 400;
-                break;
-            }
-            case 3: {
-                speed = 0.1d;
-                maxMemory = 350;
-                maxDist = 24.0d;
-                maxXrayVision = 12.0d;
-                maxForceSeekPlayerCd = 450;
-                maxChasingTicks = 450;
-                break;
-            }
-            case 4: {
-                speed = 0.11d;
-                maxMemory = 400;
-                maxDist = 28.0d;
-                maxXrayVision = 14.0d;
-                maxForceSeekPlayerCd = 400;
-                maxChasingTicks = 500;
-                break;
-            }
-            case 5: {
-                speed = 0.115d;
-                maxMemory = 450;
-                maxDist = 32.0d;
-                maxXrayVision = 16.0d;
-                maxForceSeekPlayerCd = 400;
-                maxChasingTicks = 550;
-                break;
-            }
-            case 6: {
-                speed = 0.12d;
-                maxMemory = 500;
-                maxDist = 36.0d;
-                maxXrayVision = 18.0d;
-                maxForceSeekPlayerCd = 350;
-                maxChasingTicks = 600;
-                break;
-            }
-            case 7: {
-                speed = 0.1225d;
-                maxMemory = 600;
-                maxDist = 40.0d;
-                maxXrayVision = 20.0d;
-                maxForceSeekPlayerCd = 300;
-                maxChasingTicks = 650;
-                break;
-            }
-            case 8: {
-                speed = 0.125d;
-                maxMemory = 680;
-                maxDist = 44.0d;
-                maxXrayVision = 22.0d;
-                maxForceSeekPlayerCd = 300;
-                maxChasingTicks = 700;
-                break;
-            }
-            case 9: {
-                speed = 0.14d;
-                maxMemory = 800;
-                maxDist = 48.0d;
-                maxXrayVision = 24.0d;
-                maxForceSeekPlayerCd = 200;
-                maxChasingTicks = 800;
-                break;
-            }
-        }
+    public float getMaxSeekDist() {
+        return this.maxSeekDist;
+    }
 
-        if (hasEnabledRadio) {
-            maxChasingTicks += 100;
-            maxDist += 8.0d;
-            maxXrayVision += 8.0d;
-            maxMemory += 10;
-        }
+    public synchronized void setRandomPlayerChasePercent(float randomPlayerChasePercent) {
+        this.randomPlayerChasePercent = randomPlayerChasePercent;
+    }
 
-        this.maxPlayerChasingTicks = maxChasingTicks;
+    public synchronized float getRandomPlayerChasePercent() {
+        return this.randomPlayerChasePercent;
+    }
 
-        if (maxForceSeekPlayerCd > 0 && this.forceSeekPlayerCd-- < 0) {
-            this.memory = aggression * 50;
-            this.getAtomicBoolean().set(true);
-            this.forceSeekPlayerCd = maxForceSeekPlayerCd;
-        }
+    public synchronized void setMaxSpeed(float maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
 
-        this.maxSpeed = speed;
-        if (this.memory-- > 0) {
-            this.getAtomicBoolean().set(true);
-            return;
-        }
+    public synchronized float getMaxSpeed() {
+        return this.maxSpeed;
+    }
 
-        this.getAtomicBoolean().set(false);
-        if (this.canSeePlayer(worldItem)) {
-            if (this.distanceToPlayer(worldItem) <= maxDist) {
-                this.memory = maxMemory;
-                this.getAtomicBoolean().set(true);
-            }
-        } else {
-            if (this.distanceToPlayer(worldItem) <= maxXrayVision) {
-                this.memory = maxMemory;
-                this.getAtomicBoolean().set(true);
-            }
-        }
+    public int getMaxMemory() {
+        return this.maxMemory;
     }
 
     private double distanceToPlayer(WorldItem worldItem) {

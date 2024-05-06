@@ -1,6 +1,6 @@
 package ru.alfabouh.engine.render.scene.scene_render.groups;
 
-import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
 import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
@@ -8,7 +8,7 @@ import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 import java.util.List;
 
 public class WorldRender extends SceneRenderBase {
-    public WorldRender(Scene.SceneRenderConveyor sceneRenderConveyor) {
+    public WorldRender(SceneRender sceneRenderConveyor) {
         super(1, sceneRenderConveyor, new RenderGroup("WORLD"));
     }
 
@@ -17,9 +17,11 @@ public class WorldRender extends SceneRenderBase {
     }
 
     public void onStartRender() {
+        super.onStartRender();
     }
 
     public void onStopRender() {
+        super.onStopRender();
     }
 
     private void render(double partialTicks, List<IModeledSceneObject> renderObjects) {

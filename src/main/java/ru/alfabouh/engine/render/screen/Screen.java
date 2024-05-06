@@ -75,7 +75,6 @@ public class Screen {
 
     public void initScreen() {
         this.scene = new Scene(this, new SceneWorld(Game.getGame().getPhysicsWorld()));
-        this.fillScene(this.getScene());
         this.setWindowCallbacks();
         this.createControllerDispatcher(this.getWindow());
     }
@@ -91,14 +90,6 @@ public class Screen {
     private void initShaders() {
         ResourceManager.shaderAssets.loadAllShaders();
         ResourceManager.shaderAssets.startShaders();
-    }
-
-    private void fillScene(Scene scene) {
-        scene.addSceneRenderBase(new WorldRender(scene.getSceneRender()));
-        scene.addSceneRenderBase(new WorldTransparentRender(scene.getSceneRender()));
-        scene.addSceneRenderBase(new WorldRenderLiquids(scene.getSceneRender()));
-        scene.addSceneRenderBase(new SkyRender(scene.getSceneRender()));
-        scene.addSceneRenderBase(new DebugRender(scene.getSceneRender()));
     }
 
     public void buildScreen() {

@@ -32,8 +32,8 @@ public class ItemEmp extends InventoryItem {
     public void onUpdate(IWorld world, boolean isCurrent) {
         WorldItem worldItem = (WorldItem) this.itemOwner();
         double dist = worldItem.getPosition().distance(Map01.entityManiac.getPosition());
-        int maxDist = 60;
-        this.level = MathHelper.clamp((int) ((maxDist - dist) / 10.0f), 0, 5);
+        int maxDist = 52;
+        this.level = (int) (((maxDist - Math.min(dist, maxDist)) / maxDist) * 6);
         if (this.getLevel() > 0 && isCurrent) {
             this.beep.setPitch(this.getLevel() * 0.8f + 0.1f);
             if (!this.beep.isPlaying()) {

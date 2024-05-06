@@ -11,6 +11,7 @@ import ru.alfabouh.engine.game.controller.input.MouseKeyboardController;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.render.scene.Scene;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.gui.InGameGUI;
 import ru.alfabouh.engine.render.scene.gui.PauseMenuGUI;
 import ru.alfabouh.engine.render.scene.world.camera.AttachedCamera;
@@ -88,7 +89,7 @@ public class BindingList {
 
         this.keyZ = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                Scene.setSceneDebugMode(Scene.getDebugMode() + 1);
+                SceneRender.CURRENT_DEBUG_MODE = SceneRender.CURRENT_DEBUG_MODE == 0 ? 1 : 0;
             }
         }, GLFW.GLFW_KEY_Z);
 

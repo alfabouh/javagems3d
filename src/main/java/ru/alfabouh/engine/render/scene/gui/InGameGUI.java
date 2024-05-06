@@ -11,6 +11,7 @@ import ru.alfabouh.engine.inventory.Inventory;
 import ru.alfabouh.engine.physics.entities.player.KinematicPlayerSP;
 import ru.alfabouh.engine.physics.entities.prop.PhysPlank;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.fabric.render.data.inventory.RenderInventoryItemData;
 import ru.alfabouh.engine.render.scene.gui.base.GUI;
 import ru.alfabouh.engine.render.scene.gui.ui.*;
@@ -144,7 +145,7 @@ public class InGameGUI extends AbstractGUI {
             textUI.clear();
         }
 
-        if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 1) {
+        if (SceneRender.CURRENT_DEBUG_MODE == 1) {
             if (entityPlayerSP instanceof KinematicPlayerSP) {
                 KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
                 this.coordinates.setText(String.format("%s %s %s | %s %s %s", (float) entityPlayerSP.getPosition().x, (float) entityPlayerSP.getPosition().y, (float) entityPlayerSP.getPosition().z, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().x, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().y, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().z));
@@ -157,7 +158,7 @@ public class InGameGUI extends AbstractGUI {
             this.fps.render(partialTicks);
         }
 
-        if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 1) {
+        if (SceneRender.CURRENT_DEBUG_MODE == 1) {
 
             this.entities.render(partialTicks);
             this.coordinates.render(partialTicks);
@@ -211,7 +212,7 @@ public class InGameGUI extends AbstractGUI {
             this.cassetteText.setHexColor(0xffee22);
             this.cassetteText.render(partialTicks);
 
-            if (Game.getGame().getScreen().getScene().getSceneRender().getCurrentDebugMode() == 0) {
+            if (SceneRender.CURRENT_DEBUG_MODE == 0) {
                 if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
                     this.itemDescText.setText(inventory.getCurrentItem().getDescription());
                     this.itemDescText.render(partialTicks);

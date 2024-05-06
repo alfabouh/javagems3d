@@ -6,6 +6,7 @@ import ru.alfabouh.engine.game.exception.GameException;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Graph implements Serializable {
     private final Map<GVertex, List<GEdge>> graph;
@@ -89,7 +90,7 @@ public class Graph implements Serializable {
     public GVertex getRandomVertex() {
         Random random = new Random();
         Set<GVertex> set = this.graph.keySet();
-        return set.stream().skip(Game.getGame().random.nextInt(set.size() - 1)).findFirst().get();
+        return set.stream().skip(ThreadLocalRandom.current().nextInt(set.size())).findAny().get();
     }
 
     @SuppressWarnings("all")
