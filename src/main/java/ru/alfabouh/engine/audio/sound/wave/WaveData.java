@@ -100,9 +100,9 @@ public class WaveData {
             return null;
         }
 
-        WaveData waveData = new WaveData(buffer, channels, (int) audioFormat.getSampleRate());
+        WaveData WaveData = new WaveData(buffer, channels, (int) audioFormat.getSampleRate());
 
-        return waveData;
+        return WaveData;
     }
 
     private static ByteBuffer convertAudioBytes(byte[] audioBytes, boolean twoBytesData, boolean bigEndian) {
@@ -122,6 +122,6 @@ public class WaveData {
     }
 
     public void dispose() {
-        data.clear();
+        this.data.clear();
     }
 }

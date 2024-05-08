@@ -1,10 +1,9 @@
 package ru.alfabouh.engine.audio.sound;
 
 import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.ALC;
 import ru.alfabouh.engine.audio.SoundManager;
+import ru.alfabouh.engine.audio.sound.wave.OldJGLWaveData;
 import ru.alfabouh.engine.audio.sound.wave.WaveData;
-import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.game.resources.cache.GameCache;
 import ru.alfabouh.engine.game.resources.cache.ICached;
@@ -42,12 +41,12 @@ public class SoundBuffer implements ICached {
     }
 
     private void readWave(URL url, int soundFormat) {
-        WaveData waveData = WaveData.create(url);
-        if (waveData == null) {
+        OldJGLWaveData WaveData = OldJGLWaveData.create(url);
+        if (WaveData == null) {
             throw new GameException("Couldn't create wavefront: " + this.getSoundName());
         }
-        AL10.alBufferData(this.buffer, soundFormat, waveData.data, waveData.samplerate);
-        waveData.dispose();
+        AL10.alBufferData(this.buffer, soundFormat, WaveData.data, WaveData.samplerate);
+        WaveData.dispose();
         SoundManager.checkALonErrors();
     }
 

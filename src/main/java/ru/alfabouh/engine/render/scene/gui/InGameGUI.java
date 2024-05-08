@@ -154,9 +154,9 @@ public class InGameGUI extends AbstractGUI {
             this.coordinates.setText(String.format("%s %s %s", (int) entityPlayerSP.getPosition().x, (int) entityPlayerSP.getPosition().y, (int) entityPlayerSP.getPosition().z));
         }
 
-        if (Game.DEBUG_MODE) {
+        //if (Game.DEBUG_MODE) {
             this.fps.render(partialTicks);
-        }
+        //}
 
         if (SceneRender.CURRENT_DEBUG_MODE == 1) {
 

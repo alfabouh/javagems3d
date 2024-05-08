@@ -471,7 +471,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
             this.kill();
         }
         this.checkEnemy();
-        float staminaDelta = 0.002f;
+        float staminaDelta = 0.0025f;
         this.staminaCd -= 1;
         if (this.isRunning()) {
             this.stamina -= staminaDelta;
@@ -479,7 +479,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 this.staminaCd = 160;
             }
         } else {
-            this.stamina = Math.min(this.stamina + staminaDelta * 0.75f, 1.0f);
+            this.stamina = Math.min(this.stamina + staminaDelta * 0.7f, 1.0f);
         }
         boolean flag = !this.groundCheck();
         Vector3d look = MathHelper.calcLookVector(this.getRotation());
