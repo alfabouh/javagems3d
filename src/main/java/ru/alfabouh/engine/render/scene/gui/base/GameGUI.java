@@ -3,6 +3,7 @@ package ru.alfabouh.engine.render.scene.gui.base;
 import org.joml.Vector2i;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
 import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.game.controller.ControllerDispatcher;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.render.scene.gui.MainMenuGUI;
 
@@ -45,6 +46,9 @@ public class GameGUI {
     }
 
     public void setCurrentGui(GUI currentGui) {
+        ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptLMB();
+        ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptRMB();
+        ControllerDispatcher.mouseKeyboardController.getMouse().forceInterruptMMB();
         if (this.getCurrentGui() != null) {
             if (this.oldGui != null) {
                 this.oldGui.onStopRender();

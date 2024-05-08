@@ -48,7 +48,7 @@ public class NavigationToPlayerAI extends NavigationAI {
         this.queuePath = new ArrayList<>();
         this.atomicBoolean = new AtomicBoolean(false);
         this.playerPos = new Vector3d(0.0d);
-        this.chasingSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 4.0f, 4.0f);
+        this.chasingSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 4.0f, 3.0f);
 
         if (this.chasingSound != null) {
             this.chasingSound.setAttachedTo(worldItem);
@@ -63,7 +63,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                             continue;
                         }
 
-                        this.setSpeed(this.getAtomicBoolean().get() ? this.getMaxSpeed() : 0.115f);
+                        this.setSpeed(this.getAtomicBoolean().get() ? this.getMaxSpeed() : 0.14f);
 
                         if (!this.getAtomicBoolean().get() && this.reachedDestination()) {
                             randomVertex = Game.random.nextFloat() <= this.getRandomPlayerChasePercent() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : world.getGraph().getRandomVertex();
@@ -172,12 +172,12 @@ public class NavigationToPlayerAI extends NavigationAI {
         float aggressionPercent = 1.0f;
         boolean hasEnabledRadio = false;
 
-        final float minSeekDist = 18.0f;
+        final float minSeekDist = 16.0f;
         final float minSpeed = 0.09f;
         final int minMemory = 200;
 
-        final float maxSeekDist = 52.0f;
-        final float maxSpeed = 0.125f;
+        final float maxSeekDist = 50.0f;
+        final float maxSpeed = 0.12f;
         final int maxMemory = 600;
 
         if (worldItem instanceof KinematicPlayerSP) {

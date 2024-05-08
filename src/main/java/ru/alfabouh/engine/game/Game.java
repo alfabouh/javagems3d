@@ -27,7 +27,7 @@ import java.util.Random;
 
 public class Game {
     public static boolean DEBUG_MODE = true;
-    public static final String GAME_NAME = "Abandoned horror game";
+    public static final String GAME_NAME = "Reznya 3D";
     public static long rngSeed;
     public static Random random;
     private static Game startScreen;

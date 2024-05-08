@@ -80,14 +80,17 @@ public class Mouse {
 
     public void forceInterruptLMB() {
         this.forceInterruptLMB = true;
+        this.flag1 = false;
     }
 
     public void forceInterruptRMB() {
         this.forceInterruptRMB = true;
+        this.flag2 = false;
     }
 
     public void forceInterruptMMB() {
         this.forceInterruptMMB = true;
+        this.flag3 = false;
     }
 
     public boolean isLeftKeyPressed() {

@@ -187,7 +187,7 @@ public class Map01 implements IMapLoader {
 
         //Graph graph = new Graph();
         //TerrainGraphGenerator terrainGraphGenerator = new TerrainGraphGenerator(world.getDynamicsWorld(), graph);
-        //Graph.GVertex vertex = terrainGraphGenerator.startPos(65.0d, -1.5d, -25.0d);
+        //Graph.GVertex vertex = terrainGraphGenerator.startPos(42.0d, 7.5d, -9.5d);
         //terrainGraphGenerator.generate(vertex);
         //Graph.saveInFile(graph, this.levelInfo().getLevelName());
     }

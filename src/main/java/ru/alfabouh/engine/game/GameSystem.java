@@ -176,8 +176,7 @@ public class GameSystem implements IEngine {
                 badExit = false;
             } catch (Exception e) {
                 Game.getGame().getLogManager().error(e);
-                GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
-                badExit = false;
+                badExit = true;
             } finally {
                 try {
                     this.destroyMap();
@@ -187,12 +186,13 @@ public class GameSystem implements IEngine {
                     Game.getGame().getSoundManager().destroy();
                     Game.getGame().getPhysicThreadManager().getPhysicsTimer().cleanResources();
                     Game.getGame().getLogManager().log("Engine-Off");
-                    if (badExit) {
-                        GameLogging.showExceptionDialog("The program closed in a strange way. Open the logs folder to find out the details.");
-                    }
                 } catch (Exception e) {
                     Game.getGame().getLogManager().error(e);
-                    GameLogging.showExceptionDialog("An exception occurred on game closing. Open the logs folder for details.");
+                    badExit = true;
+                } finally {
+                    if (badExit) {
+                        GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder to find out the details.");
+                    }
                 }
             }
         });

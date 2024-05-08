@@ -351,6 +351,7 @@ public class Screen {
         if (Game.getGame().isValidPlayer()) {
             SoundListener.updateOrientationAndPosition(TransformationManager.instance.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
         }
+        SoundListener.updateListenerGain();
         Scene.checkGLErrors();
     }
 
@@ -405,7 +406,7 @@ public class Screen {
             GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             int strokes = 0;
             for (String s : this.lines) {
-                TextUI textUI = new TextUI(s, this.guiFont, 0x00ff00, new Vector3f(0.0f, (strokes++) * 40.0f, 0.5f));
+                TextUI textUI = new TextUI(s, this.guiFont, 0x00ff00, new Vector3f(5.0f, (strokes++) * 40.0f + 5.0f, 0.5f));
                 textUI.render(0.0f);
                 textUI.clear();
             }
