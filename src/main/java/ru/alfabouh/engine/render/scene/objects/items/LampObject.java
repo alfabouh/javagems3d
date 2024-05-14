@@ -19,11 +19,11 @@ public class LampObject extends EntityObject {
         super.onAddLight(light);
         if (this.getWorldItem() instanceof PhysLightCube) {
             if (this.getWorldItem().hasLight()) {
-                Vector3d color = light.getLightColor().mul(8.0d);
+                Vector3d color = light.getLightColor();
                 Material material = new Material();
                 material.setDiffuse(ColorSample.createColor(color));
                 this.getRenderData().setOverObjectMaterial(material);
-                this.getRenderData().getModelRenderParams().setLightOpaque(false);
+                this.getRenderData().getModelRenderParams().setBright(true);
             }
         }
     }

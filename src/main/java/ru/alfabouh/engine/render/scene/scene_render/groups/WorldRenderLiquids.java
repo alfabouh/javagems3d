@@ -13,7 +13,7 @@ import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 
 public class WorldRenderLiquids extends SceneRenderBase {
     public WorldRenderLiquids(SceneRender sceneRenderConveyor) {
-        super(10, sceneRenderConveyor, new RenderGroup("LIQUIDS"));
+        super(10, sceneRenderConveyor, new RenderGroup("LIQUIDS_DEFERRED"));
     }
 
     public void onRender(double partialTicks) {
@@ -26,10 +26,10 @@ public class WorldRenderLiquids extends SceneRenderBase {
             shaderManager.getUtils().performProjectionMatrix();
             shaderManager.getUtils().passViewAndModelMatrices(model);
             shaderManager.getUtils().passShadowsInfo();
-            shaderManager.getUtils().passCommonInfo();
+            shaderManager.getUtils().passCameraInfo();
             shaderManager.performUniform("texture_scaling", liquidObject.getTextureScaling());
             shaderManager.getUtils().passCubeMap("ambient_cubemap", liquidObject.getRenderLiquidData().getAmbient());
-            shaderManager.performUniform("use_cubemap", liquidObject.getRenderLiquidData().reflections() ? 1 : 0);
+            shaderManager.performUniform("use_cubemap", liquidObject.getRenderLiquidData().reflections());
 
             Scene.activeGlTexture(0);
             liquidObject.getRenderLiquidData().getLiquidTexture().bindTexture();

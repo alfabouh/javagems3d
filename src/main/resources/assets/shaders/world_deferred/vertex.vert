@@ -1,3 +1,6 @@
+layout (location=0) in vec3 position;
+layout (location=1) in vec2 texture;
+
 struct PointLight
 {
     float plPosX;
@@ -26,10 +29,6 @@ layout (std140, binding = 1) uniform PointLights {
     int total_plights;
 };
 
-layout (std140, binding = 2) uniform Misc {
-    float w_tick;
-};
-
 layout (std140, binding = 3) uniform Fog {
     float fogDensity;
     float fogColorR;
@@ -37,6 +36,17 @@ layout (std140, binding = 3) uniform Fog {
     float fogColorB;
 };
 
+out vec2 out_texture;
+out mat4 out_view_matrix;
+out mat4 out_inversed_view_matrix;
+uniform mat4 projection_model_matrix;
+uniform mat4 view_matrix;
+
 void main()
 {
+    gl_Position = projection_model_matrix * vec4(position, 1.0f);
+    out_texture = texture;
+
+    out_inversed_view_matrix = inverse(view_matrix);
+    out_view_matrix = view_matrix;
 }

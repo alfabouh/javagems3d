@@ -37,7 +37,7 @@ public class RenderObject extends RenderWorldItem {
 
                     GL30.glStencilFunc(GL30.GL_NOTEQUAL, 1, 0xFF);
                     GL30.glStencilMask(0x00);
-                    ShaderManager shaderManager = ResourceManager.shaderAssets.world_selected;
+                    ShaderManager shaderManager = ResourceManager.shaderAssets.world_selected_gbuffer;
                     Model<Format3D> model = entityObject.getModel3D();
                     GL30.glDisable(GL30.GL_CULL_FACE);
                     GL30.glEnable(GL30.GL_DEPTH_TEST);

@@ -7,13 +7,13 @@ import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 
 import java.util.List;
 
-public class WorldRender extends SceneRenderBase {
-    public WorldRender(SceneRender sceneRenderConveyor) {
-        super(1, sceneRenderConveyor, new RenderGroup("WORLD"));
+public class WorldForwardRender extends SceneRenderBase {
+    public WorldForwardRender(SceneRender sceneRenderConveyor) {
+        super(1, sceneRenderConveyor, new RenderGroup("WORLD_FORWARD"));
     }
 
     public void onRender(double partialTicks) {
-        this.render(partialTicks, this.getSceneWorld().getFilteredEntityList());
+        this.render(partialTicks, this.getSceneWorld().getFilteredEntityList(SceneRender.RenderPass.FORWARD));
     }
 
     public void onStartRender() {

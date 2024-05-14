@@ -66,7 +66,7 @@ public class ShaderProgram {
                 err = "UNKNOWN ERR";
             }
             Game.getGame().getLogManager().warn("Could not link shader: " + err);
-            return false;
+            //return false;
         }
         if (this.vertexShaderId != 0) {
             GL20.glDetachShader(this.programId, this.vertexShaderId);

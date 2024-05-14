@@ -46,25 +46,25 @@ public class SkyRender extends SceneRenderBase {
     }
 
     private void renderCubeMapSkyBox() {
-        Sky sky = this.getSceneWorld().getEnvironment().getSky();
-        ShaderManager shaderManager = ResourceManager.shaderAssets.skybox;
-        Model<Format3D> model = SkyRender.skyBoxModel;
-        shaderManager.bind();
-        GL30.glDisable(GL30.GL_CULL_FACE);
-        GL30.glDepthFunc(GL30.GL_LEQUAL);
-        shaderManager.getUtils().performProjectionMatrix();
-        Matrix4d matrix4d = TransformationManager.instance.getModelViewMatrix(model);
-        matrix4d.m30(0);
-        matrix4d.m31(0);
-        matrix4d.m32(0);
-        shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog() ? 1 : 0);
-        shaderManager.getUtils().performModelViewMatrix3d(matrix4d);
-        shaderManager.getUtils().setCubeMapTexture(sky.getSkyBox().cubeMapTexture());
-        //shaderManager.getUtils().setCubeMapTexture(Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
-        Scene.renderModel(model, GL30.GL_TRIANGLES);
-        shaderManager.unBind();
-        GL30.glDepthFunc(GL30.GL_LESS);
-        GL30.glEnable(GL30.GL_CULL_FACE);
+       Sky sky = this.getSceneWorld().getEnvironment().getSky();
+       ShaderManager shaderManager = ResourceManager.shaderAssets.skybox;
+       Model<Format3D> model = SkyRender.skyBoxModel;
+       shaderManager.bind();
+       GL30.glDisable(GL30.GL_CULL_FACE);
+       GL30.glDepthFunc(GL30.GL_LEQUAL);
+       shaderManager.getUtils().performProjectionMatrix();
+       Matrix4d matrix4d = TransformationManager.instance.getModelViewMatrix(model);
+       matrix4d.m30(0);
+       matrix4d.m31(0);
+       matrix4d.m32(0);
+       shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog() ? 1 : 0);
+       shaderManager.getUtils().performModelViewMatrix3d(matrix4d);
+       shaderManager.getUtils().setCubeMapTexture(sky.getSkyBox().cubeMapTexture());
+       //shaderManager.getUtils().setCubeMapTexture(Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
+       Scene.renderModel(model, GL30.GL_TRIANGLES);
+       shaderManager.unBind();
+       GL30.glDepthFunc(GL30.GL_LESS);
+       GL30.glEnable(GL30.GL_CULL_FACE);
     }
 
     public void onRender(double partialTicks) {

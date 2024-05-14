@@ -13,6 +13,7 @@ import ru.alfabouh.engine.inventory.items.*;
 import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.physics.brush.Plane4dBrush;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.fabric.Render2D3DObject;
 import ru.alfabouh.engine.render.scene.fabric.render.RenderObject;
 import ru.alfabouh.engine.render.scene.fabric.render.RenderPlayerSP;
@@ -95,7 +96,7 @@ public class RenderDataLoader implements IAssetsLoader {
         Material csMat = new Material();
         csMat.setDiffuse(ResourceManager.renderAssets.cassette_world);
 
-        this.water = new RenderLiquidData(ResourceManager.renderAssets.waterNormals, ResourceManager.renderAssets.waterTexture, false, ResourceManager.shaderAssets.liquid);
+        this.water = new RenderLiquidData(ResourceManager.renderAssets.waterNormals, ResourceManager.renderAssets.waterTexture, false, ResourceManager.shaderAssets.world_liquid_gbuffer);
 
         this.enemy = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_enemy);
         this.enemy.getModelRenderParams().setCustomCullingAABSize(new Vector3d(5.0d));
@@ -145,19 +146,19 @@ public class RenderDataLoader implements IAssetsLoader {
         this.cassette_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.cassette_world.setOverObjectMaterial(csMat);
 
-        this.plank = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.plank);
+        this.plank = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.plank);
 
-        this.door1 = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.door2);
+        this.door1 = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.door2);
         this.door1.getModelRenderParams().setShouldInterpolateMovement(false).setCustomCullingAABSize(new Vector3d(5.0d));
 
-        this.entityCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
-        this.entityLamp = new RenderObjectData(new RenderObject(), LampObject.class, ResourceManager.shaderAssets.world).setMeshDataGroup(ResourceManager.modelAssets.cube);
-        this.player = new RenderObjectData(new RenderPlayerSP(), PlayerSPObject.class, ResourceManager.shaderAssets.world);
+        this.entityCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.cube);
+        this.entityLamp = new RenderObjectData(new RenderObject(), LampObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.cube);
+        this.player = new RenderObjectData(new RenderPlayerSP(), PlayerSPObject.class, ResourceManager.shaderAssets.world_gbuffer);
 
-        this.ground = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world);
+        this.ground = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world_gbuffer);
         this.ground.getModelRenderParams().setAlphaDiscard(0.25f);
 
-        this.particleFlame = new RenderParticleD2Data(new RenderObject(), ParticleObject.class, ResourceManager.shaderAssets.world, ResourceManager.renderAssets.particleTexturePack, true);
+        this.particleFlame = new RenderParticleD2Data(new RenderObject(), ParticleObject.class, ResourceManager.shaderAssets.world_gbuffer, ResourceManager.renderAssets.particleTexturePack, true);
 
         Game.getGame().getScreen().addLineInLoadingScreen("Render data successfully loaded...");
     }

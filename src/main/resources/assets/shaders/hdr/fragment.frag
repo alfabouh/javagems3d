@@ -8,7 +8,7 @@ vec4 hdr(vec4, float, float);
 
 void main()
 {
-    frag_color = hdr(texture(texture_sampler, out_texture), 3.0, 0.5);
+    frag_color = hdr(texture(texture_sampler, out_texture), 1.5, 0.5);
 }
 
 vec4 hdr(vec4 in_col, float exposure, float gamma) {

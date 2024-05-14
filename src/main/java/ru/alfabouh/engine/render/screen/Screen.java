@@ -74,6 +74,7 @@ public class Screen {
     }
 
     public void initScreen() {
+        this.addLineInLoadingScreen("Drawing scene...");
         this.scene = new Scene(this, new SceneWorld(Game.getGame().getPhysicsWorld()));
         this.setWindowCallbacks();
         this.createControllerDispatcher(this.getWindow());
@@ -149,12 +150,13 @@ public class Screen {
         if (Game.DEBUG_MODE) {
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
         }
-        this.window = new Window(new Window.WindowProperties(Screen.defaultW, Screen.defaultH, Game.getGame().toString()));
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        boolean flag = vidMode != null && Game.getGame().getGameSettings().windowMode.getValue() == 0;
+        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : Screen.defaultW, flag ? vidMode.height() : Screen.defaultH, Game.getGame().toString()));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new GameException("Failed to create the GLFW window");
         }
-        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         if (vidMode != null) {
             int x = (vidMode.width() - Screen.defaultW) / 2;
             int y = (vidMode.height() - Screen.defaultH) / 2;
@@ -164,7 +166,6 @@ public class Screen {
         }
         GLFW.glfwMakeContextCurrent(window);
         this.checkScreenMode();
-        this.checkVSync();
         return true;
     }
 
@@ -269,11 +270,6 @@ public class Screen {
         return this.getScene().getCurrentCamera();
     }
 
-    private void enableMSAA() {
-        GL11.glEnable(GL13.GL_MULTISAMPLE);
-        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, (int) MathHelper.clamp(Game.getGame().getGameSettings().msaa.getValue(), 0.0f, 8.0f));
-    }
-
     private void updateScreen() {
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
@@ -290,7 +286,7 @@ public class Screen {
     }
 
     private void renderLoop() throws InterruptedException {
-        this.enableMSAA();
+        SoundListener.updateListenerGain();
         int fps = 0;
         double lastFPS = Game.glfwTime();
 

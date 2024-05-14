@@ -14,9 +14,11 @@ import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LightManager implements ILightManager {
     public static final int MAX_POINT_LIGHTS = 128;
@@ -58,7 +60,7 @@ public class LightManager implements ILightManager {
     }
 
     public float calcAmbientLight() {
-        return Math.max(0.5f * this.environment.getSky().getSunBrightness(), 1.5e-2f);
+        return this.environment.getSky().getSunBrightness();
     }
 
     public List<PointLight> getPointLightList() {
@@ -75,8 +77,8 @@ public class LightManager implements ILightManager {
     private void updateSunUbo(Matrix4d viewMatrix) {
         Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunAngle(), viewMatrix, 0.0f);
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8);
-        value1Buffer.put(SceneRender.CURRENT_DEBUG_MODE == 0 ? this.calcAmbientLight() : 1.0f);
-        value1Buffer.put(SceneRender.CURRENT_DEBUG_MODE == 0 ? this.environment.getSky().getSunBrightness() : 1.0f);
+        value1Buffer.put(this.calcAmbientLight());
+        value1Buffer.put(this.environment.getSky().getSunBrightness());
         value1Buffer.put(angle.x);
         value1Buffer.put(angle.y);
         value1Buffer.put(angle.z);
@@ -89,10 +91,12 @@ public class LightManager implements ILightManager {
     }
 
     private void updatePointLightsUbo() {
-        this.getPointLightList().sort(Comparator.comparingDouble(e -> e.getBrightness() * -1));
+        List<PointLight> pointLights = this.getPointLightList().stream().filter(PointLight::isEnabled).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1)).collect(Collectors.toList());
+
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
-        for (int i = 0; i < this.getPointLightList().size(); i++) {
-            PointLight pointLight = this.getPointLightList().get(i);
+        int total = pointLights.size();
+        for (int i = 0; i < total; i++) {
+            PointLight pointLight = pointLights.get(i);
             value1Buffer.put((float) pointLight.getLightPos().x);
             value1Buffer.put((float) pointLight.getLightPos().y);
             value1Buffer.put((float) pointLight.getLightPos().z);
@@ -102,9 +106,15 @@ public class LightManager implements ILightManager {
             value1Buffer.put(pointLight.getBrightness());
             value1Buffer.put(pointLight.getAttachedShadowSceneId());
             value1Buffer.flip();
-            SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * 32, value1Buffer);
+            SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, i * (8 * 4), value1Buffer);
         }
         MemoryUtil.memFree(value1Buffer);
+
+        IntBuffer intBuffer = MemoryUtil.memAllocInt(1);
+        intBuffer.put(total);
+        intBuffer.flip();
+        SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.PointLights, LightManager.MAX_POINT_LIGHTS * (8 * 4), intBuffer);
+        MemoryUtil.memFree(intBuffer);
     }
 
     public void removeAllLights() {

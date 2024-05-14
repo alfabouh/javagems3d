@@ -4,12 +4,13 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.render.scene.SceneRender;
 
 @SuppressWarnings("all")
 public final class ModelRenderParams {
     private boolean lightOpaque;
     private boolean shadowCaster;
-    private boolean shadowReceiver;
+    private boolean passShadowsInfoInRender;
     private boolean hasTransparency;
     private float alphaDiscardValue;
     private boolean isBright;
@@ -18,12 +19,14 @@ public final class ModelRenderParams {
     private ShaderManager shaderManager;
     private float renderDistance;
     private boolean shouldInterpolateMovement;
+    private SceneRender.RenderPass renderPass;
 
-    public ModelRenderParams(boolean shadowCaster, boolean shadowReceiver, boolean hasTransparency, @NotNull ShaderManager shaderManager) {
+    public ModelRenderParams(boolean shadowCaster, boolean passShadowsInfoInRender, boolean hasTransparency, @NotNull ShaderManager shaderManager) {
+        this.setShaderManager(shaderManager);
+
         this.shadowCaster = shadowCaster;
-        this.shadowReceiver = shadowReceiver;
+        this.passShadowsInfoInRender = passShadowsInfoInRender;
         this.hasTransparency = hasTransparency;
-        this.shaderManager = shaderManager;
         this.lightOpaque = true;
         this.isBright = false;
         this.renderDistance = -1.0f;
@@ -33,12 +36,29 @@ public final class ModelRenderParams {
         this.customCullingAABSize = null;
     }
 
+    private void setForwardRenderPass() {
+        this.setRenderPass(SceneRender.RenderPass.FORWARD);
+    }
+
+    private void setDeferredRenderPass() {
+        this.setRenderPass(SceneRender.RenderPass.DEFERRED);
+    }
+
+    public SceneRender.RenderPass getRenderPassToRenderIn() {
+        return this.renderPass;
+    }
+
     public static ModelRenderParams defaultModelRenderConstraints(@NotNull ShaderManager shaderManager) {
-        return new ModelRenderParams(true, true, false, shaderManager);
+        return new ModelRenderParams(true, false, false, shaderManager);
     }
 
     public boolean isShouldInterpolateMovement() {
         return this.shouldInterpolateMovement;
+    }
+
+    public ModelRenderParams setRenderPass(SceneRender.RenderPass renderPass) {
+        this.renderPass = renderPass;
+        return this;
     }
 
     public ModelRenderParams setShouldInterpolateMovement(boolean shouldInterpolateMovement) {
@@ -77,15 +97,6 @@ public final class ModelRenderParams {
         this.hasTransparency = hasTransparency;
     }
 
-    public boolean isLightOpaque() {
-        return this.lightOpaque;
-    }
-
-    public ModelRenderParams setLightOpaque(boolean lightOpaque) {
-        this.lightOpaque = lightOpaque;
-        return this;
-    }
-
     public boolean isShadowCaster() {
         return this.shadowCaster;
     }
@@ -95,12 +106,12 @@ public final class ModelRenderParams {
         return this;
     }
 
-    public boolean isShadowReceiver() {
-        return this.shadowReceiver;
+    public boolean isPassShadowsInfoInRender() {
+        return this.passShadowsInfoInRender;
     }
 
-    public ModelRenderParams setShadowReceiver(boolean shadowReceiver) {
-        this.shadowReceiver = shadowReceiver;
+    public ModelRenderParams setPassShadowsInfoInRender(boolean passShadowsInfoInRender) {
+        this.passShadowsInfoInRender = passShadowsInfoInRender;
         return this;
     }
 
@@ -138,17 +149,22 @@ public final class ModelRenderParams {
 
     public void setShaderManager(@NotNull ShaderManager shaderManager) {
         this.shaderManager = shaderManager;
+        if (this.getShaderManager().isUseForGBuffer()) {
+            this.setDeferredRenderPass();
+        } else {
+            this.setForwardRenderPass();
+        }
     }
 
     public ModelRenderParams copy() {
-        ModelRenderParams modelRenderParams = new ModelRenderParams(this.isShadowCaster(), this.isShadowReceiver(), this.isHasTransparency(), this.getShaderManager());
-        modelRenderParams.setLightOpaque(this.isLightOpaque());
+        ModelRenderParams modelRenderParams = new ModelRenderParams(this.isShadowCaster(), this.isPassShadowsInfoInRender(), this.isHasTransparency(), this.getShaderManager());
         modelRenderParams.setTextureScaling(this.getTextureScaling());
         modelRenderParams.setBright(this.isBright());
         modelRenderParams.setRenderDistance(this.getRenderDistance());
         modelRenderParams.setAlphaDiscard(this.getAlphaDiscardValue());
         modelRenderParams.setCustomCullingAABSize(this.getCustomCullingAABSize());
         modelRenderParams.setShouldInterpolateMovement(this.isShouldInterpolateMovement());
+        modelRenderParams.setRenderPass(this.getRenderPassToRenderIn());
         return modelRenderParams;
     }
 }

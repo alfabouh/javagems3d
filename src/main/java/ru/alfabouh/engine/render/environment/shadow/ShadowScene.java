@@ -1,14 +1,15 @@
 package ru.alfabouh.engine.render.environment.shadow;
 
 import org.joml.*;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.game.resources.assets.materials.textures.IImageSample;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.game.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.render.environment.light.PointLight;
@@ -47,7 +48,11 @@ public class ShadowScene {
 
         this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
         this.FBOTexture2DProgram.clearFBO();
-        this.FBOTexture2DProgram.createFrameBuffer2DTexture(this.getShadowDim(), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL43.GL_RG32F, GL30.GL_RG, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+
+        FBOTexture2DProgram.FBOTextureInfo[] FBOs = new FBOTexture2DProgram.FBOTextureInfo[]{new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
+                new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
+                new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG)};
+        this.FBOTexture2DProgram.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     private Vector2i getShadowDim() {
@@ -210,8 +215,10 @@ public class ShadowScene {
                 if (model == null || model.getMeshDataGroup() == null) {
                     continue;
                 }
+                this.getSunShadowShader().performUniform("texture_sampler", 0);
+                GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 this.getSunShadowShader().getUtils().performModelMatrix3d(model, false);
-                Scene.renderModel(model, GL30.GL_TRIANGLES);
+                this.renderModelForShadow(model);
             }
         }
         this.getFrameBufferObjectProgram().unBindFBO();
@@ -264,6 +271,23 @@ public class ShadowScene {
             }
         }
         this.getPointLightShadowShader().unBind();
+    }
+
+    private void renderModelForShadow(Model<?> model) {
+        for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
+            if (modelNode.getMaterial().getDiffuse() instanceof IImageSample) {
+                ((IImageSample) modelNode.getMaterial().getDiffuse()).bindTexture();
+            }
+            GL30.glBindVertexArray(modelNode.getMesh().getVao());
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glEnableVertexAttribArray(a);
+            }
+            GL30.glDrawElements(GL11.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glDisableVertexAttribArray(a);
+            }
+            GL30.glBindVertexArray(0);
+        }
     }
 
     public void bindPointLightToShadowScene(int attachCode, PointLight pointLight) {

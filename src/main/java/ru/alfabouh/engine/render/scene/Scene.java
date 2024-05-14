@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.controller.input.IController;
-import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.resources.assets.materials.Material;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
@@ -21,8 +20,6 @@ import ru.alfabouh.engine.render.scene.gui.base.GUI;
 import ru.alfabouh.engine.render.scene.gui.base.GameGUI;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
 import ru.alfabouh.engine.render.scene.objects.items.PhysicsObject;
-import ru.alfabouh.engine.render.scene.scene_render.groups.GuiRender;
-import ru.alfabouh.engine.render.scene.scene_render.groups.InventoryRender;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.AttachedCamera;
 import ru.alfabouh.engine.render.scene.world.camera.FreeCamera;
@@ -30,11 +27,6 @@ import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.render.screen.window.Window;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Scene implements IScene {
     private final Screen screen;
@@ -54,7 +46,6 @@ public class Scene implements IScene {
         this.window = this.getScreen().getWindow();
         this.frustumCulling = new FrustumCulling();
         this.gui = new GameGUI();
-
         this.sceneRender = new SceneRender(this.getSceneData());
     }
 
@@ -230,7 +221,7 @@ public class Scene implements IScene {
                 }
             }
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-                shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial(), sceneObject.getModelRenderParams().isShadowReceiver());
+                shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial(), sceneObject.getModelRenderParams().isPassShadowsInfoInRender());
                 GL30.glBindVertexArray(modelNode.getMesh().getVao());
                 for (int a : modelNode.getMesh().getAttributePointers()) {
                     GL30.glEnableVertexAttribArray(a);
