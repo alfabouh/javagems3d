@@ -47,7 +47,8 @@ public class MainMenuGUI extends AbstractGUI {
 
     public void createFBOs(Vector2i dim) {
         this.postFbo.clearFBO();
-        this.postFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0}, false, GL43.GL_RGB, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        FBOTexture2DProgram.FBOTextureInfo[] FBOs = new FBOTexture2DProgram.FBOTextureInfo[]{new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB, GL30.GL_RGB)};
+        this.postFbo.createFrameBuffer2DTexture(dim, FBOs, false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
     }
 
     public void startMusic() {

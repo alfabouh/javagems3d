@@ -10,6 +10,7 @@ import ru.alfabouh.engine.render.environment.Environment;
 import ru.alfabouh.engine.render.environment.light.Light;
 import ru.alfabouh.engine.render.frustum.FrustumCulling;
 import ru.alfabouh.engine.render.frustum.ICullable;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.fabric.render.data.RenderLiquidData;
 import ru.alfabouh.engine.render.scene.fabric.render.data.RenderObjectData;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
@@ -51,12 +52,12 @@ public final class SceneWorld implements IWorld {
         return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.getRenderABB()) || !e.canBeCulled()).collect(Collectors.toList());
     }
 
-    public List<IModeledSceneObject> getFilteredEntityList() {
+    public List<IModeledSceneObject> getFilteredEntityList(SceneRender.RenderPass renderPassFiltering) {
         List<IModeledSceneObject> physicsObjects = new ArrayList<>(this.getToRenderList());
         if (this.getFrustumCulling() == null) {
             return physicsObjects;
         }
-        return this.filterCulled(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> e.isVisible() && !this.isItemReachedRenderDistance(e)).collect(Collectors.toList());
+        return this.filterCulled(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> (renderPassFiltering == null || e.getModelRenderParams().getRenderPassToRenderIn() == renderPassFiltering) && e.isVisible() && !this.isItemReachedRenderDistance(e)).collect(Collectors.toList());
     }
 
     public List<IModeledSceneObject> getToRenderList() {

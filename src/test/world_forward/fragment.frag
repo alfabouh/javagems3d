@@ -10,46 +10,29 @@ layout (location = 1) out vec4 bright_color;
 
 uniform vec3 camera_pos;
 
-uniform int use_cubemap;
-uniform int use_normals;
 uniform int texturing_code;
 uniform int lighting_code;
 
-const vec3 sampleOffsetDirections[20] = vec3[]
-(
-    vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1),
-    vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
-    vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
-    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
-);
+const int light_opacity_code = 1 << 2;
+const int light_bright_code = 1 << 3;
 
-const vec2 samples[16] = vec2[](
-    vec2(0.25, 0.25),
-    vec2(0.5, 0.5),
-    vec2(0.75, 0.75),
-    vec2(1.0, 1.0),
+const int diffuse_code = 1 << 2;
+const int emissive_code = 1 << 3;
+const int metallic_code = 1 << 4;
+const int normals_code = 1 << 5;
+const int specular_code = 1 << 6;
 
-    vec2(-0.25, 0.25),
-    vec2(-0.5, 0.5),
-    vec2(-0.75, 0.75),
-    vec2(-1.0, 1.0),
-
-    vec2(0.25, -0.25),
-    vec2(0.5, -0.5),
-    vec2(0.75, -0.75),
-    vec2(1.0, -1.0),
-
-    vec2(-0.25, -0.25),
-    vec2(-0.5, -0.5),
-    vec2(-0.75, -0.75),
-    vec2(-1.0, -1.0)
-);
+uniform int show_cascades;
+uniform float alpha_discard;
 
 uniform samplerCube ambient_cubemap;
 uniform vec2 texture_scaling;
+uniform vec4 diffuse_color;
 uniform sampler2D diffuse_map;
 uniform sampler2D normals_map;
+uniform sampler2D emissive_map;
+uniform sampler2D specular_map;
+uniform sampler2D metallic_map;
 
 struct CascadeShadow {
     float split_distance;
@@ -88,6 +71,7 @@ layout (std140, binding = 0) uniform SunLight {
 
 layout (std140, binding = 1) uniform PointLights {
     PointLight p_l[128];
+    int total_plights;
 };
 
 layout (std140, binding = 2) uniform Misc {
@@ -108,7 +92,7 @@ vec4 calc_light();
 vec4 calc_fog(vec3, vec4);
 
 vec2 scaled_coordinates() {
-    return (texture_coordinates + w_tick * 0.05) * texture_scaling;
+    return texture_coordinates * texture_scaling;
 }
 
 vec4 refract_cubemap(vec3 normal, float cnst) {
@@ -122,7 +106,7 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture(normals_map, scaled_coordinates() + w_tick * 0.015).rgb;
+    vec3 normal = texture(normals_map, scaled_coordinates()).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -130,52 +114,65 @@ vec3 calc_normal_map() {
 
 void main()
 {
-    vec4 lightFactor = calc_light();
     vec4 diffuse_texture = texture(diffuse_map, scaled_coordinates());
-    diffuse_texture += (use_cubemap == 1 ? refract_cubemap(calc_normal_map(), 1.1) : vec4(0.0));
+    vec4 emissive_texture = texture(emissive_map, scaled_coordinates());
+    vec4 diffuse = (texturing_code & diffuse_code) != 0 ? diffuse_texture : diffuse_color;
 
-    vec4 final = diffuse_texture * lightFactor;
-    frag_color = vec4(final.rgb, 1.0);
-    frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
-    float brightness = frag_color.r + frag_color.g + frag_color.b;
-
-    bright_color = brightness >= 8. ? frag_color : vec4(0., 0., 0., 1.0);
-}
-
-float per_cascade_bias_shadow[3] = float[](1.0e-6f, 1.0e-6f, 1.0e-6f);
-float per_cascade_linear_shadow[3] = float[](0.75, 0.8, 0.85);
-
-float calcVSM(int idx, vec4 shadow_coord, vec2 offset, float bias, float linear) {
-    vec2 moments = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord.xy + offset).rg;
-    float variance = moments.y - (moments.x * moments.x);
-
-    variance = max(variance, bias);
-    float d = shadow_coord.z - moments.x;
-    float shadowPCT = smoothstep(linear, 1.0, variance / (variance + d * d));
-
-    return shadowPCT > 1.0e-18f || shadow_coord.z <= moments.x + per_cascade_bias_shadow[0] ? 1.0 : shadowPCT;
-}
-
-float calculate_shadow_no_pcf(vec4 worldPosition, int idx, float bias, float linear) {
-    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
-    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    return calcVSM(idx, shadow_coord, vec2(0.0), bias, linear);
-}
-
-float calculate_shadow_pcf(vec4 worldPosition, int idx, float bias, float linear) {
-    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
-    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, 0);
-    int samSize = 8;
-
-    for (int i = 0; i < samSize; i++) {
-        vec2 offset = samples[i] * texelSize * 0.5;
-        shadow += calcVSM(idx, shadow_coord, offset, bias, linear);
+    if (alpha_discard > 0 && diffuse.a < alpha_discard) {
+        discard;
     }
 
-    return shadow / float(samSize);
+    diffuse += vec4(1.0 - diffuse.a) * alpha_discard + vec4(1.0 - diffuse.a) * diffuse;
+
+    vec4 lightFactor = (lighting_code & light_bright_code) != 0 ? vec4(1.5) : (lighting_code & light_opacity_code) == 0 ? vec4(1.) : ((texturing_code & emissive_code) != 0 ? emissive_texture * vec4(4.) : calc_light());
+
+    diffuse += (texturing_code & metallic_code) != 0 ? (refract_cubemap(calc_normal_map(), 1.73) * texture(metallic_map, texture_coordinates)) : vec4(0.0);
+
+    vec4 final = diffuse * lightFactor;
+    frag_color = vec4(final.xyz, diffuse_texture.a);
+
+    vec3 cascmask = vec3(1.0);
+    int cascadeIndex = int(mv_vertex_pos.z < cascade_shadow[0].split_distance) + int(mv_vertex_pos.z < cascade_shadow[1].split_distance);
+    switch (cascadeIndex) {
+        case 0:
+            cascmask = vec3(1.0f, 0.75f, 0.75f);
+            break;
+        case 1:
+            cascmask = vec3(0.75f, 1.0f, 0.75f);
+            break;
+        case 2:
+            cascmask = vec3(0.75f, 0.75f, 1.0f);
+            break;
+        default:
+            cascmask = vec3(1.0f, 1.0f, 0.75f);
+            break;
+    }
+    frag_color.rgb *= (show_cascades == 1) ? cascmask : vec3(1.0);
+    frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
+
+    float brightness = dot(frag_color.rgb, vec3(0.2126, 0.7152, 0.0722));
+    bright_color = brightness > 2.5 ? frag_color : vec4(0., 0., 0., diffuse_texture.a);
+}
+
+float vsmFixLightBleed(float pMax, float amount)
+{
+    return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
+}
+
+float calcVSM(int idx, vec4 shadow_coord, float bias) {
+    vec4 tex = shadow_coord / shadow_coord.w;
+    vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, tex.xy);
+    float mu = vsm.x;
+    float s2 = max(vsm.y - mu * mu, bias);
+    float pmax = s2 / (s2 + (tex.z - mu) * (tex.z - mu));
+
+    return tex.z >= vsm.x ? vsmFixLightBleed(pmax, 0.7) : 1.0;
+}
+
+float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
+    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
+    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
+    return calcVSM(idx, shadow_coord, bias);
 }
 
 float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos)
@@ -183,24 +180,37 @@ float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 
     vec3 fragToLight = fragPosition - lightPos;
     vec3 pos = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
 
-    float bias = max(0.05 * (1.0 - dot(mv_vertex_normal, pos)), 0.005);
+    float bias = 0.05;
     float currentDepth = length(fragToLight);
     float closestDepth = texture(cubemap, fragToLight).r;
     closestDepth *= far_plane;
     return currentDepth - bias > closestDepth ? 0.0 : 1.0;
 }
 
+/*
+float calcVSM(samplerCube cubemap, vec3 fragToLight, float bias) {
+    vec4 vsm = texture(cubemap, fragToLight);
+    float mu = vsm.x;
+    float s2 = max(vsm.y - mu * mu, bias);
+    float pmax = s2 / (s2 + (length(fragToLight) - mu) * (length(fragToLight) - mu));
+
+    return length(fragToLight) >= mu ? vsmFixLightBleed(pmax, 0.7) : 1.0;
+}
+
+float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos) {
+    vec3 fragToLight = normalize(fragPosition - lightPos);
+    float bias = 0.05;
+
+    return calcVSM(cubemap, fragToLight, bias);
+}
+*/
+
 vec4 calc_light() {
     vec4 lightFactors = vec4(0.);
     vec3 normal = normalize(mv_vertex_normal);
     vec3 sunPos = normalize(vec3(sunX, sunY, sunZ));
     int cascadeIndex = int(mv_vertex_pos.z < cascade_shadow[0].split_distance) + int(mv_vertex_pos.z < cascade_shadow[1].split_distance);
-    float bias = per_cascade_bias_shadow[cascadeIndex];
-    bias *= tan(acos(dot(normal, sunPos)));
-    bias = clamp(bias, 0.0, 1.0e-5f);
-
-    float linear = per_cascade_linear_shadow[cascadeIndex];
-    float sun_shadow = cascadeIndex == 0 ? calculate_shadow_pcf(out_world_position, cascadeIndex, bias, linear) : calculate_shadow_no_pcf(out_world_position, cascadeIndex, bias, linear);
+    float sun_shadow = calculate_shadow_vsm(out_world_position, cascadeIndex, 1.0e-7f);
 
     vec4 calcSunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, mv_vertex_pos, normal);
 
@@ -212,19 +222,21 @@ vec4 calc_light() {
         float at_base = 1.8 / (bright * 0.5);
         float linear = 2.25 / (bright * 2.75);
         float expo = 0.6 / (bright * 0.25f);
-        vec4 shadow = p.shadowMapId >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[int(p.shadowMapId)], out_world_position.xyz, vec3(p.plPosX, p.plPosY, p.plPosZ))) : vec4(1.0);
+        float p_id = p.shadowMapId;
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[int(p_id)], out_world_position.xyz, vec3(p.plPosX, p.plPosY, p.plPosZ))) : vec4(1.0);
         point_light_factor += calc_point_light(p, mv_vertex_pos, normal, at_base, linear, expo, bright) * shadow;
     }
 
-    float prgb = point_light_factor.r + point_light_factor.g + point_light_factor.b;
-    lightFactors += calcSunFactor * clamp(sun_shadow + prgb, 0.0, 1.0);
+    float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 3.0;
+    lightFactors += calcSunFactor * clamp(sun_shadow + brightness, 0.0, 1.0);
     lightFactors += point_light_factor;
     lightFactors += vec4(vec3(sunColorR, sunColorG, sunColorB) * ambient, 0.0);
+
     return lightFactors;
 }
 
 vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal) {
-    vec3 new_normal = use_normals == 1 ? calc_normal_map() : mv_vertex_normal;
+    vec3 new_normal = (texturing_code & normals_code) != 0 ? calc_normal_map() : vNormal;
     vec4 diffuseC = vec4(0.);
     vec4 specularC = vec4(0.);
 
@@ -236,10 +248,12 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     vec3 from_light = light_dir;
     vec3 reflectionF = normalize(from_light + camDir);
     specularF = max(dot(new_normal, reflectionF), 0.);
-    specularF = pow(specularF, 12.0);
+    specularF = pow(specularF, 8.0);
     specularC = brightness * specularF * vec4(colors, 1.);
 
-    return dot(vNormal, from_light) + 0.0001 >= 0 ? (diffuseC + specularC) : vec4(0.);
+    vec4 specularMap = (texturing_code & specular_code) != 0 ? texture(specular_map, texture_coordinates) : vec4(1.);
+
+    return dot(vNormal, from_light) + 0.0001 >= 0 ? (diffuseC + (specularC * specularMap)) : vec4(0.);
 }
 
 vec4 calc_sun_light(vec3 sunPos, vec3 vPos, vec3 vNormal) {

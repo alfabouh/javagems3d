@@ -174,19 +174,19 @@ public class Map01 implements IMapLoader {
         Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityLamp);
         entityPropInfo.getBulletObject().makeStatic();
         PointLight pointLight = (PointLight) new PointLight().setLightColor(new Vector3d(1.0f, 0.0f, 0.0f));
-        pointLight.setBrightness(2.0f);
+        pointLight.setBrightness(1.0f);
         Game.getGame().getProxy().addLight(entityPropInfo, pointLight);
 
         PointLight pointLight2 = (PointLight) new PointLight(new Vector3d(38.25f, -6.1f, -10.65f)).setLightColor(new Vector3d(1.0f, 0.0f, 0.0f));
-        pointLight2.setBrightness(3.0f);
+        pointLight2.setBrightness(1.0f);
         Game.getGame().getProxy().addLight(pointLight2);
 
         PointLight pointLight3 = (PointLight) new PointLight(new Vector3d(-40.0f, -7.7f, -26.5f)).setLightColor(new Vector3d(1.0f, 0.0f, 0.0f));
-        pointLight3.setBrightness(3.0f);
+        pointLight3.setBrightness(1.0f);
         Game.getGame().getProxy().addLight(pointLight3);
 
         //Graph graph = new Graph();
-        //TerrainGraphGenerator terrainGraphGenerator = new TerrainGraphGenerator(world.getDynamicsWorld(), graph);
+        //TerrainGraphGenerator terrainGraphGenerator = new TerrainGraphGenerator(world_forward.getDynamicsWorld(), graph);
         //Graph.GVertex vertex = terrainGraphGenerator.startPos(42.0d, 7.5d, -9.5d);
         //terrainGraphGenerator.generate(vertex);
         //Graph.saveInFile(graph, this.levelInfo().getLevelName());
@@ -216,6 +216,6 @@ public class Map01 implements IMapLoader {
 
     @Override
     public MapInfo levelInfo() {
-        return new MapInfo(new Vector4d(0.0d, 0.0d, 0.0d, 0.1375d), false, new Vector3d(43.0d, -7.5d, -10.0d), 0.15f, new Vector3f(0.5f, 0.5f, 1.0f), "map01");
+        return new MapInfo(new Vector4d(0.0d, 0.0d, 0.0d, 0.1375d), false, new Vector3d(43.0d, -7.5d, -10.0d), 0.25f, new Vector3f(0.5f, 0.5f, 1.0f), "map01");
     }
 }

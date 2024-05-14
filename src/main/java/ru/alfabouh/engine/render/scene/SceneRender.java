@@ -20,9 +20,9 @@ import ru.alfabouh.engine.render.environment.Environment;
 import ru.alfabouh.engine.render.environment.shadow.ShadowScene;
 import ru.alfabouh.engine.render.scene.programs.FBOTexture2DProgram;
 import ru.alfabouh.engine.render.scene.scene_render.groups.*;
-import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 import ru.alfabouh.engine.render.screen.Screen;
+import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -34,7 +34,9 @@ public class SceneRender {
     public static float PSX_SCREEN_OFFSET = 160.0f;
     public static int CURRENT_DEBUG_MODE;
 
-    private List<SceneRenderBase> sceneRenderBases;
+    private List<SceneRenderBase> sceneRenderBases_forward;
+    private List<SceneRenderBase> sceneRenderBases_deferred;
+
     private final GuiRender guiRender;
     private final InventoryRender inventoryRender;
 
@@ -42,57 +44,96 @@ public class SceneRender {
     private final FBOTexture2DProgram fboPsx;
     private final FBOTexture2DProgram fboBlur;
     private final FBOTexture2DProgram sceneFbo;
-    private final FBOTexture2DProgram mixFbo;
+    private final FBOTexture2DProgram gBuffer;
+    private final FBOTexture2DProgram finalRenderedSceneFbo;
     private final ShadowScene shadowScene;
 
     private double lastUpdate = Game.glfwTime();
     private int glitchTicks;
 
     public SceneRender(Scene.SceneData sceneData) {
-        this.sceneRenderBases = new ArrayList<>();
+        this.sceneRenderBases_deferred = new ArrayList<>();
+        this.sceneRenderBases_forward = new ArrayList<>();
+
         this.guiRender = new GuiRender(this);
         this.inventoryRender = new InventoryRender(this);
+
         this.sceneData = sceneData;
 
         this.shadowScene = new ShadowScene(this.getSceneData().getSceneWorld());
         this.fboBlur = new FBOTexture2DProgram(true);
         this.sceneFbo = new FBOTexture2DProgram(true);
         this.fboPsx = new FBOTexture2DProgram(true);
-        this.mixFbo = new FBOTexture2DProgram(true);
+        this.gBuffer = new FBOTexture2DProgram(true);
+        this.finalRenderedSceneFbo = new FBOTexture2DProgram(true);
 
         this.createFBOs(this.getWindowDimensions());
     }
 
     public void createFBOs(Vector2i dim) {
-        boolean msaa = Game.getGame().getGameSettings().msaa.getValue() != 0;
-
         this.fboBlur.clearFBO();
         this.sceneFbo.clearFBO();
-        this.mixFbo.clearFBO();
         this.fboPsx.clearFBO();
+        this.gBuffer.clearFBO();
+        this.finalRenderedSceneFbo.clearFBO();
 
-        this.fboPsx.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT0}, true, GL30.GL_RGBA, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
-        this.fboBlur.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0}, false, GL30.GL_RGB, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-        if (msaa) {
-            this.sceneFbo.createFrameBuffer2DTextureMSAA(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, GL43.GL_RGB16F);
-        } else {
-            this.sceneFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, true, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-        }
-        this.mixFbo.createFrameBuffer2DTexture(dim, new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, false, GL43.GL_RGB16F, GL30.GL_RGB, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        FBOTexture2DProgram.FBOTextureInfo[] psxFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+                {
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
+                };
+        this.fboPsx.createFrameBuffer2DTexture(dim, psxFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+
+        FBOTexture2DProgram.FBOTextureInfo[] blurFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+                {
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
+                };
+        this.fboBlur.createFrameBuffer2DTexture(dim, blurFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+
+        FBOTexture2DProgram.FBOTextureInfo[] sceneFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+                {
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB16F, GL30.GL_RGB),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB16F, GL30.GL_RGB)
+                };
+        this.sceneFbo.createFrameBuffer2DTexture(dim, sceneFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+
+        FBOTexture2DProgram.FBOTextureInfo[] gBufferFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+                {
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB32F, GL30.GL_RGB),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB32F, GL30.GL_RGB),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT3, GL43.GL_RGB, GL30.GL_RGB),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT5, GL43.GL_RGB, GL30.GL_RGB)
+                };
+        this.gBuffer.createFrameBuffer2DTexture(dim, gBufferFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+
+        FBOTexture2DProgram.FBOTextureInfo[] finalRenderedSceneFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+                {
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
+                };
+        this.finalRenderedSceneFbo.createFrameBuffer2DTexture(dim, finalRenderedSceneFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     private void fillScene() {
-        this.sceneRenderBases.add(new WorldRender(this));
-        this.sceneRenderBases.add(new WorldTransparentRender(this));
-        this.sceneRenderBases.add(new WorldRenderLiquids(this));
-        this.sceneRenderBases.add(new SkyRender(this));
-        this.sceneRenderBases.add(new DebugRender(this));
+        this.sceneRenderBases_forward.add(new WorldForwardRender(this));
+        this.sceneRenderBases_forward.add(new WorldTransparentRender(this));
+        this.sceneRenderBases_forward.add(new SkyRender(this));
+        this.sceneRenderBases_forward.add(new DebugRender(this));
+
+        this.sceneRenderBases_deferred.add(new WorldRenderLiquids(this));
+        this.sceneRenderBases_deferred.add(new WorldDeferredRender(this));
     }
 
     public void onStartRender() {
         this.fillScene();
-        this.sceneRenderBases = this.sceneRenderBases.stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
-        this.sceneRenderBases.forEach(SceneRenderBase::onStartRender);
+        this.sceneRenderBases_forward = this.sceneRenderBases_forward.stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
+        this.sceneRenderBases_deferred = this.sceneRenderBases_deferred.stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
+
+        this.sceneRenderBases_forward.forEach(SceneRenderBase::onStartRender);
+        this.sceneRenderBases_deferred.forEach(SceneRenderBase::onStartRender);
+
         this.inventoryRender.onStartRender();
         this.guiRender.onStartRender();
     }
@@ -100,10 +141,13 @@ public class SceneRender {
     public void onStopRender() {
         this.fboBlur.clearFBO();
         this.sceneFbo.clearFBO();
-        this.mixFbo.clearFBO();
         this.fboPsx.clearFBO();
+        this.gBuffer.clearFBO();
+        this.finalRenderedSceneFbo.clearFBO();
 
-        this.sceneRenderBases.forEach(SceneRenderBase::onStopRender);
+        this.sceneRenderBases_forward.forEach(SceneRenderBase::onStopRender);
+        this.sceneRenderBases_deferred.forEach(SceneRenderBase::onStopRender);
+
         this.inventoryRender.onStopRender();
         this.guiRender.onStopRender();
     }
@@ -128,8 +172,10 @@ public class SceneRender {
 
         SceneRender.getGameUboShader().bind();
 
-        this.renderScene(partialTicks);
+        this.renderScene(partialTicks, model);
         this.bloomPostProcessing(partialTicks, model);
+        this.renderSceneWithBloomAndHDR(partialTicks, model);
+        this.postFXAA(model);
 
         if (SceneRender.CURRENT_DEBUG_MODE == 0) {
             GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -138,7 +184,7 @@ public class SceneRender {
             GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
             this.fboPsx.bindFBO();
             this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 0);
-            this.renderSceneWithBloomAndHDR(partialTicks, model);
+            this.renderFinalScene(model);
 
             this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 2);
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
@@ -148,14 +194,12 @@ public class SceneRender {
             this.fboPsx.connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 1);
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.guiRender.onRender(partialTicks);
-
             this.fboPsx.unBindFBO();
-
             this.renderSceneWithPSXPostProcessing(model);
 
             GL30.glDisable(GL30.GL_BLEND);
         } else {
-            this.renderSceneWithBloomAndHDR(partialTicks, model);
+            this.renderFinalScene(model);
             this.renderDebugScreen(partialTicks);
             this.inventoryRender.onRender(partialTicks);
             this.guiRender.onRender(partialTicks);
@@ -165,25 +209,115 @@ public class SceneRender {
         SceneRender.getGameUboShader().unBind();
     }
 
-    public void renderScene(double partialTicks) {
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
-        this.renderSceneInFbo(partialTicks);
-        GL30.glDisable(GL30.GL_DEPTH_TEST);
+    private void renderFinalScene(Model<Format2D> model) {
+       ShaderManager imgShader = ResourceManager.shaderAssets.gui_image;
+       imgShader.bind();
+       imgShader.performUniform("texture_sampler", 0);
+       GL30.glActiveTexture(GL30.GL_TEXTURE0);
+       this.finalRenderedSceneFbo.bindTexture(0);
+       imgShader.getUtils().performProjectionMatrix2d(model);
+       Scene.renderModel(model, GL30.GL_TRIANGLES);
+       imgShader.unBind();
+    }
 
-        this.sceneFbo.copyFBOtoFBO(this.mixFbo.getFrameBufferId(), new int[]{GL30.GL_COLOR_ATTACHMENT0, GL30.GL_COLOR_ATTACHMENT1}, this.getWindowDimensions());
+    private void geometryPass(double partialTicks) {
+        this.gBuffer.bindFBO();
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
+        for (SceneRenderBase sceneRenderBase : this.sceneRenderBases_deferred) {
+            sceneRenderBase.onRender(partialTicks);
+        }
+        this.gBuffer.unBindFBO();
+    }
+
+    private void lightPass(double partialTicks, Model<Format2D> model) {
+        this.getDeferredWorldShader().bind();
+        this.getDeferredWorldShader().performUniform("view_matrix", TransformationManager.instance.getMainCameraViewMatrix());
+        this.getDeferredWorldShader().performUniform("gPositions", 0);
+        this.getDeferredWorldShader().performUniform("gNormals", 1);
+        this.getDeferredWorldShader().performUniform("gTexture", 2);
+        this.getDeferredWorldShader().performUniform("gEmission", 3);
+        this.getDeferredWorldShader().performUniform("gSpecular", 4);
+        this.getDeferredWorldShader().performUniform("gMetallic", 5);
+        this.getDeferredWorldShader().getUtils().passShadowsInfo();
+
+        GL30.glActiveTexture(GL30.GL_TEXTURE0);
+        this.gBuffer.bindTexture(0);
+        GL30.glActiveTexture(GL30.GL_TEXTURE1);
+        this.gBuffer.bindTexture(1);
+        GL30.glActiveTexture(GL30.GL_TEXTURE2);
+        this.gBuffer.bindTexture(2);
+        GL30.glActiveTexture(GL30.GL_TEXTURE3);
+        this.gBuffer.bindTexture(3);
+        GL30.glActiveTexture(GL30.GL_TEXTURE4);
+        this.gBuffer.bindTexture(4);
+        GL30.glActiveTexture(GL30.GL_TEXTURE5);
+        this.gBuffer.bindTexture(5);
+
+        this.getDeferredWorldShader().getUtils().performProjectionMatrix2d(model);
+        Scene.renderModel(model, GL30.GL_TRIANGLES);
+        this.getDeferredWorldShader().unBind();
+    }
+
+    public void renderScene(double partialTicks, Model<Format2D> model) {
+        this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getToRenderList());
+        Screen.setViewport(this.getWindowDimensions());
+
+        GL30.glEnable(GL30.GL_DEPTH_TEST);
+        this.geometryPass(partialTicks);
+
+        this.sceneFbo.bindFBO();
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        this.lightPass(partialTicks, model);
+        this.sceneFbo.unBindFBO();
+
+        this.gBuffer.copyFBOtoFBODepth(this.sceneFbo.getFrameBufferId(), this.getWindowDimensions());
+
+        this.sceneFbo.bindFBO();
+        this.renderForwardScene(partialTicks);
+        this.sceneFbo.unBindFBO();
+
+        GL30.glDisable(GL30.GL_DEPTH_TEST);
+    }
+
+    private void renderForwardScene(double partialTicks) {
+        GL30.glEnable(GL30.GL_BLEND);
+        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+        for (SceneRenderBase sceneRenderBase : this.sceneRenderBases_forward) {
+            sceneRenderBase.onRender(partialTicks);
+        }
+        GL30.glDisable(GL30.GL_BLEND);
+    }
+
+    public void postFXAA(Model<Format2D> model) {
+        this.finalRenderedSceneFbo.bindFBO();
+        this.getFXAAShader().bind();
+        this.getFXAAShader().performUniform("resolution", new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y));
+        this.getFXAAShader().performUniform("texture_sampler", 0);
+        this.getFXAAShader().performUniform("FXAA_SPAN_MAX", (float) Math.pow(Game.getGame().getGameSettings().fxaa.getValue(), 2));
+        this.getFXAAShader().getUtils().performProjectionMatrix2d(model);
+        GL30.glActiveTexture(GL30.GL_TEXTURE0);
+        this.finalRenderedSceneFbo.bindTexture(0);
+        Scene.renderModel(model, GL30.GL_TRIANGLES);
+        this.getFXAAShader().unBind();
+        this.finalRenderedSceneFbo.unBindFBO();
     }
 
     public void renderSceneWithBloomAndHDR(double partialTicks, Model<Format2D> model) {
+        this.finalRenderedSceneFbo.bindFBO();
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+
         this.getPostProcessingShader().bind();
         this.getPostProcessingShader().performUniform("texture_sampler", 0);
         this.getPostProcessingShader().performUniform("blur_sampler", 1);
         GL30.glActiveTexture(GL30.GL_TEXTURE1);
         this.fboBlur.bindTexture(0);
         GL30.glActiveTexture(GL30.GL_TEXTURE0);
-        this.mixFbo.bindTexture(0);
+        this.sceneFbo.bindTexture(0);
         this.getPostProcessingShader().getUtils().performProjectionMatrix2d(model);
         Scene.renderModel(model, GL30.GL_TRIANGLES);
         this.getPostProcessingShader().unBind();
+
+        this.finalRenderedSceneFbo.unBindFBO();
     }
 
     public void renderSceneWithPSXPostProcessing(Model<Format2D> model) {
@@ -239,20 +373,6 @@ public class SceneRender {
         this.getPostProcessingShader2().unBind();
     }
 
-    private void renderSceneInFbo(double partialTicks) {
-        this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getToRenderList());
-        Screen.setViewport(this.getWindowDimensions());
-        this.sceneFbo.bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
-        GL30.glEnable(GL30.GL_BLEND);
-        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
-        for (SceneRenderBase sceneRenderBase : this.sceneRenderBases) {
-            sceneRenderBase.onRender(partialTicks);
-        }
-        GL30.glDisable(GL30.GL_BLEND);
-        this.sceneFbo.unBindFBO();
-    }
-
     private void bloomPostProcessing(double partialTicks, Model<Format2D> model) {
         if (Game.getGame().getGameSettings().bloom.getValue() == 0) {
             this.fboBlur.bindFBO();
@@ -260,7 +380,7 @@ public class SceneRender {
             this.fboBlur.unBindFBO();
             return;
         }
-        FBOTexture2DProgram startFbo = this.mixFbo;
+        FBOTexture2DProgram startFbo = this.sceneFbo;
         int startBinding = 1;
         int steps = 12;
 
@@ -283,24 +403,84 @@ public class SceneRender {
 
     private void renderDebugScreen(double partialTicks) {
         if (SceneRender.CURRENT_DEBUG_MODE == 1) {
-            Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(400.0f, 300.0f), 0);
+            Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(300.0f, 200.0f), 0);
             ResourceManager.shaderAssets.gui_image.bind();
             ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.mixFbo.bindTexture(1);
+            this.gBuffer.bindTexture(0);
             ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
             Scene.renderModel(model, GL30.GL_TRIANGLES);
             ResourceManager.shaderAssets.gui_image.unBind();
             model.clean();
 
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 350.0f), new Vector2f(400.0f, 650.0f), 0);
+
+            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 200.0f), new Vector2f(300.0f, 400.0f), 0);
+            ResourceManager.shaderAssets.gui_image.bind();
+            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.gBuffer.bindTexture(1);
+            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
+            ResourceManager.shaderAssets.gui_image.unBind();
+            model.clean();
+
+            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 400.0f), new Vector2f(300.0f, 600.0f), 0);
+            ResourceManager.shaderAssets.gui_image.bind();
+            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.gBuffer.bindTexture(2);
+            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
+            ResourceManager.shaderAssets.gui_image.unBind();
+            model.clean();
+
+            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 600.0f), new Vector2f(300.0f, 800.0f), 0);
+            ResourceManager.shaderAssets.gui_image.bind();
+            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.gBuffer.bindTexture(3);
+            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
+            ResourceManager.shaderAssets.gui_image.unBind();
+            model.clean();
+
+            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 400.0f), new Vector2f(600.0f, 600.0f), 0);
+            ResourceManager.shaderAssets.gui_image.bind();
+            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.gBuffer.bindTexture(4);
+            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
+            ResourceManager.shaderAssets.gui_image.unBind();
+            model.clean();
+
+            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 600.0f), new Vector2f(600.0f, 800.0f), 0);
+            ResourceManager.shaderAssets.gui_image.bind();
+            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.gBuffer.bindTexture(5);
+            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
+            ResourceManager.shaderAssets.gui_image.unBind();
+            model.clean();
+
+            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 0.0f), new Vector2f(600.0f, 200.0f), 0);
             ResourceManager.shaderAssets.gui_image.bind();
             ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
             this.getShadowScene().getFrameBufferObjectProgram().bindTexture(0);
             ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
             Scene.renderModel(model, GL30.GL_TRIANGLES);
-            this.getShadowScene().getFrameBufferObjectProgram().unBindTexture();
+            ResourceManager.shaderAssets.gui_image.unBind();
+            model.clean();
+
+            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 200.0f), new Vector2f(600.0f, 400.0f), 0);
+            ResourceManager.shaderAssets.gui_image.bind();
+            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
+            GL30.glActiveTexture(GL30.GL_TEXTURE0);
+            this.sceneFbo.bindTexture(1);
+            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
+            Scene.renderModel(model, GL30.GL_TRIANGLES);
             ResourceManager.shaderAssets.gui_image.unBind();
             model.clean();
         }
@@ -361,5 +541,18 @@ public class SceneRender {
 
     public ShaderManager getPostProcessingShader2() {
         return ResourceManager.shaderAssets.post_psx;
+    }
+
+    public ShaderManager getDeferredWorldShader() {
+        return ResourceManager.shaderAssets.world_deferred;
+    }
+
+    public ShaderManager getFXAAShader() {
+        return ResourceManager.shaderAssets.fxaa;
+    }
+
+    public enum RenderPass {
+        DEFERRED,
+        FORWARD;
     }
 }

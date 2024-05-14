@@ -25,7 +25,6 @@ public class RenderParticleD2Data extends RenderObjectData {
         material.setDiffuse(particleTexturePack.getiImageSample()[0]);
         this.setOverObjectMaterial(material);
         this.getModelRenderParams().setShadowCaster(false);
-        this.getModelRenderParams().setShadowReceiver(false);
         this.getModelRenderParams().setHasTransparency(true);
         this.getModelRenderParams().setRenderDistance(RenderParticleD2Data.RENDER_PARTICLE_DISTANCE);
         this.getModelRenderParams().invertTextureCoordinates();

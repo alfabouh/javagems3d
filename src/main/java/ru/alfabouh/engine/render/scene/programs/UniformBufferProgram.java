@@ -7,6 +7,7 @@ import ru.alfabouh.engine.game.exception.GameException;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 public class UniformBufferProgram {
     private final int uboBlock;
@@ -53,6 +54,12 @@ public class UniformBufferProgram {
     }
 
     public void setUniformBufferData(int offset, FloatBuffer buffer) {
+        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, this.getUboBlock());
+        GL43.glBufferSubData(GL43.GL_UNIFORM_BUFFER, offset, buffer);
+        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, 0);
+    }
+
+    public void setUniformBufferData(int offset, IntBuffer buffer) {
         GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, this.getUboBlock());
         GL43.glBufferSubData(GL43.GL_UNIFORM_BUFFER, offset, buffer);
         GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, 0);

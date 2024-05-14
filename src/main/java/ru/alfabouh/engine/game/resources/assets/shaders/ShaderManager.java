@@ -2,20 +2,15 @@ package ru.alfabouh.engine.game.resources.assets.shaders;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4d;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.resources.assets.materials.Material;
 import ru.alfabouh.engine.game.resources.assets.materials.textures.ColorSample;
 import ru.alfabouh.engine.game.resources.assets.materials.textures.IImageSample;
 import ru.alfabouh.engine.game.resources.assets.materials.textures.ISample;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.render.environment.shadow.CascadeShadow;
@@ -28,11 +23,11 @@ import ru.alfabouh.engine.render.scene.programs.CubeMapProgram;
 import ru.alfabouh.engine.render.scene.programs.ShaderProgram;
 import ru.alfabouh.engine.render.scene.programs.UniformBufferProgram;
 import ru.alfabouh.engine.render.scene.programs.UniformProgram;
-import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,12 +40,24 @@ public final class ShaderManager {
     private final ShaderUtils shaderUtils;
     private ShaderProgram shaderProgram;
     private UniformProgram uniformProgram;
+    private boolean useForGBuffer;
 
     public ShaderManager(ShaderGroup shaderGroup) {
         this.shaderGroup = shaderGroup;
         this.shaderUtils = new ShaderUtils();
         this.uniformBufferProgramMap = new HashMap<>();
         this.uniformBufferObjects = new HashSet<>();
+
+        this.useForGBuffer = false;
+    }
+
+    public ShaderManager setUseForGBuffer(boolean useForGBuffer) {
+        this.useForGBuffer = useForGBuffer;
+        return this;
+    }
+
+    public boolean isUseForGBuffer() {
+        return this.useForGBuffer;
     }
 
     public ShaderManager copy() {
@@ -158,6 +165,10 @@ public final class ShaderManager {
         this.performUniform(uniform, -1, o);
     }
 
+    public void performUniformBuffer(UniformBufferObject uniform, IntBuffer data) {
+        this.performUniformBuffer(uniform, 0, data);
+    }
+
     public void performUniformBuffer(UniformBufferObject uniform, ByteBuffer data) {
         this.performUniformBuffer(uniform, 0, data);
     }
@@ -174,6 +185,13 @@ public final class ShaderManager {
         UniformBufferProgram uniformBufferProgram = this.getUniformBufferProgram(uniformBufferObject);
         if (uniformBufferProgram != null) {
             uniformBufferProgram.setUniformBufferData(offset, data);
+        }
+    }
+
+    public void performUniformBuffer(UniformBufferObject uniform, int offset, IntBuffer data) {
+        UniformBufferProgram uniformBufferObject = this.getUniformBufferProgram(uniform);
+        if (uniformBufferObject != null) {
+            uniformBufferObject.setUniformBufferData(offset, data);
         }
     }
 
@@ -259,17 +277,13 @@ public final class ShaderManager {
                 return;
             }
             int lighting_code = 0;
-            if (modelRenderParams.isLightOpaque()) {
-                lighting_code |= 1 << 2;
-            }
             if (modelRenderParams.isBright()) {
-                lighting_code |= 1 << 3;
+                lighting_code |= 1 << 2;
             }
             ShaderManager.this.performUniform("lighting_code", lighting_code);
         }
 
         public void performModelMaterialOnShader(Material material, boolean passShadows) {
-            Scene scene = Game.getGame().getScreen().getScene();
             if (material == null) {
                 return;
             }
@@ -289,7 +303,7 @@ public final class ShaderManager {
                 GL30.glBindTexture(GL11.GL_TEXTURE_2D, 0);
             }
 
-            this.passCommonInfo();
+            this.passCameraInfo();
             this.passCubeMap("ambient_cubemap", cubeMapProgram);
             if (diffuse != null) {
                 if (diffuse instanceof IImageSample) {
@@ -340,9 +354,7 @@ public final class ShaderManager {
             ShaderManager.this.performUniformNoWarn("texturing_code", texturing_code);
         }
 
-        public void passCommonInfo() {
-            Vector4d vector4d = new Vector4d(Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition(), 1.0d);
-            vector4d.mul(TransformationManager.instance.getMainCameraViewMatrix());
+        public void passCameraInfo() {
             ShaderManager.this.performUniformNoWarn("camera_pos", Game.getGame().getScreen().getScene().getCurrentCamera().getCamPosition());
         }
 

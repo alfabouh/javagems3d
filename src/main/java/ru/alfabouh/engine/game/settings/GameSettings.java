@@ -15,7 +15,7 @@ public class GameSettings {
     public SettingIntSlots windowMode;
     public SettingIntSlots vSync;
     public SettingIntSlots anisotropic;
-    public SettingIntSlots msaa;
+    public SettingIntSlots fxaa;
     public SettingIntSlots texturesQuality;
     public SettingIntSlots texturesFiltering;
     public SettingIntSlots bloom;
@@ -26,20 +26,11 @@ public class GameSettings {
         this.optionsFile = new File(Game.getGameFilesFolder().toFile(), "settings.txt");
         this.soundGain = new SettingFloatBar("sound_gain", 1.0f);
 
-        //this.windowMode = new SettingIntSlots("windowMode", 0, 0, 1);
-        //this.shadowQuality = new SettingIntSlots("shadowQuality", 1, 0, 2);
-        //this.vSync = new SettingIntSlots("vSync", 1, 0, 1);
-        //this.anisotropic = new SettingIntSlots("anisotropic", 1, 0, 1);
-        //this.msaa = new SettingIntSlots("msaa", 2, 0, 3);
-        //this.texturesQuality = new SettingIntSlots("texturesQuality", 2, 0, 2);
-        //this.bloom = new SettingIntSlots("bloom", 1, 0, 1);
-        //this.texturesFiltering = new SettingIntSlots("texturesFiltering", 1, 0, 1);
-
         this.windowMode = new SettingIntSlots("windowMode", 0, 0, 1);
         this.shadowQuality = new SettingIntSlots("shadowQuality", 0, 0, 2);
         this.vSync = new SettingIntSlots("vSync", 1, 0, 1);
         this.anisotropic = new SettingIntSlots("anisotropic", 0, 0, 1);
-        this.msaa = new SettingIntSlots("msaa", 0, 0, 3);
+        this.fxaa = new SettingIntSlots("fxaa", 0, 0, 4);
         this.texturesQuality = new SettingIntSlots("texturesQuality", 0, 0, 2);
         this.bloom = new SettingIntSlots("bloom", 0, 0, 1);
         this.texturesFiltering = new SettingIntSlots("texturesFiltering", 0, 0, 1);
@@ -67,17 +58,18 @@ public class GameSettings {
         this.texturesQuality.addName(1, "Medium");
         this.texturesQuality.addName(2, "High");
 
-        this.msaa.addName(0, "Off");
-        this.msaa.addName(1, "2x");
-        this.msaa.addName(2, "4x");
-        this.msaa.addName(3, "8x");
+        this.fxaa.addName(0, "Off");
+        this.fxaa.addName(1, "2x");
+        this.fxaa.addName(2, "4x");
+        this.fxaa.addName(3, "8x");
+        this.fxaa.addName(4, "16x");
 
         this.addSetting(this.windowMode);
         this.addSetting(this.soundGain);
         this.addSetting(this.shadowQuality);
         this.addSetting(this.vSync);
         this.addSetting(this.anisotropic);
-        this.addSetting(this.msaa);
+        this.addSetting(this.fxaa);
         this.addSetting(this.texturesQuality);
         this.addSetting(this.bloom);
         this.addSetting(this.texturesFiltering);

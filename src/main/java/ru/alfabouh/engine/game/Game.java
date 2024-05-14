@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 public class Game {
-    public static boolean DEBUG_MODE = true;
+    public static boolean DEBUG_MODE = false;
     public static final String GAME_NAME = "Reznya 3D";
     public static long rngSeed;
     public static Random random;
@@ -98,7 +98,7 @@ public class Game {
     }
 
     public static long systemTime() {
-        return System.nanoTime();
+        return System.currentTimeMillis();
     }
 
     public static double glfwTime() {

@@ -8,6 +8,7 @@ import ru.alfabouh.engine.game.resources.assets.models.basic.constructor.IEntity
 import ru.alfabouh.engine.game.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
+import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.alfabouh.engine.render.scene.objects.items.PhysicsObject;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;

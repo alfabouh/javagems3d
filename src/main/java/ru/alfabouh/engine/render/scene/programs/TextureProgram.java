@@ -14,9 +14,9 @@ public class TextureProgram implements ITextureProgram {
         this.textureId = GL30.glGenTextures();
     }
 
-    public void createTexture(Vector2i size, int internalFormat, int textureFormat, int filtering_mag, int filtering_min, int compareMode, int compareFunc, int clamp_s, int clamp_t, float[] borderColor) {
+    public void createTexture(Vector2i size, int textureFormat, int internalFormat, int filtering_mag, int filtering_min, int compareMode, int compareFunc, int clamp_s, int clamp_t, float[] borderColor) {
         this.bindTexture(GL43.GL_TEXTURE_2D);
-        GL30.glTexImage2D(GL43.GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, textureFormat, GL30.GL_FLOAT, (ByteBuffer) null);
+        GL30.glTexImage2D(GL43.GL_TEXTURE_2D, 0, textureFormat, size.x, size.y, 0, internalFormat, GL30.GL_FLOAT, (ByteBuffer) null);
         GL30.glTexParameteri(GL43.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, filtering_mag);
         GL30.glTexParameteri(GL43.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, filtering_min);
         GL30.glTexParameteri(GL43.GL_TEXTURE_2D, GL30.GL_TEXTURE_COMPARE_MODE, compareMode);

@@ -15,7 +15,7 @@ import ru.alfabouh.engine.render.scene.gui.InGameGUI;
 
 public class GameSystem implements IEngine {
     public static final String ENG_NAME = "JVertex3d";
-    public static final String ENG_VER = "0.11a";
+    public static final String ENG_VER = "0.12a";
 
     private final ResourceManager resourceManager;
     private final EngineState engineState;

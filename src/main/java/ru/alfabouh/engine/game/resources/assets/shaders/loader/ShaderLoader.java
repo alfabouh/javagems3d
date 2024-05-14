@@ -32,16 +32,18 @@ public class ShaderLoader {
     public ShaderManager blur9;
     public ShaderManager blur13;
     public ShaderManager hdr;
+    public ShaderManager fxaa;
     public ShaderManager post_psx;
     public ShaderManager menu_psx;
     public ShaderManager skybox;
-    public ShaderManager world;
+    public ShaderManager world_gbuffer;
+    public ShaderManager world_liquid_gbuffer;
+    public ShaderManager world_deferred;
     public ShaderManager simple;
     public ShaderManager depth_sun;
-    public ShaderManager liquid;
     public ShaderManager depth_plight;
     public ShaderManager debug;
-    public ShaderManager world_selected;
+    public ShaderManager world_selected_gbuffer;
     public ShaderManager inventory_zippo;
     public ShaderManager inventory_common_item;
 
@@ -51,7 +53,7 @@ public class ShaderLoader {
 
     private void loadAll() {
         this.SunLight = this.createUBO("SunLight", 0, 32);
-        this.PointLights = this.createUBO("PointLights", 1, 32 * LightManager.MAX_POINT_LIGHTS);
+        this.PointLights = this.createUBO("PointLights", 1, 32 * LightManager.MAX_POINT_LIGHTS + 4);
         this.Misc = this.createUBO("Misc", 2, 4);
         this.Fog = this.createUBO("Fog", 3, 16);
 
@@ -69,12 +71,15 @@ public class ShaderLoader {
         this.blur9 = this.createShaderManager("blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur13 = this.createShaderManager("blur13", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
+        this.fxaa = this.createShaderManager("fxaa", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.hdr = this.createShaderManager("hdr", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.post_psx = this.createShaderManager("post_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
 
         this.skybox = this.createShaderManager("skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight);
-        this.world = this.createShaderManager("world", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
-        this.liquid = this.createShaderManager("liquid", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
+
+        this.world_gbuffer = this.createShaderManager("world_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).setUseForGBuffer(true);
+        this.world_deferred = this.createShaderManager("world_deferred", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.PointLights).addUBO(this.Fog);
+        this.world_liquid_gbuffer = this.createShaderManager("world_liquid_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
 
         this.menu = this.createShaderManager("menu", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.menu_psx = this.createShaderManager("menu_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
@@ -84,7 +89,7 @@ public class ShaderLoader {
 
         this.simple = this.createShaderManager("simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_sun = this.createShaderManager("depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.world_selected = this.createShaderManager("world_selected", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_selected_gbuffer = this.createShaderManager("world_selected_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_plight = this.createShaderManager("depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT | Shader.ShaderType.GEOMETRIC_BIT);
 
         this.gameUbo = this.createShaderManager("gameubo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
@@ -119,9 +124,7 @@ public class ShaderLoader {
 
     public void loadAllShaders() {
         for (ShaderManager shaderManager : ShaderLoader.allShaders) {
-            if (shaderManager.getShaderGroup().getFragmentShader() != null) {
-                shaderManager.getShaderGroup().initAll();
-            }
+            shaderManager.getShaderGroup().initAll();
         }
     }
 }

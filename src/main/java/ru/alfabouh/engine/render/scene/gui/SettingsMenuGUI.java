@@ -3,14 +3,11 @@ package ru.alfabouh.engine.render.scene.gui;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.controller.ControllerDispatcher;
-import ru.alfabouh.engine.game.controller.input.MouseKeyboardController;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.render.scene.gui.base.GUI;
 import ru.alfabouh.engine.render.scene.gui.ui.ButtonUI;
 import ru.alfabouh.engine.render.scene.gui.ui.OptionArrowsUI;
 import ru.alfabouh.engine.render.scene.gui.ui.OptionSliderUI;
-import ru.alfabouh.engine.render.scene.gui.ui.TextUI;
 import ru.alfabouh.engine.render.screen.window.Window;
 
 public class SettingsMenuGUI extends AbstractGUI {
@@ -19,7 +16,7 @@ public class SettingsMenuGUI extends AbstractGUI {
     private OptionArrowsUI windowMode;
     private OptionArrowsUI vSync;
     private OptionArrowsUI anisotropic;
-    private OptionArrowsUI msaa;
+    private OptionArrowsUI fxaa;
     private OptionArrowsUI texturesQuality;
     private OptionArrowsUI bloom;
     private OptionArrowsUI texturesFiltering;
@@ -38,14 +35,14 @@ public class SettingsMenuGUI extends AbstractGUI {
         if (Game.DEBUG_MODE) {
             this.shadowQuality.setPosition(new Vector3f(x, y + 90.0f, 0.5f));
             this.anisotropic.setPosition(new Vector3f(x, y + 120.0f, 0.5f));
-            this.msaa.setPosition(new Vector3f(x, y + 150.0f, 0.5f));
+            this.fxaa.setPosition(new Vector3f(x, y + 150.0f, 0.5f));
             this.texturesQuality.setPosition(new Vector3f(x, y + 180.0f, 0.5f));
             this.bloom.setPosition(new Vector3f(x, y + 210.0f, 0.5f));
             this.texturesFiltering.setPosition(new Vector3f(x, y + 240.0f, 0.5f));
 
             this.shadowQuality.render(partialTicks);
             this.anisotropic.render(partialTicks);
-            this.msaa.render(partialTicks);
+            this.fxaa.render(partialTicks);
             this.texturesQuality.render(partialTicks);
             this.bloom.render(partialTicks);
             this.texturesFiltering.render(partialTicks);
@@ -84,7 +81,7 @@ public class SettingsMenuGUI extends AbstractGUI {
         this.windowMode = new OptionArrowsUI("Window Mode", new Vector3f(0.0f), Game.getGame().getGameSettings().windowMode);
         this.vSync = new OptionArrowsUI("V-Sync", new Vector3f(0.0f), Game.getGame().getGameSettings().vSync);
         this.anisotropic = new OptionArrowsUI("Anisotropic Filtering", new Vector3f(0.0f), Game.getGame().getGameSettings().anisotropic);
-        this.msaa = new OptionArrowsUI("MSAA", new Vector3f(0.0f), Game.getGame().getGameSettings().msaa);
+        this.fxaa = new OptionArrowsUI("FXAA", new Vector3f(0.0f), Game.getGame().getGameSettings().fxaa);
         this.texturesQuality = new OptionArrowsUI("Textures Quality", new Vector3f(0.0f), Game.getGame().getGameSettings().texturesQuality);
         this.bloom = new OptionArrowsUI("Bloom Effect", new Vector3f(0.0f), Game.getGame().getGameSettings().bloom);
         this.texturesFiltering = new OptionArrowsUI("Textures Filtering", new Vector3f(0.0f), Game.getGame().getGameSettings().texturesFiltering);
@@ -97,7 +94,7 @@ public class SettingsMenuGUI extends AbstractGUI {
         this.windowMode.clear();
         this.vSync.clear();
         this.anisotropic.clear();
-        this.msaa.clear();
+        this.fxaa.clear();
         this.texturesQuality.clear();
         this.bloom.clear();
         this.texturesFiltering.clear();

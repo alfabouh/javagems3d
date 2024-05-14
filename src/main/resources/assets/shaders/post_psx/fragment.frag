@@ -139,7 +139,7 @@ vec4 crt(vec4 txt) {
     vec3 color = txt.rgb;
     float sharpness = 0.25;
     color = pow(color, vec3(sharpness));
-    return vec4(color * 0.2, 1.0);
+    return vec4(color * 0.5, 1.0);
 }
 
 vec4 random_noise(vec4 txtr) {

@@ -29,6 +29,7 @@ layout (std140, binding = 0) uniform SunLight {
 
 layout (std140, binding = 1) uniform PointLights {
     PointLight p_l[128];
+    int total_plights;
 };
 
 layout (std140, binding = 2) uniform Misc {

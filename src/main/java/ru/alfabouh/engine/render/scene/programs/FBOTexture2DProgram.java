@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL43;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.render.scene.Scene;
-import ru.alfabouh.engine.render.screen.Screen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,17 +23,16 @@ public class FBOTexture2DProgram {
         this.drawColor = drawColor;
     }
 
-    public void createFrameBuffer2DTextureMSAA(Vector2i size, int[] attachments, int internalFormat) {
+    public void createFrameBuffer2DTextureMSAA(Vector2i size, int[] attachments, int internalFormat, int msaa) {
         if (!Scene.isSceneActive()) {
             return;
         }
-        int msaaLevel = (int) Math.pow(2, Game.getGame().getGameSettings().msaa.getValue());
         this.frameBufferId = GL30.glGenFramebuffers();
         this.renderBufferId = GL30.glGenRenderbuffers();
         this.bindFBO();
 
         for (int attachment : attachments) {
-            MSAATextureProgram msaaTextureProgram = new MSAATextureProgram(msaaLevel);
+            MSAATextureProgram msaaTextureProgram = new MSAATextureProgram(msaa);
             msaaTextureProgram.createTexture(size, internalFormat);
             GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL43.GL_TEXTURE_2D_MULTISAMPLE, ((ITextureProgram) msaaTextureProgram).getTextureId(), 0);
             this.getTexturePrograms().add(msaaTextureProgram);
@@ -48,7 +46,7 @@ public class FBOTexture2DProgram {
         }
 
         GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);
-        GL43.glRenderbufferStorageMultisample(GL43.GL_RENDERBUFFER, msaaLevel, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
+        GL43.glRenderbufferStorageMultisample(GL43.GL_RENDERBUFFER, msaa, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
         GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
         GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
 
@@ -60,7 +58,7 @@ public class FBOTexture2DProgram {
         this.unBindFBO();
     }
 
-    public void createFrameBuffer2DTexture(Vector2i size, int[] attachments, boolean depthBuffer, int internalFormat, int textureFormat, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
+    public void createFrameBuffer2DTexture(Vector2i size, FBOTextureInfo[] fboTextureInfo, boolean depthBuffer, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
         if (!Scene.isSceneActive()) {
             return;
         }
@@ -68,10 +66,10 @@ public class FBOTexture2DProgram {
         this.renderBufferId = GL30.glGenRenderbuffers();
         this.bindFBO();
 
-        for (int attachment : attachments) {
+        for (FBOTextureInfo fboTextureInfo1 : fboTextureInfo) {
             TextureProgram textureProgram1 = new TextureProgram();
-            textureProgram1.createTexture(size, internalFormat, textureFormat, filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor);
-            GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL43.GL_TEXTURE_2D, ((ITextureProgram) textureProgram1).getTextureId(), 0);
+            textureProgram1.createTexture(size, fboTextureInfo1.getTextureFormat(), fboTextureInfo1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor);
+            GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, fboTextureInfo1.getAttachment(), GL43.GL_TEXTURE_2D, ((ITextureProgram) textureProgram1).getTextureId(), 0);
             this.getTexturePrograms().add(textureProgram1);
         }
 
@@ -79,7 +77,7 @@ public class FBOTexture2DProgram {
             GL30.glDrawBuffer(GL30.GL_NONE);
             GL30.glReadBuffer(GL30.GL_NONE);
         } else {
-            GL30.glDrawBuffers(Arrays.stream(attachments).distinct().toArray());
+            GL30.glDrawBuffers(Arrays.stream(fboTextureInfo).filter(e -> e.getAttachment() >= GL30.GL_COLOR_ATTACHMENT0 && e.getAttachment() <= GL30.GL_COLOR_ATTACHMENT31).map(FBOTextureInfo::getAttachment).distinct().mapToInt(Integer::intValue).toArray());
         }
 
         if (depthBuffer) {
@@ -97,7 +95,7 @@ public class FBOTexture2DProgram {
         this.unBindFBO();
     }
 
-    public void copyFBOtoFBO(int fboTo, int[] attachmentsToCopy, Vector2i dimension) {
+    public void copyFBOtoFBOColor(int fboTo, int[] attachmentsToCopy, Vector2i dimension) {
         GL43.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, this.getFrameBufferId());
         GL43.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, fboTo);
         for (int att : attachmentsToCopy) {
@@ -105,6 +103,13 @@ public class FBOTexture2DProgram {
             GL43.glDrawBuffer(att);
             GL43.glBlitFramebuffer(0, 0, dimension.x, dimension.y, 0, 0, dimension.x, dimension.y, GL30.GL_COLOR_BUFFER_BIT, GL30.GL_NEAREST);
         }
+        GL43.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+    }
+
+    public void copyFBOtoFBODepth(int fboTo, Vector2i dimension) {
+        GL43.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, this.getFrameBufferId());
+        GL43.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, fboTo);
+        GL43.glBlitFramebuffer(0, 0, dimension.x, dimension.y, 0, 0, dimension.x, dimension.y, GL30.GL_DEPTH_BUFFER_BIT, GL30.GL_NEAREST);
         GL43.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
     }
 
@@ -155,5 +160,29 @@ public class FBOTexture2DProgram {
         GL30.glDeleteRenderbuffers(this.renderBufferId);
         GL30.glDeleteFramebuffers(this.frameBufferId);
         this.frameBufferId = -1;
+    }
+
+    public static class FBOTextureInfo {
+        private final int attachment;
+        private final int textureFormat;
+        private final int internalFormat;
+
+        public FBOTextureInfo(int attachment, int textureFormat, int internalFormat) {
+            this.attachment = attachment;
+            this.textureFormat = textureFormat;
+            this.internalFormat = internalFormat;
+        }
+
+        public int getAttachment() {
+            return this.attachment;
+        }
+
+        public int getTextureFormat() {
+            return this.textureFormat;
+        }
+
+        public int getInternalFormat() {
+            return this.internalFormat;
+        }
     }
 }
