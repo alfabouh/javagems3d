@@ -14,6 +14,7 @@ import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
+import ru.alfabouh.engine.render.scene.debug.constants.GlobalRenderDebugConstants;
 import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
@@ -26,7 +27,7 @@ public class DebugRender extends SceneRenderBase {
     }
 
     public void onRender(double partialTicks) {
-        if (SceneRender.CURRENT_DEBUG_MODE == 1) {
+        if (GlobalRenderDebugConstants.SHOW_DEBUG_LINES) {
             this.debugShaders.bind();
             this.renderDebugSunDirection(this);
             this.renderNavMesh(this);

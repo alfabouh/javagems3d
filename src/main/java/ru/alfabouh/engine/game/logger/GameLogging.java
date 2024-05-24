@@ -9,13 +9,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 public class GameLogging {
     private final Logger log;
 
     public GameLogging() {
         this.log = LogManager.getRootLogger();
+        try {
+            this.initStreams(this.log);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void initStreams(final Logger log) throws IOException {
+        try (StreamOutputTranslation streamOutputTranslation = new StreamOutputTranslation(log)) {
+            System.setOut(new PrintStream(streamOutputTranslation, true));
+            System.setErr(new PrintStream(streamOutputTranslation, true));
+        }
     }
 
     public void log(String message, Object... objects) {
@@ -30,9 +43,11 @@ public class GameLogging {
         this.log.warn(message, objects);
     }
 
-    public void error(Exception e) {
-        this.log.error("\n****************************************Exception****************************************", e);
-        this.log.error("\n****************************************Exception****************************************");
+    public void exception(Exception e) {
+        this.bigWarn("Process caught an exception!");
+        System.err.println("\n****************************************Exception****************************************");
+        e.printStackTrace(System.err);
+        System.err.println("\n****************************************Exception****************************************");
     }
 
     public void bigWarn(String message, Object... objects) {
@@ -55,18 +70,41 @@ public class GameLogging {
         SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, "[" + threadName + "]: " + msg, GameSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
     }
 
-    private StringBuilder getStringBuilder(String message, Object[] objects, StackTraceElement[] trace) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\n");
-        stringBuilder.append("****************************************");
-        stringBuilder.append("\n");
-        stringBuilder.append(String.format("* " + message, objects));
-        stringBuilder.append("\n");
-        for (int i = 2; i < 8 && i < trace.length; i++) {
-            stringBuilder.append(String.format("* at %s%s", trace[i].toString(), i == 7 ? "..." : ""));
-            stringBuilder.append("\n");
+    private static class StreamOutputTranslation extends OutputStream {
+        private final Logger logger;
+        private final StringBuilder builder = new StringBuilder();
+
+        public StreamOutputTranslation(Logger logger) {
+            this.logger = logger;
         }
-        stringBuilder.append("****************************************");
-        return stringBuilder;
-    }
+
+        @Override
+        public void write(int b) {
+            char c = (char) b;
+            if (c == '\n') {
+                this.logAndClear();
+            } else {
+                this.builder.append(c);
+            }
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) {
+            for (int i = off; i < off + len; i++) {
+                this.write(b[i]);
+            }
+        }
+
+        @Override
+        public void write(byte[] b) {
+            this.write(b, 0, b.length);
+        }
+
+        private void logAndClear() {
+            if (this.builder.length() > 0) {
+                this.logger.info(this.builder.toString());
+            }
+            this.builder.setLength(0);
+        }
+    };
 }

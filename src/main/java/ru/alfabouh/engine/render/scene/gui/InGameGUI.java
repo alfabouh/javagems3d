@@ -23,12 +23,6 @@ public class InGameGUI extends AbstractGUI {
     public static boolean show_shift = true;
 
     private boolean isVisible;
-    private TextUI fps;
-    private TextUI entities;
-    private TextUI coordinates;
-    private TextUI info1;
-    private TextUI speed;
-    private TextUI tick;
     private TextUI staminaText;
     private TextUI mindText;
     private TextUI itemDescText;
@@ -56,20 +50,13 @@ public class InGameGUI extends AbstractGUI {
         this.cdText = new TextUI(ResourceManager.renderAssets.standardFont);
         this.cassetteText = new TextUI(ResourceManager.renderAssets.standardFont);
 
-        this.fps = new TextUI(ResourceManager.renderAssets.standardFont);
         this.itemDescText = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(80.0f, 80.0f, 0.5f));
-        this.entities = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 20.0f, 0.5f));
-        this.coordinates = new TextUI(ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 40.0f, 0.5f));
 
-        this.info1 = new TextUI("Управление LCTRL", ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 60.0f, 0.5f));
         this.staminaText = new TextUI("[Stamina]", ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 0.0f, 0.5f));
         this.staminaText.setShaderManager(ResourceManager.shaderAssets.gui_noised);
 
         this.mindText = new TextUI("[Mind]", ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, 0.0f, 0.5f));
         this.mindText.setShaderManager(ResourceManager.shaderAssets.gui_noised);
-
-        this.speed = new TextUI(ResourceManager.renderAssets.standardFont);
-        this.tick = new TextUI(ResourceManager.renderAssets.standardFont);
 
         this.crosshair = new ImageSizedUI(ResourceManager.renderAssets.crosshair, new Vector3f(0.0f), new Vector2f(16.0f));
         this.crosshair.setNormalizeByScreen(true);
@@ -97,12 +84,6 @@ public class InGameGUI extends AbstractGUI {
 
     @Override
     public void onStopRender() {
-        this.fps.clear();
-        this.entities.clear();
-        this.coordinates.clear();
-        this.info1.clear();
-        this.speed.clear();
-        this.tick.clear();
         this.crosshair.clear();
     }
 
@@ -118,10 +99,7 @@ public class InGameGUI extends AbstractGUI {
     private void renderTextOnScreen(double partialTicks) {
         double width = Game.getGame().getScreen().getWidth();
         double height = Game.getGame().getScreen().getHeight();
-        SceneWorld sceneWorld = Game.getGame().getSceneWorld();
         final WorldItem entityPlayerSP = (WorldItem) Game.getGame().getPlayerSP();
-        this.fps.setText("FPS: " + Screen.FPS + " | TPS: " + Screen.PHYS2_TPS);
-        this.entities.setText("entities: " + Game.getGame().getPhysicsWorld().countItems());
 
         if (InGameGUI.show_wasd) {
             if (Game.getGame().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput().mul(1, 0, 1).length() > 0) {
@@ -143,48 +121,6 @@ public class InGameGUI extends AbstractGUI {
             textUI.setPosition(new Vector3f((float) (width / 2.0f - textUI.getTextWidth() / 2.0f), (float) (height / 2.0f - textUI.getTextHeight() / 2.0f - 130.0f), 0.5f));
             textUI.render(partialTicks);
             textUI.clear();
-        }
-
-        if (SceneRender.CURRENT_DEBUG_MODE == 1) {
-            if (entityPlayerSP instanceof KinematicPlayerSP) {
-                KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
-                this.coordinates.setText(String.format("%s %s %s | %s %s %s", (float) entityPlayerSP.getPosition().x, (float) entityPlayerSP.getPosition().y, (float) entityPlayerSP.getPosition().z, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().x, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().y, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().z));
-            }
-        } else {
-            this.coordinates.setText(String.format("%s %s %s", (int) entityPlayerSP.getPosition().x, (int) entityPlayerSP.getPosition().y, (int) entityPlayerSP.getPosition().z));
-        }
-
-        //if (Game.DEBUG_MODE) {
-            this.fps.render(partialTicks);
-        //}
-
-        if (SceneRender.CURRENT_DEBUG_MODE == 1) {
-
-            this.entities.render(partialTicks);
-            this.coordinates.render(partialTicks);
-
-            int i1 = 60;
-            if (!Keyboard.isPressedKey(GLFW.GLFW_KEY_LEFT_CONTROL)) {
-                this.info1.render(partialTicks);
-            } else {
-                for (Binding keyBinding : Binding.getBindingList()) {
-                    TextUI textUI = new TextUI(keyBinding.toString(), ResourceManager.renderAssets.standardFont, new Vector3f(0.0f, i1, 0.0f));
-                    textUI.render(partialTicks);
-                    textUI.clear();
-                    i1 += 30;
-                }
-            }
-
-            if (entityPlayerSP instanceof KinematicPlayerSP) {
-                KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
-                this.speed.setText("speed: " + String.format("%.4f", kinematicPlayerSP.getScalarSpeed()));
-                this.speed.setPosition(new Vector3f(0.0f, i1 + 20.0f, 0.0f));
-                this.speed.render(partialTicks);
-            }
-
-            this.tick.setText("tick: " + sceneWorld.getTicks());
-            this.tick.setPosition(new Vector3f(0.0f, i1 + 40.0f, 0.0f));
-            this.tick.render(partialTicks);
         }
 
         if (entityPlayerSP instanceof KinematicPlayerSP) {
@@ -212,11 +148,9 @@ public class InGameGUI extends AbstractGUI {
             this.cassetteText.setHexColor(0xffee22);
             this.cassetteText.render(partialTicks);
 
-            if (SceneRender.CURRENT_DEBUG_MODE == 0) {
-                if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
-                    this.itemDescText.setText(inventory.getCurrentItem().getDescription());
-                    this.itemDescText.render(partialTicks);
-                }
+            if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
+                this.itemDescText.setText(inventory.getCurrentItem().getDescription());
+                this.itemDescText.render(partialTicks);
             }
 
             for (Inventory.Slot slot : inventory.getInventorySlots()) {

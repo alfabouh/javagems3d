@@ -1,13 +1,7 @@
 package ru.alfabouh.engine.physics.world.timer;
 
-import org.jetbrains.annotations.NotNull;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.logger.GameLogging;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class PhysicThreadManager {
     public static final Object locker = new Object();
@@ -35,7 +29,7 @@ public class PhysicThreadManager {
             try {
                 this.getPhysicsTimer().updateTimer(this.getTps());
             } catch (Exception e) {
-                Game.getGame().getLogManager().error(e);
+                Game.getGame().getLogManager().exception(e);
                 GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
             }
         });

@@ -6,16 +6,14 @@ import ru.alfabouh.engine.game.controller.ControllerDispatcher;
 import ru.alfabouh.engine.game.logger.GameLogging;
 import ru.alfabouh.engine.game.map.loader.IMapLoader;
 import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.game.synchronizing.SyncManger;
 import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
-import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
 import ru.alfabouh.engine.render.environment.Environment;
 import ru.alfabouh.engine.render.scene.gui.InGameGUI;
 
 public class GameSystem implements IEngine {
     public static final String ENG_NAME = "JVertex3d";
-    public static final String ENG_VER = "0.12a";
+    public static final String ENG_VER = "0.13a";
 
     private final ResourceManager resourceManager;
     private final EngineState engineState;
@@ -137,7 +135,7 @@ public class GameSystem implements IEngine {
             return;
         }
         Game.getGame().getSoundManager().stopAllSounds();
-        Game.getGame().getLogManager().warn("Cleaning worlds!");
+        Game.getGame().getLogManager().log("Cleaning worlds!");
         this.endWorlds();
         this.localPlayer = null;
     }
@@ -172,10 +170,10 @@ public class GameSystem implements IEngine {
                 this.getEngineState().gameResourcesLoaded = true;
                 this.createGraphics();
                 this.engineState().engineIsReady = true;
-                Game.getGame().getScreen().startScreen();
+                Game.getGame().getScreen().startScreenRenderProcess();
                 badExit = false;
             } catch (Exception e) {
-                Game.getGame().getLogManager().error(e);
+                Game.getGame().getLogManager().exception(e);
                 badExit = true;
             } finally {
                 try {
@@ -187,7 +185,7 @@ public class GameSystem implements IEngine {
                     Game.getGame().getPhysicThreadManager().getPhysicsTimer().cleanResources();
                     Game.getGame().getLogManager().log("Engine-Off");
                 } catch (Exception e) {
-                    Game.getGame().getLogManager().error(e);
+                    Game.getGame().getLogManager().exception(e);
                     badExit = true;
                 } finally {
                     if (badExit) {
@@ -207,8 +205,6 @@ public class GameSystem implements IEngine {
 
     private void createGraphics() {
         Game.getGame().getScreen().buildScreen();
-        Game.getGame().getScreen().initScreen();
-        Game.getGame().getScreen().showWindow();
         Game.getGame().getResourceManager().loadAllAssets();
     }
 

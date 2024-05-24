@@ -6,6 +6,7 @@ import ru.alfabouh.engine.physics.world.IWorld;
 import ru.alfabouh.engine.physics.world.object.IWorldDynamic;
 import ru.alfabouh.engine.render.environment.sky.skybox.ISkyBox;
 import ru.alfabouh.engine.render.scene.SceneRender;
+import ru.alfabouh.engine.render.scene.debug.constants.GlobalRenderDebugConstants;
 
 public class Sky implements IWorldDynamic {
     private final ISkyBox skyBox;
@@ -51,7 +52,7 @@ public class Sky implements IWorldDynamic {
     }
 
     public float getSunBrightness() {
-        return SceneRender.CURRENT_DEBUG_MODE == 1 ? 1.0f : this.sunBrightness;
+        return GlobalRenderDebugConstants.FULL_BRIGHT ? 1.0f : this.sunBrightness;
     }
 
     public void setSunBrightness(float sunBrightness) {

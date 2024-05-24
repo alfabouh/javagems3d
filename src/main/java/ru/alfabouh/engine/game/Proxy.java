@@ -15,32 +15,33 @@ import ru.alfabouh.engine.render.screen.Screen;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Proxy {
     private final PhysicsTimer physicsTimer;
     private final Screen screen;
-    private final Deque<Pair<WorldItem, RenderObjectData>> deque1;
-    private final Deque<Pair<WorldItem, Light>> deque2;
-    private final Deque<Pair<ILiquid, RenderLiquidData>> deque3;
+    private final ConcurrentLinkedDeque<Pair<WorldItem, RenderObjectData>> deque1;
+    private final ConcurrentLinkedDeque<Pair<WorldItem, Light>> deque2;
+    private final ConcurrentLinkedDeque<Pair<ILiquid, RenderLiquidData>> deque3;
 
     public Proxy(PhysicsTimer gameWorldTimer, Screen screen) {
         this.physicsTimer = gameWorldTimer;
         this.screen = screen;
 
-        this.deque1 = new ArrayDeque<>();
-        this.deque2 = new ArrayDeque<>();
-        this.deque3 = new ArrayDeque<>();
+        this.deque1 = new ConcurrentLinkedDeque<>();
+        this.deque2 = new ConcurrentLinkedDeque<>();
+        this.deque3 = new ConcurrentLinkedDeque<>();
     }
 
-    public synchronized Deque<Pair<WorldItem, RenderObjectData>> getDeque1() {
+    public Deque<Pair<WorldItem, RenderObjectData>> getDeque1() {
         return this.deque1;
     }
 
-    public synchronized Deque<Pair<WorldItem, Light>> getDeque2() {
+    public Deque<Pair<WorldItem, Light>> getDeque2() {
         return this.deque2;
     }
 
-    public synchronized Deque<Pair<ILiquid, RenderLiquidData>> getDeque3() {
+    public Deque<Pair<ILiquid, RenderLiquidData>> getDeque3() {
         return this.deque3;
     }
 

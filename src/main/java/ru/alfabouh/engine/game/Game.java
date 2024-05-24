@@ -7,7 +7,7 @@ import ru.alfabouh.engine.game.logger.GameLogging;
 import ru.alfabouh.engine.game.map.loader.IMapLoader;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.settings.GameSettings;
-import ru.alfabouh.engine.game.synchronizing.SyncManger;
+import ru.alfabouh.engine.game.synchronizing.SyncManager;
 import ru.alfabouh.engine.physics.entities.player.IPlayer;
 import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
@@ -21,12 +21,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Random;
 
 public class Game {
-    public static boolean DEBUG_MODE = false;
+    public static boolean DEBUG_MODE = true;
     public static final String GAME_NAME = "Reznya 3D";
     public static long rngSeed;
     public static Random random;
@@ -123,7 +122,7 @@ public class Game {
             Game.getGame().gameSystem = new GameSystem();
             Game.getGame().getEngineSystem().startSystem();
         } catch (Exception e) {
-            Game.getGame().getLogManager().error(e);
+            Game.getGame().getLogManager().exception(e);
             GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
         }
     }
@@ -196,7 +195,7 @@ public class Game {
     }
 
     public void showMainMenu() {
-        Game.getGame().getScreen().showMainMenu();
+        Game.getGame().getScreen().getScene().getGui().showMainMenu();
     }
 
     public void destroyMap() {
@@ -220,7 +219,7 @@ public class Game {
 
     public synchronized void destroyGame() {
         Game.getGame().shouldBeClosed = true;
-        SyncManger.freeAll();
+        SyncManager.freeAll();
         synchronized (PhysicThreadManager.locker) {
             PhysicThreadManager.locker.notifyAll();
         }

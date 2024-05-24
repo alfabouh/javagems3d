@@ -71,7 +71,7 @@ public final class World implements IWorld {
 
         List<WorldItem> copy1 = new ArrayList<>(this.getAllWorldItems());
         if (this.collectionsWaitingRefresh) {
-            synchronized (PhysicsTimer.lock) {
+            synchronized (PhysicsTimer.lockObject) {
                 this.allDynamicItems.clear();
                 this.allBulletItems.clear();
                 this.allDynamicItems.addAll(copy1.stream().filter(World::isItemDynamic).map(e -> (IWorldDynamic) e).collect(Collectors.toList()));

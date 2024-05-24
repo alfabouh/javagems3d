@@ -7,7 +7,7 @@ void main()
 {
     vec4 v = texture(texture_sampler, out_texture);
     if (v.a < 0.5) {
-        discard;
+       // discard;
     }
 
     float d = gl_FragCoord.z;

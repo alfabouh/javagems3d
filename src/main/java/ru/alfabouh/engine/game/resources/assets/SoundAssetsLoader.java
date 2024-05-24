@@ -35,31 +35,31 @@ public class SoundAssetsLoader implements IAssetsLoader {
         this.pl_step = new SoundBuffer[4];
         this.pl_slosh = new SoundBuffer[4];
 
-        this.glitch = ResourceManager.createSoundBuffer("glitch.wav", AL10.AL_FORMAT_MONO16);
-        this.map_ambience1 = ResourceManager.createSoundBuffer("valley_night.wav", AL10.AL_FORMAT_MONO16);
-        this.saw = ResourceManager.createSoundBuffer("saw.wav", AL10.AL_FORMAT_MONO16);
-        this.zippo_o = ResourceManager.createSoundBuffer("zippo_o.wav", AL10.AL_FORMAT_MONO16);
-        this.zippo_c = ResourceManager.createSoundBuffer("zippo_c.wav", AL10.AL_FORMAT_MONO16);
-        this.beep = ResourceManager.createSoundBuffer("beep.wav", AL10.AL_FORMAT_MONO16);
-        this.pick = ResourceManager.createSoundBuffer("pick.wav", AL10.AL_FORMAT_MONO16);
-        this.turn = ResourceManager.createSoundBuffer("turn.wav", AL10.AL_FORMAT_MONO16);
-        this.music = ResourceManager.createSoundBuffer("music.wav", AL10.AL_FORMAT_MONO16);
-        this.soda = ResourceManager.createSoundBuffer("soda.wav", AL10.AL_FORMAT_MONO16);
-        this.door = ResourceManager.createSoundBuffer("door.wav", AL10.AL_FORMAT_MONO16);
-        this.meat = ResourceManager.createSoundBuffer("meat.wav", AL10.AL_FORMAT_MONO16);
-        this.horror = ResourceManager.createSoundBuffer("horror.wav", AL10.AL_FORMAT_MONO16);
-        this.horror2 = ResourceManager.createSoundBuffer("horror2.wav", AL10.AL_FORMAT_MONO16);
-        this.victory = ResourceManager.createSoundBuffer("victory.wav", AL10.AL_FORMAT_MONO16);
-        this.crackling = ResourceManager.createSoundBuffer("crackling.wav", AL10.AL_FORMAT_MONO16);
-        this.wood_break = ResourceManager.createSoundBuffer("wood_break.wav", AL10.AL_FORMAT_MONO16);
-        this.drips = ResourceManager.createSoundBuffer("drips.wav", AL10.AL_FORMAT_MONO16);
-        this.button = ResourceManager.createSoundBuffer("button.wav", AL10.AL_FORMAT_MONO16);
-        this.menu = ResourceManager.createSoundBuffer("menu.wav", AL10.AL_FORMAT_MONO16);
-        this.en_steps = ResourceManager.createSoundBuffer("en_steps.wav", AL10.AL_FORMAT_MONO16);
+        this.glitch = ResourceManager.createSoundBuffer("fx/glitch.ogg", AL10.AL_FORMAT_MONO16);
+        this.map_ambience1 = ResourceManager.createSoundBuffer("ambient/valley_night.ogg", AL10.AL_FORMAT_MONO16);
+        this.saw = ResourceManager.createSoundBuffer("enemy/saw.ogg", AL10.AL_FORMAT_MONO16);
+        this.zippo_o = ResourceManager.createSoundBuffer("ui/zippo_o.ogg", AL10.AL_FORMAT_MONO16);
+        this.zippo_c = ResourceManager.createSoundBuffer("ui/zippo_c.ogg", AL10.AL_FORMAT_MONO16);
+        this.beep = ResourceManager.createSoundBuffer("ui/beep.ogg", AL10.AL_FORMAT_MONO16);
+        this.pick = ResourceManager.createSoundBuffer("player/pick.ogg", AL10.AL_FORMAT_MONO16);
+        this.turn = ResourceManager.createSoundBuffer("ui/turn.ogg", AL10.AL_FORMAT_MONO16);
+        this.music = ResourceManager.createSoundBuffer("ambient/music.ogg", AL10.AL_FORMAT_MONO16);
+        this.soda = ResourceManager.createSoundBuffer("player/soda.ogg", AL10.AL_FORMAT_MONO16);
+        this.door = ResourceManager.createSoundBuffer("environment/door.ogg", AL10.AL_FORMAT_MONO16);
+        this.meat = ResourceManager.createSoundBuffer("fx/meat.ogg", AL10.AL_FORMAT_MONO16);
+        this.horror = ResourceManager.createSoundBuffer("ambient/horror.ogg", AL10.AL_FORMAT_MONO16);
+        this.horror2 = ResourceManager.createSoundBuffer("ambient/horror2.ogg", AL10.AL_FORMAT_MONO16);
+        this.victory = ResourceManager.createSoundBuffer("fx/victory.ogg", AL10.AL_FORMAT_MONO16);
+        this.crackling = ResourceManager.createSoundBuffer("fx/crackling.ogg", AL10.AL_FORMAT_MONO16);
+        this.wood_break = ResourceManager.createSoundBuffer("environment/wood_break.ogg", AL10.AL_FORMAT_MONO16);
+        this.drips = ResourceManager.createSoundBuffer("ambient/drips.ogg", AL10.AL_FORMAT_MONO16);
+        this.button = ResourceManager.createSoundBuffer("ui/button.ogg", AL10.AL_FORMAT_MONO16);
+        this.menu = ResourceManager.createSoundBuffer("ui/menu.ogg", AL10.AL_FORMAT_MONO16);
+        this.en_steps = ResourceManager.createSoundBuffer("enemy/en_steps.ogg", AL10.AL_FORMAT_MONO16);
 
         for (int i = 0; i < 4; i++) {
-            this.pl_step[i] = ResourceManager.createSoundBuffer("pl_step" + (i + 1) + ".wav", AL10.AL_FORMAT_STEREO16);
-            this.pl_slosh[i] = ResourceManager.createSoundBuffer("pl_slosh" + (i + 1) + ".wav", AL10.AL_FORMAT_STEREO16);
+            this.pl_step[i] = ResourceManager.createSoundBuffer("player/pl_step" + (i + 1) + ".ogg", AL10.AL_FORMAT_STEREO16);
+            this.pl_slosh[i] = ResourceManager.createSoundBuffer("player/pl_slosh" + (i + 1) + ".ogg", AL10.AL_FORMAT_STEREO16);
         }
     }
 

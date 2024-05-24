@@ -56,11 +56,6 @@ public class MouseKeyboardController implements IController {
     @Override
     public void updateControllerState(Window window) {
         this.getMouse().update();
-        if (this.getMouse().scrollUpdate) {
-            this.getMouse().scrollUpdate = false;
-        } else {
-            this.getMouse().scrollVector = 0;
-        }
         this.keyboard.updateKeys();
         this.getPositionInput().set(0.0d);
         this.getRotationInput().set(0.0d);

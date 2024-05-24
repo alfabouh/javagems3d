@@ -7,7 +7,6 @@ uniform sampler2D texture_sampler_inventory;
 uniform sampler2D texture_screen;
 uniform sampler2D texture_blood;
 uniform int e_lsd;
-uniform int psx_gui_shake;
 uniform int kill;
 uniform int victory;
 uniform int glitch_tick;
@@ -76,14 +75,14 @@ vec4 psx() {
 
     vec4 blood_over = kill == 1 ? texture(texture_blood, distortedCoord) : vec4(0.0);
 
-    vec4 gui_t1 = texture(texture_sampler_gui, psx_gui_shake == 1 ? distortedCoordGui : texIn);
+    vec4 gui_t1 = texture(texture_sampler_gui, distortedCoordGui);
     vec4 gui_t2 = texture(texture_sampler_gui, distortedCoordGui + vec2(panic_val * 0.01));
     gui_t2.g *= 0;
     gui_t2.b *= 0;
     vec4 gui_t3 = texture(texture_sampler_gui, distortedCoordGui - vec2(panic_val * 0.01));
     gui_t3.r *= 0;
     gui_t3.g *= 0;
-    vec4 t2 = psx_gui_shake == 1 ? mix(gui_t1, gui_t2 + gui_t3, 1.0 - gui_t1.a) : gui_t1;
+    vec4 t2 = mix(gui_t1, gui_t2 + gui_t3, 1.0 - gui_t1.a);
 
     vec2 distortedCoordInventory = curveUV(pixelCoords2, panic_val * 0.5);
     distortedCoordInventory.x += sin(pixelCoords2.y * 8.0) * sin(C1) * C2;

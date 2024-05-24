@@ -104,7 +104,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.hasSoda = false;
         this.stamina = 1.0f;
         this.mind = 1.0f;
-        this.noiseSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror, SoundType.BACKGROUND_AMBIENT_SOUND, 2.0f, 0.0f, 1.0f);
+        this.noiseSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror, SoundType.BACKGROUND_AMBIENT_SOUND, 1.5f, 0.0f, 1.0f);
         this.mindCd = 0;
         this.staminaCd = 0;
         this.inventory = new Inventory(this, 4);
@@ -167,13 +167,13 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     public void createPlayer() {
         this.cachingGhostObject = new btPairCachingGhostObject();
         this.collisionShape = new btCapsuleShape(0.4d, 0.6d);
-        this.collisionShape2 = new btCapsuleShape(0.25d, 0.6d);
+        this.collisionShape2 = this.collisionShape;
         this.cachingGhostObject.setCollisionShape(this.collisionShape2);
         this.cachingGhostObject.setCollisionFlags(btCollisionObject.CF_CHARACTER_OBJECT | btCollisionObject.CF_CUSTOM_MATERIAL_CALLBACK | btCollisionObject.CF_HAS_CONTACT_STIFFNESS_DAMPING);
         this.cachingGhostObject.setContactStiffnessAndDamping(RigidBodyObject.STIFFNESS, RigidBodyObject.DAMPING);
         this.kinematicCharacterController = new btKinematicCharacterController(this.cachingGhostObject, this.collisionShape, this.stepHeight, new btVector3(0.0f, 1.0f, 0.0f));
         this.getKinematicCharacterController().setMaxSlope(this.maxSlope);
-        this.getKinematicCharacterController().setMaxPenetrationDepth(0.0d);
+        //this.getKinematicCharacterController().setMaxPenetrationDepth(0.0d);
         this.getKinematicCharacterController().setWalkDirection(new btVector3(0, 0, 0));
         this.getBulletObject().setUserIndex2(this.getItemId());
         this.setCollisionTranslation(position);
@@ -184,7 +184,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     @Override
     public void onSpawn(IWorld world) {
         super.onSpawn(world);
-        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f);
+        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.5f, 1.0f);
         Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.crackling, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
     }
 
@@ -297,9 +297,9 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     private void playStepSound() {
         if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
-            Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_slosh[Game.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 0.5f, 0.25f);
+            Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_slosh[Game.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.0f, 0.25f);
         }
-        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_step[Game.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.0f, 0.5f);
+        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_step[Game.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.25f, 0.5f);
     }
 
     private btVector3 getWalkingSpeed(Vector3d motion) {
@@ -625,7 +625,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     @Override
     public void performController(Vector2d rotationInput, Vector3d xyzInput, boolean isFocused) {
-        if (this.isKilled() || this.isVictory()) {
+        if (this.isKilled() || this.isVictory() || !isFocused) {
             this.inputMotion.clear();
             return;
         }
@@ -641,12 +641,12 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 //System.out.println("new Vector3d(" + x + ", " + y + ", " + z + ")");
                 this.inventory().onMouseRightClick(this.getWorld());
             }
-            this.inventory().scrollInventoryToNotNullItem(mouseKeyboardController.getMouse().scrollVector);
+            this.inventory().scrollInventoryToNotNullItem(mouseKeyboardController.getMouse().getScrollVector());
         }
         this.wantsToGrab = ControllerDispatcher.bindings.keySelection.isPressed();
         if (ControllerDispatcher.bindings.keyX.isClicked() && this.isHasSoda()) {
             if (this.mind < 0.9f || this.stamina < 0.9f) {
-                Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.soda, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+                Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.soda, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
                 this.stamina = 1.0f;
                 this.mind = Math.min(this.mind + 0.15f, 1.0f);
                 this.staminaCd = 0;
@@ -668,7 +668,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 Game.getGame().getProxy().addLight(entityPropInfo, pointLight);
                 entityPropInfo.setObjectVelocity(this.getLookVector().mul(20.0f));
             }
-            if (ControllerDispatcher.bindings.keyBlock3.isClicked()) {
+            if (ControllerDispatcher.bindings.keyBlock3.isPressed()) {
                 PhysCube entityPropInfo = new PhysCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
                 Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
                 entityPropInfo.setObjectVelocity(this.getLookVector().mul(50.0f));

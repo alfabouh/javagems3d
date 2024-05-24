@@ -12,6 +12,7 @@ import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
+import ru.alfabouh.engine.render.scene.debug.constants.GlobalRenderDebugConstants;
 import ru.alfabouh.engine.render.scene.gui.InGameGUI;
 import ru.alfabouh.engine.render.scene.gui.PauseMenuGUI;
 import ru.alfabouh.engine.render.scene.world.camera.AttachedCamera;
@@ -33,8 +34,6 @@ public class BindingList {
     public final Key keyClear;
     public final Key keyEsc;
     public final Key keyV;
-    public final Key keyZ;
-    public final Key keyR;
     public final Key keyT;
     public final Key keyF11;
     public final Key keySelection;
@@ -54,9 +53,7 @@ public class BindingList {
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 
         this.keyV = new FunctionalKey(e -> {
-            ResourceManager.shaderAssets.destroyShaders();
             ResourceManager.reloadShaders();
-            ResourceManager.shaderAssets.startShaders();
         }, GLFW.GLFW_KEY_V);
 
         this.keyEsc = new FunctionalKey(e -> {
@@ -87,44 +84,15 @@ public class BindingList {
             }
         }, GLFW.GLFW_KEY_F11);
 
-        this.keyZ = new FunctionalKey(e -> {
-            if (e == IKeyAction.KeyAction.CLICK) {
-                SceneRender.CURRENT_DEBUG_MODE = SceneRender.CURRENT_DEBUG_MODE == 0 ? 1 : 0;
-            }
-        }, GLFW.GLFW_KEY_Z);
-
-        this.keyR = new FunctionalKey(e -> {
-            if (e == IKeyAction.KeyAction.CLICK) {
-                IController controller = Game.getGame().getScreen().getControllerDispatcher().getCurrentController();
-                ICamera camera = Game.getGame().getScreen().getCamera();
-                if (controller != null) {
-                    if (camera != null) {
-                        if (camera instanceof AttachedCamera) {
-                            AttachedCamera attachedCamera = (AttachedCamera) camera;
-                            Game.getGame().getScreen().getScene().enableFreeCamera(controller, attachedCamera.getCamPosition(), attachedCamera.getCamRotation());
-                            Game.getGame().getScreen().getControllerDispatcher().detachController();
-                        } else if (camera instanceof FreeCamera) {
-                            Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) Game.getGame().getPlayerSP());
-                            Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(controller, Game.getGame().getPlayerSP());
-                        }
-                    } else {
-                        Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) Game.getGame().getPlayerSP());
-                    }
-                }
-            }
-        }, GLFW.GLFW_KEY_R);
-
         this.keyT = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                Game.getGame().getScreen().getWindow().setInFocus(!Screen.isInFocus());
+                Game.getGame().getScreen().getWindow().switchFocus();
             }
         }, GLFW.GLFW_KEY_T);
 
         if (Game.DEBUG_MODE) {
             Binding.createBinding(this.keyV, "Reload shaders");
             Binding.createBinding(this.keyT, "Фокус");
-            Binding.createBinding(this.keyR, "Режим камеры");
-            Binding.createBinding(this.keyZ, "Режим отладки");
             Binding.createBinding(this.keyClear, "Очистка");
             Binding.createBinding(this.keyBlock1, "Куб статичный");
             Binding.createBinding(this.keyBlock2, "Куб-фонарь");

@@ -187,8 +187,8 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     }
 
     public void refreshInterpolatingState() {
-        this.currentPositionInterpolation = new InterpolationPoints(this.getWorldItem().getPosition(), this.getPrevRenderPosition());
-        this.currentRotationInterpolation = new InterpolationPoints(this.getWorldItem().getRotation(), this.getPrevRenderRotation());
+        this.currentPositionInterpolation = new InterpolationPoints(this.getWorldItem().getPosition(), this.currentPositionInterpolation.getStartPoint());
+        this.currentRotationInterpolation = new InterpolationPoints(this.getWorldItem().getRotation(), this.currentRotationInterpolation.getStartPoint());
     }
 
     private InterpolationPoints getCurrentPosState() {

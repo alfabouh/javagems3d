@@ -12,9 +12,10 @@ import ru.alfabouh.engine.game.resources.assets.models.Model;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.game.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
-import ru.alfabouh.engine.game.synchronizing.SyncManger;
+import ru.alfabouh.engine.game.synchronizing.SyncManager;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
+import ru.alfabouh.engine.physics.world.timer.PhysicsTimer;
 import ru.alfabouh.engine.render.frustum.FrustumCulling;
 import ru.alfabouh.engine.render.scene.gui.base.GUI;
 import ru.alfabouh.engine.render.scene.gui.base.GameGUI;
@@ -29,7 +30,6 @@ import ru.alfabouh.engine.render.screen.window.Window;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 public class Scene implements IScene {
-    private final Screen screen;
     private final Window window;
     private final FrustumCulling frustumCulling;
     private final SceneRender sceneRender;
@@ -42,8 +42,7 @@ public class Scene implements IScene {
 
     public Scene(Screen screen, SceneWorld sceneWorld) {
         this.sceneData = new SceneData(sceneWorld, null);
-        this.screen = screen;
-        this.window = this.getScreen().getWindow();
+        this.window = screen.getWindow();
         this.frustumCulling = new FrustumCulling();
         this.gui = new GameGUI();
         this.sceneRender = new SceneRender(this.getSceneData());
@@ -61,7 +60,7 @@ public class Scene implements IScene {
     @SuppressWarnings("all")
     public void renderScene(double deltaTime) throws InterruptedException {
         if (Scene.isSceneActive()) {
-            Screen.setViewport(this.getWindowDimensions());
+            Game.getGame().getScreen().normalizeViewPort();
             if (this.getCurrentCamera() != null) {
                 if (this.requestDestroyMap) {
                     Game.getGame().destroyMap();
@@ -70,14 +69,10 @@ public class Scene implements IScene {
                 }
                 this.elapsedTime += deltaTime / PhysicThreadManager.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
-                    SyncManger.SyncPhysicsAndRender.mark();
+                    SyncManager.SyncPhysics.free();
                     this.refresh = true;
-                    synchronized (PhysicThreadManager.locker) {
-                        PhysicThreadManager.locker.notifyAll();
-                    }
                     this.elapsedTime %= 1.0d;
                 }
-                SyncManger.SyncPhysicsAndRender.blockCurrentThread();
                 this.renderSceneInterpolated(this.elapsedTime);
             } else {
                 this.getSceneRender().onRender(deltaTime);
@@ -142,7 +137,7 @@ public class Scene implements IScene {
     }
 
     public static boolean isSceneActive() {
-        return Screen.isScreenActive();
+        return Game.getGame().getScreen().getWindow().isActive();
     }
 
     public static void setCamera(ICamera camera) {
@@ -250,10 +245,6 @@ public class Scene implements IScene {
 
     public SceneWorld getSceneWorld() {
         return this.getSceneData().getSceneWorld();
-    }
-
-    public Screen getScreen() {
-        return this.screen;
     }
 
     public Vector2i getWindowDimensions() {

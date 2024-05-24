@@ -13,11 +13,11 @@ void main()
     vec2 inverse_resolution = vec2(1.0 / resolution.x, 1.0 / resolution.y);
     vec3 luma = vec3(0.2126, 0.7152, 0.0722);
 
-    vec3 rgbNW = texture2D(texture_sampler, (gl_FragCoord.xy + vec2(-1.0, -1.0)) * inverse_resolution).xyz;
-    vec3 rgbNE = texture2D(texture_sampler, (gl_FragCoord.xy + vec2(1.0, -1.0)) * inverse_resolution).xyz;
-    vec3 rgbSW = texture2D(texture_sampler, (gl_FragCoord.xy + vec2(-1.0, 1.0)) * inverse_resolution).xyz;
-    vec3 rgbSE = texture2D(texture_sampler, (gl_FragCoord.xy + vec2(1.0, 1.0)) * inverse_resolution).xyz;
-    vec3 rgbM = texture2D(texture_sampler, gl_FragCoord.xy * inverse_resolution).xyz;
+    vec3 rgbNW = texture(texture_sampler, (gl_FragCoord.xy + vec2(-1.0, -1.0)) * inverse_resolution).xyz;
+    vec3 rgbNE = texture(texture_sampler, (gl_FragCoord.xy + vec2(1.0, -1.0)) * inverse_resolution).xyz;
+    vec3 rgbSW = texture(texture_sampler, (gl_FragCoord.xy + vec2(-1.0, 1.0)) * inverse_resolution).xyz;
+    vec3 rgbSE = texture(texture_sampler, (gl_FragCoord.xy + vec2(1.0, 1.0)) * inverse_resolution).xyz;
+    vec3 rgbM = texture(texture_sampler, gl_FragCoord.xy * inverse_resolution).xyz;
 
     float lumaNW = dot(rgbNW, luma);
     float lumaNE = dot(rgbNE, luma);
@@ -43,8 +43,8 @@ void main()
     float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
     dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX), max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX), dir * rcpDirMin)) * inverse_resolution;
 
-    vec3 rgbA = 0.5 * (texture2D(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * (1.0 / 3.0 - 0.5)).xyz + texture2D(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * (2.0 / 3.0 - 0.5)).xyz);
-    vec3 rgbB = rgbA * 0.5 + 0.25 * (texture2D(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * -0.5).xyz + texture2D(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * 0.5).xyz);
+    vec3 rgbA = 0.5 * (texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * (1.0 / 3.0 - 0.5)).xyz + texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * (2.0 / 3.0 - 0.5)).xyz);
+    vec3 rgbB = rgbA * 0.5 + 0.25 * (texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * -0.5).xyz + texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * 0.5).xyz);
 
     frag_color = vec4(rgbB, 1.0);
 }

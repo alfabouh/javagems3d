@@ -46,12 +46,13 @@ public class ShaderLoader {
     public ShaderManager world_selected_gbuffer;
     public ShaderManager inventory_zippo;
     public ShaderManager inventory_common_item;
+    public ShaderManager imgui;
 
     public ShaderLoader() {
-        this.loadAll();
+        this.init();
     }
 
-    private void loadAll() {
+    private void init() {
         this.SunLight = this.createUBO("SunLight", 0, 32);
         this.PointLights = this.createUBO("PointLights", 1, 32 * LightManager.MAX_POINT_LIGHTS + 4);
         this.Misc = this.createUBO("Misc", 2, 4);
@@ -70,6 +71,8 @@ public class ShaderLoader {
         this.blur5 = this.createShaderManager("blur5", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur9 = this.createShaderManager("blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur13 = this.createShaderManager("blur13", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+
+        this.imgui = this.createShaderManager("imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.fxaa = this.createShaderManager("fxaa", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.hdr = this.createShaderManager("hdr", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
@@ -122,9 +125,15 @@ public class ShaderLoader {
         }
     }
 
-    public void loadAllShaders() {
+    public void loadShaders() {
         for (ShaderManager shaderManager : ShaderLoader.allShaders) {
             shaderManager.getShaderGroup().initAll();
         }
+    }
+
+    public void reloadShaders() {
+        this.destroyShaders();
+        this.loadShaders();
+        this.startShaders();
     }
 }

@@ -2,52 +2,58 @@ package ru.alfabouh.engine.audio.sound;
 
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.engine.audio.SoundManager;
-import ru.alfabouh.engine.audio.sound.wave.OldJGLWaveData;
-import ru.alfabouh.engine.audio.sound.wave.WaveData;
+import ru.alfabouh.engine.audio.sound.loaders.ogg.Ogg;
+import ru.alfabouh.engine.audio.sound.loaders.wave.Wave;
+import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.game.resources.cache.GameCache;
 import ru.alfabouh.engine.game.resources.cache.ICached;
 
-import java.net.URL;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class SoundBuffer implements ICached {
     private final String soundName;
     private int buffer;
 
-    public SoundBuffer(String soundName, int soundFormat) {
+    public SoundBuffer(String soundName) {
         this.soundName = soundName;
-        this.loadSound(soundFormat);
     }
 
     public static SoundBuffer createSoundBuffer(GameCache gameCache, String soundName, int soundFormat) {
         if (gameCache.checkObjectInCache(soundName)) {
             return gameCache.getCachedSound(soundName);
         }
-        SoundBuffer soundBuffer = new SoundBuffer(soundName, soundFormat);
-        gameCache.addObjectInBuffer(soundName, soundBuffer);
+        SoundBuffer soundBuffer = new SoundBuffer(soundName);
+        if (soundBuffer.loadSound(soundFormat)) {
+            gameCache.addObjectInBuffer(soundName, soundBuffer);
+        }
         return soundBuffer;
     }
 
-    private void loadSound(int soundFormat) {
+    public boolean loadSound(int soundFormat) {
         this.buffer = AL10.alGenBuffers();
         SoundManager.checkALonErrors();
-
-        URL url = this.getClass().getResource("/assets/sounds/" + this.getSoundName());
-        if (url == null) {
-            throw new GameException("Sound " + this.getSoundName() + " doesn't exist!");
+        try {
+            return this.readWave(Game.loadFileJar("/assets/sounds/" + this.getSoundName()), soundFormat);
+        } catch (UnsupportedAudioFileException | IOException e) {
+            throw new GameException(e);
         }
-
-        this.readWave(url, soundFormat);
     }
 
-    private void readWave(URL url, int soundFormat) {
-        OldJGLWaveData WaveData = OldJGLWaveData.create(url);
-        if (WaveData == null) {
-            throw new GameException("Couldn't create wavefront: " + this.getSoundName());
+    private boolean readWave(InputStream inputStream, int soundFormat) throws UnsupportedAudioFileException, IOException {
+        Ogg ogg = (Ogg) Ogg.create(inputStream);
+        //Wave wave = (Wave) Wave.create(inputStream);
+        if (ogg != null) {
+            AL10.alBufferData(this.buffer, soundFormat, ogg.getPcm(), ogg.getSampleRate());
+            ogg.dispose();
+            SoundManager.checkALonErrors();
+            return true;
+        } else {
+            Game.getGame().getLogManager().warn("Failed to read sound: " + this.getSoundName());
         }
-        AL10.alBufferData(this.buffer, soundFormat, WaveData.data, WaveData.samplerate);
-        WaveData.dispose();
-        SoundManager.checkALonErrors();
+        return false;
     }
 
     public int getBuffer() {

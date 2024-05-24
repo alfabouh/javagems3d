@@ -25,11 +25,28 @@ public class TextureSample implements IImageSample {
     private final String name;
     private final boolean interpolate;
     private final int wrapping;
+    private boolean enableAnisotropic;
+
+    private TextureSample(String name, int width, int height, ByteBuffer buffer) {
+        this.name = name;
+        this.width = width;
+        this.height = height;
+        this.imageBuffer = buffer;
+
+        this.wrapping = GL30.GL_CLAMP_TO_BORDER;
+        this.enableAnisotropic = false;
+        this.interpolate = false;
+
+        if (this.imageBuffer != null) {
+            this.createTexture();
+        }
+    }
 
     private TextureSample(boolean inJar, String fullPath, boolean interpolate, int wrapping) {
         this.name = fullPath;
         this.interpolate = interpolate;
         this.wrapping = wrapping;
+        this.enableAnisotropic = true;
         Game.getGame().getLogManager().log("Loading " + this.getName());
         if (inJar) {
             try (InputStream inputStream = Game.loadFileJar(this.getName())) {
@@ -52,6 +69,7 @@ public class TextureSample implements IImageSample {
         this.name = id + "_inputStream";
         this.interpolate = interpolate;
         this.wrapping = wrapping;
+        this.enableAnisotropic = true;
         if (inputStream == null) {
             Game.getGame().getLogManager().warn("Error, while loading texture " + id + " InputStream is NULL");
             this.imageBuffer = null;
@@ -89,20 +107,17 @@ public class TextureSample implements IImageSample {
         return textureSample;
     }
 
-    public int getWrapping() {
-        return this.wrapping;
-    }
-
-    public boolean isInterpolate() {
-        return this.interpolate;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
-        return new TextureSample(id, inputStream, interpolate, wrapping);
+    public static TextureSample createTexture(GameCache gameCache, String name, int width, int height, ByteBuffer buffer) {
+        if (gameCache.checkObjectInCache(name)) {
+            return gameCache.getCachedTexture(name);
+        }
+        TextureSample textureSample = new TextureSample(name, width, height, buffer);
+        if (textureSample.isValid()) {
+            gameCache.addObjectInBuffer(name, textureSample);
+        } else {
+            throw new GameException("Couldn't add invalid texture in cache!");
+        }
+        return textureSample;
     }
 
     private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) {
@@ -164,7 +179,7 @@ public class TextureSample implements IImageSample {
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 6);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, this.getWrapping());
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, this.getWrapping());
-        if (anisotropic) {
+        if (anisotropic && this.isEnableAnisotropic()) {
             GL30.glTexParameterf(GL30.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL30.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
         }
         GL30.glGenerateMipmap(GL20.GL_TEXTURE_2D);
@@ -172,9 +187,49 @@ public class TextureSample implements IImageSample {
         Game.getGame().getLogManager().log("Texture " + this.getName() + " successfully created!");
     }
 
+    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
+        return new TextureSample(id, inputStream, interpolate, wrapping);
+    }
+
     public void recreateTexture() {
         GL30.glDeleteTextures(this.getTextureId());
         this.createTexture();
+    }
+
+    public void clear() {
+        if (this.isValid()) {
+            STBImage.stbi_image_free(this.getImageBuffer());
+            this.imageBuffer = null;
+        }
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
+        GL30.glDeleteTextures(this.getTextureId());
+    }
+
+    public void bindTexture() {
+        if (!this.isValid()) {
+            throw new GameException("Tried to bind invalid texture");
+        }
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, this.getTextureId());
+    }
+
+    public void setEnableAnisotropic(boolean enableAnisotropic) {
+        this.enableAnisotropic = enableAnisotropic;
+    }
+
+    public boolean isEnableAnisotropic() {
+        return this.enableAnisotropic;
+    }
+
+    public int getWrapping() {
+        return this.wrapping;
+    }
+
+    public boolean isInterpolate() {
+        return this.interpolate;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public int getHeight() {
@@ -189,28 +244,12 @@ public class TextureSample implements IImageSample {
         return this.textureId;
     }
 
-    public void clear() {
-        if (this.isValid()) {
-            STBImage.stbi_image_free(this.getImageBuffer());
-            this.imageBuffer = null;
-        }
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
-        GL30.glDeleteTextures(this.getTextureId());
-    }
-
     public boolean isValid() {
         return this.getImageBuffer() != null;
     }
 
     public ByteBuffer getImageBuffer() {
         return this.imageBuffer;
-    }
-
-    public void bindTexture() {
-        if (!this.isValid()) {
-            throw new GameException("Tried to bind invalid texture");
-        }
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, this.getTextureId());
     }
 
     @Override

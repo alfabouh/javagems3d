@@ -9,11 +9,15 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.game.exception.GameException;
 import ru.alfabouh.engine.render.screen.Screen;
 
 import java.nio.IntBuffer;
 
 public class Window {
+    public static final int defaultW = 1280;
+    public static final int defaultH = 720;
     private final long window;
     private final WindowProperties windowProperties;
     private long currentMonitor;
@@ -64,12 +68,32 @@ public class Window {
         }
     }
 
+    public void hideWindow() {
+        GLFW.glfwHideWindow(this.getDescriptor());
+    }
+
+    public void showWindow() {
+        GLFW.glfwShowWindow(this.getDescriptor());
+        GLFW.glfwFocusWindow(this.getDescriptor());
+    }
+
     public boolean isInFocus() {
-        return Screen.isScreenActive() && this.isInFocus;
+        return this.isActive() && this.isInFocus;
     }
 
     public void setInFocus(boolean inFocus) {
         isInFocus = inFocus;
+    }
+
+    public void switchFocus() {
+        this.isInFocus = !this.isInFocus;
+    }
+
+    public boolean isActive() {
+        if (this.getWidth() == 0 || this.getHeight() == 0) {
+            return false;
+        }
+        return GLFW.glfwGetWindowAttrib(this.getDescriptor(), GLFW.GLFW_ICONIFIED) == 0;
     }
 
     public void refreshFocusState() {
@@ -140,6 +164,40 @@ public class Window {
             IntBuffer height = stack.mallocInt(1);
             GLFW.glfwGetWindowSize(this.window, width, height);
             return new Vector2i(width.get(0), height.get(0));
+        }
+    }
+
+    public boolean isFullScreen() {
+        return GLFW.glfwGetWindowMonitor(this.getDescriptor()) != 0;
+    }
+
+    public void enableVSync() {
+        GLFW.glfwSwapInterval(1);
+    }
+
+    public void disableVSync() {
+        GLFW.glfwSwapInterval(0);
+    }
+
+    public void makeFullScreen() {
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        if (vidMode != null) {
+            GLFW.glfwSetWindowMonitor(this.getDescriptor(), GLFW.glfwGetPrimaryMonitor(), 0, 0, vidMode.width(), vidMode.height(), GLFW.GLFW_DONT_CARE);
+            Game.getGame().getLogManager().log("FullScreen mode");
+        } else {
+            throw new GameException("Monitor None");
+        }
+    }
+
+    public void removeFullScreen() {
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        if (vidMode != null) {
+            int x = (vidMode.width() - Window.defaultW) / 2;
+            int y = (vidMode.height() - Window.defaultH) / 2;
+            GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, Window.defaultW, Window.defaultH, GLFW.GLFW_DONT_CARE);
+            Game.getGame().getLogManager().log("DefaultScreen mode");
+        } else {
+            throw new GameException("Monitor None");
         }
     }
 
