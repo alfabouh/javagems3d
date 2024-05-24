@@ -7,6 +7,7 @@ import ru.alfabouh.engine.game.controller.input.IController;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.render.scene.gui.font.GuiFont;
 import ru.alfabouh.engine.render.screen.Screen;
+import ru.alfabouh.engine.render.screen.window.Window;
 
 public interface BasicUI {
     static float[] HEX2RGB(int hex) {
@@ -19,8 +20,8 @@ public interface BasicUI {
     static Vector2f getScreenNormalizedScaling() {
         double width = Game.getGame().getScreen().getWidth();
         double height = Game.getGame().getScreen().getHeight();
-        float f1 = (float) (width / Screen.defaultW);
-        float f2 = (float) (height / Screen.defaultH);
+        float f1 = (float) (width / Window.defaultW);
+        float f2 = (float) (height / Window.defaultH);
         float f1_r = (float) Math.max(Math.ceil(f1 * 2.0f) / 2.0f, 1.0f);
         float f2_r = (float) Math.max(Math.ceil(f2 * 2.0f) / 2.0f, 1.0f);
         float f3 = Math.min(f1_r, f2_r);

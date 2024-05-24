@@ -3,7 +3,6 @@ package ru.alfabouh.engine.physics.entities.enemy.ai;
 import org.bytedeco.bullet.BulletCollision.btBroadphaseProxy;
 import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.LinearMath.btVector3;
-import org.checkerframework.checker.units.qual.A;
 import org.joml.Vector3d;
 import ru.alfabouh.engine.audio.sound.GameSound;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
@@ -27,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NavigationToPlayerAI extends NavigationAI {
+    private boolean forceChangeWayDirection;
+
     private final Vector3d playerPos;
     private final List<Graph.GVertex> queuePath;
     private final AtomicBoolean atomicBoolean;
@@ -63,10 +64,11 @@ public class NavigationToPlayerAI extends NavigationAI {
                             continue;
                         }
 
-                        this.setSpeed(this.getAtomicBoolean().get() ? this.getMaxSpeed() : 0.14f);
+                        this.setSpeed(this.getAtomicBoolean().get() ? this.getMaxSpeed() : 0.125f);
 
-                        if (!this.getAtomicBoolean().get() && this.reachedDestination()) {
+                        if ((!this.getAtomicBoolean().get() && this.reachedDestination()) || this.isForceChangeWayDirection()) {
                             randomVertex = Game.random.nextFloat() <= this.getRandomPlayerChasePercent() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : world.getGraph().getRandomVertex();
+                            this.setForceChangeWayDirection(false);
                         }
 
                         AStar aStar = new AStar(worldItem.getWorld().getGraph(), this.getCurrentSyncVertex(), this.getAtomicBoolean().get() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : randomVertex);
@@ -85,7 +87,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                     }
                 }
             } catch (Exception e) {
-                Game.getGame().getLogManager().error(e);
+                Game.getGame().getLogManager().exception(e);
                 GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
             }
         });
@@ -98,7 +100,7 @@ public class NavigationToPlayerAI extends NavigationAI {
         if (this.getQueuePath() != null && this.getNextVertex() == null) {
             ArrayList<Graph.GVertex> gVertices = new ArrayList<>(this.getQueuePath());
             if (!gVertices.isEmpty()) {
-                if (!gVertices.get(0).equals(this.getCurrentVertex())) {
+                if (gVertices.get(0) != null && !gVertices.get(0).equals(this.getCurrentVertex())) {
                     Iterator<Graph.GVertex> gVertexIterator = gVertices.iterator();
                     while (gVertexIterator.hasNext()) {
                         Graph.GVertex vertex = gVertexIterator.next();
@@ -127,8 +129,9 @@ public class NavigationToPlayerAI extends NavigationAI {
                 this.ticksBeforeRefreshPath = 0;
             }
 
-            if (this.currentChasingTicks >= this.getMaxMemory() * 2.5f) {
+            if (this.currentChasingTicks >= this.getMaxMemory() * 2.0f) {
                 this.chasingBlockTicks = (int) (250 - (50 * this.getRandomPlayerChasePercent()));
+                this.setForceChangeWayDirection(true);
             }
 
             double seekDist = this.getMaxSeekDist();
@@ -140,7 +143,7 @@ public class NavigationToPlayerAI extends NavigationAI {
 
             if (this.chasingBlockTicks-- > 0) {
                 this.currentMemory = 0;
-                if (this.canSeePlayer(player) && distToPlayer <= seekDist / 2.5f && yDelta <= 4.0f) {
+                if (this.canSeePlayer(player) && distToPlayer <= seekDist / 3.0f && yDelta <= 4.0f) {
                     this.getAtomicBoolean().set(true);
                     this.chasingBlockTicks = 0;
                 } else {
@@ -199,6 +202,14 @@ public class NavigationToPlayerAI extends NavigationAI {
 
     public synchronized void setRandomPlayerChasePercent(float randomPlayerChasePercent) {
         this.randomPlayerChasePercent = randomPlayerChasePercent;
+    }
+
+    public synchronized void setForceChangeWayDirection(boolean forceChangeWayDirection) {
+        this.forceChangeWayDirection = forceChangeWayDirection;
+    }
+
+    public synchronized boolean isForceChangeWayDirection() {
+        return this.forceChangeWayDirection;
     }
 
     public synchronized float getRandomPlayerChasePercent() {

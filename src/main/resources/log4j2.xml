@@ -5,6 +5,9 @@
         <Property name="log-file">${date:yyyy-MM-dd_HH-mm-ss}_log.log</Property>
     </Properties>
     <Appenders>
+        <Console name="Console" target="SYSTEM_ERR">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n"/>
+        </Console>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n"/>
         </Console>

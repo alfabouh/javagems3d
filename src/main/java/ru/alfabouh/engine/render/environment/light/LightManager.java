@@ -48,8 +48,8 @@ public class LightManager implements ILightManager {
 
     public void addLight(Light light) {
         if ((light.lightCode() & Light.POINT_LIGHT) != 0) {
-            if (this.getPointLightList().size() >= LightManager.MAX_POINT_LIGHTS) {
-                throw new GameException("Reached point lights limit: " + LightManager.MAX_POINT_LIGHTS);
+            if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= LightManager.MAX_POINT_LIGHTS) {
+                throw new GameException("Reached active point lights limit: " + LightManager.MAX_POINT_LIGHTS);
             }
             this.getPointLightList().add((PointLight) light);
         }

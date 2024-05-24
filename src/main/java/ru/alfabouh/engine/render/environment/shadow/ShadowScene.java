@@ -203,7 +203,7 @@ public class ShadowScene {
     private void sunScene(List<Model<Format3D>> modelList) {
         this.getSunShadowShader().bind();
         this.getFrameBufferObjectProgram().bindFBO();
-        Screen.setViewport(this.getShadowDim());
+        GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
         for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
             CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
@@ -247,7 +247,8 @@ public class ShadowScene {
 
     private void pointLightsScene(List<Model<Format3D>> modelList) {
         this.getPointLightShadowShader().bind();
-        Screen.setViewport(this.getShadowDim());
+        GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
+
         for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {

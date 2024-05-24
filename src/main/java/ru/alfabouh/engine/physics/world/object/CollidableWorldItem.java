@@ -98,7 +98,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
     protected void addCallBacks(RigidBodyObject rigidBodyObject) {
     }
 
-    public RigidBodyObject getBulletObject() {
+    public synchronized RigidBodyObject getBulletObject() {
         return this.rigidBodyObject;
     }
 

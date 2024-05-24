@@ -1,4 +1,4 @@
-package ru.alfabouh.engine.render.scene.bullet;
+package ru.alfabouh.engine.render.scene.debug.bullet;
 
 import org.bytedeco.bullet.LinearMath.btIDebugDraw;
 import org.bytedeco.bullet.LinearMath.btVector3;

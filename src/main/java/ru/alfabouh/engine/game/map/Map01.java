@@ -204,7 +204,7 @@ public class Map01 implements IMapLoader {
 
     @Override
     public void addSounds(World world) {
-        Game.getGame().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.drips, SoundType.WORLD_AMBIENT_SOUND, 1.0f, 5.0f, 4.0f, new Vector3d(-1.5d, -19.0d, -23.0d));
+        Game.getGame().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.drips, SoundType.WORLD_AMBIENT_SOUND, 1.5f, 5.0f, 4.0f, new Vector3d(-1.5d, -19.0d, -23.0d));
         Game.getGame().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.map_ambience1, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 3.0f, 3.0f, new Vector3d(20.5d, 10.0d, -25.0d));
     }
 

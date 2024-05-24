@@ -1,4 +1,4 @@
-package ru.alfabouh.engine.audio.sound.ogg;
+package ru.alfabouh.engine.audio.sound.loaders.ogg;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
@@ -6,8 +6,9 @@ import org.lwjgl.stb.STBVorbis;
 import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.audio.sound.loaders.ISoundLoader;
 import ru.alfabouh.engine.game.exception.GameException;
+import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,15 +16,15 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-public class OggData {
+public class Ogg implements ISoundLoader {
     private final ShortBuffer pcm;
     private final int sampleRate;
     private int format;
 
-    private OggData(String path) {
+    private Ogg(InputStream stream) {
         try (STBVorbisInfo info = STBVorbisInfo.malloc()) {
             try {
-                this.pcm = this.readOGG(path, info);
+                this.pcm = this.readOGG(stream, info);
                 this.sampleRate = info.sample_rate();
             } catch (IOException e) {
                 throw new GameException(e);
@@ -31,8 +32,8 @@ public class OggData {
         }
     }
 
-    public static OggData create(String path) {
-        return new OggData(path);
+    public static ISoundLoader create(InputStream is) {
+        return is == null ? null : new Ogg(is);
     }
 
     public int getSampleRate() {
@@ -47,10 +48,9 @@ public class OggData {
         return this.format;
     }
 
-    private ShortBuffer readOGG(String path, STBVorbisInfo info) throws IOException {
+    private ShortBuffer readOGG(InputStream stream, STBVorbisInfo info) throws IOException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            InputStream stream = Game.loadFileJar(path);
-            byte[] buffer = new byte[stream.available()];
+            byte[] buffer = IOUtils.readExactlyNBytes(stream, stream.available());
             ByteBuffer byteBuffer = BufferUtils.createByteBuffer(buffer.length);
             byteBuffer.put(buffer);
             byteBuffer.flip();
@@ -74,5 +74,9 @@ public class OggData {
 
             return res;
         }
+    }
+
+    public void dispose() {
+        MemoryUtil.memFree(this.pcm);
     }
 }

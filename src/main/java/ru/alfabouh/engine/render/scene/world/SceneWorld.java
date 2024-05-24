@@ -174,8 +174,6 @@ public final class SceneWorld implements IWorld {
                 PhysicsObject physicsObject = (PhysicsObject) sceneObject;
                 if (refresh) {
                     physicsObject.refreshInterpolatingState();
-                    physicsObject.setPrevPos(physicsObject.getWorldItem().getPosition());
-                    physicsObject.setPrevRot(physicsObject.getWorldItem().getRotation());
                 }
                 physicsObject.onUpdate(this);
                 physicsObject.updateRenderPos(partialTicks);

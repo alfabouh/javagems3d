@@ -288,7 +288,7 @@ public final class ShaderManager {
                 return;
             }
 
-            ShaderManager.this.performUniformNoWarn("show_cascades", SceneRender.CURRENT_DEBUG_MODE);
+            //ShaderManager.this.performUniformNoWarn("show_cascades", SceneRender.CURRENT_DEBUG_MODE);
 
             ISample diffuse = material.getDiffuse();
             IImageSample emissive = material.getEmissive();

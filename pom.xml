@@ -127,19 +127,19 @@
             <version>3.25-1.5.10</version>
         </dependency>
         <dependency>
-            <groupId>io.imgui.java</groupId>
-            <artifactId>binding</artifactId>
-            <version>1.76-0.9</version>
+            <groupId>io.github.spair</groupId>
+            <artifactId>imgui-java-lwjgl3</artifactId>
+            <version>1.86.11</version>
         </dependency>
         <dependency>
-            <groupId>io.imgui.java</groupId>
-            <artifactId>lwjgl3</artifactId>
-            <version>1.76-0.9</version>
+            <groupId>io.github.spair</groupId>
+            <artifactId>imgui-java-binding</artifactId>
+            <version>1.86.11</version>
         </dependency>
         <dependency>
-            <groupId>io.imgui.java</groupId>
-            <artifactId>natives-windows</artifactId>
-            <version>1.76-0.9</version>
+            <groupId>io.github.spair</groupId>
+            <artifactId>imgui-java-natives-windows</artifactId>
+            <version>1.86.11</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -271,7 +271,6 @@
             <version>1.14.12</version>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
     <properties>
         <lwjgl.version>3.3.3</lwjgl.version>

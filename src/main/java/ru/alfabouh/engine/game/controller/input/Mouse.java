@@ -6,7 +6,7 @@ import ru.alfabouh.engine.render.screen.window.Window;
 public class Mouse {
     private final Window window;
     public boolean scrollUpdate;
-    public int scrollVector;
+    private int scrollVector;
     private boolean isInWindowBounds;
     private boolean flag1;
     private boolean flag2;
@@ -57,6 +57,12 @@ public class Mouse {
                 this.flag3 = false;
             }
         }
+
+        if (this.scrollUpdate) {
+            this.scrollUpdate = false;
+        } else {
+            this.scrollVector = 0;
+        }
     }
 
     public Window getWindow() {
@@ -103,5 +109,9 @@ public class Mouse {
 
     public boolean isMiddleKeyPressed() {
         return this.flag3;
+    }
+
+    public int getScrollVector() {
+        return this.scrollVector;
     }
 }

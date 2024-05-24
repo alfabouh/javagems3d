@@ -79,7 +79,7 @@ void main()
 
     gPosition = vec4(mv_vertex_pos, 1.0);
     gColor = diffuse;
-    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? emissive_texture : vec4(0.0);
-    gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, scaled_coordinates()) : vec4(0.0);
-    gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, scaled_coordinates()) : vec4(0.0)) * refract_cubemap(m_vertex_normal, 1.73);
+    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? emissive_texture : vec4(vec3(0.0), 1.0);
+    gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, scaled_coordinates()) : vec4(vec3(0.0), 1.0);
+    gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, scaled_coordinates()) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
 }

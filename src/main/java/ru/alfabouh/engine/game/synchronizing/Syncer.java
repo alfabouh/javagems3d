@@ -4,46 +4,57 @@ import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public final class Syncer {
-    private final AtomicBoolean atomicBoolean;
-    private final Object monitor = new Object();
+    private final ReentrantLock lock;
+    private final Condition condition;
+    private boolean flag;
 
     public Syncer() {
-        this.atomicBoolean = new AtomicBoolean(false);
+        this.lock = new ReentrantLock();
+        this.condition = lock.newCondition();
+        this.flag = false;
+    }
+
+    public boolean isFlag() {
+        return this.flag;
     }
 
     public void mark() {
-        this.atomicBoolean.set(true);
+        this.lock.lock();
+        try {
+            this.flag = true;
+        } finally {
+            this.lock.unlock();
+        }
     }
 
     public void free() {
-        this.atomicBoolean.set(false);
+        this.lock.lock();
+        try {
+            this.flag = false;
+            this.condition.signalAll();
+        } finally {
+            this.lock.unlock();
+        }
     }
 
-    public void blockCurrentThread() {
+    public void blockCurrentThread(final boolean flagB) throws GameException {
         if (Game.getGame().isShouldBeClosed()) {
             return;
         }
-        if (this.atomicBoolean.get()) {
-            try {
-                Thread thread = new Thread(() -> {
-                    while (true) {
-                        if (!this.atomicBoolean.get()) {
-                            synchronized (this.monitor) {
-                                this.monitor.notifyAll();
-                            }
-                            break;
-                        }
-                    }
-                });
-                thread.start();
-                synchronized (this.monitor) {
-                    this.monitor.wait();
-                }
-            } catch (InterruptedException e) {
-                throw new GameException(e);
+
+        this.lock.lock();
+        try {
+            while (this.flag == flagB) {
+                this.condition.await();
             }
+        } catch (InterruptedException e) {
+            throw new GameException(e);
+        } finally {
+            this.lock.unlock();
         }
     }
 }

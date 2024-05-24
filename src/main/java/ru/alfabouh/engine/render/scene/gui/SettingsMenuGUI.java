@@ -2,6 +2,7 @@ package ru.alfabouh.engine.render.scene.gui;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.render.scene.gui.base.GUI;
@@ -61,7 +62,6 @@ public class SettingsMenuGUI extends AbstractGUI {
 
         this.saveSettings.setPosition(new Vector3f(window.getWidth() / 2.0f - this.saveSettings.getSize().x / 2.0f, (Game.DEBUG_MODE ? this.texturesFiltering.getPosition().y : this.vSync.getPosition().y) + 100.0f, 0.5f));
         this.saveSettings.render(partialTicks);
-
     }
 
     @Override
@@ -69,10 +69,13 @@ public class SettingsMenuGUI extends AbstractGUI {
         this.saveSettings = new ButtonUI("Save", ResourceManager.renderAssets.buttonFont, new Vector3f(0.0f, 0.0f, 0.5f), new Vector2f(300.0f, 60.0f));
         this.saveSettings.setOnClick(() -> {
             Game.getGame().getGameSettings().saveOptions();
+            Game.getGame().getScreen().showGameLoadingScreen();
+            Game.getGame().getScreen().addLineInLoadingScreen("Performing settings...");
             Game.getGame().getResourceManager().recreateTexturesInCache();
-            Game.getGame().getScreen().reloadFBOs();
+            Game.getGame().getScreen().reloadSceneAndShadowsFrameBufferObjects();
             Game.getGame().getScreen().checkScreenMode();
             Game.getGame().getScreen().checkVSync();
+            Game.getGame().getScreen().removeLoadingScreen();
             this.goBack();
         });
 

@@ -22,7 +22,7 @@ public class LocalPlayer {
         KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) this.getEntityPlayerSP();
         kinematicPlayerSP.createPlayer();
         KinematicPlayerSP physPlayerSP = (KinematicPlayerSP) this.entityPlayerSP;
-        synchronized (PhysicsTimer.lock) {
+        synchronized (PhysicsTimer.lockObject) {
             kinematicPlayerSP.getWorld().addInBulletWorld(physPlayerSP.getBulletObject(), kinematicPlayerSP.getBodyIndex());
             kinematicPlayerSP.getWorld().getDynamicsWorld().addAction(kinematicPlayerSP.getKinematicCharacterController());
         }

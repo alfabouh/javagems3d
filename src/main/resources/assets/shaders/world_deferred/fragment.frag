@@ -114,7 +114,8 @@ float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 
 }
 
 vec4 calc_light(vec3 frag_pos, vec3 normal) {
-    vec4 lightFactors = vec4(0.);
+    vec4 lightFactors = vec4(vec3(sunColorR, sunColorG, sunColorB) * ambient, 1.0);
+
     vec3 sunPos = normalize(vec3(sunX, sunY, sunZ));
     int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
 
@@ -124,7 +125,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
 
     float sun_shadow = calculate_shadow_vsm(world_position, cascadeIndex, 1.0e-7f);
 
-    vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal);
+    vec4 sunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, frag_pos, normal);
 
     vec4 point_light_factor = vec4(0.0);
     for (int i = 0; i < total_plights; i++) {
@@ -139,10 +140,9 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
     }
 
     float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
-    lightFactors += sunFactor * clamp(sun_shadow + brightness, 0.5, 1.0);
+    lightFactors += sunFactor * clamp(sun_shadow + brightness, 0.0, 1.0);
 
     lightFactors += point_light_factor;
-    lightFactors += vec4(vec3(sunColorR, sunColorG, sunColorB) * ambient, 1.0);
 
     return lightFactors;
 }

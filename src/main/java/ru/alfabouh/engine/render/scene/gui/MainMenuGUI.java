@@ -42,7 +42,7 @@ public class MainMenuGUI extends AbstractGUI {
         this.isVisible = true;
         this.showBlood = showBlood;
         this.postFbo = new FBOTexture2DProgram(true);
-        this.horror = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.0f, 1.0f, 1.0f);
+        this.horror = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.5f, 1.0f, 1.0f);
     }
 
     public void createFBOs(Vector2i dim) {
@@ -146,7 +146,7 @@ public class MainMenuGUI extends AbstractGUI {
 
         this.exitButton = new ButtonUI("Exit", ResourceManager.renderAssets.buttonFont, new Vector3f(0.0f, 0.0f, 0.5f), new Vector2f(300.0f, 60.0f));
         this.exitButton.setOnClick(() -> {
-            Game.getGame().destroyGame();
+            Game.getGame().showGui(new LeaveConfirmationGUI(this));
         });
 
         this.gameOver = new TextUI(ResourceManager.renderAssets.standardFont, 0xff3333);

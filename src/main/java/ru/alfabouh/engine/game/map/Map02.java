@@ -48,8 +48,8 @@ public class Map02 implements IMapLoader {
 
     @Override
     public void addBrushes(World world) {
-        WorldModeledBrush worldModeledBrush = new WorldModeledBrush(world, ResourceManager.modelAssets.ground, RigidBodyObject.PhysProperties.createProperties(Materials.grassGround), "grass");
-        Game.getGame().getProxy().addItemInWorlds(worldModeledBrush, new RenderObjectData(ResourceManager.renderDataAssets.ground, ResourceManager.modelAssets.ground));
+        WorldModeledBrush worldModeledBrush = new WorldModeledBrush(world, ResourceManager.modelAssets.ground2, RigidBodyObject.PhysProperties.createProperties(Materials.grassGround), "grass");
+        Game.getGame().getProxy().addItemInWorlds(worldModeledBrush, new RenderObjectData(ResourceManager.renderDataAssets.ground, ResourceManager.modelAssets.ground2));
         worldModeledBrush.setDebugDrawing(false);
     }
 

@@ -16,6 +16,7 @@ import ru.alfabouh.engine.render.scene.gui.font.GuiFont;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,8 +36,9 @@ public class ResourceManager {
         ResourceManager.shaderAssets = new ShaderLoader();
     }
 
-    public static void reloadShaders() {
-        ResourceManager.shaderAssets.loadAllShaders();
+    public static void loadShaders() {
+        ResourceManager.shaderAssets.loadShaders();
+        ResourceManager.shaderAssets.startShaders();
     }
 
     public static Font createFontFromJAR(String font) {
@@ -67,6 +69,10 @@ public class ResourceManager {
         return TextureSample.createTexture(Game.getGame().getResourceManager().getGameCache(), path, interpolate, wrapping);
     }
 
+    public static TextureSample createTexture(String name, int width, int height, ByteBuffer buffer) {
+        return TextureSample.createTexture(Game.getGame().getResourceManager().getGameCache(), name, width, height, buffer);
+    }
+
     public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
         return TextureSample.createTextureIS(id, inputStream, interpolate, wrapping);
     }
@@ -85,6 +91,10 @@ public class ResourceManager {
 
     public static MeshDataGroup getMeshDataGroupResource(String key) {
         return Game.getGame().getResourceManager().getGameCache().getCachedMeshDataGroup(key);
+    }
+
+    public static void reloadShaders() {
+        ResourceManager.shaderAssets.reloadShaders();
     }
 
     public void init() {
@@ -132,7 +142,7 @@ public class ResourceManager {
                     try {
                         assets.load(this.getGameCache());
                     } catch (Exception e) {
-                        Game.getGame().getLogManager().error(e);
+                        Game.getGame().getLogManager().exception(e);
                         GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
                     }
                 });

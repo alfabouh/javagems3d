@@ -8,13 +8,14 @@ import org.bytedeco.bullet.global.BulletCollision;
 import org.jetbrains.annotations.NotNull;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.synchronizing.SyncManger;
+import ru.alfabouh.engine.game.synchronizing.SyncManager;
 import ru.alfabouh.engine.physics.entities.BodyGroup;
 import ru.alfabouh.engine.physics.world.World;
-import ru.alfabouh.engine.render.scene.bullet.JBDebugDraw;
+import ru.alfabouh.engine.render.scene.debug.bullet.JBDebugDraw;
 
 public class PhysicsTimer implements IPhysTimer {
-    public static final Object lock = new Object();
+    public static final Object lockObject = new Object();
+    public static final Object lockProcess = new Object();
     public static int TPS;
     @SuppressWarnings("all")
     public final JBDebugDraw jbDebugDraw;
@@ -33,7 +34,7 @@ public class PhysicsTimer implements IPhysTimer {
         this.broadcaster.getOverlappingPairCache().setInternalGhostPairCallback(this.pairCallback);
         this.collisionConfiguration = new btDefaultCollisionConfiguration();
         this.collisionDispatcher = new btCollisionDispatcher(collisionConfiguration);
-        this.collisionDispatcher.setDispatcherFlags(btCollisionDispatcher.CD_STATIC_STATIC_REPORTED | btCollisionDispatcher.CD_DISABLE_CONTACTPOOL_DYNAMIC_ALLOCATION | btCollisionDispatcher.CD_USE_RELATIVE_CONTACT_BREAKING_THRESHOLD);
+        this.collisionDispatcher.setDispatcherFlags(btCollisionDispatcher.CD_STATIC_STATIC_REPORTED | btCollisionDispatcher.CD_USE_RELATIVE_CONTACT_BREAKING_THRESHOLD);
         btGImpactCollisionAlgorithm.registerAlgorithm(this.collisionDispatcher);
         this.constraintSolve = new btSequentialImpulseConstraintSolver();
         this.discreteDynamicsWorld = new btDiscreteDynamicsWorld(this.getCollisionDispatcher(), this.getBroadcaster(), this.getConstraintSolver(), this.getCollisionConfiguration());
@@ -54,30 +55,27 @@ public class PhysicsTimer implements IPhysTimer {
     public void updateTimer(int TPS) {
         final double step = 1.0f / TPS;
         final int explicit = 16;
-        final btDiscreteDynamicsWorld discreteDynamicsWorld1 = this.getDiscreteDynamicsWorld();
-        final World world1 = this.getWorld();
+        final World world1 = this.world;
+        final btDiscreteDynamicsWorld discreteDynamicsWorld1 = this.discreteDynamicsWorld;
+
         if (discreteDynamicsWorld1 == null) {
             throw new GameException("Current Dynamics World is NULL!");
         }
         try {
             Game.getGame().getLogManager().log("Starting physics!");
             while (!Game.getGame().isShouldBeClosed()) {
-                synchronized (PhysicThreadManager.locker) {
-                    PhysicThreadManager.locker.wait();
-                }
+                SyncManager.SyncPhysics.mark();
+                SyncManager.SyncPhysics.blockCurrentThread(true);
                 if (Game.getGame().getEngineState().isEngineIsReady() && !Game.getGame().getEngineState().isPaused()) {
-                    this.getWorld().onWorldUpdate();
-                    synchronized (PhysicsTimer.lock) {
+                    synchronized (PhysicsTimer.lockObject) {
+                        world1.onWorldUpdate();
                         discreteDynamicsWorld1.stepSimulation(step, explicit, step / (double) explicit);
-                        SyncManger.SyncPhysicsAndRender.free();
                     }
-                } else {
-                    SyncManger.SyncPhysicsAndRender.free();
                 }
                 PhysicsTimer.TPS += 1;
             }
             Game.getGame().getLogManager().log("Stopping physics!");
-        } catch (InterruptedException | GameException e) {
+        } catch (GameException e) {
             throw new GameException(e);
         } finally {
             Game.getGame().destroyGame();
@@ -105,7 +103,9 @@ public class PhysicsTimer implements IPhysTimer {
     }
 
     public World getWorld() {
-        return this.world;
+        synchronized (PhysicsTimer.lockObject) {
+            return this.world;
+        }
     }
 
     public void cleanResources() {
@@ -113,83 +113,78 @@ public class PhysicsTimer implements IPhysTimer {
         this.getDiscreteDynamicsWorld().deallocate();
     }
 
-    public synchronized btGhostPairCallback getPairCallback() {
-        return this.pairCallback;
-    }
-
-    public synchronized final btDynamicsWorld getDynamicsWorld() {
-        return this.getDiscreteDynamicsWorld();
-    }
-
-    public synchronized final btCollisionWorld getCollisionWorld() {
-        return this.getDiscreteDynamicsWorld().getCollisionWorld();
+    public final btCollisionWorld getCollisionWorld() {
+        synchronized (PhysicsTimer.lockObject) {
+            return this.getDiscreteDynamicsWorld().getCollisionWorld();
+        }
     }
 
     public void addInWorld(btCollisionObject btCollisionObject, BodyGroup bodyGroup) {
-        synchronized (PhysicsTimer.lock) {
+        synchronized (PhysicsTimer.lockObject) {
             btCollisionObject.setUserIndex(bodyGroup.getIndex());
-            if (btCollisionObject instanceof btRigidBody) {
-                this.getDiscreteDynamicsWorld().addRigidBody((btRigidBody) btCollisionObject, bodyGroup.getGroup(), bodyGroup.getMask());
-            } else {
-                this.getDiscreteDynamicsWorld().addCollisionObject(btCollisionObject, bodyGroup.getGroup(), bodyGroup.getMask());
-            }
+        }
+        if (btCollisionObject instanceof btRigidBody) {
+            this.getDiscreteDynamicsWorld().addRigidBody((btRigidBody) btCollisionObject, bodyGroup.getGroup(), bodyGroup.getMask());
+        } else {
+            this.getDiscreteDynamicsWorld().addCollisionObject(btCollisionObject, bodyGroup.getGroup(), bodyGroup.getMask());
         }
     }
 
     public void addRigidBodyInWorld(@NotNull btRigidBody rigidBody) {
-        synchronized (PhysicsTimer.lock) {
-            this.getDiscreteDynamicsWorld().addRigidBody(rigidBody);
-        }
+        this.getDiscreteDynamicsWorld().addRigidBody(rigidBody);
     }
 
     public void addCollisionObjectInWorld(@NotNull btCollisionObject collisionObject) {
-        synchronized (PhysicsTimer.lock) {
-            this.getDiscreteDynamicsWorld().addCollisionObject(collisionObject);
-        }
+        this.getDiscreteDynamicsWorld().addCollisionObject(collisionObject);
     }
 
     public void removeRigidBodyFromWorld(@NotNull btRigidBody rigidBody) {
-        synchronized (PhysicsTimer.lock) {
-            this.getDiscreteDynamicsWorld().removeRigidBody(rigidBody);
-        }
+        this.getDiscreteDynamicsWorld().removeRigidBody(rigidBody);
     }
 
     public void removeCollisionObjectFromWorld(@NotNull btCollisionObject collisionObject) {
-        synchronized (PhysicsTimer.lock) {
-            this.getDiscreteDynamicsWorld().removeCollisionObject(collisionObject);
-        }
+        this.getDiscreteDynamicsWorld().removeCollisionObject(collisionObject);
     }
 
     public void removeActionObjectFromWorld(@NotNull btActionInterface actionInterface) {
-        synchronized (PhysicsTimer.lock) {
-            this.getDiscreteDynamicsWorld().removeAction(actionInterface);
-        }
+        this.getDiscreteDynamicsWorld().removeAction(actionInterface);
     }
 
     public void updateAabb(@NotNull btCollisionObject rigidBody) {
-        synchronized (PhysicsTimer.lock) {
-            this.getDiscreteDynamicsWorld().updateSingleAabb(rigidBody);
+        this.getDiscreteDynamicsWorld().updateSingleAabb(rigidBody);
+    }
+
+    public final btDynamicsWorld getDynamicsWorld() {
+        return this.getDiscreteDynamicsWorld();
+    }
+
+    private btDiscreteDynamicsWorld getDiscreteDynamicsWorld() {
+        synchronized (PhysicsTimer.lockObject) {
+            return this.discreteDynamicsWorld;
         }
     }
 
-    private synchronized btDiscreteDynamicsWorld getDiscreteDynamicsWorld() {
-        return this.discreteDynamicsWorld;
-    }
-
     public btConstraintSolver getConstraintSolver() {
-        return this.constraintSolve;
+        synchronized (PhysicsTimer.lockObject) {
+            return this.constraintSolve;
+        }
     }
 
     public btBroadphaseInterface getBroadcaster() {
-        return this.broadcaster;
+        synchronized (PhysicsTimer.lockObject) {
+            return this.broadcaster;
+        }
     }
 
     public btCollisionConfiguration getCollisionConfiguration() {
-        return this.collisionConfiguration;
+        synchronized (PhysicsTimer.lockObject) {
+            return this.collisionConfiguration;
+        }
     }
 
     public btCollisionDispatcher getCollisionDispatcher() {
-        return this.collisionDispatcher;
+        synchronized (PhysicsTimer.lockObject) {
+            return this.collisionDispatcher;
+        }
     }
-
 }
