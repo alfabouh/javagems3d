@@ -101,16 +101,20 @@ float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
     return calcVSM(idx, shadow_coord, bias);
 }
 
-float calculate_point_light_shadow(samplerCube cubemap, vec3 fragPosition, vec3 lightPos)
+float calculate_point_light_shadow(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos)
 {
     vec3 fragToLight = fragPosition - lightPos;
-    vec3 pos = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
-
-    float bias = 0.05;
     float currentDepth = length(fragToLight);
-    float closestDepth = texture(cubemap, fragToLight).r;
-    closestDepth *= far_plane;
-    return currentDepth - bias > closestDepth ? 0.0 : 1.0;
+    currentDepth /= far_plane;
+
+    vec3 lightPosViewSpace = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
+
+    vec4 vsmValues = texture(vsmCubemap, normalize(fragToLight));
+    float mu = vsmValues.r;
+    float s2 = max(vsmValues.g - mu * mu, 1.0e-5f);
+    float pmax = s2 / (s2 + (currentDepth - mu) * (currentDepth - mu));
+
+    return vsmFixLightBleed(pmax, 0.2);
 }
 
 vec4 calc_light(vec3 frag_pos, vec3 normal) {

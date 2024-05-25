@@ -173,7 +173,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.cachingGhostObject.setContactStiffnessAndDamping(RigidBodyObject.STIFFNESS, RigidBodyObject.DAMPING);
         this.kinematicCharacterController = new btKinematicCharacterController(this.cachingGhostObject, this.collisionShape, this.stepHeight, new btVector3(0.0f, 1.0f, 0.0f));
         this.getKinematicCharacterController().setMaxSlope(this.maxSlope);
-        //this.getKinematicCharacterController().setMaxPenetrationDepth(0.0d);
+        this.getKinematicCharacterController().setMaxPenetrationDepth(0.0d);
         this.getKinematicCharacterController().setWalkDirection(new btVector3(0, 0, 0));
         this.getBulletObject().setUserIndex2(this.getItemId());
         this.setCollisionTranslation(position);

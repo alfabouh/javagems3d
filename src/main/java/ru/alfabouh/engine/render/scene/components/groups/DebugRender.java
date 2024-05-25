@@ -1,4 +1,4 @@
-package ru.alfabouh.engine.render.scene.scene_render.groups;
+package ru.alfabouh.engine.render.scene.components.groups;
 
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -15,7 +15,7 @@ import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.debug.constants.GlobalRenderDebugConstants;
-import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
+import ru.alfabouh.engine.render.scene.components.RenderGroup;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 public class DebugRender extends SceneRenderBase {

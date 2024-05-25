@@ -49,8 +49,7 @@ void main()
     vec3 normals = normalize((use_normals == 1) ? calc_normal_map() : mv_vertex_normal);
     gNormal = vec4(normals, 1.0);
 
-    bool b1 = (use_cubemap == 1);
-    gMetallic = b1 ? vec4(0.5) : vec4(0.0);
+    gMetallic = (use_cubemap == 1) ? vec4(vec3(0.5), 1.0) : vec4(vec3(0.0), 1.0);
     gPosition = vec4(mv_vertex_pos, 1.0);
     gColor = diffuse;
 }

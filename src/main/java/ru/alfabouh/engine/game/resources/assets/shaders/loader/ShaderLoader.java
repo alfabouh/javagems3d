@@ -93,7 +93,7 @@ public class ShaderLoader {
         this.simple = this.createShaderManager("simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_sun = this.createShaderManager("depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.world_selected_gbuffer = this.createShaderManager("world_selected_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.depth_plight = this.createShaderManager("depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT | Shader.ShaderType.GEOMETRIC_BIT);
+        this.depth_plight = this.createShaderManager("depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.gameUbo = this.createShaderManager("gameubo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
     }

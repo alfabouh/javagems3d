@@ -4,9 +4,7 @@ import ru.alfabouh.engine.game.Game;
 
 public class GameRenderTimer {
     private boolean shouldBeErased;
-
     private double lastTime;
-
     private double deltaTime;
     private double accumulatedTime;
 

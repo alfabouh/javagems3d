@@ -30,8 +30,8 @@ public class PointLightShadow {
 
     public void createFBO(Vector2i dim) {
         this.pointLightCubeMap.clearFBO();
-        //this.pointLightCubeMap.createFrameBufferCubeMapColor(new Vector2i(dim), true, GL30.GL_RG32F, GL30.GL_RG, GL30.GL_LINEAR, GL30.GL_CLAMP_TO_EDGE);
-        this.pointLightCubeMap.createFrameBufferCubeMapDepth(new Vector2i(dim), GL30.GL_NEAREST, GL30.GL_CLAMP_TO_EDGE);
+        this.pointLightCubeMap.createFrameBufferCubeMapColor(new Vector2i(dim), true, GL30.GL_RG32F, GL30.GL_RG, GL30.GL_LINEAR, GL30.GL_CLAMP_TO_EDGE);
+        //this.pointLightCubeMap.createFrameBufferCubeMapDepth(new Vector2i(dim), GL30.GL_NEAREST, GL30.GL_CLAMP_TO_EDGE);
     }
 
     public void configureMatrices() {

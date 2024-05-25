@@ -13,6 +13,7 @@ import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
 import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
+import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.physics.entities.player.KinematicPlayerSP;
 import ru.alfabouh.engine.physics.liquids.ILiquid;
@@ -20,10 +21,12 @@ import ru.alfabouh.engine.render.environment.Environment;
 import ru.alfabouh.engine.render.environment.shadow.ShadowScene;
 import ru.alfabouh.engine.render.imgui.IMGUIRender;
 import ru.alfabouh.engine.render.scene.debug.constants.GlobalRenderDebugConstants;
+import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
+import ru.alfabouh.engine.render.scene.objects.items.LiquidObject;
 import ru.alfabouh.engine.render.scene.programs.FBOTexture2DProgram;
-import ru.alfabouh.engine.render.scene.scene_render.groups.*;
+import ru.alfabouh.engine.render.scene.components.groups.*;
+import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
-import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 import java.nio.FloatBuffer;
@@ -181,15 +184,14 @@ public class SceneRender {
 
         SceneRender.getGameUboShader().bind();
 
-        this.renderScene(partialTicks, model);
-        this.bloomPostProcessing(partialTicks, model);
-        this.renderSceneWithBloomAndHDR(partialTicks, model);
-        this.postFXAA(model);
-
         if (Game.getGame().isPaused()) {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.guiRender.onRender(partialTicks);
         } else {
+            this.renderScene(partialTicks, model);
+            this.bloomPostProcessing(partialTicks, model);
+            this.renderSceneWithBloomAndHDR(partialTicks, model);
+            this.postFXAA(model);
             if (GlobalRenderDebugConstants.ENABLE_PSX) {
                 GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -275,7 +277,7 @@ public class SceneRender {
     }
 
     public void renderScene(double partialTicks, Model<Format2D> model) {
-        this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getToRenderList());
+        this.getShadowScene().renderAllModelsInShadowMap(this.getModelsToRenderInShadows(this.getSceneData().getSceneWorld()));
         Game.getGame().getScreen().normalizeViewPort();
 
         GL30.glEnable(GL30.GL_DEPTH_TEST);
@@ -293,6 +295,13 @@ public class SceneRender {
         this.getSceneFbo().unBindFBO();
 
         GL30.glDisable(GL30.GL_DEPTH_TEST);
+    }
+
+    private List<Model<Format3D>> getModelsToRenderInShadows(SceneWorld sceneWorld) {
+        List<Model<Format3D>> models = new ArrayList<>();
+        models.addAll(sceneWorld.getToRenderList().stream().filter(e -> e.hasRender() && e.getModelRenderParams().isShadowCaster()).map(IModeledSceneObject::getModel3D).collect(Collectors.toList()));
+        models.addAll(sceneWorld.getLiquids().stream().map(LiquidObject::getModel).collect(Collectors.toList()));
+        return models;
     }
 
     private void renderForwardScene(double partialTicks) {

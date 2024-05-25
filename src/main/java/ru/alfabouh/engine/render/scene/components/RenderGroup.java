@@ -1,4 +1,4 @@
-package ru.alfabouh.engine.render.scene.scene_render;
+package ru.alfabouh.engine.render.scene.components;
 
 public class RenderGroup {
     private final String id;

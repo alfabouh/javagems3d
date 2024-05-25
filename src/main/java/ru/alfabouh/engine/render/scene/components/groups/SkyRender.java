@@ -1,7 +1,8 @@
-package ru.alfabouh.engine.render.scene.scene_render.groups;
+package ru.alfabouh.engine.render.scene.components.groups;
 
 import org.joml.Matrix4d;
 import org.lwjgl.opengl.GL30;
+import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.resources.ResourceManager;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
 import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
@@ -11,7 +12,7 @@ import ru.alfabouh.engine.render.environment.sky.Sky;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
-import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
+import ru.alfabouh.engine.render.scene.components.RenderGroup;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 public class SkyRender extends SceneRenderBase {
@@ -57,10 +58,10 @@ public class SkyRender extends SceneRenderBase {
        matrix4d.m30(0);
        matrix4d.m31(0);
        matrix4d.m32(0);
-       shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog() ? 1 : 0);
+       shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog());
        shaderManager.getUtils().performModelViewMatrix3d(matrix4d);
-       shaderManager.getUtils().setCubeMapTexture(sky.getSkyBox().cubeMapTexture());
-       //shaderManager.getUtils().setCubeMapTexture(Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
+       //shaderManager.getUtils().setCubeMapTexture(sky.getSkyBox().cubeMapTexture());
+       shaderManager.getUtils().setCubeMapTexture(Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
        Scene.renderModel(model, GL30.GL_TRIANGLES);
        shaderManager.unBind();
        GL30.glDepthFunc(GL30.GL_LESS);
