@@ -1,10 +1,10 @@
-package ru.alfabouh.engine.render.scene.scene_render.groups;
+package ru.alfabouh.engine.render.scene.components.groups;
 
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
-import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
+import ru.alfabouh.engine.render.scene.components.RenderGroup;
 
 public class GuiRender extends SceneRenderBase {
     public GuiRender(SceneRender sceneRenderConveyor) {

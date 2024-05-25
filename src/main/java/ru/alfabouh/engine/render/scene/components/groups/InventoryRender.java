@@ -1,4 +1,4 @@
-package ru.alfabouh.engine.render.scene.scene_render.groups;
+package ru.alfabouh.engine.render.scene.components.groups;
 
 import ru.alfabouh.engine.game.Game;
 import ru.alfabouh.engine.game.resources.ResourceManager;
@@ -8,7 +8,7 @@ import ru.alfabouh.engine.physics.entities.player.IPlayer;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.fabric.render.data.inventory.RenderInventoryItemData;
-import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
+import ru.alfabouh.engine.render.scene.components.RenderGroup;
 import ru.alfabouh.engine.render.scene.world.camera.FreeCamera;
 
 public class InventoryRender extends SceneRenderBase {

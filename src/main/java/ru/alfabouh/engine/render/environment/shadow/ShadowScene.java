@@ -189,9 +189,8 @@ public class ShadowScene {
         return TransformationManager.Z_FAR;
     }
 
-    public void renderAllModelsInShadowMap(List<IModeledSceneObject> renderModels) {
-        List<Model<Format3D>> l1 = renderModels.stream().filter(e -> e.hasRender() && e.getModelRenderParams().isShadowCaster()).map(IModeledSceneObject::getModel3D).collect(Collectors.toList());
-        this.renderSceneInShadowMap(l1);
+    public void renderAllModelsInShadowMap(List<Model<Format3D>> renderModels) {
+        this.renderSceneInShadowMap(renderModels);
     }
 
     public void renderSceneInShadowMap(List<Model<Format3D>> modelList) {
@@ -254,19 +253,20 @@ public class ShadowScene {
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {
                 pointLightShadow.getPointLightCubeMap().bindFBO();
                 pointLightShadow.configureMatrices();
-                GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
                 for (int j = 0; j < 6; j++) {
-                    this.getPointLightShadowShader().performUniform("shadow_matrices", j, pointLightShadow.getShadowDirections().get(j));
-                }
-                this.getPointLightShadowShader().performUniform("far_plane", pointLightShadow.farPlane());
-                this.getPointLightShadowShader().performUniform("lightPos", pointLightShadow.getPointLight().getLightPos());
-                GL30.glCullFace(GL30.GL_BACK);
-                for (Model<Format3D> model : modelList) {
-                    if (model == null || model.getMeshDataGroup() == null) {
-                        continue;
+                    pointLightShadow.getPointLightCubeMap().connectCubeMapToBuffer(GL30.GL_COLOR_ATTACHMENT0, j);
+                    GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
+                    this.getPointLightShadowShader().performUniform("view_matrix", pointLightShadow.getShadowDirections().get(j));
+                    this.getPointLightShadowShader().performUniform("far_plane", pointLightShadow.farPlane());
+                    this.getPointLightShadowShader().performUniform("lightPos", pointLightShadow.getPointLight().getLightPos());
+                    GL30.glCullFace(GL30.GL_BACK);
+                    for (Model<Format3D> model : modelList) {
+                        if (model == null || model.getMeshDataGroup() == null) {
+                            continue;
+                        }
+                        this.getPointLightShadowShader().getUtils().performModelMatrix3d(model, false);
+                        Scene.renderModel(model, GL30.GL_TRIANGLES);
                     }
-                    this.getPointLightShadowShader().getUtils().performModelMatrix3d(model, false);
-                    Scene.renderModel(model, GL30.GL_TRIANGLES);
                 }
                 pointLightShadow.getPointLightCubeMap().unBindFBO();
             }

@@ -1,7 +1,7 @@
 package ru.alfabouh.engine.render.scene;
 
 import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
+import ru.alfabouh.engine.render.scene.components.RenderGroup;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 

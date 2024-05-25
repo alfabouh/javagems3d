@@ -49,7 +49,10 @@ public class FBOCubeMapProgram {
         this.bindFBO();
 
         this.getCubeMapProgram().createCubeMap(size, internalFormat, textureFormat, filtering, clamp);
-        GL30.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
+        for (int i = 0; i < 6; i++) {
+            GL32.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL32.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, this.getCubeMapProgram().getTextureId(), 0);
+        }
+        GL30.glDrawBuffers(new int[] {GL30.GL_COLOR_ATTACHMENT0});
 
         if (depthBuffer) {
             GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);

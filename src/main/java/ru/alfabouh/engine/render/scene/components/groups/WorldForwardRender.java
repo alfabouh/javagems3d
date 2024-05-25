@@ -1,29 +1,19 @@
-package ru.alfabouh.engine.render.scene.scene_render.groups;
+package ru.alfabouh.engine.render.scene.components.groups;
 
-import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
-import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
+import ru.alfabouh.engine.render.scene.components.RenderGroup;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-public class WorldTransparentRender extends SceneRenderBase {
-    public static List<IModeledSceneObject> transparentRenderObjects;
-
-    public WorldTransparentRender(SceneRender sceneRenderConveyor) {
-        super(99, sceneRenderConveyor, new RenderGroup("WORLD_TRANSPARENT"));
-        WorldTransparentRender.transparentRenderObjects = new ArrayList<>();
+public class WorldForwardRender extends SceneRenderBase {
+    public WorldForwardRender(SceneRender sceneRenderConveyor) {
+        super(1, sceneRenderConveyor, new RenderGroup("WORLD_FORWARD"));
     }
 
     public void onRender(double partialTicks) {
-        WorldTransparentRender.transparentRenderObjects.sort(Comparator.comparing(e -> -e.getModel3D().getFormat().getPosition().distance(this.getCamera().getCamPosition())));
-        GL30.glDepthMask(false);
-        this.render(partialTicks, WorldTransparentRender.transparentRenderObjects);
-        GL30.glDepthMask(true);
-        WorldTransparentRender.transparentRenderObjects.clear();
+        this.render(partialTicks, this.getSceneWorld().getFilteredEntityList(SceneRender.RenderPass.FORWARD));
     }
 
     public void onStartRender() {
@@ -38,6 +28,10 @@ public class WorldTransparentRender extends SceneRenderBase {
         for (IModeledSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {
+                    if (entityItem.getModelRenderParams().isHasTransparency()) {
+                        WorldTransparentRender.transparentRenderObjects.add(entityItem);
+                        continue;
+                    }
                     entityItem.getModelRenderParams().getShaderManager().bind();
                     entityItem.getModelRenderParams().getShaderManager().getUtils().performProjectionMatrix();
                     entityItem.renderFabric().onRender(partialTicks, this, entityItem);

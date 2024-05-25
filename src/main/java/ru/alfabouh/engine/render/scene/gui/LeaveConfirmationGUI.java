@@ -56,7 +56,6 @@ public class LeaveConfirmationGUI extends AbstractGUI {
 
     @Override
     public void onStartRender() {
-        Window window = Game.getGame().getScreen().getWindow();
         this.textUI = new TextUI("You really want to leave the game?", ResourceManager.renderAssets.buttonFont);
 
         this.yesButton = new ButtonUI("Yes", ResourceManager.renderAssets.buttonFont, new Vector3f(0.0f), new Vector2f(200.0f, 60.0f));

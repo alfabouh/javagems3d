@@ -1,4 +1,4 @@
-package ru.alfabouh.engine.render.scene.scene_render.groups;
+package ru.alfabouh.engine.render.scene.components.groups;
 
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.game.resources.assets.models.Model;
@@ -9,7 +9,7 @@ import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.objects.items.LiquidObject;
-import ru.alfabouh.engine.render.scene.scene_render.RenderGroup;
+import ru.alfabouh.engine.render.scene.components.RenderGroup;
 
 public class WorldRenderLiquids extends SceneRenderBase {
     public WorldRenderLiquids(SceneRender sceneRenderConveyor) {
