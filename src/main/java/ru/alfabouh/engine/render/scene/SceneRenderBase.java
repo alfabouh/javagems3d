@@ -1,6 +1,6 @@
 package ru.alfabouh.engine.render.scene;
 
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.JGems;
 import ru.alfabouh.engine.render.scene.components.RenderGroup;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
@@ -14,21 +14,21 @@ public abstract class SceneRenderBase {
         this.renderPriority = renderPriority;
         this.renderGroup = renderGroup;
         this.sceneRenderConveyor = sceneRenderConveyor;
-        Game.getGame().getLogManager().log("Scene \"" + renderGroup.getId() + "\" init");
+        JGems.get().getLogManager().log("Scene \"" + renderGroup.getId() + "\" init");
     }
 
     public ICamera getCamera() {
-        return Game.getGame().getScreen().getCamera();
+        return JGems.get().getScreen().getCamera();
     }
 
     public abstract void onRender(double partialTicks);
 
     public void onStartRender() {
-        Game.getGame().getLogManager().log("Scene " + this.getRenderGroup().getId() + ": render start!");
+        JGems.get().getLogManager().log("Scene " + this.getRenderGroup().getId() + ": render start!");
     }
 
     public void onStopRender() {
-        Game.getGame().getLogManager().log("Scene " + this.getRenderGroup().getId() + ": render stop!");
+        JGems.get().getLogManager().log("Scene " + this.getRenderGroup().getId() + ": render stop!");
     }
 
     public int getRenderPriority() {

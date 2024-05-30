@@ -6,9 +6,9 @@ uniform sampler2D texture_sampler_gui;
 uniform sampler2D texture_sampler_inventory;
 uniform sampler2D texture_screen;
 uniform sampler2D texture_blood;
-uniform int e_lsd;
-uniform int kill;
-uniform int victory;
+uniform bool e_lsd;
+uniform bool kill;
+uniform bool victory;
 uniform int glitch_tick;
 uniform float panic;
 uniform float offset;
@@ -49,9 +49,9 @@ vec2 curveUV(vec2 inVec, float factor) {
 vec4 psx() {
     vec2 texIn = glitch_tick > 0 ? 1.0 - out_texture : out_texture;
 
-    const float panic_val = (victory == 1 || kill == 1) ? 0.05 : panic + 0.05;
+    const float panic_val = (victory || kill) ? 0.05 : panic + 0.05;
 
-    float pixelSize = e_lsd == 0 ? 0.008 : 0.004;
+    float pixelSize = e_lsd ? 0.008 : 0.004;
     float pixelSize2 = 0.004;
     vec2 offres = vec2(offset / textureSize(texture_sampler, 0));
     vec2 texCoords = (texIn / (1.0 - offres)) - offres / 2.0;
@@ -73,7 +73,7 @@ vec4 psx() {
 
     vec4 screen_over = texture(texture_screen, texCoords * vec2(5.0));
 
-    vec4 blood_over = kill == 1 ? texture(texture_blood, distortedCoord) : vec4(0.0);
+    vec4 blood_over = kill ? texture(texture_blood, distortedCoord) : vec4(0.0);
 
     vec4 gui_t1 = texture(texture_sampler_gui, distortedCoordGui);
     vec4 gui_t2 = texture(texture_sampler_gui, distortedCoordGui + vec2(panic_val * 0.01));
@@ -96,7 +96,7 @@ vec4 psx() {
     vec3 color = texture(texture_sampler, distortedCoord).rgb;
     vec4 res = vec4(color * (vec3(screen_over) * 0.5 + 0.5), 1.0);
 
-    vec4 vic = victory == 1 ? vec4(w_tick * 0.5) : vec4(0.);
+    vec4 vic = victory ? vec4(w_tick * 0.5) : vec4(0.);
 
     vec4 result = mix(mix(crt(lsd(res)), t2, t2.a), t3, t3.a);
     result = glitch_tick > 0 ? 1.0 - result : result;
@@ -131,7 +131,7 @@ vec4 lsd(vec4 txt) {
     int paletteIndex = clamp(int((grayScale * float(pallette)) + 0.5), 0, pallette);
     color = palette[paletteIndex];
 
-    return e_lsd == 0 ? txt : vec4(color, 1.0);
+    return !e_lsd ? txt : vec4(color, 1.0);
 }
 
 vec4 crt(vec4 txt) {

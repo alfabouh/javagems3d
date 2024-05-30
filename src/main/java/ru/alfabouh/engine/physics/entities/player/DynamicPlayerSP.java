@@ -9,10 +9,10 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.controller.ControllerDispatcher;
-import ru.alfabouh.engine.game.controller.input.IController;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.controller.ControllerDispatcher;
+import ru.alfabouh.engine.system.controller.input.IController;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.physics.collision.AbstractCollision;
 import ru.alfabouh.engine.physics.collision.Capsule;
@@ -263,21 +263,21 @@ public class DynamicPlayerSP extends PhysEntity implements IPlayer {
     public void performController(Vector2d rotationInput, Vector3d xyzInput, boolean isFocused) {
         if (ControllerDispatcher.bindings.keyBlock1.isClicked()) {
             PhysLightCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, false, 50.0d), new Vector3d(1.0d), 2.0d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
-            Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
+            JGems.get().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(30.0f));
         }
         if (ControllerDispatcher.bindings.keyBlock2.isClicked()) {
             PhysCube entityPropInfo = new PhysLightCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.defaultMaterial, false, 1.0d), new Vector3d(1.0d), 0.25d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
-            int a = Game.random.nextInt(3);
-            Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityLamp);
-            PointLight pointLight = (PointLight) new PointLight().setLightColor(new Vector3d(a == 0 ? 1.0d : Game.random.nextFloat(), a == 1 ? 1.0d : Game.random.nextFloat(), a == 2 ? 1.0d : Game.random.nextFloat()));
+            int a = JGems.random.nextInt(3);
+            JGems.get().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityLamp);
+            PointLight pointLight = (PointLight) new PointLight().setLightColor(new Vector3d(a == 0 ? 1.0d : JGems.random.nextFloat(), a == 1 ? 1.0d : JGems.random.nextFloat(), a == 2 ? 1.0d : JGems.random.nextFloat()));
             pointLight.setBrightness(8.0f);
-            Game.getGame().getProxy().addLight(entityPropInfo, pointLight);
+            JGems.get().getProxy().addLight(entityPropInfo, pointLight);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(20.0f));
         }
         if (ControllerDispatcher.bindings.keyBlock3.isClicked()) {
             PhysCube entityPropInfo = new PhysCube(this.getWorld(), RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), new Vector3d(1.0d), 1.3d, this.getPosition().add(this.getLookVector().mul(2.0f)), new Vector3d(0.0d));
-            Game.getGame().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
+            JGems.get().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
             entityPropInfo.setObjectVelocity(this.getLookVector().mul(50.0f));
         }
         if (ControllerDispatcher.bindings.keyClear.isClicked()) {

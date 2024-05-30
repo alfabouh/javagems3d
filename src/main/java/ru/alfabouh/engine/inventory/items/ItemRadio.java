@@ -2,8 +2,8 @@ package ru.alfabouh.engine.inventory.items;
 
 import ru.alfabouh.engine.audio.sound.GameSound;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.physics.world.IWorld;
 
 public class ItemRadio extends InventoryItem {
@@ -14,8 +14,8 @@ public class ItemRadio extends InventoryItem {
     public ItemRadio() {
         super("radio");
         this.openCd = 0;
-        this.music = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.music, SoundType.BACKGROUND_AMBIENT_SOUND, 2.0f, 1.0f, 1.0f);
-        this.setDescription("[Calms the mind. Be careful]");
+        this.music = JGems.get().getSoundManager().createSound(ResourceManager.soundAssetsLoader.music, SoundType.BACKGROUND_AMBIENT_SOUND, 2.0f, 1.0f, 1.0f);
+        this.setDescription(JGems.get().I18n("item.description.radio"));
     }
 
     @Override
@@ -45,13 +45,13 @@ public class ItemRadio extends InventoryItem {
     }
 
     private void close() {
-        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+        JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
         this.music.pauseSound();
         this.isOpened = false;
     }
 
     private void open() {
-        Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+        JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
         this.music.playSound();
         this.isOpened = true;
     }

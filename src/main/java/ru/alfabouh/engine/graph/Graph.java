@@ -1,8 +1,8 @@
 package ru.alfabouh.engine.graph;
 
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 
 import java.io.*;
 import java.util.*;
@@ -30,9 +30,9 @@ public class Graph implements Serializable {
 
     public static Graph readFromFile(String name) {
         String path = "/assets/map/" + name + ".nmesh";
-        InputStream inputStream = Game.loadFileJarSilently(path);
+        InputStream inputStream = JGems.loadFileJarSilently(path);
         if (inputStream == null) {
-            Game.getGame().getLogManager().warn("Couldn't find file " + path);
+            JGems.get().getLogManager().warn("Couldn't find file " + path);
             return null;
         }
         try {
@@ -197,9 +197,16 @@ public class Graph implements Serializable {
 
         @Override
         public int hashCode() {
-            double result = this.x;
-            result = 31 * result + this.y + 28 * this.z;
-            return (int) result;
+            final int prime = 31;
+            int result = 1;
+            long temp;
+            temp = Double.doubleToLongBits(this.getX());
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            temp = Double.doubleToLongBits(this.getY());
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            temp = Double.doubleToLongBits(this.getZ());
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            return result;
         }
 
         @Override

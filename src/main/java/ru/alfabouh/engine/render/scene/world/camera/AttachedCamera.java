@@ -2,7 +2,7 @@ package ru.alfabouh.engine.render.scene.world.camera;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.JGems;
 import ru.alfabouh.engine.physics.entities.player.IPlayer;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.render.scene.objects.items.PhysicsObject;
@@ -44,12 +44,12 @@ public class AttachedCamera extends Camera {
 
     public void attachCameraToItem(WorldItem worldItem) {
         if (!worldItem.tryAttachRenderCamera(this)) {
-            Game.getGame().getLogManager().warn("Unable to attach camera to " + worldItem.getItemName());
+            JGems.get().getLogManager().warn("Unable to attach camera to " + worldItem.getItemName());
         }
     }
 
     public void attachCameraToItem(PhysicsObject physicsObject) {
-        Game.getGame().getLogManager().log("Attached camera to: " + physicsObject.getWorldItem().getItemName());
+        JGems.get().getLogManager().log("Attached camera to: " + physicsObject.getWorldItem().getItemName());
         this.physicsObject = physicsObject;
     }
 

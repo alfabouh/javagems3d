@@ -2,8 +2,8 @@ package ru.alfabouh.engine.physics.world.object;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.physics.entities.IControllable;
 import ru.alfabouh.engine.physics.particles.ParticleFX;
@@ -68,7 +68,7 @@ public abstract class WorldItem implements IWorldObject {
     public void onSpawn(IWorld iWorld) {
         this.spawnTick = iWorld.getTicks();
         if (!this.isParticle()) {
-            Game.getGame().getLogManager().log("Add entity in world - [ " + this + " ]");
+            JGems.get().getLogManager().log("Add entity in world - [ " + this + " ]");
         }
         this.spawned = true;
     }
@@ -76,7 +76,7 @@ public abstract class WorldItem implements IWorldObject {
     public void onDestroy(IWorld iWorld) {
         this.clearLights();
         if (!this.isParticle()) {
-            Game.getGame().getLogManager().log("Removed entity from world - [ " + this + " ]");
+            JGems.get().getLogManager().log("Removed entity from world - [ " + this + " ]");
         }
     }
 

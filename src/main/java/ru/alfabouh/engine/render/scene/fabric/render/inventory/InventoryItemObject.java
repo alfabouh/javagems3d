@@ -2,11 +2,11 @@ package ru.alfabouh.engine.render.scene.fabric.render.inventory;
 
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.resources.assets.materials.textures.IImageSample;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.models.mesh.MeshDataGroup;
-import ru.alfabouh.engine.game.resources.assets.models.mesh.ModelNode;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.IImageSample;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.models.mesh.MeshDataGroup;
+import ru.alfabouh.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.inventory.items.InventoryItem;
 import ru.alfabouh.engine.render.scene.SceneRenderBase;
 import ru.alfabouh.engine.render.scene.fabric.render.base.IRenderInventoryItem;

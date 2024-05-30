@@ -2,9 +2,9 @@ package ru.alfabouh.engine.render.scene.world.camera;
 
 import org.joml.Vector2d;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.controller.ControllerDispatcher;
-import ru.alfabouh.engine.game.controller.input.IController;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.controller.ControllerDispatcher;
+import ru.alfabouh.engine.system.controller.input.IController;
 
 public class FreeCamera extends Camera {
     public static final double CAM_SPEED = 0.25d;
@@ -12,7 +12,7 @@ public class FreeCamera extends Camera {
 
     public FreeCamera(IController controller, Vector3d pos, Vector3d rot) {
         super(pos, rot);
-        Game.getGame().getLogManager().log("Created free camera at: " + pos);
+        JGems.get().getLogManager().log("Created free camera at: " + pos);
         this.controller = controller;
     }
 

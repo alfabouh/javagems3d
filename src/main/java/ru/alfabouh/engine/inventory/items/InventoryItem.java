@@ -1,6 +1,6 @@
 package ru.alfabouh.engine.inventory.items;
 
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.inventory.IHasInventory;
 import ru.alfabouh.engine.physics.world.IWorld;
 

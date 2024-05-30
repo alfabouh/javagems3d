@@ -2,7 +2,7 @@ package ru.alfabouh.engine.render.environment;
 
 import org.joml.Vector3d;
 import org.joml.Vector3f;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.physics.world.IWorld;
 import ru.alfabouh.engine.physics.world.object.IWorldDynamic;
 import ru.alfabouh.engine.render.environment.fog.Fog;

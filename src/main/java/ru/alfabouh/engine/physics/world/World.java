@@ -5,8 +5,8 @@ import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.BulletCollision.btGhostObject;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.inventory.IHasInventory;
 import ru.alfabouh.engine.physics.entities.BodyGroup;
@@ -55,7 +55,7 @@ public final class World implements IWorld {
     }
 
     public PhysicsTimer getBulletTimer() {
-        return Game.getGame().getPhysicThreadManager().getPhysicsTimer();
+        return JGems.get().getPhysicThreadManager().getPhysicsTimer();
     }
 
     public void addInBulletWorld(btCollisionObject btCollisionObject, BodyGroup bodyGroup) {
@@ -67,7 +67,7 @@ public final class World implements IWorld {
     }
 
     public void onWorldUpdate() {
-        Game.getGame().getEngineSystem().getMapLoader().onMapUpdate(this);
+        JGems.get().getEngineSystem().getMapLoader().onMapUpdate(this);
 
         List<WorldItem> copy1 = new ArrayList<>(this.getAllWorldItems());
         if (this.collectionsWaitingRefresh) {
@@ -111,7 +111,7 @@ public final class World implements IWorld {
 
     public void setGraph(Graph graph) {
         if (graph == null) {
-            Game.getGame().getLogManager().warn("Map Nav Mesh is NULL");
+            JGems.get().getLogManager().warn("Map Nav Mesh is NULL");
         }
         this.graph = graph;
     }
@@ -122,7 +122,7 @@ public final class World implements IWorld {
     }
 
     public void addLight(Light light) {
-        Game.getGame().getProxy().addLight(light);
+        JGems.get().getProxy().addLight(light);
     }
 
     public void addItem(WorldItem worldItem) {

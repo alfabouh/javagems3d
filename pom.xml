@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.alfabouh</groupId>
-    <artifactId>jvertex3d</artifactId>
+    <artifactId>JavaGems3D</artifactId>
     <version>1.0</version>
 
     <build>
@@ -15,7 +15,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ru.alfabouh.engine.game.Game</mainClass>
+                            <mainClass>ru.alfabouh.engine.JGems</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -33,7 +33,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>ru.alfabouh.engine.game.Game</mainClass>
+                    <mainClass>ru.alfabouh.engine.JGems</mainClass>
                     <arguments>
                         <argument>--add-exports</argument>
                         <argument>java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
@@ -54,7 +54,7 @@
                             <jar>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</jar>
                             <errTitle>encc</errTitle>
                             <classPath>
-                                <mainClass>ru.alfabouh.engine.game.Game</mainClass>
+                                <mainClass>ru.alfabouh.engine.JGems</mainClass>
                                 <addDependencies>true</addDependencies>
                                 <preCp>anything</preCp>
                             </classPath>
@@ -125,11 +125,6 @@
             <groupId>org.bytedeco</groupId>
             <artifactId>bullet</artifactId>
             <version>3.25-1.5.10</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.spair</groupId>
-            <artifactId>imgui-java-lwjgl3</artifactId>
-            <version>1.86.11</version>
         </dependency>
         <dependency>
             <groupId>io.github.spair</groupId>

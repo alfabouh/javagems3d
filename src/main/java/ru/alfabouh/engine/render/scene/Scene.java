@@ -5,20 +5,18 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.controller.input.IController;
-import ru.alfabouh.engine.game.resources.assets.materials.Material;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.models.mesh.ModelNode;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
-import ru.alfabouh.engine.game.synchronizing.SyncManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.render.scene.gui.ImmediateUI;
+import ru.alfabouh.engine.system.controller.input.IController;
+import ru.alfabouh.engine.system.resources.assets.materials.Material;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.synchronizing.SyncManager;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
-import ru.alfabouh.engine.physics.world.timer.PhysicsTimer;
 import ru.alfabouh.engine.render.frustum.FrustumCulling;
-import ru.alfabouh.engine.render.scene.gui.base.GUI;
-import ru.alfabouh.engine.render.scene.gui.base.GameGUI;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
 import ru.alfabouh.engine.render.scene.objects.items.PhysicsObject;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
@@ -33,7 +31,7 @@ public class Scene implements IScene {
     private final Window window;
     private final FrustumCulling frustumCulling;
     private final SceneRender sceneRender;
-    private final GameGUI gui;
+    private final ImmediateUI immediateUI;
     private final SceneData sceneData;
 
     private double elapsedTime;
@@ -44,26 +42,25 @@ public class Scene implements IScene {
         this.sceneData = new SceneData(sceneWorld, null);
         this.window = screen.getWindow();
         this.frustumCulling = new FrustumCulling();
-        this.gui = new GameGUI();
+        this.immediateUI = new ImmediateUI();
         this.sceneRender = new SceneRender(this.getSceneData());
     }
 
     public void preRender() {
-        this.getGui().initMainMenu();
-        Game.getGame().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.setupBuffers();
+        JGems.get().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.setupBuffers();
         this.getSceneWorld().setFrustumCulling(this.getFrustumCulling());
-        Game.getGame().getLogManager().log("Starting scene rendering!");
+        JGems.get().getLogManager().log("Starting scene rendering!");
         this.getSceneRender().onStartRender();
-        Game.getGame().getLogManager().log("Scene rendering started!");
+        JGems.get().getLogManager().log("Scene rendering started!");
     }
 
     @SuppressWarnings("all")
     public void renderScene(double deltaTime) throws InterruptedException {
         if (Scene.isSceneActive()) {
-            Game.getGame().getScreen().normalizeViewPort();
+            JGems.get().getScreen().normalizeViewPort();
             if (this.getCurrentCamera() != null) {
                 if (this.requestDestroyMap) {
-                    Game.getGame().destroyMap();
+                    JGems.get().destroyMap();
                     this.requestDestroyMap = false;
                     return;
                 }
@@ -84,6 +81,7 @@ public class Scene implements IScene {
     public void renderSceneInterpolated(final double partialTicks) throws InterruptedException {
         this.getFrustumCulling().refreshFrustumCullingState(TransformationManager.instance.getProjectionMatrix(), TransformationManager.instance.getMainCameraViewMatrix());
         this.getSceneWorld().onWorldEntityUpdate(this.refresh, partialTicks);
+        this.getSceneWorld().onWorldUpdate();
         this.getCurrentCamera().updateCamera(partialTicks);
         TransformationManager.instance.updateViewMatrix(this.getCurrentCamera());
         this.getSceneRender().onRender(partialTicks);
@@ -91,24 +89,16 @@ public class Scene implements IScene {
     }
 
     public void postRender() {
-        Game.getGame().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.cleanup();
-        Game.getGame().getLogManager().log("Stopping scene rendering!");
+        JGems.get().getPhysicThreadManager().getPhysicsTimer().jbDebugDraw.cleanup();
+        JGems.get().getLogManager().log("Stopping scene rendering!");
         this.getSceneRender().onStopRender();
-        Game.getGame().getLogManager().log("Destroying resources!");
-        this.removeGui();
-        Game.getGame().getLogManager().log("Scene rendering stopped");
+        JGems.get().getLogManager().log("Destroying resources!");
+        this.UI().destroyUI();
+        JGems.get().getLogManager().log("Scene rendering stopped");
     }
 
     public static void activeGlTexture(int code) {
         GL30.glActiveTexture(GL13.GL_TEXTURE0 + code);
-    }
-
-    public void removeGui() {
-        this.getGui().setCurrentGui(null);
-    }
-
-    public void setGui(GUI gui) {
-        this.getGui().setCurrentGui(gui);
     }
 
     public void setRenderCamera(ICamera camera) {
@@ -121,7 +111,7 @@ public class Scene implements IScene {
 
     public void onWindowResize(Vector2i dim) {
         this.getSceneRender().onWindowResize(dim);
-        this.getGui().onWindowResize(dim);
+        this.UI().onWindowResize(dim);
     }
 
     public void enableFreeCamera(IController controller, Vector3d pos, Vector3d rot) {
@@ -137,11 +127,11 @@ public class Scene implements IScene {
     }
 
     public static boolean isSceneActive() {
-        return Game.getGame().getScreen().getWindow().isActive();
+        return JGems.get().getScreen().getWindow().isActive();
     }
 
     public static void setCamera(ICamera camera) {
-        Game.getGame().getScreen().getScene().setRenderCamera(camera);
+        JGems.get().getScreen().getScene().setRenderCamera(camera);
     }
 
     public static void checkGLErrors() {
@@ -174,7 +164,7 @@ public class Scene implements IScene {
                     error = "UNKNOWN";
                     break;
             }
-            Game.getGame().getLogManager().warn("GL ERROR: " + error);
+            JGems.get().getLogManager().warn("GL ERROR: " + error);
         }
     }
 
@@ -231,8 +221,8 @@ public class Scene implements IScene {
         }
     }
 
-    public GameGUI getGui() {
-        return this.gui;
+    public ImmediateUI UI() {
+        return this.immediateUI;
     }
 
     public SceneData getSceneData() {

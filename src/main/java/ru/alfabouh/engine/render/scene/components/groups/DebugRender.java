@@ -4,12 +4,12 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.ResourceManager;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
@@ -34,8 +34,8 @@ public class DebugRender extends SceneRenderBase {
             this.debugShaders.getUtils().performProjectionMatrix();
             this.debugShaders.unBind();
 
-            if (!Game.getGame().getPhysicsWorld().getDynamicsWorld().isNull()) {
-                Game.getGame().getPhysicsWorld().getDynamicsWorld().debugDrawWorld();
+            if (!JGems.get().getPhysicsWorld().getDynamicsWorld().isNull()) {
+                JGems.get().getPhysicsWorld().getDynamicsWorld().debugDrawWorld();
             }
         }
     }
@@ -53,7 +53,7 @@ public class DebugRender extends SceneRenderBase {
             return;
         }
         for (Graph.GVertex vertex : sceneRenderBase.getSceneWorld().getWorld().getGraph().getGraphContainer().keySet()) {
-            if (Game.getGame().getScreen().getCamera().getCamPosition().distance(new Vector3d(vertex.getX(), vertex.getY() + 0.1d, vertex.getZ())) > 5.0f) {
+            if (JGems.get().getScreen().getCamera().getCamPosition().distance(new Vector3d(vertex.getX(), vertex.getY() + 0.1d, vertex.getZ())) > 5.0f) {
                 continue;
             }
             Model<Format3D> model0 = MeshHelper.generateVector3DModel(new Vector3f((float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ()), new Vector3f((float) vertex.getX(), (float) (vertex.getY() + 1.0d), (float) vertex.getZ()));

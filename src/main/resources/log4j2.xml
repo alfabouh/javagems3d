@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Properties>
-        <Property name="log-path">${sys:user.home}/.JVertex3d/log</Property>
+        <Property name="log-path">${sys:user.home}/.jgems3d/log</Property>
         <Property name="log-file">${date:yyyy-MM-dd_HH-mm-ss}_log.log</Property>
     </Properties>
     <Appenders>
@@ -16,7 +16,7 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="ru.alfabouh.engine.game.logger.GameLogging" level="debug" additivity="true">
+        <Logger name="ru.alfabouh.engine.system.logger.GameLogging" level="debug" additivity="true">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Logger>

@@ -1,7 +1,7 @@
 package ru.alfabouh.engine.render.scene.fabric.render.data.inventory;
 
-import ru.alfabouh.engine.game.resources.assets.materials.textures.TextureSample;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.TextureSample;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.render.scene.fabric.render.base.IRenderInventoryItem;
 
 public class RenderInventoryItemData {

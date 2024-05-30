@@ -2,7 +2,7 @@ in vec3 out_texture;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 uniform samplerCube cube_map_sampler;
-uniform int covered_by_fog;
+uniform bool covered_by_fog;
 
 layout (std140, binding = 0) uniform SunLight {
     float ambient;
@@ -28,7 +28,7 @@ void main()
     vec4 color = vec4(vec3(fogColorR, fogColorG, fogColorB) * vec3(sunColorR, sunColorG, sunColorB), 1.0);
 
     float fogFactor = fogDensity * 100;
-    float f = covered_by_fog == 1 ? clamp(fogFactor, 0.0, 1.0) : 0.0;
+    float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
 
     frag_color = (color * f) + (diffuse * (1.0 - f));
 

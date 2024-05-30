@@ -2,9 +2,9 @@ package ru.alfabouh.engine.render.scene.programs;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderGroup;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderGroup;
 
 public class ShaderProgram {
     private final int programId;
@@ -51,7 +51,7 @@ public class ShaderProgram {
         GL20.glShaderSource(id, shader);
         GL20.glCompileShader(id);
         if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == 0) {
-            Game.getGame().getLogManager().warn(shader);
+            JGems.get().getLogManager().warn(shader);
             throw new GameException("Compile shader error: " + GL20.glGetShaderInfoLog(id, 4096));
         }
         GL20.glAttachShader(this.programId, id);
@@ -65,7 +65,7 @@ public class ShaderProgram {
             if (err.isEmpty()) {
                 err = "UNKNOWN ERR";
             }
-            Game.getGame().getLogManager().warn("Could not link shader: " + err);
+            JGems.get().getLogManager().warn("Could not link shader: " + err);
             //return false;
         }
         if (this.vertexShaderId != 0) {
@@ -81,7 +81,7 @@ public class ShaderProgram {
         if (GL20.glGetProgrami(this.programId, GL20.GL_VALIDATE_STATUS) == 0) {
             String err = GL20.glGetShaderInfoLog(this.programId, 4096);
             if (!err.isEmpty()) {
-                Game.getGame().getLogManager().warn("Could not validate shader " + err);
+                JGems.get().getLogManager().warn("Could not validate shader " + err);
                 return false;
             }
         }

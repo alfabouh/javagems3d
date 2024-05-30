@@ -3,7 +3,7 @@ package ru.alfabouh.engine.render.scene.fabric.render.data;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.render.scene.SceneRender;
 
 @SuppressWarnings("all")

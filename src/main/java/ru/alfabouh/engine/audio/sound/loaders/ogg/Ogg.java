@@ -7,7 +7,7 @@ import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.engine.audio.sound.loaders.ISoundLoader;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.system.exception.GameException;
 import sun.misc.IOUtils;
 
 import java.io.IOException;

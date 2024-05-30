@@ -6,9 +6,9 @@ import org.bytedeco.bullet.LinearMath.btIDebugDraw;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.bytedeco.bullet.global.BulletCollision;
 import org.jetbrains.annotations.NotNull;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.synchronizing.SyncManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.synchronizing.SyncManager;
 import ru.alfabouh.engine.physics.entities.BodyGroup;
 import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.render.scene.debug.bullet.JBDebugDraw;
@@ -62,11 +62,11 @@ public class PhysicsTimer implements IPhysTimer {
             throw new GameException("Current Dynamics World is NULL!");
         }
         try {
-            Game.getGame().getLogManager().log("Starting physics!");
-            while (!Game.getGame().isShouldBeClosed()) {
+            JGems.get().getLogManager().log("Starting physics!");
+            while (!JGems.get().isShouldBeClosed()) {
                 SyncManager.SyncPhysics.mark();
                 SyncManager.SyncPhysics.blockCurrentThread(true);
-                if (Game.getGame().getEngineState().isEngineIsReady() && !Game.getGame().getEngineState().isPaused()) {
+                if (JGems.get().getEngineState().isEngineIsReady() && !JGems.get().getEngineState().isPaused()) {
                     synchronized (PhysicsTimer.lockObject) {
                         world1.onWorldUpdate();
                         discreteDynamicsWorld1.stepSimulation(step, explicit, step / (double) explicit);
@@ -74,11 +74,11 @@ public class PhysicsTimer implements IPhysTimer {
                 }
                 PhysicsTimer.TPS += 1;
             }
-            Game.getGame().getLogManager().log("Stopping physics!");
+            JGems.get().getLogManager().log("Stopping physics!");
         } catch (GameException e) {
             throw new GameException(e);
         } finally {
-            Game.getGame().destroyGame();
+            JGems.get().destroyGame();
         }
     }
 
@@ -109,7 +109,7 @@ public class PhysicsTimer implements IPhysTimer {
     }
 
     public void cleanResources() {
-        Game.getGame().getLogManager().log("Cleaning physics world resources...");
+        JGems.get().getLogManager().log("Cleaning physics world resources...");
         this.getDiscreteDynamicsWorld().deallocate();
     }
 

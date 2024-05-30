@@ -8,13 +8,13 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.basic.MeshHelper;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.ResourceManager;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format2D;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.physics.entities.player.KinematicPlayerSP;
 import ru.alfabouh.engine.physics.liquids.ILiquid;
 import ru.alfabouh.engine.render.environment.Environment;
@@ -56,7 +56,7 @@ public class SceneRender {
 
     private final ShadowScene shadowScene;
 
-    private double lastUpdate = Game.glfwTime();
+    private double lastUpdate = JGems.glfwTime();
     private int glitchTicks;
 
     public SceneRender(Scene.SceneData sceneData) {
@@ -77,7 +77,7 @@ public class SceneRender {
 
         this.createFBOs(this.getWindowDimensions());
 
-        this.imguiRender = new IMGUIRender(Game.getGame().getScreen().getWindow(), Game.getGame().getResourceManager().getGameCache());
+        this.imguiRender = new IMGUIRender(JGems.get().getScreen().getWindow(), JGems.get().getResourceManager().getGameCache());
     }
 
     public void createFBOs(Vector2i dim) {
@@ -184,7 +184,7 @@ public class SceneRender {
 
         SceneRender.getGameUboShader().bind();
 
-        if (Game.getGame().isPaused()) {
+        if (JGems.get().isPaused()) {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.guiRender.onRender(partialTicks);
         } else {
@@ -215,7 +215,6 @@ public class SceneRender {
                 GL30.glDisable(GL30.GL_BLEND);
             } else {
                 this.renderFinalScene(model);
-                this.renderDebugScreen(partialTicks);
                 this.inventoryRender.onRender(partialTicks);
                 this.guiRender.onRender(partialTicks);
             }
@@ -278,7 +277,7 @@ public class SceneRender {
 
     public void renderScene(double partialTicks, Model<Format2D> model) {
         this.getShadowScene().renderAllModelsInShadowMap(this.getModelsToRenderInShadows(this.getSceneData().getSceneWorld()));
-        Game.getGame().getScreen().normalizeViewPort();
+        JGems.get().getScreen().normalizeViewPort();
 
         GL30.glEnable(GL30.GL_DEPTH_TEST);
         this.geometryPass(partialTicks);
@@ -299,7 +298,7 @@ public class SceneRender {
 
     private List<Model<Format3D>> getModelsToRenderInShadows(SceneWorld sceneWorld) {
         List<Model<Format3D>> models = new ArrayList<>();
-        models.addAll(sceneWorld.getToRenderList().stream().filter(e -> e.hasRender() && e.getModelRenderParams().isShadowCaster()).map(IModeledSceneObject::getModel3D).collect(Collectors.toList()));
+        models.addAll(sceneWorld.getModeledSceneEntities().stream().filter(e -> e.hasRender() && e.getModelRenderParams().isShadowCaster()).map(IModeledSceneObject::getModel3D).collect(Collectors.toList()));
         models.addAll(sceneWorld.getLiquids().stream().map(LiquidObject::getModel).collect(Collectors.toList()));
         return models;
     }
@@ -318,7 +317,7 @@ public class SceneRender {
         this.getFXAAShader().bind();
         this.getFXAAShader().performUniform("resolution", new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y));
         this.getFXAAShader().performUniform("texture_sampler", 0);
-        this.getFXAAShader().performUniform("FXAA_SPAN_MAX", (float) Math.pow(Game.getGame().getGameSettings().fxaa.getValue(), 2));
+        this.getFXAAShader().performUniform("FXAA_SPAN_MAX", (float) Math.pow(JGems.get().getGameSettings().fxaa.getValue(), 2));
         this.getFXAAShader().getUtils().performProjectionMatrix2d(model);
         GL30.glActiveTexture(GL30.GL_TEXTURE0);
         this.getFinalRenderedSceneFbo().bindTexture(0);
@@ -346,10 +345,10 @@ public class SceneRender {
     }
 
     public void renderSceneWithPSXPostProcessing(Model<Format2D> model) {
-        if (!Game.getGame().isValidPlayer()) {
+        if (!JGems.get().isValidPlayer()) {
            return;
         }
-        KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) Game.getGame().getPlayerSP();
+        KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) JGems.get().getPlayerSP();
 
         this.getPostProcessingShader2().bind();
         this.getPostProcessingShader2().performUniform("texture_sampler", 0);
@@ -363,12 +362,12 @@ public class SceneRender {
         this.getPostProcessingShader2().performUniform("e_lsd", 0);
 
         float panic = 1.0f - kinematicPlayerSP.getMind();
-        double curr = Game.glfwTime();
+        double curr = JGems.glfwTime();
         if (curr - this.lastUpdate > 1.0d) {
             if (this.glitchTicks <= 0) {
-                if (!Game.getGame().isPaused() && panic > 0.3f && Game.random.nextFloat() <= panic * 0.1f) {
+                if (!JGems.get().isPaused() && panic > 0.3f && JGems.random.nextFloat() <= panic * 0.1f) {
                     this.glitchTicks = 1;
-                    Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.glitch, SoundType.BACKGROUND_SOUND, 1.5f, 1.0f);
+                    JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.glitch, SoundType.BACKGROUND_SOUND, 1.5f, 1.0f);
                 }
             } else {
                 this.glitchTicks = 0;
@@ -398,7 +397,7 @@ public class SceneRender {
     }
 
     private void bloomPostProcessing(double partialTicks, Model<Format2D> model) {
-        if (Game.getGame().getGameSettings().bloom.getValue() == 0) {
+        if (JGems.get().getGameSettings().bloom.getValue() == 0) {
             this.getFboBlur().bindFBO();
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.getFboBlur().unBindFBO();
@@ -425,98 +424,13 @@ public class SceneRender {
         this.getBlurShader().unBind();
     }
 
-    private void renderDebugScreen(double partialTicks) {
-        if (GlobalRenderDebugConstants.RENDER_FBO_TEXTURES_ON_SCREEN) {
-            Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(300.0f, 200.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.gBuffer.bindTexture(0);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-
-
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 200.0f), new Vector2f(300.0f, 400.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.gBuffer.bindTexture(1);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 400.0f), new Vector2f(300.0f, 600.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.gBuffer.bindTexture(2);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f, 600.0f), new Vector2f(300.0f, 800.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.gBuffer.bindTexture(3);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 400.0f), new Vector2f(600.0f, 600.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.gBuffer.bindTexture(4);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 600.0f), new Vector2f(600.0f, 800.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.gBuffer.bindTexture(5);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 0.0f), new Vector2f(600.0f, 200.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.getShadowScene().getFrameBufferObjectProgram().bindTexture(0);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-
-            model = MeshHelper.generatePlane2DModelInverted(new Vector2f(300.0f, 200.0f), new Vector2f(600.0f, 400.0f), 0);
-            ResourceManager.shaderAssets.gui_image.bind();
-            ResourceManager.shaderAssets.gui_image.performUniform("texture_sampler", 0);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.sceneFbo.bindTexture(1);
-            ResourceManager.shaderAssets.gui_image.getUtils().performProjectionMatrix2d(model);
-            Scene.renderModel(model, GL30.GL_TRIANGLES);
-            ResourceManager.shaderAssets.gui_image.unBind();
-            model.clean();
-        }
-    }
-
     public void onWindowResize(Vector2i dim) {
         this.createFBOs(dim);
         this.getImguiRender().onResize(dim);
     }
 
     private void updateUbo() {
-        SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{Game.getGame().getScreen().getRenderTicks()});
+        SceneRender.getGameUboShader().performUniformBuffer(ResourceManager.shaderAssets.Misc, new float[]{JGems.get().getScreen().getRenderTicks()});
         Environment environment = this.getSceneData().getSceneWorld().getEnvironment();
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(4);
         value1Buffer.put(!GlobalRenderDebugConstants.FULL_BRIGHT ? environment.getFog().getDensity() : 0.0f);
@@ -569,7 +483,7 @@ public class SceneRender {
     }
 
     public Vector2i getWindowDimensions() {
-        return Game.getGame().getScreen().getDimensions();
+        return JGems.get().getScreen().getDimensions();
     }
 
     public static ShaderManager getGameUboShader() {

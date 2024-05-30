@@ -4,10 +4,10 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.physics.brush.WorldBrush;
 import ru.alfabouh.engine.physics.entities.IControllable;
 import ru.alfabouh.engine.physics.jb_objects.JBulletEntity;
@@ -63,7 +63,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     @Override
     public void onSpawn(IWorld iWorld) {
         if (!this.getWorldItem().isParticle()) {
-            Game.getGame().getLogManager().log("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
+            JGems.get().getLogManager().log("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
         }
         if (this.hasRender()) {
             if (this.getRenderData().getEntityModelConstructor() != null) {
@@ -78,7 +78,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     @Override
     public void onDestroy(IWorld iWorld) {
         if (!this.getWorldItem().isParticle()) {
-            Game.getGame().getLogManager().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
+            JGems.get().getLogManager().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
         }
         if (this.hasRender()) {
             this.renderFabric().onStopRender(this);
@@ -86,11 +86,11 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     }
 
     public void onAddLight(Light light) {
-        Game.getGame().getLogManager().log("Add light to: " + this.getWorldItem().getItemName());
+        JGems.get().getLogManager().log("Add light to: " + this.getWorldItem().getItemName());
     }
 
     public void onRemoveLight(Light light) {
-        Game.getGame().getLogManager().log("Removed light from: " + this.getWorldItem().getItemName());
+        JGems.get().getLogManager().log("Removed light from: " + this.getWorldItem().getItemName());
     }
 
     protected Vector3d calcABBSize(WorldItem worldItem) {

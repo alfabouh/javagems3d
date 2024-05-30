@@ -1,7 +1,7 @@
 package ru.alfabouh.engine.render.environment.light;
 
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.JGems;
 import ru.alfabouh.engine.physics.world.IWorld;
 import ru.alfabouh.engine.render.scene.objects.items.PhysicsObject;
 
@@ -61,7 +61,7 @@ public class PointLight extends Light {
     public void stop() {
         super.stop();
         if (this.getAttachedShadowSceneId() >= 0) {
-            Game.getGame().getScreen().getScene().getSceneRender().getShadowScene().unBindPointLightFromShadowScene(this);
+            JGems.get().getScreen().getScene().getSceneRender().getShadowScene().unBindPointLightFromShadowScene(this);
         }
     }
 

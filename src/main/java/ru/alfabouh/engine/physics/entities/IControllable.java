@@ -2,7 +2,7 @@ package ru.alfabouh.engine.physics.entities;
 
 import org.joml.Vector2d;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.controller.input.IController;
+import ru.alfabouh.engine.system.controller.input.IController;
 
 public interface IControllable {
     IController currentController();

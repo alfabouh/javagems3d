@@ -4,26 +4,23 @@ import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.game.resources.assets.materials.textures.IImageSample;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.models.mesh.ModelNode;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.ResourceManager;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.IImageSample;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.render.environment.light.PointLight;
 import ru.alfabouh.engine.render.scene.Scene;
-import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
 import ru.alfabouh.engine.render.scene.programs.FBOTexture2DProgram;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
-import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ShadowScene {
     public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
@@ -60,7 +57,7 @@ public class ShadowScene {
     }
 
     private static float qualityMultiplier() {
-        int i = (int) MathHelper.clamp(Game.getGame().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
+        int i = (int) MathHelper.clamp(JGems.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 
@@ -227,7 +224,7 @@ public class ShadowScene {
         ShaderManager blurShader = ResourceManager.shaderAssets.blur13;
         Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(ShadowScene.SHADOW_SUN_MAP_SIZE), 0);
         blurShader.bind();
-        blurShader.performUniform("resolution", new Vector2f(Game.getGame().getScreen().getDimensions()));
+        blurShader.performUniform("resolution", new Vector2f(JGems.getGame().getScreen().getDimensions()));
         this.getFrameBufferObjectProgram().bindFBO();
         for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
             this.getFrameBufferObjectProgram().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
@@ -293,7 +290,7 @@ public class ShadowScene {
 
     public void bindPointLightToShadowScene(int attachCode, PointLight pointLight) {
         if (attachCode >= ShadowScene.MAX_POINT_LIGHTS_SHADOWS) {
-            Game.getGame().getLogManager().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + ShadowScene.MAX_POINT_LIGHTS_SHADOWS);
+            JGems.get().getLogManager().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + ShadowScene.MAX_POINT_LIGHTS_SHADOWS);
             return;
         }
         PointLightShadow pointLightShadow = this.getPointLightShadows().get(attachCode);
@@ -302,7 +299,7 @@ public class ShadowScene {
 
     public void unBindPointLightFromShadowScene(PointLight pointLight) {
         if (pointLight.getAttachedShadowSceneId() < 0) {
-            Game.getGame().getLogManager().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scene!");
+            JGems.get().getLogManager().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scene!");
             return;
         }
         this.getPointLightShadows().get(pointLight.getAttachedShadowSceneId()).setPointLight(null);

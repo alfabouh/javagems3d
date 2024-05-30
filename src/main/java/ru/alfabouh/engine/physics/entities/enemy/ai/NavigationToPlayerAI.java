@@ -6,10 +6,10 @@ import org.bytedeco.bullet.LinearMath.btVector3;
 import org.joml.Vector3d;
 import ru.alfabouh.engine.audio.sound.GameSound;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.logger.GameLogging;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.logger.GameLogging;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.graph.pathfind.AStar;
 import ru.alfabouh.engine.inventory.items.ItemRadio;
@@ -49,7 +49,7 @@ public class NavigationToPlayerAI extends NavigationAI {
         this.queuePath = new ArrayList<>();
         this.atomicBoolean = new AtomicBoolean(false);
         this.playerPos = new Vector3d(0.0d);
-        this.chasingSound = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 4.0f, 3.0f);
+        this.chasingSound = JGems.get().getSoundManager().createSound(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 4.0f, 3.0f);
 
         if (this.chasingSound != null) {
             this.chasingSound.setAttachedTo(worldItem);
@@ -58,7 +58,7 @@ public class NavigationToPlayerAI extends NavigationAI {
         Thread seekPathThread = new Thread(() -> {
             try {
                 Graph.GVertex randomVertex = world.getGraph() == null ? null : world.getGraph().getRandomVertex();
-                while (Game.getGame().isCurrentMapIsValid()) {
+                while (JGems.get().isCurrentMapIsValid()) {
                     try {
                         if (worldItem.getWorld().getGraph() == null || this.getCurrentSyncVertex() == null || !this.isActive()) {
                             continue;
@@ -67,7 +67,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                         this.setSpeed(this.getAtomicBoolean().get() ? this.getMaxSpeed() : 0.125f);
 
                         if ((!this.getAtomicBoolean().get() && this.reachedDestination()) || this.isForceChangeWayDirection()) {
-                            randomVertex = Game.random.nextFloat() <= this.getRandomPlayerChasePercent() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : world.getGraph().getRandomVertex();
+                            randomVertex = JGems.random.nextFloat() <= this.getRandomPlayerChasePercent() ? this.findClosestPlayerVertex(worldItem.getWorld().getGraph()) : world.getGraph().getRandomVertex();
                             this.setForceChangeWayDirection(false);
                         }
 
@@ -78,7 +78,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                         if (path != null) {
                             this.getQueuePath().addAll(path);
                         } else {
-                            Game.getGame().getLogManager().warn("Nav pathfind problems!");
+                            JGems.get().getLogManager().warn("Nav pathfind problems!");
                         }
 
                         Thread.sleep(50);
@@ -87,8 +87,8 @@ public class NavigationToPlayerAI extends NavigationAI {
                     }
                 }
             } catch (Exception e) {
-                Game.getGame().getLogManager().exception(e);
-                GameLogging.showExceptionDialog("An exception occurred inside the game. Open the logs folder for details.");
+                JGems.get().getLogManager().exception(e);
+                GameLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
             }
         });
         seekPathThread.setDaemon(true);

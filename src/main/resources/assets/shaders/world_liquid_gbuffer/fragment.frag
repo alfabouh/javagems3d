@@ -11,8 +11,8 @@ uniform vec2 texture_scaling;
 uniform sampler2D diffuse_map;
 uniform sampler2D normals_map;
 
-uniform int use_cubemap;
-uniform int use_normals;
+uniform bool use_cubemap;
+uniform bool use_normals;
 uniform vec3 camera_pos;
 
 layout (location = 0) out vec4 gPosition;
@@ -46,10 +46,10 @@ void main()
 
     vec4 diffuse = diffuse_texture;
 
-    vec3 normals = normalize((use_normals == 1) ? calc_normal_map() : mv_vertex_normal);
+    vec3 normals = normalize(use_normals ? calc_normal_map() : mv_vertex_normal);
     gNormal = vec4(normals, 1.0);
 
-    gMetallic = (use_cubemap == 1) ? vec4(vec3(0.5), 1.0) : vec4(vec3(0.0), 1.0);
+    gMetallic = use_cubemap ? vec4(vec3(0.5), 1.0) : vec4(vec3(0.0), 1.0);
     gPosition = vec4(mv_vertex_pos, 1.0);
     gColor = diffuse;
 }

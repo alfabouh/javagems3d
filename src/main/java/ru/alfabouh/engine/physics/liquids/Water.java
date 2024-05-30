@@ -3,7 +3,7 @@ package ru.alfabouh.engine.physics.liquids;
 import org.bytedeco.bullet.BulletCollision.*;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.JGems;
 import ru.alfabouh.engine.physics.entities.BodyGroup;
 import ru.alfabouh.engine.physics.entities.states.EntityState;
 import ru.alfabouh.engine.physics.jb_objects.JBulletEntity;
@@ -66,12 +66,12 @@ public class Water implements ILiquid {
     @Override
     public void onSpawn(IWorld iWorld) {
         this.createGhostZone();
-        Game.getGame().getLogManager().log("Created new Liquid: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
+        JGems.get().getLogManager().log("Created new Liquid: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
     }
 
     @Override
     public void onDestroy(IWorld iWorld) {
         this.collisionShape.deallocate();
-        Game.getGame().getLogManager().log("Destroyed Liquid: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
+        JGems.get().getLogManager().log("Destroyed Liquid: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
     }
 }

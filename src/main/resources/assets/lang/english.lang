@@ -1,0 +1,47 @@
+settings.on=On
+settings.off-Off
+settings.fullScreen=Full Screen
+settings.windowed=Windowed
+settings.low=Low
+settings.medium=Medium
+settings.high=High
+
+menu.settings.sound=Sound
+menu.settings.fxaa=FXAA
+menu.settings.anisotropic=Anisotropic Filtering
+menu.settings.bloom=Bloom Effect
+menu.settings.window=Window Mode
+menu.settings.textureQ=Texture Quality
+menu.settings.shadowQ=Shadow Quality
+menu.settings.vsync=V-Sync
+menu.settings.language=Language
+
+menu.save=Save
+menu.back=Go Back
+
+menu.pause.continue=Continue
+
+menu.main.settings=Settings
+menu.main.exit=Exit
+menu.main.play=Play
+menu.main.retry=Retry
+menu.main.gameplay.dead=Status: Dead. Recorded time: %s
+menu.main.gameplay.alive=Status: Alive. Recorded time: %s
+
+menu.confirm.no=No
+menu.confirm.yes=Yes
+menu.confirm.text=You really want to leave?
+
+gameplay.mind=[Mind]
+gameplay.stamina=[Stamina]
+gameplay.press_x=[Press X]
+gameplay.disks=%s Disks
+gameplay.cassettes=%s Cassettes
+gameplay.crowbar_use=[Break planks with crowbar]
+gameplay.shift_tip=[PRESS SHIFT TO RUN]
+gameplay.walk_tip=[PRESS W,A,S,D TO WALK]
+
+item.description.crowbar=[Plank Removal Tool]
+item.description.emp=[Anomaly indicator]
+item.description.zippo=[Light]
+item.description.radio=[Calms the mind. Be careful]

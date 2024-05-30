@@ -1,6 +1,6 @@
 package ru.alfabouh.engine.physics.brush;
 
-import ru.alfabouh.engine.game.resources.assets.models.mesh.MeshDataGroup;
+import ru.alfabouh.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.engine.physics.collision.AbstractCollision;
 import ru.alfabouh.engine.physics.collision.ModelShape;
 import ru.alfabouh.engine.physics.jb_objects.RigidBodyObject;

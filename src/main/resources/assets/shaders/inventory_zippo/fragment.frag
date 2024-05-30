@@ -2,7 +2,7 @@ layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 frag_color2;
 in vec2 texture_coordinates;
 
-uniform int use_emission;
+uniform bool use_emission;
 uniform sampler2D diffuse_map;
 uniform sampler2D emissive_map;
 
@@ -12,6 +12,6 @@ void main()
     vec4 evec4 = texture(emissive_map, 1.0 - texture_coordinates);
     vec4 cvec = vec4(frag_color);
     cvec *= vec4(0.0, 0.0, 0.0, 1.0);
-    cvec += use_emission == 1 && evec4.a > 0 ? evec4 : vec4(0.0);
+    cvec += use_emission && evec4.a > 0 ? evec4 : vec4(0.0);
     frag_color2 = (cvec);
 }

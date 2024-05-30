@@ -3,12 +3,10 @@ package ru.alfabouh.engine.audio.sound.loaders.wave;
 import javax.sound.sampled.*;
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.engine.audio.sound.loaders.ISoundLoader;
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.JGems;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -29,7 +27,7 @@ public class Wave implements ISoundLoader {
             ais.read(audioBytes);
             buffer = convertAudioBytes(audioBytes, audioFormat.getSampleSizeInBits() == 16, audioFormat.isBigEndian());
         } catch (IOException e) {
-            Game.getGame().getLogManager().warn("Unable to read audio input stream, " + e.getMessage());
+            JGems.get().getLogManager().warn("Unable to read audio input stream, " + e.getMessage());
         }
 
         this.data = buffer;
@@ -77,7 +75,7 @@ public class Wave implements ISoundLoader {
         try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(is)) {
             return new Wave(inputStream);
         } catch (Exception e) {
-            Game.getGame().getLogManager().warn("Unable to create from inputstream, " + e.getMessage());
+            JGems.get().getLogManager().warn("Unable to create from inputstream, " + e.getMessage());
             return null;
         }
     }

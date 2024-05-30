@@ -9,13 +9,13 @@ import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.controller.ControllerDispatcher;
-import ru.alfabouh.engine.game.controller.input.MouseKeyboardController;
-import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.game.resources.assets.materials.textures.TextureSample;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
-import ru.alfabouh.engine.game.resources.cache.GameCache;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.controller.ControllerDispatcher;
+import ru.alfabouh.engine.system.controller.input.MouseKeyboardController;
+import ru.alfabouh.engine.system.resources.ResourceManager;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.TextureSample;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.resources.cache.GameCache;
 import ru.alfabouh.engine.physics.entities.player.IPlayer;
 import ru.alfabouh.engine.physics.entities.player.KinematicPlayerSP;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
@@ -110,8 +110,8 @@ public class IMGUIRender {
     }
 
     public void render(double partialTicks) {
-        ControllerDispatcher controllerDispatcher = Game.getGame().getScreen().getControllerDispatcher();
-        if (Game.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
+        ControllerDispatcher controllerDispatcher = JGems.get().getScreen().getControllerDispatcher();
+        if (JGems.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.drawGui(controllerDispatcher);
 
             ImDrawData drawData = ImGui.getDrawData();
@@ -197,14 +197,14 @@ public class IMGUIRender {
     private boolean psx = true;
 
     private void drawGui(ControllerDispatcher controllerDispatcher) {
-        if (!Game.getGame().isValidPlayer()) {
+        if (!JGems.get().isValidPlayer()) {
             return;
         }
         MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controllerDispatcher.getCurrentController();
-        ICamera camera = Game.getGame().getScreen().getCamera();
-        IPlayer entityPlayerSP = Game.getGame().getPlayerSP();
-        SceneWorld sceneWorld = Game.getGame().getSceneWorld();
-        SceneRender sceneRender = Game.getGame().getScreen().getScene().getSceneRender();
+        ICamera camera = JGems.get().getScreen().getCamera();
+        IPlayer entityPlayerSP = JGems.get().getPlayerSP();
+        SceneWorld sceneWorld = JGems.get().getSceneWorld();
+        SceneRender sceneRender = JGems.get().getScreen().getScene().getSceneRender();
 
         ImGui.newFrame();
         ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
@@ -217,7 +217,7 @@ public class IMGUIRender {
         if (entityPlayerSP instanceof KinematicPlayerSP) {
             KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
             ImGui.text(String.format("%s %s %s | %s %s %s", (float) kinematicPlayerSP.getPosition().x, (float) kinematicPlayerSP.getPosition().y, (float) kinematicPlayerSP.getPosition().z, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().x, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().y, (float) kinematicPlayerSP.getCurrentHitScanCoordinate().z));
-            ImGui.text("entities: " + Game.getGame().getPhysicsWorld().countItems());
+            ImGui.text("entities: " + JGems.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
             ImGui.text("current speed(scalar): " + String.format("%.4f", kinematicPlayerSP.getScalarSpeed()));
         }
@@ -225,11 +225,11 @@ public class IMGUIRender {
         if (ImGui.checkbox("FreeCam", this.freeCam)) {
             this.freeCam = !this.freeCam;
             if (this.freeCam) {
-                Game.getGame().getScreen().getScene().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
-                Game.getGame().getScreen().getControllerDispatcher().detachController();
+                JGems.get().getScreen().getScene().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
+                JGems.get().getScreen().getControllerDispatcher().detachController();
             } else {
-                Game.getGame().getScreen().getScene().enableAttachedCamera((WorldItem) Game.getGame().getPlayerSP());
-                Game.getGame().getScreen().getControllerDispatcher().attachControllerTo(mouseKeyboardController, Game.getGame().getPlayerSP());
+                JGems.get().getScreen().getScene().enableAttachedCamera((WorldItem) JGems.get().getPlayerSP());
+                JGems.get().getScreen().getControllerDispatcher().attachControllerTo(mouseKeyboardController, JGems.get().getPlayerSP());
             }
         }
         if (ImGui.checkbox("Full Bright", this.fullBright)) {

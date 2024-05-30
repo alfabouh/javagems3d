@@ -1,8 +1,8 @@
 package ru.alfabouh.engine.physics.collision;
 
 import org.bytedeco.bullet.BulletCollision.btCollisionShape;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.assets.models.mesh.MeshDataGroup;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.resources.assets.models.mesh.MeshDataGroup;
 
 public class ModelShape implements AbstractCollision {
     private final MeshDataGroup meshDataGroup;

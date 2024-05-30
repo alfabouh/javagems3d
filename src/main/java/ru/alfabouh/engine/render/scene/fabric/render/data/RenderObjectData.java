@@ -2,13 +2,12 @@ package ru.alfabouh.engine.render.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.assets.materials.Material;
-import ru.alfabouh.engine.game.resources.assets.models.basic.constructor.IEntityModelConstructor;
-import ru.alfabouh.engine.game.resources.assets.models.mesh.MeshDataGroup;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.resources.assets.materials.Material;
+import ru.alfabouh.engine.system.resources.assets.models.basic.constructor.IEntityModelConstructor;
+import ru.alfabouh.engine.system.resources.assets.models.mesh.MeshDataGroup;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
-import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.fabric.render.base.IRenderFabric;
 import ru.alfabouh.engine.render.scene.objects.items.PhysicsObject;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
