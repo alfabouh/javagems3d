@@ -1,6 +1,6 @@
 package ru.alfabouh.engine.render.screen.timer;
 
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.JGems;
 
 public class GameRenderTimer {
     private boolean shouldBeErased;
@@ -9,12 +9,12 @@ public class GameRenderTimer {
     private double accumulatedTime;
 
     public GameRenderTimer() {
-        this.lastTime = Game.glfwTime();
+        this.lastTime = JGems.glfwTime();
         this.shouldBeErased = false;
     }
 
     public void update() {
-        double currentTime = Game.glfwTime();
+        double currentTime = JGems.glfwTime();
         this.deltaTime = currentTime - this.lastTime;
         this.lastTime = currentTime;
         this.accumulatedTime += this.deltaTime;

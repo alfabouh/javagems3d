@@ -3,8 +3,8 @@ package ru.alfabouh.engine.physics.entities.prop;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.physics.triggers.Zone;
 import ru.alfabouh.engine.physics.triggers.zones.DoorTriggerZone;
 import ru.alfabouh.engine.physics.world.IWorld;
@@ -61,7 +61,7 @@ public class WorldDoor extends WorldItem implements IWorldDynamic {
                 this.setPosition(new Vector3d(this.startingPosition).sub(0.7d, 0.0d, 0.7d));
             }
             if (!this.wasOpened) {
-                Game.getGame().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.door, SoundType.WORLD_SOUND, 1.75f, 1.0f, 1.0f, this.getPosition());
+                JGems.get().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.door, SoundType.WORLD_SOUND, 1.75f, 1.0f, 1.0f, this.getPosition());
             }
             this.wasOpened = true;
         } else {

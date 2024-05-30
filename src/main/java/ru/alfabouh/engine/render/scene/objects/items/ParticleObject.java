@@ -1,8 +1,8 @@
 package ru.alfabouh.engine.render.scene.objects.items;
 
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.assets.materials.Material;
-import ru.alfabouh.engine.game.resources.assets.materials.textures.ParticleTexturePack;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.assets.materials.Material;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.ParticleTexturePack;
 import ru.alfabouh.engine.physics.world.IWorld;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.render.scene.fabric.render.data.RenderObjectData;
@@ -11,7 +11,7 @@ import ru.alfabouh.engine.render.scene.world.SceneWorld;
 
 public class ParticleObject extends EntityObject {
     private int currentTexture;
-    private double lastUpdate = Game.glfwTime();
+    private double lastUpdate = JGems.glfwTime();
 
     public ParticleObject(SceneWorld sceneWorld, WorldItem worldItem, RenderObjectData renderData) {
         super(sceneWorld, worldItem, renderData);
@@ -24,7 +24,7 @@ public class ParticleObject extends EntityObject {
         RenderParticleD2Data renderParticleD2Data = (RenderParticleD2Data) this.getRenderData();
         ParticleTexturePack particleTexturePack = renderParticleD2Data.getParticleTexturePack();
         if (particleTexturePack.getAnimationRate() <= 0.0f) {
-            this.currentTexture = Game.random.nextInt(particleTexturePack.getTexturesNum());
+            this.currentTexture = JGems.random.nextInt(particleTexturePack.getTexturesNum());
             Material material = new Material();
             material.setDiffuse(particleTexturePack.getiImageSample()[this.currentTexture]);
             renderParticleD2Data.setOverObjectMaterial(material);
@@ -37,7 +37,7 @@ public class ParticleObject extends EntityObject {
         super.onUpdate(iWorld);
         RenderParticleD2Data renderParticleD2Data = (RenderParticleD2Data) this.getRenderData();
         ParticleTexturePack particleTexturePack = renderParticleD2Data.getParticleTexturePack();
-        double curr = Game.glfwTime();
+        double curr = JGems.glfwTime();
         if (particleTexturePack.getAnimationRate() > 0.0f) {
             if (curr - this.lastUpdate > 1.0d * particleTexturePack.getAnimationRate()) {
                 this.currentTexture = (this.currentTexture + 1) % particleTexturePack.getTexturesNum();

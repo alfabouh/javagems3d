@@ -2,10 +2,10 @@ package ru.alfabouh.engine.render.transformation;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format2D;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 
 import java.util.ArrayList;
@@ -27,11 +27,11 @@ public class TransformationManager {
     }
 
     public Matrix4d getProjectionMatrix() {
-        return TransformationManager.instance.getTransform().getProjectionMatrix(TransformationManager.FOV, Game.getGame().getScreen().getWidth(), Game.getGame().getScreen().getHeight(), TransformationManager.Z_NEAR, TransformationManager.Z_FAR);
+        return TransformationManager.instance.getTransform().getProjectionMatrix(TransformationManager.FOV, JGems.get().getScreen().getWidth(), JGems.get().getScreen().getHeight(), TransformationManager.Z_NEAR, TransformationManager.Z_FAR);
     }
 
     public Matrix4d getProjectionMatrixFpv() {
-        return TransformationManager.instance.getTransform().getProjectionMatrix(TransformationManager.FOV, Game.getGame().getScreen().getWidth(), Game.getGame().getScreen().getHeight(), 0.01f, 10.0f);
+        return TransformationManager.instance.getTransform().getProjectionMatrix(TransformationManager.FOV, JGems.get().getScreen().getWidth(), JGems.get().getScreen().getHeight(), 0.01f, 10.0f);
     }
 
     public Matrix4d buildViewMatrix(ICamera camera, Vector3d offset) {
@@ -67,11 +67,11 @@ public class TransformationManager {
     }
 
     public Matrix4d getScreenMatrix2D() {
-        return TransformationManager.instance.getTransform().getOrthographicMatrix(0, Game.getGame().getScreen().getWidth(), Game.getGame().getScreen().getHeight(), 0);
+        return TransformationManager.instance.getTransform().getOrthographicMatrix(0, JGems.get().getScreen().getWidth(), JGems.get().getScreen().getHeight(), 0);
     }
 
     public Matrix4d getOrthographicScreenModelMatrix(Model<Format2D> model) {
-        Matrix4d orthographicMatrix = TransformationManager.instance.getTransform().getOrthographicMatrix(0, Game.getGame().getScreen().getWidth(), Game.getGame().getScreen().getHeight(), 0);
+        Matrix4d orthographicMatrix = TransformationManager.instance.getTransform().getOrthographicMatrix(0, JGems.get().getScreen().getWidth(), JGems.get().getScreen().getHeight(), 0);
         return TransformationManager.instance.getTransform().getOrthoModelMatrix(model, orthographicMatrix);
     }
 

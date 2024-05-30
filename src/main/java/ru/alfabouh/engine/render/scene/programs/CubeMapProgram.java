@@ -1,11 +1,9 @@
 package ru.alfabouh.engine.render.scene.programs;
 
 import org.joml.Vector2i;
-import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.game.resources.assets.materials.textures.TextureSample;
+import ru.alfabouh.engine.system.resources.ResourceManager;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.TextureSample;
 
 import java.nio.ByteBuffer;
 
@@ -46,7 +44,7 @@ public class CubeMapProgram {
 
         for (int i = 0; i < 6; i++) {
             TextureSample textureSample = cubeMapTextureArray.getTextureArray()[i];
-            GL30.glTexImage2D(GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL30.GL_RGB16, textureSample.getWidth(), textureSample.getHeight(), 0, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, textureSample.getImageBuffer());
+            GL30.glTexImage2D(GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL30.GL_RGB16, textureSample.size().x, textureSample.size().y, 0, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, textureSample.getImageBuffer());
         }
 
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);

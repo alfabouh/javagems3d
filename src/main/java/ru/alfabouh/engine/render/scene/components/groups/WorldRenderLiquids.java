@@ -1,9 +1,9 @@
 package ru.alfabouh.engine.render.scene.components.groups;
 
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.render.frustum.ICullable;
 import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
@@ -17,7 +17,7 @@ public class WorldRenderLiquids extends SceneRenderBase {
     }
 
     public void onRender(double partialTicks) {
-        for (ICullable cullable : this.getSceneWorld().filterCulled(this.getSceneWorld().getLiquids())) {
+        for (ICullable cullable : this.getSceneWorld().getEntitiesFrustumCulledList(this.getSceneWorld().getLiquids())) {
             LiquidObject liquidObject = (LiquidObject) cullable;
             Model<Format3D> model = liquidObject.getModel();
             ShaderManager shaderManager = liquidObject.getRenderLiquidData().getShaderManager();

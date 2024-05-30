@@ -3,11 +3,8 @@ package ru.alfabouh.engine.render.scene.programs;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
-import org.lwjgl.opengl.GL43;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.render.scene.Scene;
-import ru.alfabouh.engine.render.screen.Screen;
 
 public class FBOCubeMapProgram {
     private final CubeMapProgram cubeMapProgram;

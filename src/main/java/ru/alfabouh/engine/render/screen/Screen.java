@@ -1,7 +1,6 @@
 package ru.alfabouh.engine.render.screen;
 
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -12,16 +11,16 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.engine.audio.sound.SoundListener;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.GameSystem;
-import ru.alfabouh.engine.game.controller.ControllerDispatcher;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.render.scene.gui.elements.UIText;
+import ru.alfabouh.engine.system.EngineSystem;
+import ru.alfabouh.engine.system.controller.ControllerDispatcher;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.physics.world.timer.PhysicsTimer;
 import ru.alfabouh.engine.render.scene.Scene;
-import ru.alfabouh.engine.render.scene.gui.font.FontCode;
-import ru.alfabouh.engine.render.scene.gui.font.GuiFont;
-import ru.alfabouh.engine.render.scene.gui.ui.TextUI;
+import ru.alfabouh.engine.render.scene.gui.elements.base.font.FontCode;
+import ru.alfabouh.engine.render.scene.gui.elements.base.font.GuiFont;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 import ru.alfabouh.engine.render.screen.timer.GameRenderTimer;
@@ -52,7 +51,7 @@ public class Screen {
 
     public void addLineInLoadingScreen(String s) {
         if (this.gameLoadingScreen == null) {
-            Game.getGame().getLogManager().warn("Loading screen is NULL");
+            JGems.get().getLogManager().warn("Loading screen is NULL");
             return;
         }
         this.gameLoadingScreen.addText(s);
@@ -74,7 +73,7 @@ public class Screen {
             this.normalizeViewPort();
             this.getWindow().showWindow();
 
-            Game.getGame().getLogManager().log("Screen built successful");
+            JGems.get().getLogManager().log("Screen built successful");
         } else {
             throw new GameException("Caught exception, while building screen!!");
         }
@@ -97,7 +96,7 @@ public class Screen {
 
     private void createObjects(Window window) {
         this.controllerDispatcher = new ControllerDispatcher(window);
-        this.scene = new Scene(this, new SceneWorld(Game.getGame().getPhysicsWorld()));
+        this.scene = new Scene(this, new SceneWorld(JGems.get().getPhysicsWorld()));
     }
 
     private void resizeWindow(Vector2i dim) {
@@ -121,12 +120,12 @@ public class Screen {
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL20.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
-        if (Game.DEBUG_MODE) {
+        if (JGems.DEBUG_MODE) {
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
         }
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        boolean flag = vidMode != null && Game.getGame().getGameSettings().windowMode.getValue() == 0;
-        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : Window.defaultW, flag ? vidMode.height() : Window.defaultH, Game.getGame().toString()));
+        boolean flag = vidMode != null && JGems.get().getGameSettings().windowMode.getValue() == 0;
+        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : Window.defaultW, flag ? vidMode.height() : Window.defaultH, JGems.get().toString()));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new GameException("Failed to create the GLFW window");
@@ -143,7 +142,7 @@ public class Screen {
     }
 
     public void checkVSync() {
-        if (Game.getGame().getGameSettings().vSync.getValue() == 1) {
+        if (JGems.get().getGameSettings().vSync.getValue() == 1) {
             this.getWindow().enableVSync();
         } else {
             this.getWindow().disableVSync();
@@ -151,7 +150,7 @@ public class Screen {
     }
 
     public void checkScreenMode() {
-        if (Game.getGame().getGameSettings().windowMode.getValue() == 0) {
+        if (JGems.get().getGameSettings().windowMode.getValue() == 0) {
             if (!this.getWindow().isFullScreen()) {
                 this.getWindow().makeFullScreen();
             }
@@ -186,20 +185,22 @@ public class Screen {
     }
 
     public void startScreenRenderProcess() {
-        Game.getGame().getLogManager().log("Starting screen...");
+        JGems.get().getLogManager().log("Starting screen...");
         SoundListener.updateListenerGain();
 
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
-        this.getScene().getGui().showMainMenu();
+        JGems.get().showMainMenu();
+
         try {
             this.renderLoop();
         } catch (InterruptedException e) {
             throw new GameException(e);
         }
+
         this.getScene().postRender();
-        Game.getGame().getLogManager().log("Destroying screen...");
+        JGems.get().getLogManager().log("Destroying screen...");
         this.getTimerPool().clear();
         GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
         GLFW.glfwTerminate();
@@ -210,13 +211,13 @@ public class Screen {
         GameRenderTimer perSecondTimer = this.getTimerPool().createTimer();
         GameRenderTimer renderTimer = this.getTimerPool().createTimer();
         GameRenderTimer deltaTimer = this.getTimerPool().createTimer();
-        while (!Game.getGame().isShouldBeClosed()) {
+        while (!JGems.get().isShouldBeClosed()) {
             this.getTimerPool().update();
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
-                Game.getGame().destroyGame();
+                JGems.get().destroyGame();
                 break;
             }
-            Game.getGame().getProxy().update();
+            JGems.get().getProxy().update();
             if (this.getControllerDispatcher() != null) {
                 this.getControllerDispatcher().updateController(this.getWindow());
                 this.getWindow().refreshFocusState();
@@ -248,8 +249,8 @@ public class Screen {
     }
 
     private void updateSound() {
-        Game.getGame().getSoundManager().update();
-        if (Game.getGame().isValidPlayer()) {
+        JGems.get().getSoundManager().update();
+        if (JGems.get().isValidPlayer()) {
             SoundListener.updateOrientationAndPosition(TransformationManager.instance.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
         }
         SoundListener.updateListenerGain();
@@ -304,13 +305,14 @@ public class Screen {
         private final ArrayList<String> lines;
 
         public GameLoadingScreen() {
-            Game.getGame().getLogManager().log("Loading screen");
+            JGems.get().getLogManager().log("Loading screen");
             Font gameFont = ResourceManager.createFontFromJAR("gamefont.ttf");
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
-            this.lines.add(GameSystem.ENG_NAME + " : " + GameSystem.ENG_VER);
+            this.lines.add(EngineSystem.ENG_NAME + " : " + EngineSystem.ENG_VER);
             this.lines.add("...");
-            this.lines.add("Loading game...");
+            this.lines.add("System01...");
+            this.lines.add("...");
         }
 
         public void updateScreen() {
@@ -318,9 +320,9 @@ public class Screen {
             GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             int strokes = 0;
             for (String s : this.lines) {
-                TextUI textUI = new TextUI(s, this.guiFont, 0x00ff00, new Vector3f(5.0f, (strokes++) * 40.0f + 5.0f, 0.5f));
+                UIText textUI = new UIText(s, this.guiFont,0x00ff00, new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
                 textUI.render(0.0f);
-                textUI.clear();
+                textUI.cleanData();
             }
             GLFW.glfwSwapBuffers(Screen.this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();

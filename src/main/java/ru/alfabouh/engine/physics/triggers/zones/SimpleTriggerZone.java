@@ -7,7 +7,7 @@ import org.bytedeco.bullet.BulletCollision.btPairCachingGhostObject;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
-import ru.alfabouh.engine.game.Game;
+import ru.alfabouh.engine.JGems;
 import ru.alfabouh.engine.physics.entities.BodyGroup;
 import ru.alfabouh.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.engine.physics.triggers.ITrigger;
@@ -40,13 +40,13 @@ public class SimpleTriggerZone implements ITriggerZone {
 
     public void onSpawn(IWorld iWorld) {
         this.createGhostZone();
-        Game.getGame().getLogManager().log("Created new ITrigger zone: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
+        JGems.get().getLogManager().log("Created new ITrigger zone: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
     }
 
     public void onDestroy(IWorld iWorld) {
         this.collisionShape.deallocate();
         this.ghostObject = null;
-        Game.getGame().getLogManager().log("Destroyed ITrigger zone: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
+        JGems.get().getLogManager().log("Destroyed ITrigger zone: Location=" + this.getZone().getLocation() + " | Size=" + this.getZone().getSize());
     }
 
     public int getFilter() {

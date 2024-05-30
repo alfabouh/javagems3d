@@ -9,9 +9,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.render.screen.Screen;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 
 import java.nio.IntBuffer;
 
@@ -183,7 +182,7 @@ public class Window {
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         if (vidMode != null) {
             GLFW.glfwSetWindowMonitor(this.getDescriptor(), GLFW.glfwGetPrimaryMonitor(), 0, 0, vidMode.width(), vidMode.height(), GLFW.GLFW_DONT_CARE);
-            Game.getGame().getLogManager().log("FullScreen mode");
+            JGems.get().getLogManager().log("FullScreen mode");
         } else {
             throw new GameException("Monitor None");
         }
@@ -195,7 +194,7 @@ public class Window {
             int x = (vidMode.width() - Window.defaultW) / 2;
             int y = (vidMode.height() - Window.defaultH) / 2;
             GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, Window.defaultW, Window.defaultH, GLFW.GLFW_DONT_CARE);
-            Game.getGame().getLogManager().log("DefaultScreen mode");
+            JGems.get().getLogManager().log("DefaultScreen mode");
         } else {
             throw new GameException("Monitor None");
         }

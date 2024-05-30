@@ -3,11 +3,10 @@ package ru.alfabouh.engine.audio.sound;
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.engine.audio.SoundManager;
 import ru.alfabouh.engine.audio.sound.loaders.ogg.Ogg;
-import ru.alfabouh.engine.audio.sound.loaders.wave.Wave;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.cache.GameCache;
-import ru.alfabouh.engine.game.resources.cache.ICached;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.resources.cache.GameCache;
+import ru.alfabouh.engine.system.resources.cache.ICached;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class SoundBuffer implements ICached {
         this.buffer = AL10.alGenBuffers();
         SoundManager.checkALonErrors();
         try {
-            return this.readWave(Game.loadFileJar("/assets/sounds/" + this.getSoundName()), soundFormat);
+            return this.readWave(JGems.loadFileJar("/assets/sounds/" + this.getSoundName()), soundFormat);
         } catch (UnsupportedAudioFileException | IOException e) {
             throw new GameException(e);
         }
@@ -51,7 +50,7 @@ public class SoundBuffer implements ICached {
             SoundManager.checkALonErrors();
             return true;
         } else {
-            Game.getGame().getLogManager().warn("Failed to read sound: " + this.getSoundName());
+            JGems.get().getLogManager().warn("Failed to read sound: " + this.getSoundName());
         }
         return false;
     }

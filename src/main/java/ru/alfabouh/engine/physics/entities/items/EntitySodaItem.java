@@ -2,8 +2,8 @@ package ru.alfabouh.engine.physics.entities.items;
 
 import org.joml.Vector3d;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.physics.entities.player.KinematicPlayerSP;
 import ru.alfabouh.engine.physics.triggers.Zone;
 import ru.alfabouh.engine.physics.triggers.zones.PickUpItemTriggerZone;
@@ -26,8 +26,8 @@ public class EntitySodaItem extends WorldItem {
                                                                        KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) e;
                                                                        if (!kinematicPlayerSP.isHasSoda()) {
                                                                            kinematicPlayerSP.setHasSoda(true);
-                                                                           Game.getGame().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pick, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
-                                                                           Game.getGame().getLogManager().log("Put soda in inventory!");
+                                                                           JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pick, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+                                                                           JGems.get().getLogManager().log("Put soda in inventory!");
                                                                            this.setDead();
                                                                        }
                                                                    }

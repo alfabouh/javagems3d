@@ -2,10 +2,9 @@ package ru.alfabouh.engine.inventory.items;
 
 import ru.alfabouh.engine.audio.sound.GameSound;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.map.Map01;
-import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.math.MathHelper;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.map.Map01;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.physics.world.IWorld;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 
@@ -16,8 +15,8 @@ public class ItemEmp extends InventoryItem {
     public ItemEmp() {
         super("emp");
         this.level = 0;
-        this.beep = Game.getGame().getSoundManager().createSound(ResourceManager.soundAssetsLoader.beep, SoundType.BACKGROUND_AMBIENT_SOUND, 0.5f, 0.7f, 1.0f);
-        this.setDescription("[Anomaly indicator]");
+        this.beep = JGems.get().getSoundManager().createSound(ResourceManager.soundAssetsLoader.beep, SoundType.BACKGROUND_AMBIENT_SOUND, 0.5f, 0.7f, 1.0f);
+        this.setDescription(JGems.get().I18n("item.description.emp"));
     }
 
     @Override

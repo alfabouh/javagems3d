@@ -6,8 +6,8 @@ import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.engine.audio.sound.GameSound;
 import ru.alfabouh.engine.audio.sound.SoundBuffer;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 
 import java.nio.ByteBuffer;
@@ -55,7 +55,7 @@ public final class SoundManager {
     }
 
     public void createSystem() {
-        Game.getGame().getLogManager().log("Creating sound OpenAL system!");
+        JGems.get().getLogManager().log("Creating sound OpenAL system!");
         this.device = ALC10.alcOpenDevice((ByteBuffer) null);
         if (this.getDevice() == MemoryUtil.NULL) {
             throw new GameException("Failed to create OpenAL device!");
@@ -68,7 +68,7 @@ public final class SoundManager {
         ALC10.alcMakeContextCurrent(this.getContext());
         AL.createCapabilities(alcCapabilities);
         this.isSystemCreated = true;
-        Game.getGame().getLogManager().log("OpenAL system successfully created!");
+        JGems.get().getLogManager().log("OpenAL system successfully created!");
         AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
         SoundManager.checkALonErrors();
     }

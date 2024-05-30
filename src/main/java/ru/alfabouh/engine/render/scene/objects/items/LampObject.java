@@ -1,8 +1,8 @@
 package ru.alfabouh.engine.render.scene.objects.items;
 
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.resources.assets.materials.Material;
-import ru.alfabouh.engine.game.resources.assets.materials.textures.ColorSample;
+import ru.alfabouh.engine.system.resources.assets.materials.Material;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.ColorSample;
 import ru.alfabouh.engine.physics.entities.prop.PhysLightCube;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.render.environment.light.Light;

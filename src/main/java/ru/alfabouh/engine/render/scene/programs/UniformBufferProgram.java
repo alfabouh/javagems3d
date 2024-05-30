@@ -2,8 +2,8 @@ package ru.alfabouh.engine.render.scene.programs;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -28,7 +28,7 @@ public class UniformBufferProgram {
         int uniformLocation = this.getLocation();
         this.binding = binding;
         if (uniformLocation < 0) {
-            Game.getGame().getLogManager().warn("Could not find uniform-buffer " + this.getName());
+            JGems.get().getLogManager().warn("Could not find uniform-buffer " + this.getName());
             return false;
         }
         this.setupUniformBuffer(bytes, binding);

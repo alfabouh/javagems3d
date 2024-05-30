@@ -1,10 +1,10 @@
 package ru.alfabouh.engine.render.scene.fabric.render;
 
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.engine.game.resources.ResourceManager;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.system.resources.ResourceManager;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.physics.entities.states.EntityState;
 import ru.alfabouh.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.engine.physics.world.World;

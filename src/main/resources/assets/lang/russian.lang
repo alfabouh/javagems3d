@@ -1,0 +1,47 @@
+settings.on=Вкл
+settings.off=Выкл
+settings.fullScreen=Полный экран
+settings.windowed=В окне
+settings.low=Низкое
+settings.medium=Среднее
+settings.high=Высокое
+
+menu.settings.sound=Звук
+menu.settings.fxaa=FXAA
+menu.settings.anisotropic=Анизотропная фильтрация
+menu.settings.bloom=Блюм Эффект
+menu.settings.window=Режим окна
+menu.settings.textureQ=Качество текстур
+menu.settings.shadowQ=Качество теней
+menu.settings.vsync=V-Sync
+menu.settings.language=Язык
+
+menu.save=Сохранить
+menu.back=Назад
+
+menu.pause.continue=Продолжить
+
+menu.main.settings=Настройки
+menu.main.exit=Выход
+menu.main.play=Играть
+menu.main.retry=Повторить
+menu.main.gameplay.dead=Статус: Мертв. Время записи: %s
+menu.main.gameplay.alive=Статус: Жив. Время записи: %s
+
+menu.confirm.no=Нет
+menu.confirm.yes=Да
+menu.confirm.text=Вы действительно хотите выйти?
+
+gameplay.mind=[Разум]
+gameplay.stamina=[Выносливость]
+gameplay.press_x=[Нажмите X]
+gameplay.disks=%s Диски
+gameplay.cassettes=%s Кассеты
+gameplay.crowbar_use=[Сломать доски ломом]
+gameplay.shift_tip=[НАЖМИТЕ SHIFT, ЧТОБЫ БЕЖАТЬ]
+gameplay.walk_tip=[НАЖМИТЕ W,A,S,D, ЧТОБЫ ИДТИ]
+
+item.description.crowbar=[Инструмент для удаления досок]
+item.description.emp=[Индикатор аномалий]
+item.description.zippo=[Свет]
+item.description.radio=[Успокаивает разум. Будьте осторожны]

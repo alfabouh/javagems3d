@@ -1,7 +1,7 @@
 package ru.alfabouh.engine.render.scene.world;
 
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.physics.liquids.ILiquid;
 import ru.alfabouh.engine.physics.world.IWorld;
 import ru.alfabouh.engine.physics.world.World;
@@ -41,11 +41,11 @@ public final class SceneWorld implements IWorld {
         if (!renderObject.hasRender()) {
             return true;
         }
-        ICamera camera = Game.getGame().getScreen().getCamera();
+        ICamera camera = JGems.get().getScreen().getCamera();
         return renderObject.getModelRenderParams().getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel3D().getFormat().getPosition()) > renderObject.getModelRenderParams().getRenderDistance();
     }
 
-    public Collection<? extends ICullable> filterCulled(Collection<? extends ICullable> list) {
+    public Collection<? extends ICullable> getEntitiesFrustumCulledList(Collection<? extends ICullable> list) {
         if (this.getFrustumCulling() == null) {
             return list;
         }
@@ -53,24 +53,20 @@ public final class SceneWorld implements IWorld {
     }
 
     public List<IModeledSceneObject> getFilteredEntityList(SceneRender.RenderPass renderPassFiltering) {
-        List<IModeledSceneObject> physicsObjects = new ArrayList<>(this.getToRenderList());
+        List<IModeledSceneObject> physicsObjects = new ArrayList<>(this.getModeledSceneEntities());
         if (this.getFrustumCulling() == null) {
             return physicsObjects;
         }
-        return this.filterCulled(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> (renderPassFiltering == null || e.getModelRenderParams().getRenderPassToRenderIn() == renderPassFiltering) && e.isVisible() && !this.isItemReachedRenderDistance(e)).collect(Collectors.toList());
-    }
-
-    public List<IModeledSceneObject> getToRenderList() {
-        return this.toRenderList;
+        return this.getEntitiesFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> (renderPassFiltering == null || e.getModelRenderParams().getRenderPassToRenderIn() == renderPassFiltering) && e.isVisible() && !this.isItemReachedRenderDistance(e)).collect(Collectors.toList());
     }
 
     public void addRenderObjectInScene(IModeledSceneObject renderObject) {
-        this.getToRenderList().add(renderObject);
+        this.getModeledSceneEntities().add(renderObject);
     }
 
     public void removeRenderObjectFromScene(IModeledSceneObject renderObject) {
-        if (!this.getToRenderList().remove(renderObject)) {
-            Game.getGame().getLogManager().warn("Couldn't remove a render object from scene rendering!");
+        if (!this.getModeledSceneEntities().remove(renderObject)) {
+            JGems.get().getLogManager().warn("Couldn't remove a render object from scene rendering!");
         }
     }
 
@@ -110,13 +106,58 @@ public final class SceneWorld implements IWorld {
         this.getLiquids().add(new LiquidObject(liquid, renderLiquidData));
     }
 
-    public Set<LiquidObject> getLiquids() {
-        return this.liquids;
+    public void removeLight(WorldItem worldItem, int i) {
+        this.removeLight(worldItem.getAttachedLights().get(i));
+    }
+
+    public void removeLight(Light light) {
+        light.setEnabled(false);
+    }
+
+    public void addLight(Light light) {
+        this.getEnvironment().getLightManager().addLight(light);
+    }
+
+    @Override
+    public void onWorldStart() {
+        JGems.get().getScreen().zeroRenderTick();
+        this.getEnvironment().init(this);
+        this.ticks = 0;
+    }
+
+    @Override
+    public void onWorldUpdate() {
+        this.ticks += 1;
+    }
+
+    public void onWorldEntityUpdate(boolean refresh, double partialTicks) {
+        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
+        while (iterator.hasNext()) {
+            IModeledSceneObject sceneObject = iterator.next();
+            if (sceneObject instanceof PhysicsObject) {
+                PhysicsObject physicsObject = (PhysicsObject) sceneObject;
+                if (refresh) {
+                    physicsObject.refreshInterpolatingState();
+                }
+                physicsObject.onUpdate(this);
+                physicsObject.updateRenderPos(partialTicks);
+                physicsObject.updateRenderTranslation();
+                if (physicsObject.isDead()) {
+                    physicsObject.onDestroy(this);
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onWorldEnd() {
+        this.cleanAll();
     }
 
     private void cleanAll() {
         this.getEnvironment().getLightManager().removeAllLights();
-        Iterator<IModeledSceneObject> iterator = this.getToRenderList().iterator();
+        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
             IModeledSceneObject modeledSceneObject = iterator.next();
             if (modeledSceneObject instanceof PhysicsObject) {
@@ -134,57 +175,16 @@ public final class SceneWorld implements IWorld {
         }
     }
 
-    public void disableLight(WorldItem worldItem, int i) {
-        this.removeLight(worldItem.getAttachedLights().get(i));
-    }
-
-    public void removeLight(Light light) {
-        light.setEnabled(false);
-    }
-
-    public void addLight(Light light) {
-        this.getEnvironment().getLightManager().addLight(light);
-    }
-
-    @Override
-    public void onWorldStart() {
-        Game.getGame().getScreen().zeroRenderTick();
-        this.getEnvironment().init(this);
-        this.ticks = 0;
-    }
-
-    public void onWorldUpdate() {
-        this.ticks += 1;
-    }
-
-    @Override
-    public void onWorldEnd() {
-        this.cleanAll();
-    }
-
     public int getTicks() {
         return this.ticks;
     }
 
-    public void onWorldEntityUpdate(boolean refresh, double partialTicks) {
-        Iterator<IModeledSceneObject> iterator = this.getToRenderList().iterator();
-        while (iterator.hasNext()) {
-            IModeledSceneObject sceneObject = iterator.next();
-            if (sceneObject instanceof PhysicsObject) {
-                PhysicsObject physicsObject = (PhysicsObject) sceneObject;
-                if (refresh) {
-                    physicsObject.refreshInterpolatingState();
-                }
-                physicsObject.onUpdate(this);
-                physicsObject.updateRenderPos(partialTicks);
-                physicsObject.updateRenderTranslation();
-                if (physicsObject.isDead()) {
-                    physicsObject.onDestroy(this);
-                    iterator.remove();
-                }
-            }
-        }
-        this.onWorldUpdate();
+    public Set<LiquidObject> getLiquids() {
+        return this.liquids;
+    }
+
+    public List<IModeledSceneObject> getModeledSceneEntities() {
+        return this.toRenderList;
     }
 
     public FrustumCulling getFrustumCulling() {

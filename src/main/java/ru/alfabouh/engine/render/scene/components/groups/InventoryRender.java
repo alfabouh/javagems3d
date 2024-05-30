@@ -1,7 +1,7 @@
 package ru.alfabouh.engine.render.scene.components.groups;
 
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.inventory.IHasInventory;
 import ru.alfabouh.engine.inventory.items.InventoryItem;
 import ru.alfabouh.engine.physics.entities.player.IPlayer;
@@ -17,8 +17,8 @@ public class InventoryRender extends SceneRenderBase {
     }
 
     public void onRender(double partialTicks) {
-        IPlayer player = Game.getGame().getPlayerSP();
-        if (player instanceof IHasInventory && !(Game.getGame().getScreen().getCamera() instanceof FreeCamera)) {
+        IPlayer player = JGems.get().getPlayerSP();
+        if (player instanceof IHasInventory && !(JGems.get().getScreen().getCamera() instanceof FreeCamera)) {
             IHasInventory hasInventory = (IHasInventory) player;
             InventoryItem current = hasInventory.inventory().getCurrentItem();
             if (hasInventory.inventory().getCurrentItem() != null && ResourceManager.renderDataAssets.inventoryItemRenderTable.hasRender(current)) {

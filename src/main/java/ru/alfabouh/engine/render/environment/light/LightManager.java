@@ -5,11 +5,9 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4d;
 import org.lwjgl.system.MemoryUtil;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.ResourceManager;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.render.environment.Environment;
-import ru.alfabouh.engine.render.scene.Scene;
 import ru.alfabouh.engine.render.scene.SceneRender;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 

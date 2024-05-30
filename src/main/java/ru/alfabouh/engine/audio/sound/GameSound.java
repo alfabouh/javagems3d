@@ -5,8 +5,6 @@ import org.joml.Vector3d;
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.engine.audio.SoundManager;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 
 import java.nio.IntBuffer;

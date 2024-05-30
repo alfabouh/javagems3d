@@ -1,11 +1,10 @@
 package ru.alfabouh.engine.render.transformation;
 
 import org.joml.Matrix4d;
-import org.joml.Vector2d;
 import org.joml.Vector3d;
-import ru.alfabouh.engine.game.resources.assets.models.Model;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format2D;
-import ru.alfabouh.engine.game.resources.assets.models.formats.Format3D;
+import ru.alfabouh.engine.system.resources.assets.models.Model;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format2D;
+import ru.alfabouh.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.engine.math.MathHelper;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 

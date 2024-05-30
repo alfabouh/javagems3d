@@ -22,7 +22,7 @@ const int metallic_code = 1 << 4;
 const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
 
-uniform int show_cascades;
+uniform bool show_cascades;
 uniform float alpha_discard;
 
 uniform samplerCube ambient_cubemap;
@@ -147,7 +147,7 @@ void main()
             cascmask = vec3(1.0f, 1.0f, 0.75f);
             break;
     }
-    frag_color.rgb *= (show_cascades == 1) ? cascmask : vec3(1.0);
+    frag_color.rgb *= show_cascades ? cascmask : vec3(1.0);
     frag_color = fogDensity > 0 ? calc_fog(mv_vertex_pos, frag_color) : frag_color;
 
     float brightness = dot(frag_color.rgb, vec3(0.2126, 0.7152, 0.0722));

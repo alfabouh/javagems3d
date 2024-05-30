@@ -1,10 +1,10 @@
 package ru.alfabouh.engine.render.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
-import ru.alfabouh.engine.game.Game;
-import ru.alfabouh.engine.game.exception.GameException;
-import ru.alfabouh.engine.game.resources.assets.materials.textures.TextureSample;
-import ru.alfabouh.engine.game.resources.assets.shaders.ShaderManager;
+import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
+import ru.alfabouh.engine.system.resources.assets.materials.textures.TextureSample;
+import ru.alfabouh.engine.system.resources.assets.shaders.ShaderManager;
 import ru.alfabouh.engine.render.scene.programs.CubeMapProgram;
 
 public final class RenderLiquidData {
@@ -28,7 +28,7 @@ public final class RenderLiquidData {
     }
 
     public CubeMapProgram getAmbient() {
-        return Game.getGame().getScreen().getRenderWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture();
+        return JGems.get().getScreen().getRenderWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture();
     }
 
     public ShaderManager getShaderManager() {
