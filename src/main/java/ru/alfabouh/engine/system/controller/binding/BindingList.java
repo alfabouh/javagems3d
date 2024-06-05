@@ -2,8 +2,8 @@ package ru.alfabouh.engine.system.controller.binding;
 
 import org.lwjgl.glfw.GLFW;
 import ru.alfabouh.engine.JGems;
-import ru.alfabouh.engine.render.scene.gui.panels.GamePlayPanel;
-import ru.alfabouh.engine.render.scene.gui.panels.PausePanel;
+import ru.alfabouh.engine.render.scene.immediate_gui.panels.GamePlayPanel;
+import ru.alfabouh.engine.render.scene.immediate_gui.panels.PausePanel;
 import ru.alfabouh.engine.system.controller.ControllerDispatcher;
 import ru.alfabouh.engine.system.controller.components.FunctionalKey;
 import ru.alfabouh.engine.system.controller.components.IKeyAction;
@@ -27,6 +27,7 @@ public class BindingList {
     public final Key keyV;
     public final Key keyT;
     public final Key keyF11;
+    public final Key keyF2;
     public final Key keySelection;
 
     public BindingList() {
@@ -75,6 +76,12 @@ public class BindingList {
             }
         }, GLFW.GLFW_KEY_F11);
 
+        this.keyF2 = new FunctionalKey(e -> {
+            if (e == IKeyAction.KeyAction.CLICK) {
+                JGems.get().getScreen().getScene().getSceneRender().takeScreenShot();
+            }
+        }, GLFW.GLFW_KEY_F2);
+
         this.keyT = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
                 JGems.get().getScreen().getWindow().switchFocus();
@@ -88,6 +95,7 @@ public class BindingList {
             Binding.createBinding(this.keyBlock1, "Куб статичный");
             Binding.createBinding(this.keyBlock2, "Куб-фонарь");
             Binding.createBinding(this.keyBlock3, "Куб реалистичный");
+            Binding.createBinding(this.keyF2, "Screenshot");
         }
 
         Binding.createBinding(this.keyA, "Шаг влево");

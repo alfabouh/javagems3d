@@ -12,7 +12,6 @@ public class FrustumCulling {
     private final List<Vector4d> planes;
     private final FrustumIntersection frustumIntersection;
     private Matrix4d projectionViewMatrix;
-    private boolean enabled;
 
     public FrustumCulling() {
         this.projectionViewMatrix = new Matrix4d();
@@ -21,15 +20,6 @@ public class FrustumCulling {
         for (int i = 0; i < 6; i++) {
             this.planes.add(i, new Vector4d());
         }
-        this.enabled = true;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public void refreshFrustumCullingState(Matrix4d projection, Matrix4d view) {

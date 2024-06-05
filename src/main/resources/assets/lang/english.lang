@@ -1,5 +1,5 @@
 settings.on=On
-settings.off-Off
+settings.off=Off
 settings.fullScreen=Full Screen
 settings.windowed=Windowed
 settings.low=Low

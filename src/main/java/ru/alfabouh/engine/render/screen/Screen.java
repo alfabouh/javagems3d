@@ -12,15 +12,15 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.engine.audio.sound.SoundListener;
 import ru.alfabouh.engine.JGems;
-import ru.alfabouh.engine.render.scene.gui.elements.UIText;
+import ru.alfabouh.engine.render.scene.immediate_gui.elements.UIText;
 import ru.alfabouh.engine.system.EngineSystem;
 import ru.alfabouh.engine.system.controller.ControllerDispatcher;
 import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.physics.world.timer.PhysicsTimer;
 import ru.alfabouh.engine.render.scene.Scene;
-import ru.alfabouh.engine.render.scene.gui.elements.base.font.FontCode;
-import ru.alfabouh.engine.render.scene.gui.elements.base.font.GuiFont;
+import ru.alfabouh.engine.render.scene.immediate_gui.elements.base.font.FontCode;
+import ru.alfabouh.engine.render.scene.immediate_gui.elements.base.font.GuiFont;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 import ru.alfabouh.engine.render.screen.timer.GameRenderTimer;
@@ -58,6 +58,7 @@ public class Screen {
     }
 
     public void buildScreen() {
+        JGems.get().getLogManager().log("Init Graphics!");
         if (this.tryToBuildScreen()) {
             this.checkScreenMode();
             this.checkVSync();
@@ -239,7 +240,6 @@ public class Screen {
     }
 
     private void renderGameScene(double delta) throws InterruptedException {
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
         GL30.glEnable(GL30.GL_CULL_FACE);
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);

@@ -37,7 +37,7 @@ gameplay.stamina=[Выносливость]
 gameplay.press_x=[Нажмите X]
 gameplay.disks=%s Диски
 gameplay.cassettes=%s Кассеты
-gameplay.crowbar_use=[Сломать доски ломом]
+gameplay.crowbar_use=[Сломайте доски ломом]
 gameplay.shift_tip=[НАЖМИТЕ SHIFT, ЧТОБЫ БЕЖАТЬ]
 gameplay.walk_tip=[НАЖМИТЕ W,A,S,D, ЧТОБЫ ИДТИ]
 

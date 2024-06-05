@@ -120,7 +120,7 @@ public final class SceneWorld implements IWorld {
 
     @Override
     public void onWorldStart() {
-        JGems.get().getScreen().zeroRenderTick();
+        //JGems.get().getScreen().zeroRenderTick();
         this.getEnvironment().init(this);
         this.ticks = 0;
     }

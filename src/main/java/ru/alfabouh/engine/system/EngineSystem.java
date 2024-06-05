@@ -2,10 +2,11 @@ package ru.alfabouh.engine.system;
 
 import org.joml.Vector3d;
 import org.joml.Vector4d;
+import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.JGems;
-import ru.alfabouh.engine.render.scene.gui.panels.GamePlayPanel;
+import ru.alfabouh.engine.render.scene.immediate_gui.panels.GamePlayPanel;
 import ru.alfabouh.engine.system.controller.ControllerDispatcher;
-import ru.alfabouh.engine.system.logger.GameLogging;
+import ru.alfabouh.engine.system.logger.JGemsLogging;
 import ru.alfabouh.engine.system.map.loader.IMapLoader;
 import ru.alfabouh.engine.system.proxy.LocalPlayer;
 import ru.alfabouh.engine.system.resources.ResourceManager;
@@ -13,10 +14,15 @@ import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.physics.world.object.WorldItem;
 import ru.alfabouh.engine.render.environment.Environment;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.RuntimeMXBean;
+import java.util.Properties;
+
 public class EngineSystem implements IEngine {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
-    public static final String ENG_VER = "0.14a";
+    public static final String ENG_VER = "0.15a";
 
     private final ResourceManager resourceManager;
     private final EngineState engineState;
@@ -159,7 +165,7 @@ public class EngineSystem implements IEngine {
 
     @SuppressWarnings("all")
     public void startSystem() {
-        JGems.get().getLogManager().log("Engine-On");
+        this.printSystemInfo();
         if (this.engineState().isEngineIsReady()) {
             JGems.get().getLogManager().warn("Engine thread is currently running!");
             return;
@@ -193,13 +199,72 @@ public class EngineSystem implements IEngine {
                     badExit = true;
                 } finally {
                     if (badExit) {
-                        GameLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.");
+                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.");
                     }
                 }
             }
         });
         this.thread.setName("system");
         this.thread.start();
+    }
+
+    private void printSystemInfo() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+        Properties properties = System.getProperties();
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        long maxMemory = Runtime.getRuntime().maxMemory();
+
+        JGems.get().getLogManager().log("");
+        JGems.get().getLogManager().log("==========================================================");
+        JGems.get().getLogManager().log("****DATA***");
+        JGems.get().getLogManager().log("==========================================================");
+
+        JGems.get().getLogManager().log("SYSTEM INFO");
+        JGems.get().getLogManager().log("System: " + osBean.getName());
+        JGems.get().getLogManager().log("System architecture: " + osBean.getArch());
+        JGems.get().getLogManager().log("System version: " + osBean.getVersion());
+
+        JGems.get().getLogManager().log("");
+        JGems.get().getLogManager().log("JAVA INFO");
+        JGems.get().getLogManager().log("Java version: " + runtimeBean.getSpecVersion());
+        JGems.get().getLogManager().log("Java vendor: " + runtimeBean.getSpecVendor());
+        JGems.get().getLogManager().log("Java VM: " + runtimeBean.getVmVersion());
+        JGems.get().getLogManager().log("Java VM version: " + runtimeBean.getVmVersion());
+
+        JGems.get().getLogManager().log("");
+        JGems.get().getLogManager().log("USER INFO");
+        JGems.get().getLogManager().log("User name: " + properties.getProperty("user.name"));
+        JGems.get().getLogManager().log("User home: " + properties.getProperty("user.home"));
+        JGems.get().getLogManager().log("User dir: " + properties.getProperty("user.dir"));
+
+        JGems.get().getLogManager().log("");
+        JGems.get().getLogManager().log("HARDWARE INFO");
+        JGems.get().getLogManager().log("Available processors: " + availableProcessors);
+        JGems.get().getLogManager().log("Free memory: " + freeMemory / 1024 / 1024 + " MB");
+        JGems.get().getLogManager().log("Total memory: " + totalMemory / 1024 / 1024 + " MB");
+        JGems.get().getLogManager().log("Max memory: " + (maxMemory == Long.MAX_VALUE ? "UNLIMITED" : maxMemory / 1024 / 1024 + " MB"));
+
+        JGems.get().getLogManager().log("==========================================================");
+        JGems.get().getLogManager().log("****DATA***");
+        JGems.get().getLogManager().log("==========================================================");
+        JGems.get().getLogManager().log("");
+    }
+
+    private void printGraphicsInfo() {
+        JGems.get().getLogManager().log("");
+        JGems.get().getLogManager().log("==========================================================");
+        JGems.get().getLogManager().log("***RENDER INFO***");
+        JGems.get().getLogManager().log("==========================================================");
+        JGems.get().getLogManager().log("Renderer: " + GL30.glGetString(GL30.GL_RENDERER));
+        JGems.get().getLogManager().log("OpenGL Version: " + GL30.glGetString(GL30.GL_VERSION));
+        JGems.get().getLogManager().log("Vendor: " + GL30.glGetString(GL30.GL_VENDOR));
+        JGems.get().getLogManager().log("==========================================================");
+        JGems.get().getLogManager().log("***RENDER INFO***");
+        JGems.get().getLogManager().log("==========================================================");
+        JGems.get().getLogManager().log("");
     }
 
     @Override
@@ -209,6 +274,7 @@ public class EngineSystem implements IEngine {
 
     private void createGraphics() {
         JGems.get().getScreen().buildScreen();
+        this.printGraphicsInfo();
         JGems.get().getResourceManager().loadAllAssets();
     }
 

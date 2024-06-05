@@ -12,7 +12,7 @@ import org.joml.Vector3d;
 import ru.alfabouh.engine.audio.sound.GameSound;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
 import ru.alfabouh.engine.JGems;
-import ru.alfabouh.engine.render.scene.gui.panels.MainMenuPanel;
+import ru.alfabouh.engine.render.scene.immediate_gui.panels.MainMenuPanel;
 import ru.alfabouh.engine.system.controller.ControllerDispatcher;
 import ru.alfabouh.engine.system.controller.input.IController;
 import ru.alfabouh.engine.system.controller.input.MouseKeyboardController;

@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.engine.JGems;
-import ru.alfabouh.engine.render.scene.gui.ImmediateUI;
+import ru.alfabouh.engine.render.scene.immediate_gui.ImmediateUI;
 import ru.alfabouh.engine.system.controller.input.IController;
 import ru.alfabouh.engine.system.resources.assets.materials.Material;
 import ru.alfabouh.engine.system.resources.assets.models.Model;
