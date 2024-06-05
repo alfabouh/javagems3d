@@ -6,8 +6,8 @@ import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.system.resources.assets.materials.textures.ParticleTexturePack;
 import ru.alfabouh.engine.system.resources.assets.materials.textures.TextureSample;
 import ru.alfabouh.engine.system.resources.cache.GameCache;
-import ru.alfabouh.engine.render.scene.gui.elements.base.font.FontCode;
-import ru.alfabouh.engine.render.scene.gui.elements.base.font.GuiFont;
+import ru.alfabouh.engine.render.scene.immediate_gui.elements.base.font.FontCode;
+import ru.alfabouh.engine.render.scene.immediate_gui.elements.base.font.GuiFont;
 import ru.alfabouh.engine.render.scene.programs.CubeMapProgram;
 
 import java.awt.*;

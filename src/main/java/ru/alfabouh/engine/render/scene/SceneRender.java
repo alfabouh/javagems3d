@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
 import ru.alfabouh.engine.JGems;
+import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.system.resources.assets.models.Model;
 import ru.alfabouh.engine.system.resources.assets.models.basic.MeshHelper;
@@ -19,7 +20,7 @@ import ru.alfabouh.engine.physics.entities.player.KinematicPlayerSP;
 import ru.alfabouh.engine.physics.liquids.ILiquid;
 import ru.alfabouh.engine.render.environment.Environment;
 import ru.alfabouh.engine.render.environment.shadow.ShadowScene;
-import ru.alfabouh.engine.render.imgui.IMGUIRender;
+import ru.alfabouh.engine.render.dear_imgui.DearImGuiRender;
 import ru.alfabouh.engine.render.scene.debug.constants.GlobalRenderDebugConstants;
 import ru.alfabouh.engine.render.scene.objects.IModeledSceneObject;
 import ru.alfabouh.engine.render.scene.objects.items.LiquidObject;
@@ -29,7 +30,15 @@ import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.scene.world.camera.ICamera;
 import ru.alfabouh.engine.render.transformation.TransformationManager;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -37,11 +46,12 @@ import java.util.stream.Collectors;
 
 public class SceneRender {
     public static float PSX_SCREEN_OFFSET = 160.0f;
+    private boolean wantsToTakeScreenshot;
 
     private List<SceneRenderBase> sceneRenderBases_forward;
     private List<SceneRenderBase> sceneRenderBases_deferred;
 
-    private final IMGUIRender imguiRender;
+    private final DearImGuiRender dearImGuiRender;
 
     private final GuiRender guiRender;
     private final InventoryRender inventoryRender;
@@ -77,10 +87,12 @@ public class SceneRender {
 
         this.createFBOs(this.getWindowDimensions());
 
-        this.imguiRender = new IMGUIRender(JGems.get().getScreen().getWindow(), JGems.get().getResourceManager().getGameCache());
+        this.dearImGuiRender = new DearImGuiRender(JGems.get().getScreen().getWindow(), JGems.get().getResourceManager().getGameCache());
+        this.wantsToTakeScreenshot = false;
     }
 
     public void createFBOs(Vector2i dim) {
+
         this.clearAllFBOs();
 
         FBOTexture2DProgram.FBOTextureInfo[] psxFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
@@ -113,13 +125,17 @@ public class SceneRender {
                         new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB),
                         new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT5, GL43.GL_RGB, GL30.GL_RGB)
                 };
-        this.gBuffer.createFrameBuffer2DTexture(dim, gBufferFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.gBuffer.createFrameBuffer2DTexture(new Vector2i(dim), gBufferFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
         FBOTexture2DProgram.FBOTextureInfo[] finalRenderedSceneFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
                 {
                         new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
                 };
         this.finalRenderedSceneFbo.createFrameBuffer2DTexture(dim, finalRenderedSceneFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+    }
+
+    public void takeScreenShot() {
+        this.wantsToTakeScreenshot = true;
     }
 
     private void fillScene() {
@@ -166,9 +182,8 @@ public class SceneRender {
 
     public void onRender(double partialTicks) {
         if (this.getSceneData().getCamera() == null) {
-            GL30.glEnable(GL30.GL_DEPTH_TEST);
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.guiRender.onRender(partialTicks);
-            GL30.glDisable(GL30.GL_DEPTH_TEST);
             return;
         }
 
@@ -188,6 +203,7 @@ public class SceneRender {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.guiRender.onRender(partialTicks);
         } else {
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
             this.renderScene(partialTicks, model);
             this.bloomPostProcessing(partialTicks, model);
             this.renderSceneWithBloomAndHDR(partialTicks, model);
@@ -203,7 +219,6 @@ public class SceneRender {
 
                 this.getFboPsx().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 2);
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-
                 this.inventoryRender.onRender(partialTicks);
 
                 this.getFboPsx().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, 1);
@@ -224,6 +239,12 @@ public class SceneRender {
         SceneRender.getGameUboShader().unBind();
 
         this.getImguiRender().render(partialTicks);
+
+        if (this.wantsToTakeScreenshot) {
+            JGems.get().getLogManager().log("Took screenshot!");
+            this.writeBufferInFile(this.getWindowDimensions());
+            this.wantsToTakeScreenshot = false;
+        }
     }
 
     private void renderFinalScene(Model<Format2D> model) {
@@ -454,6 +475,38 @@ public class SceneRender {
         return false;
     }
 
+    private void writeBufferInFile(Vector2i dim) {
+        int w = dim.x;
+        int h = dim.y;
+        int i1 = w * h;
+        ByteBuffer p = ByteBuffer.allocateDirect(i1 * 4);
+        GL30.glReadPixels(0, 0, w, h, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, p);
+        try {
+            BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+            int[] pArray = new int[i1];
+            p.asIntBuffer().get(pArray);
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    int i = (x + (w * y)) * 4;
+                    int r = p.get(i) & 0xFF;
+                    int g = p.get(i + 1) & 0xFF;
+                    int b = p.get(i + 2) & 0xFF;
+                    int a = p.get(i + 3) & 0xFF;
+                    int rgb = (a << 24) | (r << 16) | (g << 8) | b;
+                    image.setRGB(x, dim.y - y - 1, rgb);
+                }
+            }
+            Path scrPath = Paths.get(JGems.getGameFilesFolder() + "/screenshots/");
+            if (!Files.exists(scrPath)) {
+                Files.createDirectories(scrPath);
+            }
+            String builder = scrPath + "/screen_" + JGems.systemTime() + ".png";
+            ImageIO.write(image, "PNG", new File(builder));
+        } catch (IOException e) {
+            JGems.get().getLogManager().warn(e.getMessage());
+        }
+    }
+
     public FBOTexture2DProgram getSceneFbo() {
         return this.sceneFbo;
     }
@@ -474,8 +527,8 @@ public class SceneRender {
         return this.fboBlur;
     }
 
-    public IMGUIRender getImguiRender() {
-        return this.imguiRender;
+    public DearImGuiRender getImguiRender() {
+        return this.dearImGuiRender;
     }
 
     public ShadowScene getShadowScene() {

@@ -5,15 +5,15 @@ import ru.alfabouh.engine.audio.SoundManager;
 import ru.alfabouh.engine.physics.entities.player.IPlayer;
 import ru.alfabouh.engine.physics.world.World;
 import ru.alfabouh.engine.physics.world.timer.PhysicThreadManager;
-import ru.alfabouh.engine.render.scene.gui.ImmediateUI;
-import ru.alfabouh.engine.render.scene.gui.panels.MainMenuPanel;
-import ru.alfabouh.engine.render.scene.gui.panels.base.PanelUI;
+import ru.alfabouh.engine.render.scene.immediate_gui.ImmediateUI;
+import ru.alfabouh.engine.render.scene.immediate_gui.panels.MainMenuPanel;
+import ru.alfabouh.engine.render.scene.immediate_gui.panels.base.PanelUI;
 import ru.alfabouh.engine.render.scene.world.SceneWorld;
 import ru.alfabouh.engine.render.screen.Screen;
 import ru.alfabouh.engine.system.EngineSystem;
 import ru.alfabouh.engine.system.exception.GameException;
 import ru.alfabouh.engine.system.localisation.Localisation;
-import ru.alfabouh.engine.system.logger.GameLogging;
+import ru.alfabouh.engine.system.logger.JGemsLogging;
 import ru.alfabouh.engine.system.map.loader.IMapLoader;
 import ru.alfabouh.engine.system.proxy.Proxy;
 import ru.alfabouh.engine.system.resources.ResourceManager;
@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Random;
 
 public class JGems {
@@ -39,7 +40,7 @@ public class JGems {
 
     private final String[] startArgs;
     private final SoundManager soundManager;
-    private final GameLogging logManager;
+    private final JGemsLogging logManager;
     private final Screen screen;
     private final PhysicThreadManager physicThreadManager;
     private final Proxy proxy;
@@ -54,7 +55,7 @@ public class JGems {
         JGems.random = new Random(JGems.rngSeed);
 
         this.startArgs = startArgs;
-        this.logManager = new GameLogging();
+        this.logManager = new JGemsLogging();
         this.shouldBeClosed = false;
         this.physicThreadManager = new PhysicThreadManager(PhysicThreadManager.TICKS_PER_SECOND);
         this.soundManager = new SoundManager();
@@ -102,15 +103,19 @@ public class JGems {
 
     private static void start() {
         try {
+            JGems.get().getLogManager().log("Engine-On");
+            JGems.get().getLogManager().log("Starting system! Date: " + JGems.date());
+            JGems.get().getLogManager().log(JGems.GAME_NAME + ": " + EngineSystem.ENG_NAME + " - " + EngineSystem.ENG_VER);
+            JGems.get().getLogManager().log("===============================================================");
+            JGems.get().getLogManager().log("Run args: " + Arrays.toString(JGems.get().getStartArgs()));
             JGems.get().getLogManager().log("Loading settings from file...");
             JGems.get().getGameSettings().loadOptions();
             JGems.get().checkArgs(JGems.get().getStartArgs());
-            JGems.get().getLogManager().log("Starting system! Date: " + JGems.date());
             JGems.get().engineSystem = new EngineSystem();
             JGems.get().getEngineSystem().startSystem();
         } catch (Exception e) {
             JGems.get().getLogManager().exception(e);
-            GameLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
+            JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
         }
     }
 
@@ -235,7 +240,7 @@ public class JGems {
         return this.getEngineSystem().getLocalPlayer().getEntityPlayerSP();
     }
 
-    public GameLogging getLogManager() {
+    public JGemsLogging getLogManager() {
         return this.logManager;
     }
 

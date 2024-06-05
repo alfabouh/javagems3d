@@ -6,7 +6,6 @@ public enum Lang {
 
     private final String fullName;
     private final String fileName;
-    private int id;
 
     Lang(String fullName, String fileName) {
         this.fullName = fullName;

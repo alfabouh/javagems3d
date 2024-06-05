@@ -8,7 +8,7 @@ import ru.alfabouh.engine.audio.sound.GameSound;
 import ru.alfabouh.engine.audio.sound.data.SoundType;
 import ru.alfabouh.engine.JGems;
 import ru.alfabouh.engine.system.exception.GameException;
-import ru.alfabouh.engine.system.logger.GameLogging;
+import ru.alfabouh.engine.system.logger.JGemsLogging;
 import ru.alfabouh.engine.system.resources.ResourceManager;
 import ru.alfabouh.engine.graph.Graph;
 import ru.alfabouh.engine.graph.pathfind.AStar;
@@ -88,7 +88,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                 }
             } catch (Exception e) {
                 JGems.get().getLogManager().exception(e);
-                GameLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
+                JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
             }
         });
         seekPathThread.setDaemon(true);

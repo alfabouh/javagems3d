@@ -3,26 +3,40 @@
     <Properties>
         <Property name="log-path">${sys:user.home}/.jgems3d/log</Property>
         <Property name="log-file">${date:yyyy-MM-dd_HH-mm-ss}_log.log</Property>
+
+        <Property name="fatal-path">${sys:user.home}/.jgems3d/log/fatal</Property>
+        <Property name="fatal-file">${date:yyyy-MM-dd_HH-mm-ss}_fatal.log</Property>
     </Properties>
     <Appenders>
-        <Console name="Console" target="SYSTEM_ERR">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n"/>
+        <JGemsConsoleAppender name="JGemsAppender" pattern="[%d{HH:mm:ss}] [%t] [%-5level] - %msg%n%ex" />
+        <Console name="ConsoleERR" target="SYSTEM_ERR">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n%ex"/>
         </Console>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n"/>
+        <Console name="ConsoleOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n%ex"/>
         </Console>
-        <File name="File" fileName="${log-path}/${log-file}">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n"/>
+        <File name="FileOUT" fileName="${log-path}/${log-file}">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>
+        </File>
+        <File name="FileERR" fileName="${fatal-path}/${fatal-file}">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="ru.alfabouh.engine.system.logger.GameLogging" level="debug" additivity="true">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
+        <Logger name="JGemsLogger" level="all" additivity="true">
+            <AppenderRef ref="ConsoleERR">
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="FileERR">
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="ConsoleOUT">
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="ACCEPT"/>
+            </AppenderRef>
+            <AppenderRef ref="FileOUT" />
         </Logger>
         <Root level="all">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="JGemsAppender"/>
         </Root>
     </Loggers>
 </Configuration>

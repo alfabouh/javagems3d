@@ -3,7 +3,7 @@ package ru.alfabouh.engine.system.resources;
 import ru.alfabouh.engine.audio.sound.SoundBuffer;
 import ru.alfabouh.engine.JGems;
 import ru.alfabouh.engine.system.exception.GameException;
-import ru.alfabouh.engine.system.logger.GameLogging;
+import ru.alfabouh.engine.system.logger.JGemsLogging;
 import ru.alfabouh.engine.system.resources.assets.*;
 import ru.alfabouh.engine.system.resources.assets.materials.textures.TextureSample;
 import ru.alfabouh.engine.system.resources.assets.models.mesh.MeshDataGroup;
@@ -11,7 +11,7 @@ import ru.alfabouh.engine.system.resources.assets.shaders.loader.ShaderLoader;
 import ru.alfabouh.engine.system.resources.assets.utils.ModelLoader;
 import ru.alfabouh.engine.system.resources.cache.GameCache;
 import ru.alfabouh.engine.system.resources.cache.ICached;
-import ru.alfabouh.engine.render.scene.gui.elements.base.font.GuiFont;
+import ru.alfabouh.engine.render.scene.immediate_gui.elements.base.font.GuiFont;
 
 import java.awt.*;
 import java.io.IOException;
@@ -143,7 +143,7 @@ public class ResourceManager {
                         assets.load(this.getGameCache());
                     } catch (Exception e) {
                         JGems.get().getLogManager().exception(e);
-                        GameLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
+                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
                     }
                 });
                 thread.setDaemon(true);
