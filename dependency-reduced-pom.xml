@@ -18,7 +18,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>ru.alfabouh.engine.JGems</mainClass>
+                  <mainClass>ru.alfabouh.jgems3d.engine.JGems</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -67,7 +67,7 @@
               <jar>${project.build.directory}/${project.build.finalName}-shaded.jar</jar>
               <errTitle>encc</errTitle>
               <classPath>
-                <mainClass>ru.alfabouh.engine.JGems</mainClass>
+                <mainClass>ru.alfabouh.jgems3d.engine.JGems</mainClass>
                 <addDependencies>true</addDependencies>
                 <preCp>anything</preCp>
               </classPath>
