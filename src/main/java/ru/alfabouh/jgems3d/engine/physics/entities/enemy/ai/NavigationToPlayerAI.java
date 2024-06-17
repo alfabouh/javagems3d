@@ -17,7 +17,7 @@ import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 import ru.alfabouh.jgems3d.proxy.logger.managers.JGemsLogging;
 

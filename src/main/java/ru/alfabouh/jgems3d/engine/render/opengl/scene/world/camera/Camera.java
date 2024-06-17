@@ -3,8 +3,8 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera;
 import org.joml.Vector3d;
 
 public class Camera implements ICamera {
-    private final Vector3d camPosition;
-    private final Vector3d camRotation;
+    protected final Vector3d camPosition;
+    protected final Vector3d camRotation;
 
     public Camera(Vector3d pos, Vector3d rot) {
         this.camPosition = new Vector3d(pos);

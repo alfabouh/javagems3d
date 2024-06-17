@@ -7,7 +7,7 @@ import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.audio.sound.loaders.ISoundLoader;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import sun.misc.IOUtils;
 
 import java.io.IOException;

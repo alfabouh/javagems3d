@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.inventory.items;
 
 import ru.alfabouh.jgems3d.engine.inventory.IHasInventory;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 public abstract class InventoryItem {
     private final String name;

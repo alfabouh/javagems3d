@@ -3,8 +3,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.programs;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 public class FBOCubeMapProgram {
     private final CubeMapProgram cubeMapProgram;

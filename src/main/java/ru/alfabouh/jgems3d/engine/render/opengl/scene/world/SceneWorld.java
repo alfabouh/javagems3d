@@ -16,7 +16,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderLiquidData;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderObjectData;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.util.*;

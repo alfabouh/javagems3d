@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements.ba
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

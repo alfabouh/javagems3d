@@ -58,44 +58,44 @@ public class ShaderLoader implements IShaderLoader {
         this.Misc = this.createUBO("Misc", 2, 4);
         this.Fog = this.createUBO("Fog", 3, 16);
 
-        this.world_enemy = this.createShaderManager("jgems/world_enemy", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.world_pickable = this.createShaderManager("jgems/world_pickable", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.debug = this.createShaderManager("jgems/debug", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.gui_text = this.createShaderManager("jgems/gui_text", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.gui_noised = this.createShaderManager("jgems/gui_noised", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_enemy = this.createShaderManager("jgems/shaders/world_enemy", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_pickable = this.createShaderManager("jgems/shaders/world_pickable", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.debug = this.createShaderManager("jgems/shaders/debug", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.gui_text = this.createShaderManager("jgems/shaders/gui_text", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.gui_noised = this.createShaderManager("jgems/shaders/gui_noised", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
-        this.gui_button = this.createShaderManager("jgems/gui_button", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.gui_image = this.createShaderManager("jgems/gui_image", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.gui_image_selectable = this.createShaderManager("jgems/gui_image_selectable", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.gui_button = this.createShaderManager("jgems/shaders/gui_button", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.gui_image = this.createShaderManager("jgems/shaders/gui_image", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.gui_image_selectable = this.createShaderManager("jgems/shaders/gui_image_selectable", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
-        this.blur5 = this.createShaderManager("jgems/blur5", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.blur9 = this.createShaderManager("jgems/blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.blur13 = this.createShaderManager("jgems/blur13", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.blur5 = this.createShaderManager("jgems/shaders/blur5", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.blur9 = this.createShaderManager("jgems/shaders/blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.blur13 = this.createShaderManager("jgems/shaders/blur13", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
-        this.imgui = this.createShaderManager("jgems/imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.imgui = this.createShaderManager("jgems/shaders/imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
-        this.fxaa = this.createShaderManager("jgems/fxaa", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.hdr = this.createShaderManager("jgems/hdr", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.post_psx = this.createShaderManager("jgems/post_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
+        this.fxaa = this.createShaderManager("jgems/shaders/fxaa", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.hdr = this.createShaderManager("jgems/shaders/hdr", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.post_psx = this.createShaderManager("jgems/shaders/post_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
 
-        this.skybox = this.createShaderManager("jgems/skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight);
+        this.skybox = this.createShaderManager("jgems/shaders/skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight);
 
-        this.world_gbuffer = this.createShaderManager("jgems/world_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).setUseForGBuffer(true);
-        this.world_deferred = this.createShaderManager("jgems/world_deferred", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.PointLights).addUBO(this.Fog);
-        this.world_liquid_gbuffer = this.createShaderManager("jgems/world_liquid_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
+        this.world_gbuffer = this.createShaderManager("jgems/shaders/world_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).setUseForGBuffer(true);
+        this.world_deferred = this.createShaderManager("jgems/shaders/world_deferred", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.PointLights).addUBO(this.Fog);
+        this.world_liquid_gbuffer = this.createShaderManager("jgems/shaders/world_liquid_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.Misc);
 
-        this.menu = this.createShaderManager("jgems/menu", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.menu_psx = this.createShaderManager("jgems/menu_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.menu = this.createShaderManager("jgems/shaders/menu", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.menu_psx = this.createShaderManager("jgems/shaders/menu_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
-        this.inventory_zippo = this.createShaderManager("jgems/inventory_zippo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.inventory_common_item = this.createShaderManager("jgems/inventory_common_item", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.inventory_zippo = this.createShaderManager("jgems/shaders/inventory_zippo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.inventory_common_item = this.createShaderManager("jgems/shaders/inventory_common_item", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
-        this.simple = this.createShaderManager("jgems/simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.depth_sun = this.createShaderManager("jgems/depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.world_selected_gbuffer = this.createShaderManager("jgems/world_selected_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.depth_plight = this.createShaderManager("jgems/depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.simple = this.createShaderManager("jgems/shaders/simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.depth_sun = this.createShaderManager("jgems/shaders/depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_selected_gbuffer = this.createShaderManager("jgems/shaders/world_selected_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.depth_plight = this.createShaderManager("jgems/shaders/depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
-        this.gameUbo = this.createShaderManager("jgems/gameubo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
+        this.gameUbo = this.createShaderManager("jgems/shaders/gameubo", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBO(this.SunLight).addUBO(this.Misc).addUBO(this.PointLights).addUBO(this.Fog);
     }
 
     public UniformBufferObject createUBO(String id, int binding, int bsize) {

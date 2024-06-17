@@ -16,7 +16,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.io.IOException;

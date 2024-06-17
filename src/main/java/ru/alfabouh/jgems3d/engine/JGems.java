@@ -15,9 +15,9 @@ import ru.alfabouh.jgems3d.engine.system.localisation.Localisation;
 import ru.alfabouh.jgems3d.engine.system.map.loader.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.proxy.Proxy;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
-import ru.alfabouh.jgems3d.engine.system.settings.GameSettings;
+import ru.alfabouh.jgems3d.engine.system.settings.JGemsSettings;
 import ru.alfabouh.jgems3d.engine.system.synchronizing.SyncManager;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 import ru.alfabouh.jgems3d.proxy.logger.managers.JGemsLogging;
 
@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class JGems {
-    public static boolean FIRST_LAUNCH = false;
     public static boolean DEBUG_MODE = false;
     public static final String GAME_NAME = "Reznya HD";
     public static long rngSeed;
@@ -44,7 +43,7 @@ public class JGems {
     private final JGemsScreen screen;
     private final PhysicThreadManager physicThreadManager;
     private final Proxy proxy;
-    private final GameSettings gameSettings;
+    private final JGemsSettings JGemsSettings;
     private final Localisation localisation;
 
     private boolean shouldBeClosed;
@@ -63,13 +62,9 @@ public class JGems {
         this.screen = new JGemsScreen();
         this.proxy = new Proxy(this.getPhysicThreadManager().getPhysicsTimer(), this.getScreen());
 
-        if (!Files.exists(JGems.getGameFilesFolder())) {
-            Files.createDirectories(JGems.getGameFilesFolder());
-            SystemLogging.get().getLogManager().log("Created system folder");
-            JGems.FIRST_LAUNCH = true;
-        }
+        JGems.checkFilesDirectory();
 
-        this.gameSettings = new GameSettings();
+        this.JGemsSettings = new JGemsSettings(new File(JGems.getGameFilesFolder().toFile(), "settings.txt"));
         this.localisation = new Localisation();
     }
 
@@ -168,8 +163,8 @@ public class JGems {
         JGems.get().showMainMenu();
     }
 
-    public synchronized GameSettings getGameSettings() {
-        return this.gameSettings;
+    public synchronized JGemsSettings getGameSettings() {
+        return this.JGemsSettings;
     }
 
     public synchronized void destroyGame() {
@@ -258,6 +253,13 @@ public class JGems {
     }
 
 
+    public static void checkFilesDirectory() throws IOException {
+        if (!Files.exists(JGems.getGameFilesFolder())) {
+            Files.createDirectories(JGems.getGameFilesFolder());
+            SystemLogging.get().getLogManager().log("Created system folder");
+        }
+    }
+
     public static String date() {
         LocalDateTime date = LocalDateTime.now();
         return date.toString();
@@ -297,6 +299,11 @@ public class JGems {
         return Paths.get(appdataPath, folderPath);
     }
 
+    public static Path getFilesFolder() {
+        String appdataPath = System.getProperty("user.home");
+        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase();
+        return Paths.get(appdataPath, folderPath);
+    }
 
     public String toString() {
         return EngineSystem.ENG_NAME + ": " + EngineSystem.ENG_VER + " - " + JGems.GAME_NAME;

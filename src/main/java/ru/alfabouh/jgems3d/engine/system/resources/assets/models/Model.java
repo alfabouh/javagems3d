@@ -8,7 +8,10 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGr
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
-public final class Model<T extends IFormat> {
+import java.io.Serializable;
+
+public final class Model<T extends IFormat> implements Serializable {
+    private static final long serialVersionUID = -228L;
     private final T format;
     private final MeshDataGroup meshDataGroup;
 

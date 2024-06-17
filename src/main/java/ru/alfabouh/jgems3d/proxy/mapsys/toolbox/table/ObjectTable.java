@@ -3,27 +3,30 @@ package ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ModeledObject;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.base.IMapObject;
 import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
-import ru.alfabouh.jgems3d.toolbox.resources.utils.SimpleModelLoader;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ObjectTable {
-    private final Set<IMapObject> objects;
+    private final Map<String, IMapObject> objects;
 
     public ObjectTable() {
-        this.objects = new HashSet<>();
+        this.objects = new HashMap<>();
     }
 
     public void init() {
-        this.addObject(new ModeledObject("cube", ResourceManager.createModel("/assets/jgems/models/cube/cube.obj")));
+        this.addObject("cube", new ModeledObject(ResourceManager.createModel("/assets/jgems/models/cube/cube.obj")));
+        this.addObject("door", new ModeledObject(ResourceManager.createModel("/assets/jgems/models/door2/door2.obj")));
+        this.addObject("map01", new ModeledObject(ResourceManager.createModel("/assets/jgems/models/map01/map01.obj")));
     }
 
-    public void addObject(IMapObject mapObject) {
-        this.getObjects().add(mapObject);
+    public void addObject(String key, IMapObject mapObject) {
+        this.getObjects().put(key, mapObject);
     }
 
-    public Set<IMapObject> getObjects() {
+    public Map<String, IMapObject> getObjects() {
         return this.objects;
     }
 }

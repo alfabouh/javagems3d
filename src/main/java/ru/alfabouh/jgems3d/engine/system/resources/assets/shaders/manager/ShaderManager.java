@@ -7,7 +7,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.UniformProgram;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.Uniform;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.nio.ByteBuffer;

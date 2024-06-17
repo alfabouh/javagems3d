@@ -12,13 +12,12 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGr
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.utils.ModelLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
 import ru.alfabouh.jgems3d.toolbox.resources.samples.TextureSample;
 
 import java.nio.IntBuffer;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +85,7 @@ public class SimpleModelLoader {
         int[] vertices = SimpleModelLoader.readVertices(aiMesh);
         float[] textureCoordinates = SimpleModelLoader.readTextureCoordinates(aiMesh);
         float[] positions = SimpleModelLoader.readPositions(aiMesh);
+        float[] normals = SimpleModelLoader.readNormals(aiMesh);
 
         if (textureCoordinates.length == 0) {
             int totalElements = (positions.length / 3) * 2;
@@ -95,6 +95,7 @@ public class SimpleModelLoader {
         Mesh mesh = new Mesh();
         mesh.putIndexValues(vertices);
         mesh.putPositionValues(positions);
+        mesh.putNormalValues(normals);
         mesh.putTextureCoordinateValues(textureCoordinates);
         mesh.bakeMesh();
         return mesh;
@@ -111,6 +112,20 @@ public class SimpleModelLoader {
             AIVector3D textCoord = buffer.get();
             data[pos++] = textCoord.x();
             data[pos++] = 1 - textCoord.y();
+        }
+        return data;
+    }
+
+    private static float[] readNormals(AIMesh aiMesh) {
+        AIVector3D.Buffer buffer = aiMesh.mNormals();
+        assert buffer != null;
+        float[] data = new float[buffer.remaining() * 3];
+        int pos = 0;
+        while (buffer.remaining() > 0) {
+            AIVector3D normal = buffer.get();
+            data[pos++] = normal.x();
+            data[pos++] = normal.y();
+            data[pos++] = normal.z();
         }
         return data;
     }

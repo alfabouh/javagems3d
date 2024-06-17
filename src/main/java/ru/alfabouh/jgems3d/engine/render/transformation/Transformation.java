@@ -30,7 +30,8 @@ public class Transformation {
     }
 
     public static Matrix4d getModelMatrix(Format3D format) {
-        return new Matrix4d().identity().translate(format.getPosition()).rotateXYZ(format.getRotation()).scale(format.getScale());
+        Vector3d rotation = format.getRotation();
+        return new Matrix4d().identity().translate(format.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format.getScale());
     }
 
     public static Matrix4d getModelViewMatrix(Format3D format3D, Matrix4d viewMatrix) {

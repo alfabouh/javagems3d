@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.programs;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 public class ShaderProgram {

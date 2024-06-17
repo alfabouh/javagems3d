@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.nio.IntBuffer;
@@ -80,13 +80,6 @@ public class Window implements IWindow {
 
     public void switchFocus() {
         this.isInFocus = !this.isInFocus;
-    }
-
-    public boolean isActive() {
-        if (this.getWindowDimensions().x == 0 || this.getWindowDimensions().y == 0) {
-            return false;
-        }
-        return GLFW.glfwGetWindowAttrib(this.getDescriptor(), GLFW.GLFW_ICONIFIED) == 0;
     }
 
     public void refreshFocusState() {

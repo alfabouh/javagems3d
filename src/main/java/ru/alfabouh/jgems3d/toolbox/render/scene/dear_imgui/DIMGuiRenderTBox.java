@@ -197,10 +197,10 @@ public class DIMGuiRenderTBox {
         ImGui.newFrame();
         this.getCurrentContentToRender().drawContent(dim, partialTicks);
         ImGui.endFrame();
-
         ImGui.render();
 
         ImGuiIO imGuiIO = ImGui.getIO();
+        imGuiIO.clearInputKeys();
         imGuiIO.setMousePos((float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[0], (float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[1]);
         imGuiIO.setMouseDown(0, mouseKeyboardController.getMouseAndKeyboard().isLeftKeyPressed());
         imGuiIO.setMouseDown(1, mouseKeyboardController.getMouseAndKeyboard().isRightKeyPressed());

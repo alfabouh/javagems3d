@@ -16,6 +16,9 @@ public class ShaderLoader implements IShaderLoader {
     public static final List<UniformBufferObject> allUniformBuffers = new ArrayList<>();
 
 
+    public TBoxShaderManager world_isometric_object;
+    public TBoxShaderManager world_lines;
+    public TBoxShaderManager world_xyz;
     public TBoxShaderManager world_object;
     public TBoxShaderManager imgui;
 
@@ -24,8 +27,11 @@ public class ShaderLoader implements IShaderLoader {
     }
 
     private void init() {
-        this.world_object = this.createShaderManager("toolbox/world_object", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.imgui = this.createShaderManager("toolbox/imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_isometric_object = this.createShaderManager("toolbox/shaders/world_isometric_object", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_object = this.createShaderManager("toolbox/shaders/world_object", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_lines = this.createShaderManager("toolbox/shaders/world_lines", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_xyz = this.createShaderManager("toolbox/shaders/world_xyz", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.imgui = this.createShaderManager("toolbox/shaders/imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
     }
 
     public UniformBufferObject createUBO(String id, int binding, int bsize) {

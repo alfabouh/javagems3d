@@ -9,7 +9,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.environment.Environment;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

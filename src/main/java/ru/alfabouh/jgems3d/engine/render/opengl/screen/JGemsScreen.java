@@ -27,7 +27,7 @@ import ru.alfabouh.jgems3d.engine.render.transformation.TransformationUtils;
 import ru.alfabouh.jgems3d.engine.system.EngineSystem;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.awt.*;
@@ -203,23 +203,21 @@ public class JGemsScreen implements IScreen {
     public void startScreenRenderProcess() {
         SystemLogging.get().getLogManager().log("Starting screen...");
         SoundListener.updateListenerGain();
-
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
         JGems.get().showMainMenu();
-
         try {
             this.renderLoop();
         } catch (InterruptedException e) {
             throw new JGemsException(e);
+        } finally {
+            this.getScene().postRender();
+            SystemLogging.get().getLogManager().log("Destroying screen...");
+            this.getTimerPool().clear();
+            GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
+            GLFW.glfwTerminate();
         }
-
-        this.getScene().postRender();
-        SystemLogging.get().getLogManager().log("Destroying screen...");
-        this.getTimerPool().clear();
-        GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
-        GLFW.glfwTerminate();
     }
 
     private void renderLoop() throws InterruptedException {

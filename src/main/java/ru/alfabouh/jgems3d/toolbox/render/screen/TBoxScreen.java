@@ -17,19 +17,18 @@ import ru.alfabouh.jgems3d.engine.render.opengl.screen.timer.TimerPool;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.Window;
 import ru.alfabouh.jgems3d.engine.render.transformation.TransformationUtils;
-import ru.alfabouh.jgems3d.engine.system.EngineSystem;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.TBoxMapSys;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.render.scene.TBoxScene;
-import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
 import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.LoadingContent;
 import ru.alfabouh.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
 
 public class TBoxScreen implements IScreen {
+    public static int FPS;
     private Window tBoxWindow;
     private TBoxControllerDispatcher controllerDispatcher;
     private TBoxScene scene;
@@ -67,8 +66,8 @@ public class TBoxScreen implements IScreen {
         } else {
             return false;
         }
-
         GLFW.glfwMakeContextCurrent(window);
+        GLFW.glfwSwapInterval(1);
         return true;
     }
 
@@ -89,33 +88,43 @@ public class TBoxScreen implements IScreen {
         GL11.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
         this.getScene().createGUI();
         this.loadResourcesAndRenderLoadingScreen();
-
         this.getScene().preRender();
         try {
             this.renderLoop();
         } catch (InterruptedException e) {
             throw new JGemsException(e);
+        } finally {
+            this.getScene().postRender();
+            SystemLogging.get().getLogManager().log("Destroying screen...");
+            this.getTimerPool().clear();
+            GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
+            GLFW.glfwTerminate();
         }
-        this.getScene().postRender();
-        SystemLogging.get().getLogManager().log("Destroying screen...");
-        this.getTimerPool().clear();
-        GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
-        GLFW.glfwTerminate();
     }
 
     private void renderLoop() throws InterruptedException {
         GameRenderTimer deltaTimer = this.getTimerPool().createTimer();
+        GameRenderTimer fpsTimer = this.getTimerPool().createTimer();
         GL30.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+        int fps = 0;
+
         while (!ToolBox.get().isShouldBeClosed()) {
+            Thread.sleep(1000L / 72L);
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
                 ToolBox.get().closeTBox();
                 break;
             }
-
-            this.getTransformationUtils().updateMatrices();
             this.getTimerPool().update();
+            this.getTransformationUtils().updateMatrices();
             this.getControllerDispatcher().updateController(this.getWindow());
+            this.getTransformationUtils().updateCamera(this.getScene().getCamera());
             this.renderGameScene(deltaTimer.getDeltaTime());
+
+            fps += 1;
+            if (fpsTimer.resetTimerAfterReachedSeconds(1.0f)) {
+                TBoxScreen.FPS = fps;
+                fps = 0;
+            }
 
             GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();
@@ -127,7 +136,6 @@ public class TBoxScreen implements IScreen {
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-        this.getTransformationUtils().updateCamera(this.getScene().getCamera());
         this.getScene().render(delta);
         JGemsSceneUtils.checkGLErrors();
     }

@@ -20,7 +20,7 @@ import ru.alfabouh.jgems3d.engine.physics.world.object.IWorldDynamic;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicsTimer;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.Light;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.util.*;

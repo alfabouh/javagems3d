@@ -23,7 +23,7 @@ public class TBoxFreeCamera extends FreeCamera {
         return TBoxControllerDispatcher.getNormalizedRotationInput(this.getController());
     }
 
-    protected float camSpeed() {
+    protected float camDefaultSpeed() {
         return 15.0f;
     }
 }

@@ -9,11 +9,13 @@ import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 
 public class FreeCamera extends Camera {
     private IController controller;
+    private float speed;
 
     public FreeCamera(IController controller, Vector3d pos, Vector3d rot) {
         super(pos, rot);
         SystemLogging.get().getLogManager().log("Created free camera at: " + pos);
         this.controller = controller;
+        this.speed = this.camDefaultSpeed();
     }
 
     public void setCameraPos(Vector3d vector3d) {
@@ -29,6 +31,12 @@ public class FreeCamera extends Camera {
         if (this.getController() != null) {
             this.moveCamera(this.moveCameraPosInput().mul(deltaTicks));
             this.moveCameraRot(this.moveCameraRotInput());
+        }
+        if (this.camRotation.x > 90) {
+            this.camRotation.x = 90;
+        }
+        if (this.camRotation.x < -90) {
+            this.camRotation.x = -90;
         }
     }
 
@@ -64,7 +72,15 @@ public class FreeCamera extends Camera {
         this.addCameraRot(new Vector3d(xy, 0));
     }
 
-    protected float camSpeed() {
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public float camSpeed() {
+        return this.speed;
+    }
+
+    protected float camDefaultSpeed() {
         return 5.0f;
     }
 

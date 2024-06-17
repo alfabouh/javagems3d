@@ -11,7 +11,7 @@ import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.debug.bullet.JBDebugDraw;
 import ru.alfabouh.jgems3d.engine.system.synchronizing.SyncManager;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 public class PhysicsTimer implements IPhysTimer {

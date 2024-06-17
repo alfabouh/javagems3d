@@ -4,8 +4,7 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL43;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +54,9 @@ public class FBOTexture2DProgram {
     }
 
     public void createFrameBuffer2DTexture(Vector2i size, FBOTextureInfo[] fboTextureInfo, boolean depthBuffer, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
+        if (size.x <= 0.0f || size.y <= 0.0f) {
+            return;
+        }
         this.frameBufferId = GL30.glGenFramebuffers();
         this.renderBufferId = GL30.glGenRenderbuffers();
         this.bindFBO();
