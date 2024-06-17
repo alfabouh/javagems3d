@@ -10,7 +10,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.PointLight;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderLiquidData;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderObjectData;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.JGemsScreen;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 import java.util.Deque;
 import java.util.Iterator;

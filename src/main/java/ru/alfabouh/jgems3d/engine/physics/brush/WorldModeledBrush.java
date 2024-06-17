@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.physics.brush;
 
 import ru.alfabouh.jgems3d.engine.physics.collision.AbstractCollision;
-import ru.alfabouh.jgems3d.engine.physics.collision.ModelShape;
+import ru.alfabouh.jgems3d.engine.physics.collision.ModelStaticShape;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
@@ -21,6 +21,6 @@ public class WorldModeledBrush extends WorldBrush {
 
     @Override
     protected AbstractCollision constructCollision() {
-        return new ModelShape(this.meshDataGroup);
+        return new ModelStaticShape(this.meshDataGroup);
     }
 }

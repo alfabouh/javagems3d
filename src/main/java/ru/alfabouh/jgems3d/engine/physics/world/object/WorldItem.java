@@ -10,7 +10,7 @@ import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.Light;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.AttachedCamera;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.util.ArrayList;

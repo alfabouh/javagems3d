@@ -25,15 +25,16 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
         this.normalizedPositionInput.set(0.0d);
         this.normalizedRotationInput.set(0.0d);
 
-        if (!EditorContent.isFocusedOnSceneFrame) {
-            return;
-        }
-
         double[] xy = this.getMouseAndKeyboard().getCursorCoordinates();
         double d1 = xy[0] - this.prevMouseCoord.x;
         double d2 = xy[1] - this.prevMouseCoord.y;
 
-        if (this.getMouseAndKeyboard().isRightKeyPressed()) {
+        if (!EditorContent.isFocusedOnSceneFrame) {
+            this.prevMouseCoord.set(xy[0], xy[1]);
+            return;
+        }
+
+        if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
             this.getRotationInput().set(new Vector2d(d2, d1));
         }
 
@@ -57,6 +58,7 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
         if (TBoxControllerDispatcher.bindingManager().keyDown.isPressed()) {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
+
         this.normalizedPositionInput.set(new Vector3d(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
         this.normalizedRotationInput.set(new Vector2d(this.getRotationInput()).mul(TBoxControllerDispatcher.CAM_SENS));
     }

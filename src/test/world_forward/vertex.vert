@@ -48,9 +48,11 @@ out vec3 mv_vertex_normal;
 out vec3 mv_vertex_pos;
 out mat3 TBN;
 out mat4 out_view_matrix;
+out vec3 outSunPos;
 
 out vec4 out_world_position;
 
+uniform vec3 sunPos;
 uniform mat4 view_matrix;
 uniform mat4 model_matrix;
 uniform mat4 projection_matrix;
@@ -60,6 +62,8 @@ void main()
     mat4 model_view_matrix = view_matrix * model_matrix;
     vec4 mv_pos = model_view_matrix * vec4(aPosition, 1.0f);
     gl_Position = projection_matrix * mv_pos;
+
+    outSunPos = view_matrix * vec4(sunPos, 0.0);
 
     texture_coordinates = aTexture;
     mv_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;

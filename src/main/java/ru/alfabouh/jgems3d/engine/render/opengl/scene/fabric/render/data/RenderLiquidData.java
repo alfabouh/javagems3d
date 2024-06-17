@@ -5,7 +5,7 @@ import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.CubeMapProgram;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 public final class RenderLiquidData {
     private final TextureSample liquidTexture;

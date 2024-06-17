@@ -1,6 +1,7 @@
 package ru.alfabouh.jgems3d.toolbox.resources.shaders.manager;
 
 import org.joml.Matrix4d;
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsScene;
@@ -100,6 +101,10 @@ public final class TBoxShaderManager extends ShaderManager {
             this.performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), model);
         }
 
+        public void performOrthographicMatrix(float aspectRatio, float borders) {
+            this.performPerspectiveMatrix(Transformation.getOrthographic3DMatrix(-borders * aspectRatio, borders * aspectRatio, -borders, borders, 0, 100, true));
+        }
+
         public void performPerspectiveMatrix() {
             this.performPerspectiveMatrix(TBoxSceneUtils.getMainPerspectiveMatrix());
         }
@@ -122,6 +127,10 @@ public final class TBoxShaderManager extends ShaderManager {
 
         public void performViewMatrix(Matrix4d matrix4d) {
             TBoxShaderManager.this.performUniform("view_matrix", matrix4d);
+        }
+
+        public void performModel3DMatrix(Format3D format3D) {
+            this.performModel3DMatrix(Transformation.getModelMatrix(format3D));
         }
 
         public void performModel3DMatrix(Model<Format3D> model) {

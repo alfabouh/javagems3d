@@ -7,8 +7,8 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGr
 public class MarkerObject extends ModeledObject {
     private final Vector3d color;
 
-    public MarkerObject(@NotNull Vector3d color, @NotNull String objectId, @NotNull MeshDataGroup meshDataGroup) {
-        super(objectId, meshDataGroup);
+    public MarkerObject(@NotNull Vector3d color, @NotNull MeshDataGroup meshDataGroup) {
+        super(meshDataGroup);
         this.color = color;
     }
 

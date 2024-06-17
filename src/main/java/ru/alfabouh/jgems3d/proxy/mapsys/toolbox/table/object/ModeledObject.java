@@ -5,26 +5,14 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGr
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.base.IMapObject;
 
 public class ModeledObject implements IMapObject {
-    private final String objectId;
     private final MeshDataGroup meshDataGroup;
 
-    public ModeledObject(@NotNull String objectId, @NotNull MeshDataGroup meshDataGroup) {
-        this.objectId = objectId;
+    public ModeledObject(@NotNull MeshDataGroup meshDataGroup) {
         this.meshDataGroup = meshDataGroup;
-    }
-
-    @Override
-    public String objectId() {
-        return this.objectId;
     }
 
     @Override
     public MeshDataGroup meshDataGroup() {
         return this.meshDataGroup;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.objectId().hashCode();
     }
 }

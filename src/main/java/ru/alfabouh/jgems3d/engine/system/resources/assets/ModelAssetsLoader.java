@@ -21,8 +21,8 @@ public class ModelAssetsLoader implements IAssetsLoader {
         this.door2 = ResourceManager.createMesh("/assets/jgems/models/door2/door2.obj");
         this.plank = ResourceManager.createMesh("/assets/jgems/models/plank/plank.obj");
 
-        this.ground.constructCollisionMeshForStaticObject();
-        this.ground2.constructCollisionMeshForStaticObject();
+        this.ground.constructStaticMesh();
+        this.ground2.constructStaticMesh();
 
         JGems.get().getScreen().addLineInLoadingScreen("Models successfully loaded...");
     }

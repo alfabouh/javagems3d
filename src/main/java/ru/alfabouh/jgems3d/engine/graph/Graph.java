@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.graph;
 
 import org.joml.Vector3d;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.proxy.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
 
 import java.io.*;

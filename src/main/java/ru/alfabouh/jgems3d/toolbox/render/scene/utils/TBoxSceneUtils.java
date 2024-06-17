@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
@@ -14,7 +15,7 @@ import ru.alfabouh.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 public class TBoxSceneUtils {
     public static final float FOV = (float) Math.toRadians(60.0f);
     public static final float Z_NEAR = 0.1f;
-    public static final float Z_FAR = 100.0f;
+    public static final float Z_FAR = 300.0f;
 
     public static Matrix4d getMainCameraViewMatrix() {
         return ToolBox.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
@@ -45,10 +46,18 @@ public class TBoxSceneUtils {
 
     @SuppressWarnings("all")
     public static void renderModelTextured(TBoxShaderManager shaderManager, Model<Format3D> model, int code) {
-        if (model == null || model.getMeshDataGroup() == null) {
+        if (model == null) {
             return;
         }
-        for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
+        TBoxSceneUtils.renderModelTextured(shaderManager, model.getMeshDataGroup(), code);
+    }
+
+    @SuppressWarnings("all")
+    public static void renderModelTextured(TBoxShaderManager shaderManager, MeshDataGroup meshDataGroup, int code) {
+        if (meshDataGroup == null) {
+            return;
+        }
+        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
             shaderManager.getUtils().performModelMaterialOnShader(modelNode.getMaterial());
             GL30.glBindVertexArray(modelNode.getMesh().getVao());
             for (int a : modelNode.getMesh().getAttributePointers()) {

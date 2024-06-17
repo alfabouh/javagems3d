@@ -12,7 +12,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.StringJoiner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class LoggingManager {
     private final Logger log;
@@ -73,13 +75,29 @@ public abstract class LoggingManager {
         JButton openLogFolderButton = new JButton("Open logs");
         openLogFolderButton.addActionListener(e -> {
             try {
-                Desktop.getDesktop().open(new File(JGems.getGameFilesFolder().toFile(), "/log/"));
+                Desktop.getDesktop().open(new File(JGems.getFilesFolder().toFile(), "/log/"));
             } catch (IOException ignored) {
-                SystemLogging.get().getLogManager().warn("Failed to open logs file");
+                SystemLogging.get().getLogManager().error("Failed to open logs file");
             }
         });
 
         final String threadName = Thread.currentThread().getName();
         SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, "[" + threadName + "]: " + msg, EngineSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
+    }
+
+    public static void showWindowInfo(String message) {
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message));
+    }
+
+    public static boolean showConfirmationWindowDialog(String message) {
+        final AtomicInteger integer = new AtomicInteger(0);
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                integer.set(JOptionPane.showConfirmDialog(null, message));
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return integer.get() == 0;
     }
 }

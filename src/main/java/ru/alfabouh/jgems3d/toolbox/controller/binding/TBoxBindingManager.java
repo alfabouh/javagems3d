@@ -11,6 +11,7 @@ public class TBoxBindingManager extends BindingManager {
     public final Key keyS;
     public final Key keyUp;
     public final Key keyDown;
+    public final Key keyDelete;
 
     public TBoxBindingManager() {
         this.keyA = new Key(GLFW.GLFW_KEY_A);
@@ -19,6 +20,7 @@ public class TBoxBindingManager extends BindingManager {
         this.keyS = new Key(GLFW.GLFW_KEY_S);
         this.keyUp = new Key(GLFW.GLFW_KEY_SPACE);
         this.keyDown = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
+        this.keyDelete = new Key(GLFW.GLFW_KEY_DELETE);
 
         this.createBinding(this.keyA, "Шаг влево");
         this.createBinding(this.keyD, "Шаг вправо");
@@ -26,5 +28,6 @@ public class TBoxBindingManager extends BindingManager {
         this.createBinding(this.keyS, "Шаг назад");
         this.createBinding(this.keyUp, "Лететь вверх");
         this.createBinding(this.keyDown, "Лететь вниз");
+        this.createBinding(this.keyDelete, "Delete");
     }
 }

@@ -3,17 +3,19 @@ package ru.alfabouh.jgems3d.toolbox.render.scene.items.objects;
 import org.jetbrains.annotations.NotNull;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.jgems3d.toolbox.render.scene.items.collision.LocalCollision;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 
-public class TBoxModelObject implements ITBoxScene3DObject {
+public class TBoxModelObject extends TBoxScene3DObject {
     private final Model<Format3D> model;
     private final TBoxObjectRenderData renderData;
-    private final String id;
+    private final LocalCollision localCollision;
 
-    public TBoxModelObject(@NotNull String id, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
+    public TBoxModelObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
+        super(name);
         this.model = model;
         this.renderData = renderData;
-        this.id = id;
+        this.localCollision = new LocalCollision(model);
     }
 
     public Model<Format3D> getModel() {
@@ -25,8 +27,12 @@ public class TBoxModelObject implements ITBoxScene3DObject {
         return this.renderData;
     }
 
+    public void reCalcCollision() {
+        this.getLocalCollision().calcAABB(this.getModel().getFormat());
+    }
+
     @Override
-    public String getStringID() {
-        return this.id;
+    public LocalCollision getLocalCollision() {
+        return this.localCollision;
     }
 }
