@@ -2,6 +2,7 @@ package ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content;
 
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiComboFlags;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
@@ -14,51 +15,37 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3
 import ru.alfabouh.jgems3d.proxy.logger.managers.LoggingManager;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.TBoxMapSys;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.ObjectTable;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ObjectType;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.Attribute;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeContainer;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeType;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.controller.binding.TBoxBindingManager;
 import ru.alfabouh.jgems3d.toolbox.render.scene.TBoxScene;
-import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.TBoxScene3DObject;
+import ru.alfabouh.jgems3d.toolbox.render.scene.container.MapProperties;
+import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 import ru.alfabouh.jgems3d.toolbox.render.screen.TBoxScreen;
 
 import java.io.File;
+import java.util.Map;
 
 public class EditorContent implements ImGuiContent {
+    public static boolean sceneShowLight = true;
+    public static boolean sceneShowFog = true;
+    public static boolean isFocusedOnSceneFrame;
+
+    private final TBoxScene tBoxScene;
+
     private final Vector2d sceneFrameCenter;
     private final Vector2d sceneFrameMin;
     private final Vector2d sceneFrameMax;
 
-    private final TBoxScene tBoxScene;
-
-    public static boolean isFocusedOnSceneFrame;
-
-    public boolean fogCheck;
-    public float[] sunPosX = new float[] {0.f};
-    public float[] sunPosY = new float[] {0.f};
-    public float[] sunPosZ = new float[] {0.f};
-    public float[] fogClr = new float[] {1.f, 1.f, 1.f};
-    public float[] fogDensity = new float[1];
-    public float[] sunClr = new float[] {1.f, 1.f, 1.f};
-    public float[] sunBrightness = new float[] {1.f};
-    public boolean skyCoveredByFog;
-    public final ImInt objectInt = new ImInt();
     public final ImInt objectSelectionInt = new ImInt();
 
-    public final String[] objectIds;
+    public String currentSelectedToPlaceID;
 
     public float[] previewBorders = new float[] {1.0f};
-
-    private final float[] positionX = new float[1];
-    private final float[] positionY = new float[1];
-    private final float[] positionZ = new float[1];
-    private final float[] rotationX = new float[1];
-    private final float[] rotationY = new float[1];
-    private final float[] rotationZ = new float[1];
-    private final float[] scalingX = new float[1];
-    private final float[] scalingY = new float[1];
-    private final float[] scalingZ = new float[1];
-
-    public ImString mapName = new ImString();
 
     public TBoxScene3DObject prevSelectedItem;
     public TBoxScene3DObject currentSelectedObject;
@@ -69,9 +56,6 @@ public class EditorContent implements ImGuiContent {
         this.sceneFrameMax = new Vector2d(0.0d);
 
         this.tBoxScene = tBoxScene;
-        ObjectTable objectTable = TBoxMapSys.INSTANCE.getObjectTable();
-
-        this.objectIds = objectTable.getObjects().keySet().toArray(new String[0]);
     }
 
     private void renderScene(Vector2i dim) {
@@ -112,17 +96,61 @@ public class EditorContent implements ImGuiContent {
         ImGui.setWindowPos(dim.x * 0.5f, 20);
 
         if (ImGui.collapsingHeader("Create Object", ImGuiTreeNodeFlags.DefaultOpen)) {
-            ImGui.combo("Object", this.objectInt, this.objectIds);
-            ImGui.newLine();
-            ImGui.text("Object preview");
-            ImGui.image(TBoxScene.previewItemFbo.getTexturePrograms().get(0).getTextureId(), 240, 240, 0.0f, 1.0f, 1.0f, 0.0f);
-            ImGui.sliderFloat("Preview Scale", this.previewBorders, 0.1f, 10.0f);
+            ImGui.columns(2, "SEdit", true);
 
-            if (ImGui.button("Place object")) {
-                String nameId = this.objectIds[this.objectInt.get()];
-                this.getTBoxScene().placeObjectFromGUI(this, nameId);
-                this.removeSelection();
+            ObjectTable boxMapSys = TBoxMapSys.INSTANCE.getObjectTable();
+
+            String[] physicNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.PHYSICS_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
+            String[] modelNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.MODEL_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
+            String[] specialNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.SPECIAL_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
+
+            ImGui.showDemoWindow();
+            ImGui.newLine();
+
+            if (ImGui.beginCombo("Physics Objects", "Preview1", ImGuiComboFlags.NoPreview)) {
+                for (String s : physicNames) {
+                    if (ImGui.selectable(s)) {
+                        this.currentSelectedToPlaceID = s;
+                    }
+                }
+                ImGui.endCombo();
             }
+
+            if (ImGui.beginCombo("Models", "Preview2", ImGuiComboFlags.NoPreview)) {
+                for (String s : modelNames) {
+                    if (ImGui.selectable(s)) {
+                        this.currentSelectedToPlaceID = s;
+                    }
+                }
+                ImGui.endCombo();
+            }
+
+            if (ImGui.beginCombo("Markers", "Preview3", ImGuiComboFlags.NoPreview)) {
+                for (String s : specialNames) {
+                    if (ImGui.selectable(s)) {
+                        this.currentSelectedToPlaceID = s;
+                    }
+                }
+                ImGui.endCombo();
+            }
+
+            if (this.currentSelectedToPlaceID != null) {
+                ImGui.newLine();
+                ImGui.text("Selected: " + this.currentSelectedToPlaceID);
+                if (ImGui.button("Place object")) {
+                    this.getTBoxScene().placeObjectFromGUI(this, this.currentSelectedToPlaceID);
+                    this.removeSelection();
+                }
+                if (TBoxScene.canRenderOnPreview(this.currentSelectedToPlaceID)) {
+                    ImGui.nextColumn();
+                    ImGui.text("Object preview");
+                    ImGui.image(TBoxScene.previewItemFbo.getTexturePrograms().get(0).getTextureId(), 240, 240, 0.0f, 1.0f, 1.0f, 0.0f);
+                    ImGui.newLine();
+                    ImGui.sliderFloat("Preview Scale", this.previewBorders, 0.1f, 10.0f);
+                }
+            }
+
+            ImGui.columns(1);
         }
 
         ImGui.newLine();
@@ -130,7 +158,7 @@ public class EditorContent implements ImGuiContent {
         this.prevSelectedItem = this.currentSelectedObject;
         this.currentSelectedObject = null;
         if (ImGui.collapsingHeader("Scene Objects", ImGuiTreeNodeFlags.DefaultOpen)) {
-            String[] strings = this.getTBoxScene().getSceneObjects().stream().map(TBoxScene3DObject::toString).toArray(String[]::new);
+            String[] strings = this.getTBoxScene().getSceneContainer().getSceneObjects().stream().map(TBoxScene3DObject::toString).toArray(String[]::new);
             ImGui.columns(2, "SObj", true);
 
             ImGui.beginChild("list");
@@ -140,8 +168,8 @@ public class EditorContent implements ImGuiContent {
             }
             ImGui.endChild();
 
-            if (!this.getTBoxScene().getSceneObjects().isEmpty()) {
-                Object[] objects = this.getTBoxScene().getSceneObjects().toArray();
+            if (!this.getTBoxScene().getSceneContainer().getSceneObjects().isEmpty()) {
+                Object[] objects = this.getTBoxScene().getSceneContainer().getSceneObjects().toArray();
                 for (int i = 0; i < objects.length; i++) {
                     TBoxScene3DObject object = (TBoxScene3DObject) objects[i];
                     object.setSelected(false);
@@ -157,73 +185,69 @@ public class EditorContent implements ImGuiContent {
             if (this.currentSelectedObject != null) {
                 Format3D format3D = this.currentSelectedObject.getModel().getFormat();
 
-                if (this.prevSelectedItem == null || this.currentSelectedObject != this.prevSelectedItem) {
-                    this.resetTransform(format3D);
-                }
-
                 ImGui.text("Selected:" + this.currentSelectedObject);
                 if (ImGui.button("Destroy Object")) {
                     this.getTBoxScene().removeObject(this.currentSelectedObject);
-                    if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneObjects().size()) {
-                        this.objectSelectionInt.set(this.getTBoxScene().getSceneObjects().size() - 1);
+                    if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneContainer().getSceneObjects().size()) {
+                        this.objectSelectionInt.set(this.getTBoxScene().getSceneContainer().getSceneObjects().size() - 1);
                     }
                 }
 
                 ImGui.newLine();
                 ImGui.text("Transform:");
-                boolean flag = false;
 
                 TBoxBindingManager tBoxBindingManager = TBoxControllerDispatcher.bindingManager();
 
-                float speed = tBoxBindingManager.keyDown.isPressed() ? 0.1f : 0.01f;
-                if (ImGui.dragFloat("PositionX", this.positionX, speed)) {
-                    flag = true;
-                }
-                if (ImGui.dragFloat("PositionY", this.positionY, speed)) {
-                    flag = true;
-                }
-                if (ImGui.dragFloat("PositionZ", this.positionZ, speed)) {
-                    flag = true;
-                }
-                ImGui.separator();
-                if (ImGui.dragFloat("RotationX", this.rotationX, speed)) {
-                    flag = true;
-                }
-                if (ImGui.dragFloat("RotationY", this.rotationY, speed)) {
-                    flag = true;
-                }
-                if (ImGui.dragFloat("RotationZ", this.rotationZ,  speed)) {
-                    flag = true;
-                }
-                ImGui.separator();
-                if (ImGui.dragFloat("ScalingX", this.scalingX, speed)) {
-                    flag = true;
-                }
-                if (ImGui.dragFloat("ScalingY", this.scalingY, speed)) {
-                    flag = true;
-                }
-                if (ImGui.dragFloat("ScalingZ", this.scalingZ, speed)) {
-                    flag = true;
-                }
+                float speed = tBoxBindingManager.keyCtrl.isPressed() ? 0.001f : 0.01f;
+                if (this.currentSelectedObject.canEditPosition()) {
+                    float[] positionX = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getPosition().x};
+                    float[] positionY = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getPosition().y};
+                    float[] positionZ = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getPosition().z};
 
-                if (flag) {
-                    this.performSettingsOnObject(this.currentSelectedObject, format3D);
+                    if (ImGui.dragFloat("Position X", positionX, speed) || ImGui.dragFloat("Position Y", positionY, speed) || ImGui.dragFloat("Position Z", positionZ, speed)) {
+                        format3D.setPosition(new Vector3d(positionX[0], positionY[0], positionZ[0]));
+                        this.currentSelectedObject.getLocalCollision().calcAABB(format3D);
+                    }
+                }
+                if (this.currentSelectedObject.canEditRotation()) {
+                    ImGui.separator();
+                    float[] rotationX = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getRotation().x};
+                    float[] rotationY = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getRotation().y};
+                    float[] rotationZ = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getRotation().z};
+
+                    if (ImGui.dragFloat("Rotation X", rotationX, speed) || ImGui.dragFloat("Rotation Y", rotationY, speed) || ImGui.dragFloat("Rotation Z", rotationZ, speed)) {
+                        format3D.setRotation(new Vector3d(rotationX[0], rotationY[0], rotationZ[0]));
+                        this.currentSelectedObject.getLocalCollision().calcAABB(format3D);
+                    }
+                }
+                if (this.currentSelectedObject.canEditScaling()) {
+                    ImGui.separator();
+                    float[] scalingX = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getScaling().x};
+                    float[] scalingY = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getScaling().y};
+                    float[] scalingZ = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getScaling().z};
+
+                    if (ImGui.dragFloat("Scaling X", scalingX, speed) || ImGui.dragFloat("Scaling Y", scalingY, speed) || ImGui.dragFloat("Scaling Z", scalingZ, speed)) {
+                        format3D.setScaling(new Vector3d(scalingX[0], scalingY[0], scalingZ[0]));
+                        this.currentSelectedObject.getLocalCollision().calcAABB(format3D);
+                    }
                 }
 
                 ImGui.newLine();
                 ImGui.beginChild("obj_prop");
-                if (ImGui.collapsingHeader("Object Properties")) {
-                    if (ImGui.checkbox("Physics Object", this.currentSelectedObject.getMapObjectProperties().isPhysicsObject())) {
-                        this.currentSelectedObject.getMapObjectProperties().setPhysicsObject(!this.currentSelectedObject.getMapObjectProperties().isPhysicsObject());
+                if (this.currentSelectedObject.hasAttributes()) {
+                    AttributeContainer attributeContainer = this.currentSelectedObject.getAttributeContainer();
+                    for (Attribute<?> attribute : attributeContainer.getAttributeSet().values()) {
+                        if (attribute.getAttributeType().equals(AttributeType.COLOR3)) {
+                            Object value = attribute.getValue();
+                            if (value instanceof Vector3d) {
+                                Vector3d vector3d = (Vector3d) value;
+                                float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
+                                if (ImGui.colorEdit3(attribute.getDescription(), f1)) {
+                                    vector3d.set(f1);
+                                }
+                            }
+                        }
                     }
-                    ImGui.beginDisabled(!this.currentSelectedObject.getMapObjectProperties().isPhysicsObject());
-                    if (ImGui.checkbox("Is Static", this.currentSelectedObject.getMapObjectProperties().isStatic())) {
-                        this.currentSelectedObject.getMapObjectProperties().setStatic(!this.currentSelectedObject.getMapObjectProperties().isStatic());
-                    }
-                    if (ImGui.checkbox("Use Mesh Collision", this.currentSelectedObject.getMapObjectProperties().isGenerateMeshCollision())) {
-                        this.currentSelectedObject.getMapObjectProperties().setGenerateMeshCollision(!this.currentSelectedObject.getMapObjectProperties().isGenerateMeshCollision());
-                    }
-                    ImGui.endDisabled();
                 }
                 ImGui.endChild();
             }
@@ -236,7 +260,7 @@ public class EditorContent implements ImGuiContent {
     }
 
     public boolean trySelectObject(TBoxScene3DObject boxScene3DObject) {
-        Object[] objects = this.getTBoxScene().getSceneObjects().toArray();
+        Object[] objects = this.getTBoxScene().getSceneContainer().getSceneObjects().toArray();
         for (int i = 0; i < objects.length; i++) {
             TBoxScene3DObject object = (TBoxScene3DObject) objects[i];
             if (object.equals(boxScene3DObject)) {
@@ -252,52 +276,48 @@ public class EditorContent implements ImGuiContent {
         this.objectSelectionInt.set(-1);
     }
 
-    private void performSettingsOnObject(TBoxScene3DObject boxScene3DObject, Format3D format3D) {
-        format3D.setPosition(new Vector3d(this.positionX[0], this.positionY[0], this.positionZ[0]));
-        format3D.setRotation(new Vector3d(Math.toRadians(this.rotationX[0]), Math.toRadians(this.rotationY[0]), Math.toRadians(this.rotationZ[0])));
-        format3D.setScale(new Vector3d(this.scalingX[0], this.scalingY[0], this.scalingZ[0]));
-        boxScene3DObject.getLocalCollision().calcAABB(format3D);
-    }
-
-    private void resetTransform(Format3D format3D) {
-        this.positionX[0] = ((float) format3D.getPosition().x);
-        this.positionY[0] = ((float) format3D.getPosition().y);
-        this.positionZ[0] = ((float) format3D.getPosition().z);
-
-        this.rotationX[0] = ((float) Math.toDegrees(format3D.getRotation().x));
-        this.rotationY[0] = ((float) Math.toDegrees(format3D.getRotation().y));
-        this.rotationZ[0] = ((float) Math.toDegrees(format3D.getRotation().z));
-
-        this.scalingX[0] = ((float) format3D.getScale().x);
-        this.scalingY[0] = ((float) format3D.getScale().y);
-        this.scalingZ[0] = ((float) format3D.getScale().z);
-    }
-
     private void renderProperties(Vector2i dim) {
         ImGui.begin("Properties", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
         ImGui.setWindowSize(dim.x * 0.5f, dim.y * 0.5f - 19);
         ImGui.setWindowPos(0, dim.y * 0.5f + 20);
 
-        ImGui.inputText("Map Name", this.mapName);
+        MapProperties mapProperties = this.getTBoxScene().getMapProperties();
+        ImString string = new ImString(mapProperties.getMapName());
+        if (ImGui.inputText("Map Name", string)) {
+            mapProperties.setMapName(string.get());
+        }
         if (ImGui.collapsingHeader("Map Settings", ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.beginChild("sett1");
             if (ImGui.collapsingHeader("Sky")) {
-                ImGui.sliderFloat("Sun Brightness", this.sunBrightness, 0.0f, 1.0f);
-                ImGui.colorEdit3("Sun Color", this.sunClr);
-                ImGui.sliderAngle("Sun Angle X", this.sunPosX);
-                ImGui.sliderAngle("Sun Angle Y", this.sunPosY);
-                ImGui.sliderAngle("Sun Angle Z", this.sunPosZ);
+                float[] f1 = new float[] {mapProperties.getSkyProp().getSunBrightness()};
+                if (ImGui.sliderFloat("Sun Brightness", f1, 0.0f, 1.0f)) {
+                    mapProperties.getSkyProp().setSunBrightness(f1[0]);
+                }
+                float[] c1 = new float[] {(float) mapProperties.getSkyProp().getSunColor().x, (float) mapProperties.getSkyProp().getSunColor().y, (float) mapProperties.getSkyProp().getSunColor().z};
+                if (ImGui.colorEdit3("Sun Color", c1)) {
+                    mapProperties.getSkyProp().setSunColor(new Vector3d(c1));
+                }
+                Vector3d v3 = new Vector3d(0.0f, 1.0f, 0.0f);
+                float[] a1 = new float[] {(float) mapProperties.getSkyProp().getSunPos().x};
+                float[] a3 = new float[] {(float) mapProperties.getSkyProp().getSunPos().z};
+                if (ImGui.sliderAngle("Sun Angle X", a1) || ImGui.sliderAngle("Sun Angle Z", a3)) {
+                    mapProperties.getSkyProp().setSunPos(new Vector3d(a1[0], (float) mapProperties.getSkyProp().getSunPos().y, a3[0]));
+                }
             }
             if (ImGui.collapsingHeader("Fog")) {
-                if (ImGui.checkbox("Enable Fog", this.fogCheck)) {
-                    this.fogCheck = !this.fogCheck;
+                if (ImGui.checkbox("Enable Fog", mapProperties.getFogProp().isFogEnabled())) {
+                    mapProperties.getFogProp().setFogEnabled(!mapProperties.getFogProp().isFogEnabled());
                 }
 
-                ImGui.beginDisabled(!this.fogCheck);
-                ImGui.sliderFloat("Fog Density", this.fogDensity, 0.0f, 1.0f);
-                ImGui.colorEdit3("Fog Color", this.fogClr);
-                if (ImGui.checkbox("Sky Covered By Fog", this.skyCoveredByFog)) {
-                    this.skyCoveredByFog = !this.skyCoveredByFog;
+                ImGui.beginDisabled(!mapProperties.getFogProp().isFogEnabled());
+                float [] f1 = new float[] {mapProperties.getFogProp().getFogDensity()};
+                if (ImGui.sliderFloat("Fog Density", f1, 0.0f, 1.0f)) {
+                    mapProperties.getFogProp().setFogDensity(f1[0]);
+                }
+                float[] c1 = new float[] {(float) mapProperties.getFogProp().getFogColor().x, (float) mapProperties.getFogProp().getFogColor().y, (float) mapProperties.getFogProp().getFogColor().z};
+                ImGui.colorEdit3("Fog Color", c1);
+                if (ImGui.checkbox("Sky Covered By Fog", mapProperties.getFogProp().isSkyCoveredByFog())) {
+                    mapProperties.getFogProp().setSkyCoveredByFog(!mapProperties.getFogProp().isSkyCoveredByFog());
                 }
                 ImGui.endDisabled();
             }
@@ -305,10 +325,6 @@ public class EditorContent implements ImGuiContent {
         }
 
         ImGui.end();
-    }
-
-    public Vector3f getSunPos() {
-        return new Vector3f(0.0f, 1.0f, 0.0f).rotateX(this.sunPosX[0]).rotateY(this.sunPosY[0]).rotateZ(this.sunPosZ[0]).normalize();
     }
 
     private void renderMenuBar() {
@@ -322,28 +338,38 @@ public class EditorContent implements ImGuiContent {
             }
 
             if (ImGui.menuItem("Save Map")) {
-                if (this.mapName.isEmpty()) {
+                if (this.getTBoxScene().getMapProperties().getMapName().isEmpty()) {
                     LoggingManager.showWindowInfo("Enter map name!");
                 } else {
-                    this.getTBoxScene().prepareMapToSave(this, null);
+                    this.getTBoxScene().prepareMapToSave(null);
                 }
             }
 
             if (ImGui.menuItem("Load Map")) {
-                this.getTBoxScene().tryLoadMap(this, null);
+                this.getTBoxScene().tryLoadMap(null);
             }
 
             String recentStrSave = ToolBox.get().getTBoxSettings().recentPathSave.getValue();
             if (!recentStrSave.isEmpty()) {
                 if (ImGui.menuItem("Save Recent: " + recentStrSave)) {
-                    this.getTBoxScene().prepareMapToSave(this, new File(recentStrSave));
+                    this.getTBoxScene().prepareMapToSave(new File(recentStrSave));
                 }
             }
             String recentStrOpen = ToolBox.get().getTBoxSettings().recentPathOpen.getValue();
             if (!recentStrOpen.isEmpty()) {
                 if (ImGui.menuItem("Load Recent: " + recentStrOpen)) {
-                    this.getTBoxScene().tryLoadMap(this, new File(recentStrOpen));
+                    this.getTBoxScene().tryLoadMap( new File(recentStrOpen));
                 }
+            }
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Scene")) {
+            if (ImGui.checkbox("Light", this.sceneShowLight)) {
+                EditorContent.sceneShowLight = !EditorContent.sceneShowLight;
+            }
+            if (ImGui.checkbox("Fog", this.sceneShowFog)) {
+                EditorContent.sceneShowFog = !EditorContent.sceneShowFog;
             }
             ImGui.endMenu();
         }
@@ -362,8 +388,8 @@ public class EditorContent implements ImGuiContent {
             if (tBoxBindingManager.keyDelete.isClicked()) {
                 this.getTBoxScene().removeObject(this.currentSelectedObject);
                 this.getTBoxScene().removeObject(this.currentSelectedObject);
-                if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneObjects().size()) {
-                    this.objectSelectionInt.set(this.getTBoxScene().getSceneObjects().size() - 1);
+                if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneContainer().getSceneObjects().size()) {
+                    this.objectSelectionInt.set(this.getTBoxScene().getSceneContainer().getSceneObjects().size() - 1);
                 }
             }
         }

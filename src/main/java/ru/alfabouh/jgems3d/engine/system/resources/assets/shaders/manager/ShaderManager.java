@@ -86,6 +86,10 @@ public abstract class ShaderManager {
     }
 
     public void performUniform(String uniform, String postfix, int arrayPos, Object o) {
+        if (o == null) {
+            SystemLogging.get().getLogManager().error("[" + this.getShaderGroup().getId() + "] NULL uniform " + uniform);
+            return;
+        }
         if (!this.checkUniformInGroup(uniform)) {
             SystemLogging.get().getLogManager().warn("[" + this.getShaderGroup().getId() + "] Unknown uniform " + uniform);
             return;

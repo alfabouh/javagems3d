@@ -20,7 +20,7 @@ public abstract class InventoryItemObject implements IRenderInventoryItem {
         Format3D format3D = new Format3D();
         format3D.setPosition(pos);
         format3D.setRotation(rot);
-        format3D.setScale(scale);
+        format3D.setScaling(scale);
         renderInventoryItemData.getShaderManager().getUtils().performModel3DViewMatrix(Transformation.getModelMatrix(format3D));
     }
 

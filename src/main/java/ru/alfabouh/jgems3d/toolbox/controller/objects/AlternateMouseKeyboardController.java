@@ -55,7 +55,7 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
         if (TBoxControllerDispatcher.bindingManager().keyUp.isPressed()) {
             this.getPositionInput().add(0.0f, 1.0f, 0.0f);
         }
-        if (TBoxControllerDispatcher.bindingManager().keyDown.isPressed()) {
+        if (TBoxControllerDispatcher.bindingManager().keyShift.isPressed()) {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
 

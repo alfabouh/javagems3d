@@ -12,6 +12,10 @@ public abstract class BindingManager {
         this.bindingSet = new HashSet<>();
     }
 
+    public void createBinding(Key key) {
+        this.createBinding(Binding.createBinding(key, ""));
+    }
+
     public void createBinding(Key key, String description) {
         this.createBinding(Binding.createBinding(key, description));
     }

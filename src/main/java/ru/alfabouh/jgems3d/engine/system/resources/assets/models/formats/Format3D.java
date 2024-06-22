@@ -44,17 +44,17 @@ public class Format3D implements IFormat {
         this.getRotation().set(rotation);
     }
 
-    public Vector3d getScale() {
+    public Vector3d getScaling() {
         return this.scale;
     }
 
-    public void setScale(Vector3d scale) {
-        this.getScale().set(scale);
+    public void setScaling(Vector3d scale) {
+        this.getScaling().set(scale);
     }
 
     @Override
     public IFormat copy() {
-        return new Format3D(new Vector3d(this.getPosition()), new Vector3d(this.getRotation()), new Vector3d(this.getScale()));
+        return new Format3D(new Vector3d(this.getPosition()), new Vector3d(this.getRotation()), new Vector3d(this.getScaling()));
     }
 
     @Override

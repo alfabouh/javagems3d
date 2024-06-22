@@ -20,6 +20,7 @@ public class ShaderLoader implements IShaderLoader {
     public TBoxShaderManager world_lines;
     public TBoxShaderManager world_xyz;
     public TBoxShaderManager world_object;
+    public TBoxShaderManager world_marker;
     public TBoxShaderManager imgui;
 
     public ShaderLoader() {
@@ -31,6 +32,7 @@ public class ShaderLoader implements IShaderLoader {
         this.world_object = this.createShaderManager("toolbox/shaders/world_object", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.world_lines = this.createShaderManager("toolbox/shaders/world_lines", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.world_xyz = this.createShaderManager("toolbox/shaders/world_xyz", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_marker = this.createShaderManager("toolbox/shaders/world_marker", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.imgui = this.createShaderManager("toolbox/shaders/imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
     }
 
