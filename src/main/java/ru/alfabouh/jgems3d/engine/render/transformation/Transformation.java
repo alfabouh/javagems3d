@@ -31,12 +31,12 @@ public class Transformation {
 
     public static Matrix4d getModelMatrix(Format3D format) {
         Vector3d rotation = format.getRotation();
-        return new Matrix4d().identity().translate(format.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format.getScale());
+        return new Matrix4d().identity().translate(format.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format.getScaling());
     }
 
     public static Matrix4d getModelViewMatrix(Format3D format3D, Matrix4d viewMatrix) {
         Vector3d rotation = format3D.getRotation();
-        Matrix4d m1 = new Matrix4d().identity().translate(format3D.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format3D.getScale());
+        Matrix4d m1 = new Matrix4d().identity().translate(format3D.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format3D.getScaling());
         if (format3D.isOrientedToViewMatrix()) {
             viewMatrix.transpose3x3(m1);
         }

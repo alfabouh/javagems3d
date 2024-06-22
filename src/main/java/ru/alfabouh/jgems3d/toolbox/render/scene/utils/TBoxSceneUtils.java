@@ -2,13 +2,10 @@ package ru.alfabouh.jgems3d.toolbox.render.scene.utils;
 
 import org.joml.Matrix4d;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 

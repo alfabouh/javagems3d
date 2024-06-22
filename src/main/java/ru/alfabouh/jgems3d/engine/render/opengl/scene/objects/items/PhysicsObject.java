@@ -145,7 +145,7 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
     public void updateRenderTranslation() {
         if (this.isHasModel()) {
             Model<Format3D> model = this.getModel3D();
-            model.getFormat().setScale(new Vector3d(this.getScale()));
+            model.getFormat().setScaling(new Vector3d(this.getScale()));
             model.getFormat().setPosition(this.getRenderPosition());
             model.getFormat().setRotation(this.getRenderRotation());
         }

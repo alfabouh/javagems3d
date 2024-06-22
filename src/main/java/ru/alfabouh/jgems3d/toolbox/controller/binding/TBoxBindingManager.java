@@ -10,7 +10,8 @@ public class TBoxBindingManager extends BindingManager {
     public final Key keyW;
     public final Key keyS;
     public final Key keyUp;
-    public final Key keyDown;
+    public final Key keyShift;
+    public final Key keyCtrl;
     public final Key keyDelete;
 
     public TBoxBindingManager() {
@@ -19,15 +20,17 @@ public class TBoxBindingManager extends BindingManager {
         this.keyW = new Key(GLFW.GLFW_KEY_W);
         this.keyS = new Key(GLFW.GLFW_KEY_S);
         this.keyUp = new Key(GLFW.GLFW_KEY_SPACE);
-        this.keyDown = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
+        this.keyShift = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
+        this.keyCtrl = new Key(GLFW.GLFW_KEY_LEFT_CONTROL);
         this.keyDelete = new Key(GLFW.GLFW_KEY_DELETE);
 
-        this.createBinding(this.keyA, "Шаг влево");
-        this.createBinding(this.keyD, "Шаг вправо");
-        this.createBinding(this.keyW, "Шаг вперед");
-        this.createBinding(this.keyS, "Шаг назад");
-        this.createBinding(this.keyUp, "Лететь вверх");
-        this.createBinding(this.keyDown, "Лететь вниз");
-        this.createBinding(this.keyDelete, "Delete");
+        this.createBinding(this.keyA);
+        this.createBinding(this.keyD);
+        this.createBinding(this.keyW);
+        this.createBinding(this.keyS);
+        this.createBinding(this.keyUp);
+        this.createBinding(this.keyShift);
+        this.createBinding(this.keyCtrl);
+        this.createBinding(this.keyDelete);
     }
 }

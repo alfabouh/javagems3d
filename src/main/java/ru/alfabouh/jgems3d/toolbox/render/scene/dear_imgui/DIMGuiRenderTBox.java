@@ -88,6 +88,13 @@ public class DIMGuiRenderTBox {
 
     private ImGuiIO getImGuiIO() {
         ImGuiIO io = ImGui.getIO();
+        io.setKeyMap(ImGuiKey.C, GLFW.GLFW_KEY_C);
+        io.setKeyMap(ImGuiKey.Y, GLFW.GLFW_KEY_Y);
+        io.setKeyMap(ImGuiKey.Z, GLFW.GLFW_KEY_Z);
+        io.setKeyMap(ImGuiKey.X, GLFW.GLFW_KEY_X);
+        io.setKeyMap(ImGuiKey.A, GLFW.GLFW_KEY_A);
+        io.setKeyMap(ImGuiKey.V, GLFW.GLFW_KEY_V);
+
         io.setKeyMap(ImGuiKey.Tab, GLFW.GLFW_KEY_TAB);
         io.setKeyMap(ImGuiKey.LeftArrow, GLFW.GLFW_KEY_LEFT);
         io.setKeyMap(ImGuiKey.RightArrow, GLFW.GLFW_KEY_RIGHT);
@@ -117,6 +124,9 @@ public class DIMGuiRenderTBox {
         ImDrawData drawData = ImGui.getDrawData();
 
         ImGuiIO io = ImGui.getIO();
+        io.setKeyCtrl(TBoxControllerDispatcher.bindingManager().keyCtrl.isPressed());
+        io.setKeyShift(TBoxControllerDispatcher.bindingManager().keyShift.isPressed());
+
         ImVec2 dSize = new ImVec2();
         io.getDisplaySize(dSize);
 
