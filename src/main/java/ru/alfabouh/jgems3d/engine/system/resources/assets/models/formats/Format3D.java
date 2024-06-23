@@ -6,13 +6,13 @@ import org.joml.Vector3d;
 public class Format3D implements IFormat {
     private final Vector3d position;
     private final Vector3d rotation;
-    private final Vector3d scale;
+    private final Vector3d scaling;
     private boolean isOrientedToView;
 
-    public Format3D(@NotNull Vector3d position, Vector3d rotation, Vector3d scale) {
+    public Format3D(@NotNull Vector3d position, Vector3d rotation, Vector3d scaling) {
         this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
+        this.rotation = rotation == null ? new Vector3d(0.0d) : rotation;
+        this.scaling = scaling == null ? new Vector3d(1.0d) : scaling;
         this.isOrientedToView = false;
     }
 
@@ -45,7 +45,7 @@ public class Format3D implements IFormat {
     }
 
     public Vector3d getScaling() {
-        return this.scale;
+        return this.scaling;
     }
 
     public void setScaling(Vector3d scale) {

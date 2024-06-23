@@ -22,6 +22,8 @@ import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.file.save.container.SaveContaine
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.file.save.objects.SaveObject;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.AbstractObjectData;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ObjectType;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.Attribute;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeIDS;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.render.scene.camera.TBoxFreeCamera;
 import ru.alfabouh.jgems3d.toolbox.render.scene.container.MapProperties;
@@ -38,6 +40,7 @@ import ru.alfabouh.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 
 import javax.swing.*;
 import java.io.File;
+import java.lang.Math;
 import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.List;
@@ -100,7 +103,17 @@ public class TBoxScene {
 
                 if (saveObjects != null) {
                     for (SaveObject saveObject : saveObjects) {
-                        Format3D format3D = new Format3D(saveObject.getPosition(), saveObject.getRotation(), saveObject.getScaling());
+                        Vector3d savePos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3d.class);
+                        Vector3d saveRot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3d.class);
+                        Vector3d saveScale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3d.class);
+                        if (savePos == null) {
+                            SystemLogging.get().getLogManager().error("Deserialized object has NULL position!!");
+                            continue;
+                        }
+                        if (saveRot != null) {
+                            saveRot = new Vector3d(Math.toRadians(saveRot.x), Math.toRadians(saveRot.y), Math.toRadians(saveRot.z));
+                        }
+                        Format3D format3D = new Format3D(savePos, saveRot, saveScale);
                         AbstractObjectData mapObject = TBoxMapSys.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
                         MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
                         TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
@@ -129,7 +142,7 @@ public class TBoxScene {
         SaveContainer saveContainer = new SaveContainer(this.getSceneContainer().getMapProperties());
 
         for (TBoxObject tBoxObject : this.getSceneContainer().getObjectsFromContainer(TBoxObject.class)) {
-            saveContainer.addSaveObject(new SaveObject(tBoxObject.getAttributeContainer(), tBoxObject.objectId(), tBoxObject.getModel().getFormat()));
+            saveContainer.addSaveObject(new SaveObject(tBoxObject.getAttributeContainer(), tBoxObject.objectId()));
         }
 
         try {
@@ -304,6 +317,24 @@ public class TBoxScene {
 
         TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
         tBoxObject.setAttributeContainer(mapObject.copyAttributeContainer());
+
+        Attribute<Vector3d> attribute = tBoxObject.getAttributeContainer().tryGetAttributeByID(AttributeIDS.POSITION_XYZ, Vector3d.class);
+        if (attribute == null) {
+            throw new JGemsException("Caught attribute with NULL position!");
+        }
+        attribute.setValue(format3D.getPosition());
+
+        Vector3d rot = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3d.class);
+        if (rot != null) {
+            format3D.setRotation(new Vector3d(Math.toRadians(rot.x), Math.toRadians(rot.y), Math.toRadians(rot.z)));
+        }
+
+        Vector3d scaling = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3d.class);
+        if (scaling != null) {
+            format3D.setScaling(scaling);
+        }
+
+        tBoxObject.reCalcCollision();
         this.addObject(tBoxObject);
     }
 

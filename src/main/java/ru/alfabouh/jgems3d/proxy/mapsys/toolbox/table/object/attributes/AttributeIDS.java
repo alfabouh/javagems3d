@@ -3,7 +3,9 @@ package ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes;
 public enum AttributeIDS {
     IS_STATIC("is_static", "Is Static"),
     COLOR("color", "Color"),
-    ROTATION_Y("rotation_y", "Rotation Y");
+    POSITION_XYZ("position_xyz", "Position"),
+    ROTATION_XYZ("rotation_xyz", "Rotation"),
+    SCALING_XYZ("scaling_xyz", "Scaling");
 
     private final String id;
     private final String description;

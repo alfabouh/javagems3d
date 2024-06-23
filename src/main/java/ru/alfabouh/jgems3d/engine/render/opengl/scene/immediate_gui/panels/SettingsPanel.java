@@ -37,7 +37,7 @@ public class SettingsPanel extends AbstractPanelUI {
             immediateUI.settingCarouselUI(JGems.get().I18n("menu.settings.shadowQ"), ResourceManager.renderAssets.standardFont, 0xffffff, new Vector2i(x, y += 30), JGems.get().getGameSettings().shadowQuality, 0.5f);
         }
 
-        immediateUI.buttonUI(JGems.get().I18n("menu.objects"), ResourceManager.renderAssets.standardFont, new Vector2i(windowW / 2 - 150, y += 50), new Vector2i(300, 60), 0xffffff, 0.5f)
+        immediateUI.buttonUI(JGems.get().I18n("menu.save"), ResourceManager.renderAssets.standardFont, new Vector2i(windowW / 2 - 150, y += 50), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems.get().getGameSettings().saveOptions();
                     JGems.get().getScreen().showGameLoadingScreen();

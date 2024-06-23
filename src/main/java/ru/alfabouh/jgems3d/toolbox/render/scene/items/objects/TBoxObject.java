@@ -1,8 +1,11 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.items.objects;
 
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3d;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ObjectType;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeContainer;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 
@@ -12,17 +15,10 @@ public final class TBoxObject extends TBoxScene3DObject {
     }
 
     @Override
-    public boolean canEditPosition() {
-        return true;
-    }
-
-    @Override
-    public boolean canEditScaling() {
-        return true;
-    }
-
-    @Override
-    public boolean canEditRotation() {
-        return true;
+    public TBoxObject copy() {
+        TBoxObject tBoxObject = new TBoxObject(this.objectId(), this.getRenderData(), new Model<>(this.getModel()));
+        tBoxObject.setAttributeContainer(new AttributeContainer(this.getAttributeContainer()));
+        tBoxObject.setPositionWithAttribute(new Vector3d(tBoxObject.getModel().getFormat().getPosition()).add(0.0f, 2.5f, 0.0f));
+        return tBoxObject;
     }
 }

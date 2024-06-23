@@ -4,40 +4,49 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 
-public final class Attribute <T extends Serializable> {
+public final class Attribute <T extends Serializable> implements Serializable {
+    private static final long serialVersionUID = -228L;
     private final String id;
     private final String description;
-    private final AttributeType attributeType;
+    private final AttributeFlag attributeFlag;
     private T t;
 
     public Attribute(Attribute<T> attribute) {
-        this.attributeType = attribute.getAttributeType();
+        this.attributeFlag = attribute.getAttributeType();
         this.id = attribute.getId();
         this.description = attribute.getDescription();
         this.t = new CopyFactory<T>(attribute.getValue()).deepCopy();
     }
 
-    public Attribute(@NotNull AttributeType attributeType, @NotNull String id, @NotNull String description, @NotNull T defaultValue) {
-        this.attributeType = attributeType;
+    public Attribute(@NotNull AttributeFlag attributeFlag, @NotNull String id, @NotNull String description, @NotNull T defaultValue) {
+        this.attributeFlag = attributeFlag;
         this.id = id;
         this.description = description;
         this.t = defaultValue;
     }
 
-    public Attribute(AttributeType attributeType, @NotNull AttributeIDS name, @NotNull T defaultValue) {
-        this(attributeType, name.getId(), name.getDescription(), defaultValue);
+    public Attribute(AttributeFlag attributeFlag, @NotNull AttributeIDS name, @NotNull T defaultValue) {
+        this(attributeFlag, name.getId(), name.getDescription(), defaultValue);
     }
 
     public void setValue(T t) {
         this.t = t;
     }
 
+    public <E extends Serializable> void setValueWithCast(E e) {
+        if (this.getValue().getClass().isAssignableFrom(e.getClass())) {
+            @SuppressWarnings("unchecked")
+            Attribute<E> attribute = (Attribute<E>) this;
+            attribute.setValue(e);
+        }
+    }
+
     public T getValue() {
         return this.t;
     }
 
-    public AttributeType getAttributeType() {
-        return this.attributeType;
+    public AttributeFlag getAttributeType() {
+        return this.attributeFlag;
     }
 
     public String getDescription() {
