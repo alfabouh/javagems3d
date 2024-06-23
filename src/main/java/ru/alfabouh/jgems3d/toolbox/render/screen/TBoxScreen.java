@@ -19,6 +19,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.Window;
 import ru.alfabouh.jgems3d.engine.render.transformation.TransformationUtils;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.proxy.logger.managers.LoggingManager;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.TBoxMapSys;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
@@ -176,20 +177,24 @@ public class TBoxScreen implements IScreen {
     @Override
     public void buildScreen() {
         SystemLogging.get().getLogManager().log("Building screen...");
-        if (this.tryToBuildScreen()) {
-            GL.createCapabilities();
+        try {
+            if (this.tryToBuildScreen()) {
+                GL.createCapabilities();
 
-            this.createTransformation();
-            this.createResourceManager();
-            ResourceManager.loadShaders();
+                this.createTransformation();
+                this.createResourceManager();
+                ResourceManager.loadShaders();
 
-            this.setScreenCallbacks();
-            this.createObjects(this.getWindow());
-            this.normalizeViewPort();
+                this.setScreenCallbacks();
+                this.createObjects(this.getWindow());
+                this.normalizeViewPort();
 
-            SystemLogging.get().getLogManager().log("TBoxScreen built successful");
-        } else {
-            throw new JGemsException("Caught exception, while building screen!!");
+                SystemLogging.get().getLogManager().log("TBoxScreen built successful");
+            } else {
+                throw new JGemsException("Caught exception, while building screen!!");
+            }
+        } catch (Exception e) {
+            LoggingManager.showExceptionDialog("Couldn't create window!");
         }
     }
 

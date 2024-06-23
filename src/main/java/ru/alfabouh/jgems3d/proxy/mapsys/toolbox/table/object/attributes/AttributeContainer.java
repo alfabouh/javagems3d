@@ -6,7 +6,8 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class AttributeContainer {
+public final class AttributeContainer implements Serializable {
+    private static final long serialVersionUID = -228L;
     private final Map<String, Attribute<?>> attributeSet;
 
     public AttributeContainer(Attribute<?>... a) {
@@ -39,13 +40,12 @@ public final class AttributeContainer {
     public <E extends Serializable> Attribute<E> tryGetAttributeByID(String id, Class<E> eClass) {
         Attribute<?> attribute = this.getAttributeSet().get(id);
         if (attribute == null) {
-            SystemLogging.get().getLogManager().warn("Couldn't find attribute with id: " + id);
             return null;
         }
         if (eClass.isInstance(attribute.getValue())) {
             return (Attribute<E>) attribute;
         } else {
-            SystemLogging.get().getLogManager().warn("Attribute id: " + id + " has another type!");
+            SystemLogging.get().getLogManager().warn("Attribute id: " + id + " has another type: " + attribute.getValue().getClass());
         }
         return null;
     }

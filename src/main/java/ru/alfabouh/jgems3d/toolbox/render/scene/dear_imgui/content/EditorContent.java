@@ -10,7 +10,6 @@ import imgui.type.ImString;
 import org.joml.Vector2d;
 import org.joml.Vector2i;
 import org.joml.Vector3d;
-import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.proxy.logger.managers.LoggingManager;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.TBoxMapSys;
@@ -18,7 +17,7 @@ import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.ObjectTable;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ObjectType;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.Attribute;
 import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeContainer;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeType;
+import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeFlag;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.controller.binding.TBoxBindingManager;
@@ -102,7 +101,7 @@ public class EditorContent implements ImGuiContent {
 
             String[] physicNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.PHYSICS_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
             String[] modelNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.MODEL_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
-            String[] specialNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.SPECIAL_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
+            String[] specialNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.MARKER_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
 
             ImGui.showDemoWindow();
             ImGui.newLine();
@@ -159,6 +158,7 @@ public class EditorContent implements ImGuiContent {
         this.currentSelectedObject = null;
         if (ImGui.collapsingHeader("Scene Objects", ImGuiTreeNodeFlags.DefaultOpen)) {
             String[] strings = this.getTBoxScene().getSceneContainer().getSceneObjects().stream().map(TBoxScene3DObject::toString).toArray(String[]::new);
+
             ImGui.columns(2, "SObj", true);
 
             ImGui.beginChild("list");
@@ -183,8 +183,6 @@ public class EditorContent implements ImGuiContent {
             ImGui.nextColumn();
             ImGui.beginChild("list_editor");
             if (this.currentSelectedObject != null) {
-                Format3D format3D = this.currentSelectedObject.getModel().getFormat();
-
                 ImGui.text("Selected:" + this.currentSelectedObject);
                 if (ImGui.button("Destroy Object")) {
                     this.getTBoxScene().removeObject(this.currentSelectedObject);
@@ -192,61 +190,102 @@ public class EditorContent implements ImGuiContent {
                         this.objectSelectionInt.set(this.getTBoxScene().getSceneContainer().getSceneObjects().size() - 1);
                     }
                 }
+                if (ImGui.button("Make Copy")) {
+                    this.getTBoxScene().addObject(this.currentSelectedObject.copy());
+                }
 
                 ImGui.newLine();
-                ImGui.text("Transform:");
-
+                ImGui.text("Attributes:");
                 TBoxBindingManager tBoxBindingManager = TBoxControllerDispatcher.bindingManager();
-
                 float speed = tBoxBindingManager.keyCtrl.isPressed() ? 0.001f : 0.01f;
-                if (this.currentSelectedObject.canEditPosition()) {
-                    float[] positionX = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getPosition().x};
-                    float[] positionY = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getPosition().y};
-                    float[] positionZ = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getPosition().z};
-
-                    if (ImGui.dragFloat("Position X", positionX, speed) || ImGui.dragFloat("Position Y", positionY, speed) || ImGui.dragFloat("Position Z", positionZ, speed)) {
-                        format3D.setPosition(new Vector3d(positionX[0], positionY[0], positionZ[0]));
-                        this.currentSelectedObject.getLocalCollision().calcAABB(format3D);
-                    }
-                }
-                if (this.currentSelectedObject.canEditRotation()) {
-                    ImGui.separator();
-                    float[] rotationX = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getRotation().x};
-                    float[] rotationY = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getRotation().y};
-                    float[] rotationZ = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getRotation().z};
-
-                    if (ImGui.dragFloat("Rotation X", rotationX, speed) || ImGui.dragFloat("Rotation Y", rotationY, speed) || ImGui.dragFloat("Rotation Z", rotationZ, speed)) {
-                        format3D.setRotation(new Vector3d(rotationX[0], rotationY[0], rotationZ[0]));
-                        this.currentSelectedObject.getLocalCollision().calcAABB(format3D);
-                    }
-                }
-                if (this.currentSelectedObject.canEditScaling()) {
-                    ImGui.separator();
-                    float[] scalingX = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getScaling().x};
-                    float[] scalingY = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getScaling().y};
-                    float[] scalingZ = new float[] {(float) this.currentSelectedObject.getModel().getFormat().getScaling().z};
-
-                    if (ImGui.dragFloat("Scaling X", scalingX, speed) || ImGui.dragFloat("Scaling Y", scalingY, speed) || ImGui.dragFloat("Scaling Z", scalingZ, speed)) {
-                        format3D.setScaling(new Vector3d(scalingX[0], scalingY[0], scalingZ[0]));
-                        this.currentSelectedObject.getLocalCollision().calcAABB(format3D);
-                    }
-                }
-
                 ImGui.newLine();
+                ImGui.separator();
                 ImGui.beginChild("obj_prop");
                 if (this.currentSelectedObject.hasAttributes()) {
                     AttributeContainer attributeContainer = this.currentSelectedObject.getAttributeContainer();
                     for (Attribute<?> attribute : attributeContainer.getAttributeSet().values()) {
-                        if (attribute.getAttributeType().equals(AttributeType.COLOR3)) {
-                            Object value = attribute.getValue();
-                            if (value instanceof Vector3d) {
-                                Vector3d vector3d = (Vector3d) value;
-                                float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
-                                if (ImGui.colorEdit3(attribute.getDescription(), f1)) {
-                                    vector3d.set(f1);
+                        if (attribute.getAttributeType().equals(AttributeFlag.STATIC_NO_EDIT)) {
+                            continue;
+                        }
+                        Format3D format3D = this.currentSelectedObject.getModel().getFormat();
+                        Object value = attribute.getValue();
+                        switch (attribute.getAttributeType()) {
+                            case POSITION_X:
+                            case POSITION_Y:
+                            case POSITION_Z:
+                            case POSITION_XYZ:
+                            {
+                                if (value instanceof Vector3d) {
+                                    Vector3d vector3d = (Vector3d) value;
+                                    ImGui.text(attribute.getDescription());
+                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
+                                    this.transformPosition(format3D, f1, attribute.getAttributeType().getParams(), speed);
+                                    attribute.setValueWithCast(new Vector3d(f1));
                                 }
+                                break;
+                            }
+                            case ROTATION_X:
+                            case ROTATION_Y:
+                            case ROTATION_Z:
+                            case ROTATION_XYZ:
+                            {
+                                if (value instanceof Vector3d) {
+                                    Vector3d vector3d = (Vector3d) value;
+                                    ImGui.text(attribute.getDescription());
+                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
+                                    this.transformRotation(format3D, f1, attribute.getAttributeType().getParams(), speed);
+                                    attribute.setValueWithCast(new Vector3d(f1));
+                                }
+                                break;
+                            }
+                            case SCALING_X:
+                            case SCALING_Y:
+                            case SCALING_Z:
+                            case SCALING_XYZ:
+                            {
+                                if (value instanceof Vector3d) {
+                                    Vector3d vector3d = (Vector3d) value;
+                                    ImGui.text(attribute.getDescription());
+                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
+                                    this.transformScaling(format3D, f1, attribute.getAttributeType().getParams(), speed);
+                                    attribute.setValueWithCast(new Vector3d(f1));
+                                }
+                                break;
+                            }
+                            case COLOR3:
+                            {
+                                if (value instanceof Vector3d) {
+                                    Vector3d vector3d = (Vector3d) value;
+                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
+                                    if (ImGui.colorEdit3(attribute.getDescription(), f1)) {
+                                        vector3d.set(f1);
+                                    }
+                                }
+                                break;
+                            }
+                            case BOOL:
+                            {
+                                if (value instanceof Boolean) {
+                                    Boolean aBoolean = (Boolean) value;
+                                    if (ImGui.checkbox(attribute.getDescription(), aBoolean)) {
+                                        attribute.setValueWithCast(!aBoolean);
+                                    }
+                                }
+                                break;
+                            }
+                            case FLOAT:
+                            {
+                                if (value instanceof Float) {
+                                    Float aFloat = (Float) value;
+                                    float[] f1 = new float[] {aFloat};
+                                    if (ImGui.sliderAngle(attribute.getDescription(), f1)) {
+                                        attribute.setValueWithCast(f1[0]);
+                                    }
+                                }
+                                break;
                             }
                         }
+                        ImGui.separator();
                     }
                 }
                 ImGui.endChild();
@@ -257,6 +296,114 @@ public class EditorContent implements ImGuiContent {
         }
 
         ImGui.end();
+    }
+
+    private void transformPosition(Format3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
+        boolean flag = false;
+        float[] positionX = new float[] {0.0f};
+        float[] positionY = new float[] {0.0f};
+        float[] positionZ = new float[] {0.0f};
+
+        if ((transformFlag & 1) != 0) {
+            positionX[0] = values[0];
+            if (ImGui.dragFloat("Position X", positionX, dragSpeed)) {
+                values[0] = positionX[0];
+                flag = true;
+            }
+        }
+
+        if ((transformFlag & 2) != 0) {
+            positionY[0] = values[1];
+            if (ImGui.dragFloat("Position Y", positionY, dragSpeed)) {
+                values[1] = positionY[0];
+                flag = true;
+            }
+        }
+
+        if ((transformFlag & 4) != 0) {
+            positionZ[0] = values[2];
+            if (ImGui.dragFloat("Position Z", positionZ, dragSpeed)) {
+                values[2] = positionZ[0];
+                flag = true;
+            }
+        }
+
+        if (flag) {
+            currentObjFormat.setPosition(new Vector3d(positionX[0], positionY[0], positionZ[0]));
+            this.currentSelectedObject.getLocalCollision().calcAABB(currentObjFormat);
+        }
+    }
+
+    private void transformRotation(Format3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
+        boolean flag = false;
+        float[] rotationX = new float[] {0.0f};
+        float[] rotationY = new float[] {0.0f};
+        float[] rotationZ = new float[] {0.0f};
+
+        if ((transformFlag & 1) != 0) {
+            rotationX[0] = values[0];
+            if (ImGui.dragFloat("Rotation X", rotationX, dragSpeed)) {
+                values[0] = rotationX[0];
+                flag = true;
+            }
+        }
+
+        if ((transformFlag & 2) != 0) {
+            rotationY[0] = values[1];
+            if (ImGui.dragFloat("Rotation Y", rotationY, dragSpeed)) {
+                values[1] = rotationY[0];
+                flag = true;
+            }
+        }
+
+        if ((transformFlag & 4) != 0) {
+            rotationZ[0] = values[2];
+            if (ImGui.dragFloat("Rotation Z", rotationZ, dragSpeed)) {
+                values[2] = rotationZ[0];
+                flag = true;
+            }
+        }
+
+        if (flag) {
+            currentObjFormat.setRotation(new Vector3d(Math.toRadians(rotationX[0]), Math.toRadians(rotationY[0]), Math.toRadians(rotationZ[0])));
+            this.currentSelectedObject.getLocalCollision().calcAABB(currentObjFormat);
+        }
+    }
+
+    private void transformScaling(Format3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
+        boolean flag = false;
+        float[] scalingX = new float[] {0.0f};
+        float[] scalingY = new float[] {0.0f};
+        float[] scalingZ = new float[] {0.0f};
+
+        if ((transformFlag & 1) != 0) {
+            scalingX[0] = values[0];
+            if (ImGui.dragFloat("Scaling X", scalingX, dragSpeed)) {
+                values[0] = scalingX[0];
+                flag = true;
+            }
+        }
+
+        if ((transformFlag & 2) != 0) {
+            scalingY[0] = values[1];
+            if (ImGui.dragFloat("Scaling Y", scalingY, dragSpeed)) {
+                values[1] = scalingY[0];
+                flag = true;
+            }
+        }
+
+        if ((transformFlag & 4) != 0) {
+            scalingZ[0] = values[2];
+            if (ImGui.dragFloat("Scaling Z", scalingZ, dragSpeed)) {
+                values[2] = scalingZ[0];
+                flag = true;
+            }
+        }
+
+        if (flag) {
+            currentObjFormat.setScaling(new Vector3d(scalingX[0], scalingY[0], scalingZ[0]));
+            this.currentSelectedObject.getLocalCollision().calcAABB(currentObjFormat);
+        }
     }
 
     public boolean trySelectObject(TBoxScene3DObject boxScene3DObject) {

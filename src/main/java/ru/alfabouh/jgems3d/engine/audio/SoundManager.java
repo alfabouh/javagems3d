@@ -126,7 +126,7 @@ public final class SoundManager {
         }
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, 1.0f, null);
         gameSound.playSound();
-        return null;
+        return gameSound;
     }
 
     public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, Vector3d position) {
@@ -136,7 +136,7 @@ public final class SoundManager {
         GameSound gameSound = GameSound.createSound(soundBuffer, soundType, pitch, gain, rollOff, null);
         gameSound.setPosition(position);
         gameSound.playSound();
-        return null;
+        return gameSound;
     }
 
     public GameSound playSoundAtEntity(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem worldItem) {

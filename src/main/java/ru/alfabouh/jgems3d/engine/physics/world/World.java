@@ -34,7 +34,7 @@ public final class World implements IWorld {
     private final Set<ILiquid> liquids;
     private final Set<WorldItem> toCleanItems;
     private Graph graph;
-    private boolean collectionsWaitingRefresh;
+    private boolean collectionsWaitRefresh;
     private int ticks;
 
     public World() {
@@ -71,7 +71,7 @@ public final class World implements IWorld {
         JGems.get().getEngineSystem().getMapLoader().onMapUpdate(this);
 
         List<WorldItem> copy1 = new ArrayList<>(this.getAllWorldItems());
-        if (this.collectionsWaitingRefresh) {
+        if (this.collectionsWaitRefresh) {
             synchronized (PhysicsTimer.lockObject) {
                 this.allDynamicItems.clear();
                 this.allBulletItems.clear();
@@ -80,7 +80,7 @@ public final class World implements IWorld {
                 this.allDynamicItems.addAll(this.triggerZones);
                 this.allBulletItems.addAll(copy1.stream().filter(World::isItemJBulletObject).map(e -> (JBulletEntity) e).collect(Collectors.toList()));
             }
-            this.collectionsWaitingRefresh = false;
+            this.collectionsWaitRefresh = false;
         }
         Set<IWorldDynamic> toUpdate = new HashSet<>(this.allDynamicItems);
         for (IWorldDynamic iWorldDynamic : toUpdate) {
@@ -179,7 +179,7 @@ public final class World implements IWorld {
 
     private void clearItemsCollection(Collection<? extends WorldItem> collection) {
         for (WorldItem worldItem : collection) {
-            this.collectionsWaitingRefresh = true;
+            this.collectionsWaitRefresh = true;
             worldItem.onDestroy(this);
             this.getAllWorldItems().remove(worldItem);
         }
@@ -243,7 +243,7 @@ public final class World implements IWorld {
         if (worldItem == null) {
             throw new JGemsException("Tried to pass NULL item in world");
         }
-        this.collectionsWaitingRefresh = true;
+        this.collectionsWaitRefresh = true;
         worldItem.onSpawn(this);
         this.getAllWorldItems().add(worldItem);
     }
