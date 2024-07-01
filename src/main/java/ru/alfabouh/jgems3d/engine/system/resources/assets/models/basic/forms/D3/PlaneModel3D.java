@@ -29,8 +29,8 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
         List<Vector3f> vertices = new ArrayList<>(Arrays.asList(v1, v2, v3, v4));
 
         Vector3f center = new Vector3f();
-        for (Vector3f Vector3f : vertices) {
-            center.add(Vector3f);
+        for (Vector3f vector3f : vertices) {
+            center.add(vector3f);
         }
         center.div(vertices.size());
 

@@ -78,8 +78,8 @@ public class DynamicPlayerSP extends PhysEntity implements IPlayer {
         }
     }
 
-    private void onStep(Vector3f Vector3f) {
-        this.setVelocityVector(Vector3f);
+    private void onStep(Vector3f vector3f) {
+        this.setVelocityVector(vector3f);
     }
 
     private Vector3f getStepVelocityVector(Vector3f motion) {
@@ -191,12 +191,12 @@ public class DynamicPlayerSP extends PhysEntity implements IPlayer {
         return this.isOnGround;
     }
 
-    protected Vector3f getMotionVector(Vector3f Vector3f) {
-        Vector3f Vector3f1 = new Vector3f(Vector3f).mul(new Vector3f(1, 0, 1));
-        if (Vector3f1.length() > 0) {
-            Vector3f1.normalize();
+    protected Vector3f getMotionVector(Vector3f vector3f) {
+        Vector3f vector3f1 = new Vector3f(vector3f).mul(new Vector3f(1, 0, 1));
+        if (vector3f.length() > 0) {
+            vector3f.normalize();
         }
-        return Vector3f1;
+        return vector3f;
     }
 
     private Vector3f calcControllerMotion() {

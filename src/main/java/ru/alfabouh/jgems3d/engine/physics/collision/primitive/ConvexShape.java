@@ -21,8 +21,8 @@ public class ConvexShape implements AbstractCollision {
     @Override
     public btCollisionShape buildCollisionShape(Vector3f scale) {
         this.convexHullShape = new btConvexHullShape();
-        for (Vector3f Vector3f : this.points) {
-            convexHullShape.addPoint(new btVector3(Vector3f.x, Vector3f.y, Vector3f.z));
+        for (Vector3f vector3f : this.points) {
+            convexHullShape.addPoint(new btVector3(vector3f.x, vector3f.y, vector3f.z));
         }
         convexHullShape.setLocalScaling(this.getScaling(scale));
         return convexHullShape;

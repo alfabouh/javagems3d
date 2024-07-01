@@ -80,12 +80,12 @@ public class MathHelper {
         return Math.max(d1, d2);
     }
 
-    public static Vector3f convertV3DV3F(Vector3f Vector3f) {
-        return new Vector3f((float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z);
+    public static Vector3f convertV3DV3F(Vector3f vector3f) {
+        return new Vector3f((float) vector3f.x, (float) vector3f.y, (float) vector3f.z);
     }
 
-    public static Vector3f convertV3FV3D(Vector3f Vector3f) {
-        return new Vector3f(Vector3f);
+    public static Vector3f convertV3FV3D(Vector3f vector3f) {
+        return new Vector3f(vector3f);
     }
 
     public static Vector3f calcLookVector(Vector3f rotations) {

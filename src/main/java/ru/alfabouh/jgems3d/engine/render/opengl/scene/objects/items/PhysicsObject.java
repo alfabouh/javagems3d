@@ -102,10 +102,10 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
                 btVector3 v1 = new btVector3();
                 btVector3 v2 = new btVector3();
                 jBulletEntity.getBulletObject().getCollisionShape().getAabb(jBulletEntity.getBulletObject().getWorldTransform(), v1, v2);
-                Vector3f Vector3f = new Vector3f((float) (v2.getX() - v1.getX()), (float) (v2.getY() - v1.getY()), (float) (v2.getZ() - v1.getZ()));
+                Vector3f vector3f = new Vector3f((float) (v2.getX() - v1.getX()), (float) (v2.getY() - v1.getY()), (float) (v2.getZ() - v1.getZ()));
                 v1.deallocate();
                 v2.deallocate();
-                return Vector3f;
+                return vector3f;
             }
         }
         return this.getModelRenderParams().getCustomCullingAABSize() != null ? this.getModelRenderParams().getCustomCullingAABSize() : new Vector3f(worldItem.getScale().add(1.0f, 1.0f, 1.0f));
@@ -211,12 +211,12 @@ public abstract class PhysicsObject implements IModeledSceneObject, IWorldObject
         return new Vector3f(this.prevRenderRotation);
     }
 
-    public void setPrevPos(Vector3f Vector3f) {
-        this.prevRenderPosition.set(new Vector3f(Vector3f));
+    public void setPrevPos(Vector3f vector3f) {
+        this.prevRenderPosition.set(new Vector3f(vector3f));
     }
 
-    public void setPrevRot(Vector3f Vector3f) {
-        this.prevRenderRotation.set(new Vector3f(Vector3f));
+    public void setPrevRot(Vector3f vector3f) {
+        this.prevRenderRotation.set(new Vector3f(vector3f));
     }
 
     public Vector3f getPrevRenderPosition() {

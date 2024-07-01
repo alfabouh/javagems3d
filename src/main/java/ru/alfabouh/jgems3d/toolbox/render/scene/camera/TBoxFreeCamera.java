@@ -12,11 +12,11 @@ public class TBoxFreeCamera extends FreeCamera {
     }
 
     protected Vector3f moveCameraPosInput() {
-        Vector3f Vector3f = TBoxControllerDispatcher.getNormalizedPositionInput(this.getController());
-        if (Vector3f.length() != 0.0f) {
-            Vector3f.normalize();
+        Vector3f vector3f = TBoxControllerDispatcher.getNormalizedPositionInput(this.getController());
+        if (vector3f.length() != 0.0f) {
+            vector3f.normalize();
         }
-        return Vector3f;
+        return vector3f;
     }
 
     protected Vector2f moveCameraRotInput() {

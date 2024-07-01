@@ -17,12 +17,12 @@ public class FreeCamera extends Camera {
         this.speed = this.camDefaultSpeed();
     }
 
-    public void setCameraPos(Vector3f Vector3f) {
-        super.setCameraPos(Vector3f);
+    public void setCameraPos(Vector3f vector3f) {
+        super.setCameraPos(vector3f);
     }
 
-    public void setCameraRot(Vector3f Vector3f) {
-        super.setCameraRot(Vector3f);
+    public void setCameraRot(Vector3f vector3f) {
+        super.setCameraRot(vector3f);
     }
 
     @Override
@@ -40,23 +40,23 @@ public class FreeCamera extends Camera {
     }
 
     protected Vector3f moveCameraPosInput() {
-        Vector3f Vector3f = JGemsControllerDispatcher.getNormalizedPositionInput(this.getController());
-        if (Vector3f.length() != 0.0f) {
-            Vector3f.normalize();
+        Vector3f vector3f = JGemsControllerDispatcher.getNormalizedPositionInput(this.getController());
+        if (vector3f.length() != 0.0f) {
+            vector3f.normalize();
         }
-        return Vector3f;
+        return vector3f;
     }
 
     protected Vector2f moveCameraRotInput() {
         return JGemsControllerDispatcher.getNormalizedRotationInput(this.getController());
     }
 
-    public void addCameraPos(Vector3f Vector3f) {
-        super.setCameraPos(this.getCamPosition().add(Vector3f));
+    public void addCameraPos(Vector3f vector3f) {
+        super.setCameraPos(this.getCamPosition().add(vector3f));
     }
 
-    public void addCameraRot(Vector3f Vector3f) {
-        super.setCameraRot(this.getCamRotation().add(Vector3f));
+    public void addCameraRot(Vector3f vector3f) {
+        super.setCameraRot(this.getCamRotation().add(vector3f));
     }
 
     public IController getController() {

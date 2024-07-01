@@ -148,8 +148,8 @@ public class Graph implements Serializable {
             return new Vector3f(this.getX(), this.getY(), this.getZ()).distance(vertex.getX(), vertex.getY(), vertex.getZ());
         }
 
-        public double distanceTo(Vector3f Vector3f) {
-            return new Vector3f(this.getX(), this.getY(), this.getZ()).distance(Vector3f);
+        public double distanceTo(Vector3f vector3f) {
+            return new Vector3f(this.getX(), this.getY(), this.getZ()).distance(vector3f);
         }
 
         public float getG() {
