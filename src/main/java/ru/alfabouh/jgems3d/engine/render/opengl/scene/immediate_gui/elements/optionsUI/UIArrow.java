@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements.optionsUI;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import ru.alfabouh.jgems3d.engine.JGems;
@@ -30,12 +30,17 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         super.render(partialTicks);
 
         this.imageStaticUI.setScaling(this.getScaling());
         this.imageStaticUI.setSelected(this.isSelected());
         this.imageStaticUI.render(partialTicks);
+    }
+
+    @Override
+    public void buildUI() {
+        this.imageStaticUI.buildUI();
     }
 
     @Override
@@ -63,7 +68,7 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    protected void onMouseInside(Vector2d mouseCoordinates) {
+    protected void onMouseInside(Vector2f mouseCoordinates) {
 
     }
 
@@ -78,7 +83,7 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    protected void onClicked(Vector2d mouseCoordinates) {
+    protected void onClicked(Vector2f mouseCoordinates) {
         if (this.vector == 1) {
             if (!this.settingIntSlots.goRight()) {
                 this.settingIntSlots.setValue(0);
@@ -93,7 +98,7 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    protected void onUnClicked(Vector2d mouseCoordinates) {
+    protected void onUnClicked(Vector2f mouseCoordinates) {
 
     }
 }

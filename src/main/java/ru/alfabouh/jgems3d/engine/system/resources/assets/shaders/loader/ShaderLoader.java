@@ -5,7 +5,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.Shader;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,7 @@ public class ShaderLoader implements IShaderLoader {
     public JGemsShaderManager blur5;
     public JGemsShaderManager blur9;
     public JGemsShaderManager blur13;
+    public JGemsShaderManager blur_vsm;
     public JGemsShaderManager hdr;
     public JGemsShaderManager fxaa;
     public JGemsShaderManager post_psx;
@@ -71,6 +72,7 @@ public class ShaderLoader implements IShaderLoader {
         this.blur5 = this.createShaderManager("jgems/shaders/blur5", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur9 = this.createShaderManager("jgems/shaders/blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur13 = this.createShaderManager("jgems/shaders/blur13", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.blur_vsm = this.createShaderManager("jgems/shaders/blur_vsm", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.imgui = this.createShaderManager("jgems/shaders/imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 

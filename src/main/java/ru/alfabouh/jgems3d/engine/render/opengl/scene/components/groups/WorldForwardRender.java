@@ -12,7 +12,7 @@ public class WorldForwardRender extends SceneRenderBase {
         super(1, sceneRenderConveyor, new RenderGroup("WORLD_FORWARD"));
     }
 
-    public void onRender(double partialTicks) {
+    public void onRender(float partialTicks) {
         this.render(partialTicks, this.getSceneWorld().getFilteredEntityList(JGemsSceneRender.RenderPass.FORWARD));
     }
 
@@ -24,7 +24,7 @@ public class WorldForwardRender extends SceneRenderBase {
         super.onStopRender();
     }
 
-    private void render(double partialTicks, List<IModeledSceneObject> renderObjects) {
+    private void render(float partialTicks, List<IModeledSceneObject> renderObjects) {
         for (IModeledSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {

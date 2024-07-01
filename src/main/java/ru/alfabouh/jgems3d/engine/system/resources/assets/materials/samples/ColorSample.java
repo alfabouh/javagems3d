@@ -1,24 +1,24 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples;
 
-import org.joml.Vector3d;
-import org.joml.Vector4d;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class ColorSample implements ISample {
-    private final Vector4d color;
+    private final Vector4f color;
 
-    private ColorSample(Vector4d color) {
+    private ColorSample(Vector4f color) {
         this.color = color;
     }
 
-    public static ColorSample createColor(Vector4d vector4d) {
-        return new ColorSample(new Vector4d(vector4d));
+    public static ColorSample createColor(Vector4f Vector4f) {
+        return new ColorSample(new Vector4f(Vector4f));
     }
 
-    public static ColorSample createColor(Vector3d vector3d) {
-        return new ColorSample(new Vector4d(vector3d, 1.0d));
+    public static ColorSample createColor(Vector3f Vector3f) {
+        return new ColorSample(new Vector4f(Vector3f, 1.0f));
     }
 
-    public Vector4d getColor() {
+    public Vector4f getColor() {
         return this.color;
     }
 }

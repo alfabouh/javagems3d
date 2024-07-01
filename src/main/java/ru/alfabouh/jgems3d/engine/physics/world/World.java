@@ -4,11 +4,11 @@ import org.bytedeco.bullet.BulletCollision.btCollisionObject;
 import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.BulletCollision.btGhostObject;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.graph.Graph;
 import ru.alfabouh.jgems3d.engine.inventory.IHasInventory;
-import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.liquids.ILiquid;
 import ru.alfabouh.jgems3d.engine.physics.liquids.Water;
@@ -21,7 +21,7 @@ import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicsTimer;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.Light;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,7 +68,7 @@ public final class World implements IWorld {
     }
 
     public void onWorldUpdate() {
-        JGems.get().getEngineSystem().getMapLoader().onMapUpdate(this);
+        //JGems.get().getEngineSystem().getMapLoader().onMapUpdate(this);
 
         List<WorldItem> copy1 = new ArrayList<>(this.getAllWorldItems());
         if (this.collectionsWaitRefresh) {
@@ -89,7 +89,7 @@ public final class World implements IWorld {
                 if (worldItem1 instanceof IHasInventory) {
                     ((IHasInventory) worldItem1).inventory().updateInventory(this);
                 }
-                worldItem1.setPrevPosition(new Vector3d(worldItem1.getPosition()));
+                worldItem1.setPrevPosition(new Vector3f(worldItem1.getPosition()));
             }
             iWorldDynamic.onUpdate(this);
         }

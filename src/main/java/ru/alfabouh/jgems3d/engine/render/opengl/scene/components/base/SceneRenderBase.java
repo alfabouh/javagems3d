@@ -5,7 +5,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.ICamera;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.components.RenderGroup;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public abstract class SceneRenderBase {
     private final int renderPriority;
@@ -23,7 +23,7 @@ public abstract class SceneRenderBase {
         return JGems.get().getScreen().getCamera();
     }
 
-    public abstract void onRender(double partialTicks);
+    public abstract void onRender(float partialTicks);
 
     public void onStartRender() {
         SystemLogging.get().getLogManager().log("Scene " + this.getRenderGroup().getId() + ": render start!");

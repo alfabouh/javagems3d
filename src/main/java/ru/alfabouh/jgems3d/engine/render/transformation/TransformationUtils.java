@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.transformation;
 
-import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.ICamera;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
@@ -9,16 +9,16 @@ public class TransformationUtils {
     private final Vector3f projectionData;
 
     private final CameraTransformation cameraTransformation;
-    private final Matrix4d perspectiveMatrix;
-    private final Matrix4d orthographicMatrix;
+    private final Matrix4f perspectiveMatrix;
+    private final Matrix4f orthographicMatrix;
     private final IWindow window;
 
     public TransformationUtils(IWindow window, float fov, float zNear, float zFar) {
         this.window = window;
         this.projectionData = new Vector3f(fov, zNear, zFar);
         this.cameraTransformation = new CameraTransformation();
-        this.perspectiveMatrix = new Matrix4d().identity();
-        this.orthographicMatrix = new Matrix4d().identity();
+        this.perspectiveMatrix = new Matrix4f().identity();
+        this.orthographicMatrix = new Matrix4f().identity();
 
         this.updateMatrices();
     }
@@ -40,16 +40,16 @@ public class TransformationUtils {
         this.updatePerspectiveMatrix();
     }
 
-    public Matrix4d getMainCameraViewMatrix() {
+    public Matrix4f getMainCameraViewMatrix() {
         return this.getCameraTransformation().getViewMatrix();
     }
 
-    public Matrix4d getOrthographicMatrix() {
-        return new Matrix4d(this.orthographicMatrix);
+    public Matrix4f getOrthographicMatrix() {
+        return new Matrix4f(this.orthographicMatrix);
     }
 
-    public Matrix4d getPerspectiveMatrix() {
-        return new Matrix4d(this.perspectiveMatrix);
+    public Matrix4f getPerspectiveMatrix() {
+        return new Matrix4f(this.perspectiveMatrix);
     }
 
     public CameraTransformation getCameraTransformation() {

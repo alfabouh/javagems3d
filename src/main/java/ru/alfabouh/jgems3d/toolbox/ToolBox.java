@@ -1,8 +1,8 @@
 package ru.alfabouh.jgems3d.toolbox;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.system.EngineSystem;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.proxy.logger.managers.JGemsLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 import ru.alfabouh.jgems3d.toolbox.render.screen.TBoxScreen;
 import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
 import ru.alfabouh.jgems3d.toolbox.settings.TBoxSettings;

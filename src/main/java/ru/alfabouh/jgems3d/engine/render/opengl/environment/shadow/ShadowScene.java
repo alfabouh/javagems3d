@@ -1,9 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.environment.shadow;
 
-import org.joml.Matrix4d;
-import org.joml.Vector2i;
-import org.joml.Vector3d;
-import org.joml.Vector4d;
+import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
@@ -16,13 +13,15 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.render.transformation.Transformation;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.IImageSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +30,15 @@ public class ShadowScene {
     public static final int CASCADE_SPLITS = 3;
     private final SceneWorld sceneWorld;
     private Vector2i shadowDimensions;
-    private final FBOTexture2DProgram FBOTexture2DProgram;
+    private final FBOTexture2DProgram shadowFBO;
+    private final FBOTexture2DProgram shadowPostFBO;
     private List<CascadeShadow> cascadeShadows;
     private List<PointLightShadow> pointLightShadows;
 
     public ShadowScene(SceneWorld sceneWorld) {
         this.sceneWorld = sceneWorld;
-        this.FBOTexture2DProgram = new FBOTexture2DProgram(true);
+        this.shadowFBO = new FBOTexture2DProgram(true);
+        this.shadowPostFBO = new FBOTexture2DProgram(true);
         this.initCascades();
         this.initPointLightShadows();
 
@@ -48,12 +49,14 @@ public class ShadowScene {
         this.shadowDimensions = new Vector2i((int) (2048 * ShadowScene.qualityMultiplier()));
 
         this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
-        this.FBOTexture2DProgram.clearFBO();
+        this.shadowFBO.clearFBO();
+        this.shadowPostFBO.clearFBO();
 
         FBOTexture2DProgram.FBOTextureInfo[] FBOs = new FBOTexture2DProgram.FBOTextureInfo[]{new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
                 new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
                 new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG)};
-        this.FBOTexture2DProgram.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     private Vector2i getShadowDim() {
@@ -83,12 +86,12 @@ public class ShadowScene {
         final int dimensions = this.getShadowDim().x;
         JGemsScene scene = JGems.get().getScreen().getScene();
 
-        Matrix4d view = scene.getTransformationUtils().getMainCameraViewMatrix();
-        Matrix4d projection = scene.getTransformationUtils().getPerspectiveMatrix();
+        Matrix4f view = scene.getTransformationUtils().getMainCameraViewMatrix();
+        Matrix4f projection = scene.getTransformationUtils().getPerspectiveMatrix();
 
-        Vector4d sunPos = new Vector4d(this.getSceneWorld().getEnvironment().getSky().getSunAngle(), 0.0d);
+        Vector4f sunPos = new Vector4f(this.getSceneWorld().getEnvironment().getSky().getSunPos(), 0.0f);
 
-        float[] cascadeSplitLambda = new float[]{0.5f, 0.5f, 0.5f};
+        float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
         float[] cascadeSplits = new float[ShadowScene.CASCADE_SPLITS];
 
         float nearClip = this.nearCascadeClip();
@@ -113,66 +116,66 @@ public class ShadowScene {
         for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
             float splitDist = cascadeSplits[i];
 
-            Vector3d[] frustumCorners = new Vector3d[]{
-                    new Vector3d(-1.0d, 1.0d, -1.0d),
-                    new Vector3d(1.0d, 1.0d, -1.0d),
-                    new Vector3d(1.0d, -1.0d, -1.0d),
-                    new Vector3d(-1.0d, -1.0d, -1.0d),
-                    new Vector3d(-1.0d, 1.0d, 1.0d),
-                    new Vector3d(1.0d, 1.0d, 1.0d),
-                    new Vector3d(1.0d, -1.0d, 1.0d),
-                    new Vector3d(-1.0d, -1.0d, 1.0d),
+            Vector3f[] frustumCorners = new Vector3f[]{
+                    new Vector3f(-1.0f, 1.0f, -1.0f),
+                    new Vector3f(1.0f, 1.0f, -1.0f),
+                    new Vector3f(1.0f, -1.0f, -1.0f),
+                    new Vector3f(-1.0f, -1.0f, -1.0f),
+                    new Vector3f(-1.0f, 1.0f, 1.0f),
+                    new Vector3f(1.0f, 1.0f, 1.0f),
+                    new Vector3f(1.0f, -1.0f, 1.0f),
+                    new Vector3f(-1.0f, -1.0f, 1.0f),
             };
 
-            Matrix4d invCam = (new Matrix4d(projection).mul(view)).invert();
+            Matrix4f invCam = (new Matrix4f(projection).mul(view)).invert();
             for (int j = 0; j < 8; j++) {
-                Vector4d invCorner = new Vector4d(frustumCorners[j], 1.0d).mul(invCam);
-                frustumCorners[j] = new Vector3d(invCorner.x, invCorner.y, invCorner.z).div(new Vector3d(invCorner.w));
+                Vector4f invCorner = new Vector4f(frustumCorners[j], 1.0f).mul(invCam);
+                frustumCorners[j] = new Vector3f(invCorner.x, invCorner.y, invCorner.z).div(new Vector3f(invCorner.w));
             }
 
             for (int j = 0; j < 4; j++) {
-                Vector3d dist = new Vector3d(frustumCorners[j + 4]).sub(frustumCorners[j]);
-                frustumCorners[j + 4] = new Vector3d(frustumCorners[j]).add(new Vector3d(dist).mul(splitDist));
-                frustumCorners[j] = new Vector3d(frustumCorners[j]).add(new Vector3d(dist).mul(lastSplitDist));
+                Vector3f dist = new Vector3f(frustumCorners[j + 4]).sub(frustumCorners[j]);
+                frustumCorners[j + 4] = new Vector3f(frustumCorners[j]).add(new Vector3f(dist).mul(splitDist));
+                frustumCorners[j] = new Vector3f(frustumCorners[j]).add(new Vector3f(dist).mul(lastSplitDist));
             }
 
-            Vector3d frustumCenter = new Vector3d(0.0d);
+            Vector3f frustumCenter = new Vector3f(0.0f);
             for (int j = 0; j < 8; j++) {
                 frustumCenter.add(frustumCorners[j]);
             }
-            frustumCenter.div(8.0d);
-            double radius = 0.0d;
+            frustumCenter.div(8.0f);
+            float radius = 0.0f;
             for (int j = 0; j < 8; j++) {
-                double distance = (new Vector3d(frustumCorners[j]).sub(frustumCenter)).length();
-                radius = Math.max(radius, distance);
+                double distance = (new Vector3f(frustumCorners[j]).sub(frustumCenter)).length();
+                radius = (float) Math.max(radius, distance);
             }
-            radius = Math.ceil(radius * 16.0d) / 16.0d;
+            radius = (float) (Math.ceil(radius * 16.0d) / 16.0d);
 
-            Vector3d maxExtents = new Vector3d(radius);
-            Vector3d minExtents = new Vector3d(maxExtents).mul(-1.0d);
+            Vector3f maxExtents = new Vector3f(radius);
+            Vector3f minExtents = new Vector3f(maxExtents).mul(-1.0f);
 
-            Vector3d lightDir = (new Vector3d(sunPos.x, sunPos.y, sunPos.z).mul(-1.0d)).normalize();
-            Vector3d eye = new Vector3d(frustumCenter).sub(new Vector3d(lightDir).mul(-minExtents.z));
-            Vector3d up = new Vector3d(0.0d, 1.0d, 0.0d);
-            Matrix4d lightViewMatrix = Transformation.getLookAtMatrix(eye, up, frustumCenter);
-            Matrix4d lightOrthoMatrix = Transformation.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
+            Vector3f lightDir = (new Vector3f(sunPos.x, sunPos.y, sunPos.z).mul(-1.0f)).normalize();
+            Vector3f eye = new Vector3f(frustumCenter).sub(new Vector3f(lightDir).mul(-minExtents.z));
+            Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+            Matrix4f lightViewMatrix = Transformation.getLookAtMatrix(eye, up, frustumCenter);
+            Matrix4f lightOrthoMatrix = Transformation.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
 
             CascadeShadow cascadeShadow = cascadeShadows.get(i);
             cascadeShadow.setSplitDistance((nearClip + splitDist * clipRange) * -1.0f);
 
-            Matrix4d shadowMatrix = new Matrix4d(lightOrthoMatrix.mul(lightViewMatrix));
-            Vector4d shadowOrigin = new Vector4d(0.0d, 0.0d, 0.0d, 1.0d);
+            Matrix4f shadowMatrix = new Matrix4f(lightOrthoMatrix.mul(lightViewMatrix));
+            Vector4f shadowOrigin = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
             shadowOrigin.mul(shadowMatrix, shadowOrigin);
             shadowOrigin.mul(dimensions).div(2.0f);
 
-            Vector4d roundedOrigin = new Vector4d();
+            Vector4f roundedOrigin = new Vector4f();
             shadowOrigin.round(roundedOrigin);
-            Vector4d roundOffset = new Vector4d(roundedOrigin).sub(shadowOrigin);
-            roundOffset.mul(2.0d).div(dimensions);
-            roundOffset.z = 0.0d;
-            roundOffset.w = 0.0d;
+            Vector4f roundOffset = new Vector4f(roundedOrigin).sub(shadowOrigin);
+            roundOffset.mul(2.0f).div(dimensions);
+            roundOffset.z = 0.0f;
+            roundOffset.w = 0.0f;
 
-            Matrix4d shadowProj = new Matrix4d(lightOrthoMatrix);
+            Matrix4f shadowProj = new Matrix4f(lightOrthoMatrix);
             shadowProj.m30(shadowProj.m30() + roundOffset.x);
             shadowProj.m31(shadowProj.m31() + roundOffset.y);
             shadowProj.m32(shadowProj.m32() + roundOffset.z);
@@ -204,14 +207,14 @@ public class ShadowScene {
 
     private void sunScene(List<Model<Format3D>> modelList) {
         this.getSunShadowShader().bind();
-        this.getFrameBufferObjectProgram().bindFBO();
+        this.getShadowFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
         for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
             CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
-            this.getFrameBufferObjectProgram().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
+            this.getShadowFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
-            this.getSunShadowShader().performUniform("projection_view_matrix", new Matrix4d(cascadeShadow.getLightProjectionViewMatrix()));
+            this.getSunShadowShader().performUniform("projection_view_matrix", new Matrix4f(cascadeShadow.getLightProjectionViewMatrix()));
             GL30.glCullFace(GL30.GL_BACK);
             for (Model<Format3D> model : modelList) {
                 if (model == null || model.getMeshDataGroup() == null) {
@@ -223,28 +226,27 @@ public class ShadowScene {
                 this.renderModelForShadow(model);
             }
         }
-        this.getFrameBufferObjectProgram().unBindFBO();
+        this.getShadowFBO().unBindFBO();
         this.getSunShadowShader().unBind();
 
-        /*
-        TBoxShaderManager blurShader = ResourceManager.shaderAssets.blur13;
-        Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(news Vector2f(0.0f), news Vector2f(ShadowScene.SHADOW_SUN_MAP_SIZE), 0);
-        blurShader.bind();
-        blurShader.performUniform("resolution", news Vector2f(JGems.getGame().getScreen().getDimensions()));
-        this.getFrameBufferObjectProgram().bindFBO();
+        Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getShadowDim()), 0);
+        JGemsShaderManager shaderManager = ResourceManager.shaderAssets.blur_vsm;
+        this.getShadowPostFBO().bindFBO();
+        GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
+        shaderManager.bind();
+        shaderManager.performUniform("projection_model_matrix", Transformation.getModelOrthographicMatrix(model.getFormat(), Transformation.getOrthographic2DMatrix(0, this.getShadowDim().x, this.getShadowDim().y, 0)));
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
         for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
-            this.getFrameBufferObjectProgram().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
+            GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT);
+            this.getShadowPostFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
+            this.getShadowFBO().getTexturePrograms().get(i).bindTexture(GL30.GL_TEXTURE_2D);
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            this.getFrameBufferObjectProgram().bindTexture(0);
-            blurShader.performUniform("texture_sampler", 0);
-            blurShader.performUniform("direction", news Vector2f(1.0f, 1.0f));
-            blurShader.getUtils().performProjectionMatrix2d(model);
-            JGemsScene.renderModel(model, GL30.GL_TRIANGLES);
+            shaderManager.performUniform("texture_sampler", 0);
+            JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         }
-        this.getFrameBufferObjectProgram().unBindFBO();
-        blurShader.unBind();
+        shaderManager.unBind();
+        this.getShadowPostFBO().unBindFBO();
         model.clean();
-         */
     }
 
     private void pointLightsScene(List<Model<Format3D>> modelList) {
@@ -279,9 +281,9 @@ public class ShadowScene {
 
     private void renderModelForShadow(Model<?> model) {
         for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-            if (modelNode.getMaterial().getDiffuse() instanceof IImageSample) {
-                ((IImageSample) modelNode.getMaterial().getDiffuse()).bindTexture();
-            }
+           //if (modelNode.getMaterial().getDiffuse() instanceof IImageSample) {
+           //    ((IImageSample) modelNode.getMaterial().getDiffuse()).bindTexture();
+           //}
             GL30.glBindVertexArray(modelNode.getMesh().getVao());
             for (int a : modelNode.getMesh().getAttributePointers()) {
                 GL30.glEnableVertexAttribArray(a);
@@ -319,8 +321,12 @@ public class ShadowScene {
         return this.cascadeShadows;
     }
 
-    public FBOTexture2DProgram getFrameBufferObjectProgram() {
-        return this.FBOTexture2DProgram;
+    public FBOTexture2DProgram getShadowFBO() {
+        return this.shadowFBO;
+    }
+
+    public FBOTexture2DProgram getShadowPostFBO() {
+        return this.shadowPostFBO;
     }
 
     public SceneWorld getSceneWorld() {

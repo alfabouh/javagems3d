@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.frustum;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.joml.Vector3f;
 
 public class RenderABB {
@@ -12,13 +12,13 @@ public class RenderABB {
         this.abbMax = new Vector3f(0.0f);
     }
 
-    public RenderABB(Vector3d center, Vector3d size) {
+    public RenderABB(Vector3f center, Vector3f size) {
         this.abbMin = new Vector3f(0.0f);
         this.abbMax = new Vector3f(0.0f);
         this.setAbbForm(center, size);
     }
 
-    public void setAbbForm(Vector3d center, Vector3d size) {
+    public void setAbbForm(Vector3f center, Vector3f size) {
         double d1 = size.x / 2.0f;
         double d2 = size.y / 2.0f;
         double d3 = size.z / 2.0f;

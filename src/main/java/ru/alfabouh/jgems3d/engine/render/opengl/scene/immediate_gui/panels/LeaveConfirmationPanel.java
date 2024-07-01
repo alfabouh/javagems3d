@@ -15,7 +15,7 @@ public class LeaveConfirmationPanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, double partialTicks) {
+    public void drawPanel(ImmediateUI immediateUI, float partialTicks) {
         MainMenuPanel.renderMenuBackGround(false, new Vector3f(1.0f, 0.2f, 1.0f));
         Window window = JGems.get().getScreen().getWindow();
         int windowW = window.getWindowDimensions().x;

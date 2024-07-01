@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples;
 
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class ParticleTexturePack {
     private final IImageSample[] iImageSample;

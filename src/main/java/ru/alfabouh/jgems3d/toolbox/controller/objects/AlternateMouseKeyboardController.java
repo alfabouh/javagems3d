@@ -1,8 +1,8 @@
 package ru.alfabouh.jgems3d.toolbox.controller.objects;
 
-import org.joml.Vector2d;
 import org.joml.Vector2f;
-import org.joml.Vector3d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
@@ -26,8 +26,8 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
         this.normalizedRotationInput.set(0.0d);
 
         double[] xy = this.getMouseAndKeyboard().getCursorCoordinates();
-        double d1 = xy[0] - this.prevMouseCoord.x;
-        double d2 = xy[1] - this.prevMouseCoord.y;
+        float d1 = (float) (xy[0] - this.prevMouseCoord.x);
+        float d2 = (float) (xy[1] - this.prevMouseCoord.y);
 
         if (!EditorContent.isFocusedOnSceneFrame) {
             this.prevMouseCoord.set(xy[0], xy[1]);
@@ -35,7 +35,7 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
         }
 
         if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
-            this.getRotationInput().set(new Vector2d(d2, d1));
+            this.getRotationInput().set(new Vector2f(d2, d1));
         }
 
         this.prevMouseCoord.set(xy[0], xy[1]);
@@ -59,7 +59,7 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
 
-        this.normalizedPositionInput.set(new Vector3d(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
-        this.normalizedRotationInput.set(new Vector2d(this.getRotationInput()).mul(TBoxControllerDispatcher.CAM_SENS));
+        this.normalizedPositionInput.set(new Vector3f(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
+        this.normalizedRotationInput.set(new Vector2f(this.getRotationInput()).mul(TBoxControllerDispatcher.CAM_SENS));
     }
 }

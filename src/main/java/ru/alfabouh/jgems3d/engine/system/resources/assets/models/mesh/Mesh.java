@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
@@ -73,7 +73,7 @@ public final class Mesh {
         return a;
     }
 
-    public static float[] reorderFloats3Array(List<Vector3d> list) {
+    public static float[] reorderFloats3Array(List<Vector3f> list) {
         if (list == null || list.isEmpty()) {
             return null;
         }
@@ -277,9 +277,18 @@ public final class Mesh {
     }
 
     public void clean() {
+        this.indexes.clear();
+        this.attributePositions.clear();
+        this.attributeTextureCoordinates.clear();
+        this.attributeNormals.clear();
+        this.attributeTangents.clear();
+        this.attributeBitangents.clear();
+        this.attributePointers.clear();
+
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glDeleteBuffers(this.getIndexVbo());
         GL30.glDeleteBuffers(this.getPositionVbo());
+        GL30.glDeleteBuffers(this.getAvaragedNormalsVbo());
         GL30.glDeleteBuffers(this.getTextureCoordinatesVbo());
         GL30.glDeleteBuffers(this.getNormalsVbo());
         GL30.glDeleteBuffers(this.getTangentsVbo());
@@ -329,7 +338,7 @@ public final class Mesh {
         return newArray;
     }
 
-    void memFree(Buffer buffer) {
+    private void memFree(Buffer buffer) {
         if (buffer != null) {
             MemoryUtil.memFree(buffer);
         }

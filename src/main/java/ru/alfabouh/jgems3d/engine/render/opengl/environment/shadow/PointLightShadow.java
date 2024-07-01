@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.environment.shadow;
 
-import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.PointLight;
@@ -16,7 +16,7 @@ public class PointLightShadow {
     private final int id;
     private final SceneWorld sceneWorld;
     private PointLight pointLight;
-    private List<Matrix4d> shadowDirections;
+    private List<Matrix4f> shadowDirections;
 
     public PointLightShadow(int id, SceneWorld sceneWorld) {
         this.id = id;
@@ -68,7 +68,7 @@ public class PointLightShadow {
         }
     }
 
-    public List<Matrix4d> getShadowDirections() {
+    public List<Matrix4f> getShadowDirections() {
         return this.shadowDirections;
     }
 

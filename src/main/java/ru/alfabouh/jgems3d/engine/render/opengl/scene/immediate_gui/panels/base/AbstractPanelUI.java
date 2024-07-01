@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.base
 
 import org.joml.Vector2i;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.ImmediateUI;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public abstract class AbstractPanelUI implements PanelUI {
     private final PanelUI prevPanel;

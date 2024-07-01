@@ -89,8 +89,6 @@ public class DIMGuiRenderTBox {
     private ImGuiIO getImGuiIO() {
         ImGuiIO io = ImGui.getIO();
         io.setKeyMap(ImGuiKey.C, GLFW.GLFW_KEY_C);
-        io.setKeyMap(ImGuiKey.Y, GLFW.GLFW_KEY_Y);
-        io.setKeyMap(ImGuiKey.Z, GLFW.GLFW_KEY_Z);
         io.setKeyMap(ImGuiKey.X, GLFW.GLFW_KEY_X);
         io.setKeyMap(ImGuiKey.A, GLFW.GLFW_KEY_A);
         io.setKeyMap(ImGuiKey.V, GLFW.GLFW_KEY_V);
@@ -114,7 +112,7 @@ public class DIMGuiRenderTBox {
         return io;
     }
 
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         if (this.getCurrentContentToRender() == null) {
             return;
         }
@@ -200,7 +198,7 @@ public class DIMGuiRenderTBox {
         this.getShaderManager().unBind();
     }
 
-    private void drawGui(TBoxControllerDispatcher controllerDispatcher, double partialTicks) {
+    private void drawGui(TBoxControllerDispatcher controllerDispatcher, float partialTicks) {
         MouseKeyboardController mouseKeyboardController = controllerDispatcher.getMouseKeyboardController();
         Vector2i dim = ToolBox.get().getScreen().getDimensions();
 

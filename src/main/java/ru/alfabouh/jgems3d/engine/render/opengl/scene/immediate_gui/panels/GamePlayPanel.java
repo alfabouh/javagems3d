@@ -4,8 +4,8 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.inventory.Inventory;
-import ru.alfabouh.jgems3d.engine.physics.entities.player.KinematicPlayerSP;
-import ru.alfabouh.jgems3d.engine.physics.entities.prop.PhysPlank;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlayerSP;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.props.PhysPlank;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.inventory.RenderInventoryItemData;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.ImmediateUI;
@@ -24,12 +24,12 @@ public class GamePlayPanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, double partialTicks) {
+    public void drawPanel(ImmediateUI immediateUI, float partialTicks) {
         this.renderTextOnScreen(immediateUI, partialTicks);
         this.renderImagesOnScreen(immediateUI, partialTicks);
     }
 
-    private void renderTextOnScreen(ImmediateUI immediateUI, double partialTicks) {
+    private void renderTextOnScreen(ImmediateUI immediateUI, float partialTicks) {
         Window window = JGems.get().getScreen().getWindow();
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
@@ -99,7 +99,7 @@ public class GamePlayPanel extends AbstractPanelUI {
         immediateUI.textUI(JGems.get().I18n("gameplay.mind"), ResourceManager.renderAssets.standardFont, new Vector2i(42, windowH - 250), 0xffffff, 0.5f);
     }
 
-    private void renderImagesOnScreen(ImmediateUI immediateUI, double partialTicks) {
+    private void renderImagesOnScreen(ImmediateUI immediateUI, float partialTicks) {
         Window window = JGems.get().getScreen().getWindow();
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
@@ -107,12 +107,12 @@ public class GamePlayPanel extends AbstractPanelUI {
         float stamina = ((KinematicPlayerSP) JGems.get().getPlayerSP()).getStamina();
         float mind = ((KinematicPlayerSP) JGems.get().getPlayerSP()).getMind();
 
-        immediateUI.scale(new Vector2f(3.0f));
+        immediateUI.scale(new Vector2f(2.0f));
         immediateUI.imageUI(ResourceManager.renderAssets.gui1, new Vector2i(42, windowH - 160), new Vector2f(0.0f), new Vector2f(101.0f, 6.0f), 0.5f);
-        immediateUI.imageUI(ResourceManager.renderAssets.gui1, new Vector2i(42, windowH - 160), new Vector2f(0.0f, 6.0f), new Vector2f(101.0f * stamina, 6.0f), 0.5f);
-
-        immediateUI.imageUI(ResourceManager.renderAssets.gui1, new Vector2i(42, windowH - 220), new Vector2f(0.0f), new Vector2f(101.0f, 6.0f), 0.5f);
-        immediateUI.imageUI(ResourceManager.renderAssets.gui1, new Vector2i(42, windowH - 220), new Vector2f(0.0f, 6.0f), new Vector2f(101.0f * mind, 6.0f), 0.5f);
+        //immediateUI.imageUI(ResourceManager.renderAssets.gui1, new Vector2i(42, windowH - 160), new Vector2f(0.0f, 6.0f), new Vector2f(101.0f * stamina, 6.0f), 0.5f);
+//
+        //immediateUI.imageUI(ResourceManager.renderAssets.gui1, new Vector2i(42, windowH - 220), new Vector2f(0.0f), new Vector2f(101.0f, 6.0f), 0.5f);
+        //immediateUI.imageUI(ResourceManager.renderAssets.gui1, new Vector2i(42, windowH - 220), new Vector2f(0.0f, 6.0f), new Vector2f(101.0f * mind, 6.0f), 0.5f);
         immediateUI.defaultScale();
 
         int crossSize = 32;

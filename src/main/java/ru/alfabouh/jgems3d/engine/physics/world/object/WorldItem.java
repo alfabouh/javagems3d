@@ -1,9 +1,9 @@
 package ru.alfabouh.jgems3d.engine.physics.world.object;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
-import ru.alfabouh.jgems3d.engine.physics.entities.IControllable;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.IControllable;
 import ru.alfabouh.jgems3d.engine.physics.particles.ParticleFX;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
@@ -11,31 +11,31 @@ import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.Light;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.AttachedCamera;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class WorldItem implements IWorldObject {
     private static int globalId;
-    protected final Vector3d position;
-    protected final Vector3d rotation;
+    protected final Vector3f position;
+    protected final Vector3f rotation;
     private final World world;
-    private final Vector3d prevPosition;
+    private final Vector3f prevPosition;
     private final String itemName;
     private final int itemId;
     private final List<Light> attachedLights;
     private int spawnTick;
     private boolean isDead;
     private boolean spawned;
-    private double scale;
+    private Vector3f scale;
     private PhysicsObject relativeRenderObject;
 
-    public WorldItem(World world, double scale, @NotNull Vector3d pos, @NotNull Vector3d rot, String itemName) {
+    public WorldItem(World world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scale, String itemName) {
         this.itemName = itemName;
-        this.rotation = new Vector3d(rot);
-        this.position = new Vector3d(pos);
-        this.prevPosition = new Vector3d(this.position);
+        this.rotation = new Vector3f(rot);
+        this.position = new Vector3f(pos);
+        this.prevPosition = new Vector3f(this.position);
         this.scale = scale;
         this.world = world;
         this.attachedLights = new ArrayList<>();
@@ -45,24 +45,16 @@ public abstract class WorldItem implements IWorldObject {
         this.relativeRenderObject = null;
     }
 
-    public WorldItem(World world, double scale, Vector3d pos, String itemName) {
-        this(world, scale, pos, new Vector3d(0.0d), itemName);
+    public WorldItem(World world, Vector3f pos, Vector3f rot, String itemName) {
+        this(world, pos, rot, new Vector3f(1.0f), itemName);
     }
 
-    public WorldItem(World world, double scale, String itemName) {
-        this(world, scale, new Vector3d(0.0d), new Vector3d(0.0d), itemName);
-    }
-
-    public WorldItem(World world, @NotNull Vector3d pos, @NotNull Vector3d rot, String itemName) {
-        this(world, 1.0d, pos, rot, itemName);
-    }
-
-    public WorldItem(World world, Vector3d pos, String itemName) {
-        this(world, 1.0d, pos, new Vector3d(0.0d), itemName);
+    public WorldItem(World world ,Vector3f pos, String itemName) {
+        this(world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
     public WorldItem(World world, String itemName) {
-        this(world, 1.0d, new Vector3d(0.0d), new Vector3d(0.0d), itemName);
+        this(world, new Vector3f(1.0f), new Vector3f(0.0f), new Vector3f(0.0f), itemName);
     }
 
     public void onSpawn(IWorld iWorld) {
@@ -92,39 +84,39 @@ public abstract class WorldItem implements IWorldObject {
         return this.getItemName() + "(" + this.getItemId() + ")";
     }
 
-    public Vector3d getPrevPosition() {
-        return new Vector3d(this.prevPosition);
+    public Vector3f getPrevPosition() {
+        return new Vector3f(this.prevPosition);
     }
 
-    public void setPrevPosition(Vector3d vector3d) {
-        this.prevPosition.set(vector3d);
+    public void setPrevPosition(Vector3f Vector3f) {
+        this.prevPosition.set(Vector3f);
     }
 
     public int getTicksExisted() {
         return this.getWorld().getTicks() - this.spawnTick;
     }
 
-    public Vector3d getPosition() {
-        return new Vector3d(this.position);
+    public Vector3f getPosition() {
+        return new Vector3f(this.position);
     }
 
-    public void setPosition(Vector3d vector3d) {
-        this.position.set(vector3d);
+    public void setPosition(Vector3f Vector3f) {
+        this.position.set(Vector3f);
     }
 
-    public Vector3d getRotation() {
-        return new Vector3d(this.rotation);
+    public Vector3f getRotation() {
+        return new Vector3f(this.rotation);
     }
 
-    public void setRotation(Vector3d vector3d) {
-        this.rotation.set(vector3d);
+    public void setRotation(Vector3f Vector3f) {
+        this.rotation.set(Vector3f);
     }
 
-    public double getScale() {
-        return this.scale;
+    public Vector3f getScale() {
+        return new Vector3f(this.scale);
     }
 
-    public void setScale(double scale) {
+    public void setScale(Vector3f scale) {
         this.scale = scale;
     }
 
@@ -132,7 +124,7 @@ public abstract class WorldItem implements IWorldObject {
         return true;
     }
 
-    public Vector3d getLookVector() {
+    public Vector3f getLookVector() {
         return MathHelper.calcLookVector(this.getRotation());
     }
 

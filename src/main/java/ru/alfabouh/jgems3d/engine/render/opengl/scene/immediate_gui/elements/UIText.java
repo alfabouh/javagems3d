@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL13;
@@ -22,32 +22,37 @@ public class UIText extends UIElement {
     private final int hexColor;
     private final Vector2i position;
     private boolean cacheText;
+    private final GuiFont fontTexture;
 
     public UIText(@NotNull String text, @NotNull GuiFont fontTexture, int hexColor, @NotNull Vector2i position, float zValue) {
         super(ResourceManager.shaderAssets.gui_text, zValue);
+        this.fontTexture = fontTexture;
         this.text = text;
         this.hexColor = hexColor;
         this.position = position;
         this.cacheText = true;
-
-        if (this.getText() != null && !this.getText().isEmpty()) {
-            this.textModel = new UIText.TextModel(fontTexture);
-            this.textModel.getModel().getFormat().setPosition(new Vector2d(this.getPosition()));
-            this.textModel.getModel().getFormat().setScale(new Vector2d(this.getScaling()));
-        }
     }
 
     @Override
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(this.textModel.getModel());
         GL30.glActiveTexture(GL13.GL_TEXTURE0);
-        this.textModel.getFontTexture().getTexture().bindTexture();
+        this.getFontTexture().getTexture().bindTexture();
         shaderManager.performUniform("texture_sampler", 0);
         shaderManager.performUniform("colour", new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f));
         JGemsSceneUtils.renderModel(this.textModel.getModel(), GL30.GL_TRIANGLES);
         shaderManager.unBind();
+    }
+
+    @Override
+    public void buildUI() {
+        if (this.getText() != null && !this.getText().isEmpty()) {
+            this.textModel = new UIText.TextModel();
+            this.textModel.getModel().getFormat().setPosition(new Vector2f(this.getPosition()));
+            this.textModel.getModel().getFormat().setScale(new Vector2f(this.getScaling()));
+        }
     }
 
     @Override
@@ -80,8 +85,12 @@ public class UIText extends UIElement {
         if (this.isCacheText()) {
             result = prime * result + this.text.hashCode();
         }
-        result = prime * result + this.textModel.getFontTexture().hashCode();
+        result = prime * result + this.getFontTexture().hashCode();
         return result;
+    }
+
+    public GuiFont getFontTexture() {
+        return this.fontTexture;
     }
 
     public void setCacheText(boolean cacheText) {
@@ -96,10 +105,8 @@ public class UIText extends UIElement {
         private final Model<Format2D> model;
         private float width;
         private float height;
-        private final GuiFont fontTexture;
 
-        public TextModel(GuiFont fontTexture) {
-            this.fontTexture = fontTexture;
+        public TextModel() {
             this.model = this.buildModel();
         }
 
@@ -107,37 +114,36 @@ public class UIText extends UIElement {
             Mesh mesh = new Mesh();
             char[] chars = UIText.this.getText().toCharArray();
             float z = UIText.this.getZValue();
-            this.height = this.fontTexture.getHeight();
+            this.height = UIText.this.fontTexture.getHeight();
 
             float startX = 0.0f;
             for (int i = 0; i < chars.length; i++) {
-                GuiFont.CharInfo charInfo = this.fontTexture.getCharInfo(chars[i]);
-
+                GuiFont.CharInfo charInfo = UIText.this.fontTexture.getCharInfo(chars[i]);
                 mesh.putPositionValue(startX);
                 mesh.putPositionValue(0.0f);
                 mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) charInfo.getStartX() / (float) this.fontTexture.getWidth());
+                mesh.putTextureCoordinateValue((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
                 mesh.putTextureCoordinateValue(0.0f);
                 mesh.putIndexValue(i * 4);
 
                 mesh.putPositionValue(startX);
                 mesh.putPositionValue(this.getHeight());
                 mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) charInfo.getStartX() / (float) this.fontTexture.getWidth());
+                mesh.putTextureCoordinateValue((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
                 mesh.putTextureCoordinateValue(1.0f);
                 mesh.putIndexValue(i * 4 + 1);
 
                 mesh.putPositionValue(startX + charInfo.getWidth());
                 mesh.putPositionValue(this.getHeight());
                 mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) this.fontTexture.getWidth());
+                mesh.putTextureCoordinateValue((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
                 mesh.putTextureCoordinateValue(1.0f);
                 mesh.putIndexValue(i * 4 + 2);
 
                 mesh.putPositionValue(startX + charInfo.getWidth());
                 mesh.putPositionValue(0.0f);
                 mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) this.fontTexture.getWidth());
+                mesh.putTextureCoordinateValue((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
                 mesh.putTextureCoordinateValue(0.0f);
                 mesh.putIndexValue(i * 4 + 3);
 
@@ -150,10 +156,6 @@ public class UIText extends UIElement {
             mesh.bakeMesh();
 
             return new Model<>(new Format2D(), mesh);
-        }
-
-        public GuiFont getFontTexture() {
-            return this.fontTexture;
         }
 
         public void clear() {

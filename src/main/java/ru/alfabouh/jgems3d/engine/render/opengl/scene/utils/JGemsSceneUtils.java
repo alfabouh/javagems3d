@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.utils;
 
-import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
@@ -11,22 +11,22 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class JGemsSceneUtils {
     public static final float FOV = (float) Math.toRadians(60.0f);
     public static final float Z_NEAR = 0.1f;
     public static final float Z_FAR = 100.0f;
 
-    public static Matrix4d getMainCameraViewMatrix() {
+    public static Matrix4f getMainCameraViewMatrix() {
         return JGems.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
     }
 
-    public static Matrix4d getMainPerspectiveMatrix() {
+    public static Matrix4f getMainPerspectiveMatrix() {
         return JGems.get().getScreen().getTransformationUtils().getPerspectiveMatrix();
     }
 
-    public static Matrix4d getMainOrthographicMatrix() {
+    public static Matrix4f getMainOrthographicMatrix() {
         return JGems.get().getScreen().getTransformationUtils().getOrthographicMatrix();
     }
 

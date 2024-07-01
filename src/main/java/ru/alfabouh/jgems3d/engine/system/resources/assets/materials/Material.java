@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.materials;
 
-import org.joml.Vector4d;
+import org.joml.Vector4f;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.IImageSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ISample;
@@ -73,7 +73,7 @@ public class Material {
     }
 
     public void setDefaultDiffuse() {
-        this.diffuse = ColorSample.createColor(new Vector4d(1.0d, 0.0d, 1.0d, 1.0d));
+        this.diffuse = ColorSample.createColor(new Vector4f(1.0f, 0.0f, 1.0f, 1.0f));
     }
 
     public void setDefaultNormals() {

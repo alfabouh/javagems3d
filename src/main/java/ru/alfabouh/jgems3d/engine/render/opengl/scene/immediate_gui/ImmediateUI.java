@@ -14,21 +14,24 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements.bas
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements.optionsUI.UICarousel;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements.optionsUI.UISlider;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.base.PanelUI;
+import ru.alfabouh.jgems3d.engine.system.map.legacy.Map02;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.IImageSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.settings.basic.SettingSlot;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingFloatBar;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class ImmediateUI {
+    public static int MAX_TICKS_TO_REMOVE_UNUSED_UI = 3;
     public static int GLOBAL_UI_SCALING = 0;
     public static boolean AUTO_SCREEN_SCALING = false;
     private boolean requestCleanFrame;
     private final Map<Integer, UIElement> uiFrameCache;
     private PanelUI currentPanel;
-    private double partialTicks;
+    private float partialTicks;
     private final RenderUIData renderUIData;
 
     public ImmediateUI() {
@@ -74,15 +77,26 @@ public class ImmediateUI {
         this.setPanel(null);
     }
 
-    public void renderFrame(double partialTicks) {
+    public void renderFrame(float partialTicks) {
         this.partialTicks = partialTicks;
 
         if (this.requestCleanFrame) {
             this.cleanFrame();
             this.requestCleanFrame = false;
         }
+
         if (this.getCurrentPanel() != null) {
             this.getCurrentPanel().drawPanel(this, this.partialTicks);
+        }
+
+        this.getUiFrameCache().values().forEach(UIElement::incrementUnusedTicks);
+        Iterator<UIElement> uiElementIterator = this.getUiFrameCache().values().iterator();
+        while (uiElementIterator.hasNext()) {
+            UIElement element = uiElementIterator.next();
+            if (element.getUnUsedTicks() > ImmediateUI.MAX_TICKS_TO_REMOVE_UNUSED_UI) {
+                element.cleanData();
+                uiElementIterator.remove();
+            }
         }
     }
 
@@ -131,30 +145,35 @@ public class ImmediateUI {
     }
 
     private <T extends UIElement> T checkUIInCacheAndRender(Class<T> clazz, UIElement uiElement) {
-        T ui = this.addUIInCache(clazz, uiElement);
         if (this.renderUIData.getShaderManager() != null) {
-            ui.setCurrentShader(this.renderUIData.getShaderManager());
+            uiElement.setCurrentShader(this.renderUIData.getShaderManager());
         } else {
-            ui.setDefaultShader();
+            uiElement.setDefaultShader();
         }
         if (this.renderUIData.getScaling() != null) {
-            ui.setScaling(this.renderUIData.getScaling());
+            uiElement.setScaling(this.renderUIData.getScaling());
         } else {
-            ui.setDefaultScaling();
+            uiElement.setDefaultScaling();
         }
+        T ui = this.addUIInCache(clazz, uiElement);
         ui.render(this.partialTicks);
         return ui;
     }
 
     private <T extends UIElement> T addUIInCache(Class<T> clazz, UIElement uiElement) {
+        uiElement.buildUI();
         int hash = uiElement.hashCode();
         if (this.getUiFrameCache().containsKey(hash)) {
             UIElement cachedUiElement = this.getUiFrameCache().get(hash);
             if (uiElement.equals(cachedUiElement)) {
+                cachedUiElement.zeroUnusedTicks();
+                uiElement.cleanData();
                 return clazz.cast(cachedUiElement);
             }
+        } else {
+            //System.out.println(hash);
+            this.getUiFrameCache().put(uiElement.hashCode(), uiElement);
         }
-        this.getUiFrameCache().put(uiElement.hashCode(), uiElement);
         return clazz.cast(uiElement);
     }
 

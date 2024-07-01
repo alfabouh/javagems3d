@@ -13,20 +13,20 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.proxy.logger.managers.LoggingManager;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.TBoxMapSys;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.file.read.TBoxEditorReader;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.file.save.TBoxEditorSaver;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.file.save.container.SaveContainer;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.file.save.objects.SaveObject;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.AbstractObjectData;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ObjectType;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.Attribute;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeIDS;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
+import ru.alfabouh.jgems3d.mapsys.toolbox.TBoxMapSys;
+import ru.alfabouh.jgems3d.mapsys.file.read.TBoxReader;
+import ru.alfabouh.jgems3d.mapsys.file.save.TBoxSaver;
+import ru.alfabouh.jgems3d.mapsys.file.save.container.SaveContainer;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.SaveObject;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.AbstractObjectData;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.ObjectType;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.Attribute;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeIDS;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.render.scene.camera.TBoxFreeCamera;
-import ru.alfabouh.jgems3d.toolbox.render.scene.container.MapProperties;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
 import ru.alfabouh.jgems3d.toolbox.render.scene.container.SceneContainer;
 import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.DIMGuiRenderTBox;
 import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
@@ -85,7 +85,7 @@ public class TBoxScene {
                 }
             }
             if (file != null) {
-                saveContainer = TBoxEditorReader.readMapFolder(file);
+                saveContainer = TBoxReader.readMapFolder(file);
 
                 ToolBox.get().getTBoxSettings().recentPathOpen.setValue(new File(file.toString()).getAbsolutePath());
 
@@ -103,15 +103,15 @@ public class TBoxScene {
 
                 if (saveObjects != null) {
                     for (SaveObject saveObject : saveObjects) {
-                        Vector3d savePos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3d.class);
-                        Vector3d saveRot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3d.class);
-                        Vector3d saveScale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3d.class);
+                        Vector3f savePos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3f.class);
+                        Vector3f saveRot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3f.class);
+                        Vector3f saveScale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3f.class);
                         if (savePos == null) {
                             SystemLogging.get().getLogManager().error("Deserialized object has NULL position!!");
                             continue;
                         }
                         if (saveRot != null) {
-                            saveRot = new Vector3d(Math.toRadians(saveRot.x), Math.toRadians(saveRot.y), Math.toRadians(saveRot.z));
+                            saveRot = new Vector3f(saveRot);
                         }
                         Format3D format3D = new Format3D(savePos, saveRot, saveScale);
                         AbstractObjectData mapObject = TBoxMapSys.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
@@ -156,7 +156,7 @@ public class TBoxScene {
                 }
             }
             if (file != null) {
-                TBoxEditorSaver.saveEditorToJSON(saveContainer, file);
+                TBoxSaver.saveEditorToJSON(saveContainer, file);
                 String path = new File(file.toString()).getAbsolutePath();
                 ToolBox.get().getTBoxSettings().recentPathSave.setValue(path);
             }
@@ -168,7 +168,7 @@ public class TBoxScene {
 
     public void preRender() {
         this.createFBOs(this.getWindow().getWindowDimensions());
-        this.camera = new TBoxFreeCamera(ToolBox.get().getScreen().getControllerDispatcher().getMouseKeyboardController(), new Vector3d(-0.0f), new Vector3d(0.0d));
+        this.camera = new TBoxFreeCamera(ToolBox.get().getScreen().getControllerDispatcher().getMouseKeyboardController(), new Vector3f(-0.0f), new Vector3f(0.0f));
         this.setGUIEditor();
         SystemLogging.get().getLogManager().log("Pre-Scene Render");
 
@@ -186,7 +186,7 @@ public class TBoxScene {
         ToolBox.get().getScreen().getResourceManager().destroy();
     }
 
-    public void render(double deltaTime) {
+    public void render(float deltaTime) {
         if (!this.isActiveScene()) {
             return;
         }
@@ -197,12 +197,12 @@ public class TBoxScene {
         if (this.getDimGuiRenderTBox().getCurrentContentToRender() instanceof EditorContent) {
             EditorContent editorContent = (EditorContent) this.getDimGuiRenderTBox().getCurrentContentToRender();
             this.getSceneContainer().render(deltaTime);
-            Vector3d v3 = this.getMapProperties().getSkyProp().getSunPos();
-            Model<Format3D> modelSun = MeshHelper.generateVector3DModel(new Vector3f(0.0f), new Vector3f((float) v3.x, (float) v3.y, (float) v3.z).mul(300.0f));
+            Vector3f v3 = this.getMapProperties().getSkyProp().getSunPos();
+            Model<Format3D> modelSun = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f((float) v3.x, (float) v3.y, (float) v3.z).mul(300.0f));
             ResourceManager.shaderAssets.world_lines.bind();
             ResourceManager.shaderAssets.world_lines.getUtils().performPerspectiveMatrix();
             ResourceManager.shaderAssets.world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-            ResourceManager.shaderAssets.world_lines.performUniform("colour", new Vector4d(1.0f, 1.0f, 0.0f, 1.0f));
+            ResourceManager.shaderAssets.world_lines.performUniform("colour", new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
             TBoxSceneUtils.renderModel(modelSun, GL30.GL_LINES);
             ResourceManager.shaderAssets.world_lines.unBind();
             modelSun.clean();
@@ -211,7 +211,7 @@ public class TBoxScene {
                 ResourceManager.shaderAssets.world_lines.bind();
                 ResourceManager.shaderAssets.world_lines.getUtils().performPerspectiveMatrix();
                 ResourceManager.shaderAssets.world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-                ResourceManager.shaderAssets.world_lines.performUniform("colour", new Vector4d(0.0f, 1.0f, 0.0f, 1.0f));
+                ResourceManager.shaderAssets.world_lines.performUniform("colour", new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
                 TBoxSceneUtils.renderModel(model, GL30.GL_LINES);
                 ResourceManager.shaderAssets.world_lines.unBind();
                 model.clean();
@@ -244,10 +244,10 @@ public class TBoxScene {
         GL30.glEnable(GL30.GL_DEPTH_TEST);
         Format3D format3D = new Format3D();
         Model<Format3D> model = new Model<>(format3D, ToolBox.get().getResourceManager().getModelResources().xyz);
-        Quaterniond quaterniond = new Quaterniond();
-        Matrix4d matrix4d = TBoxSceneUtils.getMainCameraViewMatrix();
-        matrix4d.getNormalizedRotation(quaterniond);
-        Matrix4d inversedView = new Matrix4d().identity().rotate(quaterniond);
+        Quaternionf quaterniond = new Quaternionf();
+        Matrix4f Matrix4f = TBoxSceneUtils.getMainCameraViewMatrix();
+        Matrix4f.getNormalizedRotation(quaterniond);
+        Matrix4f inversedView = new Matrix4f().identity().rotate(quaterniond);
         ResourceManager.shaderAssets.world_xyz.bind();
         ResourceManager.shaderAssets.world_xyz.getUtils().performOrthographicMatrix(this.getWindow().getWindowDimensions().x / (float) this.getWindow().getWindowDimensions().y, 36.0f);
         ResourceManager.shaderAssets.world_xyz.getUtils().performModel3DMatrix(model);
@@ -262,22 +262,22 @@ public class TBoxScene {
         TBoxShaderManager shaderManager = ResourceManager.shaderAssets.world_isometric_object;
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(1.0f, borders);
-        shaderManager.getUtils().performModel3DMatrix(new Matrix4d().identity().lookAt(new Vector3d(1.0d, 1.0d, 1.0d), new Vector3d(0.0d), new Vector3d(0.0d, 1.0d, 0.0d)));
+        shaderManager.getUtils().performModel3DMatrix(new Matrix4f().identity().lookAt(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
         TBoxSceneUtils.renderModelTextured(shaderManager, mapObject.meshDataGroup(), GL30.GL_TRIANGLES);
         shaderManager.unBind();
         ToolBox.get().getScreen().normalizeViewPort();
     }
 
     public boolean tryGrabObject(EditorContent editorContent) {
-        Vector2d sceneFrameMin = editorContent.getSceneFrameMin();
-        Vector2d sceneFrameMax = editorContent.getSceneFrameMax();
-        Vector2d mouseCVector = new Vector2d(ToolBox.get().getScreen().getControllerDispatcher().getMouseKeyboardController().getMouseAndKeyboard().getCursorCoordinates());
+        Vector2f sceneFrameMin = editorContent.getSceneFrameMin();
+        Vector2f sceneFrameMax = editorContent.getSceneFrameMax();
+        Vector2f mouseCVector = new Vector2f(ToolBox.get().getScreen().getControllerDispatcher().getMouseKeyboardController().getMouseAndKeyboard().getCursorCoordinatesV2F());
 
-        Vector3d camTo = this.getMouseRay(mouseCVector, sceneFrameMin, sceneFrameMax).mul(100.0f);
-        Vector3d camPos = this.getCamera().getCamPosition();
+        Vector3f camTo = this.getMouseRay(mouseCVector, sceneFrameMin, sceneFrameMax).mul(100.0f);
+        Vector3f camPos = this.getCamera().getCamPosition();
 
         Set<TBoxScene3DObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(e -> e.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
-        List<Pair<Vector3d, TBoxScene3DObject>> intersections = intersectedAABBs.stream().map(obj -> new Pair<>(obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo), obj)).filter(pair -> pair.getKey() != null).sorted(Comparator.comparingDouble(pair -> pair.getKey().distance(camPos))).collect(Collectors.toList());
+        List<Pair<Vector3f, TBoxScene3DObject>> intersections = intersectedAABBs.stream().map(obj -> new Pair<>(obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo), obj)).filter(pair -> pair.getKey() != null).sorted(Comparator.comparingDouble(pair -> pair.getKey().distance(camPos))).collect(Collectors.toList());
 
         if (intersections.isEmpty()) {
             editorContent.removeSelection();
@@ -300,36 +300,36 @@ public class TBoxScene {
     public void placeObjectFromGUI(EditorContent editorContent, String nameId) {
         AbstractObjectData mapObject = TBoxMapSys.INSTANCE.getObjectTable().getObjects().get(nameId);
         MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
-        Vector3d camRot = this.getCamera().getCamRotation();
-        Vector3d camPos = this.getCamera().getCamPosition();
-        Vector3d camTo = MathHelper.calcLookVector(camRot).normalize();
+        Vector3f camRot = this.getCamera().getCamRotation();
+        Vector3f camPos = this.getCamera().getCamPosition();
+        Vector3f camTo = MathHelper.calcLookVector(camRot).normalize();
 
         Format3D format3D = new Format3D();
-        format3D.setPosition(new Vector3d(camPos).add(MathHelper.calcLookVector(camRot).mul(5.0f)));
+        format3D.setPosition(new Vector3f(camPos).add(MathHelper.calcLookVector(camRot).mul(5.0f)));
 
         Set<TBoxScene3DObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
-        List<Vector3d> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < 15.0f).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
+        List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < 15.0f).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
 
         if (!intersections.isEmpty()) {
-            Vector3d closestObject = intersections.get(0);
+            Vector3f closestObject = intersections.get(0);
             format3D.setPosition(closestObject);
         }
 
         TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
         tBoxObject.setAttributeContainer(mapObject.copyAttributeContainer());
 
-        Attribute<Vector3d> attribute = tBoxObject.getAttributeContainer().tryGetAttributeByID(AttributeIDS.POSITION_XYZ, Vector3d.class);
+        Attribute<Vector3f> attribute = tBoxObject.getAttributeContainer().tryGetAttributeByID(AttributeIDS.POSITION_XYZ, Vector3f.class);
         if (attribute == null) {
             throw new JGemsException("Caught attribute with NULL position!");
         }
         attribute.setValue(format3D.getPosition());
 
-        Vector3d rot = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3d.class);
+        Vector3f rot = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3f.class);
         if (rot != null) {
-            format3D.setRotation(new Vector3d(Math.toRadians(rot.x), Math.toRadians(rot.y), Math.toRadians(rot.z)));
+            format3D.setRotation(rot);
         }
 
-        Vector3d scaling = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3d.class);
+        Vector3f scaling = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3f.class);
         if (scaling != null) {
             format3D.setScaling(scaling);
         }
@@ -338,24 +338,24 @@ public class TBoxScene {
         this.addObject(tBoxObject);
     }
 
-    public Vector3d getMouseRay(Vector2d mouseCoordinates, Vector2d sceneFrameMin, Vector2d sceneFrameMax) {
-        Matrix4d projectionMatrix = TBoxSceneUtils.getMainPerspectiveMatrix();
-        Matrix4d viewMatrix = TBoxSceneUtils.getMainCameraViewMatrix();
+    public Vector3f getMouseRay(Vector2f mouseCoordinates, Vector2f sceneFrameMin, Vector2f sceneFrameMax) {
+        Matrix4f projectionMatrix = TBoxSceneUtils.getMainPerspectiveMatrix();
+        Matrix4f viewMatrix = TBoxSceneUtils.getMainCameraViewMatrix();
 
-        double normalizedX = 2.0 * (mouseCoordinates.x - sceneFrameMin.x) / (sceneFrameMax.x - sceneFrameMin.x) - 1.0;
-        double normalizedY = 1.0 - 2.0 * (mouseCoordinates.y - sceneFrameMin.y) / (sceneFrameMax.y - sceneFrameMin.y);
+        float normalizedX = 2.0f * (mouseCoordinates.x - sceneFrameMin.x) / (sceneFrameMax.x - sceneFrameMin.x) - 1.0f;
+        float normalizedY = 1.0f - 2.0f * (mouseCoordinates.y - sceneFrameMin.y) / (sceneFrameMax.y - sceneFrameMin.y);
 
-        Vector4d clipCoordinates = new Vector4d(normalizedX, normalizedY, -1.0, 1.0);
+        Vector4f clipCoordinates = new Vector4f(normalizedX, normalizedY, -1.0f, 1.0f);
 
-        Matrix4d invertedProjection = projectionMatrix.invert();
-        Vector4d eyeCoordinates = invertedProjection.transform(clipCoordinates);
-        eyeCoordinates.z = -1.0;
-        eyeCoordinates.w = 0.0;
+        Matrix4f invertedProjection = projectionMatrix.invert();
+        Vector4f eyeCoordinates = invertedProjection.transform(clipCoordinates);
+        eyeCoordinates.z = -1.0f;
+        eyeCoordinates.w = 0.0f;
 
-        Matrix4d invertedView = viewMatrix.invert();
-        Vector4d worldCoordinates = invertedView.transform(eyeCoordinates);
+        Matrix4f invertedView = viewMatrix.invert();
+        Vector4f worldCoordinates = invertedView.transform(eyeCoordinates);
 
-        Vector3d mouseRay = new Vector3d(worldCoordinates.x, worldCoordinates.y, worldCoordinates.z);
+        Vector3f mouseRay = new Vector3f(worldCoordinates.x, worldCoordinates.y, worldCoordinates.z);
         mouseRay.normalize();
 
         return mouseRay;

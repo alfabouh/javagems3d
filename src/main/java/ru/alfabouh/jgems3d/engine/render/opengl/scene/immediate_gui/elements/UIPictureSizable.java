@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL13;
@@ -17,7 +17,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsS
 
 public class UIPictureSizable extends UIElement {
     protected final IImageSample iImageSample;
-    protected final Model<Format2D> imageModel;
+    protected Model<Format2D> imageModel;
     private final Vector2i position;
     private final Vector2i size;
 
@@ -26,14 +26,12 @@ public class UIPictureSizable extends UIElement {
         this.iImageSample = iImageSample;
         this.position = position;
         this.size = size;
-
-        this.imageModel = this.constructModel();
     }
 
     @Override
-    public void render(double partialTicks) {
-        this.imageModel.getFormat().setPosition(new Vector2d(this.getPosition()));
-        this.imageModel.getFormat().setScale(new Vector2d(this.getScaling()));
+    public void render(float partialTicks) {
+        this.imageModel.getFormat().setPosition(new Vector2f(this.getPosition()));
+        this.imageModel.getFormat().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
@@ -42,6 +40,11 @@ public class UIPictureSizable extends UIElement {
         shaderManager.performUniform("texture_sampler", 0);
         JGemsSceneUtils.renderModel(this.imageModel, GL30.GL_TRIANGLES);
         shaderManager.unBind();
+    }
+
+    @Override
+    public void buildUI() {
+        this.imageModel = this.constructModel();
     }
 
     @Override

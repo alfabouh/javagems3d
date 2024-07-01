@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.programs;
 import org.joml.*;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
@@ -28,17 +28,17 @@ public class UniformProgram {
         if (value instanceof Vector2f) {
             this.setUniform(uniformName, (Vector2f) value);
             return true;
-        } else if (value instanceof Vector2d) {
-            this.setUniform(uniformName, (Vector2d) value);
+        } else if (value instanceof Vector2f) {
+            this.setUniform(uniformName, (Vector2f) value);
             return true;
-        } else if (value instanceof Vector4d) {
-            this.setUniform(uniformName, (Vector4d) value);
+        } else if (value instanceof Vector4f) {
+            this.setUniform(uniformName, (Vector4f) value);
             return true;
-        } else if (value instanceof Matrix4d) {
-            this.setUniform(uniformName, (Matrix4d) value);
+        } else if (value instanceof Matrix4f) {
+            this.setUniform(uniformName, (Matrix4f) value);
             return true;
-        } else if (value instanceof Vector3d) {
-            this.setUniform(uniformName, (Vector3d) value);
+        } else if (value instanceof Vector3f) {
+            this.setUniform(uniformName, (Vector3f) value);
             return true;
         } else if (value instanceof Integer) {
             this.setUniform(uniformName, (int) value);
@@ -59,7 +59,7 @@ public class UniformProgram {
         return false;
     }
 
-    public void setUniform(String uniformName, Matrix4d value) {
+    public void setUniform(String uniformName, Matrix4f value) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
             value.get(floatBuffer);
@@ -70,19 +70,6 @@ public class UniformProgram {
     public void setUniform(String uniformName, Vector2f value) {
         GL20.glUniform2f(this.uniforms.get(uniformName), value.x, value.y);
     }
-
-    public void setUniform(String uniformName, Vector2d value) {
-        GL20.glUniform2f(this.uniforms.get(uniformName), (float) value.x, (float) value.y);
-    }
-
-    public void setUniform(String uniformName, Vector4d value) {
-        GL20.glUniform4f(this.uniforms.get(uniformName), (float) value.x, (float) value.y, (float) value.z, (float) value.w);
-    }
-
-    public void setUniform(String uniformName, Vector3d value) {
-        GL20.glUniform3f(this.uniforms.get(uniformName), (float) value.x, (float) value.y, (float) value.z);
-    }
-
     public void setUniform(String uniformName, Vector4f value) {
         GL20.glUniform4f(this.uniforms.get(uniformName), value.x, value.y, value.z, value.w);
     }

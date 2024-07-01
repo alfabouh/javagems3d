@@ -7,7 +7,7 @@ import org.bytedeco.bullet.BulletCollision.btPairCachingGhostObject;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.jetbrains.annotations.NotNull;
-import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.triggers.ITrigger;
 import ru.alfabouh.jgems3d.engine.physics.triggers.ITriggerZone;
@@ -15,7 +15,7 @@ import ru.alfabouh.jgems3d.engine.physics.triggers.Zone;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.util.HashSet;
 import java.util.Iterator;

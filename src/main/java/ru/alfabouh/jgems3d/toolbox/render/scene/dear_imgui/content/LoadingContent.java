@@ -9,7 +9,7 @@ public class LoadingContent implements ImGuiContent {
     public LoadingContent() {
     }
 
-    public void drawContent(Vector2i dim, double partialTicks) {
+    public void drawContent(Vector2i dim, float partialTicks) {
         ImGui.begin(ToolBox.get().toString(), ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
         ImGui.setWindowSize(400, 200);
         ImGui.setWindowPos(dim.x * 0.5f - 200, dim.y * 0.5f - 100);

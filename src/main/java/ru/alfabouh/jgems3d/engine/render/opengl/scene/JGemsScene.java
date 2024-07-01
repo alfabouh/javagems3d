@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene;
 
 import org.joml.Vector2i;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
@@ -20,7 +20,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.screen.JGemsScreen;
 import ru.alfabouh.jgems3d.engine.render.transformation.TransformationUtils;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.engine.system.synchronizing.SyncManager;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;
@@ -30,7 +30,7 @@ public class JGemsScene implements IScene {
     private final ImmediateUI immediateUI;
     private final SceneData sceneData;
 
-    private double elapsedTime;
+    private float elapsedTime;
     private boolean refresh;
     private boolean requestDestroyMap;
 
@@ -53,7 +53,7 @@ public class JGemsScene implements IScene {
     }
 
     @SuppressWarnings("all")
-    public void renderScene(double deltaTime) throws InterruptedException {
+    public void renderScene(float deltaTime) throws InterruptedException {
         if (JGemsSceneUtils.isSceneActive()) {
             JGems.get().getScreen().normalizeViewPort();
             if (this.getCurrentCamera() != null) {
@@ -76,7 +76,7 @@ public class JGemsScene implements IScene {
     }
 
     @SuppressWarnings("all")
-    public void renderSceneInterpolated(final double partialTicks, final double deltaTicks) throws InterruptedException {
+    public void renderSceneInterpolated(final float partialTicks, final float deltaTicks) throws InterruptedException {
         this.getFrustumCulling().refreshFrustumCullingState(this.getTransformationUtils().getPerspectiveMatrix(), this.getTransformationUtils().getMainCameraViewMatrix());
         this.getSceneWorld().onWorldEntityUpdate(this.refresh, partialTicks);
         this.getSceneWorld().onWorldUpdate();
@@ -112,7 +112,7 @@ public class JGemsScene implements IScene {
         this.UI().onWindowResize(dim);
     }
 
-    public void enableFreeCamera(IController controller, Vector3d pos, Vector3d rot) {
+    public void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
         this.setRenderCamera(new FreeCamera(controller, pos, rot));
     }
 

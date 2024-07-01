@@ -1,12 +1,11 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ObjectType;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeContainer;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeIDS;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeContainer;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeIDS;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.collision.LocalCollision;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 
@@ -32,29 +31,29 @@ public abstract class TBoxScene3DObject {
 
     public abstract TBoxScene3DObject copy();
 
-    public void setPositionWithAttribute(Vector3d vector3d) {
-        this.getModel().getFormat().setPosition(vector3d);
-        Vector3d vector3d1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3d.class);
-        if (vector3d1 != null) {
-            vector3d1.set(vector3d);
+    public void setPositionWithAttribute(Vector3f Vector3f) {
+        this.getModel().getFormat().setPosition(Vector3f);
+        Vector3f Vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3f.class);
+        if (Vector3f1 != null) {
+            Vector3f1.set(Vector3f);
         }
         this.reCalcCollision();
     }
 
-    public void setRotationWithAttribute(Vector3d vector3d) {
-        this.getModel().getFormat().setRotation(vector3d);
-        Vector3d vector3d1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3d.class);
-        if (vector3d1 != null) {
-            vector3d1.set(vector3d);
+    public void setRotationWithAttribute(Vector3f Vector3f) {
+        this.getModel().getFormat().setRotation(Vector3f);
+        Vector3f Vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3f.class);
+        if (Vector3f1 != null) {
+            Vector3f1.set(Vector3f);
         }
         this.reCalcCollision();
     }
 
-    public void setScalingWithAttribute(Vector3d vector3d) {
-        this.getModel().getFormat().setScaling(vector3d);
-        Vector3d vector3d1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3d.class);
-        if (vector3d1 != null) {
-            vector3d1.set(vector3d);
+    public void setScalingWithAttribute(Vector3f Vector3f) {
+        this.getModel().getFormat().setScaling(Vector3f);
+        Vector3f Vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3f.class);
+        if (Vector3f1 != null) {
+            Vector3f1.set(Vector3f);
         }
         this.reCalcCollision();
     }

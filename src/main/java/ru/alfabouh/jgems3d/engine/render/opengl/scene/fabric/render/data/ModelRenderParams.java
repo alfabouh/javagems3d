@@ -1,8 +1,8 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
@@ -14,8 +14,8 @@ public final class ModelRenderParams {
     private boolean hasTransparency;
     private float alphaDiscardValue;
     private boolean isBright;
-    private Vector2d textureScaling;
-    private Vector3d customCullingAABSize;
+    private Vector2f textureScaling;
+    private Vector3f customCullingAABSize;
     private JGemsShaderManager shaderManager;
     private float renderDistance;
     private boolean shouldInterpolateMovement;
@@ -31,7 +31,7 @@ public final class ModelRenderParams {
         this.isBright = false;
         this.renderDistance = -1.0f;
         this.alphaDiscardValue = 0.0f;
-        this.textureScaling = new Vector2d(1.0d);
+        this.textureScaling = new Vector2f(1.0f);
         this.shouldInterpolateMovement = true;
         this.customCullingAABSize = null;
     }
@@ -66,17 +66,17 @@ public final class ModelRenderParams {
         return this;
     }
 
-    public Vector3d getCustomCullingAABSize() {
+    public Vector3f getCustomCullingAABSize() {
         return this.customCullingAABSize;
     }
 
-    public ModelRenderParams setCustomCullingAABSize(Vector3d customCullingAABSize) {
+    public ModelRenderParams setCustomCullingAABSize(Vector3f customCullingAABSize) {
         this.customCullingAABSize = customCullingAABSize;
         return this;
     }
 
     public ModelRenderParams invertTextureCoordinates() {
-        this.textureScaling.mul(1.0d, -1.0d);
+        this.textureScaling.mul(1.0f, -1.0f);
         return this;
     }
 
@@ -115,11 +115,11 @@ public final class ModelRenderParams {
         return this;
     }
 
-    public Vector2d getTextureScaling() {
-        return new Vector2d(this.textureScaling);
+    public Vector2f getTextureScaling() {
+        return new Vector2f(this.textureScaling);
     }
 
-    public ModelRenderParams setTextureScaling(Vector2d textureScaling) {
+    public ModelRenderParams setTextureScaling(Vector2f textureScaling) {
         this.textureScaling = textureScaling;
         return this;
     }

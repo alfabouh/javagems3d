@@ -5,10 +5,9 @@ import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.bytedeco.bullet.LinearMath.btDefaultMotionState;
 import org.bytedeco.bullet.LinearMath.btMotionState;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3d;
-import ru.alfabouh.jgems3d.engine.physics.collision.AbstractCollision;
-import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
-import ru.alfabouh.jgems3d.engine.physics.entities.states.EntityState;
+import org.joml.Vector3f;
+import ru.alfabouh.jgems3d.engine.physics.collision.base.AbstractCollision;
+import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
@@ -16,14 +15,14 @@ import ru.alfabouh.jgems3d.engine.physics.world.World;
 
 public abstract class CollidableWorldItem extends WorldItem implements JBulletEntity {
     private final EntityState entityState;
-    private final Vector3d startTranslation;
-    private final Vector3d startRotation;
+    private final Vector3f startTranslation;
+    private final Vector3f startRotation;
     private final RigidBodyObject.PhysProperties properties;
     private RigidBodyObject rigidBodyObject;
     private RigidBodyConstructor rigidBodyConstructor;
 
-    public CollidableWorldItem(World world, RigidBodyObject.PhysProperties properties, double scale, @NotNull Vector3d startTranslation, @NotNull Vector3d startRotation, String itemName) {
-        super(world, scale, startTranslation, startRotation, itemName);
+    public CollidableWorldItem(World world, RigidBodyObject.PhysProperties properties, Vector3f startTranslation, Vector3f startRotation, Vector3f scale, String itemName) {
+        super(world, startTranslation, startRotation, scale, itemName);
         this.properties = properties;
         this.startTranslation = startTranslation;
         this.startRotation = startRotation;
@@ -43,23 +42,32 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         ((World) iWorld).getBulletTimer().removeCollisionObjectFromWorld(this.getBulletObject());
     }
 
-    public Vector3d getPosition() {
-        return new Vector3d(this.getBulletObject().getTranslation());
+    public Vector3f getPosition() {
+        return new Vector3f(this.getBulletObject().getTranslation());
     }
 
-    public void setPosition(Vector3d vector3d) {
-        this.getBulletObject().setTranslation(vector3d);
+    public void setPosition(Vector3f Vector3f) {
+        if (Vector3f == null) {
+            return;
+        }
+        this.getBulletObject().setTranslation(Vector3f);
     }
 
-    public Vector3d getRotation() {
-        return new Vector3d(this.getBulletObject().getRotation());
+    public Vector3f getRotation() {
+        return new Vector3f(this.getBulletObject().getRotation());
     }
 
-    public void setRotation(Vector3d vector3d) {
-        this.getBulletObject().setRotation(vector3d);
+    public void setRotation(Vector3f Vector3f) {
+        if (Vector3f == null) {
+            return;
+        }
+        this.getBulletObject().setRotation(Vector3f);
     }
 
-    public void setScale(double scale) {
+    public void setScale(Vector3f scale) {
+        if (scale == null) {
+            return;
+        }
         super.setScale(scale);
         if (this.isValid()) {
             this.getBulletObject().setScaling(scale);
@@ -75,7 +83,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         return this.rigidBodyConstructor;
     }
 
-    private void createRigidBody(World world, @NotNull Vector3d position, @NotNull Vector3d rotation, double scaling, RigidBodyObject.PhysProperties properties) {
+    private void createRigidBody(World world, @NotNull Vector3f position, @NotNull Vector3f rotation, Vector3f scaling, RigidBodyObject.PhysProperties properties) {
         this.rigidBodyConstructor = new RigidBodyConstructor(world, scaling, this.constructCollision());
         this.rigidBodyObject = this.getRigidBodyConstructor().buildRigidBody(properties);
         if (this.getBodyIndex().isStatic()) {
@@ -102,33 +110,28 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         return this.rigidBodyObject;
     }
 
-    @Override
-    public BodyGroup getBodyIndex() {
-        return BodyGroup.RIGID_BODY;
-    }
-
     public EntityState entityState() {
         return this.entityState;
     }
 
-    public void applyCentralForce(Vector3d vector3d) {
-        this.getBulletObject().applyCentralForce(vector3d);
+    public void applyCentralForce(Vector3f Vector3f) {
+        this.getBulletObject().applyCentralForce(Vector3f);
     }
 
-    public double getObjectSpeed() {
+    public float getObjectSpeed() {
         return this.getObjectVelocity().length();
     }
 
-    public Vector3d getObjectVelocity() {
+    public Vector3f getObjectVelocity() {
         return this.getBulletObject().getObjectLinearVelocity();
     }
 
-    public void setObjectVelocity(Vector3d vector3d) {
-        this.getBulletObject().setObjectLinearVelocity(vector3d);
+    public void setObjectVelocity(Vector3f Vector3f) {
+        this.getBulletObject().setObjectLinearVelocity(Vector3f);
     }
 
-    public void addObjectVelocity(Vector3d vector3d) {
-        this.getBulletObject().addObjectLinearVelocity(vector3d);
+    public void addObjectVelocity(Vector3f Vector3f) {
+        this.getBulletObject().addObjectLinearVelocity(Vector3f);
     }
 
     public static class RigidBodyConstructor {
@@ -137,7 +140,7 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         private final World world;
         private btRigidBody.btRigidBodyConstructionInfo btRigidBodyConstructionInfo;
 
-        public RigidBodyConstructor(World world, double scaling, AbstractCollision abstractCollision) {
+        public RigidBodyConstructor(World world, Vector3f scaling, AbstractCollision abstractCollision) {
             this.btCollisionShape = abstractCollision.buildCollisionShape(scaling);
             this.motionState = new btDefaultMotionState();
             this.world = world;

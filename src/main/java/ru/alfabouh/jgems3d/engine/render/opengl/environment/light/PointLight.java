@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.environment.light;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
@@ -10,18 +10,18 @@ public class PointLight extends Light {
     private float brightness;
 
     public PointLight() {
-        super(new Vector3d(0.0d), new Vector3d(0.0d), new Vector3d(0.0d));
+        super(new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(0.0f));
     }
 
-    public PointLight(Vector3d lightPos, Vector3d lightColor) {
+    public PointLight(Vector3f lightPos, Vector3f lightColor) {
         super(lightPos, lightColor);
     }
 
-    public PointLight(Vector3d lightPos) {
+    public PointLight(Vector3f lightPos) {
         super(lightPos);
     }
 
-    public PointLight(Vector3d lightPos, Vector3d lightColor, Vector3d offset) {
+    public PointLight(Vector3f lightPos, Vector3f lightColor, Vector3f offset) {
         super(lightPos, lightColor, offset);
     }
 
@@ -29,11 +29,11 @@ public class PointLight extends Light {
         super(physicsObject);
     }
 
-    public PointLight(PhysicsObject physicsObject, Vector3d lightColor) {
+    public PointLight(PhysicsObject physicsObject, Vector3f lightColor) {
         super(physicsObject, lightColor);
     }
 
-    public PointLight(PhysicsObject physicsObject, Vector3d lightColor, Vector3d offset) {
+    public PointLight(PhysicsObject physicsObject, Vector3f lightColor, Vector3f offset) {
         super(physicsObject, lightColor, offset);
     }
 

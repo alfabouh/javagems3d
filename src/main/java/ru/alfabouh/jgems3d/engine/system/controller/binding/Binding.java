@@ -1,11 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.controller.binding;
 
 import ru.alfabouh.jgems3d.engine.system.controller.components.Key;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Binding {
     private final String description;

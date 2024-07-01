@@ -18,7 +18,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         WorldTransparentRender.transparentRenderObjects = new ArrayList<>();
     }
 
-    public void onRender(double partialTicks) {
+    public void onRender(float partialTicks) {
         WorldTransparentRender.transparentRenderObjects.sort(Comparator.comparing(e -> -e.getModel3D().getFormat().getPosition().distance(this.getCamera().getCamPosition())));
         GL30.glDepthMask(false);
         this.render(partialTicks, WorldTransparentRender.transparentRenderObjects);
@@ -34,7 +34,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         super.onStopRender();
     }
 
-    private void render(double partialTicks, List<IModeledSceneObject> renderObjects) {
+    private void render(float partialTicks, List<IModeledSceneObject> renderObjects) {
         for (IModeledSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {

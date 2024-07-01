@@ -15,16 +15,21 @@ public class ModelAssetsLoader implements IAssetsLoader {
     @Override
     public void load(ResourceCache ResourceCache) {
         JGems.get().getScreen().addLineInLoadingScreen("Loading models...");
-        this.cube = ResourceManager.createMesh("/assets/jgems/models/cube/cube.obj");
-        this.ground = ResourceManager.createMesh("/assets/jgems/models/map01/map01.obj");
-        this.ground2 = ResourceManager.createMesh("/assets/jgems/models/map02/map02.obj");
-        this.door2 = ResourceManager.createMesh("/assets/jgems/models/door2/door2.obj");
-        this.plank = ResourceManager.createMesh("/assets/jgems/models/plank/plank.obj");
-
-        this.ground.constructStaticMesh();
-        this.ground2.constructStaticMesh();
+        this.cube = this.createMesh("/assets/jgems/models/cube/cube.obj", true);
+        this.ground = this.createMesh("/assets/jgems/models/map01/map01.obj", true);
+        this.ground2 = this.createMesh("/assets/jgems/models/map02/map02.obj", true);
+        this.door2 = this.createMesh("/assets/jgems/models/door2/door2.obj", false);
+        this.plank = this.createMesh("/assets/jgems/models/plank/plank.obj", true);
 
         JGems.get().getScreen().addLineInLoadingScreen("Models successfully loaded...");
+    }
+
+    private MeshDataGroup createMesh(String path, boolean constructCollisionMesh) {
+        MeshDataGroup meshDataGroup = ResourceManager.createMesh(path);
+        if (constructCollisionMesh) {
+            meshDataGroup.constructCollisionMesh();
+        }
+        return meshDataGroup;
     }
 
     @Override

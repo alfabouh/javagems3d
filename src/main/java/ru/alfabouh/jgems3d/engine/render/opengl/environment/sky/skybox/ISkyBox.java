@@ -4,7 +4,6 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.CubeMapProgram;
 
 public interface ISkyBox {
     CubeMapProgram cubeMapTexture();
-
     SkyboxType skyboxType();
 
     enum SkyboxType {

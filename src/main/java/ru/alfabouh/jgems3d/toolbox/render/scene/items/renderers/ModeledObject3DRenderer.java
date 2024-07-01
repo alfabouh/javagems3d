@@ -1,15 +1,14 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.items.renderers;
 
-import org.joml.Vector3d;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.toolbox.render.scene.container.MapProperties;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
 import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 import ru.alfabouh.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 
 public class ModeledObject3DRenderer implements ITBoxObjectRenderer {
     @Override
-    public void onRender(MapProperties properties, TBoxScene3DObject tBoxScene3DObject, double deltaTime) {
+    public void onRender(MapProperties properties, TBoxScene3DObject tBoxScene3DObject, float deltaTime) {
         tBoxScene3DObject.getRenderData().getShaderManager().bind();
         tBoxScene3DObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
         tBoxScene3DObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxScene3DObject.getModel());

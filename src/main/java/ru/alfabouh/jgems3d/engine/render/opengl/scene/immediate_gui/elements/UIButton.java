@@ -1,10 +1,10 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector4d;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
@@ -20,7 +20,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format2
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class UIButton extends UIInteractiveElement {
-    private final Model<Format2D> buttonModel;
+    private Model<Format2D> buttonModel;
     private final GuiFont guiFont;
     private final UIText uiText;
     private final Vector2i position;
@@ -40,8 +40,6 @@ public class UIButton extends UIInteractiveElement {
         Vector2i fontOffset = this.getFontPos(text, this.getSize());
         this.uiText = new UIText(text, guiFont, textColorHex, new Vector2i(this.getPosition()).add(fontOffset), zValue);
 
-        this.buttonModel = MeshHelper.generatePlane2DModel(new Vector2f(position), new Vector2f(this.getSize().x, this.getSize().y).add(position.x, position.y), zValue);
-
         this.onEntered = null;
         this.onLeft = null;
         this.onClick = null;
@@ -50,17 +48,23 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         super.render(partialTicks);
 
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
-        shaderManager.performUniform("background_color", new Vector4d(0.25d, 0.0d, 0.15d, 0.8d));
+        shaderManager.performUniform("background_color", new Vector4f(0.25f, 0.0f, 0.15f, 0.8f));
         shaderManager.performUniform("selected", this.isSelected());
         JGemsSceneUtils.renderModel(this.buttonModel, GL30.GL_TRIANGLES);
         shaderManager.unBind();
         this.uiText.render(partialTicks);
+    }
+
+    @Override
+    public void buildUI() {
+        this.buttonModel = MeshHelper.generatePlane2DModel(new Vector2f(position), new Vector2f(this.getSize().x, this.getSize().y).add(position.x, position.y), this.getZValue());
+        this.uiText.buildUI();
     }
 
     private Vector2i getFontPos(String text, Vector2i buttonSize) {
@@ -95,7 +99,7 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    protected void onMouseInside(Vector2d mouseCoordinates) {
+    protected void onMouseInside(Vector2f mouseCoordinates) {
         if (this.onInside != null) {
             this.onInside.action();
         }
@@ -116,7 +120,7 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    protected void onClicked(Vector2d mouseCoordinates) {
+    protected void onClicked(Vector2f mouseCoordinates) {
         if (this.onClick != null) {
             JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
             this.onClick.action();
@@ -124,7 +128,7 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    protected void onUnClicked(Vector2d mouseCoordinates) {
+    protected void onUnClicked(Vector2f mouseCoordinates) {
         if (this.onUnClick != null) {
             this.onUnClick.action();
         }

@@ -6,6 +6,6 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.ImmediateUI;
 public interface PanelUI {
     void onConstruct(ImmediateUI immediateUI);
     void onDestruct(ImmediateUI immediateUI);
-    void drawPanel(ImmediateUI immediateUI, double partialTicks);
+    void drawPanel(ImmediateUI immediateUI, float partialTicks);
     void onWindowResize(Vector2i dim);
 }

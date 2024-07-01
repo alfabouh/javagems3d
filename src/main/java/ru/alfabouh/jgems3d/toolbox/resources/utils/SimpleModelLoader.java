@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.toolbox.resources.utils;
 
-import org.joml.Vector4d;
+import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
@@ -13,7 +13,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.utils.ModelLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
 import ru.alfabouh.jgems3d.toolbox.resources.samples.TextureSample;
 
@@ -162,7 +162,7 @@ public class SimpleModelLoader {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4D = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4D) == Assimp.aiReturn_SUCCESS) {
-                material.setDiffuse(ColorSample.createColor(new Vector4d(color4D.r(), color4D.g(), color4D.b(), color4D.a())));
+                material.setDiffuse(ColorSample.createColor(new Vector4f(color4D.r(), color4D.g(), color4D.b(), color4D.a())));
             }
             color4D.clear();
             String diffuse = SimpleModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);

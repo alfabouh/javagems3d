@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.physics.triggers.zones;
 
-import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
 import ru.alfabouh.jgems3d.engine.physics.triggers.Zone;
 
 public class DoorTriggerZone extends SimpleTriggerZone {

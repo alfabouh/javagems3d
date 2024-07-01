@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine;
 
 import org.lwjgl.glfw.GLFW;
 import ru.alfabouh.jgems3d.engine.audio.SoundManager;
-import ru.alfabouh.jgems3d.engine.physics.entities.player.IPlayer;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicThreadManager;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.ImmediateUI;
@@ -12,14 +12,14 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.JGemsScreen;
 import ru.alfabouh.jgems3d.engine.system.EngineSystem;
 import ru.alfabouh.jgems3d.engine.system.localisation.Localisation;
-import ru.alfabouh.jgems3d.engine.system.map.loader.IMapLoader;
+import ru.alfabouh.jgems3d.engine.system.map.legacy.loader.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.proxy.Proxy;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
 import ru.alfabouh.jgems3d.engine.system.settings.JGemsSettings;
 import ru.alfabouh.jgems3d.engine.system.synchronizing.SyncManager;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.proxy.logger.managers.JGemsLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 
 import java.io.File;
 import java.io.IOException;

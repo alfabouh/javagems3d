@@ -35,12 +35,19 @@ public class UICarousel extends UIElement {
     }
 
     @Override
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         this.uiText.render(partialTicks);
         this.uiTitle.render(partialTicks);
-
         this.right.render(partialTicks);
         this.left.render(partialTicks);
+    }
+
+    @Override
+    public void buildUI() {
+        this.uiText.buildUI();
+        this.uiTitle.buildUI();
+        this.right.buildUI();
+        this.left.buildUI();
     }
 
     @Override

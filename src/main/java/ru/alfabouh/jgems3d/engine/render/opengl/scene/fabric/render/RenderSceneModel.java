@@ -11,7 +11,7 @@ public class RenderSceneModel extends RenderWorldItem {
     }
 
     @Override
-    public void onRender(double partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(float partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
         SceneObject sceneObject = (SceneObject) renderItem;
         sceneObject.getModelRenderParams().getShaderManager().bind();
         sceneObject.getModelRenderParams().getShaderManager().getUtils().performPerspectiveMatrix();

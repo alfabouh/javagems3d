@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.utils;
 
-import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -14,15 +14,15 @@ public class TBoxSceneUtils {
     public static final float Z_NEAR = 0.1f;
     public static final float Z_FAR = 300.0f;
 
-    public static Matrix4d getMainCameraViewMatrix() {
+    public static Matrix4f getMainCameraViewMatrix() {
         return ToolBox.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
     }
 
-    public static Matrix4d getMainPerspectiveMatrix() {
+    public static Matrix4f getMainPerspectiveMatrix() {
         return ToolBox.get().getScreen().getTransformationUtils().getPerspectiveMatrix();
     }
 
-    public static Matrix4d getMainOrthographicMatrix() {
+    public static Matrix4f getMainOrthographicMatrix() {
         return ToolBox.get().getScreen().getTransformationUtils().getOrthographicMatrix();
     }
 

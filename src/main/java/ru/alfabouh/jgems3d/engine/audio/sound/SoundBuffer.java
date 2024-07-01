@@ -7,7 +7,7 @@ import ru.alfabouh.jgems3d.engine.audio.sound.loaders.ogg.Ogg;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ICached;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;

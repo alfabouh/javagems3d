@@ -7,27 +7,29 @@ import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
+import ru.alfabouh.jgems3d.engine.math.Pair;
+import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.FreeCamera;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.alfabouh.jgems3d.proxy.logger.managers.LoggingManager;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.TBoxMapSys;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.ObjectTable;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.ObjectType;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.Attribute;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeContainer;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.table.object.attributes.AttributeFlag;
+import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
+import ru.alfabouh.jgems3d.mapsys.toolbox.TBoxMapSys;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.ObjectTable;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.ObjectType;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.Attribute;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeContainer;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeFlag;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.controller.binding.TBoxBindingManager;
 import ru.alfabouh.jgems3d.toolbox.render.scene.TBoxScene;
-import ru.alfabouh.jgems3d.toolbox.render.scene.container.MapProperties;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 import ru.alfabouh.jgems3d.toolbox.render.screen.TBoxScreen;
 
 import java.io.File;
-import java.util.Map;
+import java.util.*;
 
 public class EditorContent implements ImGuiContent {
     public static boolean sceneShowLight = true;
@@ -36,9 +38,9 @@ public class EditorContent implements ImGuiContent {
 
     private final TBoxScene tBoxScene;
 
-    private final Vector2d sceneFrameCenter;
-    private final Vector2d sceneFrameMin;
-    private final Vector2d sceneFrameMax;
+    private final Vector2f sceneFrameCenter;
+    private final Vector2f sceneFrameMin;
+    private final Vector2f sceneFrameMax;
 
     public final ImInt objectSelectionInt = new ImInt();
 
@@ -50,9 +52,9 @@ public class EditorContent implements ImGuiContent {
     public TBoxScene3DObject currentSelectedObject;
 
     public EditorContent(TBoxScene tBoxScene) {
-        this.sceneFrameCenter = new Vector2d(0.0d);
-        this.sceneFrameMin = new Vector2d(0.0d);
-        this.sceneFrameMax = new Vector2d(0.0d);
+        this.sceneFrameCenter = new Vector2f(0.0f);
+        this.sceneFrameMin = new Vector2f(0.0f);
+        this.sceneFrameMax = new Vector2f(0.0f);
 
         this.tBoxScene = tBoxScene;
     }
@@ -77,7 +79,7 @@ public class EditorContent implements ImGuiContent {
         this.getSceneFrameMax().set(max.x, max.y);
         this.getSceneFrameCenter().set(min.x + max.x / 2.0f, min.y + max.y / 2.0f);
 
-        Vector3d pos = this.getTBoxScene().getCamera().getCamPosition();
+        Vector3f pos = this.getTBoxScene().getCamera().getCamPosition();
         String camPos = String.format("Pos: %.3f %.3f %.3f", pos.x, pos.y, pos.z);
         String fpsText = "FPS:" + TBoxScreen.FPS;
         ImGui.setCursorPos(20, 30);
@@ -99,38 +101,23 @@ public class EditorContent implements ImGuiContent {
 
             ObjectTable boxMapSys = TBoxMapSys.INSTANCE.getObjectTable();
 
-            String[] physicNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.PHYSICS_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
-            String[] modelNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.MODEL_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
-            String[] specialNames = boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(ObjectType.MARKER_OBJECT)).map(Map.Entry::getKey).toArray(String[]::new);
+            List<Pair<String, String[]>> set = new ArrayList<>();
+            for (ObjectType objectType : ObjectType.values()) {
+                set.add(new Pair<>(objectType.getGroupName(), boxMapSys.getObjects().entrySet().stream().filter(e -> e.getValue().objectType().equals(objectType)).map(Map.Entry::getKey).toArray(String[]::new)));
+            }
 
-            ImGui.showDemoWindow();
             ImGui.newLine();
 
-            if (ImGui.beginCombo("Physics Objects", "Preview1", ImGuiComboFlags.NoPreview)) {
-                for (String s : physicNames) {
-                    if (ImGui.selectable(s)) {
-                        this.currentSelectedToPlaceID = s;
+            int i = 0;
+            for (Pair<String, String[]> pairs : set) {
+                if (ImGui.beginCombo(pairs.getKey(), "Preview" + i++, ImGuiComboFlags.NoPreview)) {
+                    for (String s : pairs.getValue()) {
+                        if (ImGui.selectable(s)) {
+                            this.currentSelectedToPlaceID = s;
+                        }
                     }
+                    ImGui.endCombo();
                 }
-                ImGui.endCombo();
-            }
-
-            if (ImGui.beginCombo("Models", "Preview2", ImGuiComboFlags.NoPreview)) {
-                for (String s : modelNames) {
-                    if (ImGui.selectable(s)) {
-                        this.currentSelectedToPlaceID = s;
-                    }
-                }
-                ImGui.endCombo();
-            }
-
-            if (ImGui.beginCombo("Markers", "Preview3", ImGuiComboFlags.NoPreview)) {
-                for (String s : specialNames) {
-                    if (ImGui.selectable(s)) {
-                        this.currentSelectedToPlaceID = s;
-                    }
-                }
-                ImGui.endCombo();
             }
 
             if (this.currentSelectedToPlaceID != null) {
@@ -215,12 +202,15 @@ public class EditorContent implements ImGuiContent {
                             case POSITION_Z:
                             case POSITION_XYZ:
                             {
-                                if (value instanceof Vector3d) {
-                                    Vector3d vector3d = (Vector3d) value;
-                                    ImGui.text(attribute.getDescription());
-                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
-                                    this.transformPosition(format3D, f1, attribute.getAttributeType().getParams(), speed);
-                                    attribute.setValueWithCast(new Vector3d(f1));
+                                if (value instanceof Vector3f) {
+                                    Integer i = attribute.getAttributeType().checkAndGet(Integer.class, 0);
+                                    if (i != null) {
+                                        Vector3f Vector3f = (Vector3f) value;
+                                        ImGui.text(attribute.getDescription());
+                                        float[] f1 = new float[]{(float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
+                                        this.transformPosition(format3D, f1, i, speed);
+                                        attribute.setValueWithCast(new Vector3f(f1));
+                                    }
                                 }
                                 break;
                             }
@@ -229,12 +219,15 @@ public class EditorContent implements ImGuiContent {
                             case ROTATION_Z:
                             case ROTATION_XYZ:
                             {
-                                if (value instanceof Vector3d) {
-                                    Vector3d vector3d = (Vector3d) value;
-                                    ImGui.text(attribute.getDescription());
-                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
-                                    this.transformRotation(format3D, f1, attribute.getAttributeType().getParams(), speed);
-                                    attribute.setValueWithCast(new Vector3d(f1));
+                                if (value instanceof Vector3f) {
+                                    Integer i = attribute.getAttributeType().checkAndGet(Integer.class, 0);
+                                    if (i != null) {
+                                        Vector3f Vector3f = (Vector3f) value;
+                                        ImGui.text(attribute.getDescription());
+                                        float[] f1 = new float[]{Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
+                                        this.transformRotation(format3D, f1, i, speed);
+                                        attribute.setValueWithCast(new Vector3f(f1));
+                                    }
                                 }
                                 break;
                             }
@@ -243,22 +236,25 @@ public class EditorContent implements ImGuiContent {
                             case SCALING_Z:
                             case SCALING_XYZ:
                             {
-                                if (value instanceof Vector3d) {
-                                    Vector3d vector3d = (Vector3d) value;
-                                    ImGui.text(attribute.getDescription());
-                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
-                                    this.transformScaling(format3D, f1, attribute.getAttributeType().getParams(), speed);
-                                    attribute.setValueWithCast(new Vector3d(f1));
+                                if (value instanceof Vector3f) {
+                                    Integer i = attribute.getAttributeType().checkAndGet(Integer.class, 0);
+                                    if (i != null) {
+                                        Vector3f Vector3f = (Vector3f) value;
+                                        ImGui.text(attribute.getDescription());
+                                        float[] f1 = new float[]{Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
+                                        this.transformScaling(format3D, f1, i, speed);
+                                        attribute.setValueWithCast(new Vector3f(f1));
+                                    }
                                 }
                                 break;
                             }
                             case COLOR3:
                             {
-                                if (value instanceof Vector3d) {
-                                    Vector3d vector3d = (Vector3d) value;
-                                    float[] f1 = new float[] {(float) vector3d.x, (float) vector3d.y, (float) vector3d.z};
+                                if (value instanceof Vector3f) {
+                                    Vector3f Vector3f = (Vector3f) value;
+                                    float[] f1 = new float[] {(float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
                                     if (ImGui.colorEdit3(attribute.getDescription(), f1)) {
-                                        vector3d.set(f1);
+                                        Vector3f.set(f1);
                                     }
                                 }
                                 break;
@@ -273,13 +269,30 @@ public class EditorContent implements ImGuiContent {
                                 }
                                 break;
                             }
-                            case FLOAT:
+                            case FLOAT_0_50:
+                            case FLOAT_0_1:
                             {
                                 if (value instanceof Float) {
-                                    Float aFloat = (Float) value;
-                                    float[] f1 = new float[] {aFloat};
-                                    if (ImGui.sliderAngle(attribute.getDescription(), f1)) {
-                                        attribute.setValueWithCast(f1[0]);
+                                    Float i = attribute.getAttributeType().checkAndGet(Float.class, 0);
+                                    Float i2 = attribute.getAttributeType().checkAndGet(Float.class, 1);
+                                    if (i != null && i2 != null) {
+                                        Float aFloat = (Float) value;
+                                        float[] f1 = new float[]{aFloat};
+                                        if (ImGui.dragFloat(attribute.getDescription(), f1, 0.01f, i, i2)) {
+                                            attribute.setValueWithCast(f1[0]);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                            case STRING:
+                            {
+                                if (value instanceof String) {
+                                    String aString = (String) value;
+                                    ImString string = new ImString();
+                                    string.set(aString);
+                                    if (ImGui.inputText(attribute.getDescription(), string)) {
+                                        attribute.setValueWithCast(string.get());
                                     }
                                 }
                                 break;
@@ -329,7 +342,7 @@ public class EditorContent implements ImGuiContent {
         }
 
         if (flag) {
-            currentObjFormat.setPosition(new Vector3d(positionX[0], positionY[0], positionZ[0]));
+            currentObjFormat.setPosition(new Vector3f(positionX[0], positionY[0], positionZ[0]));
             this.currentSelectedObject.getLocalCollision().calcAABB(currentObjFormat);
         }
     }
@@ -341,31 +354,31 @@ public class EditorContent implements ImGuiContent {
         float[] rotationZ = new float[] {0.0f};
 
         if ((transformFlag & 1) != 0) {
-            rotationX[0] = values[0];
+            rotationX[0] = (float) Math.toDegrees(values[0]);
             if (ImGui.dragFloat("Rotation X", rotationX, dragSpeed)) {
-                values[0] = rotationX[0];
+                values[0] = (float) Math.toRadians(rotationX[0]);
                 flag = true;
             }
         }
 
         if ((transformFlag & 2) != 0) {
-            rotationY[0] = values[1];
+            rotationY[0] = (float) Math.toDegrees(values[1]);
             if (ImGui.dragFloat("Rotation Y", rotationY, dragSpeed)) {
-                values[1] = rotationY[0];
+                values[1] = (float) Math.toRadians(rotationY[0]);
                 flag = true;
             }
         }
 
         if ((transformFlag & 4) != 0) {
-            rotationZ[0] = values[2];
+            rotationZ[0] = (float) Math.toDegrees(values[2]);
             if (ImGui.dragFloat("Rotation Z", rotationZ, dragSpeed)) {
-                values[2] = rotationZ[0];
+                values[2] = (float) Math.toRadians(rotationZ[0]);
                 flag = true;
             }
         }
 
         if (flag) {
-            currentObjFormat.setRotation(new Vector3d(Math.toRadians(rotationX[0]), Math.toRadians(rotationY[0]), Math.toRadians(rotationZ[0])));
+            currentObjFormat.setRotation(new Vector3f(values[0], values[1], values[2]));
             this.currentSelectedObject.getLocalCollision().calcAABB(currentObjFormat);
         }
     }
@@ -401,7 +414,7 @@ public class EditorContent implements ImGuiContent {
         }
 
         if (flag) {
-            currentObjFormat.setScaling(new Vector3d(scalingX[0], scalingY[0], scalingZ[0]));
+            currentObjFormat.setScaling(new Vector3f(scalingX[0], scalingY[0], scalingZ[0]));
             this.currentSelectedObject.getLocalCollision().calcAABB(currentObjFormat);
         }
     }
@@ -429,26 +442,46 @@ public class EditorContent implements ImGuiContent {
         ImGui.setWindowPos(0, dim.y * 0.5f + 20);
 
         MapProperties mapProperties = this.getTBoxScene().getMapProperties();
-        ImString string = new ImString(mapProperties.getMapName());
-        if (ImGui.inputText("Map Name", string)) {
-            mapProperties.setMapName(string.get());
+
+        ImString imString1 = new ImString();
+        imString1.set(mapProperties.getMapName());
+        if (ImGui.inputText("Map Name", imString1)) {
+            mapProperties.setMapName(imString1.get());
         }
+
         if (ImGui.collapsingHeader("Map Settings", ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.beginChild("sett1");
             if (ImGui.collapsingHeader("Sky")) {
+
+                ImString imString2 = new ImString();
+                imString2.set(mapProperties.getSkyProp().getSkyBoxName());
+                if (ImGui.inputText("Skybox Texture Name", imString2)) {
+                    mapProperties.getSkyProp().setSkyBoxName(imString2.get());
+                }
+
                 float[] f1 = new float[] {mapProperties.getSkyProp().getSunBrightness()};
-                if (ImGui.sliderFloat("Sun Brightness", f1, 0.0f, 1.0f)) {
+                if (ImGui.dragFloat("Sun Brightness", f1, 0.01f, 0.0f, 1.0f)) {
                     mapProperties.getSkyProp().setSunBrightness(f1[0]);
                 }
                 float[] c1 = new float[] {(float) mapProperties.getSkyProp().getSunColor().x, (float) mapProperties.getSkyProp().getSunColor().y, (float) mapProperties.getSkyProp().getSunColor().z};
                 if (ImGui.colorEdit3("Sun Color", c1)) {
-                    mapProperties.getSkyProp().setSunColor(new Vector3d(c1));
+                    mapProperties.getSkyProp().setSunColor(new Vector3f(c1));
                 }
-                Vector3d v3 = new Vector3d(0.0f, 1.0f, 0.0f);
+                boolean flag = false;
                 float[] a1 = new float[] {(float) mapProperties.getSkyProp().getSunPos().x};
+                float[] a2 = new float[] {(float) mapProperties.getSkyProp().getSunPos().y};
                 float[] a3 = new float[] {(float) mapProperties.getSkyProp().getSunPos().z};
-                if (ImGui.sliderAngle("Sun Angle X", a1) || ImGui.sliderAngle("Sun Angle Z", a3)) {
-                    mapProperties.getSkyProp().setSunPos(new Vector3d(a1[0], (float) mapProperties.getSkyProp().getSunPos().y, a3[0]));
+                if (ImGui.dragFloat("Sun Position X", a1, 0.01f, -1.0f, 1.0f)) {
+                    flag = true;
+                }
+                if (ImGui.dragFloat("Sun Position Y", a2, 0.01f, -1.0f, 1.0f)) {
+                    flag = true;
+                }
+                if (ImGui.dragFloat("Sun Position Z", a3, 0.01f, -1.0f, 1.0f)) {
+                    flag = true;
+                }
+                if (flag) {
+                    mapProperties.getSkyProp().setSunPos(new Vector3f(a1[0], a2[0], a3[0]));
                 }
             }
             if (ImGui.collapsingHeader("Fog")) {
@@ -458,11 +491,13 @@ public class EditorContent implements ImGuiContent {
 
                 ImGui.beginDisabled(!mapProperties.getFogProp().isFogEnabled());
                 float [] f1 = new float[] {mapProperties.getFogProp().getFogDensity()};
-                if (ImGui.sliderFloat("Fog Density", f1, 0.0f, 1.0f)) {
+                if (ImGui.dragFloat("Fog Density", f1, 0.001f, 0.0f, 1.0f)) {
                     mapProperties.getFogProp().setFogDensity(f1[0]);
                 }
                 float[] c1 = new float[] {(float) mapProperties.getFogProp().getFogColor().x, (float) mapProperties.getFogProp().getFogColor().y, (float) mapProperties.getFogProp().getFogColor().z};
-                ImGui.colorEdit3("Fog Color", c1);
+                if (ImGui.colorEdit3("Fog Color", c1)) {
+                    mapProperties.getFogProp().setFogColor(new Vector3f(c1));
+                }
                 if (ImGui.checkbox("Sky Covered By Fog", mapProperties.getFogProp().isSkyCoveredByFog())) {
                     mapProperties.getFogProp().setSkyCoveredByFog(!mapProperties.getFogProp().isSkyCoveredByFog());
                 }
@@ -512,10 +547,13 @@ public class EditorContent implements ImGuiContent {
         }
 
         if (ImGui.beginMenu("Scene")) {
-            if (ImGui.checkbox("Light", this.sceneShowLight)) {
+            if (ImGui.button("Teleport to Center")) {
+                ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(0.0f));
+            }
+            if (ImGui.checkbox("Light", EditorContent.sceneShowLight)) {
                 EditorContent.sceneShowLight = !EditorContent.sceneShowLight;
             }
-            if (ImGui.checkbox("Fog", this.sceneShowFog)) {
+            if (ImGui.checkbox("Fog", EditorContent.sceneShowFog)) {
                 EditorContent.sceneShowFog = !EditorContent.sceneShowFog;
             }
             ImGui.endMenu();
@@ -524,7 +562,7 @@ public class EditorContent implements ImGuiContent {
         ImGui.endMainMenuBar();
     }
 
-    public void drawContent(Vector2i dim, double partialTicks) {
+    public void drawContent(Vector2i dim, float partialTicks) {
         this.renderProperties(dim);
         this.renderEdit(dim);
         this.renderScene(dim);
@@ -542,15 +580,15 @@ public class EditorContent implements ImGuiContent {
         }
     }
 
-    public Vector2d getSceneFrameMax() {
+    public Vector2f getSceneFrameMax() {
         return this.sceneFrameMax;
     }
 
-    public Vector2d getSceneFrameMin() {
+    public Vector2f getSceneFrameMin() {
         return this.sceneFrameMin;
     }
 
-    public Vector2d getSceneFrameCenter() {
+    public Vector2f getSceneFrameCenter() {
         return this.sceneFrameCenter;
     }
 

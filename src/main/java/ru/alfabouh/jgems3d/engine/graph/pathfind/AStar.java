@@ -42,7 +42,7 @@ public class AStar {
                     continue;
                 }
 
-                double tentativeG = current.getG() + edge.getWeight();
+                float tentativeG = current.getG() + edge.getWeight();
 
                 if (!openList.contains(neighbor) || tentativeG < neighbor.getG()) {
                     neighbor.setParent(current);
@@ -72,7 +72,7 @@ public class AStar {
         return path;
     }
 
-    private double heuristic(Graph.GVertex v1, Graph.GVertex v2) {
+    private float heuristic(Graph.GVertex v1, Graph.GVertex v2) {
         int dx = (int) Math.abs(v1.getX() - v2.getX());
         int dy = (int) Math.abs(v1.getZ() - v2.getZ());
         return dx + dy;

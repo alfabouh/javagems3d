@@ -1,19 +1,24 @@
 package ru.alfabouh.jgems3d.engine.system;
 
-import org.joml.Vector3d;
-import org.joml.Vector4d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
+import ru.alfabouh.jgems3d.engine.math.Pair;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.Environment;
+import ru.alfabouh.jgems3d.engine.render.opengl.environment.sky.skybox.SkyBox2D;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.GamePlayPanel;
+import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.CubeMapProgram;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
-import ru.alfabouh.jgems3d.engine.system.map.loader.IMapLoader;
+import ru.alfabouh.jgems3d.engine.system.map.legacy.loader.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.proxy.LocalPlayer;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.proxy.logger.managers.JGemsLogging;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.TextureAssetsLoader;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.FogProp;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.SkyProp;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -23,7 +28,7 @@ import java.util.Properties;
 public class EngineSystem implements IEngine {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
-    public static final String ENG_VER = "0.16a";
+    public static final String ENG_VER = "0.20a";
 
     private final ResourceManager resourceManager;
     private final EngineState engineState;
@@ -45,7 +50,7 @@ public class EngineSystem implements IEngine {
     }
 
     public String currentMapName() {
-        return this.getMapLoader().levelInfo().getLevelName();
+        return this.getMapLoader().getLevelInfo().getMapProperties().getMapName();
     }
 
     public IMapLoader getMapLoader() {
@@ -58,6 +63,10 @@ public class EngineSystem implements IEngine {
 
     public void setLockedUnPausing(boolean lockedUnPausing) {
         this.lockedUnPausing = lockedUnPausing;
+    }
+
+    public void loadMap(String mapName) {
+
     }
 
     public void loadMap(IMapLoader mapLoader) {
@@ -82,21 +91,10 @@ public class EngineSystem implements IEngine {
         SystemLogging.get().getLogManager().log("Loading map " + this.currentMapName());
         World world = JGems.get().getPhysicThreadManager().getPhysicsTimer().getWorld();
         this.localPlayer = new LocalPlayer(world);
-        this.getLocalPlayer().addPlayerInWorlds(this.getMapLoader().levelInfo().getPlayerStartPos());
-
-        SystemLogging.get().getLogManager().log("Created player");
-        SystemLogging.get().getLogManager().log(this.currentMapName() + ": Adding brushes!");
-        this.getMapLoader().addBrushes(world);
-        SystemLogging.get().getLogManager().log(this.currentMapName() + ": Adding liquids!");
-        this.getMapLoader().addLiquids(world);
-        SystemLogging.get().getLogManager().log(this.currentMapName() + ": Adding triggers!");
-        this.getMapLoader().addTriggers(world);
-        SystemLogging.get().getLogManager().log(this.currentMapName() + ": Adding entities!");
-        this.getMapLoader().addEntities(world);
-        SystemLogging.get().getLogManager().log(this.currentMapName() + ": Adding sounds!");
-        this.getMapLoader().addSounds(world);
-        SystemLogging.get().getLogManager().log(this.currentMapName() + ": Reading Nav Mesh!");
-        this.getMapLoader().readNavMesh(world);
+        this.getMapLoader().createMap(world);
+        Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
+        this.getLocalPlayer().addPlayerInWorlds(pair.getKey(), pair.getValue());
+        SystemLogging.get().getLogManager().log(this.currentMapName() + ": Map Loaded!");
 
         JGems.get().getScreen().getControllerDispatcher().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayerSP());
         JGems.get().getScreen().getScene().enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayerSP());
@@ -104,14 +102,31 @@ public class EngineSystem implements IEngine {
         JGems.get().setUIPanel(new GamePlayPanel(null));
 
         Environment environment = JGems.get().getSceneWorld().getEnvironment();
-        Vector4d fog1 = this.mapLoader.levelInfo().getFog();
-        if (this.mapLoader.levelInfo().getFog() != null) {
-            environment.getWorldFog().setColor(new Vector3d(fog1.x, fog1.y, fog1.z));
-            environment.getWorldFog().setDensity((float) fog1.w);
-            environment.getSky().setCoveredByFog(this.mapLoader.levelInfo().isSkyCoveredByFog());
+        FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
+        SkyProp skyProp = this.getMapLoader().getLevelInfo().getMapProperties().getSkyProp();
+
+        if (fogProp != null) {
+            if (fogProp.isFogEnabled()) {
+                environment.getWorldFog().setColor(fogProp.getFogColor());
+                environment.getWorldFog().setDensity(fogProp.getFogDensity());
+                environment.getSky().setCoveredByFog(fogProp.isSkyCoveredByFog());
+            } else {
+                environment.getFog().disable();
+            }
         }
-        environment.getSky().setSunColors(this.mapLoader.levelInfo().getSunColor());
-        environment.getSky().setSunBrightness(this.mapLoader.levelInfo().getSunBrightness());
+
+        if (skyProp != null) {
+            if (environment.getSky().getSkyBox() instanceof SkyBox2D) {
+                SkyBox2D skyBox2D = (SkyBox2D) environment.getSky().getSkyBox();
+                CubeMapProgram cubeMapProgram = TextureAssetsLoader.skyBoxMap.get(skyProp.getSkyBoxName());
+                if (cubeMapProgram != null) {
+                    skyBox2D.setCubeMapTexture(cubeMapProgram);
+                }
+            }
+            environment.getSky().setSunPos(skyProp.getSunPos());
+            environment.getSky().setSunColors(skyProp.getSunColor());
+            environment.getSky().setSunBrightness(skyProp.getSunBrightness());
+        }
 
         this.unPauseGame();
     }
@@ -294,7 +309,7 @@ public class EngineSystem implements IEngine {
             return this.engineIsReady;
         }
 
-        public boolean isGameResourcesLoaded() {
+        public boolean gameResourcesLoaded() {
             return this.gameResourcesLoaded;
         }
 

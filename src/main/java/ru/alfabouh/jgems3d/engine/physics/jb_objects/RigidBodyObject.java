@@ -6,11 +6,11 @@ import org.bytedeco.bullet.BulletDynamics.btRigidBody;
 import org.bytedeco.bullet.LinearMath.btQuaternion;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
-import ru.alfabouh.jgems3d.engine.physics.collision.AbstractCollision;
-import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
-import ru.alfabouh.jgems3d.engine.physics.entities.Materials;
+import ru.alfabouh.jgems3d.engine.physics.collision.base.AbstractCollision;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.materials.Materials;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 
 public class RigidBodyObject extends btRigidBody {
@@ -31,7 +31,7 @@ public class RigidBodyObject extends btRigidBody {
         this.setRigidBodyProperties(physicsProperties);
     }
 
-    public Vector3d getRotation() {
+    public Vector3f getRotation() {
         try (btTransform transform = this.getWorldTransform()) {
             double[] matrix = new double[16];
             transform.getOpenGLMatrix(matrix);
@@ -39,11 +39,11 @@ public class RigidBodyObject extends btRigidBody {
             rotation[0] = Math.atan2(matrix[9], matrix[10]);
             rotation[1] = Math.atan2(-matrix[8], Math.sqrt(matrix[9] * matrix[9] + matrix[10] * matrix[10]));
             rotation[2] = Math.atan2(matrix[4], matrix[0]);
-            return new Vector3d(-rotation[0], -rotation[1], -rotation[2]);
+            return new Vector3f((float) rotation[0], (float) rotation[1], (float) rotation[2]);
         }
     }
 
-    public void setRotation(Vector3d angles) {
+    public void setRotation(Vector3f angles) {
         try (btTransform transform = this.getWorldTransform()) {
             btQuaternion quaternion = new btQuaternion();
             quaternion.setEulerZYX(angles.z, angles.y, angles.x);
@@ -55,13 +55,13 @@ public class RigidBodyObject extends btRigidBody {
         this.getWorld().getDynamicsWorld().synchronizeMotionStates();
     }
 
-    public Vector3d getTranslation() {
+    public Vector3f getTranslation() {
         try (btTransform transform = this.getWorldTransform()) {
-            return new Vector3d(transform.getOrigin().getX(), transform.getOrigin().getY(), transform.getOrigin().getZ());
+            return new Vector3f((float) transform.getOrigin().getX(), (float) transform.getOrigin().getY(), (float) transform.getOrigin().getZ());
         }
     }
 
-    public void setTranslation(Vector3d pos) {
+    public void setTranslation(Vector3f pos) {
         try (btTransform transform = this.getWorldTransform()) {
             transform.setOrigin(new btVector3(pos.x, pos.y, pos.z));
             this.setWorldTransform(transform);
@@ -107,10 +107,10 @@ public class RigidBodyObject extends btRigidBody {
     }
 
     public void setCollision(AbstractCollision abstractCollision) {
-        this.setCollision(1.0d, abstractCollision);
+        this.setCollision(new Vector3f(1.0f), abstractCollision);
     }
 
-    public void setCollision(double scaling, AbstractCollision abstractCollision) {
+    public void setCollision(Vector3f scaling, AbstractCollision abstractCollision) {
         if (abstractCollision != null) {
             if (this.getCollisionShape() != null) {
                 this.setCollisionShape(null);
@@ -137,7 +137,7 @@ public class RigidBodyObject extends btRigidBody {
         if (properties.isRealisticInertia() && !this.isStaticObject()) {
             this.setRealisticInertia();
         } else {
-            this.setInertia(new Vector3d(0.0d));
+            this.setInertia(new Vector3f(0.0f));
         }
         this.updateCollisionObjectState();
     }
@@ -153,32 +153,32 @@ public class RigidBodyObject extends btRigidBody {
         return this.getLocalInertia();
     }
 
-    public void setInertia(Vector3d vector3d) {
-        this.setMassProps(this.getMass(), MathHelper.convert(vector3d));
+    public void setInertia(Vector3f Vector3f) {
+        this.setMassProps(this.getMass(), MathHelper.convert(Vector3f));
     }
 
-    public Vector3d getFrictionAxes() {
+    public Vector3f getFrictionAxes() {
         btVector3 b1 = this.getAnisotropicFriction();
         return MathHelper.convert(b1);
     }
 
-    public void setFrictionAxes(Vector3d axes) {
+    public void setFrictionAxes(Vector3f axes) {
         this.setAnisotropicFriction(MathHelper.convert(axes), btCollisionObject.CF_ANISOTROPIC_FRICTION);
     }
 
-    public void addObjectLinearVelocity(Vector3d vector3d) {
-        Vector3d vector3d1 = this.getObjectLinearVelocity();
-        vector3d1.add(vector3d);
-        this.setLinearVelocity(MathHelper.convert(vector3d1));
+    public void addObjectLinearVelocity(Vector3f Vector3f) {
+        Vector3f Vector3f1 = this.getObjectLinearVelocity();
+        Vector3f1.add(Vector3f);
+        this.setLinearVelocity(MathHelper.convert(Vector3f1));
     }
 
-    public Vector3d getObjectLinearVelocity() {
+    public Vector3f getObjectLinearVelocity() {
         btVector3 btVector3 = this.getLinearVelocity();
         return MathHelper.convert(btVector3);
     }
 
-    public void setObjectLinearVelocity(Vector3d vector3d) {
-        this.setLinearVelocity(MathHelper.convert(vector3d));
+    public void setObjectLinearVelocity(Vector3f Vector3f) {
+        this.setLinearVelocity(MathHelper.convert(Vector3f));
     }
 
     public void makeStatic() {
@@ -189,8 +189,8 @@ public class RigidBodyObject extends btRigidBody {
         this.setCollisionFlags((this.getCollisionFlags() | btCollisionObject.CF_DYNAMIC_OBJECT) & ~btCollisionObject.CF_STATIC_OBJECT);
     }
 
-    public void applyCentralForce(Vector3d vector3d) {
-        this.applyCentralForce(MathHelper.convert(vector3d));
+    public void applyCentralForce(Vector3f Vector3f) {
+        this.applyCentralForce(MathHelper.convert(Vector3f));
     }
 
     public void setMass(double mass) {
@@ -215,13 +215,13 @@ public class RigidBodyObject extends btRigidBody {
         this.setCcdSweptSphereRadius(0.0d);
     }
 
-    public Vector3d getScaling() {
+    public Vector3f getScaling() {
         btVector3 btVector3 = this.getCollisionShape().getLocalScaling();
         return MathHelper.convert(btVector3);
     }
 
-    public void setScaling(double scaling) {
-        this.getCollisionShape().setLocalScaling(new btVector3(scaling, scaling, scaling));
+    public void setScaling(Vector3f scaling) {
+        this.getCollisionShape().setLocalScaling(new btVector3(scaling.x, scaling.y, scaling.z));
         this.updateCollisionObjectState();
     }
 

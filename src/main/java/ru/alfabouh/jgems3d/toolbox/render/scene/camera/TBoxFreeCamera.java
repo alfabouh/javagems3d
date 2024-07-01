@@ -1,25 +1,25 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.camera;
 
-import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.FreeCamera;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 
 public class TBoxFreeCamera extends FreeCamera {
-    public TBoxFreeCamera(IController controller, Vector3d pos, Vector3d rot) {
+    public TBoxFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
         super(controller, pos, rot);
     }
 
-    protected Vector3d moveCameraPosInput() {
-        Vector3d vector3d = TBoxControllerDispatcher.getNormalizedPositionInput(this.getController());
-        if (vector3d.length() != 0.0f) {
-            vector3d.normalize();
+    protected Vector3f moveCameraPosInput() {
+        Vector3f Vector3f = TBoxControllerDispatcher.getNormalizedPositionInput(this.getController());
+        if (Vector3f.length() != 0.0f) {
+            Vector3f.normalize();
         }
-        return vector3d;
+        return Vector3f;
     }
 
-    protected Vector2d moveCameraRotInput() {
+    protected Vector2f moveCameraRotInput() {
         return TBoxControllerDispatcher.getNormalizedRotationInput(this.getController());
     }
 

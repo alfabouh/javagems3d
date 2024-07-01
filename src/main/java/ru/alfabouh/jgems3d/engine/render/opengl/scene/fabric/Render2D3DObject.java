@@ -11,7 +11,7 @@ public class Render2D3DObject extends RenderWorldItem {
     }
 
     @Override
-    public void onRender(double partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(float partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
         PhysicsObject entityObject = (PhysicsObject) renderItem;
         if (entityObject.isHasModel()) {
             entityObject.getModel3D().getFormat().setOrientedToView(true);
