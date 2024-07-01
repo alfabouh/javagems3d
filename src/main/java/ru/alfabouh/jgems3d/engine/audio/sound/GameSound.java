@@ -90,12 +90,12 @@ public class GameSound {
         this.cleanUp();
     }
 
-    public void setPosition(Vector3f Vector3f) {
-        AL10.alSource3f(this.source, AL10.AL_POSITION, (float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z);
+    public void setPosition(Vector3f vector3f) {
+        AL10.alSource3f(this.source, AL10.AL_POSITION, (float) vector3f.x, (float) vector3f.y, (float) vector3f.z);
     }
 
-    public void setVelocity(Vector3f Vector3f) {
-        AL10.alSource3f(this.source, AL10.AL_VELOCITY, (float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z);
+    public void setVelocity(Vector3f vector3f) {
+        AL10.alSource3f(this.source, AL10.AL_VELOCITY, (float) vector3f.x, (float) vector3f.y, (float) vector3f.z);
     }
 
     public float getRollOff() {

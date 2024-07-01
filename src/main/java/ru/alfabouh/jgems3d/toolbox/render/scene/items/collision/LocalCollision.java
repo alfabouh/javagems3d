@@ -34,10 +34,10 @@ public final class LocalCollision {
             for (int index : indices) {
                 int i1 = index * 3;
                 Vector4f Vector4f = new Vector4f(positions.get(i1), positions.get(i1 + 1), positions.get(i1 + 2), 1.0f).mul(modelMatrix);
-                Vector3f Vector3f = new Vector3f(Vector4f.x, Vector4f.y, Vector4f.z);
+                Vector3f vector3f = new Vector3f(Vector4f.x, Vector4f.y, Vector4f.z);
 
-                min.min(Vector3f);
-                max.max(Vector3f);
+                min.min(vector3f);
+                max.max(vector3f);
             }
         }
 
@@ -64,9 +64,9 @@ public final class LocalCollision {
 
                 float d = Intersectionf.intersectRayTriangle(rayStart, rayEnd, vertex1, vertex2, vertex3, 1.0e-12f);
                 if (d > 0.0f) {
-                    Vector3f Vector3f = new Vector3f(rayStart).add(new Vector3f(rayEnd).mul(d));
-                    if (closestVector == null || rayStart.distance(Vector3f) < rayStart.distance(closestVector)) {
-                        closestVector = Vector3f;
+                    Vector3f vector3f = new Vector3f(rayStart).add(new Vector3f(rayEnd).mul(d));
+                    if (closestVector == null || rayStart.distance(vector3f) < rayStart.distance(closestVector)) {
+                        closestVector = vector3f;
                     }
                 }
             }

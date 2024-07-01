@@ -31,29 +31,29 @@ public abstract class TBoxScene3DObject {
 
     public abstract TBoxScene3DObject copy();
 
-    public void setPositionWithAttribute(Vector3f Vector3f) {
-        this.getModel().getFormat().setPosition(Vector3f);
-        Vector3f Vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3f.class);
-        if (Vector3f1 != null) {
-            Vector3f1.set(Vector3f);
+    public void setPositionWithAttribute(Vector3f vector3f) {
+        this.getModel().getFormat().setPosition(vector3f);
+        Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3f.class);
+        if (vector3f != null) {
+            vector3f.set(vector3f);
         }
         this.reCalcCollision();
     }
 
-    public void setRotationWithAttribute(Vector3f Vector3f) {
-        this.getModel().getFormat().setRotation(Vector3f);
-        Vector3f Vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3f.class);
-        if (Vector3f1 != null) {
-            Vector3f1.set(Vector3f);
+    public void setRotationWithAttribute(Vector3f vector3f) {
+        this.getModel().getFormat().setRotation(vector3f);
+        Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3f.class);
+        if (vector3f != null) {
+            vector3f.set(vector3f);
         }
         this.reCalcCollision();
     }
 
-    public void setScalingWithAttribute(Vector3f Vector3f) {
-        this.getModel().getFormat().setScaling(Vector3f);
-        Vector3f Vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3f.class);
-        if (Vector3f1 != null) {
-            Vector3f1.set(Vector3f);
+    public void setScalingWithAttribute(Vector3f vector3f) {
+        this.getModel().getFormat().setScaling(vector3f);
+        Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3f.class);
+        if (vector3f != null) {
+            vector3f.set(vector3f);
         }
         this.reCalcCollision();
     }

@@ -205,9 +205,9 @@ public class EditorContent implements ImGuiContent {
                                 if (value instanceof Vector3f) {
                                     Integer i = attribute.getAttributeType().checkAndGet(Integer.class, 0);
                                     if (i != null) {
-                                        Vector3f Vector3f = (Vector3f) value;
+                                        Vector3f vector3f = (Vector3f) value;
                                         ImGui.text(attribute.getDescription());
-                                        float[] f1 = new float[]{(float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
+                                        float[] f1 = new float[]{(float) vector3f.x, (float) vector3f.y, (float) vector3f.z};
                                         this.transformPosition(format3D, f1, i, speed);
                                         attribute.setValueWithCast(new Vector3f(f1));
                                     }
@@ -222,9 +222,9 @@ public class EditorContent implements ImGuiContent {
                                 if (value instanceof Vector3f) {
                                     Integer i = attribute.getAttributeType().checkAndGet(Integer.class, 0);
                                     if (i != null) {
-                                        Vector3f Vector3f = (Vector3f) value;
+                                        Vector3f vector3f = (Vector3f) value;
                                         ImGui.text(attribute.getDescription());
-                                        float[] f1 = new float[]{Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
+                                        float[] f1 = new float[]{vector3f.x, (float) vector3f.y, (float) vector3f.z};
                                         this.transformRotation(format3D, f1, i, speed);
                                         attribute.setValueWithCast(new Vector3f(f1));
                                     }
@@ -239,9 +239,9 @@ public class EditorContent implements ImGuiContent {
                                 if (value instanceof Vector3f) {
                                     Integer i = attribute.getAttributeType().checkAndGet(Integer.class, 0);
                                     if (i != null) {
-                                        Vector3f Vector3f = (Vector3f) value;
+                                        Vector3f vector3f = (Vector3f) value;
                                         ImGui.text(attribute.getDescription());
-                                        float[] f1 = new float[]{Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
+                                        float[] f1 = new float[]{vector3f.x, (float) vector3f.y, (float) vector3f.z};
                                         this.transformScaling(format3D, f1, i, speed);
                                         attribute.setValueWithCast(new Vector3f(f1));
                                     }
@@ -251,10 +251,10 @@ public class EditorContent implements ImGuiContent {
                             case COLOR3:
                             {
                                 if (value instanceof Vector3f) {
-                                    Vector3f Vector3f = (Vector3f) value;
-                                    float[] f1 = new float[] {(float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z};
+                                    Vector3f vector3f = (Vector3f) value;
+                                    float[] f1 = new float[] {(float) vector3f.x, (float) vector3f.y, (float) vector3f.z};
                                     if (ImGui.colorEdit3(attribute.getDescription(), f1)) {
-                                        Vector3f.set(f1);
+                                        vector3f.set(f1);
                                     }
                                 }
                                 break;

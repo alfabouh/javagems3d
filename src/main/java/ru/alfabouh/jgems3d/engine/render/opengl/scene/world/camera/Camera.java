@@ -15,12 +15,12 @@ public class Camera implements ICamera {
         this(new Vector3f(0.0f), new Vector3f(0.0f));
     }
 
-    protected void setCameraPos(Vector3f Vector3f) {
-        this.camPosition.set(Vector3f);
+    protected void setCameraPos(Vector3f vector3f) {
+        this.camPosition.set(vector3f);
     }
 
-    protected void setCameraRot(Vector3f Vector3f) {
-        this.camRotation.set(Vector3f);
+    protected void setCameraRot(Vector3f vector3f) {
+        this.camRotation.set(vector3f);
     }
 
     public Vector3f getCamPosition() {

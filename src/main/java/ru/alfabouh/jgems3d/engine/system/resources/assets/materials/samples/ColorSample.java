@@ -14,8 +14,8 @@ public class ColorSample implements ISample {
         return new ColorSample(new Vector4f(Vector4f));
     }
 
-    public static ColorSample createColor(Vector3f Vector3f) {
-        return new ColorSample(new Vector4f(Vector3f, 1.0f));
+    public static ColorSample createColor(Vector3f vector3f) {
+        return new ColorSample(new Vector4f(vector3f, 1.0f));
     }
 
     public Vector4f getColor() {

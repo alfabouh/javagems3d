@@ -29,8 +29,8 @@ public abstract class PhysEntity extends CollidableWorldItem implements IWorldDy
         return new Vector3f(this.velocityVector);
     }
 
-    public void setVelocityVector(Vector3f Vector3f) {
-        this.velocityVector.set(Vector3f);
+    public void setVelocityVector(Vector3f vector3f) {
+        this.velocityVector.set(vector3f);
     }
 
     public void setDebugDrawing(boolean flag) {

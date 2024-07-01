@@ -153,8 +153,8 @@ public class RigidBodyObject extends btRigidBody {
         return this.getLocalInertia();
     }
 
-    public void setInertia(Vector3f Vector3f) {
-        this.setMassProps(this.getMass(), MathHelper.convert(Vector3f));
+    public void setInertia(Vector3f vector3f) {
+        this.setMassProps(this.getMass(), MathHelper.convert(vector3f));
     }
 
     public Vector3f getFrictionAxes() {
@@ -166,10 +166,10 @@ public class RigidBodyObject extends btRigidBody {
         this.setAnisotropicFriction(MathHelper.convert(axes), btCollisionObject.CF_ANISOTROPIC_FRICTION);
     }
 
-    public void addObjectLinearVelocity(Vector3f Vector3f) {
-        Vector3f Vector3f1 = this.getObjectLinearVelocity();
-        Vector3f1.add(Vector3f);
-        this.setLinearVelocity(MathHelper.convert(Vector3f1));
+    public void addObjectLinearVelocity(Vector3f vector3f) {
+        Vector3f vector3f1 = this.getObjectLinearVelocity();
+        vector3f1.add(vector3f);
+        this.setLinearVelocity(MathHelper.convert(vector3f1));
     }
 
     public Vector3f getObjectLinearVelocity() {
@@ -177,8 +177,8 @@ public class RigidBodyObject extends btRigidBody {
         return MathHelper.convert(btVector3);
     }
 
-    public void setObjectLinearVelocity(Vector3f Vector3f) {
-        this.setLinearVelocity(MathHelper.convert(Vector3f));
+    public void setObjectLinearVelocity(Vector3f vector3f) {
+        this.setLinearVelocity(MathHelper.convert(vector3f));
     }
 
     public void makeStatic() {
@@ -189,8 +189,8 @@ public class RigidBodyObject extends btRigidBody {
         this.setCollisionFlags((this.getCollisionFlags() | btCollisionObject.CF_DYNAMIC_OBJECT) & ~btCollisionObject.CF_STATIC_OBJECT);
     }
 
-    public void applyCentralForce(Vector3f Vector3f) {
-        this.applyCentralForce(MathHelper.convert(Vector3f));
+    public void applyCentralForce(Vector3f vector3f) {
+        this.applyCentralForce(MathHelper.convert(vector3f));
     }
 
     public void setMass(double mass) {

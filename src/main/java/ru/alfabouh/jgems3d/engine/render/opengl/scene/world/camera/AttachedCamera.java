@@ -34,12 +34,12 @@ public class AttachedCamera extends Camera {
     }
 
     private Vector3f cameraOffset() {
-        Vector3f Vector3f = new Vector3f(0.0f);
+        Vector3f vector3f = new Vector3f(0.0f);
         if (this.getPhysXObject() != null && this.getPhysXObject().getWorldItem() instanceof IPlayer) {
             IPlayer entityPlayerSP = (IPlayer) this.getPhysXObject().getWorldItem();
-            Vector3f.add(0, entityPlayerSP.getEyeHeight(), 0);
+            vector3f.add(0, entityPlayerSP.getEyeHeight(), 0);
         }
-        return Vector3f;
+        return vector3f;
     }
 
     public void attachCameraToItem(WorldItem worldItem) {

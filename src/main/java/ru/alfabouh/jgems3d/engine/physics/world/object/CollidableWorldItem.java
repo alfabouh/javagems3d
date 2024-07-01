@@ -46,22 +46,22 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         return new Vector3f(this.getBulletObject().getTranslation());
     }
 
-    public void setPosition(Vector3f Vector3f) {
-        if (Vector3f == null) {
+    public void setPosition(Vector3f vector3f) {
+        if (vector3f == null) {
             return;
         }
-        this.getBulletObject().setTranslation(Vector3f);
+        this.getBulletObject().setTranslation(vector3f);
     }
 
     public Vector3f getRotation() {
         return new Vector3f(this.getBulletObject().getRotation());
     }
 
-    public void setRotation(Vector3f Vector3f) {
-        if (Vector3f == null) {
+    public void setRotation(Vector3f vector3f) {
+        if (vector3f == null) {
             return;
         }
-        this.getBulletObject().setRotation(Vector3f);
+        this.getBulletObject().setRotation(new Vector3f(vector3f).negate());
     }
 
     public void setScale(Vector3f scale) {
@@ -114,8 +114,8 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         return this.entityState;
     }
 
-    public void applyCentralForce(Vector3f Vector3f) {
-        this.getBulletObject().applyCentralForce(Vector3f);
+    public void applyCentralForce(Vector3f vector3f) {
+        this.getBulletObject().applyCentralForce(vector3f);
     }
 
     public float getObjectSpeed() {
@@ -126,12 +126,12 @@ public abstract class CollidableWorldItem extends WorldItem implements JBulletEn
         return this.getBulletObject().getObjectLinearVelocity();
     }
 
-    public void setObjectVelocity(Vector3f Vector3f) {
-        this.getBulletObject().setObjectLinearVelocity(Vector3f);
+    public void setObjectVelocity(Vector3f vector3f) {
+        this.getBulletObject().setObjectLinearVelocity(vector3f);
     }
 
-    public void addObjectVelocity(Vector3f Vector3f) {
-        this.getBulletObject().addObjectLinearVelocity(Vector3f);
+    public void addObjectVelocity(Vector3f vector3f) {
+        this.getBulletObject().addObjectLinearVelocity(vector3f);
     }
 
     public static class RigidBodyConstructor {

@@ -20,8 +20,8 @@ public class OBBShape implements AbstractCollision {
 
     @Override
     public btCollisionShape buildCollisionShape(Vector3f scale) {
-        Vector3f Vector3f = this.getSize();
-        this.shape = new btBoxShape(new btVector3(Vector3f.x / 2.0f, Vector3f.y / 2.0f, Vector3f.z / 2.0f));
+        Vector3f vector3f = this.getSize();
+        this.shape = new btBoxShape(new btVector3(vector3f.x / 2.0f, vector3f.y / 2.0f, vector3f.z / 2.0f));
         this.shape.setLocalScaling(this.getScaling(scale));
         return shape;
     }

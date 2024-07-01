@@ -88,8 +88,8 @@ public abstract class WorldItem implements IWorldObject {
         return new Vector3f(this.prevPosition);
     }
 
-    public void setPrevPosition(Vector3f Vector3f) {
-        this.prevPosition.set(Vector3f);
+    public void setPrevPosition(Vector3f vector3f) {
+        this.prevPosition.set(vector3f);
     }
 
     public int getTicksExisted() {
@@ -100,16 +100,16 @@ public abstract class WorldItem implements IWorldObject {
         return new Vector3f(this.position);
     }
 
-    public void setPosition(Vector3f Vector3f) {
-        this.position.set(Vector3f);
+    public void setPosition(Vector3f vector3f) {
+        this.position.set(vector3f);
     }
 
     public Vector3f getRotation() {
         return new Vector3f(this.rotation);
     }
 
-    public void setRotation(Vector3f Vector3f) {
-        this.rotation.set(Vector3f);
+    public void setRotation(Vector3f vector3f) {
+        this.rotation.set(vector3f);
     }
 
     public Vector3f getScale() {

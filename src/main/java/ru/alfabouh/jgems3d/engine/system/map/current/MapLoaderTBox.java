@@ -45,13 +45,12 @@ public class MapLoaderTBox implements IMapLoader {
                 String id = saveObject.getObjectId();
                 Vector3f pos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.POSITION_XYZ, Vector3f.class);
                 Vector3f rot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.ROTATION_XYZ, Vector3f.class);
-                Vector3f rot_neg = new Vector3f(rot).negate();
                 Vector3f scale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.SCALING_XYZ, Vector3f.class);
                 switch (id) {
                     case "map01_physics": {
                         PhysStaticProp worldModeledBrush = new PhysStaticProp(world, "grass", RigidBodyObject.PhysProperties.createProperties(Materials.grassGround), pos, ResourceManager.modelAssets.ground);
                         JGems.get().getProxy().addItemInWorlds(worldModeledBrush, new RenderObjectData(ResourceManager.renderDataAssets.ground, ResourceManager.modelAssets.ground));
-                        worldModeledBrush.setRotation(rot_neg);
+                        worldModeledBrush.setRotation(rot);
                         worldModeledBrush.setScale(scale);
                         worldModeledBrush.setDebugDrawing(false);
                         break;

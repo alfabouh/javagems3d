@@ -28,12 +28,6 @@ public class UniformProgram {
         if (value instanceof Vector2f) {
             this.setUniform(uniformName, (Vector2f) value);
             return true;
-        } else if (value instanceof Vector2f) {
-            this.setUniform(uniformName, (Vector2f) value);
-            return true;
-        } else if (value instanceof Vector4f) {
-            this.setUniform(uniformName, (Vector4f) value);
-            return true;
         } else if (value instanceof Matrix4f) {
             this.setUniform(uniformName, (Matrix4f) value);
             return true;
@@ -48,9 +42,6 @@ public class UniformProgram {
             return true;
         } else if (value instanceof Vector4f) {
             this.setUniform(uniformName, (Vector4f) value);
-            return true;
-        } else if (value instanceof Vector3f) {
-            this.setUniform(uniformName, (Vector3f) value);
             return true;
         } else if (value instanceof Boolean) {
             this.setUniform(uniformName, ((Boolean) value) ? 1 : 0);

@@ -200,8 +200,8 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
     }
 
     @Override
-    public void setRotation(Vector3f Vector3f) {
-        this.cameraRotation.set(Vector3f);
+    public void setRotation(Vector3f vector3f) {
+        this.cameraRotation.set(vector3f);
     }
 
     public Vector3f getRotation() {
