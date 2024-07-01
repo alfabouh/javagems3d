@@ -17,7 +17,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderL
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderObjectData;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -131,7 +131,7 @@ public final class SceneWorld implements IWorld {
         this.ticks += 1;
     }
 
-    public void onWorldEntityUpdate(boolean refresh, double partialTicks) {
+    public void onWorldEntityUpdate(boolean refresh, float partialTicks) {
         Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
             IModeledSceneObject sceneObject = iterator.next();

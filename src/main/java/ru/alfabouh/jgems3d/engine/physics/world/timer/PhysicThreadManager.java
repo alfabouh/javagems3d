@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.physics.world.timer;
 
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.proxy.logger.managers.JGemsLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 
 public class PhysicThreadManager {
     public static final Object locker = new Object();

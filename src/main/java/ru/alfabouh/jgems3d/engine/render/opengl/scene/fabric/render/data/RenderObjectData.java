@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.base.IRenderFabric;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
@@ -72,11 +72,11 @@ public class RenderObjectData {
     protected void onPhysicsObjectCreated(PhysicsObject physicsObject) {
     }
 
-    public Vector2d getModelTextureScaling() {
+    public Vector2f getModelTextureScaling() {
         return this.getModelRenderParams().getTextureScaling();
     }
 
-    public RenderObjectData setModelTextureScaling(Vector2d scale) {
+    public RenderObjectData setModelTextureScaling(Vector2f scale) {
         this.getModelRenderParams().setTextureScaling(scale);
         return this;
     }

@@ -11,7 +11,7 @@ public class GuiRender extends SceneRenderBase {
         super(3, sceneRenderConveyor, new RenderGroup("GUI"));
     }
 
-    public void onRender(double partialTicks) {
+    public void onRender(float partialTicks) {
         GL30.glDisable(GL30.GL_DEPTH_TEST);
         GL30.glEnable(GL30.GL_BLEND);
         GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);

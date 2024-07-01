@@ -1,6 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.programs;
 
 import org.joml.Vector2i;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 

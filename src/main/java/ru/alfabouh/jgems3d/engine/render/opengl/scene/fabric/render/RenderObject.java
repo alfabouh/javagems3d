@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render;
 
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.engine.physics.entities.states.EntityState;
+import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.base.RenderWorldItem;
@@ -19,7 +19,7 @@ public class RenderObject extends RenderWorldItem {
     }
 
     @Override
-    public void onRender(double partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(float partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
         PhysicsObject entityObject = (PhysicsObject) renderItem;
         GL30.glClearStencil(0);
         GL30.glClear(GL30.GL_STENCIL_BUFFER_BIT);

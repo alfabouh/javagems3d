@@ -5,7 +5,7 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.invento
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.components.base.SceneRenderBase;
 
 public interface IRenderInventoryItem {
-    void onRender(double partialTicks, SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData);
+    void onRender(float partialTicks, SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData);
 
     void preRender(SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData);
 

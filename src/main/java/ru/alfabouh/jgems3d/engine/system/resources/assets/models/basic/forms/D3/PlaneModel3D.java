@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.models.basic.forms.D3;
 
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
@@ -143,8 +143,8 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
 
         Vector3f edge1 = new Vector3f(v2).sub(v1);
         Vector3f edge2 = new Vector3f(v3).sub(v1);
-        Vector2d deltaUV1 = new Vector2d(1.0f, 0.0f).sub(new Vector2d(0.0f, 0.0f));
-        Vector2d deltaUV2 = new Vector2d(1.0f, 1.0f).sub(new Vector2d(0.0f, 0.0f));
+        Vector2f deltaUV1 = new Vector2f(1.0f, 0.0f).sub(new Vector2f(0.0f, 0.0f));
+        Vector2f deltaUV2 = new Vector2f(1.0f, 1.0f).sub(new Vector2f(0.0f, 0.0f));
 
         float f = (float) (1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y));
 
@@ -157,8 +157,8 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
 
         Vector3f edge3 = new Vector3f(v3).sub(v1);
         Vector3f edge4 = new Vector3f(v4).sub(v1);
-        Vector2d deltaUV3 = new Vector2d(1.0f, 1.0f).sub(new Vector2d(0.0f, 0.0f));
-        Vector2d deltaUV4 = new Vector2d(0.0f, 1.0f).sub(new Vector2d(0.0f, 0.0f));
+        Vector2f deltaUV3 = new Vector2f(1.0f, 1.0f).sub(new Vector2f(0.0f, 0.0f));
+        Vector2f deltaUV4 = new Vector2f(0.0f, 1.0f).sub(new Vector2f(0.0f, 0.0f));
 
         float f0 = (float) (1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y));
 

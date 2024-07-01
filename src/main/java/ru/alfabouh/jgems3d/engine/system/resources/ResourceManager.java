@@ -11,8 +11,8 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.utils.ModelLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ICached;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.proxy.logger.managers.JGemsLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 
 import java.awt.*;
 import java.io.IOException;

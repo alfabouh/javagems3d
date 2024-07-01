@@ -16,12 +16,14 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.base.
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.Window;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.FBOTexture2DProgram;
-import ru.alfabouh.jgems3d.engine.system.map.Map01;
-import ru.alfabouh.jgems3d.engine.system.map.Map02;
+import ru.alfabouh.jgems3d.engine.system.map.current.MapLoaderTBox;
+import ru.alfabouh.jgems3d.engine.system.map.legacy.Map02;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format2D;
+
+import java.io.IOException;
 
 public class MainMenuPanel extends AbstractPanelUI {
     public static boolean showBlood = false;
@@ -54,7 +56,7 @@ public class MainMenuPanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, double partialTicks) {
+    public void drawPanel(ImmediateUI immediateUI, float partialTicks) {
         Window window = JGems.get().getScreen().getWindow();
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
@@ -79,7 +81,8 @@ public class MainMenuPanel extends AbstractPanelUI {
 
         immediateUI.buttonUI(MainMenuPanel.showBlood ? JGems.get().I18n("menu.main.retry") : JGems.get().I18n("menu.main.play"), ResourceManager.renderAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().loadMap(new Map02());
+                    JGems.get().loadMap(new MapLoaderTBox(MapLoaderTBox.readMapFromJar("default_map")));
+                    //JGems.get().loadMap(new Map02());
                 });
 
         immediateUI.buttonUI(JGems.get().I18n("menu.main.settings"), ResourceManager.renderAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
@@ -93,7 +96,7 @@ public class MainMenuPanel extends AbstractPanelUI {
                 });
     }
 
-    private void renderContent(ImmediateUI immediateUI, Window window, double partialTicks) {
+    private void renderContent(ImmediateUI immediateUI, Window window, float partialTicks) {
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
 

@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.programs;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

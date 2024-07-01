@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items;
 
-import ru.alfabouh.jgems3d.engine.physics.entities.PhysEntity;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.PhysEntity;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderObjectData;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.SceneWorld;

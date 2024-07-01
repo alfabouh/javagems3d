@@ -28,7 +28,7 @@ import ru.alfabouh.jgems3d.engine.system.EngineSystem;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -251,7 +251,7 @@ public class JGemsScreen implements IScreen {
         }
     }
 
-    private void renderGameScene(double delta) throws InterruptedException {
+    private void renderGameScene(float delta) throws InterruptedException {
         GL30.glEnable(GL30.GL_CULL_FACE);
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);
@@ -329,6 +329,7 @@ public class JGemsScreen implements IScreen {
             int strokes = 0;
             for (String s : this.lines) {
                 UIText textUI = new UIText(s, this.guiFont, 0x00ff00, new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
+                textUI.buildUI();
                 textUI.render(0.0f);
                 textUI.cleanData();
             }

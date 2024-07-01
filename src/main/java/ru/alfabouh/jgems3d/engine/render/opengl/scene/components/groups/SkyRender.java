@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.components.groups;
 
-import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.sky.Sky;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
@@ -53,12 +53,12 @@ public class SkyRender extends SceneRenderBase {
        GL30.glDisable(GL30.GL_CULL_FACE);
        GL30.glDepthFunc(GL30.GL_LEQUAL);
        shaderManager.getUtils().performPerspectiveMatrix();
-       Matrix4d matrix4d = Transformation.getModelViewMatrix(model.getFormat(), JGemsSceneUtils.getMainCameraViewMatrix());
-       matrix4d.m30(0);
-       matrix4d.m31(0);
-       matrix4d.m32(0);
+       Matrix4f Matrix4f = Transformation.getModelViewMatrix(model.getFormat(), JGemsSceneUtils.getMainCameraViewMatrix());
+       Matrix4f.m30(0);
+       Matrix4f.m31(0);
+       Matrix4f.m32(0);
        shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog());
-       shaderManager.getUtils().performModel3DViewMatrix(matrix4d);
+       shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
        shaderManager.getUtils().performCubeMap(sky.getSkyBox().cubeMapTexture());
        //shaderManager.getUtils().setCubeMapTexture(JGems.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
@@ -67,7 +67,7 @@ public class SkyRender extends SceneRenderBase {
        GL30.glEnable(GL30.GL_CULL_FACE);
     }
 
-    public void onRender(double partialTicks) {
+    public void onRender(float partialTicks) {
         this.renderCubeMapSkyBox();
     }
 

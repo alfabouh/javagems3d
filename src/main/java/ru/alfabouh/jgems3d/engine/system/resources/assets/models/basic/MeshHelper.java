@@ -38,7 +38,7 @@ public class MeshHelper {
         return planeModel3D.generateModel();
     }
 
-    public static Model<Format3D> generateVector3DModel(Vector3f v1, Vector3f v2) {
+    public static Model<Format3D> generateVector3fModel(Vector3f v1, Vector3f v2) {
         VectorModel3D vectorModel3D = new VectorModel3D(v1, v2);
         return vectorModel3D.generateModel();
     }
@@ -48,7 +48,7 @@ public class MeshHelper {
         return wireBoxModel3D.generateModel();
     }
 
-    public static Mesh generateVector2DMesh(Vector2f v1, Vector2f v2) {
+    public static Mesh generateVector2fMesh(Vector2f v1, Vector2f v2) {
         VectorModel2D vectorModel2D = new VectorModel2D(v1, v2);
         return vectorModel2D.generateMesh();
     }
@@ -68,7 +68,7 @@ public class MeshHelper {
         return planeModel3D.generateMesh();
     }
 
-    public static Mesh generateVector3DMesh(Vector3f v1, Vector3f v2) {
+    public static Mesh generateVector3fMesh(Vector3f v1, Vector3f v2) {
         VectorModel3D vectorModel3D = new VectorModel3D(v1, v2);
         return vectorModel3D.generateMesh();
     }

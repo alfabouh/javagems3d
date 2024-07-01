@@ -9,16 +9,16 @@ import ru.alfabouh.jgems3d.engine.render.opengl.scene.debug.constants.GlobalRend
 
 public class Sky implements IWorldDynamic {
     private final ISkyBox skyBox;
-    private Vector3f sunAngle;
+    private Vector3f sunPos;
     private Vector3f sunColors;
     private boolean coveredByFog;
     private float sunBrightness;
 
-    public Sky(ISkyBox skyBox, Vector3f sunColors, Vector3f sunAngle, float sunBrightness) {
+    public Sky(ISkyBox skyBox, Vector3f sunColors, Vector3f sunPos, float sunBrightness) {
         this.skyBox = skyBox;
         this.coveredByFog = true;
         this.setSunBrightness(sunBrightness);
-        this.setSunAngle(sunAngle);
+        this.setSunPos(sunPos);
         this.setSunColors(sunColors);
     }
 
@@ -42,12 +42,12 @@ public class Sky implements IWorldDynamic {
         this.sunColors = sunColors;
     }
 
-    public Vector3f getSunAngle() {
-        return new Vector3f(this.sunAngle);
+    public Vector3f getSunPos() {
+        return new Vector3f(this.sunPos);
     }
 
-    public void setSunAngle(Vector3f sunAngle) {
-        this.sunAngle = new Vector3f(sunAngle).normalize();
+    public void setSunPos(Vector3f sunPos) {
+        this.sunPos = new Vector3f(sunPos).normalize();
     }
 
     public float getSunBrightness() {

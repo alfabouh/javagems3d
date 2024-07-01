@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.cache;
 
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.util.HashMap;
 import java.util.Map;

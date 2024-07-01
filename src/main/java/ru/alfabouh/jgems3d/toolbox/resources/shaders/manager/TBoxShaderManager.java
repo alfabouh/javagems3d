@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.toolbox.resources.shaders.manager;
 
-import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -85,7 +85,7 @@ public final class TBoxShaderManager extends ShaderManager {
             TBoxShaderManager.this.performUniformNoWarn("camera_pos", ToolBox.get().getScreen().getScene().getCamera());
         }
 
-        public void performViewAndModelMatricesSeparately(Matrix4d viewMatrix, Model<Format3D> model) {
+        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model<Format3D> model) {
             if (TBoxShaderManager.this.checkUniformInGroup("model_matrix")) {
                 this.performModel3DMatrix(model);
             }
@@ -109,24 +109,24 @@ public final class TBoxShaderManager extends ShaderManager {
             this.performPerspectiveMatrix(TBoxSceneUtils.getMainPerspectiveMatrix());
         }
 
-        public void performPerspectiveMatrix(Matrix4d matrix4d) {
-            TBoxShaderManager.this.performUniform("projection_matrix", matrix4d);
+        public void performPerspectiveMatrix(Matrix4f Matrix4f) {
+            TBoxShaderManager.this.performUniform("projection_matrix", Matrix4f);
         }
 
         public void performOrthographicMatrix(Model<Format2D> model) {
             TBoxShaderManager.this.performUniform("projection_model_matrix", Transformation.getModelOrthographicMatrix(model.getFormat(), TBoxSceneUtils.getMainOrthographicMatrix()));
         }
 
-        public void performModel3DViewMatrix(Model<Format3D> model, Matrix4d view) {
+        public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {
             TBoxShaderManager.this.performUniform("model_view_matrix", Transformation.getModelViewMatrix(model.getFormat(), view));
         }
 
-        public void performModel3DViewMatrix(Matrix4d matrix4d) {
-            TBoxShaderManager.this.performUniform("model_view_matrix", matrix4d);
+        public void performModel3DViewMatrix(Matrix4f Matrix4f) {
+            TBoxShaderManager.this.performUniform("model_view_matrix", Matrix4f);
         }
 
-        public void performViewMatrix(Matrix4d matrix4d) {
-            TBoxShaderManager.this.performUniform("view_matrix", matrix4d);
+        public void performViewMatrix(Matrix4f Matrix4f) {
+            TBoxShaderManager.this.performUniform("view_matrix", Matrix4f);
         }
 
         public void performModel3DMatrix(Format3D format3D) {
@@ -137,8 +137,8 @@ public final class TBoxShaderManager extends ShaderManager {
             this.performModel3DMatrix(Transformation.getModelMatrix(model.getFormat()));
         }
 
-        public void performModel3DMatrix(Matrix4d matrix4d) {
-            TBoxShaderManager.this.performUniform("model_matrix", matrix4d);
+        public void performModel3DMatrix(Matrix4f Matrix4f) {
+            TBoxShaderManager.this.performUniform("model_matrix", Matrix4f);
         }
     }
 }

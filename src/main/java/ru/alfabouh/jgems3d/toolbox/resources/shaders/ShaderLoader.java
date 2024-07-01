@@ -2,10 +2,9 @@ package ru.alfabouh.jgems3d.toolbox.resources.shaders;
 
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.Shader;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.loader.IShaderLoader;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 
 import java.util.ArrayList;

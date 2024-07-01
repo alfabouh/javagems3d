@@ -1,13 +1,13 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.environment.shadow;
 
-import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 
 public class CascadeShadow {
-    private final Matrix4d lightProjectionViewMatrix;
+    private final Matrix4f lightProjectionViewMatrix;
     private float splitDistance;
 
     public CascadeShadow() {
-        this.lightProjectionViewMatrix = new Matrix4d();
+        this.lightProjectionViewMatrix = new Matrix4f();
     }
 
     public float getSplitDistance() {
@@ -18,11 +18,11 @@ public class CascadeShadow {
         this.splitDistance = splitDistance;
     }
 
-    public Matrix4d getLightProjectionViewMatrix() {
-        return new Matrix4d(this.lightProjectionViewMatrix);
+    public Matrix4f getLightProjectionViewMatrix() {
+        return new Matrix4f(this.lightProjectionViewMatrix);
     }
 
-    public void setLightProjectionViewMatrix(Matrix4d matrix4d) {
-        this.lightProjectionViewMatrix.set(matrix4d);
+    public void setLightProjectionViewMatrix(Matrix4f Matrix4f) {
+        this.lightProjectionViewMatrix.set(Matrix4f);
     }
 }

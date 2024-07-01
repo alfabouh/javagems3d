@@ -35,7 +35,7 @@ public class Shader {
     }
 
     private void loadStructs() {
-        try (InputStream inputStream = JGems.loadFileJar("/assets/", shaderName + this.getShaderType().getFile())) {
+        try (InputStream inputStream = JGems.loadFileJar("/assets", shaderName + this.getShaderType().getFile())) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             String structName = null;
@@ -64,7 +64,7 @@ public class Shader {
 
     private String loadStream(String shaderName) {
         StringBuilder shaderSource = new StringBuilder();
-        try (InputStream inputStream = JGems.loadFileJar("/assets/", shaderName + this.getShaderType().getFile())) {
+        try (InputStream inputStream = JGems.loadFileJar("/assets", shaderName + this.getShaderType().getFile())) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {

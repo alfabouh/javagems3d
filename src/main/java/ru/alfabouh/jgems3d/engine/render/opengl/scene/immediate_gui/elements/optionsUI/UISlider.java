@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements.optionsUI;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
@@ -33,11 +33,14 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     }
 
     @Override
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         super.render(partialTicks);
         UIPictureStatic line = new UIPictureStatic(ResourceManager.renderAssets.gui1, new Vector2i(this.getPosition()).add(0, (int) (3.0f * this.getScaling().y)), new Vector2f(0.0f, 13.0f), new Vector2f(100.0f, 1.0f), this.getZValue());
         UIPictureStaticSelectable brick = new UIPictureStaticSelectable(ResourceManager.renderAssets.gui1, new Vector2i(this.getPosition()).add((int) (this.getOptionValue() * this.getScaling().mul(98).x), 0), new Vector2f(0.0f, 14.0f), new Vector2f(2.0f, 7.0f), this.getZValue());
         brick.setSelected(this.isSelected());
+
+        line.buildUI();
+        brick.buildUI();
 
         line.setScaling(this.getScaling());
         brick.setScaling(this.getScaling());
@@ -49,7 +52,14 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
         brick.cleanData();
 
         UIText uiText = new UIText(this.title + " " + (int) (this.getOptionValue() * 100.0f) + "%", guiFont, this.hexColor, new Vector2i(this.getPosition()).add(this.getSize().x + 30, -3), this.zValue);
+        uiText.buildUI();
         uiText.render(partialTicks);
+        uiText.cleanData();
+    }
+
+    @Override
+    public void buildUI() {
+
     }
 
     @Override
@@ -106,7 +116,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     }
 
     @Override
-    protected void onMouseInside(Vector2d mouseCoordinates) {
+    protected void onMouseInside(Vector2f mouseCoordinates) {
 
     }
 
@@ -121,13 +131,13 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     }
 
     @Override
-    protected void onClicked(Vector2d mouseCoordinates) {
+    protected void onClicked(Vector2f mouseCoordinates) {
         float value = MathHelper.clamp((float) (mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
         this.setOptionValue(value);
     }
 
     @Override
-    protected void onUnClicked(Vector2d mouseCoordinates) {
+    protected void onUnClicked(Vector2f mouseCoordinates) {
 
     }
 }

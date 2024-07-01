@@ -1,60 +1,60 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 
 public class Format2D implements IFormat {
-    private final Vector2d position;
-    private double rotation;
-    private final Vector2d scale;
+    private final Vector2f position;
+    private float rotation;
+    private final Vector2f scale;
     private boolean isOrientedToView;
 
-    public Format2D(@NotNull Vector2d position, double rotation, Vector2d scale) {
+    public Format2D(@NotNull Vector2f position, float rotation, Vector2f scale) {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
         this.isOrientedToView = false;
     }
 
-    public Format2D(Vector2d position, float rotation) {
-        this(position, rotation, new Vector2d(1.0d));
+    public Format2D(Vector2f position, float rotation) {
+        this(position, rotation, new Vector2f(1.0f));
     }
 
-    public Format2D(Vector2d position) {
-        this(position, 0.0d, new Vector2d(1.0d));
+    public Format2D(Vector2f position) {
+        this(position, 0.0f, new Vector2f(1.0f));
     }
 
     public Format2D() {
-        this(new Vector2d(0.0d),0.0d, new Vector2d(1.0d));
+        this(new Vector2f(0.0f),0.0f, new Vector2f(1.0f));
     }
 
-    public Vector2d getPosition() {
+    public Vector2f getPosition() {
         return this.position;
     }
 
-    public void setPosition(Vector2d position) {
+    public void setPosition(Vector2f position) {
         this.getPosition().set(position);
     }
 
-    public double getRotation() {
+    public float getRotation() {
         return this.rotation;
     }
 
-    public void setRotation(double rotation) {
+    public void setRotation(float rotation) {
         this.rotation = rotation;
     }
 
-    public Vector2d getScale() {
+    public Vector2f getScale() {
         return this.scale;
     }
 
-    public void setScale(Vector2d scale) {
+    public void setScale(Vector2f scale) {
         this.getScale().set(scale);
     }
 
     @Override
     public IFormat copy() {
-        return new Format2D(new Vector2d(this.getPosition()), this.getRotation(), new Vector2d(this.getScale()));
+        return new Format2D(new Vector2f(this.getPosition()), this.getRotation(), new Vector2f(this.getScale()));
     }
 
     @Override

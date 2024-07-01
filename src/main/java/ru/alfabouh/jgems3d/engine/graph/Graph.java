@@ -1,9 +1,9 @@
 package ru.alfabouh.jgems3d.engine.graph;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.*;
 import java.util.*;
@@ -58,7 +58,7 @@ public class Graph implements Serializable {
         }
     }
 
-    public void addEdge(GVertex vertex1, GVertex vertex2, double w) {
+    public void addEdge(GVertex vertex1, GVertex vertex2, float w) {
         GEdge edge = new GEdge(vertex2, w);
         this.getGraphContainer().get(vertex1).add(edge);
     }
@@ -95,7 +95,7 @@ public class Graph implements Serializable {
     }
 
     @SuppressWarnings("all")
-    public GVertex getClosestVertex(Vector3d pos) {
+    public GVertex getClosestVertex(Vector3f pos) {
         GVertex minVer = this.getGraphContainer().keySet().stream().findFirst().get();
         for (GVertex vertex : this.getGraphContainer().keySet()) {
             if (vertex.distanceTo(pos) < minVer.distanceTo(pos)) {
@@ -107,18 +107,18 @@ public class Graph implements Serializable {
 
     public static class GEdge implements Serializable {
         private final GVertex target;
-        private final double weight;
+        private final float weight;
 
         public GEdge(GVertex vertex) {
-            this(vertex, 1.0d);
+            this(vertex, 1.0f);
         }
 
-        public GEdge(GVertex vertex, double weight) {
+        public GEdge(GVertex vertex, float weight) {
             this.target = vertex;
             this.weight = weight;
         }
 
-        public double getWeight() {
+        public float getWeight() {
             return this.weight;
         }
 
@@ -128,15 +128,15 @@ public class Graph implements Serializable {
     }
 
     public static class GVertex implements Serializable {
-        private final double x;
-        private final double y;
-        private final double z;
-        private double g;
-        private double h;
-        private double f;
+        private final float x;
+        private final float y;
+        private final float z;
+        private float g;
+        private float h;
+        private float f;
         private GVertex parent;
 
-        public GVertex(double x, double y, double z) {
+        public GVertex(float x, float y, float z) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -145,26 +145,26 @@ public class Graph implements Serializable {
         }
 
         public double distanceTo(GVertex vertex) {
-            return new Vector3d(this.getX(), this.getY(), this.getZ()).distance(vertex.getX(), vertex.getY(), vertex.getZ());
+            return new Vector3f(this.getX(), this.getY(), this.getZ()).distance(vertex.getX(), vertex.getY(), vertex.getZ());
         }
 
-        public double distanceTo(Vector3d vector3d) {
-            return new Vector3d(this.getX(), this.getY(), this.getZ()).distance(vector3d);
+        public double distanceTo(Vector3f Vector3f) {
+            return new Vector3f(this.getX(), this.getY(), this.getZ()).distance(Vector3f);
         }
 
-        public double getG() {
+        public float getG() {
             return this.g;
         }
 
-        public void setG(double g) {
+        public void setG(float g) {
             this.g = g;
         }
 
-        public double getH() {
+        public float getH() {
             return this.h;
         }
 
-        public void setH(double h) {
+        public void setH(float h) {
             this.h = h;
         }
 
@@ -172,7 +172,7 @@ public class Graph implements Serializable {
             return this.f;
         }
 
-        public void setF(double f) {
+        public void setF(float f) {
             this.f = f;
         }
 
@@ -184,15 +184,15 @@ public class Graph implements Serializable {
             this.parent = parent;
         }
 
-        public synchronized double getX() {
+        public synchronized float getX() {
             return this.x;
         }
 
-        public synchronized double getY() {
+        public synchronized float getY() {
             return this.y;
         }
 
-        public synchronized double getZ() {
+        public synchronized float getZ() {
             return this.z;
         }
 
@@ -200,13 +200,9 @@ public class Graph implements Serializable {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            long temp;
-            temp = Double.doubleToLongBits(this.getX());
-            result = prime * result + (int) (temp ^ (temp >>> 32));
-            temp = Double.doubleToLongBits(this.getY());
-            result = prime * result + (int) (temp ^ (temp >>> 32));
-            temp = Double.doubleToLongBits(this.getZ());
-            result = prime * result + (int) (temp ^ (temp >>> 32));
+            result = prime * result + Double.hashCode(this.getX());
+            result = prime * result + Double.hashCode(this.getY());
+            result = prime * result + Double.hashCode(this.getZ());
             return result;
         }
 

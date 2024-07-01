@@ -1,9 +1,9 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.container;
 
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.toolbox.render.scene.container.map_prop.FogProp;
-import ru.alfabouh.jgems3d.toolbox.render.scene.container.map_prop.SkyProp;
-import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.FogProp;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.SkyProp;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 
 import java.util.Comparator;
@@ -38,7 +38,7 @@ public class SceneContainer {
         this.objectPreRender(scene3DObject);
     }
 
-    public void render(double deltaTime) {
+    public void render(float deltaTime) {
         this.getSceneObjects().forEach(e -> e.getRenderData().getObjectRenderer().onRender(this.getMapProperties(), e, deltaTime));
     }
 

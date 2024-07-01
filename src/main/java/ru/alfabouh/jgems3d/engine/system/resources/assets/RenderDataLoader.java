@@ -1,11 +1,9 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets;
 
-import org.joml.Vector3d;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.inventory.items.*;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
-import ru.alfabouh.jgems3d.engine.physics.brush.Plane4dBrush;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.Render2D3DObject;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.RenderObject;
@@ -31,7 +29,6 @@ import java.util.Map;
 public class RenderDataLoader implements IAssetsLoader {
     public final InventoryItemRenderTable inventoryItemRenderTable;
     public RenderObjectData entityCube;
-    public RenderObjectData entityLamp;
     public RenderObjectData player;
     public RenderObjectData ground;
     public RenderObjectData particleFlame;
@@ -60,10 +57,10 @@ public class RenderDataLoader implements IAssetsLoader {
         this.inventoryItemRenderTable.addItem(ItemCrowbar.class, new RenderInventoryItemData(ResourceManager.shaderAssets.inventory_common_item, new InventoryCommonItemObject(ResourceManager.renderAssets.crowbar), ResourceManager.renderAssets.crowbar_inventory));
         this.inventoryItemRenderTable.addItem(ItemRadio.class, new RenderInventoryItemData(ResourceManager.shaderAssets.inventory_common_item, new InventoryCommonItemObject(ResourceManager.renderAssets.radio), ResourceManager.renderAssets.radio_inventory));
 
-        IEntityModelConstructor<WorldItem> entityModelConstructor = e -> {
-            Plane4dBrush plane4dBrush = (Plane4dBrush) e;
-            return new MeshDataGroup(MeshHelper.generatePlane3DMesh(MathHelper.convertV3DV3F(plane4dBrush.getVertices()[0]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[1]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[2]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[3])));
-        };
+        //IEntityModelConstructor<WorldItem> entityModelConstructor = e -> {
+        //    Plane4dBrush plane4dBrush = (Plane4dBrush) e;
+        //    return new MeshDataGroup(MeshHelper.generatePlane3DMesh(MathHelper.convertV3DV3F(plane4dBrush.getVertices()[0]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[1]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[2]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[3])));
+        //};
         IEntityModelConstructor<WorldItem> enemyModelConstructor = e -> {
             return new MeshDataGroup(MeshHelper.generatePlane3DMesh(new Vector3f(-1.0f, 0.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f), new Vector3f(-1.0f, 2.0f, 0.0f), new Vector3f(1.0f, 2.0f, 0.0f)));
         };
@@ -98,49 +95,49 @@ public class RenderDataLoader implements IAssetsLoader {
         this.water = new RenderLiquidData(ResourceManager.renderAssets.waterNormals, ResourceManager.renderAssets.waterTexture, false, ResourceManager.shaderAssets.world_liquid_gbuffer);
 
         this.enemy = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_enemy);
-        this.enemy.getModelRenderParams().setCustomCullingAABSize(new Vector3d(5.0d));
+        this.enemy.getModelRenderParams().setCustomCullingAABSize(new Vector3f(5.0f));
         this.enemy.setEntityModelConstructor(enemyModelConstructor);
         this.enemy.getModelRenderParams().setShadowCaster(false).setHasTransparency(true);
         this.enemy.setOverObjectMaterial(enMat);
 
         this.soda_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_pickable);
-        this.soda_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.soda_world.getModelRenderParams().setCustomCullingAABSize(new Vector3f(2.0f));
         this.soda_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.soda_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.soda_world.setOverObjectMaterial(sdMat);
 
         this.radio_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_pickable);
-        this.radio_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.radio_world.getModelRenderParams().setCustomCullingAABSize(new Vector3f(2.0f));
         this.radio_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.radio_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.radio_world.setOverObjectMaterial(rdMat);
 
         this.zippo_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_pickable);
-        this.zippo_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.zippo_world.getModelRenderParams().setCustomCullingAABSize(new Vector3f(2.0f));
         this.zippo_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.zippo_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.zippo_world.setOverObjectMaterial(zwMat);
 
         this.emp_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_pickable);
-        this.emp_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.emp_world.getModelRenderParams().setCustomCullingAABSize(new Vector3f(2.0f));
         this.emp_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.emp_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.emp_world.setOverObjectMaterial(ewMat);
 
         this.crowbar_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_pickable);
-        this.crowbar_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.crowbar_world.getModelRenderParams().setCustomCullingAABSize(new Vector3f(2.0f));
         this.crowbar_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.crowbar_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.crowbar_world.setOverObjectMaterial(cwMat);
 
         this.cd_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_pickable);
-        this.cd_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.cd_world.getModelRenderParams().setCustomCullingAABSize(new Vector3f(2.0f));
         this.cd_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.cd_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.cd_world.setOverObjectMaterial(cdMat);
 
         this.cassette_world = new RenderObjectData(new Render2D3DObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_pickable);
-        this.cassette_world.getModelRenderParams().setCustomCullingAABSize(new Vector3d(2.0d));
+        this.cassette_world.getModelRenderParams().setCustomCullingAABSize(new Vector3f(2.0f));
         this.cassette_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.cassette_world.getModelRenderParams().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.cassette_world.setOverObjectMaterial(csMat);
@@ -148,10 +145,9 @@ public class RenderDataLoader implements IAssetsLoader {
         this.plank = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.plank);
 
         this.door1 = new RenderObjectData(new RenderObject(), WorldItemObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.door2);
-        this.door1.getModelRenderParams().setShouldInterpolateMovement(false).setCustomCullingAABSize(new Vector3d(5.0d));
+        this.door1.getModelRenderParams().setShouldInterpolateMovement(false).setCustomCullingAABSize(new Vector3f(5.0f));
 
         this.entityCube = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.cube);
-        this.entityLamp = new RenderObjectData(new RenderObject(), LampObject.class, ResourceManager.shaderAssets.world_gbuffer).setMeshDataGroup(ResourceManager.modelAssets.cube);
         this.player = new RenderObjectData(new RenderPlayerSP(), PlayerSPObject.class, ResourceManager.shaderAssets.world_gbuffer);
 
         this.ground = new RenderObjectData(new RenderObject(), EntityObject.class, ResourceManager.shaderAssets.world_gbuffer);

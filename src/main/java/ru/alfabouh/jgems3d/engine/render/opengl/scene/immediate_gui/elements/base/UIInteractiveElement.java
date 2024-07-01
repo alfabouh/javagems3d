@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements.base;
 
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
@@ -15,7 +15,7 @@ public abstract class UIInteractiveElement extends UIElement {
         super(currentShader, zValue);
     }
 
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         this.handleInput();
     }
 
@@ -28,11 +28,11 @@ public abstract class UIInteractiveElement extends UIElement {
                 this.isMLKPressedOutsideButton = false;
             }
 
-            Vector2d mouseCoordinates = new Vector2d(mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[0], mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[1]);
+            Vector2f mouseCoordinates = mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinatesV2F();
             if (mouseCoordinates.x >= this.getPosition().x && mouseCoordinates.x <= this.getPosition().x + this.getSize().x && mouseCoordinates.y >= this.getPosition().y && mouseCoordinates.y <= this.getPosition().y + this.getSize().y) {
                 this.selected = true;
                 this.onMouseEntered();
-                this.onMouseInside(new Vector2d(mouseCoordinates));
+                this.onMouseInside(new Vector2f(mouseCoordinates));
             } else {
                 if (flag) {
                     this.isMLKPressedOutsideButton = true;
@@ -46,7 +46,7 @@ public abstract class UIInteractiveElement extends UIElement {
             if (flag) {
                 if (!this.isMLKPressedOutsideButton || (this.wasClickedButton && this.handleClickOutsideBorder())) {
                     this.selected = true;
-                    this.onClicked(new Vector2d(mouseCoordinates));
+                    this.onClicked(new Vector2f(mouseCoordinates));
                     this.wasClickedButton = true;
                     if (this.interruptMouseAfterClick()) {
                         JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptLMB();
@@ -55,21 +55,21 @@ public abstract class UIInteractiveElement extends UIElement {
                     }
                 }
             } else if (this.wasClickedButton) {
-                this.onUnClicked(new Vector2d(mouseCoordinates));
+                this.onUnClicked(new Vector2f(mouseCoordinates));
                 this.wasClickedButton = false;
             }
         }
     }
 
-    protected abstract void onMouseInside(Vector2d mouseCoordinates);
+    protected abstract void onMouseInside(Vector2f mouseCoordinates);
 
     protected abstract void onMouseEntered();
 
     protected abstract void onMouseLeft();
 
-    protected abstract void onClicked(Vector2d mouseCoordinates);
+    protected abstract void onClicked(Vector2f mouseCoordinates);
 
-    protected abstract void onUnClicked(Vector2d mouseCoordinates);
+    protected abstract void onUnClicked(Vector2f mouseCoordinates);
 
     public boolean isSelected() {
         return this.selected;

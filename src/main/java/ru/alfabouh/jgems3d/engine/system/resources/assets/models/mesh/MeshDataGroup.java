@@ -27,14 +27,12 @@ public class MeshDataGroup implements ICached {
         this(new ModelNode(mesh));
     }
 
-    public void constructDynamicMesh() {
-        this.dynamicCollisionModelMesh = new DynamicCollisionModelMesh(this);
-        this.dynamicCollisionModelMesh.constructCollisionMeshForDynamicObject();
-    }
-
-    public void constructStaticMesh() {
+    public void constructCollisionMesh() {
         this.staticCollisionModelMesh = new StaticCollisionModelMesh(this);
         this.staticCollisionModelMesh.constructCollisionMeshForStaticObject();
+
+        this.dynamicCollisionModelMesh = new DynamicCollisionModelMesh(this);
+        this.dynamicCollisionModelMesh.constructCollisionMeshForDynamicObject();
     }
 
     public btCollisionShape getStaticMesh() {

@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.audio.sound;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.jgems3d.engine.audio.SoundManager;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
@@ -51,10 +51,10 @@ public class GameSound {
         if (this.getAttachedTo() != null) {
             this.setPosition(this.getAttachedTo().getPosition());
         } else {
-            this.setPosition(new Vector3d(0.0d));
+            this.setPosition(new Vector3f(0.0f));
         }
 
-        this.setVelocity(new Vector3d(0.0d, 0.0d, 0.0d));
+        this.setVelocity(new Vector3f(0.0f, 0.0f, 0.0f));
 
         SoundManager.checkALonErrors();
         this.updateParams();
@@ -90,12 +90,12 @@ public class GameSound {
         this.cleanUp();
     }
 
-    public void setPosition(Vector3d vector3d) {
-        AL10.alSource3f(this.source, AL10.AL_POSITION, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z);
+    public void setPosition(Vector3f Vector3f) {
+        AL10.alSource3f(this.source, AL10.AL_POSITION, (float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z);
     }
 
-    public void setVelocity(Vector3d vector3d) {
-        AL10.alSource3f(this.source, AL10.AL_VELOCITY, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z);
+    public void setVelocity(Vector3f Vector3f) {
+        AL10.alSource3f(this.source, AL10.AL_VELOCITY, (float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z);
     }
 
     public float getRollOff() {

@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.components.groups;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.inventory.IHasInventory;
 import ru.alfabouh.jgems3d.engine.inventory.items.InventoryItem;
-import ru.alfabouh.jgems3d.engine.physics.entities.player.IPlayer;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.inventory.RenderInventoryItemData;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.FreeCamera;
@@ -16,7 +16,7 @@ public class InventoryRender extends SceneRenderBase {
         super(100, sceneRenderConveyor, new RenderGroup("INVENTORY"));
     }
 
-    public void onRender(double partialTicks) {
+    public void onRender(float partialTicks) {
         IPlayer player = JGems.get().getPlayerSP();
         if (player instanceof IHasInventory && !(JGems.get().getScreen().getCamera() instanceof FreeCamera)) {
             IHasInventory hasInventory = (IHasInventory) player;

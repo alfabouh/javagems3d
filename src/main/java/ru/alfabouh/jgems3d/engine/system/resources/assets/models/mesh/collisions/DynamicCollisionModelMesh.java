@@ -13,7 +13,6 @@ public class DynamicCollisionModelMesh {
     private final MeshDataGroup meshDataGroup;
     private btTriangleMesh triangleMesh;
     private btCollisionShape btCollisionShape;
-    private btTriangleInfoMap btTriangleInfoMap;
     private btConcaveShape meshShape;
 
     public DynamicCollisionModelMesh(MeshDataGroup meshDataGroup) {
@@ -32,12 +31,8 @@ public class DynamicCollisionModelMesh {
                 this.triangleMesh.addTriangle(new btVector3(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2)), new btVector3(floats.get(i2), floats.get(i2 + 1), floats.get(i2 + 2)), new btVector3(floats.get(i3), floats.get(i3 + 1), floats.get(i3 + 2)), true);
             }
         }
-        this.btTriangleInfoMap = new btTriangleInfoMap();
-        this.meshShape = new btBvhTriangleMeshShape(this.triangleMesh, true, true);
-        btBvhTriangleMeshShape bvhTriangleMeshShape = (btBvhTriangleMeshShape) this.meshShape;
-        bvhTriangleMeshShape.recalcLocalAabb();
-        BulletCollision.btGenerateInternalEdgeInfo(bvhTriangleMeshShape, btTriangleInfoMap);
-        bvhTriangleMeshShape.setTriangleInfoMap(btTriangleInfoMap);
+        this.meshShape = new btGImpactMeshShape(this.triangleMesh);
+        ((btGImpactMeshShape) this.meshShape).updateBound();
         this.btCollisionShape = meshShape;
     }
 

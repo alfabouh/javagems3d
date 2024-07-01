@@ -18,9 +18,9 @@ import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.Window;
 import ru.alfabouh.jgems3d.engine.render.transformation.TransformationUtils;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
-import ru.alfabouh.jgems3d.proxy.logger.managers.LoggingManager;
-import ru.alfabouh.jgems3d.proxy.mapsys.toolbox.TBoxMapSys;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
+import ru.alfabouh.jgems3d.mapsys.toolbox.TBoxMapSys;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.render.scene.TBoxScene;
@@ -106,7 +106,7 @@ public class TBoxScreen implements IScreen {
     private void renderLoop() throws InterruptedException {
         GameRenderTimer deltaTimer = this.getTimerPool().createTimer();
         GameRenderTimer fpsTimer = this.getTimerPool().createTimer();
-        GL30.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+        GL30.glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
         int fps = 0;
 
         while (!ToolBox.get().isShouldBeClosed()) {
@@ -132,7 +132,7 @@ public class TBoxScreen implements IScreen {
         }
     }
 
-    private void renderGameScene(double delta) throws InterruptedException {
+    private void renderGameScene(float delta) throws InterruptedException {
         GL30.glEnable(GL30.GL_CULL_FACE);
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);

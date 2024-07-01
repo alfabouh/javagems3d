@@ -1,8 +1,8 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.screen.window;
 
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector4d;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFW;
@@ -10,7 +10,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.nio.IntBuffer;
 
@@ -108,23 +108,23 @@ public class Window implements IWindow {
         }
     }
 
-    public Vector4d getWindowFrameSize() {
+    public Vector4f getWindowFrameSize() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer l = stack.mallocInt(1);
             IntBuffer t = stack.mallocInt(1);
             IntBuffer r = stack.mallocInt(1);
             IntBuffer b = stack.mallocInt(1);
             GLFW.glfwGetWindowFrameSize(this.window, l, t, r, b);
-            return new Vector4d(l.get(0), t.get(0), r.get(0), b.get(0));
+            return new Vector4f(l.get(0), t.get(0), r.get(0), b.get(0));
         }
     }
 
-    public Vector2d getWindowPos() {
+    public Vector2f getWindowPos() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer x = stack.mallocInt(1);
             IntBuffer y = stack.mallocInt(1);
             GLFW.glfwGetWindowSize(this.window, x, y);
-            return new Vector2d(x.get(0), y.get(0));
+            return new Vector2f(x.get(0), y.get(0));
         }
     }
 

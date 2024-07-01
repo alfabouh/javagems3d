@@ -1,8 +1,8 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.physics.entities.player.KinematicPlayerSP;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlayerSP;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.base.IRenderFabric;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.IRenderObject;
@@ -18,15 +18,15 @@ public class RenderPlayerSP implements IRenderFabric {
     }
 
     @Override
-    public void onRender(double partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(float partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
         PhysicsObject entityObject = (PhysicsObject) renderItem;
         WorldItem worldItem = entityObject.getWorldItem();
         if (worldItem instanceof KinematicPlayerSP) {
             KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) worldItem;
             double currTime = JGems.glfwTime();
-            double delta = currTime - this.lastGlfwTime;
+            float delta = (float) (currTime - this.lastGlfwTime);
             this.lastGlfwTime = currTime;
-            Vector3d vec3 = JGems.get().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput();
+            Vector3f vec3 = JGems.get().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput();
             if (!JGems.get().isPaused() && kinematicPlayerSP.getScalarSpeed() > 0.001f && ((vec3.y < 0 || !kinematicPlayerSP.isCanPlayerJump()) || Math.abs(vec3.y) <= 0.1f) && vec3.length() > 0.5f) {
                 RenderPlayerSP.stepBobbing += (float) delta * 60.0f * (kinematicPlayerSP.isRunning() ? 1.25f : 1.0f);
             }

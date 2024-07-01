@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.elements;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL13;
@@ -32,9 +32,9 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
     }
 
     @Override
-    public void render(double partialTicks) {
-        this.imageModel.getFormat().setPosition(new Vector2d(this.getPosition()));
-        this.imageModel.getFormat().setScale(new Vector2d(this.getScaling()));
+    public void render(float partialTicks) {
+        this.imageModel.getFormat().setPosition(new Vector2f(this.getPosition()));
+        this.imageModel.getFormat().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);

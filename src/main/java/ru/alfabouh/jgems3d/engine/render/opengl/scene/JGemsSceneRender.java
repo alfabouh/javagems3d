@@ -2,14 +2,14 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
-import ru.alfabouh.jgems3d.engine.physics.entities.player.KinematicPlayerSP;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlayerSP;
 import ru.alfabouh.jgems3d.engine.physics.liquids.ILiquid;
 import ru.alfabouh.jgems3d.engine.render.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.Environment;
@@ -29,7 +29,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.basic.MeshHelpe
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -181,7 +181,7 @@ public class JGemsSceneRender {
         this.getFinalRenderedSceneFbo().clearFBO();
     }
 
-    public void onRender(double partialTicks) {
+    public void onRender(float partialTicks) {
         if (this.getSceneData().getCamera() == null) {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.guiRender.onRender(partialTicks);
@@ -259,7 +259,7 @@ public class JGemsSceneRender {
        imgShader.unBind();
     }
 
-    private void geometryPass(double partialTicks) {
+    private void geometryPass(float partialTicks) {
         this.getGBuffer().bindFBO();
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
         for (SceneRenderBase sceneRenderBase : this.sceneRenderBases_deferred) {
@@ -268,7 +268,7 @@ public class JGemsSceneRender {
         this.getGBuffer().unBindFBO();
     }
 
-    private void lightPass(double partialTicks, Model<Format2D> model) {
+    private void lightPass(float partialTicks, Model<Format2D> model) {
         this.getDeferredWorldShader().bind();
         this.getDeferredWorldShader().performUniform("view_matrix", JGemsSceneUtils.getMainCameraViewMatrix());
         this.getDeferredWorldShader().performUniform("gPositions", 0);
@@ -297,7 +297,7 @@ public class JGemsSceneRender {
         this.getDeferredWorldShader().unBind();
     }
 
-    public void renderScene(double partialTicks, Model<Format2D> model) {
+    public void renderScene(float partialTicks, Model<Format2D> model) {
         this.getShadowScene().renderAllModelsInShadowMap(this.getModelsToRenderInShadows(this.getSceneData().getSceneWorld()));
         JGems.get().getScreen().normalizeViewPort();
 
@@ -325,7 +325,7 @@ public class JGemsSceneRender {
         return models;
     }
 
-    private void renderForwardScene(double partialTicks) {
+    private void renderForwardScene(float partialTicks) {
         GL30.glEnable(GL30.GL_BLEND);
         GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
         for (SceneRenderBase sceneRenderBase : this.sceneRenderBases_forward) {
@@ -348,7 +348,7 @@ public class JGemsSceneRender {
         this.getFinalRenderedSceneFbo().unBindFBO();
     }
 
-    public void renderSceneWithBloomAndHDR(double partialTicks, Model<Format2D> model) {
+    public void renderSceneWithBloomAndHDR(float partialTicks, Model<Format2D> model) {
         this.getFinalRenderedSceneFbo().bindFBO();
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
 
@@ -418,7 +418,7 @@ public class JGemsSceneRender {
         this.getPostProcessingShader2().unBind();
     }
 
-    private void bloomPostProcessing(double partialTicks, Model<Format2D> model) {
+    private void bloomPostProcessing(float partialTicks, Model<Format2D> model) {
         if (JGems.get().getGameSettings().bloom.getValue() == 0) {
             this.getFboBlur().bindFBO();
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
@@ -467,8 +467,8 @@ public class JGemsSceneRender {
     private boolean checkPlayerCameraInWater() {
         for (ILiquid liquid : this.getSceneData().getSceneWorld().getWorld().getLiquids()) {
             ICamera camera = this.getSceneData().getCamera();
-            Vector3d left = new Vector3d(liquid.getZone().getLocation()).sub(liquid.getZone().getSize().mul(0.5d));
-            Vector3d right = new Vector3d(liquid.getZone().getLocation()).add(liquid.getZone().getSize().mul(0.5d));
+            Vector3f left = new Vector3f(liquid.getZone().getLocation()).sub(liquid.getZone().getSize().mul(0.5f));
+            Vector3f right = new Vector3f(liquid.getZone().getLocation()).add(liquid.getZone().getSize().mul(0.5f));
             if (camera.getCamPosition().x >= left.x && camera.getCamPosition().y >= left.y && camera.getCamPosition().z >= left.z && camera.getCamPosition().x <= right.x && camera.getCamPosition().y <= right.y && camera.getCamPosition().z <= right.z) {
                 return true;
             }

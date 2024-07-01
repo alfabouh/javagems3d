@@ -5,7 +5,7 @@ import org.bytedeco.bullet.BulletCollision.btCollisionWorld;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import ru.alfabouh.jgems3d.engine.graph.Graph;
-import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
 
 import java.util.Stack;
 
@@ -25,7 +25,7 @@ public class TerrainGraphGenerator {
         while (!stack.isEmpty()) {
             Graph.GVertex current = stack.pop();
             this.getGraph().addVertex(current);
-            double off = 1.0d;
+            float off = 1.0f;
 
             Graph.GVertex[] vertices = new Graph.GVertex[4];
             vertices[0] = this.tryPlaceVertex(current, current.getX() - off, current.getY(), current.getZ());
@@ -47,7 +47,7 @@ public class TerrainGraphGenerator {
         }
     }
 
-    public Graph.GVertex startPos(double x, double y, double z) {
+    public Graph.GVertex startPos(float x, float y, float z) {
         btVector3 va1 = new btVector3(x, y, z);
         btVector3 va2 = new btVector3(x, y - 100.0d, z);
         btVector3 hit = null;
@@ -67,13 +67,13 @@ public class TerrainGraphGenerator {
         if (hit == null) {
             return new Graph.GVertex(x, y, z);
         } else {
-            Graph.GVertex gVertex = new Graph.GVertex(hit.x(), hit.y(), hit.z());
+            Graph.GVertex gVertex = new Graph.GVertex((float) hit.x(), (float) hit.y(), (float) hit.z());
             hit.deallocate();
             return gVertex;
         }
     }
 
-    private Graph.GVertex tryPlaceVertex(Graph.GVertex current, double x, double y, double z) {
+    private Graph.GVertex tryPlaceVertex(Graph.GVertex current, float x, float y, float z) {
         Graph.GVertex vertex = null;
         btVector3 va1 = new btVector3(x, y + 1.5d, z);
         btVector3 va2 = new btVector3(x, y - 3.0d, z);
@@ -91,7 +91,7 @@ public class TerrainGraphGenerator {
         this.getWorld().rayTest(va3, va4, rayResultCallback2);
         if (rayResultCallback.hasHit() && !rayResultCallback2.hasHit()) {
             btVector3 v = rayResultCallback.m_hitPointWorld();
-            vertex = new Graph.GVertex(v.x(), v.y(), v.z());
+            vertex = new Graph.GVertex((float) v.x(), (float) v.y(), (float) v.z());
         } else {
             if (rayResultCallback2.hasHit()) {
                 btVector3 v1 = rayResultCallback2.m_hitPointWorld();
@@ -108,7 +108,7 @@ public class TerrainGraphGenerator {
                 if (rayResultCallback3.hasHit()) {
                     btVector3 v2 = rayResultCallback3.m_hitPointWorld();
                     if (v2.y() <= v1.y() + 0.5d && v2.distance(va3) > 0.25d) {
-                        Graph.GVertex v = new Graph.GVertex(v2.x(), v2.y(), v2.z());
+                        Graph.GVertex v = new Graph.GVertex((float) v2.x(), (float) v2.y(), (float) v2.z());
                         this.getGraph().addVertex(v);
                         this.getGraph().addEdge(v, current);
                         this.getGraph().addEdge(current, v);

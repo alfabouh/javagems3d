@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.environment.light;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.physics.world.object.IWorldDynamic;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
 
@@ -8,43 +8,43 @@ public abstract class Light implements IWorldDynamic {
     public static final int
             POINT_LIGHT = (1 << 2);
 
-    private final Vector3d offset;
-    private final Vector3d lightColor;
-    private final Vector3d lightPos;
+    private final Vector3f offset;
+    private final Vector3f lightColor;
+    private final Vector3f lightPos;
     private PhysicsObject attachedTo;
     private boolean enabled;
     private boolean isActive;
 
     public Light() {
-        this(new Vector3d(0.0d), new Vector3d(0.0d), new Vector3d(0.0d));
+        this(new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(0.0f));
     }
 
-    public Light(Vector3d lightPos, Vector3d lightColor) {
-        this(lightPos, lightColor, new Vector3d(0.0d));
+    public Light(Vector3f lightPos, Vector3f lightColor) {
+        this(lightPos, lightColor, new Vector3f(0.0f));
     }
 
-    public Light(Vector3d lightPos) {
-        this(lightPos, new Vector3d(1.0d), new Vector3d(0.0d));
+    public Light(Vector3f lightPos) {
+        this(lightPos, new Vector3f(1.0f), new Vector3f(0.0f));
     }
 
-    public Light(Vector3d lightPos, Vector3d lightColor, Vector3d offset) {
-        this.lightColor = new Vector3d(lightColor);
-        this.lightPos = new Vector3d(lightPos);
-        this.offset = new Vector3d(offset);
+    public Light(Vector3f lightPos, Vector3f lightColor, Vector3f offset) {
+        this.lightColor = new Vector3f(lightColor);
+        this.lightPos = new Vector3f(lightPos);
+        this.offset = new Vector3f(offset);
         this.enabled = true;
         this.isActive = false;
         this.attachedTo = null;
     }
 
     public Light(PhysicsObject physicsObject) {
-        this(physicsObject.getRenderPosition(), new Vector3d(1.0d), new Vector3d(0.0d));
+        this(physicsObject.getRenderPosition(), new Vector3f(1.0f), new Vector3f(0.0f));
     }
 
-    public Light(PhysicsObject physicsObject, Vector3d lightColor) {
-        this(physicsObject.getRenderPosition(), lightColor, new Vector3d(0.0d));
+    public Light(PhysicsObject physicsObject, Vector3f lightColor) {
+        this(physicsObject.getRenderPosition(), lightColor, new Vector3f(0.0f));
     }
 
-    public Light(PhysicsObject physicsObject, Vector3d lightColor, Vector3d offset) {
+    public Light(PhysicsObject physicsObject, Vector3f lightColor, Vector3f offset) {
         this(physicsObject.getRenderPosition(), lightColor, offset);
     }
 
@@ -88,29 +88,29 @@ public abstract class Light implements IWorldDynamic {
 
     public abstract int lightCode();
 
-    public Vector3d getLightColor() {
-        return new Vector3d(this.lightColor);
+    public Vector3f getLightColor() {
+        return new Vector3f(this.lightColor);
     }
 
-    public Light setLightColor(Vector3d lightColor) {
+    public Light setLightColor(Vector3f lightColor) {
         this.lightColor.set(lightColor);
         return this;
     }
 
-    public Vector3d getLightPos() {
-        return new Vector3d(this.lightPos);
+    public Vector3f getLightPos() {
+        return new Vector3f(this.lightPos);
     }
 
-    public Light setLightPos(Vector3d lightPos) {
+    public Light setLightPos(Vector3f lightPos) {
         this.lightPos.set(lightPos);
         return this;
     }
 
-    public Vector3d getOffset() {
-        return new Vector3d(this.offset);
+    public Vector3f getOffset() {
+        return new Vector3f(this.offset);
     }
 
-    public Light setOffset(Vector3d offset) {
+    public Light setOffset(Vector3f offset) {
         this.offset.set(offset);
         return this;
     }

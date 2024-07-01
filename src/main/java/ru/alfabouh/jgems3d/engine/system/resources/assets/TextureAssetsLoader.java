@@ -11,12 +11,17 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.Text
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TextureAssetsLoader implements IAssetsLoader {
+    public static Map<String, CubeMapProgram> skyBoxMap = new HashMap<>();
+
     public TextureSample enemyTexture;
     public TextureSample waterTexture;
     public TextureSample waterNormals;
     public ParticleTexturePack particleTexturePack;
+    public CubeMapProgram defaultSkyboxCubeMap;
     public CubeMapProgram skyboxCubeMap;
     public CubeMapProgram skyboxCubeMap2;
     public GuiFont standardFont2;
@@ -94,11 +99,19 @@ public class TextureAssetsLoader implements IAssetsLoader {
             this.emp[i] = ResourceManager.createTexture("/assets/jgems/textures/items/emp/emp" + i + ".png", false, GL30.GL_CLAMP_TO_EDGE);
         }
 
-        this.skyboxCubeMap = new CubeMapProgram();
-        this.skyboxCubeMap.generateCubeMapFromTexture(new CubeMapProgram.CubeMapTextureArray("skybox/sky1", ".png"));
-        this.skyboxCubeMap2 = new CubeMapProgram();
-        this.skyboxCubeMap2.generateCubeMapFromTexture(new CubeMapProgram.CubeMapTextureArray("skybox2/sky1", ".bmp"));
+        this.defaultSkyboxCubeMap = this.createSkyBoxCubeMap("default", ".png");
+
+        this.skyboxCubeMap = this.createSkyBoxCubeMap("skyDay", ".png");
+        this.skyboxCubeMap2 = this.createSkyBoxCubeMap("skyNight", ".bmp");
+
         JGems.get().getScreen().addLineInLoadingScreen("Textures successfully loaded...");
+    }
+
+    private CubeMapProgram createSkyBoxCubeMap(String skyName, String format) {
+        CubeMapProgram cubeMap = new CubeMapProgram();
+        cubeMap.generateCubeMapFromTexture(new CubeMapProgram.CubeMapTextureArray(skyName + "/sky1", format));
+        TextureAssetsLoader.skyBoxMap.put(skyName, cubeMap);
+        return cubeMap;
     }
 
     @Override

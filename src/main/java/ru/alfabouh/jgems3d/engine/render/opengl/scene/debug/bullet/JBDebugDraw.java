@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.render.opengl.scene.debug.bullet;
 
 import org.bytedeco.bullet.LinearMath.btIDebugDraw;
 import org.bytedeco.bullet.LinearMath.btVector3;
-import org.joml.Vector4d;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -35,7 +35,7 @@ public class JBDebugDraw extends btIDebugDraw {
         debugShaders.bind();
         debugShaders.getUtils().performPerspectiveMatrix();
         debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
-        debugShaders.performUniform("colour", new Vector4d(MathHelper.convert(color), 1.0d));
+        debugShaders.performUniform("colour", new Vector4f(MathHelper.convert(color), 1.0f));
         this.drawLine(from, to);
         debugShaders.unBind();
     }

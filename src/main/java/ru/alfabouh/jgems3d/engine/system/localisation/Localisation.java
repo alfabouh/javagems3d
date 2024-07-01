@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.system.localisation;
 
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -5,7 +5,7 @@ import ru.alfabouh.jgems3d.engine.JGems;
 public class GameRenderTimer {
     private boolean shouldBeErased;
     private double lastTime;
-    private double deltaTime;
+    private float deltaTime;
     private double accumulatedTime;
 
     public GameRenderTimer() {
@@ -15,7 +15,7 @@ public class GameRenderTimer {
 
     public void update() {
         double currentTime = JGems.glfwTime();
-        this.deltaTime = currentTime - this.lastTime;
+        this.deltaTime = (float) (currentTime - this.lastTime);
         this.lastTime = currentTime;
         this.accumulatedTime += this.deltaTime;
     }
@@ -40,7 +40,7 @@ public class GameRenderTimer {
         return this.lastTime;
     }
 
-    public double getDeltaTime() {
+    public float getDeltaTime() {
         return this.deltaTime;
     }
 

@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.math;
 
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.joml.Math;
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.joml.Vector3f;
 
 public class MathHelper {
@@ -36,12 +36,12 @@ public class MathHelper {
         }
     }
 
-    public static btVector3 convert(Vector3d vector3d) {
-        return new btVector3(vector3d.x, vector3d.y, vector3d.z);
+    public static btVector3 convert(Vector3f vector3f) {
+        return new btVector3(vector3f.x, vector3f.y, vector3f.z);
     }
 
-    public static Vector3d convert(btVector3 vector3d) {
-        return new Vector3d(vector3d.getX(), vector3d.getY(), vector3d.getZ());
+    public static Vector3f convert(btVector3 vector3f) {
+        return new Vector3f((float) vector3f.getX(), (float) vector3f.getY(), (float) vector3f.getZ());
     }
 
     public static float sin(double rad) {
@@ -80,20 +80,20 @@ public class MathHelper {
         return Math.max(d1, d2);
     }
 
-    public static Vector3f convertV3DV3F(Vector3d vector3d) {
-        return new Vector3f((float) vector3d.x, (float) vector3d.y, (float) vector3d.z);
+    public static Vector3f convertV3DV3F(Vector3f Vector3f) {
+        return new Vector3f((float) Vector3f.x, (float) Vector3f.y, (float) Vector3f.z);
     }
 
-    public static Vector3d convertV3FV3D(Vector3f vector3d) {
-        return new Vector3d(vector3d);
+    public static Vector3f convertV3FV3D(Vector3f Vector3f) {
+        return new Vector3f(Vector3f);
     }
 
-    public static Vector3d calcLookVector(Vector3d rotations) {
-        double x = java.lang.Math.toRadians(rotations.x);
-        double y = java.lang.Math.toRadians(rotations.y);
-        double lX = MathHelper.sin(y) * MathHelper.cos(x);
-        double lY = -MathHelper.sin(x);
-        double lZ = -MathHelper.cos(y) * MathHelper.cos(x);
-        return new Vector3d(lX, lY, lZ);
+    public static Vector3f calcLookVector(Vector3f rotations) {
+        float x = Math.toRadians(rotations.x);
+        float y = Math.toRadians(rotations.y);
+        float lX = MathHelper.sin(y) * MathHelper.cos(x);
+        float lY = -MathHelper.sin(x);
+        float lZ = -MathHelper.cos(y) * MathHelper.cos(x);
+        return new Vector3f(lX, lY, lZ);
     }
 }

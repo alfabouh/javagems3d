@@ -1,9 +1,9 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.environment.light;
 
-import org.joml.Matrix4d;
-import org.joml.Vector3d;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4d;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.render.opengl.environment.Environment;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsSceneRender;
@@ -28,16 +28,10 @@ public class LightManager implements ILightManager {
         this.initCollections();
     }
 
-    public static Vector3d passVectorInViewSpace(Vector3d in, Matrix4d view, double w) {
-        Vector4d aux = new Vector4d(in, w);
+    public static Vector3f passVectorInViewSpace(Vector3f in, Matrix4f view, float w) {
+        Vector4f aux = new Vector4f(in, w);
         aux.mul(view);
-        return new Vector3d(aux.x, aux.y, aux.z);
-    }
-
-    public static Vector3f passVectorInViewSpace(Vector3f in, Matrix4d view, float w) {
-        Vector4d aux = new Vector4d(in, w);
-        aux.mul(view);
-        return new Vector3f((float) aux.x, (float) aux.y, (float) aux.z);
+        return new Vector3f(aux.x, aux.y, aux.z);
     }
 
     private void initCollections() {
@@ -66,14 +60,14 @@ public class LightManager implements ILightManager {
     }
 
     @Override
-    public void updateBuffers(SceneWorld sceneWorld, Matrix4d viewMatrix) {
+    public void updateBuffers(SceneWorld sceneWorld, Matrix4f viewMatrix) {
         this.getPointLightList().forEach(e -> e.onUpdate(sceneWorld));
         this.updateSunUbo(viewMatrix);
         this.updatePointLightsUbo();
     }
 
-    private void updateSunUbo(Matrix4d viewMatrix) {
-        Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunAngle(), viewMatrix, 0.0f);
+    private void updateSunUbo(Matrix4f viewMatrix) {
+        Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunPos(), viewMatrix, 0.0f);
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8);
         value1Buffer.put(this.calcAmbientLight());
         value1Buffer.put(this.environment.getSky().getSunBrightness());
@@ -95,12 +89,12 @@ public class LightManager implements ILightManager {
         int total = pointLights.size();
         for (int i = 0; i < total; i++) {
             PointLight pointLight = pointLights.get(i);
-            value1Buffer.put((float) pointLight.getLightPos().x);
-            value1Buffer.put((float) pointLight.getLightPos().y);
-            value1Buffer.put((float) pointLight.getLightPos().z);
-            value1Buffer.put((float) pointLight.getLightColor().x);
-            value1Buffer.put((float) pointLight.getLightColor().y);
-            value1Buffer.put((float) pointLight.getLightColor().z);
+            value1Buffer.put(pointLight.getLightPos().x);
+            value1Buffer.put(pointLight.getLightPos().y);
+            value1Buffer.put(pointLight.getLightPos().z);
+            value1Buffer.put(pointLight.getLightColor().x);
+            value1Buffer.put(pointLight.getLightColor().y);
+            value1Buffer.put(pointLight.getLightColor().z);
             value1Buffer.put(pointLight.getBrightness());
             value1Buffer.put(pointLight.getAttachedShadowSceneId());
             value1Buffer.flip();

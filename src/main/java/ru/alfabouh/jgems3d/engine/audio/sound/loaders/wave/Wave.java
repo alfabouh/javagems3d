@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.audio.sound.loaders.wave;
 
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.jgems3d.engine.audio.sound.loaders.ISoundLoader;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;

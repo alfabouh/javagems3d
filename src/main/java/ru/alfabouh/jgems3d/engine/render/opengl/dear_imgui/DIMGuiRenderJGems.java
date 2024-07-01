@@ -11,8 +11,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.physics.entities.player.IPlayer;
-import ru.alfabouh.jgems3d.engine.physics.entities.player.KinematicPlayerSP;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlayerSP;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.debug.constants.GlobalRenderDebugConstants;
@@ -26,7 +26,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.proxy.logger.managers.LoggingManager;
+import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
 
 import java.nio.ByteBuffer;
 
@@ -111,7 +111,7 @@ public class DIMGuiRenderJGems {
         return io;
     }
 
-    public void render(double partialTicks) {
+    public void render(float partialTicks) {
         JGemsControllerDispatcher controllerDispatcher = JGems.get().getScreen().getControllerDispatcher();
         if (JGems.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.drawGui(controllerDispatcher);
@@ -278,7 +278,7 @@ public class DIMGuiRenderJGems {
 
             ImGui.image(sceneRender.getSceneFbo().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             ImGui.sameLine();
-            ImGui.image(sceneRender.getShadowScene().getFrameBufferObjectProgram().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            ImGui.image(sceneRender.getShadowScene().getShadowFBO().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
             ImGui.endChild();
         }

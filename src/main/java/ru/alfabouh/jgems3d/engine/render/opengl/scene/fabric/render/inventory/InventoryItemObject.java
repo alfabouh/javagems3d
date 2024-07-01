@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.inventory;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.inventory.items.InventoryItem;
@@ -16,7 +16,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class InventoryItemObject implements IRenderInventoryItem {
-    protected void performTransformations(Vector3d pos, Vector3d rot, Vector3d scale, RenderInventoryItemData renderInventoryItemData) {
+    protected void performTransformations(Vector3f pos, Vector3f rot, Vector3f scale, RenderInventoryItemData renderInventoryItemData) {
         Format3D format3D = new Format3D();
         format3D.setPosition(pos);
         format3D.setRotation(rot);

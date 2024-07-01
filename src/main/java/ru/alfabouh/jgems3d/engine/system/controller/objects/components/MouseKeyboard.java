@@ -1,5 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.controller.objects.components;
 
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.BindingManager;
@@ -82,6 +83,11 @@ public class MouseKeyboard {
 
     public IWindow getWindow() {
         return this.window;
+    }
+
+    public Vector2f getCursorCoordinatesV2F() {
+        double[] d1 = this.getCursorCoordinates();
+        return new Vector2f((float) d1[0], (float) d1[1]);
     }
 
     public double[] getCursorCoordinates() {

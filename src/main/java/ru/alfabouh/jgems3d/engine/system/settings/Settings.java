@@ -6,7 +6,7 @@ import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingFloatBar;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingString;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingTrueFalse;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.*;
 import java.util.HashSet;

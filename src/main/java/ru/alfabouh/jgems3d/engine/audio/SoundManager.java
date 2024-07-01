@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.audio;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.audio.sound.GameSound;
@@ -8,7 +8,7 @@ import ru.alfabouh.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -129,7 +129,7 @@ public final class SoundManager {
         return gameSound;
     }
 
-    public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, Vector3d position) {
+    public GameSound playSoundAt(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, Vector3f position) {
         if (!this.isSystemCreated()) {
             return null;
         }

@@ -17,7 +17,7 @@ public class WorldRenderLiquids extends SceneRenderBase {
         super(10, sceneRenderConveyor, new RenderGroup("LIQUIDS_DEFERRED"));
     }
 
-    public void onRender(double partialTicks) {
+    public void onRender(float partialTicks) {
         for (ICullable cullable : this.getSceneWorld().getEntitiesFrustumCulledList(this.getSceneWorld().getLiquids())) {
             LiquidObject liquidObject = (LiquidObject) cullable;
             Model<Format3D> model = liquidObject.getModel();

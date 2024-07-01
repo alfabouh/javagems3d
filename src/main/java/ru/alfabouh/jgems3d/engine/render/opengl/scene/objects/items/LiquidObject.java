@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items;
 
-import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.physics.liquids.ILiquid;
 import ru.alfabouh.jgems3d.engine.render.opengl.frustum.ICullable;
@@ -15,27 +15,27 @@ public final class LiquidObject implements ICullable {
     private final RenderLiquidData renderLiquidData;
     private final ILiquid liquid;
     private final Model<Format3D> model;
-    private final Vector2d textureScaling;
+    private final Vector2f textureScaling;
 
     public LiquidObject(ILiquid iLiquid, RenderLiquidData renderLiquidData) {
         this.renderLiquidData = renderLiquidData;
         this.liquid = iLiquid;
-        this.textureScaling = new Vector2d(1.0d);
+        this.textureScaling = new Vector2f(1.0f);
         this.model = this.constructModel(iLiquid);
     }
 
     private Model<Format3D> constructModel(ILiquid liquid) {
-        Vector3d location = liquid.getZone().getLocation();
-        Vector3d size = new Vector3d(liquid.getZone().getSize()).mul(0.5d);
+        Vector3f location = liquid.getZone().getLocation();
+        Vector3f size = new Vector3f(liquid.getZone().getSize()).mul(0.5f);
         double y = location.y + size.y / 2.0f;
         Vector3f v1 = new Vector3f((float) (location.x - size.x), (float) y, (float) (location.z - size.z));
         Vector3f v2 = new Vector3f((float) (location.x - size.x), (float) y, (float) (location.z + size.z));
         Vector3f v3 = new Vector3f((float) (location.x + size.x), (float) y, (float) (location.z - size.z));
         Vector3f v4 = new Vector3f((float) (location.x + size.x), (float) y, (float) (location.z + size.z));
         if (size.x > size.z) {
-            this.textureScaling.set(new Vector2d(size.x / size.z, 1.0d));
+            this.textureScaling.set(new Vector2f(size.x / size.z, 1.0f));
         } else if (size.x < size.z) {
-            this.textureScaling.set(new Vector2d(1.0d, size.z / size.x));
+            this.textureScaling.set(new Vector2f(1.0f, size.z / size.x));
         }
         float sizeBound = 10.0f;
         if (size.x > sizeBound) {
@@ -47,8 +47,8 @@ public final class LiquidObject implements ICullable {
         return MeshHelper.generatePlane3DModel(v1, v2, v3, v4);
     }
 
-    public Vector2d getTextureScaling() {
-        return new Vector2d(this.textureScaling);
+    public Vector2f getTextureScaling() {
+        return new Vector2f(this.textureScaling);
     }
 
     public Model<Format3D> getModel() {

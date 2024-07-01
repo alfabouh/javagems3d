@@ -77,7 +77,7 @@ void main()
     frag_color = fogDensity > 0 ? calc_fog(frag_pos.xyz, frag_color) : frag_color;
 
     float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
-    bright_color = brightness > 1.0 ? frag_color : vec4(0., 0., 0., g_texture.a);
+    bright_color = brightness >= 1.0 ? frag_color : vec4(0., 0., 0., g_texture.a);
 }
 
 float vsmFixLightBleed(float pMax, float amount)
@@ -88,17 +88,35 @@ float vsmFixLightBleed(float pMax, float amount)
 float calcVSM(int idx, vec4 shadow_coord, float bias) {
     vec4 tex = shadow_coord / shadow_coord.w;
     vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, tex.xy);
-    float mu = vsm.x;
-    float s2 = max(vsm.y - mu * mu, bias);
-    float pmax = s2 / (s2 + (tex.z - mu) * (tex.z - mu));
-
-    return tex.z >= vsm.x ? vsmFixLightBleed(pmax, 0.7) : 1.0;
+    float E_x2 = vsm.y;
+    float Ex_2 = vsm.x * vsm.x;
+    float var = max(E_x2 - Ex_2, bias);
+    float mD = vsm.x - tex.z;
+    float mD_2 = mD * mD;
+    float p = var / (var + mD_2);
+    return max(vsmFixLightBleed(p, 0.7), int(tex.z <= vsm.x));
 }
 
 float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    return calcVSM(idx, shadow_coord, bias);
+    float c0 = calcVSM(idx, shadow_coord, bias);
+    return c0;
+}
+
+float calcSunShineVSM(vec4 world_position, vec3 frag_pos) {
+    const float bias = 1.0e-5f;
+    const float bias_f = 2.0;
+    const int max_cascades = 3;
+    int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
+    float f0 = calculate_shadow_vsm(world_position, cascadeIndex, bias);
+    if (cascadeIndex >= 0 && cascadeIndex < max_cascades) {
+        int cascadeIndex2 = int(frag_pos.z < cascade_shadow[cascadeIndex].split_distance + bias_f) + cascadeIndex;
+        float f1 = calculate_shadow_vsm(world_position, cascadeIndex2, bias);
+        float p2 = (cascade_shadow[cascadeIndex].split_distance + bias_f) - frag_pos.z;
+        return mix(f0, f1, p2 / bias_f);
+    }
+    return f0;
 }
 
 float calculate_point_light_shadow(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos)
@@ -121,13 +139,12 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
     vec4 lightFactors = vec4(vec3(sunColorR, sunColorG, sunColorB) * ambient, 1.0);
 
     vec3 sunPos = normalize(vec3(sunX, sunY, sunZ));
-    int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
 
     vec4 view_pos = vec4(frag_pos, 1.0);
     vec4 world_position = out_inversed_view_matrix * view_pos;
     world_position /= world_position.w;
 
-    float sun_shadow = calculate_shadow_vsm(world_position, cascadeIndex, 1.0e-7f);
+    float sun_shadow = calcSunShineVSM(world_position, frag_pos);
 
     vec4 sunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, frag_pos, normal);
 

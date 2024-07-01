@@ -1,8 +1,8 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.models;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.render.opengl.frustum.RenderABB;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.base.IRenderFabric;
 import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.ModelRenderParams;
@@ -40,7 +40,7 @@ public abstract class AbstractSceneObject implements IModeledSceneObject {
         return this;
     }
 
-    public void setRenderAAB(Vector3d size) {
+    public void setRenderAAB(Vector3f size) {
         this.renderABB = new RenderABB(this.model.getFormat().getPosition(), size);
         this.canBeCulled = true;
     }
@@ -53,11 +53,11 @@ public abstract class AbstractSceneObject implements IModeledSceneObject {
         return this.renderABB;
     }
 
-    public Vector2d getTextureScaling() {
+    public Vector2f getTextureScaling() {
         return this.getModelRenderParams().getTextureScaling();
     }
 
-    public void setTextureScaling(Vector2d textureScaling) {
+    public void setTextureScaling(Vector2f textureScaling) {
         this.getModelRenderParams().setTextureScaling(textureScaling);
     }
 

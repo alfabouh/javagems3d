@@ -6,7 +6,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.IFormat
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.Serializable;
 

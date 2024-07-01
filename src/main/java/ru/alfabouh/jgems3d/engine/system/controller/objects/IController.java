@@ -1,13 +1,13 @@
 package ru.alfabouh.jgems3d.engine.system.controller.objects;
 
-import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.BindingManager;
 
 public interface IController {
-    Vector2d getNormalizedRotationInput();
-    Vector3d getNormalizedPositionInput();
+    Vector2f getNormalizedRotationInput();
+    Vector3f getNormalizedPositionInput();
     BindingManager getBindingManager();
     void updateControllerState(IWindow window);
 }

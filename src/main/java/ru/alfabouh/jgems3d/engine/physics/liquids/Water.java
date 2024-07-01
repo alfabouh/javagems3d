@@ -3,13 +3,13 @@ package ru.alfabouh.jgems3d.engine.physics.liquids;
 import org.bytedeco.bullet.BulletCollision.*;
 import org.bytedeco.bullet.LinearMath.btTransform;
 import org.bytedeco.bullet.LinearMath.btVector3;
-import ru.alfabouh.jgems3d.engine.physics.entities.BodyGroup;
-import ru.alfabouh.jgems3d.engine.physics.entities.states.EntityState;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.triggers.Zone;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class Water implements ILiquid {
     private final Zone zone;

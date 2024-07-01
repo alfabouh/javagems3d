@@ -1,16 +1,16 @@
 package ru.alfabouh.jgems3d.engine.system.controller.dispatcher;
 
-import org.joml.Vector2d;
-import org.joml.Vector3d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.physics.entities.IControllable;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.IControllable;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.Window;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.JGemsBindingManager;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
-import ru.alfabouh.jgems3d.proxy.logger.SystemLogging;
+import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class JGemsControllerDispatcher implements IControllerDispatcher {
     public static final float CAM_SENS = 0.1f;
@@ -32,11 +32,11 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
         return JGemsControllerDispatcher.mouseKeyboardController;
     }
 
-    public static Vector2d getNormalizedRotationInput(IController iController) {
+    public static Vector2f getNormalizedRotationInput(IController iController) {
         return iController.getNormalizedRotationInput();
     }
 
-    public static Vector3d getNormalizedPositionInput(IController iController) {
+    public static Vector3f getNormalizedPositionInput(IController iController) {
         return iController.getNormalizedPositionInput();
     }
 
@@ -78,8 +78,8 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     }
 
     private void performControllerToItem(IWindow window, IController iController, IControllable iControllable) {
-        Vector2d d1 = JGemsControllerDispatcher.getNormalizedRotationInput(iController);
-        Vector3d d2 = JGemsControllerDispatcher.getNormalizedPositionInput(iController);
+        Vector2f d1 = JGemsControllerDispatcher.getNormalizedRotationInput(iController);
+        Vector3f d2 = JGemsControllerDispatcher.getNormalizedPositionInput(iController);
         iControllable.performController(d1, d2, window.isInFocus());
     }
 }

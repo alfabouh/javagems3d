@@ -1,21 +1,21 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.environment.fog;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 public final class Fog {
     private float density;
-    private Vector3d color;
+    private Vector3f color;
 
     public Fog() {
         this.density = -1.0f;
-        this.color = new Vector3d(0.85d);
+        this.color = new Vector3f(0.85f);
     }
 
-    public Vector3d getColor() {
-        return new Vector3d(this.color);
+    public Vector3f getColor() {
+        return new Vector3f(this.color);
     }
 
-    public void setColor(Vector3d color) {
+    public void setColor(Vector3f color) {
         this.color = color;
     }
 

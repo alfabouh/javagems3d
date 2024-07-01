@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.inventory;
 
-import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.inventory.items.InventoryItem;
@@ -33,10 +33,10 @@ public class InventoryZippoObject extends InventoryItemObject {
     }
 
     @Override
-    public void onRender(double partialTicks, SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData) {
+    public void onRender(float partialTicks, SceneRenderBase sceneRenderBase, InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData) {
         ItemZippo itemZippo = (ItemZippo) inventoryItem;
-        double d1 = Math.cos(RenderPlayerSP.stepBobbing * 0.1f) * 0.051f;
-        super.performTransformations(new Vector3d(0.1f, -1.0f + d1, -1.4f), new Vector3d(0.0f, Math.toRadians(20.0f), 0.0f), new Vector3d(1.0d), renderInventoryItemData);
+        float d1 = (float) (Math.cos(RenderPlayerSP.stepBobbing * 0.1f) * 0.051f);
+        super.performTransformations(new Vector3f(0.1f, -1.0f + d1, -1.4f), new Vector3f(0.0f, (float) Math.toRadians(20.0f), 0.0f), new Vector3f(1.0f), renderInventoryItemData);
         renderInventoryItemData.getShaderManager().performUniform("use_emission", itemZippo.isOpened());
         super.renderInventoryModel(itemZippo.isOpened() ? this.model1 : this.model2, renderInventoryItemData.getShaderManager());
     }

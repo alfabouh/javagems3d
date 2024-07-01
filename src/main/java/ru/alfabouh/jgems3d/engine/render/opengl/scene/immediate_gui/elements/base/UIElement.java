@@ -11,8 +11,9 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsS
 import java.util.Objects;
 
 public abstract class UIElement implements UIScalable {
-    private JGemsShaderManager defaultShader;
-    private JGemsShaderManager overridenShader;
+    private int unUsedTicks;
+    private final JGemsShaderManager defaultShader;
+    private JGemsShaderManager overShader;
     private final Vector2f scaling;
     private final float zValue;
 
@@ -20,10 +21,12 @@ public abstract class UIElement implements UIScalable {
         this.defaultShader = defaultShader;
         this.scaling = new Vector2f(1.0f);
         this.zValue = zValue;
-        this.overridenShader = null;
+        this.overShader = null;
+        this.zeroUnusedTicks();
     }
 
-    public abstract void render(double partialTicks);
+    public abstract void render(float partialTicks);
+    public abstract void buildUI();
     public abstract void cleanData();
     public abstract @NotNull Vector2i getSize();
     public abstract @NotNull Vector2i getPosition();
@@ -34,11 +37,11 @@ public abstract class UIElement implements UIScalable {
     }
 
     public void setDefaultShader() {
-        this.overridenShader = null;
+        this.overShader = null;
     }
 
     public UIElement setCurrentShader(JGemsShaderManager shader) {
-        this.overridenShader = shader;
+        this.overShader = shader;
         return this;
     }
 
@@ -61,7 +64,19 @@ public abstract class UIElement implements UIScalable {
     }
 
     protected JGemsShaderManager getCurrentShader() {
-        return this.overridenShader != null ? this.overridenShader : this.defaultShader;
+        return this.overShader != null ? this.overShader : this.defaultShader;
+    }
+
+    public void zeroUnusedTicks() {
+        this.unUsedTicks = -1;
+    }
+
+    public void incrementUnusedTicks() {
+        this.unUsedTicks += 1;
+    }
+
+    public int getUnUsedTicks() {
+        return this.unUsedTicks;
     }
 
     @Override
@@ -69,9 +84,11 @@ public abstract class UIElement implements UIScalable {
         if (this == o) {
             return true;
         }
-        if (o == null || this.getClass() != o.getClass()) {
+
+        if (o == null || !o.getClass().isAssignableFrom(this.getClass())) {
             return false;
         }
+
         final UIElement uiElement = (UIElement) o;
         return Float.compare(this.getZValue(), uiElement.getZValue()) == 0 &&
                 Objects.equals(this.getPosition(), uiElement.getPosition()) &&
