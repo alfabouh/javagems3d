@@ -4,14 +4,14 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.render.opengl.environment.shadow.CascadeShadow;
-import ru.alfabouh.jgems3d.engine.render.opengl.environment.shadow.PointLightShadow;
-import ru.alfabouh.jgems3d.engine.render.opengl.environment.shadow.ShadowScene;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsScene;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.ModelRenderParams;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.CubeMapProgram;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
-import ru.alfabouh.jgems3d.engine.render.transformation.Transformation;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.shadow.CascadeShadow;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.shadow.PointLightShadow;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsScene;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.ModelRenderParams;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.CubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.utils.JGemsSceneUtils;
+import ru.alfabouh.jgems3d.engine.graphics.transformation.Transformation;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.IImageSample;
@@ -37,8 +37,8 @@ public final class JGemsShaderManager extends ShaderManager {
     }
 
     @Override
-    public JGemsShaderManager addUBO(UniformBufferObject uniformBufferObject) {
-        return (JGemsShaderManager) super.addUBO(uniformBufferObject);
+    public JGemsShaderManager addUBOs(UniformBufferObject... uniformBufferObjects) {
+        return (JGemsShaderManager) super.addUBOs(uniformBufferObjects);
     }
 
     public JGemsShaderManager copy() {
@@ -64,7 +64,7 @@ public final class JGemsShaderManager extends ShaderManager {
             JGemsShaderManager.this.performUniform("lighting_code", lighting_code);
         }
 
-        public void performModelMaterialOnShader(Material material, boolean passShadows) {
+        public void performModelMaterialOnShader(Material material) {
             if (material == null) {
                 return;
             }
@@ -128,9 +128,6 @@ public final class JGemsShaderManager extends ShaderManager {
                 specular.bindTexture();
                 JGemsShaderManager.this.performUniformNoWarn("specular_map", code);
                 texturing_code |= 1 << 6;
-            }
-            if (passShadows) {
-                this.performShadowsInfo();
             }
 
             JGemsShaderManager.this.performUniformNoWarn("texturing_code", texturing_code);

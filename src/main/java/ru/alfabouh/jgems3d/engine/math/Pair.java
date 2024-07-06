@@ -2,24 +2,24 @@ package ru.alfabouh.jgems3d.engine.math;
 
 public class Pair<K, V> {
 
-    private final K key;
-    private final V value;
+    private final K first;
+    private final V second;
 
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
+    public Pair(K first, V second) {
+        this.first = first;
+        this.second = second;
     }
 
-    public K getKey() {
-        return key;
+    public K getFirst() {
+        return first;
     }
 
-    public V getValue() {
-        return value;
+    public V getSecond() {
+        return second;
     }
 
     @Override
     public String toString() {
-        return key + "=" + value;
+        return first + " + " + second;
     }
 }

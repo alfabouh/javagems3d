@@ -3,7 +3,6 @@ package ru.alfabouh.jgems3d.engine.math;
 import org.bytedeco.bullet.LinearMath.btVector3;
 import org.joml.Math;
 import org.joml.Vector3f;
-import org.joml.Vector3f;
 
 public class MathHelper {
     private static final int BF_SIN_BITS = 12;
@@ -81,7 +80,7 @@ public class MathHelper {
     }
 
     public static Vector3f convertV3DV3F(Vector3f vector3f) {
-        return new Vector3f((float) vector3f.x, (float) vector3f.y, (float) vector3f.z);
+        return new Vector3f(vector3f.x, vector3f.y, vector3f.z);
     }
 
     public static Vector3f convertV3FV3D(Vector3f vector3f) {

@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.toolbox.controller;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.IControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;

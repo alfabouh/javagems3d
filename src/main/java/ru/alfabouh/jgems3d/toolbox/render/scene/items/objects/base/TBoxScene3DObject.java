@@ -13,10 +13,10 @@ public abstract class TBoxScene3DObject {
     private static int globalObjectID;
     private final String name;
     private final int id;
-    private boolean selected;
     private final Model<Format3D> model;
     private final TBoxObjectRenderData renderData;
     private final LocalCollision localCollision;
+    private boolean selected;
     private AttributeContainer attributeContainer;
 
     public TBoxScene3DObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
@@ -62,13 +62,13 @@ public abstract class TBoxScene3DObject {
         return this.getAttributeContainer() != null && this.getAttributeContainer().hasAttributes();
     }
 
+    public AttributeContainer getAttributeContainer() {
+        return this.attributeContainer;
+    }
+
     public TBoxScene3DObject setAttributeContainer(AttributeContainer attributeContainer) {
         this.attributeContainer = attributeContainer;
         return this;
-    }
-
-    public AttributeContainer getAttributeContainer() {
-        return this.attributeContainer;
     }
 
     public void reCalcCollision() {
@@ -95,12 +95,12 @@ public abstract class TBoxScene3DObject {
         return this.id;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
     public boolean isSelected() {
         return this.selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public String toString() {

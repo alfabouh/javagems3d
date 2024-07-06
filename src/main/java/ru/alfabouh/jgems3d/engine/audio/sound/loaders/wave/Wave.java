@@ -37,6 +37,15 @@ public class Wave implements ISoundLoader {
         this.samplerate = (int) audioFormat.getSampleRate();
     }
 
+    public static ISoundLoader create(InputStream is) {
+        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(is)) {
+            return new Wave(inputStream);
+        } catch (Exception e) {
+            SystemLogging.get().getLogManager().warn("Unable to create from inputstream, " + e.getMessage());
+            return null;
+        }
+    }
+
     public int getSampleRate() {
         return this.samplerate;
     }
@@ -71,15 +80,6 @@ public class Wave implements ISoundLoader {
             assert false : "Only mono or stereo is supported";
         }
         return channels;
-    }
-
-    public static ISoundLoader create(InputStream is) {
-        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(is)) {
-            return new Wave(inputStream);
-        } catch (Exception e) {
-            SystemLogging.get().getLogManager().warn("Unable to create from inputstream, " + e.getMessage());
-            return null;
-        }
     }
 
     private ByteBuffer convertAudioBytes(byte[] audioBytes, boolean twoBytesData, boolean bigEndian) {

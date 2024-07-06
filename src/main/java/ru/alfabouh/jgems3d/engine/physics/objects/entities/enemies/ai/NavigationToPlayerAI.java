@@ -16,8 +16,8 @@ import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlaye
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 
@@ -27,13 +27,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NavigationToPlayerAI extends NavigationAI {
-    private boolean forceChangeWayDirection;
-
     private final Vector3f playerPos;
     private final List<Graph.GVertex> queuePath;
     private final AtomicBoolean atomicBoolean;
+    private final GameSound chasingSound;
+    private boolean forceChangeWayDirection;
     private IPlayer player;
-
     private float maxSpeed;
     private int currentMemory;
     private int currentChasingTicks;
@@ -43,14 +42,12 @@ public class NavigationToPlayerAI extends NavigationAI {
     private int ticksBeforeRefreshPath;
     private float randomPlayerChasePercent;
 
-    private final GameSound chasingSound;
-
     public NavigationToPlayerAI(double speed, WorldItem worldItem, final World world) {
         super(speed, worldItem, world);
         this.queuePath = new ArrayList<>();
         this.atomicBoolean = new AtomicBoolean(false);
         this.playerPos = new Vector3f(0.0f);
-        this.chasingSound = JGems.get().getSoundManager().createSound(ResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 4.0f, 3.0f);
+        this.chasingSound = JGems.get().getSoundManager().createSound(JGemsResourceManager.soundAssetsLoader.saw, SoundType.WORLD_AMBIENT_SOUND, 2.0f, 4.0f, 3.0f);
 
         if (this.chasingSound != null) {
             this.chasingSound.setAttachedTo(worldItem);
@@ -201,28 +198,28 @@ public class NavigationToPlayerAI extends NavigationAI {
         return this.maxSeekDist;
     }
 
-    public synchronized void setRandomPlayerChasePercent(float randomPlayerChasePercent) {
-        this.randomPlayerChasePercent = randomPlayerChasePercent;
+    public synchronized boolean isForceChangeWayDirection() {
+        return this.forceChangeWayDirection;
     }
 
     public synchronized void setForceChangeWayDirection(boolean forceChangeWayDirection) {
         this.forceChangeWayDirection = forceChangeWayDirection;
     }
 
-    public synchronized boolean isForceChangeWayDirection() {
-        return this.forceChangeWayDirection;
-    }
-
     public synchronized float getRandomPlayerChasePercent() {
         return this.randomPlayerChasePercent;
     }
 
-    public synchronized void setMaxSpeed(float maxSpeed) {
-        this.maxSpeed = maxSpeed;
+    public synchronized void setRandomPlayerChasePercent(float randomPlayerChasePercent) {
+        this.randomPlayerChasePercent = randomPlayerChasePercent;
     }
 
     public synchronized float getMaxSpeed() {
         return this.maxSpeed;
+    }
+
+    public synchronized void setMaxSpeed(float maxSpeed) {
+        this.maxSpeed = maxSpeed;
     }
 
     public int getMaxMemory() {

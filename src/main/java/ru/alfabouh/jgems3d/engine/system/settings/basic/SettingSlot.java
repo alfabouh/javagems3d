@@ -28,6 +28,10 @@ public abstract class SettingSlot extends SettingObject {
         return this.value;
     }
 
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     public boolean goRight() {
         if (this.getValue() < this.getMax()) {
             this.setValue(this.getValue() + 1);
@@ -42,9 +46,5 @@ public abstract class SettingSlot extends SettingObject {
             return true;
         }
         return false;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
     }
 }

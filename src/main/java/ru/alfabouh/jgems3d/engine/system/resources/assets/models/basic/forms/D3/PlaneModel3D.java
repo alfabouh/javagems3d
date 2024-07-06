@@ -146,29 +146,29 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
         Vector2f deltaUV1 = new Vector2f(1.0f, 0.0f).sub(new Vector2f(0.0f, 0.0f));
         Vector2f deltaUV2 = new Vector2f(1.0f, 1.0f).sub(new Vector2f(0.0f, 0.0f));
 
-        float f = (float) (1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y));
+        float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-        float tan1x = (float) (f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x));
-        float tan1y = (float) (f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y));
-        float tan1z = (float) (f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z));
-        float biTan1x = (float) (f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x));
-        float biTan1y = (float) (f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y));
-        float biTan1z = (float) (f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z));
+        float tan1x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        float tan1y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        float tan1z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        float biTan1x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        float biTan1y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        float biTan1z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
 
         Vector3f edge3 = new Vector3f(v3).sub(v1);
         Vector3f edge4 = new Vector3f(v4).sub(v1);
         Vector2f deltaUV3 = new Vector2f(1.0f, 1.0f).sub(new Vector2f(0.0f, 0.0f));
         Vector2f deltaUV4 = new Vector2f(0.0f, 1.0f).sub(new Vector2f(0.0f, 0.0f));
 
-        float f0 = (float) (1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y));
+        float f0 = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-        float tan2x = (float) (f0 * (deltaUV4.y * edge3.x - deltaUV3.y * edge4.x));
-        float tan2y = (float) (f0 * (deltaUV4.y * edge3.y - deltaUV3.y * edge4.y));
-        float tan2z = (float) (f0 * (deltaUV4.y * edge3.z - deltaUV3.y * edge4.z));
+        float tan2x = f0 * (deltaUV4.y * edge3.x - deltaUV3.y * edge4.x);
+        float tan2y = f0 * (deltaUV4.y * edge3.y - deltaUV3.y * edge4.y);
+        float tan2z = f0 * (deltaUV4.y * edge3.z - deltaUV3.y * edge4.z);
 
-        float biTan2x = (float) (f0 * (-deltaUV4.x * edge3.x + deltaUV3.x * edge4.x));
-        float biTan2y = (float) (f0 * (-deltaUV4.x * edge3.y + deltaUV3.x * edge4.y));
-        float biTan2z = (float) (f0 * (-deltaUV4.x * edge3.z + deltaUV3.x * edge4.z));
+        float biTan2x = f0 * (-deltaUV4.x * edge3.x + deltaUV3.x * edge4.x);
+        float biTan2y = f0 * (-deltaUV4.x * edge3.y + deltaUV3.x * edge4.y);
+        float biTan2z = f0 * (-deltaUV4.x * edge3.z + deltaUV3.x * edge4.z);
 
         for (int i = 0; i < 4; i++) {
             mesh.putTangentValue(tan1x);

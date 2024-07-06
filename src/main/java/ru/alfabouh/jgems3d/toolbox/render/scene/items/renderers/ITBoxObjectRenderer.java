@@ -5,6 +5,8 @@ import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DOb
 
 public interface ITBoxObjectRenderer {
     void onRender(MapProperties properties, TBoxScene3DObject tBoxScene3DObject, float deltaTime);
+
     void preRender(TBoxScene3DObject tBoxScene3DObject);
+
     void postRender(TBoxScene3DObject tBoxScene3DObject);
 }

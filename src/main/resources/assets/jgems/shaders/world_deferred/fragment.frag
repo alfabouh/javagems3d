@@ -106,14 +106,15 @@ float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
 
 float calcSunShineVSM(vec4 world_position, vec3 frag_pos) {
     const float bias = 1.0e-5f;
-    const float bias_f = 2.0;
+    const float bias_f = 3.0;
+    const float half_bias_f = bias_f / 2.0;
     const int max_cascades = 3;
-    int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
+    int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance - half_bias_f) + int(frag_pos.z < cascade_shadow[1].split_distance - half_bias_f);
     float f0 = calculate_shadow_vsm(world_position, cascadeIndex, bias);
     if (cascadeIndex >= 0 && cascadeIndex < max_cascades) {
-        int cascadeIndex2 = int(frag_pos.z < cascade_shadow[cascadeIndex].split_distance + bias_f) + cascadeIndex;
+        int cascadeIndex2 = int(frag_pos.z < cascade_shadow[cascadeIndex].split_distance + half_bias_f) + cascadeIndex;
         float f1 = calculate_shadow_vsm(world_position, cascadeIndex2, bias);
-        float p2 = (cascade_shadow[cascadeIndex].split_distance + bias_f) - frag_pos.z;
+        float p2 = (cascade_shadow[cascadeIndex].split_distance + half_bias_f) - frag_pos.z;
         return mix(f0, f1, p2 / bias_f);
     }
     return f0;

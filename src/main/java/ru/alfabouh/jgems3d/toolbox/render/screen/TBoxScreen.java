@@ -10,13 +10,13 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.utils.JGemsSceneUtils;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.IScreen;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.timer.GameRenderTimer;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.timer.TimerPool;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.Window;
-import ru.alfabouh.jgems3d.engine.render.transformation.TransformationUtils;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.utils.JGemsSceneUtils;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.IScreen;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.timer.GameRenderTimer;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window;
+import ru.alfabouh.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
@@ -26,15 +26,15 @@ import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.render.scene.TBoxScene;
 import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.LoadingContent;
 import ru.alfabouh.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
-import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
+import ru.alfabouh.jgems3d.toolbox.resources.TBoxResourceManager;
 
 public class TBoxScreen implements IScreen {
     public static int FPS;
+    private final TimerPool timerPool;
     private Window tBoxWindow;
     private TBoxControllerDispatcher controllerDispatcher;
     private TBoxScene scene;
-    private final TimerPool timerPool;
-    private ResourceManager resourceManager;
+    private TBoxResourceManager resourceManager;
     private TransformationUtils transformationUtils;
 
     public TBoxScreen() {
@@ -162,7 +162,7 @@ public class TBoxScreen implements IScreen {
     }
 
     private void createResourceManager() {
-        this.resourceManager = new ResourceManager();
+        this.resourceManager = new TBoxResourceManager();
     }
 
     private void createTransformation() {
@@ -183,7 +183,7 @@ public class TBoxScreen implements IScreen {
 
                 this.createTransformation();
                 this.createResourceManager();
-                ResourceManager.loadShaders();
+                TBoxResourceManager.createShaders();
 
                 this.setScreenCallbacks();
                 this.createObjects(this.getWindow());
@@ -198,7 +198,7 @@ public class TBoxScreen implements IScreen {
         }
     }
 
-    public ResourceManager getResourceManager() {
+    public TBoxResourceManager getResourceManager() {
         return this.resourceManager;
     }
 

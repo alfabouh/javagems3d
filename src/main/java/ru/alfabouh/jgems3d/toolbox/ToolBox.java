@@ -1,10 +1,11 @@
 package ru.alfabouh.jgems3d.toolbox;
+
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.system.EngineSystem;
+import ru.alfabouh.jgems3d.engine.system.core.EngineSystem;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 import ru.alfabouh.jgems3d.toolbox.render.screen.TBoxScreen;
-import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
+import ru.alfabouh.jgems3d.toolbox.resources.TBoxResourceManager;
 import ru.alfabouh.jgems3d.toolbox.settings.TBoxSettings;
 
 import java.io.File;
@@ -15,8 +16,8 @@ import java.nio.file.Paths;
 public class ToolBox {
     private static ToolBox toolBox;
     private final TBoxScreen tBoxScreen;
-    private boolean shouldBeClosed;
     private final TBoxSettings tBoxSettings;
+    private boolean shouldBeClosed;
 
     private ToolBox() throws IOException {
         SystemLogging.get().setCurrentLogging(SystemLogging.toolBoxLogging);
@@ -30,6 +31,16 @@ public class ToolBox {
     public static void main(String[] args) throws IOException {
         ToolBox.toolBox = new ToolBox();
         ToolBox.get().startSystem();
+    }
+
+    public static ToolBox get() {
+        return ToolBox.toolBox;
+    }
+
+    public static Path getTBoxFilesFolder() {
+        String appdataPath = System.getProperty("user.home");
+        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase() + "//tool_box";
+        return Paths.get(appdataPath, folderPath);
     }
 
     public void closeTBox() {
@@ -54,7 +65,7 @@ public class ToolBox {
         return this.tBoxSettings;
     }
 
-    public ResourceManager getResourceManager() {
+    public TBoxResourceManager getResourceManager() {
         return this.getScreen().getResourceManager();
     }
 
@@ -62,20 +73,9 @@ public class ToolBox {
         return this.tBoxScreen;
     }
 
-    public static ToolBox get() {
-        return ToolBox.toolBox;
-    }
-
     public boolean isShouldBeClosed() {
         return this.shouldBeClosed;
     }
-
-    public static Path getTBoxFilesFolder() {
-        String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase() + "//tool_box";
-        return Paths.get(appdataPath, folderPath);
-    }
-
 
     public String toString() {
         return EngineSystem.ENG_NAME + " - [ToolBox v" + EngineSystem.ENG_VER + "]";

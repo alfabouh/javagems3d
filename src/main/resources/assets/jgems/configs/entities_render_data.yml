@@ -1,0 +1,23 @@
+objects:
+  - name: default
+    shader_name: jgems/shaders/world_gbuffer
+    render_fabric: RenderObject
+    render_object: WorldItemObject
+    mesh_render_params:
+      shadow_caster: true
+      has_transparency: false
+      light_opaque: true
+      is_bright: false
+      render_distance: -1.0f
+      alpha_discard: 0.0f
+      interpolate_movement: true
+  - name: g_common_data
+    shader_name: jgems/shaders/world_gbuffer
+    render_fabric: RenderObject
+    render_object: WorldItemObject
+  - name: g_map01_data
+    shader_name: jgems/shaders/world_gbuffer
+    render_fabric: RenderObject
+    render_object: WorldItemObject
+    mesh_render_params:
+      alpha_discard: 0.8f

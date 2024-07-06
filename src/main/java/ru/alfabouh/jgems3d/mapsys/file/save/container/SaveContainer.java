@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.mapsys.file.save.container;
 
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.SaveObject;
 import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.mapsys.file.save.objects.SaveObject;
 
 import java.util.HashSet;
 import java.util.Set;

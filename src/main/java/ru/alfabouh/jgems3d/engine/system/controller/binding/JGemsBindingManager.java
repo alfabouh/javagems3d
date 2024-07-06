@@ -2,14 +2,14 @@ package ru.alfabouh.jgems3d.engine.system.controller.binding;
 
 import org.lwjgl.glfw.GLFW;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.GamePlayPanel;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.PausePanel;
-import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.GamePlayPanel;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.PausePanel;
 import ru.alfabouh.jgems3d.engine.system.controller.components.FunctionalKey;
 import ru.alfabouh.jgems3d.engine.system.controller.components.IKeyAction;
 import ru.alfabouh.jgems3d.engine.system.controller.components.Key;
+import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class JGemsBindingManager extends BindingManager {
     public final Key keyA;
@@ -45,7 +45,7 @@ public class JGemsBindingManager extends BindingManager {
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 
         this.keyV = new FunctionalKey(e -> {
-            ResourceManager.reloadShaders();
+            JGemsResourceManager.reloadShaders();
         }, GLFW.GLFW_KEY_V);
 
         this.keyEsc = new FunctionalKey(e -> {

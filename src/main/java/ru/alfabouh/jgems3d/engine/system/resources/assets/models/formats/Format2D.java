@@ -5,8 +5,8 @@ import org.joml.Vector2f;
 
 public class Format2D implements IFormat {
     private final Vector2f position;
-    private float rotation;
     private final Vector2f scale;
+    private float rotation;
     private boolean isOrientedToView;
 
     public Format2D(@NotNull Vector2f position, float rotation, Vector2f scale) {
@@ -25,7 +25,7 @@ public class Format2D implements IFormat {
     }
 
     public Format2D() {
-        this(new Vector2f(0.0f),0.0f, new Vector2f(1.0f));
+        this(new Vector2f(0.0f), 0.0f, new Vector2f(1.0f));
     }
 
     public Vector2f getPosition() {

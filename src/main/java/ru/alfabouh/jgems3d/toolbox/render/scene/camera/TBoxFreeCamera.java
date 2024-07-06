@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.toolbox.render.scene.camera;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.FreeCamera;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.FreeCamera;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 

@@ -4,9 +4,9 @@ import org.lwjgl.openal.AL10;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.SoundManager;
 import ru.alfabouh.jgems3d.engine.audio.sound.loaders.ogg.Ogg;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ICached;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -21,13 +21,13 @@ public class SoundBuffer implements ICached {
         this.soundName = soundName;
     }
 
-    public static SoundBuffer createSoundBuffer(ResourceCache ResourceCache, String soundName, int soundFormat) {
-        if (ResourceCache.checkObjectInCache(soundName)) {
-            return (SoundBuffer) ResourceCache.getCachedObject(soundName);
+    public static SoundBuffer createSoundBuffer(ResourceCache resourceCache, String soundName, int soundFormat) {
+        if (resourceCache.checkObjectInCache(soundName)) {
+            return (SoundBuffer) resourceCache.getCachedObject(soundName);
         }
         SoundBuffer soundBuffer = new SoundBuffer(soundName);
         if (soundBuffer.loadSound(soundFormat)) {
-            ResourceCache.addObjectInBuffer(soundName, soundBuffer);
+            resourceCache.addObjectInBuffer(soundName, soundBuffer);
         }
         return soundBuffer;
     }
@@ -65,7 +65,7 @@ public class SoundBuffer implements ICached {
     }
 
     @Override
-    public void onCleaningCache(ResourceCache ResourceCache) {
+    public void onCleaningCache(ResourceCache resourceCache) {
         AL10.alDeleteBuffers(this.getBuffer());
         SoundManager.checkALonErrors();
     }

@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.logger.managers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.system.EngineSystem;
+import ru.alfabouh.jgems3d.engine.system.core.EngineSystem;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.translators.StreamOutputTranslation;
 
@@ -17,8 +17,9 @@ import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class LoggingManager {
-    private final Logger log;
+    public static boolean markConsoleDirty;
     public static final StringJoiner consoleText = new StringJoiner("\n");
+    private final Logger log;
 
     public LoggingManager(String loggerName) {
         this.log = loggerName == null ? LogManager.getRootLogger() : LogManager.getLogger(loggerName);
@@ -29,8 +30,43 @@ public abstract class LoggingManager {
         }
     }
 
+    public static void addTextInConsoleBuffer(CharSequence sequence) {
+        LoggingManager.consoleText.add(sequence);
+        LoggingManager.markConsoleDirty = true;
+    }
+
     public static String consoleText() {
         return JGemsLogging.consoleText.toString();
+    }
+
+    public static void showExceptionDialog(String msg) {
+        JButton openLogFolderButton = new JButton("Open logs");
+        openLogFolderButton.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().open(new File(JGems.getFilesFolder().toFile(), "/log/"));
+            } catch (IOException ignored) {
+                SystemLogging.get().getLogManager().error("Failed to open logs file");
+            }
+        });
+
+        final String threadName = Thread.currentThread().getName();
+        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, "[" + threadName + "]: " + msg, EngineSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
+    }
+
+    public static void showWindowInfo(String message) {
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message));
+    }
+
+    public static boolean showConfirmationWindowDialog(String message) {
+        final AtomicInteger integer = new AtomicInteger(0);
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                integer.set(JOptionPane.showConfirmDialog(null, message));
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return integer.get() == 0;
     }
 
     private void initStreams(final Logger log) throws IOException {
@@ -69,35 +105,5 @@ public abstract class LoggingManager {
         this.log.error("****************************************");
         this.log.error("* " + message, objects);
         this.log.error("****************************************");
-    }
-
-    public static void showExceptionDialog(String msg) {
-        JButton openLogFolderButton = new JButton("Open logs");
-        openLogFolderButton.addActionListener(e -> {
-            try {
-                Desktop.getDesktop().open(new File(JGems.getFilesFolder().toFile(), "/log/"));
-            } catch (IOException ignored) {
-                SystemLogging.get().getLogManager().error("Failed to open logs file");
-            }
-        });
-
-        final String threadName = Thread.currentThread().getName();
-        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, "[" + threadName + "]: " + msg, EngineSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
-    }
-
-    public static void showWindowInfo(String message) {
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message));
-    }
-
-    public static boolean showConfirmationWindowDialog(String message) {
-        final AtomicInteger integer = new AtomicInteger(0);
-        try {
-            SwingUtilities.invokeAndWait(() -> {
-                integer.set(JOptionPane.showConfirmDialog(null, message));
-            });
-        } catch (InterruptedException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-        return integer.get() == 0;
     }
 }

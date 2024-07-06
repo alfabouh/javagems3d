@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples;
 
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class ParticleTexturePack {
@@ -35,7 +35,7 @@ public class ParticleTexturePack {
     private void loadTextures() {
         SystemLogging.get().getLogManager().log("Loading particle texture pack: " + this.path);
         for (int i = 0; i < this.texturesNum; i++) {
-            this.iImageSample[i] = ResourceManager.createTexture(this.path + i + this.format, true, GL30.GL_REPEAT);
+            this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTexture(this.path + i + this.format, true, GL30.GL_REPEAT);
         }
     }
 }

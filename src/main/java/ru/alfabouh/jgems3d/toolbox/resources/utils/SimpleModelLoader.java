@@ -5,6 +5,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import ru.alfabouh.jgems3d.engine.JGems;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
@@ -12,9 +13,8 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGr
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.utils.ModelLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
-import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
+import ru.alfabouh.jgems3d.toolbox.resources.TBoxResourceManager;
 import ru.alfabouh.jgems3d.toolbox.resources.samples.TextureSample;
 
 import java.nio.IntBuffer;
@@ -72,12 +72,12 @@ public class SimpleModelLoader {
     }
 
     @SuppressWarnings("all")
-    public static MeshDataGroup createMesh(ResourceCache ResourceCache, String modelPath) {
-        if (ResourceCache.checkObjectInCache(modelPath)) {
-            return (MeshDataGroup) ResourceCache.getCachedObject(modelPath);
+    public static MeshDataGroup createMesh(ResourceCache resourceCache, String modelPath) {
+        if (resourceCache.checkObjectInCache(modelPath)) {
+            return (MeshDataGroup) resourceCache.getCachedObject(modelPath);
         }
         MeshDataGroup meshDataGroup = SimpleModelLoader.loadMesh(modelPath);
-        ResourceCache.addObjectInBuffer(modelPath, meshDataGroup);
+        resourceCache.addObjectInBuffer(modelPath, meshDataGroup);
         return meshDataGroup;
     }
 
@@ -167,9 +167,9 @@ public class SimpleModelLoader {
             color4D.clear();
             String diffuse = SimpleModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
             if (diffuse != null) {
-                TextureSample textureSample = (TextureSample) ResourceManager.getResource(fullPath + diffuse);
+                TextureSample textureSample = (TextureSample) TBoxResourceManager.getResource(fullPath + diffuse);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTextureInJar(fullPath + diffuse);
+                    textureSample = TBoxResourceManager.createTextureInJar(fullPath + diffuse);
                 }
                 if (textureSample.isValid()) {
                     material.setDiffuse(textureSample);

@@ -1,11 +1,10 @@
 package ru.alfabouh.jgems3d.toolbox.resources.shaders.manager;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2i;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.JGemsScene;
-import ru.alfabouh.jgems3d.engine.render.transformation.Transformation;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsScene;
+import ru.alfabouh.jgems3d.engine.graphics.transformation.Transformation;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.IImageSample;
@@ -33,8 +32,8 @@ public final class TBoxShaderManager extends ShaderManager {
     }
 
     @Override
-    public TBoxShaderManager addUBO(UniformBufferObject uniformBufferObject) {
-        return (TBoxShaderManager) super.addUBO(uniformBufferObject);
+    public TBoxShaderManager addUBOs(UniformBufferObject... uniformBufferObjects) {
+        return (TBoxShaderManager) super.addUBOs(uniformBufferObjects);
     }
 
     public TBoxShaderManager copy() {

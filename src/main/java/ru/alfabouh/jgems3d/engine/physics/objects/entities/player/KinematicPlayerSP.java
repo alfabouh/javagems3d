@@ -17,26 +17,25 @@ import ru.alfabouh.jgems3d.engine.inventory.Inventory;
 import ru.alfabouh.jgems3d.engine.inventory.items.ItemCrowbar;
 import ru.alfabouh.jgems3d.engine.inventory.items.ItemRadio;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
-import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.props.PhysDynamicProp;
-import ru.alfabouh.jgems3d.engine.physics.objects.materials.Materials;
-import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.entities.common.PhysDynamicEntity;
+import ru.alfabouh.jgems3d.engine.physics.objects.materials.Materials;
+import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.object.CollidableWorldItem;
 import ru.alfabouh.jgems3d.engine.physics.world.object.IWorldDynamic;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicThreadManager;
-import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.PointLight;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.RenderPlayerSP;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.MainMenuPanel;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.objects.RenderPlayerSP;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.MainMenuPanel;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 import ru.alfabouh.jgems3d.engine.system.map.legacy.Map01;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -104,7 +103,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.hasSoda = false;
         this.stamina = 1.0f;
         this.mind = 1.0f;
-        this.noiseSound = JGems.get().getSoundManager().createSound(ResourceManager.soundAssetsLoader.horror, SoundType.BACKGROUND_AMBIENT_SOUND, 1.5f, 0.0f, 1.0f);
+        this.noiseSound = JGems.get().getSoundManager().createSound(JGemsResourceManager.soundAssetsLoader.horror, SoundType.BACKGROUND_AMBIENT_SOUND, 1.5f, 0.0f, 1.0f);
         this.mindCd = 0;
         this.staminaCd = 0;
         this.inventory = new Inventory(this, 4);
@@ -164,7 +163,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         return this.kinematicCharacterController;
     }
 
-    public void createPlayer() {
+    public void createPlayer(Vector3f startPos, Vector3f startRot) {
         this.cachingGhostObject = new btPairCachingGhostObject();
         this.collisionShape = new btCapsuleShape(0.4d, 0.6d);
         this.collisionShape2 = this.collisionShape;
@@ -176,16 +175,17 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.getKinematicCharacterController().setMaxPenetrationDepth(0.2d);
         this.getKinematicCharacterController().setWalkDirection(new btVector3(0, 0, 0));
         this.getBulletObject().setUserIndex2(this.getItemId());
-        this.setCollisionTranslation(position);
-        this.setCollisionRotation(rotation);
+        this.setCollisionTranslation(startPos);
+        this.setCollisionRotation(new Vector3f(0.0f, (float) Math.toRadians(90.0f), 0.0f));
+        this.cameraRotation.set(startRot);
         this.noiseSound.playSound();
     }
 
     @Override
     public void onSpawn(IWorld world) {
         super.onSpawn(world);
-        JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.5f, 1.0f);
-        JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.crackling, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.horror2, SoundType.BACKGROUND_AMBIENT_SOUND, 1.5f, 1.0f);
+        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.crackling, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
     }
 
     public void onDestroy(IWorld iWorld) {
@@ -199,13 +199,13 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         return new Vector3f(this.getCollisionTranslation());
     }
 
+    public Vector3f getRotation() {
+        return this.getCameraRotation();
+    }
+
     @Override
     public void setRotation(Vector3f vector3f) {
         this.cameraRotation.set(vector3f);
-    }
-
-    public Vector3f getRotation() {
-        return this.getCameraRotation();
     }
 
     public boolean canBeDestroyed() {
@@ -297,9 +297,9 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     private void playStepSound() {
         if (this.entityState().checkState(EntityState.StateType.IN_WATER)) {
-            JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_slosh[JGems.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.0f, 0.25f);
+            JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.pl_slosh[JGems.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.0f, 0.25f);
         }
-        JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.pl_step[JGems.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.25f, 0.5f);
+        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.pl_step[JGems.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.25f, 0.5f);
     }
 
     private btVector3 getWalkingSpeed(Vector3f motion) {
@@ -436,7 +436,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
 
     private void kill() {
         if (!this.isKilled()) {
-            JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.meat, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
+            JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.meat, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
             this.killed = true;
         }
     }
@@ -445,7 +445,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         if (!this.isVictory()) {
             Map01.entityManiac.destroy();
             JGems.get().getScreen().zeroRenderTick();
-            JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.victory, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+            JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.victory, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
             this.victory = true;
         }
     }
@@ -505,7 +505,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
                 rigidBody.activate();
                 Vector3f impulse = new Vector3f(look).normalize().mul(4.0f + JGems.random.nextFloat() * 3.0f);
                 rigidBody.applyImpulse(MathHelper.convert(impulse), MathHelper.convert(this.getCurrentHitScanCoordinate().normalize().mul(0.05f + JGems.random.nextFloat() * 0.05f)));
-                JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.wood_break, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+                JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.wood_break, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
             }
         } else if (this.wantsToSelect != null) {
             this.currentSelectedItem = this.wantsToSelect;
@@ -646,7 +646,7 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         this.wantsToGrab = JGemsControllerDispatcher.bindingManager().keySelection.isPressed();
         if (JGemsControllerDispatcher.bindingManager().keyX.isClicked() && this.isHasSoda()) {
             if (this.mind < 0.9f || this.stamina < 0.9f) {
-                JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.soda, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
+                JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.soda, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
                 this.stamina = 1.0f;
                 this.mind = Math.min(this.mind + 0.15f, 1.0f);
                 this.staminaCd = 0;
@@ -655,8 +655,8 @@ public class KinematicPlayerSP extends WorldItem implements IPlayer, JBulletEnti
         }
         if (JGems.DEBUG_MODE) {
             if (JGemsControllerDispatcher.bindingManager().keyBlock1.isClicked()) {
-                PhysDynamicProp entityPropInfo = new PhysDynamicProp(this.getWorld(), "test", RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), this.getPosition().add(this.getLookVector().mul(2.0f)), ResourceManager.modelAssets.cube);
-                JGems.get().getProxy().addItemInWorlds(entityPropInfo, ResourceManager.renderDataAssets.entityCube);
+                PhysDynamicEntity entityPropInfo = new PhysDynamicEntity(this.getWorld(), "test", RigidBodyObject.PhysProperties.createProperties(Materials.brickCube, true, 50.0d), this.getPosition().add(this.getLookVector().mul(2.0f)), JGemsResourceManager.modelAssets.cube);
+                JGems.get().getProxy().addItemInWorlds(entityPropInfo, JGemsResourceManager.renderDataAssets.entityCube);
                 entityPropInfo.setObjectVelocity(this.getLookVector().mul(50.0f));
             }
         }

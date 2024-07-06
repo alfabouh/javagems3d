@@ -8,9 +8,9 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.JGems;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.IImageSample;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.IOException;
@@ -19,11 +19,11 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class TextureSample implements IImageSample {
+    private final String name;
     private ByteBuffer imageBuffer;
     private int width;
     private int height;
     private int textureId;
-    private final String name;
 
     private TextureSample(String name, int width, int height, ByteBuffer buffer) {
         this.name = name;
@@ -69,26 +69,26 @@ public class TextureSample implements IImageSample {
         }
     }
 
-    public static TextureSample createTexture(boolean inJar, ResourceCache ResourceCache, String fullPath) {
-        if (ResourceCache.checkObjectInCache(fullPath)) {
-            return (TextureSample) ResourceCache.getCachedObject(fullPath);
+    public static TextureSample createTexture(boolean inJar, ResourceCache resourceCache, String fullPath) {
+        if (resourceCache.checkObjectInCache(fullPath)) {
+            return (TextureSample) resourceCache.getCachedObject(fullPath);
         }
         TextureSample textureSample = new TextureSample(inJar, fullPath);
         if (textureSample.isValid()) {
-            ResourceCache.addObjectInBuffer(fullPath, textureSample);
+            resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
             throw new JGemsException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache ResourceCache, String name, int width, int height, ByteBuffer buffer) {
-        if (ResourceCache.checkObjectInCache(name)) {
-            return(TextureSample) ResourceCache.getCachedObject(name);
+    public static TextureSample createTexture(ResourceCache resourceCache, String name, int width, int height, ByteBuffer buffer) {
+        if (resourceCache.checkObjectInCache(name)) {
+            return (TextureSample) resourceCache.getCachedObject(name);
         }
         TextureSample textureSample = new TextureSample(name, width, height, buffer);
         if (textureSample.isValid()) {
-            ResourceCache.addObjectInBuffer(name, textureSample);
+            resourceCache.addObjectInBuffer(name, textureSample);
         } else {
             throw new JGemsException("Couldn't add invalid texture in cache!");
         }
@@ -199,7 +199,7 @@ public class TextureSample implements IImageSample {
     }
 
     @Override
-    public void onCleaningCache(ResourceCache ResourceCache) {
+    public void onCleaningCache(ResourceCache resourceCache) {
         this.clear();
     }
 }

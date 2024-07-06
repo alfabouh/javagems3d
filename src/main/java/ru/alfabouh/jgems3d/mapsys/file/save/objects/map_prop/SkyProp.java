@@ -19,35 +19,35 @@ public class SkyProp {
         this.sunBrightness = sunBrightness;
     }
 
-    public void setSkyBoxName(String skyBoxName) {
-        this.skyBoxName = skyBoxName;
-    }
-
-    public void setSunColor(Vector3f sunColor) {
-        this.sunColor.set(sunColor);
-    }
-
-    public void setSunPos(Vector3f sunPos) {
-        this.sunPos.set(sunPos);
-    }
-
-    public void setSunBrightness(float sunBrightness) {
-        this.sunBrightness = sunBrightness;
-    }
-
     public String getSkyBoxName() {
         return this.skyBoxName;
+    }
+
+    public void setSkyBoxName(String skyBoxName) {
+        this.skyBoxName = skyBoxName;
     }
 
     public float getSunBrightness() {
         return this.sunBrightness;
     }
 
+    public void setSunBrightness(float sunBrightness) {
+        this.sunBrightness = sunBrightness;
+    }
+
     public Vector3f getSunColor() {
         return new Vector3f(this.sunColor);
     }
 
+    public void setSunColor(Vector3f sunColor) {
+        this.sunColor.set(sunColor);
+    }
+
     public Vector3f getSunPos() {
         return new Vector3f(this.sunPos);
+    }
+
+    public void setSunPos(Vector3f sunPos) {
+        this.sunPos.set(sunPos);
     }
 }

@@ -5,12 +5,9 @@ import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
 
 public class SystemLogging {
-    private static final SystemLogging INSTANCE = new SystemLogging();
-
     public static final LoggingManager jGemsLogging = new JGemsLogging("JGemsLogger");
     public static final LoggingManager toolBoxLogging = new JGemsLogging("ToolBoxLogger");
-
-
+    private static final SystemLogging INSTANCE = new SystemLogging();
     private LoggingManager currentLogging;
 
     public SystemLogging() {

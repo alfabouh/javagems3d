@@ -6,7 +6,7 @@ import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
 import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlayerSP;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicsTimer;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class LocalPlayer {
     private final IPlayer entityPlayerSP;
@@ -19,19 +19,18 @@ public class LocalPlayer {
         return this.entityPlayerSP;
     }
 
-    public void addPlayerInWorlds(Vector3f position, double rotation) {
+    public void addPlayerInWorlds(Vector3f position, Vector3f rotation) {
         KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) this.getEntityPlayerSP();
-        kinematicPlayerSP.createPlayer();
+        kinematicPlayerSP.createPlayer(position, rotation);
         KinematicPlayerSP physPlayerSP = (KinematicPlayerSP) this.entityPlayerSP;
+
         synchronized (PhysicsTimer.lockObject) {
             kinematicPlayerSP.getWorld().addInBulletWorld(physPlayerSP.getBulletObject(), kinematicPlayerSP.getBodyIndex());
             kinematicPlayerSP.getWorld().getDynamicsWorld().addAction(kinematicPlayerSP.getKinematicCharacterController());
         }
-        kinematicPlayerSP.setCanPlayerJump(false);
+        kinematicPlayerSP.setCanPlayerJump(true);
 
         kinematicPlayerSP.getWorld().addItem(kinematicPlayerSP);
-        JGems.get().getScreen().getRenderWorld().addItem(kinematicPlayerSP, ResourceManager.renderDataAssets.player);
-        physPlayerSP.setCollisionTranslation(position);
-        physPlayerSP.setRotation(new Vector3f(0.0f, (float) -Math.toDegrees(rotation), 0.0f));
+        JGems.get().getScreen().getRenderWorld().addItem(kinematicPlayerSP, JGemsResourceManager.renderDataAssets.player);
     }
 }

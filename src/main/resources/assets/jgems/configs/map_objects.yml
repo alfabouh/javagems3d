@@ -1,0 +1,13 @@
+objects:
+  - name: m_cube
+    render_object_data: g_common_data
+    mesh_data_group: /assets/jgems/models/cube/cube.obj
+    type: prop
+  - name: cube
+    render_object_data: g_common_data
+    mesh_data_group: /assets/jgems/models/cube/cube.obj
+    type: entity
+  - name: map01
+    render_object_data: g_map01_data
+    mesh_data_group: /assets/jgems/models/map01/map01.obj
+    type: entity

@@ -41,6 +41,13 @@ public class StaticCollisionModelMesh {
         this.btCollisionShape = meshShape;
     }
 
+    public void clean() {
+        this.triangleMesh = null;
+        this.btCollisionShape = null;
+        this.btTriangleInfoMap = null;
+        this.meshShape = null;
+    }
+
     public btCollisionShape getMeshShape() {
         return this.btCollisionShape;
     }

@@ -2,8 +2,8 @@ package ru.alfabouh.jgems3d.toolbox.render.scene.items.renderers;
 
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeIDS;
 import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeIDS;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 import ru.alfabouh.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 

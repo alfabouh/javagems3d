@@ -1,14 +1,11 @@
 package ru.alfabouh.jgems3d.engine.system.map;
 
-import org.checkerframework.checker.units.qual.A;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.math.Pair;
 import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MapInfo {
     private final List<Pair<Vector3f, Double>> spawnPoints;

@@ -7,7 +7,6 @@ in vec3 mv_vertex_normal;
 in vec3 mv_vertex_pos;
 
 uniform float alpha_discard;
-uniform vec2 texture_scaling;
 
 uniform vec4 diffuse_color;
 uniform sampler2D diffuse_map;
@@ -38,17 +37,13 @@ layout (location = 3) out vec4 gEmission;
 layout (location = 4) out vec4 gSpecular;
 layout (location = 5) out vec4 gMetallic;
 
-vec2 scaled_coordinates() {
-    return texture_coordinates * texture_scaling;
-}
-
 bool checkCode(int i1, int i2) {
     int i3 = i1 & i2;
     return bool(i3 != 0);
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture(normals_map, scaled_coordinates()).rgb;
+    vec3 normal = texture(normals_map, texture_coordinates).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -63,8 +58,8 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
 
 void main()
 {
-    vec4 diffuse_texture = texture(diffuse_map, scaled_coordinates());
-    vec4 emissive_texture = texture(emissive_map, scaled_coordinates());
+    vec4 diffuse_texture = texture(diffuse_map, texture_coordinates);
+    vec4 emissive_texture = texture(emissive_map, texture_coordinates);
 
     vec4 diffuse = checkCode(texturing_code, diffuse_code) ? diffuse_texture : diffuse_color;
 
@@ -80,6 +75,6 @@ void main()
     gPosition = vec4(mv_vertex_pos, 1.0);
     gColor = diffuse;
     gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? emissive_texture : vec4(vec3(0.0), 1.0);
-    gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, scaled_coordinates()) : vec4(vec3(0.0), 1.0);
-    gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, scaled_coordinates()) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
+    gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, texture_coordinates) : vec4(vec3(0.0), 1.0);
+    gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, texture_coordinates) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
 }

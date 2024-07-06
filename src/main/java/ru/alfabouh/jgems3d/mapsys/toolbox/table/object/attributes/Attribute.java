@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 
-public final class Attribute <T extends Serializable> implements Serializable {
+public final class Attribute<T extends Serializable> implements Serializable {
     private static final long serialVersionUID = -228L;
     private final String id;
     private final String description;
@@ -29,10 +29,6 @@ public final class Attribute <T extends Serializable> implements Serializable {
         this(attributeFlag, name.getId(), name.getDescription(), defaultValue);
     }
 
-    public void setValue(T t) {
-        this.t = t;
-    }
-
     public <E extends Serializable> void setValueWithCast(E e) {
         if (this.getValue().getClass().isAssignableFrom(e.getClass())) {
             @SuppressWarnings("unchecked")
@@ -43,6 +39,10 @@ public final class Attribute <T extends Serializable> implements Serializable {
 
     public T getValue() {
         return this.t;
+    }
+
+    public void setValue(T t) {
+        this.t = t;
     }
 
     public AttributeFlag getAttributeType() {
