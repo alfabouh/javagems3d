@@ -1,16 +1,16 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.items.collision;
 
-import org.bytedeco.bullet.LinearMath.btVector3;
-import org.checkerframework.checker.units.qual.A;
-import org.joml.*;
-import ru.alfabouh.jgems3d.engine.math.Triple;
-import ru.alfabouh.jgems3d.engine.render.transformation.Transformation;
+import org.joml.Intersectionf;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+import ru.alfabouh.jgems3d.engine.graphics.transformation.Transformation;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 
-import java.util.*;
+import java.util.List;
 
 public final class LocalCollision {
     private final MeshDataGroup meshDataGroup;
@@ -74,7 +74,7 @@ public final class LocalCollision {
         return closestVector;
     }
 
-//969FE1C0623D4457
+    //969FE1C0623D4457
     public boolean isRayIntersectObjectMesh(Format3D format3D, Vector3f rayStart, Vector3f rayEnd) {
         Matrix4f modelMatrix = Transformation.getModelMatrix(format3D);
 

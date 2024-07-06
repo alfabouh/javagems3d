@@ -1,24 +1,21 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui;
 
 import imgui.*;
-import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiKey;
-import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.engine.render.opengl.dear_imgui.DIMGuiMesh;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiMesh;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
-import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
 import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.ImGuiContent;
-import ru.alfabouh.jgems3d.toolbox.resources.ResourceManager;
+import ru.alfabouh.jgems3d.toolbox.resources.TBoxResourceManager;
 import ru.alfabouh.jgems3d.toolbox.resources.samples.TextureSample;
 import ru.alfabouh.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 
@@ -31,15 +28,15 @@ public class DIMGuiRenderTBox {
     private GLFWKeyCallback prevKeyCallback;
     private ImGuiContent currentContentToRender;
 
-    public DIMGuiRenderTBox(IWindow window, ResourceCache ResourceCache) {
-        this.shaderManager = ResourceManager.shaderAssets.imgui;
+    public DIMGuiRenderTBox(IWindow window, ResourceCache resourceCache) {
+        this.shaderManager = TBoxResourceManager.shaderAssets.imgui;
 
-        this.createUIResources(ResourceCache, window.getWindowDimensions());
+        this.createUIResources(resourceCache, window.getWindowDimensions());
         this.createUICallbacks(window);
         this.currentContentToRender = null;
     }
 
-    private void createUIResources(ResourceCache ResourceCache, Vector2i windowSize) {
+    private void createUIResources(ResourceCache resourceCache, Vector2i windowSize) {
         ImGui.createContext();
 
         ImGuiIO imGuiIO = ImGui.getIO();
@@ -51,7 +48,7 @@ public class DIMGuiRenderTBox {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = TextureSample.createTexture(ResourceCache, "imgui_fonts", width.get(), height.get(), buffer);
+        this.textureSample = TextureSample.createTexture(resourceCache, "imgui_fonts", width.get(), height.get(), buffer);
         this.dearImGuiMesh = new DIMGuiMesh();
     }
 
@@ -79,10 +76,10 @@ public class DIMGuiRenderTBox {
         });
 
         GLFW.glfwSetCharCallback(window.getDescriptor(), (descriptor, c) -> {
-           if (!io.getWantCaptureKeyboard()) {
-               return;
-           }
-           io.addInputCharacter(c);
+            if (!io.getWantCaptureKeyboard()) {
+                return;
+            }
+            io.addInputCharacter(c);
         });
     }
 
@@ -220,12 +217,12 @@ public class DIMGuiRenderTBox {
         io.setDisplaySize(size.x, size.y);
     }
 
-    public void setCurrentContentToRender(ImGuiContent currentContentToRender) {
-        this.currentContentToRender = currentContentToRender;
-    }
-
     public ImGuiContent getCurrentContentToRender() {
         return this.currentContentToRender;
+    }
+
+    public void setCurrentContentToRender(ImGuiContent currentContentToRender) {
+        this.currentContentToRender = currentContentToRender;
     }
 
     public DIMGuiMesh getImguiMesh() {

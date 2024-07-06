@@ -7,9 +7,9 @@ import ru.alfabouh.jgems3d.engine.physics.objects.base.IControllable;
 import ru.alfabouh.jgems3d.engine.physics.particles.ParticleFX;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
-import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.Light;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.objects.items.PhysicsObject;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.camera.AttachedCamera;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.Light;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.items.AbstractSceneItemObject;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.AttachedCamera;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
@@ -29,7 +29,7 @@ public abstract class WorldItem implements IWorldObject {
     private boolean isDead;
     private boolean spawned;
     private Vector3f scale;
-    private PhysicsObject relativeRenderObject;
+    private AbstractSceneItemObject relativeRenderObject;
 
     public WorldItem(World world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scale, String itemName) {
         this.itemName = itemName;
@@ -49,7 +49,7 @@ public abstract class WorldItem implements IWorldObject {
         this(world, pos, rot, new Vector3f(1.0f), itemName);
     }
 
-    public WorldItem(World world ,Vector3f pos, String itemName) {
+    public WorldItem(World world, Vector3f pos, String itemName) {
         this(world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
@@ -76,7 +76,7 @@ public abstract class WorldItem implements IWorldObject {
         return this.spawned;
     }
 
-    public void setRelativeRenderObject(PhysicsObject relativeRenderObject) {
+    public void setRelativeRenderObject(AbstractSceneItemObject relativeRenderObject) {
         this.relativeRenderObject = relativeRenderObject;
     }
 
@@ -199,7 +199,7 @@ public abstract class WorldItem implements IWorldObject {
         return this instanceof ParticleFX;
     }
 
-    private PhysicsObject relativeRenderObject() {
+    private AbstractSceneItemObject relativeRenderObject() {
         return this.relativeRenderObject;
     }
 }

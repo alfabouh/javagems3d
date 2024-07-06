@@ -19,35 +19,35 @@ public class FogProp {
         this.skyCoveredByFog = skyCoveredByFog;
     }
 
-    public void setFogColor(Vector3f fogColor) {
-        this.fogColor.set(fogColor);
-    }
-
-    public void setFogEnabled(boolean fogEnabled) {
-        this.fogEnabled = fogEnabled;
-    }
-
-    public void setFogDensity(float fogDensity) {
-        this.fogDensity = fogDensity;
-    }
-
-    public void setSkyCoveredByFog(boolean skyCoveredByFog) {
-        this.skyCoveredByFog = skyCoveredByFog;
-    }
-
     public Vector3f getFogColor() {
         return new Vector3f(this.fogColor);
+    }
+
+    public void setFogColor(Vector3f fogColor) {
+        this.fogColor.set(fogColor);
     }
 
     public boolean isFogEnabled() {
         return this.fogEnabled;
     }
 
+    public void setFogEnabled(boolean fogEnabled) {
+        this.fogEnabled = fogEnabled;
+    }
+
     public float getFogDensity() {
         return this.fogDensity;
     }
 
+    public void setFogDensity(float fogDensity) {
+        this.fogDensity = fogDensity;
+    }
+
     public boolean isSkyCoveredByFog() {
         return this.skyCoveredByFog;
+    }
+
+    public void setSkyCoveredByFog(boolean skyCoveredByFog) {
+        this.skyCoveredByFog = skyCoveredByFog;
     }
 }

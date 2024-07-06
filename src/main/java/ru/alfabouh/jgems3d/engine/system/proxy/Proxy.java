@@ -5,11 +5,11 @@ import ru.alfabouh.jgems3d.engine.physics.liquids.ILiquid;
 import ru.alfabouh.jgems3d.engine.physics.triggers.ITriggerZone;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicsTimer;
-import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.Light;
-import ru.alfabouh.jgems3d.engine.render.opengl.environment.light.PointLight;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderLiquidData;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.fabric.render.data.RenderObjectData;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.JGemsScreen;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.Light;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.PointLight;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderLiquidData;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderObjectData;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 import java.util.Deque;
@@ -48,22 +48,22 @@ public class Proxy {
         Iterator<Pair<WorldItem, RenderObjectData>> it1 = this.getDeque1().iterator();
         while (it1.hasNext()) {
             Pair<WorldItem, RenderObjectData> pair = it1.next();
-            this.screen.getRenderWorld().addItem(pair.getKey(), pair.getValue());
+            this.screen.getRenderWorld().addItem(pair.getFirst(), pair.getSecond());
             it1.remove();
         }
 
         Iterator<Pair<WorldItem, Light>> it2 = this.getDeque2().iterator();
         while (it2.hasNext()) {
             Pair<WorldItem, Light> pair = it2.next();
-            pair.getKey().attachLight(pair.getValue());
-            this.addLight(pair.getValue());
+            pair.getFirst().attachLight(pair.getSecond());
+            this.addLight(pair.getSecond());
             it2.remove();
         }
 
         Iterator<Pair<ILiquid, RenderLiquidData>> it3 = this.getDeque3().iterator();
         while (it3.hasNext()) {
             Pair<ILiquid, RenderLiquidData> pair = it3.next();
-            this.screen.getRenderWorld().addLiquid(pair.getKey(), pair.getValue());
+            this.screen.getRenderWorld().addLiquid(pair.getFirst(), pair.getSecond());
             it3.remove();
         }
     }

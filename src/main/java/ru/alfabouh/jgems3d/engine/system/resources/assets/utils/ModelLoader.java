@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
@@ -16,7 +16,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.objects.GameResources;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class ModelLoader {
     }
 
     @SuppressWarnings("all")
-    private static MeshDataGroup loadMesh(String modelPath) {
+    private static MeshDataGroup loadMesh(GameResources gameResources, String modelPath) {
         SystemLogging.get().getLogManager().log("Loading model " + modelPath);
 
         final int FLAGS = Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
@@ -104,7 +104,7 @@ public class ModelLoader {
                         List<Material> materialList = new ArrayList<>();
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
-                                materialList.add(ModelLoader.readMaterial(aiMaterial, JGems.normalizeURL((Paths.get(modelPath)).getParent().toString()) + "/"));
+                                materialList.add(ModelLoader.readMaterial(gameResources, aiMaterial, JGems.normalizeURL((Paths.get(modelPath)).getParent().toString()) + "/"));
                             }
                         }
                         int totalMeshes = scene.mNumMeshes();
@@ -137,12 +137,13 @@ public class ModelLoader {
     }
 
     @SuppressWarnings("all")
-    public static MeshDataGroup createMesh(ResourceCache ResourceCache, String modelPath) {
-        if (ResourceCache.checkObjectInCache(modelPath)) {
-            return (MeshDataGroup) ResourceCache.getCachedObject(modelPath);
+    public static MeshDataGroup createMesh(GameResources gameResources, String modelPath) {
+        ResourceCache resourceCache = gameResources.getResourceCache();
+        if (resourceCache.checkObjectInCache(modelPath)) {
+            return (MeshDataGroup) resourceCache.getCachedObject(modelPath);
         }
-        MeshDataGroup meshDataGroup = ModelLoader.loadMesh(modelPath);
-        ResourceCache.addObjectInBuffer(modelPath, meshDataGroup);
+        MeshDataGroup meshDataGroup = ModelLoader.loadMesh(gameResources, modelPath);
+        resourceCache.addObjectInBuffer(modelPath, meshDataGroup);
         return meshDataGroup;
     }
 
@@ -254,7 +255,7 @@ public class ModelLoader {
         return data;
     }
 
-    private static Material readMaterial(AIMaterial aiMaterial, String fullPath) {
+    private static Material readMaterial(GameResources gameResources, AIMaterial aiMaterial, String fullPath) {
         Material material = new Material();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4D = AIColor4D.create();
@@ -268,9 +269,9 @@ public class ModelLoader {
             String specular = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_SPECULAR);
             String normals = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_NORMALS);
             if (diffuse != null) {
-                TextureSample textureSample = ResourceManager.getTextureResource(fullPath + diffuse);
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + diffuse);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + diffuse, true, GL30.GL_REPEAT);
+                    textureSample = gameResources.createTexture(fullPath + diffuse, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setDiffuse(textureSample);
@@ -279,36 +280,36 @@ public class ModelLoader {
                 }
             }
             if (normals != null) {
-                TextureSample textureSample = ResourceManager.getTextureResource(fullPath + normals);
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + normals);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + normals, true, GL30.GL_REPEAT);
+                    textureSample = gameResources.createTexture(fullPath + normals, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setNormals(textureSample);
                 }
             }
             if (emissive != null) {
-                TextureSample textureSample = ResourceManager.getTextureResource(fullPath + emissive);
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + emissive);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + emissive, true, GL30.GL_REPEAT);
+                    textureSample = gameResources.createTexture(fullPath + emissive, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setEmissive(textureSample);
                 }
             }
             if (metallic != null) {
-                TextureSample textureSample = ResourceManager.getTextureResource(fullPath + metallic);
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + metallic);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + metallic, true, GL30.GL_REPEAT);
+                    textureSample = gameResources.createTexture(fullPath + metallic, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setMetallic(textureSample);
                 }
             }
             if (specular != null) {
-                TextureSample textureSample = ResourceManager.getTextureResource(fullPath + specular);
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + specular);
                 if (textureSample == null) {
-                    textureSample = ResourceManager.createTexture(fullPath + specular, true, GL30.GL_REPEAT);
+                    textureSample = gameResources.createTexture(fullPath + specular, true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
                     material.setSpecular(textureSample);

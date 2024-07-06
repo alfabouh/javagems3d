@@ -1,11 +1,11 @@
 package ru.alfabouh.jgems3d.engine.system.settings;
 
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.settings.basic.SettingObject;
 import ru.alfabouh.jgems3d.engine.system.settings.basic.SettingSlot;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingFloatBar;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingString;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingTrueFalse;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.*;

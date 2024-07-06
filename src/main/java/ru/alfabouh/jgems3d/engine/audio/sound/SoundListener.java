@@ -13,12 +13,12 @@ public class SoundListener {
         if (ALC10.alcGetCurrentContext() == MemoryUtil.NULL) {
             return;
         }
-        AL10.alListener3f(AL10.AL_POSITION, (float) position.x, (float) position.y, (float) position.z);
+        AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, position.z);
         Vector3f at = new Vector3f();
         cameraMatrix.positiveZ(at).negate();
         Vector3f up = new Vector3f();
         cameraMatrix.positiveY(up);
-        float[] data = new float[]{(float) at.x, (float) at.y, (float) at.z, (float) up.x, (float) up.y, (float) up.z};
+        float[] data = new float[]{at.x, at.y, at.z, up.x, up.y, up.z};
         AL10.alListenerfv(AL10.AL_ORIENTATION, data);
         SoundManager.checkALonErrors();
     }

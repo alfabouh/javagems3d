@@ -19,9 +19,9 @@ public class ModeledObject3DRenderer implements ITBoxObjectRenderer {
 
         tBoxScene3DObject.getRenderData().getShaderManager().performUniform("sunPos", properties.getSkyProp().getSunPos());
         tBoxScene3DObject.getRenderData().getShaderManager().performUniform("sunColor", properties.getSkyProp().getSunColor());
-        tBoxScene3DObject.getRenderData().getShaderManager().performUniform("sunBright",  properties.getSkyProp().getSunBrightness());
+        tBoxScene3DObject.getRenderData().getShaderManager().performUniform("sunBright", properties.getSkyProp().getSunBrightness());
 
-        tBoxScene3DObject.getRenderData().getShaderManager().performUniform("fogDensity",  properties.getFogProp().getFogDensity());
+        tBoxScene3DObject.getRenderData().getShaderManager().performUniform("fogDensity", properties.getFogProp().getFogDensity());
         tBoxScene3DObject.getRenderData().getShaderManager().performUniform("fogColor", properties.getFogProp().getFogColor());
 
         TBoxSceneUtils.renderModelTextured(tBoxScene3DObject.getRenderData().getShaderManager(), tBoxScene3DObject.getModel(), GL30.GL_TRIANGLES);

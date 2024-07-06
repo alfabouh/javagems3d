@@ -7,9 +7,9 @@ import org.bytedeco.bullet.LinearMath.btMotionState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.physics.collision.base.AbstractCollision;
-import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
+import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 

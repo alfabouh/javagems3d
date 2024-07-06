@@ -5,19 +5,19 @@ import ru.alfabouh.jgems3d.engine.audio.SoundManager;
 import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicThreadManager;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.ImmediateUI;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.MainMenuPanel;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.immediate_gui.panels.base.PanelUI;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.world.SceneWorld;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.JGemsScreen;
-import ru.alfabouh.jgems3d.engine.system.EngineSystem;
-import ru.alfabouh.jgems3d.engine.system.localisation.Localisation;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.ImmediateUI;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.MainMenuPanel;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.base.PanelUI;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
+import ru.alfabouh.jgems3d.engine.system.core.EngineSystem;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.alfabouh.jgems3d.engine.system.map.legacy.loader.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.proxy.Proxy;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.engine.system.settings.JGemsSettings;
 import ru.alfabouh.jgems3d.engine.system.synchronizing.SyncManager;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
 
@@ -32,8 +32,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class JGems {
-    public static boolean DEBUG_MODE = false;
     public static final String GAME_NAME = "Reznya HD";
+    public static boolean DEBUG_MODE = false;
     public static long rngSeed;
     public static Random random;
     private static JGems mainObject;
@@ -76,18 +76,6 @@ public class JGems {
         return GLFW.glfwGetTime();
     }
 
-    public void showMainMenu() {
-        this.setUIPanel(new MainMenuPanel(null));
-    }
-
-    public void setUIPanel(PanelUI panelUI) {
-        this.getUI().setPanel(panelUI);
-    }
-
-    public void removeUIPanel() {
-        this.getUI().removePanel();
-    }
-
     public static void main(String[] args) throws IOException {
         JGems.mainObject = new JGems(args);
         JGems.start();
@@ -113,6 +101,70 @@ public class JGems {
             SystemLogging.get().getLogManager().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
         }
+    }
+
+    public static void checkFilesDirectory() throws IOException {
+        if (!Files.exists(JGems.getGameFilesFolder())) {
+            Files.createDirectories(JGems.getGameFilesFolder());
+            SystemLogging.get().getLogManager().log("Created system folder");
+        }
+    }
+
+    public static String date() {
+        LocalDateTime date = LocalDateTime.now();
+        return date.toString();
+    }
+
+    public static String getGamePath() {
+        return new File(JGems.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
+    }
+
+    public static boolean seekInJar(String path) {
+        return JGems.class.getResourceAsStream(path) != null;
+    }
+
+    public static InputStream loadFileJar(String path) {
+        InputStream inputStream = JGems.class.getResourceAsStream(path);
+        if (inputStream == null) {
+            throw new JGemsException("Couldn't find: " + path);
+        }
+        return inputStream;
+    }
+
+    public static String normalizeURL(String url) {
+        return url.replace("\\", "/");
+    }
+
+    public static InputStream loadFileJarSilently(String path) {
+        return JGems.class.getResourceAsStream(path);
+    }
+
+    public static InputStream loadFileJar(String folder, String path) {
+        return JGems.loadFileJar(folder + "/" + path);
+    }
+
+    public static Path getGameFilesFolder() {
+        String appdataPath = System.getProperty("user.home");
+        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase() + "//" + JGems.GAME_NAME.toLowerCase();
+        return Paths.get(appdataPath, folderPath);
+    }
+
+    public static Path getFilesFolder() {
+        String appdataPath = System.getProperty("user.home");
+        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase();
+        return Paths.get(appdataPath, folderPath);
+    }
+
+    public void showMainMenu() {
+        this.setUIPanel(new MainMenuPanel(null));
+    }
+
+    public void setUIPanel(PanelUI panelUI) {
+        this.getUI().setPanel(panelUI);
+    }
+
+    public void removeUIPanel() {
+        this.getUI().removePanel();
     }
 
     public void checkArgs(String[] args) {
@@ -203,7 +255,7 @@ public class JGems {
         return this.getEngineSystem().getEngineState();
     }
 
-    public ResourceManager getResourceManager() {
+    public JGemsResourceManager getResourceManager() {
         return this.getEngineSystem().getResourceManager();
     }
 
@@ -250,59 +302,6 @@ public class JGems {
 
     public boolean isPaused() {
         return this.getEngineState().isPaused();
-    }
-
-
-    public static void checkFilesDirectory() throws IOException {
-        if (!Files.exists(JGems.getGameFilesFolder())) {
-            Files.createDirectories(JGems.getGameFilesFolder());
-            SystemLogging.get().getLogManager().log("Created system folder");
-        }
-    }
-
-    public static String date() {
-        LocalDateTime date = LocalDateTime.now();
-        return date.toString();
-    }
-
-    public static String getGamePath() {
-        return new File(JGems.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
-    }
-
-    public static boolean seekInJar(String path) {
-        return JGems.class.getResourceAsStream(path) != null;
-    }
-
-    public static InputStream loadFileJar(String path) {
-        InputStream inputStream = JGems.class.getResourceAsStream(path);
-        if (inputStream == null) {
-            throw new JGemsException("Couldn't find: " + path);
-        }
-        return inputStream;
-    }
-
-    public static String normalizeURL(String url) {
-        return url.replace("\\", "/");
-    }
-
-    public static InputStream loadFileJarSilently(String path) {
-        return JGems.class.getResourceAsStream(path);
-    }
-
-    public static InputStream loadFileJar(String folder, String path) {
-        return JGems.loadFileJar(folder + "/" + path);
-    }
-
-    public static Path getGameFilesFolder() {
-        String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase() + "//" + JGems.GAME_NAME.toLowerCase();
-        return Paths.get(appdataPath, folderPath);
-    }
-
-    public static Path getFilesFolder() {
-        String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase();
-        return Paths.get(appdataPath, folderPath);
     }
 
     public String toString() {

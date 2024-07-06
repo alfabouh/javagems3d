@@ -3,19 +3,19 @@ package ru.alfabouh.jgems3d.engine.system.controller.objects;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.BindingManager;
-import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.JGemsBindingManager;
+import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.components.MouseKeyboard;
 
 public class MouseKeyboardController implements IController {
+    protected final Vector2f normalizedRotationInput;
+    protected final Vector3f normalizedPositionInput;
     private final BindingManager bindingManager;
     private final Vector3f xyzInput;
     private final MouseKeyboard mouseAndKeyboard;
     private final IWindow window;
-    protected final Vector2f normalizedRotationInput;
-    protected final Vector3f normalizedPositionInput;
 
     public MouseKeyboardController(IWindow window, BindingManager bindingManager) {
         this.window = window;

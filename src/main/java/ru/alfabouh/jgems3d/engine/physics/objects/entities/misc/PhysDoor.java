@@ -10,7 +10,7 @@ import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.object.IWorldDynamic;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class PhysDoor extends WorldItem implements IWorldDynamic {
     private final Vector3f startingRotation;
@@ -61,7 +61,7 @@ public class PhysDoor extends WorldItem implements IWorldDynamic {
                 this.setPosition(new Vector3f(this.startingPosition).sub(0.7f, 0.0f, 0.7f));
             }
             if (!this.wasOpened) {
-                JGems.get().getSoundManager().playSoundAt(ResourceManager.soundAssetsLoader.door, SoundType.WORLD_SOUND, 1.75f, 1.0f, 1.0f, this.getPosition());
+                JGems.get().getSoundManager().playSoundAt(JGemsResourceManager.soundAssetsLoader.door, SoundType.WORLD_SOUND, 1.75f, 1.0f, 1.0f, this.getPosition());
             }
             this.wasOpened = true;
         } else {

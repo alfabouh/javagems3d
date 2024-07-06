@@ -1,6 +1,7 @@
 package ru.alfabouh.jgems3d.mapsys.file;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
@@ -22,7 +23,7 @@ public final class SerializeHelper {
     public static <T> T readFromJSON(InputStream inputStream, Class<T> tClass) throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-        return (T) gson.fromJson(SerializeHelper.convert(inputStream), tClass);
+        return gson.fromJson(SerializeHelper.convert(inputStream), tClass);
     }
 
     public static <T> T readFromBytes(InputStream inputStream, Class<T> tClass) throws IOException, ClassNotFoundException {
@@ -42,7 +43,7 @@ public final class SerializeHelper {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         try (FileReader reader = new FileReader(file + "//" + fileName)) {
-            return (T) gson.fromJson(reader, tClass);
+            return gson.fromJson(reader, tClass);
         }
     }
 
@@ -50,7 +51,7 @@ public final class SerializeHelper {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         try (FileReader reader = new FileReader(file + "//" + fileName)) {
-            return (T) gson.fromJson(reader, tTypeToken);
+            return gson.fromJson(reader, tTypeToken);
         }
     }
 
@@ -78,7 +79,7 @@ public final class SerializeHelper {
     }
 
     public static void saveToBytes(File path, String fileName, Object object) throws IOException {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(path + "//" + fileName)){
+        try (FileOutputStream fileOutputStream = new FileOutputStream(path + "//" + fileName)) {
             try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
                 objectOutputStream.writeObject(object);
             }

@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.system.controller.objects.components;
 
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
-import ru.alfabouh.jgems3d.engine.render.opengl.screen.window.IWindow;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.alfabouh.jgems3d.engine.system.controller.components.Key;
 

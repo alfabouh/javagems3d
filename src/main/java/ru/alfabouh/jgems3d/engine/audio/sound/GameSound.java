@@ -91,35 +91,35 @@ public class GameSound {
     }
 
     public void setPosition(Vector3f vector3f) {
-        AL10.alSource3f(this.source, AL10.AL_POSITION, (float) vector3f.x, (float) vector3f.y, (float) vector3f.z);
+        AL10.alSource3f(this.source, AL10.AL_POSITION, vector3f.x, vector3f.y, vector3f.z);
     }
 
     public void setVelocity(Vector3f vector3f) {
-        AL10.alSource3f(this.source, AL10.AL_VELOCITY, (float) vector3f.x, (float) vector3f.y, (float) vector3f.z);
+        AL10.alSource3f(this.source, AL10.AL_VELOCITY, vector3f.x, vector3f.y, vector3f.z);
     }
 
     public float getRollOff() {
         return Math.max(this.rollOff, 0.0f);
     }
 
-    public float getGain() {
-        return Math.max(this.gain, 0.0f);
+    public void setRollOff(float rollOff) {
+        this.rollOff = rollOff;
     }
 
-    public float getPitch() {
-        return Math.max(this.pitch, 0.0f);
+    public float getGain() {
+        return Math.max(this.gain, 0.0f);
     }
 
     public void setGain(float gain) {
         this.gain = gain;
     }
 
-    public void setPitch(float pitch) {
-        this.pitch = pitch;
+    public float getPitch() {
+        return Math.max(this.pitch, 0.0f);
     }
 
-    public void setRollOff(float rollOff) {
-        this.rollOff = rollOff;
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
     }
 
     public boolean isPaused() {

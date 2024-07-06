@@ -34,6 +34,6 @@ public class LogAppender extends AbstractAppender {
     public void append(LogEvent event) {
         CharSequence sequence = (CharSequence) getLayout().toSerializable(event);
         this.stringJoiner.add(sequence);
-        LoggingManager.consoleText.add(sequence);
+        LoggingManager.addTextInConsoleBuffer(sequence);
     }
 }

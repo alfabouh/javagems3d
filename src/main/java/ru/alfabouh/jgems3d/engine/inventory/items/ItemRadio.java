@@ -4,7 +4,7 @@ import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.GameSound;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class ItemRadio extends InventoryItem {
     private final GameSound music;
@@ -14,7 +14,7 @@ public class ItemRadio extends InventoryItem {
     public ItemRadio() {
         super("radio");
         this.openCd = 0;
-        this.music = JGems.get().getSoundManager().createSound(ResourceManager.soundAssetsLoader.music, SoundType.BACKGROUND_AMBIENT_SOUND, 2.0f, 1.0f, 1.0f);
+        this.music = JGems.get().getSoundManager().createSound(JGemsResourceManager.soundAssetsLoader.music, SoundType.BACKGROUND_AMBIENT_SOUND, 2.0f, 1.0f, 1.0f);
         this.setDescription(JGems.get().I18n("item.description.radio"));
     }
 
@@ -45,13 +45,13 @@ public class ItemRadio extends InventoryItem {
     }
 
     private void close() {
-        JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
         this.music.pauseSound();
         this.isOpened = false;
     }
 
     private void open() {
-        JGems.get().getSoundManager().playLocalSound(ResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.turn, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
         this.music.playSound();
         this.isOpened = true;
     }

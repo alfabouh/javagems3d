@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.settings.objects;
 
-import ru.alfabouh.jgems3d.engine.system.localisation.Lang;
+import ru.alfabouh.jgems3d.engine.system.resources.localisation.Lang;
 import ru.alfabouh.jgems3d.engine.system.settings.basic.SettingSlot;
 
 import java.util.HashMap;

@@ -14,7 +14,6 @@ public class LoadingContent implements ImGuiContent {
         ImGui.setWindowSize(400, 200);
         ImGui.setWindowPos(dim.x * 0.5f - 200, dim.y * 0.5f - 100);
         ImGui.text("Loading...");
-
         ImGui.end();
     }
 }

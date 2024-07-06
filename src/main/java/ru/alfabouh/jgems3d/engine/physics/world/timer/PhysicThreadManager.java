@@ -7,9 +7,9 @@ public class PhysicThreadManager {
     public static final Object locker = new Object();
     public static final int TICKS_PER_SECOND = 50;
     public static final int PHYS_THREADS = 1;
-    private Thread thread;
     private final PhysicsTimer physicsTimer;
     private final int tps;
+    private Thread thread;
 
     public PhysicThreadManager(int tps) {
         this.tps = tps;

@@ -1,7 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh;
 
 import org.joml.Vector3f;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
@@ -79,9 +78,9 @@ public final class Mesh {
         }
         float[] a = new float[list.size() * 3];
         for (int i = 0; i < list.size(); i += 3) {
-            a[i] = (float) list.get(i).x;
-            a[i + 1] = (float) list.get(i).y;
-            a[i + 2] = (float) list.get(i).z;
+            a[i] = list.get(i).x;
+            a[i + 1] = list.get(i).y;
+            a[i + 2] = list.get(i).z;
         }
         return a;
     }

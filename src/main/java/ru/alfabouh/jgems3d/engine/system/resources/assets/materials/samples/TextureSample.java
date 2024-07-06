@@ -9,8 +9,8 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.IOException;
@@ -19,13 +19,13 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class TextureSample implements IImageSample {
+    private final String name;
+    private final boolean interpolate;
+    private final int wrapping;
     private ByteBuffer imageBuffer;
     private int width;
     private int height;
     private int textureId;
-    private final String name;
-    private final boolean interpolate;
-    private final int wrapping;
     private boolean enableAnisotropic;
 
     private TextureSample(String name, int width, int height, ByteBuffer buffer) {
@@ -82,43 +82,47 @@ public class TextureSample implements IImageSample {
         }
     }
 
-    public static TextureSample createTextureOutsideJar(ResourceCache ResourceCache, String fullPath, boolean interpolate, int wrapping) {
-        if (ResourceCache.checkObjectInCache(fullPath)) {
-            return (TextureSample) ResourceCache.getCachedObject(fullPath);
+    public static TextureSample createTextureOutsideJar(ResourceCache resourceCache, String fullPath, boolean interpolate, int wrapping) {
+        if (resourceCache.checkObjectInCache(fullPath)) {
+            return (TextureSample) resourceCache.getCachedObject(fullPath);
         }
         TextureSample textureSample = new TextureSample(false, fullPath, interpolate, wrapping);
         if (textureSample.isValid()) {
-            ResourceCache.addObjectInBuffer(fullPath, textureSample);
+            resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
             throw new JGemsException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache ResourceCache, String fullPath, boolean interpolate, int wrapping) {
-        if (ResourceCache.checkObjectInCache(fullPath)) {
-            return (TextureSample) ResourceCache.getCachedObject(fullPath);
+    public static TextureSample createTexture(ResourceCache resourceCache, String fullPath, boolean interpolate, int wrapping) {
+        if (resourceCache.checkObjectInCache(fullPath)) {
+            return (TextureSample) resourceCache.getCachedObject(fullPath);
         }
         TextureSample textureSample = new TextureSample(true, fullPath, interpolate, wrapping);
         if (textureSample.isValid()) {
-            ResourceCache.addObjectInBuffer(fullPath, textureSample);
+            resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
             throw new JGemsException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache ResourceCache, String name, int width, int height, ByteBuffer buffer) {
-        if (ResourceCache.checkObjectInCache(name)) {
-            return (TextureSample) ResourceCache.getCachedObject(name);
+    public static TextureSample createTexture(ResourceCache resourceCache, String name, int width, int height, ByteBuffer buffer) {
+        if (resourceCache.checkObjectInCache(name)) {
+            return (TextureSample) resourceCache.getCachedObject(name);
         }
         TextureSample textureSample = new TextureSample(name, width, height, buffer);
         if (textureSample.isValid()) {
-            ResourceCache.addObjectInBuffer(name, textureSample);
+            resourceCache.addObjectInBuffer(name, textureSample);
         } else {
             throw new JGemsException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
+    }
+
+    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
+        return new TextureSample(id, inputStream, interpolate, wrapping);
     }
 
     private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) {
@@ -188,10 +192,6 @@ public class TextureSample implements IImageSample {
         SystemLogging.get().getLogManager().log("Texture " + this.getName() + " successfully created!");
     }
 
-    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
-        return new TextureSample(id, inputStream, interpolate, wrapping);
-    }
-
     public void recreateTexture() {
         GL30.glDeleteTextures(this.getTextureId());
         this.createTexture();
@@ -218,12 +218,12 @@ public class TextureSample implements IImageSample {
         return new Vector2i(this.width, this.height);
     }
 
-    public void setEnableAnisotropic(boolean enableAnisotropic) {
-        this.enableAnisotropic = enableAnisotropic;
-    }
-
     public boolean isEnableAnisotropic() {
         return this.enableAnisotropic;
+    }
+
+    public void setEnableAnisotropic(boolean enableAnisotropic) {
+        this.enableAnisotropic = enableAnisotropic;
     }
 
     public int getWrapping() {
@@ -251,7 +251,7 @@ public class TextureSample implements IImageSample {
     }
 
     @Override
-    public void onCleaningCache(ResourceCache ResourceCache) {
+    public void onCleaningCache(ResourceCache resourceCache) {
         this.clear();
     }
 }

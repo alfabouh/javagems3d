@@ -12,16 +12,16 @@ import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
 import ru.alfabouh.jgems3d.engine.physics.collision.base.AbstractCollision;
 import ru.alfabouh.jgems3d.engine.physics.collision.primitive.CapsuleShape;
-import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
-import ru.alfabouh.jgems3d.engine.physics.objects.base.PhysEntity;
-import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.PhysObject;
+import ru.alfabouh.jgems3d.engine.physics.objects.states.EntityState;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 
-public class DynamicPlayerSP extends PhysEntity implements IPlayer {
+public class DynamicPlayerSP extends PhysObject implements IPlayer {
     private final Vector3f cameraRotation;
     private final float speedMultiplier;
     private final float eyeHeight;

@@ -1,24 +1,23 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager;
 
 import org.jetbrains.annotations.NotNull;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.ShaderProgram;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.UniformBufferProgram;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.programs.UniformProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.ShaderProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.UniformBufferProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.UniformProgram;
+import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.Uniform;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.resources.cache.ICached;
+import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public abstract class ShaderManager {
+public abstract class ShaderManager implements ICached {
     private final Map<UniformBufferObject, UniformBufferProgram> uniformBufferProgramMap;
     private final Set<UniformBufferObject> uniformBufferObjects;
     private final ShaderGroup shaderGroup;
@@ -34,13 +33,13 @@ public abstract class ShaderManager {
         this.useForGBuffer = false;
     }
 
+    public boolean isUseForGBuffer() {
+        return this.useForGBuffer;
+    }
+
     public ShaderManager setUseForGBuffer(boolean useForGBuffer) {
         this.useForGBuffer = useForGBuffer;
         return this;
-    }
-
-    public boolean isUseForGBuffer() {
-        return this.useForGBuffer;
     }
 
     public abstract ShaderManager copy();
@@ -54,8 +53,8 @@ public abstract class ShaderManager {
         return false;
     }
 
-    public ShaderManager addUBO(UniformBufferObject uniformBufferObject) {
-        this.getUniformBufferObjects().add(uniformBufferObject);
+    public ShaderManager addUBOs(UniformBufferObject... uniformBufferObjects) {
+        this.getUniformBufferObjects().addAll(Arrays.asList(uniformBufferObjects));
         return this;
     }
 
@@ -247,5 +246,10 @@ public abstract class ShaderManager {
 
     public UniformProgram getUniformProgram() {
         return this.uniformProgram;
+    }
+
+    @Override
+    public void onCleaningCache(ResourceCache resourceCache) {
+        this.destroyProgram();
     }
 }

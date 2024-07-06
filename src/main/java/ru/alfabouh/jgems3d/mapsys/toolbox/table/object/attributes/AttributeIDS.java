@@ -11,6 +11,7 @@ public enum AttributeIDS {
 
     private final String id;
     private final String description;
+
     AttributeIDS(String id, String description) {
         this.id = id;
         this.description = description;

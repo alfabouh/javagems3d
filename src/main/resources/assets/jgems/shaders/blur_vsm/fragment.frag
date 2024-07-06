@@ -2,10 +2,11 @@ layout (location = 0) out vec4 frag_color;
 
 in vec2 out_texture;
 uniform sampler2D texture_sampler;
+uniform float blur;
 
 void main()
 {
-    float blur_radius = 1.0f;
+    float blur_radius = blur;
 
     vec2 texel_size = 1.0 / textureSize(texture_sampler, 0);
 

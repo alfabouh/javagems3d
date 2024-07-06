@@ -5,14 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.physics.collision.base.AbstractCollision;
 import ru.alfabouh.jgems3d.engine.physics.collision.primitive.OBBShape;
-import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
-import ru.alfabouh.jgems3d.engine.physics.objects.base.PhysEntity;
-import ru.alfabouh.jgems3d.engine.physics.objects.materials.Materials;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
+import ru.alfabouh.jgems3d.engine.physics.objects.base.PhysObject;
+import ru.alfabouh.jgems3d.engine.physics.objects.materials.Materials;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 
-public abstract class ParticleFX extends PhysEntity {
+public abstract class ParticleFX extends PhysObject {
     protected int lifeTime;
 
     public ParticleFX(World world, Vector3f scale, @NotNull Vector3f pos, @NotNull Vector3f rot) {

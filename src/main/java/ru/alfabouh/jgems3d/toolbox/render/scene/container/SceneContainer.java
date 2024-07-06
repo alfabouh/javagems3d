@@ -24,10 +24,6 @@ public class SceneContainer {
         this.mapProperties = new MapProperties("default_map", new SkyProp(), new FogProp());
     }
 
-    public void setMapProperties(MapProperties mapProperties) {
-        this.mapProperties = mapProperties;
-    }
-
     public void removeObject(TBoxScene3DObject scene3DObject) {
         this.getSceneObjects().remove(scene3DObject);
         this.objectPostRender(scene3DObject);
@@ -63,6 +59,10 @@ public class SceneContainer {
 
     public MapProperties getMapProperties() {
         return this.mapProperties;
+    }
+
+    public void setMapProperties(MapProperties mapProperties) {
+        this.mapProperties = mapProperties;
     }
 
     public Set<TBoxScene3DObject> getSceneObjects() {

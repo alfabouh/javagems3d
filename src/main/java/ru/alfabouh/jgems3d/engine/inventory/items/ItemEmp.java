@@ -6,7 +6,7 @@ import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.system.map.legacy.Map01;
-import ru.alfabouh.jgems3d.engine.system.resources.ResourceManager;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class ItemEmp extends InventoryItem {
     private final GameSound beep;
@@ -15,7 +15,7 @@ public class ItemEmp extends InventoryItem {
     public ItemEmp() {
         super("emp");
         this.level = 0;
-        this.beep = JGems.get().getSoundManager().createSound(ResourceManager.soundAssetsLoader.beep, SoundType.BACKGROUND_AMBIENT_SOUND, 0.5f, 0.7f, 1.0f);
+        this.beep = JGems.get().getSoundManager().createSound(JGemsResourceManager.soundAssetsLoader.beep, SoundType.BACKGROUND_AMBIENT_SOUND, 0.5f, 0.7f, 1.0f);
         this.setDescription(JGems.get().I18n("item.description.emp"));
     }
 

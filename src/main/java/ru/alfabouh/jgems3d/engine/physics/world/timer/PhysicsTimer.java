@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.physics.objects.base.BodyGroup;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
-import ru.alfabouh.jgems3d.engine.render.opengl.scene.debug.bullet.JBDebugDraw;
-import ru.alfabouh.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.debug.bullet.JBDebugDraw;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.synchronizing.SyncManager;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class PhysicsTimer implements IPhysTimer {

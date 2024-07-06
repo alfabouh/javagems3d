@@ -48,6 +48,10 @@ public final class Model<T extends IFormat> implements Serializable {
         this.meshDataGroup = null;
     }
 
+    public boolean isValid() {
+        return this.getMeshDataGroup() != null;
+    }
+
     public MeshDataGroup getMeshDataGroup() {
         return this.meshDataGroup;
     }

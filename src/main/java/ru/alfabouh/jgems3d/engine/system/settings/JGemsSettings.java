@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.settings;
 
-import ru.alfabouh.jgems3d.engine.system.localisation.Localisation;
+import ru.alfabouh.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingChooseLanguage;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingFloatBar;
 import ru.alfabouh.jgems3d.engine.system.settings.objects.SettingIntSlots;

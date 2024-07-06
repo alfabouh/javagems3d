@@ -3,8 +3,8 @@ package ru.alfabouh.jgems3d.engine.physics.collision.complex;
 import org.bytedeco.bullet.BulletCollision.btCollisionShape;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.physics.collision.base.AbstractCollision;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 
 @SuppressWarnings("all")
 public class ModelDynamicMeshShape implements AbstractCollision {
