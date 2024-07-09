@@ -11,10 +11,10 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
 import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlayerSP;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.debug.constants.GlobalRenderDebugConstants;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.ICamera;
@@ -205,7 +205,7 @@ public class DIMGuiRenderJGems {
         ICamera camera = JGems.get().getScreen().getCamera();
         IPlayer entityPlayerSP = JGems.get().getPlayerSP();
         SceneWorld sceneWorld = JGems.get().getSceneWorld();
-        JGemsSceneRender sceneRender = JGems.get().getScreen().getScene().getSceneRender();
+        JGemsOpenGLRenderer sceneRender = JGems.get().getScreen().getScene().getSceneRender();
 
         ImGui.newFrame();
 
@@ -285,6 +285,10 @@ public class DIMGuiRenderJGems {
             ImGui.image(sceneRender.getSceneFbo().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             ImGui.sameLine();
             ImGui.image(sceneRender.getShadowScene().getShadowFBO().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+
+            if (sceneRender.getSsaoBufferTexture() != null) {
+                ImGui.image(sceneRender.getSsaoBuffer().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            }
 
             ImGui.endChild();
         }

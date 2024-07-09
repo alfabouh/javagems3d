@@ -26,7 +26,7 @@ public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;
     private final Window window;
     private final FrustumCulling frustumCulling;
-    private final JGemsSceneRender sceneRender;
+    private final JGemsOpenGLRenderer sceneRender;
     private final ImmediateUI immediateUI;
     private final SceneData sceneData;
 
@@ -41,7 +41,7 @@ public class JGemsScene implements IScene {
         this.sceneData = new SceneData(sceneWorld, null);
         this.frustumCulling = new FrustumCulling();
         this.immediateUI = new ImmediateUI();
-        this.sceneRender = new JGemsSceneRender(this.getSceneData());
+        this.sceneRender = new JGemsOpenGLRenderer(this.getSceneData());
     }
 
     public static void activeGlTexture(int code) {
@@ -160,7 +160,7 @@ public class JGemsScene implements IScene {
         return this.getCurrentCamera() instanceof AttachedCamera && ((AttachedCamera) this.getCurrentCamera()).getPhysXObject() == abstractSceneItemObject;
     }
 
-    public JGemsSceneRender getSceneRender() {
+    public JGemsOpenGLRenderer getSceneRender() {
         return this.sceneRender;
     }
 

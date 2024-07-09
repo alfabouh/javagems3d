@@ -35,6 +35,11 @@ public class MathHelper {
         }
     }
 
+    public static float lerp(float a, float b, float f)
+    {
+        return a + f * (b - a);
+    }
+
     public static btVector3 convert(Vector3f vector3f) {
         return new btVector3(vector3f.x, vector3f.y, vector3f.z);
     }

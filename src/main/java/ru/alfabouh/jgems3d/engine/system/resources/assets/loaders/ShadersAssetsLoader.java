@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.engine.system.resources.assets.loaders;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.LightManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.Shader;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
@@ -27,13 +27,14 @@ public class ShadersAssetsLoader extends ShadersLoader {
     public JGemsShaderManager blur5;
     public JGemsShaderManager blur9;
     public JGemsShaderManager blur13;
-    public JGemsShaderManager blur_vsm;
+    public JGemsShaderManager blur_box;
     public JGemsShaderManager hdr;
     public JGemsShaderManager fxaa;
     public JGemsShaderManager post_psx;
     public JGemsShaderManager menu_psx;
     public JGemsShaderManager skybox;
     public JGemsShaderManager world_gbuffer;
+    public JGemsShaderManager world_ssao;
     public JGemsShaderManager world_liquid_gbuffer;
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager simple;
@@ -64,7 +65,7 @@ public class ShadersAssetsLoader extends ShadersLoader {
         this.blur5 = this.createShaderManager(resourceCache, "jgems/shaders/blur5", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur9 = this.createShaderManager(resourceCache, "jgems/shaders/blur9", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.blur13 = this.createShaderManager(resourceCache, "jgems/shaders/blur13", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.blur_vsm = this.createShaderManager(resourceCache, "jgems/shaders/blur_vsm", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.blur_box = this.createShaderManager(resourceCache, "jgems/shaders/blur_box", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
         this.imgui = this.createShaderManager(resourceCache, "jgems/shaders/imgui", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 
@@ -73,6 +74,8 @@ public class ShadersAssetsLoader extends ShadersLoader {
         this.post_psx = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/post_psx", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBOs(this.Misc);
 
         this.skybox = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBOs(this.SunLight);
+
+        this.world_ssao = this.createShaderManager(resourceCache, "jgems/shaders/world_ssao", Shader.ShaderType.COMPUTE_BIT);
 
         this.world_gbuffer = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/world_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).setUseForGBuffer(true);
         this.world_deferred = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/world_deferred", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBOs(this.SunLight, this.PointLights, this.Fog);
@@ -94,6 +97,6 @@ public class ShadersAssetsLoader extends ShadersLoader {
 
     @Override
     protected JGemsShaderManager createShaderObject(String shader, int types) {
-        return new JGemsShaderManager(new ShaderGroup(shader, types));
+        return new JGemsShaderManager(new ShaderContainer(shader, types));
     }
 }

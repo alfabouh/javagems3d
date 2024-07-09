@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.base;
 
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.RenderGroup;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.ICamera;
@@ -10,13 +10,12 @@ import ru.alfabouh.jgems3d.logger.SystemLogging;
 public abstract class SceneRenderBase {
     private final int renderPriority;
     private final RenderGroup renderGroup;
-    private final JGemsSceneRender sceneRenderConveyor;
+    private final JGemsOpenGLRenderer sceneRenderConveyor;
 
-    protected SceneRenderBase(int renderPriority, JGemsSceneRender sceneRenderConveyor, RenderGroup renderGroup) {
+    protected SceneRenderBase(int renderPriority, JGemsOpenGLRenderer sceneRenderConveyor, RenderGroup renderGroup) {
         this.renderPriority = renderPriority;
         this.renderGroup = renderGroup;
         this.sceneRenderConveyor = sceneRenderConveyor;
-        SystemLogging.get().getLogManager().log("Scene \"" + renderGroup.getId() + "\" init");
     }
 
     public ICamera getCamera() {

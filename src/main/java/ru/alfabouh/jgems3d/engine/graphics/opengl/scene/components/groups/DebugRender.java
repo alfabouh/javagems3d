@@ -4,8 +4,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graph.Graph;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
+import ru.alfabouh.jgems3d.engine.sysgraph.Graph;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.RenderGroup;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.base.SceneRenderBase;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.debug.constants.GlobalRenderDebugConstants;
@@ -19,7 +19,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsS
 public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;
 
-    public DebugRender(JGemsSceneRender sceneRenderConveyor) {
+    public DebugRender(JGemsOpenGLRenderer sceneRenderConveyor) {
         super(50, sceneRenderConveyor, new RenderGroup("DEBUG"));
         this.debugShaders = JGemsResourceManager.globalShaderAssets.debug;
     }

@@ -13,7 +13,7 @@ import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.alfabouh.jgems3d.engine.system.core.EngineSystem;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.localisation.Localisation;
-import ru.alfabouh.jgems3d.engine.system.map.legacy.loader.IMapLoader;
+import ru.alfabouh.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.proxy.Proxy;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.engine.system.settings.JGemsSettings;

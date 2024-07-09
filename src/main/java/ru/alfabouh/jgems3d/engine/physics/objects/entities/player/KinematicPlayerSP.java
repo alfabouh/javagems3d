@@ -34,7 +34,7 @@ import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.Mai
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
 import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
-import ru.alfabouh.jgems3d.engine.system.map.legacy.Map01;
+import ru.alfabouh.jgems3d.engine.system.map.loaders.custom.Map01;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.util.ArrayDeque;

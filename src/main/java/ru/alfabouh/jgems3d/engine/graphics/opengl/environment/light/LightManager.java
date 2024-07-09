@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.Environment;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -77,7 +77,7 @@ public class LightManager implements ILightManager {
         value1Buffer.put(this.environment.getSky().getSunColors().y);
         value1Buffer.put(this.environment.getSky().getSunColors().z);
         value1Buffer.flip();
-        JGemsSceneRender.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.SunLight, value1Buffer);
+        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.SunLight, value1Buffer);
         MemoryUtil.memFree(value1Buffer);
     }
 
@@ -97,14 +97,14 @@ public class LightManager implements ILightManager {
             value1Buffer.put(pointLight.getBrightness());
             value1Buffer.put(pointLight.getAttachedShadowSceneId());
             value1Buffer.flip();
-            JGemsSceneRender.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (8 * 4), value1Buffer);
+            JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (8 * 4), value1Buffer);
         }
         MemoryUtil.memFree(value1Buffer);
 
         IntBuffer intBuffer = MemoryUtil.memAllocInt(1);
         intBuffer.put(total);
         intBuffer.flip();
-        JGemsSceneRender.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, LightManager.MAX_POINT_LIGHTS * (8 * 4), intBuffer);
+        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, LightManager.MAX_POINT_LIGHTS * (8 * 4), intBuffer);
         MemoryUtil.memFree(intBuffer);
     }
 
@@ -120,7 +120,7 @@ public class LightManager implements ILightManager {
             value1Buffer.put(-1);
             value1Buffer.put(-1);
             value1Buffer.flip();
-            JGemsSceneRender.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * 32, value1Buffer);
+            JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * 32, value1Buffer);
         }
         MemoryUtil.memFree(value1Buffer);
     }

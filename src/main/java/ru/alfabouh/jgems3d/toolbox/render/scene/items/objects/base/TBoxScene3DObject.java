@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeContainer;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeIDS;
+import ru.alfabouh.jgems3d.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.alfabouh.jgems3d.map_sys.save.objects.object_attributes.AttributeIDS;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.collision.LocalCollision;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 

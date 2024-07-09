@@ -32,6 +32,7 @@ public class SettingsPanel extends AbstractPanelUI {
         if (JGems.DEBUG_MODE) {
             immediateUI.settingCarouselUI(JGems.get().I18n("menu.settings.anisotropic"), JGemsResourceManager.renderAssets.standardFont, 0xffffff, new Vector2i(x, y += 30), JGems.get().getGameSettings().anisotropic, 0.5f);
             immediateUI.settingCarouselUI(JGems.get().I18n("menu.settings.fxaa"), JGemsResourceManager.renderAssets.standardFont, 0xffffff, new Vector2i(x, y += 30), JGems.get().getGameSettings().fxaa, 0.5f);
+            immediateUI.settingCarouselUI(JGems.get().I18n("menu.settings.ssao"), JGemsResourceManager.renderAssets.standardFont, 0xffffff, new Vector2i(x, y += 30), JGems.get().getGameSettings().ssao, 0.5f);
             immediateUI.settingCarouselUI(JGems.get().I18n("menu.settings.bloom"), JGemsResourceManager.renderAssets.standardFont, 0xffffff, new Vector2i(x, y += 30), JGems.get().getGameSettings().bloom, 0.5f);
             immediateUI.settingCarouselUI(JGems.get().I18n("menu.settings.textureQ"), JGemsResourceManager.renderAssets.standardFont, 0xffffff, new Vector2i(x, y += 30), JGems.get().getGameSettings().texturesQuality, 0.5f);
             immediateUI.settingCarouselUI(JGems.get().I18n("menu.settings.shadowQ"), JGemsResourceManager.renderAssets.standardFont, 0xffffff, new Vector2i(x, y += 30), JGems.get().getGameSettings().shadowQuality, 0.5f);
@@ -46,8 +47,8 @@ public class SettingsPanel extends AbstractPanelUI {
                     JGems.get().getScreen().reloadSceneAndShadowsFrameBufferObjects();
                     JGems.get().getScreen().checkScreenMode();
                     JGems.get().getScreen().checkVSync();
-                    JGems.get().getScreen().removeLoadingScreen();
                     JGems.get().getLocalisation().setCurrentLang(JGems.get().getGameSettings().language.getCurrentLanguage());
+                    JGems.get().getScreen().removeLoadingScreen();
                     this.goBack(immediateUI);
                 });
 

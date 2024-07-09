@@ -1,0 +1,54 @@
+layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+layout (binding = 0) uniform sampler2D gPositions;
+layout (binding = 1) uniform sampler2D gNormals;
+layout (binding = 2) uniform sampler2D ssaoKernel;
+layout (binding = 3) uniform sampler2D ssaoNoise;
+layout (binding = 5) uniform sampler2D ssaoMask;
+
+layout (binding = 4, rgba16f) writeonly uniform image2D img_output;
+
+uniform mat4 projection_matrix;
+uniform vec2 noiseScale;
+
+void main() {
+    ivec2 id = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(img_output);
+    if (id.x >= size.x || id.y >= size.y) {
+        return;
+    }
+
+    vec2 uv = vec2(id) / vec2(size);
+
+    const float radius = 1.0;
+    const float bias = 0.025;
+
+    vec3 frag_pos = texture(gPositions, uv).xyz;
+    vec3 normals = texture(gNormals, uv).xyz;
+    vec3 ran_vec = texture(ssaoNoise, uv * noiseScale).xyz;
+
+    vec3 tangent = normalize(ran_vec - normals * dot(ran_vec, normals));
+    vec3 bitangent = cross(normals, tangent);
+    mat3 TBN = mat3(tangent, bitangent, normals);
+
+    vec2 kernelSize2 = textureSize(ssaoKernel, 0);
+    int kernelSize = int(kernelSize2.x) * int(kernelSize2.y);
+
+    float occlusion = 0.0;
+    for (int i = 0; i < kernelSize; i++) {
+        vec3 sampler = TBN * texelFetch(ssaoKernel, ivec2(i % int(kernelSize2.x), i / int(kernelSize2.y)), 0).rgb;
+        sampler = frag_pos + sampler * radius;
+
+        vec4 offset = vec4(sampler, 1.0);
+        offset = projection_matrix * offset;
+        offset.xyz /= offset.w;
+        offset.xyz = offset.xyz * 0.5 + 0.5;
+
+        float depth = texture(gPositions, offset.xy).z;
+        float rangeCheck = smoothstep(0.0, 5.0, radius / abs(frag_pos.z - depth));
+        occlusion += (depth >= sampler.z + bias ? 1.0 : 0.0) * rangeCheck;
+    }
+
+    occlusion = 1.0 - (occlusion / kernelSize);
+    imageStore(img_output, id, vec4(vec3(occlusion), 1.0));
+}

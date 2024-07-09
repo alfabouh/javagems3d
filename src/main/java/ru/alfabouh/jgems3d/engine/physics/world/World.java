@@ -6,7 +6,7 @@ import org.bytedeco.bullet.BulletCollision.btGhostObject;
 import org.bytedeco.bullet.BulletDynamics.btDynamicsWorld;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graph.Graph;
+import ru.alfabouh.jgems3d.engine.sysgraph.Graph;
 import ru.alfabouh.jgems3d.engine.inventory.IHasInventory;
 import ru.alfabouh.jgems3d.engine.physics.jb_objects.JBulletEntity;
 import ru.alfabouh.jgems3d.engine.physics.liquids.ILiquid;

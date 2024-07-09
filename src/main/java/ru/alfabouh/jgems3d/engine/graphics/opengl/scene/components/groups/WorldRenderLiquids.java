@@ -3,7 +3,7 @@ package ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.groups;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.frustum.ICullable;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsScene;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.RenderGroup;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.base.SceneRenderBase;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.items.LiquidObject;
@@ -13,7 +13,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class WorldRenderLiquids extends SceneRenderBase {
-    public WorldRenderLiquids(JGemsSceneRender sceneRenderConveyor) {
+    public WorldRenderLiquids(JGemsOpenGLRenderer sceneRenderConveyor) {
         super(10, sceneRenderConveyor, new RenderGroup("LIQUIDS_DEFERRED"));
     }
 

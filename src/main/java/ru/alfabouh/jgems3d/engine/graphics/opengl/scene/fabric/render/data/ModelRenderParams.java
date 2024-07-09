@@ -1,8 +1,6 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 @SuppressWarnings("all")

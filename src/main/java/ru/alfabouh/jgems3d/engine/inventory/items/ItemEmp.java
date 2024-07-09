@@ -5,7 +5,7 @@ import ru.alfabouh.jgems3d.engine.audio.sound.GameSound;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
-import ru.alfabouh.jgems3d.engine.system.map.legacy.Map01;
+import ru.alfabouh.jgems3d.engine.system.map.loaders.custom.Map01;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class ItemEmp extends InventoryItem {

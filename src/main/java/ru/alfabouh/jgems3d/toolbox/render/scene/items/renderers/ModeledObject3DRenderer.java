@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.items.renderers;
 
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.map_sys.save.objects.MapProperties;
 import ru.alfabouh.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 import ru.alfabouh.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;

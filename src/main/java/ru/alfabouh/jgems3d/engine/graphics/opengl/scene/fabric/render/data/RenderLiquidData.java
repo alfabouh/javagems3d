@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data;
 
 import org.jetbrains.annotations.NotNull;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.CubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.textures.CubeMapProgram;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;

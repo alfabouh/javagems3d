@@ -2,14 +2,10 @@ package ru.alfabouh.jgems3d.toolbox.resources.shaders;
 
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.Shader;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShaderResources extends ShadersLoader {
     public TBoxShaderManager world_isometric_object;
@@ -30,6 +26,6 @@ public class ShaderResources extends ShadersLoader {
 
     @Override
     public ShaderManager createShaderObject(String shader, int types) {
-        return new TBoxShaderManager(new ShaderGroup(shader, types));
+        return new TBoxShaderManager(new ShaderContainer(shader, types));
     }
 }

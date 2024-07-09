@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.system.map;
 
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.math.Pair;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.map_sys.save.objects.MapProperties;
 
 import java.util.ArrayList;
 import java.util.List;

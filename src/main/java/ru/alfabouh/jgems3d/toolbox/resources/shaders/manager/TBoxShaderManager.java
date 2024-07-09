@@ -12,7 +12,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ISam
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
@@ -21,8 +21,8 @@ import ru.alfabouh.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 public final class TBoxShaderManager extends ShaderManager {
     private final TBoxShaderUtils shaderUtils;
 
-    public TBoxShaderManager(ShaderGroup shaderGroup) {
-        super(shaderGroup);
+    public TBoxShaderManager(ShaderContainer shaderContainer) {
+        super(shaderContainer);
         this.shaderUtils = new TBoxShaderUtils();
     }
 
@@ -37,7 +37,7 @@ public final class TBoxShaderManager extends ShaderManager {
     }
 
     public TBoxShaderManager copy() {
-        return new TBoxShaderManager(this.getShaderGroup());
+        return new TBoxShaderManager(this.getShaderContainer());
     }
 
     public TBoxShaderUtils getUtils() {

@@ -20,7 +20,7 @@ import ru.alfabouh.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
-import ru.alfabouh.jgems3d.mapsys.toolbox.TBoxMapSys;
+import ru.alfabouh.jgems3d.toolbox.map_table.TBoxMapTable;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.render.scene.TBoxScene;
@@ -81,7 +81,7 @@ public class TBoxScreen implements IScreen {
         GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
         GLFW.glfwPollEvents();
         this.getResourceManager().loadResources();
-        TBoxMapSys.INSTANCE.init();
+        TBoxMapTable.INSTANCE.init();
     }
 
     public void startScreenRenderProcess() {

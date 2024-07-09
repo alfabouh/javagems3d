@@ -1,12 +1,12 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager;
 
-import org.jetbrains.annotations.NotNull;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.ShaderProgram;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.UniformBufferProgram;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.UniformProgram;
+import org.lwjgl.opengl.GL43;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.CShaderProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.GShaderProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.unifroms.UniformBufferProgram;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.Uniform;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ICached;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
@@ -18,86 +18,171 @@ import java.nio.IntBuffer;
 import java.util.*;
 
 public abstract class ShaderManager implements ICached {
-    private final Map<UniformBufferObject, UniformBufferProgram> uniformBufferProgramMap;
+    private ACT_SHADER activeShader;
     private final Set<UniformBufferObject> uniformBufferObjects;
-    private final ShaderGroup shaderGroup;
-    private ShaderProgram shaderProgram;
-    private UniformProgram uniformProgram;
+    private ShaderGroup graphicShaderGroup;
+    private ShaderGroup computingShaderGroup;
+    private final ShaderContainer shaderContainer;
     private boolean useForGBuffer;
 
-    public ShaderManager(ShaderGroup shaderGroup) {
-        this.shaderGroup = shaderGroup;
-        this.uniformBufferProgramMap = new HashMap<>();
+    public ShaderManager(ShaderContainer shaderContainer) {
         this.uniformBufferObjects = new HashSet<>();
-
+        this.shaderContainer = shaderContainer;
         this.useForGBuffer = false;
+        this.activeShader = ACT_SHADER.NONE;
     }
 
-    public boolean isUseForGBuffer() {
-        return this.useForGBuffer;
-    }
+    public abstract ShaderManager copy();
 
     public ShaderManager setUseForGBuffer(boolean useForGBuffer) {
         this.useForGBuffer = useForGBuffer;
         return this;
     }
 
-    public abstract ShaderManager copy();
+    public ShaderManager addUBOs(UniformBufferObject... uniformBufferObjects) {
+        this.uniformBufferObjects.addAll(Arrays.asList(uniformBufferObjects));
+        return this;
+    }
+
+    public void startProgram() {
+        CShaderProgram cShaderProgram = this.getShaderContainer().getComputeShader() != null ? new CShaderProgram() : null;
+        this.initShaders(this.getShaderContainer(), new GShaderProgram(), cShaderProgram);
+    }
+
+    public void destroyProgram() {
+        if (this.getComputingShaderGroup() != null) {
+            this.getComputingShaderGroup().clean();
+        }
+        if (this.getGraphicShaderGroup() != null) {
+            this.getGraphicShaderGroup().clean();
+        }
+        this.getShaderContainer().clean();
+    }
+
+    public void dispatchComputeShader(int grX, int grY, int grZ, int barrier) {
+        if (this.getShaderContainer().getComputeShader() == null) {
+            SystemLogging.get().getLogManager().warn("[" + this + "]" + " doesn't have compute program!");
+            return;
+        }
+        GL43.glDispatchCompute(grX, grY, grZ);
+        if (barrier > 0) {
+            GL43.glMemoryBarrier(barrier);
+        }
+    }
+
+    public void startComputing() {
+        this.getComputingShaderGroup().getShaderProgram().bind();
+        this.activeShader = ACT_SHADER.COMPUTE;
+    }
+
+    public void endComputing() {
+        this.getComputingShaderGroup().getShaderProgram().unbind();
+        this.activeShader = ACT_SHADER.NONE;
+    }
+
+    public void bind() {
+        this.getGraphicShaderGroup().getShaderProgram().bind();
+        this.activeShader = ACT_SHADER.GRAPHICAL;
+    }
+
+    public void unBind() {
+        this.getGraphicShaderGroup().getShaderProgram().unbind();
+        this.activeShader = ACT_SHADER.NONE;
+    }
+
+    public UniformBufferProgram getUniformBufferProgram(UniformBufferObject uniform) {
+        switch (this.activeShader) {
+            case COMPUTE: {
+                return this.getComputingShaderGroup().getUniformBufferProgram(uniform);
+            }
+            case GRAPHICAL: {
+                return this.getGraphicShaderGroup().getUniformBufferProgram(uniform);
+            }
+            case NONE:
+            default: {
+                SystemLogging.get().getLogManager().error("Couldn't operate with ShaderManager: " + this);
+            }
+        }
+        return null;
+    }
 
     public boolean checkUniformInGroup(String uniform) {
-        for (Uniform u : this.getShaderGroup().getUniformsFullSet()) {
-            if (u.getId().equals(uniform)) {
-                return true;
+        switch (this.activeShader) {
+            case COMPUTE: {
+                return this.getComputingShaderGroup().checkUniformInProgram(uniform);
+            }
+            case GRAPHICAL: {
+                return this.getGraphicShaderGroup().checkUniformInProgram(uniform);
+            }
+            case NONE:
+            default: {
+                SystemLogging.get().getLogManager().error("Couldn't operate with ShaderManager: " + this);
             }
         }
         return false;
     }
 
-    public ShaderManager addUBOs(UniformBufferObject... uniformBufferObjects) {
-        this.getUniformBufferObjects().addAll(Arrays.asList(uniformBufferObjects));
-        return this;
-    }
-
-    public void startProgram() {
-        this.initShaders(new ShaderProgram());
-    }
-
-    public void destroyProgram() {
-        if (this.shaderProgram != null) {
-            this.shaderProgram.clean();
+    public boolean setUniform(String uniform, Object o) {
+        switch (this.activeShader) {
+            case COMPUTE: {
+                return this.getComputingShaderGroup().getUniformProgram().setUniform(uniform, o);
+            }
+            case GRAPHICAL: {
+                return this.getGraphicShaderGroup().getUniformProgram().setUniform(uniform, o);
+            }
+            case NONE:
+            default: {
+                SystemLogging.get().getLogManager().error("Couldn't operate with ShaderManager: " + this);
+            }
         }
-    }
-
-    public void bind() {
-        this.getShaderProgram().bind();
-    }
-
-    public void unBind() {
-        this.getShaderProgram().unbind();
-    }
-
-    public UniformBufferProgram getUniformBufferProgram(@NotNull UniformBufferObject uniformBufferObject) {
-        UniformBufferProgram uniformBufferProgram = this.uniformBufferProgramMap.get(uniformBufferObject);
-        if (uniformBufferProgram == null) {
-            SystemLogging.get().getLogManager().warn("[" + this.getShaderGroup().getId() + "] Unknown UBO " + uniformBufferObject);
-        }
-        return uniformBufferProgram;
+        return false;
     }
 
     public void performUniform(String uniform, String postfix, int arrayPos, Object o) {
         if (o == null) {
-            SystemLogging.get().getLogManager().error("[" + this.getShaderGroup().getId() + "] NULL uniform " + uniform);
+            SystemLogging.get().getLogManager().error("[" + this + "] NULL uniform " + uniform);
             return;
         }
         if (!this.checkUniformInGroup(uniform)) {
-            SystemLogging.get().getLogManager().warn("[" + this.getShaderGroup().getId() + "] Unknown uniform " + uniform);
+            SystemLogging.get().getLogManager().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
         if (arrayPos >= 0) {
             uniform += "[" + arrayPos + "]" + postfix;
         }
-        if (!this.getUniformProgram().setUniform(uniform, o)) {
-            SystemLogging.get().getLogManager().warn("[" + this.getShaderGroup().getId() + "] Wrong arguments! U: " + uniform);
+        if (!this.setUniform(uniform, o)) {
+            SystemLogging.get().getLogManager().warn("[" + this + "] Wrong arguments! U: " + uniform);
+        }
+    }
+
+    private void initShaders(ShaderContainer shaderContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {
+        boolean flag = false;
+        if (gShaderProgram != null) {
+            this.graphicShaderGroup = new ShaderGroup(this.getShaderContainer().getId());
+            if (gShaderProgram.createShader(this.getShaderContainer().getFragmentShader(), this.getShaderContainer().getVertexShader(), this.getShaderContainer().getGeometricShader())) {
+                if (gShaderProgram.link()) {
+                    SystemLogging.get().getLogManager().log("G-Shader " + this + " successfully linked");
+                } else {
+                    throw new JGemsException("Found problems in g-shader " + this);
+                }
+                flag = true;
+            }
+            this.getGraphicShaderGroup().initShaderGroup(gShaderProgram, shaderContainer.getGUniformsFullSet(), this.uniformBufferObjects);
+        }
+        if (cShaderProgram != null) {
+            this.computingShaderGroup = new ShaderGroup(this.getShaderContainer().getId());
+            if (cShaderProgram.createShader(this.getShaderContainer().getComputeShader())) {
+                if (cShaderProgram.link()) {
+                    SystemLogging.get().getLogManager().log("C-Shader " + this + " successfully linked");
+                } else {
+                    throw new JGemsException("Found problems in c-shader " + this);
+                }
+                flag = true;
+            }
+            this.getComputingShaderGroup().initShaderGroup(cShaderProgram, shaderContainer.getCUniformsFullSet(), this.uniformBufferObjects);
+        }
+        if (!flag) {
+            throw new JGemsException("Wrong ShaderManager passed in system!");
         }
     }
 
@@ -149,8 +234,8 @@ public abstract class ShaderManager implements ICached {
         this.performUniformBuffer(uniform, 0, data);
     }
 
-    public void performUniformBuffer(UniformBufferObject uniformBufferObject, int offset, ByteBuffer data) {
-        UniformBufferProgram uniformBufferProgram = this.getUniformBufferProgram(uniformBufferObject);
+    public void performUniformBuffer(UniformBufferObject uniform, int offset, ByteBuffer data) {
+        UniformBufferProgram uniformBufferProgram = this.getUniformBufferProgram(uniform);
         if (uniformBufferProgram != null) {
             uniformBufferProgram.setUniformBufferData(offset, data);
         }
@@ -177,79 +262,34 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    private void initShaders(ShaderProgram shaderProgram) {
-        this.shaderProgram = shaderProgram;
-        this.shaderProgram.createShader(this.getShaderGroup());
-        if (shaderProgram.link()) {
-            SystemLogging.get().getLogManager().log("Shader " + this.getShaderGroup().getId() + " successfully linked");
-        } else {
-            throw new JGemsException("Found problems in shader " + this.getShaderGroup().getId());
-        }
-        this.initUniforms(new UniformProgram(this.shaderProgram.getProgramId()));
+    public boolean isUseForGBuffer() {
+        return this.useForGBuffer;
     }
 
-    @SuppressWarnings("all")
-    private boolean tryCreateUniform(String value) {
-        if (!this.getUniformProgram().createUniform(value)) {
-            SystemLogging.get().getLogManager().warn("[" + this.getShaderGroup().getId() + "] Could not find uniform " + value);
-            return false;
-        }
-        return true;
+    public ShaderGroup getComputingShaderGroup() {
+        return this.computingShaderGroup;
     }
 
-    private void initUniforms(UniformProgram uniformProgram) {
-        this.uniformProgram = uniformProgram;
-        if (this.getShaderGroup().getUniformsFullSet().isEmpty()) {
-            SystemLogging.get().getLogManager().warn("Warning! No Uniforms found in: " + this.getShaderGroup().getId());
-        }
-        for (Uniform uniform : this.getShaderGroup().getUniformsFullSet()) {
-            if (uniform.getArraySize() > 1) {
-                for (int i = 0; i < uniform.getArraySize(); i++) {
-                    if (!uniform.getFields().isEmpty()) {
-                        for (String field : uniform.getFields()) {
-                            this.tryCreateUniform(uniform.getId() + "[" + i + "]." + field);
-                        }
-                    } else {
-                        this.tryCreateUniform(uniform.getId() + "[" + i + "]");
-                    }
-                }
-            } else {
-                this.tryCreateUniform(uniform.getId());
-            }
-        }
-        this.initUniformBuffers();
+    public ShaderGroup getGraphicShaderGroup() {
+        return this.graphicShaderGroup;
     }
 
-    private void initUniformBuffers() {
-        for (UniformBufferObject uniformBufferObject : this.getUniformBufferObjects()) {
-            UniformBufferProgram uniformBufferProgram = new UniformBufferProgram(this.shaderProgram.getProgramId(), uniformBufferObject.getId());
-            if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.getBinding(), uniformBufferObject.getBufferSize())) {
-                SystemLogging.get().getLogManager().log("[" + this.getShaderGroup().getId() + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
-            } else {
-                throw new JGemsException("[" + this.getShaderGroup().getId() + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
-            }
-            this.uniformBufferProgramMap.put(uniformBufferObject, uniformBufferProgram);
-        }
-    }
-
-    public Set<UniformBufferObject> getUniformBufferObjects() {
-        return this.uniformBufferObjects;
-    }
-
-    public ShaderGroup getShaderGroup() {
-        return this.shaderGroup;
-    }
-
-    public ShaderProgram getShaderProgram() {
-        return this.shaderProgram;
-    }
-
-    public UniformProgram getUniformProgram() {
-        return this.uniformProgram;
+    public ShaderContainer getShaderContainer() {
+        return this.shaderContainer;
     }
 
     @Override
     public void onCleaningCache(ResourceCache resourceCache) {
         this.destroyProgram();
     }
+
+    public String toString() {
+        return this.getShaderContainer().getId();
+    }
+
+    private enum ACT_SHADER {
+        COMPUTE,
+        GRAPHICAL,
+        NONE
+    };
 }

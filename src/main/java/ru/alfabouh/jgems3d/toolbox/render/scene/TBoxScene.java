@@ -4,7 +4,7 @@ import javafx.util.Pair;
 import org.joml.*;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.FBOTexture2DProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.fbo.FBOTexture2DProgram;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.ICamera;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.graphics.transformation.TransformationUtils;
@@ -15,16 +15,16 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
-import ru.alfabouh.jgems3d.mapsys.file.read.TBoxReader;
-import ru.alfabouh.jgems3d.mapsys.file.save.TBoxSaver;
-import ru.alfabouh.jgems3d.mapsys.file.save.container.SaveContainer;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.SaveObject;
-import ru.alfabouh.jgems3d.mapsys.toolbox.TBoxMapSys;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.AbstractObjectData;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.ObjectType;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.Attribute;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeIDS;
+import ru.alfabouh.jgems3d.map_sys.read.TBoxMapReader;
+import ru.alfabouh.jgems3d.map_sys.save.TBoxMapSaver;
+import ru.alfabouh.jgems3d.map_sys.save.container.SaveContainer;
+import ru.alfabouh.jgems3d.map_sys.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.map_sys.save.objects.SaveObject;
+import ru.alfabouh.jgems3d.toolbox.map_table.TBoxMapTable;
+import ru.alfabouh.jgems3d.toolbox.map_table.object.AbstractObjectData;
+import ru.alfabouh.jgems3d.toolbox.map_table.object.ObjectType;
+import ru.alfabouh.jgems3d.map_sys.save.objects.object_attributes.Attribute;
+import ru.alfabouh.jgems3d.map_sys.save.objects.object_attributes.AttributeIDS;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.render.scene.camera.TBoxFreeCamera;
 import ru.alfabouh.jgems3d.toolbox.render.scene.container.SceneContainer;
@@ -63,7 +63,7 @@ public class TBoxScene {
     }
 
     public static boolean canRenderOnPreview(String nameId) {
-        AbstractObjectData mapObject = TBoxMapSys.INSTANCE.getObjectTable().getObjects().get(nameId);
+        AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(nameId);
         return mapObject.objectType().equals(ObjectType.PROP_OBJECT) || mapObject.objectType().equals(ObjectType.PHYSICS_OBJECT);
     }
 
@@ -88,7 +88,7 @@ public class TBoxScene {
                 }
             }
             if (file != null) {
-                saveContainer = TBoxReader.readMapFolder(file);
+                saveContainer = TBoxMapReader.readMapFolder(file);
 
                 ToolBox.get().getTBoxSettings().recentPathOpen.setValue(new File(file.toString()).getAbsolutePath());
 
@@ -118,7 +118,7 @@ public class TBoxScene {
                                 saveRot = new Vector3f(saveRot);
                             }
                             Format3D format3D = new Format3D(savePos, saveRot, saveScale);
-                            AbstractObjectData mapObject = TBoxMapSys.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
+                            AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
                             MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
                             TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
                             tBoxModelObject.setAttributeContainer(saveObject.getAttributeContainer());
@@ -163,7 +163,7 @@ public class TBoxScene {
                 }
             }
             if (file != null) {
-                TBoxSaver.saveEditorToJSON(saveContainer, file);
+                TBoxMapSaver.saveEditorToJSON(saveContainer, file);
                 String path = new File(file.toString()).getAbsolutePath();
                 ToolBox.get().getTBoxSettings().recentPathSave.setValue(path);
             }
@@ -233,7 +233,7 @@ public class TBoxScene {
             EditorContent editorContent = (EditorContent) content;
             String s = editorContent.currentSelectedToPlaceID;
             if (s != null && TBoxScene.canRenderOnPreview(s)) {
-                AbstractObjectData mapObject = TBoxMapSys.INSTANCE.getObjectTable().getObjects().get(s);
+                AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(s);
                 TBoxScene.previewItemFbo.bindFBO();
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
                 GL30.glEnable(GL30.GL_DEPTH_TEST);
@@ -300,7 +300,7 @@ public class TBoxScene {
     }
 
     public void placeObjectFromGUI(EditorContent editorContent, String nameId) {
-        AbstractObjectData mapObject = TBoxMapSys.INSTANCE.getObjectTable().getObjects().get(nameId);
+        AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(nameId);
         MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
         Vector3f camRot = this.getCamera().getCamRotation();
         Vector3f camPos = this.getCamera().getCamPosition();

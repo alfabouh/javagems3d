@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.physics.objects.entities.enemies.ai;
 
 import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.graph.Graph;
+import ru.alfabouh.jgems3d.engine.sysgraph.Graph;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
 import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
