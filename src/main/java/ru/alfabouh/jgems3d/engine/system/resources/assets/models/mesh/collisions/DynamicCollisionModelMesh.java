@@ -28,6 +28,7 @@ public class DynamicCollisionModelMesh {
             }
         }
         btConvexHullShape.optimizeConvexHull();
+        btConvexHullShape.setMargin(0.01f);
         this.btCollisionShape = btConvexHullShape;
     }
 

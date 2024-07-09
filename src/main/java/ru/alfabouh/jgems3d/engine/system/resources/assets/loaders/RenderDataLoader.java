@@ -54,7 +54,7 @@ public class RenderDataLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        JGems.get().getScreen().addLineInLoadingScreen("Loading render data...");
+        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading render data...");
         this.inventoryItemRenderTable.addItem(ItemZippo.class, new RenderInventoryItemData(JGemsResourceManager.globalShaderAssets.inventory_zippo, new InventoryZippoObject(), JGemsResourceManager.renderAssets.zippo_inventory));
         this.inventoryItemRenderTable.addItem(ItemEmp.class, new RenderInventoryItemData(JGemsResourceManager.globalShaderAssets.inventory_common_item, new InventoryEmpObject(), JGemsResourceManager.renderAssets.emp_inventory));
         this.inventoryItemRenderTable.addItem(ItemCrowbar.class, new RenderInventoryItemData(JGemsResourceManager.globalShaderAssets.inventory_common_item, new InventoryCommonItemObject(JGemsResourceManager.renderAssets.crowbar), JGemsResourceManager.renderAssets.crowbar_inventory));
@@ -150,7 +150,7 @@ public class RenderDataLoader implements IAssetsLoader {
 
         this.particleFlame = new RenderParticleD2Data(new RenderObject(), ParticleObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer, JGemsResourceManager.renderAssets.particleTexturePack, true);
 
-        JGems.get().getScreen().addLineInLoadingScreen("Render data successfully loaded...");
+        JGems.get().getScreen().tryAddLineInLoadingScreen("Render data successfully loaded...");
     }
 
     @Override

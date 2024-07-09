@@ -1,5 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.manager.objects;
 
+import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
@@ -29,6 +30,7 @@ public class GameResources {
     }
 
     public MeshDataGroup createMesh(String modelPath) {
+        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading model: " + modelPath);
         return ModelLoader.createMesh(this, modelPath);
     }
 
@@ -37,6 +39,7 @@ public class GameResources {
     }
 
     public TextureSample createTexture(String path, boolean interpolate, int wrapping) {
+        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
         return TextureSample.createTexture(this.getResourceCache(), path, interpolate, wrapping);
     }
 

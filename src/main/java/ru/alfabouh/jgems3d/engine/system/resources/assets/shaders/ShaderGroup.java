@@ -69,7 +69,7 @@ public class ShaderGroup {
             if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.getBinding(), uniformBufferObject.getBufferSize())) {
                 SystemLogging.get().getLogManager().log("[" + this.id + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             } else {
-                SystemLogging.get().getLogManager().error("[" + this.id + "] Couldn't link" + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
+                SystemLogging.get().getLogManager().error("[" + this.id + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             }
             this.uniformBufferProgramMap.put(uniformBufferObject, uniformBufferProgram);
         }

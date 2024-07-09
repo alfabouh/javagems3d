@@ -93,7 +93,7 @@ public class ModelLoader {
     private static MeshDataGroup loadMesh(GameResources gameResources, String modelPath) {
         SystemLogging.get().getLogManager().log("Loading model " + modelPath);
 
-        final int FLAGS = Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
+        final int FLAGS = Assimp.aiProcess_ImproveCacheLocality | Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_PreTransformVertices;
         MeshDataGroup meshDataGroup = new MeshDataGroup();
 
         if (JGems.seekInJar(modelPath)) {
@@ -102,6 +102,7 @@ public class ModelLoader {
                     if (scene != null) {
                         int totalMaterials = scene.mNumMaterials();
                         List<Material> materialList = new ArrayList<>();
+                        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading model materials...");
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
                                 materialList.add(ModelLoader.readMaterial(gameResources, aiMaterial, JGems.normalizeURL((Paths.get(modelPath)).getParent().toString()) + "/"));

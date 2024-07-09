@@ -42,7 +42,7 @@ public class SettingsPanel extends AbstractPanelUI {
                 .setOnClick(() -> {
                     JGems.get().getGameSettings().saveOptions();
                     JGems.get().getScreen().showGameLoadingScreen();
-                    JGems.get().getScreen().addLineInLoadingScreen("Performing settings...");
+                    JGems.get().getScreen().tryAddLineInLoadingScreen("Performing settings...");
                     JGems.get().getResourceManager().recreateTexturesInAllCaches();
                     JGems.get().getScreen().reloadSceneAndShadowsFrameBufferObjects();
                     JGems.get().getScreen().checkScreenMode();

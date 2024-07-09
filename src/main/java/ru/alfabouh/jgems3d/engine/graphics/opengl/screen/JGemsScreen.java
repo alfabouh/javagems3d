@@ -51,12 +51,13 @@ public class JGemsScreen implements IScreen {
         this.renderTicks = 0.0f;
     }
 
-    public void addLineInLoadingScreen(String s) {
+    @SuppressWarnings("all")
+    public boolean tryAddLineInLoadingScreen(String s) {
         if (this.loadingScreen == null) {
-            SystemLogging.get().getLogManager().warn("Loading screen is NULL");
-            return;
+            return false;
         }
         this.loadingScreen.addText(s);
+        return true;
     }
 
     public void buildScreen() {
@@ -71,7 +72,6 @@ public class JGemsScreen implements IScreen {
             JGemsResourceManager.createShaders();
 
             this.showGameLoadingScreen();
-            this.addLineInLoadingScreen("Drawing scene...");
             this.setScreenCallbacks();
             this.createObjects(this.getWindow());
 
@@ -317,7 +317,6 @@ public class JGemsScreen implements IScreen {
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(EngineSystem.ENG_NAME + " : " + EngineSystem.ENG_VER);
-            this.lines.add("...");
             this.lines.add("System01...");
             this.lines.add("...");
         }
@@ -338,6 +337,10 @@ public class JGemsScreen implements IScreen {
 
         private void addText(String s) {
             this.lines.add(s);
+            int max = Math.max(((JGemsScreen.this.getWindowDimensions().y - 135) / 45), 4);
+            if (this.lines.size() > max) {
+                this.lines.remove(3);
+            }
             this.updateScreen();
         }
 

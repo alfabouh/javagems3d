@@ -59,7 +59,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
     public TextureSample[] emp = new TextureSample[6];
 
     public void load(GameResources gameResources) {
-        JGems.get().getScreen().addLineInLoadingScreen("Loading samples...");
+        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading textures...");
         Font gameFont = JGemsResourceManager.createFontFromJAR("gamefont.ttf");
         this.standardFont2 = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);
         this.standardFont = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
@@ -105,7 +105,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
         this.skyboxCubeMap = this.createSkyBoxCubeMap("skyDay", ".png");
         this.skyboxCubeMap2 = this.createSkyBoxCubeMap("skyNight", ".bmp");
 
-        JGems.get().getScreen().addLineInLoadingScreen("Textures successfully loaded...");
+        JGems.get().getScreen().tryAddLineInLoadingScreen("Textures successfully loaded...");
     }
 
     private CubeMapProgram createSkyBoxCubeMap(String skyName, String format) {
