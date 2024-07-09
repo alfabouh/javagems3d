@@ -78,7 +78,6 @@ void main()
     float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
     float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
     float f1 = pow(AO, (1.25 - gray) * 3.);
-
     vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
 
     frag_color = mix(g_texture, metallic, 0.5) * (lights + emission);

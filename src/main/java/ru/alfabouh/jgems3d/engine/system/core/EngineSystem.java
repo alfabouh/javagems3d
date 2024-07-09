@@ -88,7 +88,7 @@ public class EngineSystem implements IEngine {
             return;
         }
         JGems.get().getScreen().showGameLoadingScreen();
-        JGems.get().getScreen().addLineInLoadingScreen("Loading Map...");
+        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading Map...");
         this.startWorlds();
         SystemLogging.get().getLogManager().log("Loading map " + this.currentMapName());
         World world = JGems.get().getPhysicThreadManager().getPhysicsTimer().getWorld();

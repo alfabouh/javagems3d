@@ -286,6 +286,9 @@ public class DIMGuiRenderJGems {
             ImGui.sameLine();
             ImGui.image(sceneRender.getShadowScene().getShadowFBO().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
+            ImGui.image(sceneRender.getFboBlur().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            ImGui.sameLine();
+
             if (sceneRender.getSsaoBufferTexture() != null) {
                 ImGui.image(sceneRender.getSsaoBuffer().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             }

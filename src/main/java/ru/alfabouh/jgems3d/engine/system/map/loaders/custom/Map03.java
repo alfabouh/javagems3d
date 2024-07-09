@@ -37,7 +37,7 @@ public class Map03 implements IMapLoader {
     @Override
     public MapInfo getLevelInfo() {
         SkyProp skyProp = new SkyProp();
-        skyProp.setSunPos(new Vector3f(0.8f, 1.0f, 0.3f));
+        skyProp.setSunPos(new Vector3f(0.35f, 1.0f, 0.125f));
         return new MapInfo(new MapProperties("default", skyProp, new FogProp()));
     }
 }

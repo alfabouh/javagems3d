@@ -75,7 +75,7 @@ public class ShadersAssetsLoader extends ShadersLoader {
 
         this.skybox = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/skybox", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBOs(this.SunLight);
 
-        this.world_ssao = this.createShaderManager(resourceCache, "jgems/shaders/world_ssao", Shader.ShaderType.COMPUTE_BIT);
+        this.world_ssao = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/world_ssao", Shader.ShaderType.COMPUTE_BIT);
 
         this.world_gbuffer = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/world_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).setUseForGBuffer(true);
         this.world_deferred = this.<JGemsShaderManager>createShaderManager(resourceCache, "jgems/shaders/world_deferred", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT).addUBOs(this.SunLight, this.PointLights, this.Fog);

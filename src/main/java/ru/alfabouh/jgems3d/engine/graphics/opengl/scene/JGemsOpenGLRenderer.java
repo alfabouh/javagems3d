@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.LightManager;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.textures.TextureProgram;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
 import ru.alfabouh.jgems3d.engine.physics.liquids.ILiquid;
@@ -588,8 +589,20 @@ public class JGemsOpenGLRenderer {
         int startBinding = 1;
         int steps = 6;
 
+        // this.getFboBlur().bindFBO();
+        // JGemsShaderManager jGemsShaderManager = JGemsResourceManager.globalShaderAssets.blur_box;
+        // jGemsShaderManager.bind();
+        // jGemsShaderManager.performUniform("blur", 3.0f);
+        // jGemsShaderManager.performUniform("texture_sampler", 0);
+        // jGemsShaderManager.getUtils().performOrthographicMatrix(model);
+        // GL30.glActiveTexture(GL30.GL_TEXTURE0);
+        // startFbo.bindTexture(1);
+        // JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        // jGemsShaderManager.unBind();
+        // this.getFboBlur().unBindFBO();
+
         this.getBlurShader().bind();
-        this.getBlurShader().performUniform("resolution", new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y));
+        this.getBlurShader().performUniform("resolution", new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y).div(6.0f));
         for (int i = 0; i < steps; i++) {
             this.getFboBlur().bindFBO();
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
