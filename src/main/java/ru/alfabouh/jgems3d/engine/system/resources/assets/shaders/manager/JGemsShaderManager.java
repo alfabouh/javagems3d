@@ -9,7 +9,7 @@ import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.shadow.PointLightS
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsScene;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.ModelRenderParams;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.CubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.textures.CubeMapProgram;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.graphics.transformation.Transformation;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.Material;
@@ -19,15 +19,15 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ISam
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public final class JGemsShaderManager extends ShaderManager {
     private final JGemsShaderUtils shaderUtils;
 
-    public JGemsShaderManager(ShaderGroup shaderGroup) {
-        super(shaderGroup);
+    public JGemsShaderManager(ShaderContainer shaderContainer) {
+        super(shaderContainer);
         this.shaderUtils = new JGemsShaderUtils();
     }
 
@@ -42,7 +42,7 @@ public final class JGemsShaderManager extends ShaderManager {
     }
 
     public JGemsShaderManager copy() {
-        return new JGemsShaderManager(this.getShaderGroup());
+        return new JGemsShaderManager(this.getShaderContainer());
     }
 
     public JGemsShaderUtils getUtils() {
@@ -69,7 +69,7 @@ public final class JGemsShaderManager extends ShaderManager {
                 return;
             }
 
-            //TBoxShaderManager.this.performUniformNoWarn("show_cascades", JGemsSceneRender.CURRENT_DEBUG_MODE);
+            //TBoxShaderManager.this.performUniformNoWarn("show_cascades", JGemsOpenGLRenderer.CURRENT_DEBUG_MODE);
 
             ISample diffuse = material.getDiffuse();
             IImageSample emissive = material.getEmissive();
@@ -138,9 +138,9 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performShadowsInfo() {
+            int startCode = 7;
             JGemsScene scene = JGems.get().getScreen().getScene();
             for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
-                int startCode = 6;
                 CascadeShadow cascadeShadow = scene.getSceneRender().getShadowScene().getCascadeShadows().get(i);
                 JGemsScene.activeGlTexture(startCode + i);
                 scene.getSceneRender().getShadowScene().getShadowPostFBO().bindTexture(i);
@@ -150,7 +150,7 @@ public final class JGemsShaderManager extends ShaderManager {
             }
             for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRender().getShadowScene().getPointLightShadows().get(i);
-                final int code = 9 + i;
+                final int code = (startCode + 3) + i;
                 JGemsScene.activeGlTexture(code);
                 pointLightShadow.getPointLightCubeMap().bindCubeMap();
                 JGemsShaderManager.this.performUniformNoWarn("far_plane", pointLightShadow.farPlane());

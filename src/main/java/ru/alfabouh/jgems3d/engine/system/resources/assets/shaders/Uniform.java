@@ -29,4 +29,25 @@ public class Uniform {
     public int getArraySize() {
         return this.arraySize;
     }
+
+    @Override
+    public String toString() {
+        return this.getId();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        return obj.hashCode() == this.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
 }

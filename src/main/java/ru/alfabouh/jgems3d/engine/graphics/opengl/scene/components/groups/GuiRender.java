@@ -2,12 +2,12 @@ package ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.groups;
 
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.RenderGroup;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.base.SceneRenderBase;
 
 public class GuiRender extends SceneRenderBase {
-    public GuiRender(JGemsSceneRender sceneRenderConveyor) {
+    public GuiRender(JGemsOpenGLRenderer sceneRenderConveyor) {
         super(3, sceneRenderConveyor, new RenderGroup("GUI"));
     }
 

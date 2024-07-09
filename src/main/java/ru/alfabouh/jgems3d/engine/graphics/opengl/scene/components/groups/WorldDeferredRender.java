@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.groups;
 
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.RenderGroup;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.base.SceneRenderBase;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.IModeledSceneObject;
@@ -8,7 +8,7 @@ import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.IModeledSceneObj
 import java.util.List;
 
 public class WorldDeferredRender extends SceneRenderBase {
-    public WorldDeferredRender(JGemsSceneRender sceneRenderConveyor) {
+    public WorldDeferredRender(JGemsOpenGLRenderer sceneRenderConveyor) {
         super(1, sceneRenderConveyor, new RenderGroup("WORLD_DEFERRED"));
     }
 

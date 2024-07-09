@@ -15,13 +15,13 @@ import ru.alfabouh.jgems3d.engine.math.Pair;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.FreeCamera;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
-import ru.alfabouh.jgems3d.mapsys.toolbox.TBoxMapSys;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.ObjectTable;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.ObjectType;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.Attribute;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeContainer;
-import ru.alfabouh.jgems3d.mapsys.toolbox.table.object.attributes.AttributeFlag;
+import ru.alfabouh.jgems3d.map_sys.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.toolbox.map_table.TBoxMapTable;
+import ru.alfabouh.jgems3d.toolbox.map_table.ObjectsTable;
+import ru.alfabouh.jgems3d.toolbox.map_table.object.ObjectType;
+import ru.alfabouh.jgems3d.map_sys.save.objects.object_attributes.Attribute;
+import ru.alfabouh.jgems3d.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.alfabouh.jgems3d.map_sys.save.objects.object_attributes.AttributeFlag;
 import ru.alfabouh.jgems3d.toolbox.ToolBox;
 import ru.alfabouh.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.alfabouh.jgems3d.toolbox.controller.binding.TBoxBindingManager;
@@ -98,7 +98,7 @@ public class EditorContent implements ImGuiContent {
         if (ImGui.collapsingHeader("Create Object", ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.columns(2, "SEdit", true);
 
-            ObjectTable boxMapSys = TBoxMapSys.INSTANCE.getObjectTable();
+            ObjectsTable boxMapSys = TBoxMapTable.INSTANCE.getObjectTable();
 
             List<Pair<String, String[]>> set = new ArrayList<>();
             for (ObjectType objectType : ObjectType.values()) {

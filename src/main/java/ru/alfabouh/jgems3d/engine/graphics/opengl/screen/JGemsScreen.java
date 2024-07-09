@@ -179,8 +179,8 @@ public class JGemsScreen implements IScreen {
     }
 
     public void reloadSceneAndShadowsFrameBufferObjects() {
-        this.getScene().getSceneRender().createFBOs(this.getWindowDimensions());
-        this.getScene().getSceneRender().getShadowScene().createFBO();
+        this.getScene().getSceneRender().createResources(this.getWindowDimensions());
+        this.getScene().getSceneRender().getShadowScene().createResources();
     }
 
     public void showGameLoadingScreen() {

@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.elements.base.font.FontCode;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.elements.base.font.GuiFont;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.CubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.textures.CubeMapProgram;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.materials.samples.ParticleTexturePack;

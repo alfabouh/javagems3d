@@ -1,7 +1,7 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.groups;
 
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.RenderGroup;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.components.base.SceneRenderBase;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.IModeledSceneObject;
@@ -13,7 +13,7 @@ import java.util.List;
 public class WorldTransparentRender extends SceneRenderBase {
     public static List<IModeledSceneObject> transparentRenderObjects;
 
-    public WorldTransparentRender(JGemsSceneRender sceneRenderConveyor) {
+    public WorldTransparentRender(JGemsOpenGLRenderer sceneRenderConveyor) {
         super(99, sceneRenderConveyor, new RenderGroup("WORLD_TRANSPARENT"));
         WorldTransparentRender.transparentRenderObjects = new ArrayList<>();
     }

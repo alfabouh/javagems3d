@@ -6,10 +6,6 @@ import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public abstract class ShadersLoader {
-    public UniformBufferObject createUBO(String id, int binding, int bSize) {
-        return new UniformBufferObject(id, binding, bSize);
-    }
-
     protected abstract void initObjects(ResourceCache resourceCache);
     protected abstract ShaderManager createShaderObject(String shader, int types);
 
@@ -32,14 +28,22 @@ public abstract class ShadersLoader {
         }
     }
 
-    public void destroyShaders(ResourceCache resourceCache) {
-        SystemLogging.get().getLogManager().log("Destroying shaders!");
+    public UniformBufferObject createUBO(String id, int binding, int bSize) {
+        return new UniformBufferObject(id, binding, bSize);
+    }
+
+    public void cleanShaders(ResourceCache resourceCache) {
         resourceCache.cleanGroupInCache(ShaderManager.class);
+    }
+
+    public void destroyShaderPrograms(ResourceCache resourceCache) {
+        SystemLogging.get().getLogManager().log("Destroying shaders!");
+        resourceCache.getAllCachedObjectsCollection(ShaderManager.class).forEach(ShaderManager::destroyProgram);
     }
 
     public void initShaders(ResourceCache resourceCache) {
         for (ShaderManager shaderManager : resourceCache.getAllCachedObjectsCollection(ShaderManager.class)) {
-            shaderManager.getShaderGroup().initAll();
+            shaderManager.getShaderContainer().initAll();
         }
     }
 
@@ -50,7 +54,8 @@ public abstract class ShadersLoader {
     }
 
     public void reloadShaders(ResourceCache resourceCache) {
-        this.destroyShaders(resourceCache);
-        this.createShaders(resourceCache);
+        this.destroyShaderPrograms(resourceCache);
+        this.initShaders(resourceCache);
+        this.startShaders(resourceCache);
     }
 }

@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.PointLight;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.FBOCubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.fbo.FBOCubeMapProgram;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.graphics.transformation.Transformation;
 

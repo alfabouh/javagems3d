@@ -9,16 +9,16 @@ import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.GamePlayPanel;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.CubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.textures.CubeMapProgram;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
-import ru.alfabouh.jgems3d.engine.system.map.legacy.loader.IMapLoader;
+import ru.alfabouh.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.proxy.LocalPlayer;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 import ru.alfabouh.jgems3d.logger.managers.JGemsLogging;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.FogProp;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.SkyProp;
+import ru.alfabouh.jgems3d.map_sys.save.objects.map_prop.FogProp;
+import ru.alfabouh.jgems3d.map_sys.save.objects.map_prop.SkyProp;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -133,6 +133,8 @@ public class EngineSystem implements IEngine {
         JGems.get().getScreen().getControllerDispatcher().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayerSP());
         JGems.get().getScreen().getScene().enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayerSP(), startPos, startRot);
         JGems.get().getScreen().getWindow().setInFocus(true);
+
+        mapLoader.postLoad(world);
         JGems.get().setUIPanel(new GamePlayPanel(null));
         JGems.get().getScreen().removeLoadingScreen();
     }

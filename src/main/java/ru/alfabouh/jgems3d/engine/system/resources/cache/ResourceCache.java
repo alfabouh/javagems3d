@@ -24,10 +24,13 @@ public class ResourceCache {
                 cachedIterator.remove();
             }
         }
-        SystemLogging.get().getLogManager().log("Cleaned cache: " + this + ". Group " + clazz);
+        SystemLogging.get().getLogManager().log("Cleaned cache: " + this + ". Group " + clazz.getName());
     }
 
     public void cleanCache() {
+        if (this.cache.isEmpty()) {
+            return;
+        }
         this.cache.forEach((o, e) -> e.onCleaningCache(this));
         this.cache.clear();
         SystemLogging.get().getLogManager().log("Cleaned cache: " + this);

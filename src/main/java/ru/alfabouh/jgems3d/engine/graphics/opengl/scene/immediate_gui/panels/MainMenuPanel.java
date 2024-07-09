@@ -9,15 +9,15 @@ import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.GameSound;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
 import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicThreadManager;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsSceneRender;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.ImmediateUI;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.base.AbstractPanelUI;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.base.PanelUI;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.FBOTexture2DProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.fbo.FBOTexture2DProgram;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window;
-import ru.alfabouh.jgems3d.engine.system.map.current.MapLoaderTBox;
-import ru.alfabouh.jgems3d.engine.system.map.legacy.Map02;
+import ru.alfabouh.jgems3d.engine.system.map.loaders.custom.Map02;
+import ru.alfabouh.jgems3d.engine.system.map.loaders.custom.Map03;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
@@ -84,7 +84,7 @@ public class MainMenuPanel extends AbstractPanelUI {
         JGemsResourceManager.globalShaderAssets.menu_psx.bind();
         JGemsResourceManager.globalShaderAssets.menu_psx.performUniform("w_tick", JGems.get().getScreen().getRenderTicks());
         JGemsResourceManager.globalShaderAssets.menu_psx.performUniform("texture_sampler", 0);
-        JGemsResourceManager.globalShaderAssets.menu_psx.performUniform("offset", JGemsSceneRender.PSX_SCREEN_OFFSET);
+        JGemsResourceManager.globalShaderAssets.menu_psx.performUniform("offset", JGemsOpenGLRenderer.PSX_SCREEN_OFFSET);
         JGemsResourceManager.globalShaderAssets.menu_psx.getUtils().performOrthographicMatrix(model);
 
         GL30.glActiveTexture(GL30.GL_TEXTURE0);
@@ -94,11 +94,24 @@ public class MainMenuPanel extends AbstractPanelUI {
         JGemsResourceManager.globalShaderAssets.menu_psx.unBind();
         model.clean();
 
-        immediateUI.buttonUI(MainMenuPanel.showBlood ? JGems.get().I18n("menu.main.retry") : JGems.get().I18n("menu.main.play"), JGemsResourceManager.renderAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+        immediateUI.buttonUI("Sponza", JGemsResourceManager.renderAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().loadMap(new MapLoaderTBox(MapLoaderTBox.readMapFromJar("default_map")));
+                    //JGems.get().loadMap(new MapLoaderTBox(MapLoaderTBox.readMapFromJar("default_map")));
                     //JGems.get().loadMap(new Map02());
+                    JGems.get().loadMap(new Map03());
                 });
+
+        immediateUI.buttonUI("Map02", JGemsResourceManager.renderAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+                .setOnClick(() -> {
+                    JGems.get().loadMap(new Map02());
+                });
+
+        //immediateUI.buttonUI(MainMenuPanel.showBlood ? JGems.get().I18n("menu.main.retry") : JGems.get().I18n("menu.main.play"), JGemsResourceManager.renderAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+        //        .setOnClick(() -> {
+        //            //JGems.get().loadMap(new MapLoaderTBox(MapLoaderTBox.readMapFromJar("default_map")));
+        //            //JGems.get().loadMap(new Map02());
+        //            JGems.get().loadMap(new Map03());
+        //        });
 
         immediateUI.buttonUI(JGems.get().I18n("menu.main.settings"), JGemsResourceManager.renderAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {

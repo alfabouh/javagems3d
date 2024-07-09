@@ -8,7 +8,7 @@ import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.math.MathHelper;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsScene;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.FBOTexture2DProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.fbo.FBOTexture2DProgram;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.graphics.transformation.Transformation;
@@ -43,7 +43,7 @@ public class ShadowScene {
         this.initCascades();
         this.initPointLightShadows();
 
-        this.createFBO();
+        this.createResources();
     }
 
     private static float qualityMultiplier() {
@@ -51,7 +51,7 @@ public class ShadowScene {
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 
-    public void createFBO() {
+    public void createResources() {
         this.shadowDimensions = new Vector2i((int) (2048 * ShadowScene.qualityMultiplier()));
 
         this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
@@ -230,7 +230,7 @@ public class ShadowScene {
         this.getSunShadowShader().unBind();
 
         Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getShadowDim()), 0);
-        JGemsShaderManager shaderManager = JGemsResourceManager.globalShaderAssets.blur_vsm;
+        JGemsShaderManager shaderManager = JGemsResourceManager.globalShaderAssets.blur_box;
         this.getShadowPostFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
         shaderManager.bind();

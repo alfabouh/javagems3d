@@ -16,6 +16,7 @@ uniform sampler2D shadow_map0;
 uniform sampler2D shadow_map1;
 uniform sampler2D shadow_map2;
 uniform float far_plane;
+uniform bool isSsaoValid;
 
 struct PointLight
 {
@@ -58,6 +59,7 @@ uniform sampler2D gTexture;
 uniform sampler2D gEmission;
 uniform sampler2D gSpecular;
 uniform sampler2D gMetallic;
+uniform sampler2D ssaoSampler;
 
 vec4 calc_sun_light(vec3, vec3, vec3);
 vec4 calc_point_light(PointLight, vec3, vec3, float, float, float, float);
@@ -73,7 +75,13 @@ void main()
     vec4 emission = vec4(texture(gEmission, out_texture).rgb, 0.0) * vec4(5.);
     vec4 metallic = texture(gMetallic, out_texture);
 
-    frag_color = mix(g_texture, metallic, 0.5) * (calc_light(frag_pos, normals) + emission);
+    float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
+    float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
+    float f1 = pow(AO, (1.25 - gray) * 3.);
+
+    vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
+
+    frag_color = mix(g_texture, metallic, 0.5) * (lights + emission);
     frag_color = fogDensity > 0 ? calc_fog(frag_pos.xyz, frag_color) : frag_color;
 
     float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));

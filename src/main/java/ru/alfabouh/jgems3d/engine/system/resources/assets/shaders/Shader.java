@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Shader {
     public static final String VERSION = "#version 460 core\n\n";
@@ -34,28 +36,44 @@ public class Shader {
         this.shaderText = this.fillShader(this.loadStream(shaderName)).toString();
     }
 
+    public void clean() {
+        this.structs.clear();
+        this.uniforms.clear();
+    }
+
     private void loadStructs() {
         try (InputStream inputStream = JGems.loadFileJar("/assets", shaderName + this.getShaderType().getFile())) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             String structName = null;
             Set<String> args = new HashSet<>();
+
+            Pattern structPattern = Pattern.compile("\\s*struct\\s+(\\w+)\\s*\\{?\\s*");
+            Pattern memberPattern = Pattern.compile("\\s*(\\w+)\\s+(\\w+)\\s*;?\\s*");
+
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                String[] subStrings = line.split(" ");
-                if (structName != null && subStrings.length > 1) {
-                    String getSubStr = subStrings[1];
-                    args.add(getSubStr.replace(";", ""));
+
+                Matcher structMatcher = structPattern.matcher(line);
+                if (structMatcher.matches()) {
+                    structName = structMatcher.group(1);
+                    continue;
                 }
-                if (subStrings[0].equals("struct")) {
-                    structName = subStrings[1];
+
+                Matcher memberMatcher = memberPattern.matcher(line);
+                if (structName != null && memberMatcher.matches()) {
+                    String memberType = memberMatcher.group(1);
+                    String memberName = memberMatcher.group(2);
+                    args.add(memberName);
                 }
+
                 if (structName != null && line.contains("}")) {
                     this.structs.put(structName, new HashSet<>(args));
                     structName = null;
                     args.clear();
                 }
             }
+
             reader.close();
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -67,25 +85,36 @@ public class Shader {
         try (InputStream inputStream = JGems.loadFileJar("/assets", shaderName + this.getShaderType().getFile())) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
+
+            Pattern uniformPattern = Pattern.compile("\\s*(?:layout\\s*\\([^)]*\\)\\s*)?uniform\\s+(\\w+)\\s+(\\w+)\\s*(\\[\\s*\\d*\\s*\\])?\\s*;?\\s*");
+
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                String[] subStrings = line.split(" ");
-                if (subStrings.length > 0 && subStrings[0].equals("uniform")) {
-                    String arg = subStrings[2].replace(";", "");
-                    if (arg.contains("[")) {
-                        String name = arg.substring(0, arg.indexOf('['));
-                        String cut = arg.substring(arg.indexOf('[') + 1).replace("]", "");
-                        Uniform uni = new Uniform(name, Integer.parseInt(cut));
-                        Set<String> fields = this.structs.get(subStrings[1]);
-                        if (fields != null) {
-                            uni.getFields().addAll(fields);
-                        }
-                        this.getUniforms().add(uni);
-                    } else {
-                        this.getUniforms().add(new Uniform(subStrings[2].replace(";", ""), 1));
-                    }
-                }
                 shaderSource.append(line).append("\n");
+
+                int uniformIndex = line.indexOf("uniform");
+                if (uniformIndex != -1) {
+                    line = line.substring(uniformIndex);
+                }
+
+                Matcher uniformMatcher = uniformPattern.matcher(line);
+                if (uniformMatcher.matches()) {
+                    String type = uniformMatcher.group(1);
+                    String name = uniformMatcher.group(2);
+                    String arraySize = uniformMatcher.group(3);
+
+                    int size = 1;
+                    if (arraySize != null && !arraySize.isEmpty()) {
+                        size = Integer.parseInt(arraySize.replaceAll("[\\[\\]\\s]", ""));
+                    }
+
+                    Uniform uniform = new Uniform(name, size);
+                    Set<String> fields = this.structs.get(type);
+                    if (fields != null) {
+                        uniform.getFields().addAll(fields);
+                    }
+                    this.getUniforms().add(uniform);
+                }
             }
             reader.close();
         } catch (IOException ex) {
@@ -120,13 +149,15 @@ public class Shader {
     public enum ShaderType {
         FRAGMENT("/fragment.frag", ShaderType.FRAGMENT_BIT),
         VERTEX("/vertex.vert", ShaderType.VERTEX_BIT),
-        GEOMETRIC("/geometric.geom", ShaderType.GEOMETRIC_BIT);
+        GEOMETRIC("/geometric.geom", ShaderType.GEOMETRIC_BIT),
+        COMPUTE("/compute.comp", ShaderType.COMPUTE_BIT);
         public static final int
                 FRAGMENT_BIT = (1 << 2),
                 VERTEX_BIT = (1 << 3),
-                GEOMETRIC_BIT = (1 << 4);
+                GEOMETRIC_BIT = (1 << 4),
+                COMPUTE_BIT = (1 << 5);
 
-        public static final int ALL = FRAGMENT.getBit() | VERTEX.getBit() | GEOMETRIC.getBit();
+        public static final int ALL = FRAGMENT.getBit() | VERTEX.getBit() | GEOMETRIC.getBit() | COMPUTE.getBit();
 
         public final String file;
         private final int flag;

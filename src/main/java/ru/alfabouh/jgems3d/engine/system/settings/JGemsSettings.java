@@ -14,6 +14,7 @@ public class JGemsSettings extends Settings {
     public SettingIntSlots vSync;
     public SettingIntSlots anisotropic;
     public SettingIntSlots fxaa;
+    public SettingIntSlots ssao;
     public SettingIntSlots texturesQuality;
     public SettingIntSlots texturesFiltering;
     public SettingIntSlots bloom;
@@ -28,6 +29,7 @@ public class JGemsSettings extends Settings {
         this.vSync = new SettingIntSlots("vSync", 1, 0, 1);
         this.anisotropic = new SettingIntSlots("anisotropic", 0, 0, 1);
         this.fxaa = new SettingIntSlots("fxaa", 0, 0, 4);
+        this.ssao = new SettingIntSlots("ssao", 0, 0, 3);
         this.texturesQuality = new SettingIntSlots("texturesQuality", 0, 0, 2);
         this.bloom = new SettingIntSlots("bloom", 0, 0, 1);
         this.texturesFiltering = new SettingIntSlots("texturesFiltering", 0, 0, 1);
@@ -65,6 +67,12 @@ public class JGemsSettings extends Settings {
         this.fxaa.addName(3, "8x", false);
         this.fxaa.addName(4, "16x", false);
 
+        this.ssao.addName(0, "settings.off", true);
+        this.ssao.addName(1, "settings.low", false);
+        this.ssao.addName(2, "settings.medium", false);
+        this.ssao.addName(3, "settings.high", false);
+
+        this.addSetting(this.ssao);
         this.addSetting(this.windowMode);
         this.addSetting(this.soundGain);
         this.addSetting(this.shadowQuality);

@@ -45,7 +45,9 @@ public class JGemsBindingManager extends BindingManager {
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 
         this.keyV = new FunctionalKey(e -> {
-            JGemsResourceManager.reloadShaders();
+            if (e == IKeyAction.KeyAction.CLICK) {
+                JGemsResourceManager.reloadShaders();
+            }
         }, GLFW.GLFW_KEY_V);
 
         this.keyEsc = new FunctionalKey(e -> {

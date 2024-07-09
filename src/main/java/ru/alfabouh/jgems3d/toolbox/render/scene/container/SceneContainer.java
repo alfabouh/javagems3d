@@ -1,9 +1,9 @@
 package ru.alfabouh.jgems3d.toolbox.render.scene.container;
 
 import ru.alfabouh.jgems3d.logger.SystemLogging;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.MapProperties;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.FogProp;
-import ru.alfabouh.jgems3d.mapsys.file.save.objects.map_prop.SkyProp;
+import ru.alfabouh.jgems3d.map_sys.save.objects.MapProperties;
+import ru.alfabouh.jgems3d.map_sys.save.objects.map_prop.FogProp;
+import ru.alfabouh.jgems3d.map_sys.save.objects.map_prop.SkyProp;
 import ru.alfabouh.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 
 import java.util.Comparator;
