@@ -1,12 +1,12 @@
 package ru.alfabouh.jgems3d.engine.inventory.items;
 
-import ru.alfabouh.jgems3d.engine.inventory.IHasInventory;
+import ru.alfabouh.jgems3d.engine.inventory.IInventoryOwner;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
 public abstract class InventoryItem {
     private final String name;
-    private IHasInventory itemOwner;
+    private IInventoryOwner itemOwner;
     private String description;
 
     public InventoryItem(String name) {
@@ -29,14 +29,14 @@ public abstract class InventoryItem {
 
     public abstract void onUpdate(IWorld world, boolean isCurrent);
 
-    public void onAddInInventory(IHasInventory hasInventory) {
+    public void onAddInInventory(IInventoryOwner hasInventory) {
         if (this.itemOwner() != null) {
             throw new JGemsException("Item " + this.getName() + " already exists in someone's inventory");
         }
         this.itemOwner = hasInventory;
     }
 
-    protected IHasInventory itemOwner() {
+    protected IInventoryOwner itemOwner() {
         return this.itemOwner;
     }
 

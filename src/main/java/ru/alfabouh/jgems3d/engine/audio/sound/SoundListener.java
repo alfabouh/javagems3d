@@ -14,6 +14,7 @@ public class SoundListener {
             return;
         }
         AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, position.z);
+        SoundManager.checkALonErrors();
         Vector3f at = new Vector3f();
         cameraMatrix.positiveZ(at).negate();
         Vector3f up = new Vector3f();

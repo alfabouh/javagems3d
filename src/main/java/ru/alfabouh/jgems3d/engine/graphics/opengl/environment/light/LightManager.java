@@ -5,8 +5,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.Environment;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 

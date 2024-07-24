@@ -12,15 +12,15 @@ public class Triple<K, V, E> {
         this.value2 = value2;
     }
 
-    public K getKey() {
+    public K getFirst() {
         return this.key;
     }
 
-    public V getValue() {
+    public V getSecond() {
         return this.value;
     }
 
-    public E getValue2() {
+    public E getThird() {
         return this.value2;
     }
 

@@ -3,8 +3,9 @@ package ru.alfabouh.jgems3d.engine.system.controller.dispatcher;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.physics.objects.base.IControllable;
-import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
+import ru.alfabouh.jgems3d.engine.inventory.IInventoryOwner;
+import ru.alfabouh.jgems3d.engine.physics.entities.properties.controller.IControllable;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.JGemsBindingManager;
@@ -13,7 +14,7 @@ import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardControl
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 public class JGemsControllerDispatcher implements IControllerDispatcher {
-    public static final float CAM_SENS = 0.1f;
+    public static final float CAM_SENS = 0.0015f;
     public static MouseKeyboardController mouseKeyboardController = null;
     private IController currentController;
     private IControllable currentControlledItem;
@@ -71,6 +72,9 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
             this.getCurrentController().updateControllerState(window);
             if (!JGems.get().getEngineState().isPaused()) {
                 if (this.getCurrentControlledItem() != null) {
+                    if (window.isInFocus() && this.getCurrentControlledItem() instanceof IInventoryOwner) {
+                        this.getCurrentController().updateItemWithInventory(((IInventoryOwner) this.getCurrentControlledItem()));
+                    }
                     this.performControllerToItem(window, this.getCurrentController(), this.getCurrentControlledItem());
                 }
             }

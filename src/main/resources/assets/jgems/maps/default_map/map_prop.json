@@ -1,1 +1,1 @@
-{"skyProp":{"sunPos":{"x":-0.9,"y":0.8,"z":-0.08},"sunColor":{"x":0.7254901,"y":0.6666666,"z":1.0},"sunBrightness":1.0,"skyBoxName":"default"},"fogProp":{"fogColor":{"x":1.0,"y":1.0,"z":1.0},"fogDensity":0.014,"fogEnabled":true,"skyCoveredByFog":false},"mapName":"default_map"}
+{"skyProp":{"sunPos":{"x":-1.0,"y":0.53,"z":-0.97},"sunColor":{"x":1.0,"y":0.90960205,"z":0.7205882},"sunBrightness":1.0,"skyBoxName":"default"},"fogProp":{"fogColor":{"x":1.0,"y":0.9538639,"z":0.8039216},"fogDensity":0.019,"fogEnabled":true,"skyCoveredByFog":false},"mapName":"default_map"}

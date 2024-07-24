@@ -181,30 +181,9 @@
             <version>3.50</version>
         </dependency>
         <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.14.17</version>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-agent</artifactId>
-            <version>1.14.13</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.30.2-GA</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>bullet-platform</artifactId>
-            <version>3.25-1.5.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>bullet</artifactId>
-            <version>3.25-1.5.10</version>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>Libbulletjme</artifactId>
+            <version>21.2.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.spair</groupId>
@@ -354,6 +333,13 @@
             <id>central</id>
             <name>bintray-plugins</name>
             <url>https://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 </project>

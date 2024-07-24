@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
+import ru.alfabouh.jgems3d.engine.system.JGemsHelper;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -48,41 +49,6 @@ public final class Mesh {
         this.tangentsVbo = 0;
         this.bitangentsVbo = 0;
         this.baked = false;
-    }
-
-    public static int[] reorderIntsArray(List<Integer> list) {
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        int[] a = new int[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            a[i] = list.get(i);
-        }
-        return a;
-    }
-
-    public static float[] reorderFloatsArray(List<Float> list) {
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        float[] a = new float[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            a[i] = list.get(i);
-        }
-        return a;
-    }
-
-    public static float[] reorderFloats3Array(List<Vector3f> list) {
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        float[] a = new float[list.size() * 3];
-        for (int i = 0; i < list.size(); i += 3) {
-            a[i] = list.get(i).x;
-            a[i + 1] = list.get(i).y;
-            a[i + 2] = list.get(i).z;
-        }
-        return a;
     }
 
     public void putPositionValue(float position) {
@@ -157,13 +123,13 @@ public final class Mesh {
         if (this.isBaked()) {
             throw new JGemsException("Tried to bake model, that is already had been baked!");
         }
-        int[] index = Mesh.reorderIntsArray(this.indexes);
+        int[] index = JGemsHelper.convertIntsArray(this.indexes);
 
-        float[] position = Mesh.reorderFloatsArray(this.attributePositions);
-        float[] texCoord = Mesh.reorderFloatsArray(this.attributeTextureCoordinates);
-        float[] normals = Mesh.reorderFloatsArray(this.attributeNormals);
-        float[] tangent = Mesh.reorderFloatsArray(this.attributeTangents);
-        float[] bitangent = Mesh.reorderFloatsArray(this.attributeBitangents);
+        float[] position = JGemsHelper.convertFloatsArray(this.attributePositions);
+        float[] texCoord = JGemsHelper.convertFloatsArray(this.attributeTextureCoordinates);
+        float[] normals = JGemsHelper.convertFloatsArray(this.attributeNormals);
+        float[] tangent = JGemsHelper.convertFloatsArray(this.attributeTangents);
+        float[] bitangent = JGemsHelper.convertFloatsArray(this.attributeBitangents);
         float[] avaragedNormals = null;
 
         this.totalVertices = index.length;

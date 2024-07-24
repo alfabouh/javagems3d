@@ -40,10 +40,6 @@ public class ResourceCache {
         return this.cache;
     }
 
-    public void addObjectInBuffer(CacheResource cacheResource) {
-        this.addObjectInBuffer(cacheResource.getKey(), cacheResource.getResource());
-    }
-
     public void addObjectInBuffer(String key, ICached object) {
         if (object == null) {
             SystemLogging.get().getLogManager().warn("Couldn't add NULL object in system cache: " + key + this);

@@ -5,7 +5,6 @@ uniform sampler2D texture_sampler;
 uniform sampler2D texture_sampler_gui;
 uniform sampler2D texture_sampler_inventory;
 uniform sampler2D texture_screen;
-uniform sampler2D texture_blood;
 uniform bool e_lsd;
 uniform bool kill;
 uniform bool victory;
@@ -73,8 +72,6 @@ vec4 psx() {
 
     vec4 screen_over = texture(texture_screen, texCoords * vec2(5.0));
 
-    vec4 blood_over = kill ? texture(texture_blood, distortedCoord) : vec4(0.0);
-
     vec4 gui_t1 = texture(texture_sampler_gui, distortedCoordGui);
     vec4 gui_t2 = texture(texture_sampler_gui, distortedCoordGui + vec2(panic_val * 0.01));
     gui_t2.g *= 0;
@@ -100,7 +97,7 @@ vec4 psx() {
 
     vec4 result = mix(mix(crt(lsd(res)), t2, t2.a), t3, t3.a);
     result = glitch_tick > 0 ? 1.0 - result : result;
-    return vinnette(random_noise(result), texCoords) + blood_over + vic;
+    return vinnette(random_noise(result), texCoords) + vic;
 }
 
 vec4 vinnette(vec4 txt, vec2 textCoords) {

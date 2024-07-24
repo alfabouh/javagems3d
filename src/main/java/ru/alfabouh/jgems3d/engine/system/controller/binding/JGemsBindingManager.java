@@ -2,8 +2,8 @@ package ru.alfabouh.jgems3d.engine.system.controller.binding;
 
 import org.lwjgl.glfw.GLFW;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.GamePlayPanel;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.PausePanel;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.panels.GamePlayPanel;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.panels.PausePanel;
 import ru.alfabouh.jgems3d.engine.system.controller.components.FunctionalKey;
 import ru.alfabouh.jgems3d.engine.system.controller.components.IKeyAction;
 import ru.alfabouh.jgems3d.engine.system.controller.components.Key;
@@ -40,7 +40,7 @@ public class JGemsBindingManager extends BindingManager {
         this.keyBlock1 = new Key(GLFW.GLFW_KEY_F);
         this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
         this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
-        this.keyClear = new FunctionalKey(e -> JGems.get().getPhysicsWorld().clearAllItems(), GLFW.GLFW_KEY_B);
+        this.keyClear = new FunctionalKey(e -> JGems.get().getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
         this.keyX = new Key(GLFW.GLFW_KEY_X);
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 

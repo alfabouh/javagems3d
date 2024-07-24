@@ -1,6 +1,8 @@
 in vec3 out_texture;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
+
+uniform mat4 view_mat_inverted;
 uniform samplerCube cube_map_sampler;
 uniform bool covered_by_fog;
 
@@ -25,12 +27,24 @@ layout (std140, binding = 3) uniform Fog {
 void main()
 {
     vec4 diffuse = texture(cube_map_sampler, out_texture);
-    vec4 color = vec4(vec3(fogColorR, fogColorG, fogColorB) * vec3(sunColorR, sunColorG, sunColorB), 1.0);
 
-    float fogFactor = fogDensity * 100;
+    vec3 sunDirection = (view_mat_inverted * vec4(normalize(vec3(sunX, sunY, sunZ)), 0.0)).rgb;
+    vec3 sunColor = vec3(sunColorR, sunColorG, sunColorB);
+    float sunBrightness = sunBright;
+
+    float sunFactor = max(dot(normalize(out_texture), sunDirection), 0.0);
+
+    sunFactor = pow(sunFactor, 150.0);
+
+    vec4 color = vec4(vec3(fogColorR, fogColorG, fogColorB) * sunColor, 1.0);
+
+    float fogFactor = fogDensity * 100.0;
     float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
 
-    frag_color = (color * f) + (diffuse * (1.0 - f));
+    sunFactor *= max((1. - f), 0.25);
 
-    bright_color = vec4(0.0);
+    vec3 sunEffect = sunColor * sunBrightness * sunFactor;
+    frag_color = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f)) + sunEffect, 1.0);
+
+    bright_color = vec4(sunEffect, 1.0);
 }

@@ -1,22 +1,21 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light;
 
 import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.physics.world.object.IWorldDynamic;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.items.AbstractSceneItemObject;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.IWorldTicked;
 
-public abstract class Light implements IWorldDynamic {
+public abstract class Light implements IWorldTicked {
     public static final int
             POINT_LIGHT = (1 << 2);
 
     private final Vector3f offset;
     private final Vector3f lightColor;
     private final Vector3f lightPos;
-    private AbstractSceneItemObject attachedTo;
     private boolean enabled;
     private boolean isActive;
 
     public Light() {
-        this(new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(0.0f));
+        this(new Vector3f(0.0f), new Vector3f(1.0f), new Vector3f(0.0f));
     }
 
     public Light(Vector3f lightPos, Vector3f lightColor) {
@@ -33,40 +32,25 @@ public abstract class Light implements IWorldDynamic {
         this.offset = new Vector3f(offset);
         this.enabled = true;
         this.isActive = false;
-        this.attachedTo = null;
     }
 
-    public Light(AbstractSceneItemObject abstractSceneItemObject) {
-        this(abstractSceneItemObject.getRenderPosition(), new Vector3f(1.0f), new Vector3f(0.0f));
+    public Light(AbstractSceneEntity abstractSceneEntity) {
+        this(abstractSceneEntity.getRenderPosition(), new Vector3f(1.0f), new Vector3f(0.0f));
     }
 
-    public Light(AbstractSceneItemObject abstractSceneItemObject, Vector3f lightColor) {
-        this(abstractSceneItemObject.getRenderPosition(), lightColor, new Vector3f(0.0f));
+    public Light(AbstractSceneEntity abstractSceneEntity, Vector3f lightColor) {
+        this(abstractSceneEntity.getRenderPosition(), lightColor, new Vector3f(0.0f));
     }
 
-    public Light(AbstractSceneItemObject abstractSceneItemObject, Vector3f lightColor, Vector3f offset) {
-        this(abstractSceneItemObject.getRenderPosition(), lightColor, offset);
-    }
-
-    public AbstractSceneItemObject getAttachedTo() {
-        return this.attachedTo;
-    }
-
-    public void setAttachedTo(AbstractSceneItemObject attachedTo) {
-        this.attachedTo = attachedTo;
+    public Light(AbstractSceneEntity abstractSceneEntity, Vector3f lightColor, Vector3f offset) {
+        this(abstractSceneEntity.getRenderPosition(), lightColor, offset);
     }
 
     public void start() {
-        if (this.isAttached()) {
-            this.attachedTo.onAddLight(this);
-        }
         this.isActive = true;
     }
 
     public void stop() {
-        if (this.isAttached()) {
-            this.attachedTo.onRemoveLight(this);
-        }
         this.isActive = false;
     }
 
@@ -82,10 +66,6 @@ public abstract class Light implements IWorldDynamic {
         this.enabled = enabled;
     }
 
-    public boolean isAttached() {
-        return this.getAttachedTo() != null;
-    }
-
     public abstract int lightCode();
 
     public Vector3f getLightColor() {
@@ -98,7 +78,7 @@ public abstract class Light implements IWorldDynamic {
     }
 
     public Vector3f getLightPos() {
-        return new Vector3f(this.lightPos);
+        return new Vector3f(this.lightPos).add(this.getOffset());
     }
 
     public Light setLightPos(Vector3f lightPos) {

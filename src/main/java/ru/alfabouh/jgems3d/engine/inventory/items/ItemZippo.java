@@ -3,9 +3,9 @@ package ru.alfabouh.jgems3d.engine.inventory.items;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
-import ru.alfabouh.jgems3d.engine.inventory.IHasInventory;
+import ru.alfabouh.jgems3d.engine.inventory.IInventoryOwner;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
-import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
@@ -50,7 +50,7 @@ public class ItemZippo extends InventoryItem {
         }
     }
 
-    public void onAddInInventory(IHasInventory hasInventory) {
+    public void onAddInInventory(IInventoryOwner hasInventory) {
         super.onAddInInventory(hasInventory);
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3f(1.0f, 0.475f, 0.375f));
         pointLight.setBrightness(4.0f);

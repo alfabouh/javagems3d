@@ -1,8 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.yml_loaders;
 
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderObjectData;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
-import ru.alfabouh.jgems3d.engine.system.resources.yml_loaders.containers.YMLRenderEntityDataContainer;
 import ru.alfabouh.jgems3d.engine.system.resources.yml_loaders.containers.YMLRenderObjectsContainer;
 import ru.alfabouh.jgems3d.engine.system.yaml.YamlReader;
 

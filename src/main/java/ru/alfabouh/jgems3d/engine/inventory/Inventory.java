@@ -6,14 +6,14 @@ import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
 
 public class Inventory {
     private final int maxSlots;
-    private final IHasInventory owner;
+    private final IInventoryOwner owner;
     private final int scrollMaxCd;
     private int currentSlot;
     private InventoryItem currentItem;
     private Slot[] inventorySlots;
     private int scrollCd;
 
-    public Inventory(@NotNull IHasInventory owner, int maxSlots) {
+    public Inventory(@NotNull IInventoryOwner owner, int maxSlots) {
         this.maxSlots = maxSlots;
         this.currentItem = null;
         this.owner = owner;
@@ -62,7 +62,7 @@ public class Inventory {
         }
     }
 
-    public IHasInventory getOwner() {
+    public IInventoryOwner getOwner() {
         return this.owner;
     }
 

@@ -1,7 +1,6 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.frustum;
 
 import org.joml.*;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.items.AbstractSceneItemObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class FrustumCulling {
         this.frustumIntersection.set(new Matrix4f(this.projectionViewMatrix));
     }
 
-    public boolean isInFrustum(ICullable.RenderSphere renderSphere) {
+    public boolean isInFrustum(ICulled.RenderSphere renderSphere) {
         if (renderSphere == null || renderSphere.getRadius() < 0) {
             return true;
         }

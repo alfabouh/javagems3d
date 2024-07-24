@@ -3,11 +3,11 @@ package ru.alfabouh.jgems3d.engine.graphics.opengl.environment.sky;
 
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
-import ru.alfabouh.jgems3d.engine.physics.world.object.IWorldDynamic;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.sky.skybox.ISkyBox;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.debug.constants.GlobalRenderDebugConstants;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 
-public class Sky implements IWorldDynamic {
+public class Sky implements IWorldTicked {
     private final ISkyBox skyBox;
     private Vector3f sunPos;
     private Vector3f sunColors;

@@ -49,8 +49,7 @@ public abstract class LoggingManager {
             }
         });
 
-        final String threadName = Thread.currentThread().getName();
-        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, "[" + threadName + "]: " + msg, EngineSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
+        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, "[" + JGems.get() + "]: " + msg, EngineSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
     }
 
     public static void showWindowInfo(String message) {

@@ -2,13 +2,13 @@ package ru.alfabouh.jgems3d.engine;
 
 import org.lwjgl.glfw.GLFW;
 import ru.alfabouh.jgems3d.engine.audio.SoundManager;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
+import ru.alfabouh.jgems3d.engine.physics.entities.player.IPlayer;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
-import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicThreadManager;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.ImmediateUI;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.MainMenuPanel;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.base.PanelUI;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
+import ru.alfabouh.jgems3d.engine.physics.world.thread.PhysicsThread;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.panels.MainMenuPanel;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.alfabouh.jgems3d.engine.system.core.EngineSystem;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class JGems {
-    public static final String GAME_NAME = "Reznya HD";
+    public static final String GAME_NAME = "indev";
     public static boolean DEBUG_MODE = false;
     public static long rngSeed;
     public static Random random;
@@ -41,9 +41,9 @@ public class JGems {
     private final String[] startArgs;
     private final SoundManager soundManager;
     private final JGemsScreen screen;
-    private final PhysicThreadManager physicThreadManager;
+    private final PhysicsThread physicsThread;
     private final Proxy proxy;
-    private final JGemsSettings JGemsSettings;
+    private final JGemsSettings jGemsSettings;
     private final Localisation localisation;
 
     private boolean shouldBeClosed;
@@ -57,14 +57,14 @@ public class JGems {
 
         this.startArgs = startArgs;
         this.shouldBeClosed = false;
-        this.physicThreadManager = new PhysicThreadManager(PhysicThreadManager.TICKS_PER_SECOND);
+        this.physicsThread = new PhysicsThread(PhysicsThread.TICKS_PER_SECOND);
         this.soundManager = new SoundManager();
         this.screen = new JGemsScreen();
         this.proxy = new Proxy(this.getPhysicThreadManager().getPhysicsTimer(), this.getScreen());
 
         JGems.checkFilesDirectory();
 
-        this.JGemsSettings = new JGemsSettings(new File(JGems.getGameFilesFolder().toFile(), "settings.txt"));
+        this.jGemsSettings = new JGemsSettings(new File(JGems.getGameFilesFolder().toFile(), "settings.txt"));
         this.localisation = new Localisation();
     }
 
@@ -178,26 +178,30 @@ public class JGems {
 
     public void pauseGameAndLockUnPausing(boolean pauseSounds) {
         this.pauseGame(pauseSounds);
-        this.engineSystem.setLockedUnPausing(true);
+        this.getEngineSystem().setLockedUnPausing(true);
     }
 
     public void unPauseGameAndUnLockUnPausing() {
         this.unPauseGame();
-        this.engineSystem.setLockedUnPausing(false);
+        this.getEngineSystem().setLockedUnPausing(false);
     }
 
     public void pauseGame(boolean pauseSounds) {
-        this.engineSystem.pauseGame();
+        this.getEngineSystem().pauseGame();
         if (pauseSounds) {
             this.getSoundManager().pauseAllSounds();
         }
     }
 
     public void unPauseGame() {
-        this.engineSystem.unPauseGame();
-        if (!this.engineSystem.isLockedUnPausing()) {
+        this.getEngineSystem().unPauseGame();
+        if (!this.getEngineSystem().isLockedUnPausing()) {
             this.getSoundManager().resumeAllSounds();
         }
+    }
+
+    public void loadMap(String mapName) {
+        this.getEngineSystem().loadMap(mapName);
     }
 
     public void loadMap(IMapLoader mapLoader) {
@@ -215,16 +219,16 @@ public class JGems {
         JGems.get().showMainMenu();
     }
 
-    public synchronized JGemsSettings getGameSettings() {
-        return this.JGemsSettings;
+    public void destroyGame() {
+        JGems.get().shouldBeClosed = true;
+        synchronized (PhysicsThread.locker) {
+            SyncManager.freeAll();
+            PhysicsThread.locker.notifyAll();
+        }
     }
 
-    public synchronized void destroyGame() {
-        JGems.get().shouldBeClosed = true;
-        SyncManager.freeAll();
-        synchronized (PhysicThreadManager.locker) {
-            PhysicThreadManager.locker.notifyAll();
-        }
+    public synchronized JGemsSettings getGameSettings() {
+        return this.jGemsSettings;
     }
 
     public synchronized SoundManager getSoundManager() {
@@ -235,7 +239,7 @@ public class JGems {
         return this.engineSystem;
     }
 
-    public synchronized boolean isCurrentMapIsValid() {
+    public boolean isCurrentMapIsValid() {
         return this.getEngineSystem().getMapLoader() != null;
     }
 
@@ -292,8 +296,8 @@ public class JGems {
         return this.screen;
     }
 
-    public PhysicThreadManager getPhysicThreadManager() {
-        return this.physicThreadManager;
+    public PhysicsThread getPhysicThreadManager() {
+        return this.physicsThread;
     }
 
     public Proxy getProxy() {

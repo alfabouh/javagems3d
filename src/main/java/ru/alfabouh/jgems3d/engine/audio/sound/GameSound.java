@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
 import ru.alfabouh.jgems3d.engine.audio.SoundManager;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
-import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.WorldItem;
 
 import java.nio.IntBuffer;
 
@@ -31,10 +31,16 @@ public class GameSound {
     }
 
     public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
+        if (soundBuffer == null) {
+            return null;
+        }
         return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, attachedTo);
     }
 
     public static GameSound createSound(SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff) {
+        if (soundBuffer == null) {
+            return null;
+        }
         return new GameSound(soundBuffer, soundType, pitch, gain, rollOff, null);
     }
 

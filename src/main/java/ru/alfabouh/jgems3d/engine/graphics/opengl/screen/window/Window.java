@@ -1,17 +1,24 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window;
 
+import com.google.common.io.ByteStreams;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class Window implements IWindow {
@@ -22,11 +29,39 @@ public class Window implements IWindow {
     private long currentMonitor;
     private boolean isInFocus;
 
-    public Window(WindowProperties windowProperties) {
+    public Window(WindowProperties windowProperties, String iconName) {
         this.isInFocus = false;
         this.window = GLFW.glfwCreateWindow(windowProperties.getWidth(), windowProperties.getHeight(), windowProperties.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
         this.windowProperties = windowProperties;
         this.currentMonitor = GLFW.glfwGetPrimaryMonitor();
+
+        if (iconName != null) {
+            this.loadIcon(iconName);
+        }
+    }
+
+    private void loadIcon(@NotNull String iconName) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer width = stack.mallocInt(1);
+            IntBuffer height = stack.mallocInt(1);
+            IntBuffer channels = stack.mallocInt(1);
+            byte[] stream = ByteStreams.toByteArray(JGems.loadFileJar(iconName));
+            ByteBuffer buffer = MemoryUtil.memAlloc(stream.length);
+            buffer.put(stream);
+            buffer.flip();
+            ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
+            if (imageBuffer == null) {
+                throw new NullPointerException("Window icon is NULL");
+            }
+            GLFWImage.Buffer iconBuffer = GLFWImage.malloc(1);
+            iconBuffer.width(width.get(0));
+            iconBuffer.height(height.get(0));
+            iconBuffer.pixels(imageBuffer);
+            GLFW.glfwSetWindowIcon(window, iconBuffer);
+            STBImage.stbi_image_free(imageBuffer);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     public void onWindowChanged() {

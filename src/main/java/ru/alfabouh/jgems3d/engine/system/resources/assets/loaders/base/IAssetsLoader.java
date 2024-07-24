@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.base;
 
-import ru.alfabouh.jgems3d.engine.system.resources.manager.objects.GameResources;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.GameResources;
 
 public interface IAssetsLoader {
     void load(GameResources gameResources);

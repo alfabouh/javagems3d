@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.system.map.loaders.custom;
 
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.enemies.EntityManiac;
+import ru.alfabouh.jgems3d.engine.physics.entities.enemies.EntityManiac;
 
 public class Map01 {
     public static EntityManiac entityManiac;
@@ -163,7 +163,7 @@ public class Map01 {
 
     @Override
     public void addLiquids(World world) {
-        Water water = new Water(new Zone(new Vector3f(-1.5d, -19.0d, -23.0d), new Vector3f(new Vector3f(35.0d, 1.0d, 35.0d))));
+        Liquid water = new Liquid(new Zone(new Vector3f(-1.5d, -19.0d, -23.0d), new Vector3f(new Vector3f(35.0d, 1.0d, 35.0d))));
         JGems.get().getProxy().addLiquidInWorlds(water, JGemsResourceManager.renderDataAssets.water);
     }
 

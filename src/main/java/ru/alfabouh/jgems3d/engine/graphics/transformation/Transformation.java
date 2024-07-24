@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.graphics.transformation;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.ICamera;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -26,7 +26,7 @@ public class Transformation {
     public static Matrix4f getViewMatrix(ICamera camera) {
         Vector3f cameraPos = camera.getCamPosition();
         Vector3f cameraRot = camera.getCamRotation();
-        return new Matrix4f().identity().rotateXYZ((float) Math.toRadians(cameraRot.x), (float) Math.toRadians(cameraRot.y), (float) Math.toRadians(cameraRot.z)).translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+        return new Matrix4f().identity().rotateXYZ((float) cameraRot.x, (float) cameraRot.y, (float) cameraRot.z).translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
     }
 
     public static Matrix4f getModelMatrix(Format3D format) {

@@ -5,13 +5,16 @@ import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.math.Pair;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
-import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.panels.GamePlayPanel;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.textures.CubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.panels.GamePlayPanel;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
+import ru.alfabouh.jgems3d.engine.system.controller.objects.IController;
+import ru.alfabouh.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 import ru.alfabouh.jgems3d.engine.system.map.loaders.IMapLoader;
+import ru.alfabouh.jgems3d.engine.system.map.loaders.tbox.MapLoaderTBox;
 import ru.alfabouh.jgems3d.engine.system.proxy.LocalPlayer;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
@@ -66,7 +69,7 @@ public class EngineSystem implements IEngine {
     }
 
     public void loadMap(String mapName) {
-
+        this.loadMap(new MapLoaderTBox(MapLoaderTBox.readMapFromJar("default_map")));
     }
 
     public void loadMap(IMapLoader mapLoader) {
@@ -85,21 +88,21 @@ public class EngineSystem implements IEngine {
     private void initMap() {
         if (!this.engineState().isEngineIsReady()) {
             SystemLogging.get().getLogManager().warn("Engine thread is not ready to load map!");
+            this.mapLoader = null;
             return;
         }
-        JGems.get().getScreen().showGameLoadingScreen();
-        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading Map...");
+        JGems.get().getScreen().showGameLoadingScreen("Loading Map...");
         this.startWorlds();
         SystemLogging.get().getLogManager().log("Loading map " + this.currentMapName());
         World world = JGems.get().getPhysicThreadManager().getPhysicsTimer().getWorld();
-        this.localPlayer = new LocalPlayer(world);
         this.getMapLoader().createMap(world);
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
 
         Vector3f startPos = new Vector3f(pair.getFirst()).add(0.0f, 0.6f, 0.0f);
-        Vector3f startRot = new Vector3f(0.0f, (float) -Math.toDegrees(pair.getSecond()), 0.0f);
+        Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
 
-        this.getLocalPlayer().addPlayerInWorlds(startPos, startRot);
+        this.localPlayer = new LocalPlayer(world, startPos, startRot);
+        this.getLocalPlayer().addPlayerInWorlds();
         SystemLogging.get().getLogManager().log(this.currentMapName() + ": Map Loaded!");
 
         Environment environment = JGems.get().getSceneWorld().getEnvironment();
@@ -129,14 +132,19 @@ public class EngineSystem implements IEngine {
             environment.getSky().setSunBrightness(skyProp.getSunBrightness());
         }
 
-        this.unPauseGame();
+        IController controller = JGems.get().getScreen().getControllerDispatcher().getCurrentController();
+        if (controller instanceof MouseKeyboardController) {
+            MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controller;
+            mouseKeyboardController.setCursorInCenter();
+        }
         JGems.get().getScreen().getControllerDispatcher().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayerSP());
-        JGems.get().getScreen().getScene().enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayerSP(), startPos, startRot);
+        JGems.get().getScreen().getScene().enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayerSP());
         JGems.get().getScreen().getWindow().setInFocus(true);
-
         mapLoader.postLoad(world);
         JGems.get().setUIPanel(new GamePlayPanel(null));
         JGems.get().getScreen().removeLoadingScreen();
+
+        this.unPauseGame();
     }
 
     public LocalPlayer getLocalPlayer() {
@@ -145,7 +153,9 @@ public class EngineSystem implements IEngine {
 
     public void destroyMap() {
         this.pauseGame();
+        JGems.get().getScreen().showGameLoadingScreen("Exit world...");
         this.clean();
+        JGems.get().getScreen().removeLoadingScreen();
         this.mapLoader = null;
     }
 
@@ -171,6 +181,7 @@ public class EngineSystem implements IEngine {
         SystemLogging.get().getLogManager().log("Cleaning worlds!");
         this.endWorlds();
         this.getResourceManager().getLocalResources().cleanCache();
+        System.gc();
         this.localPlayer = null;
     }
 
@@ -203,8 +214,8 @@ public class EngineSystem implements IEngine {
             try {
                 JGems.get().getSoundManager().createSystem();
                 JGems.get().getPhysicThreadManager().initService();
-                this.getEngineState().gameResourcesLoaded = true;
                 this.createGraphics();
+                this.getEngineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
                 JGems.get().getScreen().startScreenRenderProcess();
                 badExit = false;
@@ -213,11 +224,17 @@ public class EngineSystem implements IEngine {
                 badExit = true;
             } finally {
                 try {
-                    this.destroyMap();
+                    this.clean();
                     JGems.get().destroyGame();
                     JGems.get().getSoundManager().stopAllSounds();
                     JGems.get().getResourceManager().destroy();
                     JGems.get().getSoundManager().destroy();
+                    if (!JGems.get().getPhysicThreadManager().waitForFullTermination()) {
+                        SystemLogging.get().getLogManager().warn("Waited for physics termination too long...");
+                    }
+                    if (JGems.get().getPhysicThreadManager().badExit) {
+                        badExit = true;
+                    }
                     JGems.get().getPhysicThreadManager().getPhysicsTimer().cleanResources();
                     SystemLogging.get().getLogManager().log("Engine-Off");
                 } catch (Exception e) {

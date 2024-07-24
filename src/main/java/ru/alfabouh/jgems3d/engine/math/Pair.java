@@ -11,11 +11,11 @@ public class Pair<K, V> {
     }
 
     public K getFirst() {
-        return first;
+        return this.first;
     }
 
     public V getSecond() {
-        return second;
+        return this.second;
     }
 
     @Override

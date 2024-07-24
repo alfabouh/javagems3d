@@ -125,7 +125,7 @@ public class TextureSample implements IImageSample {
         return new TextureSample(id, inputStream, interpolate, wrapping);
     }
 
-    private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) {
+    public ByteBuffer readTextureFromMemory(String name, InputStream inputStream) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);

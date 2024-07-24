@@ -1,14 +1,15 @@
 package ru.alfabouh.jgems3d.engine.system.proxy;
 
+import org.jetbrains.annotations.Contract;
 import ru.alfabouh.jgems3d.engine.math.Pair;
-import ru.alfabouh.jgems3d.engine.physics.liquids.ILiquid;
-import ru.alfabouh.jgems3d.engine.physics.triggers.ITriggerZone;
-import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
-import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicsTimer;
+import ru.alfabouh.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
+import ru.alfabouh.jgems3d.engine.physics.world.triggers.zones.base.ITriggerZone;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.alfabouh.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light.PointLight;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderLiquidData;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderObjectData;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 
@@ -16,62 +17,22 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class Proxy {
+public final class Proxy {
     private final PhysicsTimer physicsTimer;
     private final JGemsScreen screen;
-    private final ConcurrentLinkedDeque<Pair<WorldItem, RenderObjectData>> deque1;
-    private final ConcurrentLinkedDeque<Pair<WorldItem, Light>> deque2;
-    private final ConcurrentLinkedDeque<Pair<ILiquid, RenderLiquidData>> deque3;
 
     public Proxy(PhysicsTimer gameWorldTimer, JGemsScreen screen) {
         this.physicsTimer = gameWorldTimer;
         this.screen = screen;
-
-        this.deque1 = new ConcurrentLinkedDeque<>();
-        this.deque2 = new ConcurrentLinkedDeque<>();
-        this.deque3 = new ConcurrentLinkedDeque<>();
-    }
-
-    public Deque<Pair<WorldItem, RenderObjectData>> getDeque1() {
-        return this.deque1;
-    }
-
-    public Deque<Pair<WorldItem, Light>> getDeque2() {
-        return this.deque2;
-    }
-
-    public Deque<Pair<ILiquid, RenderLiquidData>> getDeque3() {
-        return this.deque3;
     }
 
     public void update() {
-        Iterator<Pair<WorldItem, RenderObjectData>> it1 = this.getDeque1().iterator();
-        while (it1.hasNext()) {
-            Pair<WorldItem, RenderObjectData> pair = it1.next();
-            this.screen.getRenderWorld().addItem(pair.getFirst(), pair.getSecond());
-            it1.remove();
-        }
-
-        Iterator<Pair<WorldItem, Light>> it2 = this.getDeque2().iterator();
-        while (it2.hasNext()) {
-            Pair<WorldItem, Light> pair = it2.next();
-            pair.getFirst().attachLight(pair.getSecond());
-            this.addLight(pair.getSecond());
-            it2.remove();
-        }
-
-        Iterator<Pair<ILiquid, RenderLiquidData>> it3 = this.getDeque3().iterator();
-        while (it3.hasNext()) {
-            Pair<ILiquid, RenderLiquidData> pair = it3.next();
-            this.screen.getRenderWorld().addLiquid(pair.getFirst(), pair.getSecond());
-            it3.remove();
-        }
     }
 
     public void addItemInWorlds(WorldItem worldItem, RenderObjectData renderData) {
         try {
             this.physicsTimer.getWorld().addItem(worldItem);
-            this.getDeque1().add(new Pair<>(worldItem, renderData));
+            this.screen.getRenderWorld().addItem(worldItem, renderData);
         } catch (JGemsException e) {
             throw new JGemsException(e);
         }
@@ -87,17 +48,17 @@ public class Proxy {
         this.screen.getScene().getSceneRender().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
     }
 
-    public void addLiquidInWorlds(ILiquid liquid, RenderLiquidData renderLiquidData) {
-        this.physicsTimer.getWorld().addLiquid(liquid);
-        this.getDeque3().add(new Pair<>(liquid, renderLiquidData));
+    public void addLiquidInWorlds(Liquid liquid, RenderLiquidData renderLiquidData) {
+        this.physicsTimer.getWorld().addItem(liquid);
+        this.screen.getRenderWorld().addLiquid(liquid, renderLiquidData);
     }
 
     public void addTriggerZone(ITriggerZone triggerZone) {
-        this.physicsTimer.getWorld().addTriggerZone(triggerZone);
+        this.physicsTimer.getWorld().addItem(triggerZone);
     }
 
     public void addLight(WorldItem worldItem, Light light) {
-        this.getDeque2().add(new Pair<>(worldItem, light));
+        this.screen.getRenderWorld().addWorldItemLight(worldItem, light);
     }
 
     public void addLight(Light light) {
