@@ -11,13 +11,13 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsOpenGLRenderer;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.IPlayer;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.player.KinematicPlayerSP;
-import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.debug.constants.GlobalRenderDebugConstants;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.ICamera;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.alfabouh.jgems3d.engine.physics.entities.player.IPlayer;
+import ru.alfabouh.jgems3d.engine.physics.entities.player.KinematicPlayer;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
@@ -232,12 +232,12 @@ public class DIMGuiRenderJGems {
         ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
         ImGui.begin("Debug");
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
-        if (entityPlayerSP instanceof KinematicPlayerSP) {
-            KinematicPlayerSP kinematicPlayerSP = (KinematicPlayerSP) entityPlayerSP;
-            ImGui.text(String.format("%s %s %s | %s %s %s", kinematicPlayerSP.getPosition().x, kinematicPlayerSP.getPosition().y, kinematicPlayerSP.getPosition().z, kinematicPlayerSP.getCurrentHitScanCoordinate().x, kinematicPlayerSP.getCurrentHitScanCoordinate().y, kinematicPlayerSP.getCurrentHitScanCoordinate().z));
+        if (entityPlayerSP instanceof KinematicPlayer) {
+            KinematicPlayer dynamicPlayer = (KinematicPlayer) entityPlayerSP;
+            ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
             ImGui.text("entities: " + JGems.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
-            ImGui.text("current speed(scalar): " + String.format("%.4f", kinematicPlayerSP.getScalarSpeed()));
+           // ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
         }
 
         if (ImGui.checkbox("FreeCam", this.freeCam)) {
@@ -284,7 +284,7 @@ public class DIMGuiRenderJGems {
 
             ImGui.image(sceneRender.getSceneFbo().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             ImGui.sameLine();
-            ImGui.image(sceneRender.getShadowScene().getShadowFBO().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            ImGui.image(sceneRender.getShadowScene().getShadowPostFBO().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
             ImGui.image(sceneRender.getFboBlur().getTexturePrograms().get(0).getTextureId(), Window.defaultW / 4.0f, Window.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             ImGui.sameLine();

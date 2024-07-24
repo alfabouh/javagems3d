@@ -10,7 +10,7 @@ import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.Serializable;
 
-public final class Model<T extends IFormat> implements Serializable {
+public final class Model<T extends IFormat> implements Serializable, AutoCloseable {
     private static final long serialVersionUID = -228L;
     private final T format;
     private final MeshDataGroup meshDataGroup;
@@ -70,5 +70,10 @@ public final class Model<T extends IFormat> implements Serializable {
             return;
         }
         this.getMeshDataGroup().getModelNodeList().forEach(e -> e.getMesh().clean());
+    }
+
+    @Override
+    public void close() {
+        this.clean();
     }
 }

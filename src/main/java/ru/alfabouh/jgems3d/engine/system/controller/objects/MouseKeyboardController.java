@@ -4,6 +4,8 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
+import ru.alfabouh.jgems3d.engine.inventory.IInventoryOwner;
+import ru.alfabouh.jgems3d.engine.inventory.Inventory;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.alfabouh.jgems3d.engine.system.controller.binding.JGemsBindingManager;
 import ru.alfabouh.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
@@ -93,6 +95,18 @@ public class MouseKeyboardController implements IController {
         }
         this.normalizedPositionInput.set(new Vector3f(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
         this.normalizedRotationInput.set(new Vector2f(this.getRotationInput()).mul(JGemsControllerDispatcher.CAM_SENS));
+    }
+
+    @Override
+    public void updateItemWithInventory(IInventoryOwner hasInventory) {
+        Inventory inventory = hasInventory.inventory();
+        if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
+            inventory.onMouseLeftClick(hasInventory.getWorld());
+        }
+        if (this.getMouseAndKeyboard().isRightKeyPressed()) {
+            inventory.onMouseRightClick(hasInventory.getWorld());
+        }
+        inventory.scrollInventoryToNotNullItem(this.getMouseAndKeyboard().getScrollVector());
     }
 
     public void setCursorInCenter() {

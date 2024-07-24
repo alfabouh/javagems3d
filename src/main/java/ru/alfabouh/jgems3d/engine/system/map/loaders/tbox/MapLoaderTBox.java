@@ -2,20 +2,21 @@ package ru.alfabouh.jgems3d.engine.system.map.loaders.tbox;
 
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.models.SceneProp;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.base.IRenderFabric;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.ModelRenderParams;
-import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.misc.PhysDoor;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.common.PhysDynamicEntity;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.common.PhysStaticEntity;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.ModelRenderParams;
+import ru.alfabouh.jgems3d.engine.physics.entities.BtDynamicMeshBody;
+import ru.alfabouh.jgems3d.engine.physics.entities.BtStaticMeshBody;
+import ru.alfabouh.jgems3d.engine.physics.entities.misc.PhysDoor;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderObjectData;
+import ru.alfabouh.jgems3d.engine.system.JGemsHelper;
 import ru.alfabouh.jgems3d.engine.system.map.MapInfo;
 import ru.alfabouh.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.Model;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
+import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.data.MeshCollisionData;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.alfabouh.jgems3d.engine.system.resources.yml_loaders.YMLRenderEntityData;
 import ru.alfabouh.jgems3d.engine.system.resources.yml_loaders.YMLRenderObjects;
@@ -88,33 +89,32 @@ public class MapLoaderTBox implements IMapLoader {
                         case "entity": {
                             RenderObjectData renderObjectData = entityDataContainer.getMap().get(renderObjectData1);
                             boolean isStatic = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeIDS.IS_STATIC, Boolean.class);
+
+                            JGemsHelper.tryCreateMeshCollisionData(meshDataGroup);
+
                             if (isStatic) {
-                                meshDataGroup.constructCollisionMesh(true, false);
-                                PhysStaticEntity worldModeledBrush = new PhysStaticEntity(world, id, RigidBodyObject.PhysProperties.createProperties(), pos, meshDataGroup);
-                                JGems.get().getProxy().addItemInWorlds(worldModeledBrush, new RenderObjectData(renderObjectData, meshDataGroup));
+                                BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, world, pos, id);
+                                JGemsHelper.addItemInWorlds(worldModeledBrush, new RenderObjectData(renderObjectData, meshDataGroup));
                                 worldModeledBrush.setCanBeDestroyed(false);
-                                worldModeledBrush.setRotation(rot);
-                                worldModeledBrush.setScale(scale);
-                                worldModeledBrush.setDebugDrawing(false);
+                                worldModeledBrush.setRotation(new Vector3f(rot).negate());
+                                worldModeledBrush.setScaling(scale);
                             } else {
-                                meshDataGroup.constructCollisionMesh(false, true);
-                                PhysDynamicEntity worldModeledBrush = new PhysDynamicEntity(world, id, RigidBodyObject.PhysProperties.createProperties(), pos, meshDataGroup);
-                                JGems.get().getProxy().addItemInWorlds(worldModeledBrush, new RenderObjectData(renderObjectData, meshDataGroup));
-                                worldModeledBrush.setRotation(rot);
-                                worldModeledBrush.setScale(scale);
-                                worldModeledBrush.setDebugDrawing(false);
+                                BtDynamicMeshBody worldModeledBrush = new BtDynamicMeshBody(meshDataGroup, world, pos, id);
+                                JGemsHelper.addItemInWorlds(worldModeledBrush, new RenderObjectData(renderObjectData, meshDataGroup));
+                                worldModeledBrush.setCanBeDestroyed(false);
+                                worldModeledBrush.setRotation(new Vector3f(rot).negate());
+                                worldModeledBrush.setScaling(scale);
                             }
                             break;
                         }
                         case "prop": {
-
                             ModelRenderParams modelRenderParams = propDataContainer.getMap().get(renderObjectData1).getModelRenderParams();
-                            IRenderFabric renderFabric = propDataContainer.getMap().get(renderObjectData1).getRenderFabric();
+                            IRenderObjectFabric renderFabric = propDataContainer.getMap().get(renderObjectData1).getRenderFabric();
                             Model<Format3D> model = new Model<>(new Format3D(), meshDataGroup);
                             model.getFormat().setPosition(pos);
                             model.getFormat().setRotation(rot);
                             model.getFormat().setScaling(scale);
-                            JGems.get().getScreen().getScene().getSceneWorld().addRenderObjectInScene(new SceneProp(renderFabric, model, modelRenderParams));
+                            JGemsHelper.addPropInScene(new SceneProp(renderFabric, model, modelRenderParams));
                             break;
                         }
                         default: {
@@ -127,7 +127,7 @@ public class MapLoaderTBox implements IMapLoader {
                 switch (id) {
                     case "door_physics": {
                         PhysDoor physDoor = new PhysDoor(world, pos, rot, "door", false);
-                        JGems.get().getProxy().addItemInWorlds(physDoor, JGemsResourceManager.renderDataAssets.door1);
+                        JGemsHelper.addItemInWorlds(physDoor, JGemsResourceManager.renderDataAssets.door1);
                         break;
                     }
                     case "player_start": {

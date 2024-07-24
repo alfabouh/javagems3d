@@ -39,6 +39,7 @@ public class ShadersAssetsLoader extends ShadersLoader {
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager simple;
     public JGemsShaderManager depth_sun;
+    public JGemsShaderManager depth_sun_fix;
     public JGemsShaderManager depth_plight;
     public JGemsShaderManager debug;
     public JGemsShaderManager world_selected_gbuffer;
@@ -89,6 +90,8 @@ public class ShadersAssetsLoader extends ShadersLoader {
 
         this.simple = this.createShaderManager(resourceCache, "jgems/shaders/simple", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_sun = this.createShaderManager(resourceCache, "jgems/shaders/depth_sun", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.depth_sun_fix = this.createShaderManager(resourceCache, "jgems/shaders/depth_sun_fix", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+
         this.world_selected_gbuffer = this.createShaderManager(resourceCache, "jgems/shaders/world_selected_gbuffer", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
         this.depth_plight = this.createShaderManager(resourceCache, "jgems/shaders/depth_plight", Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
 

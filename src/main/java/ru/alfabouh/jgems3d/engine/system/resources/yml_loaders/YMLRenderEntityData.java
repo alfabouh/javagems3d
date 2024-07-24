@@ -1,8 +1,9 @@
 package ru.alfabouh.jgems3d.engine.system.resources.yml_loaders;
 
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.base.IRenderFabric;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderObjectData;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.items.AbstractSceneItemObject;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderWorldItem;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -40,21 +41,21 @@ public class YMLRenderEntityData implements YMLReader<YMLRenderEntityDataContain
                     if (render_object == null || render_object.isEmpty()) {
                         throw new JGemsException("YAML data: " + name + " - NULL RENDER OBJECT");
                     }
-                    Class<? extends IRenderFabric> clazz1;
-                    Class<? extends IRenderFabric> clazz2;
+                    Class<? extends IRenderObjectFabric> clazz1;
+                    Class<? extends IRenderObjectFabric> clazz2;
                     try {
-                        clazz1 = (Class<? extends IRenderFabric>) Class.forName("ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.objects." + render_fabric);
-                        clazz2 = (Class<? extends IRenderFabric>) Class.forName("ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.items." + render_object);
+                        clazz1 = (Class<? extends IRenderObjectFabric>) Class.forName(RenderWorldItem.class.getPackage().getName() + "." + render_fabric);
+                        clazz2 = (Class<? extends IRenderObjectFabric>) Class.forName(AbstractSceneEntity.class.getPackage().getName() + "." + render_object);
                     } catch (ClassNotFoundException e) {
                         throw new JGemsException(e);
                     }
-                    IRenderFabric renderFabric = null;
+                    IRenderObjectFabric renderFabric = null;
                     try {
                         renderFabric = clazz1.newInstance();
                     } catch (InstantiationException | IllegalAccessException e) {
                         throw new JGemsException(e);
                     }
-                    RenderObjectData renderObjectData = new RenderObjectData(renderFabric, (Class<? extends AbstractSceneItemObject>) clazz2, (JGemsShaderManager) JGemsResourceManager.getGlobalGameResources().getResource(shader_name));
+                    RenderObjectData renderObjectData = new RenderObjectData(renderFabric, (Class<? extends AbstractSceneEntity>) clazz2, (JGemsShaderManager) JGemsResourceManager.getGlobalGameResources().getResource(shader_name));
 
                     Map<String, Object> mesh_render_params = (Map<String, Object>) obj.get("mesh_render_params");
 

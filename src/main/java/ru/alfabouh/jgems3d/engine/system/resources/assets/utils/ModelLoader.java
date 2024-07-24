@@ -16,7 +16,7 @@ import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.engine.system.resources.manager.objects.GameResources;
+import ru.alfabouh.jgems3d.engine.system.resources.manager.GameResources;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class ModelLoader {
     private static MeshDataGroup loadMesh(GameResources gameResources, String modelPath) {
         SystemLogging.get().getLogManager().log("Loading model " + modelPath);
 
-        final int FLAGS = Assimp.aiProcess_ImproveCacheLocality | Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_PreTransformVertices;
+        final int FLAGS = Assimp.aiProcess_ImproveCacheLocality | Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
         MeshDataGroup meshDataGroup = new MeshDataGroup();
 
         if (JGems.seekInJar(modelPath)) {

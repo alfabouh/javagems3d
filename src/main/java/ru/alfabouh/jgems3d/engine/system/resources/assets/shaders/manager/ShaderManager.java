@@ -1,9 +1,9 @@
 package ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager;
 
 import org.lwjgl.opengl.GL43;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.CShaderProgram;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.GShaderProgram;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.unifroms.UniformBufferProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.shaders.CShaderProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.shaders.GShaderProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;

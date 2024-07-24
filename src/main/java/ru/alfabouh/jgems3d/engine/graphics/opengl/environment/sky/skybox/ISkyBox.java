@@ -1,6 +1,6 @@
 package ru.alfabouh.jgems3d.engine.graphics.opengl.environment.sky.skybox;
 
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.textures.CubeMapProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 
 public interface ISkyBox {
     CubeMapProgram cubeMapTexture();

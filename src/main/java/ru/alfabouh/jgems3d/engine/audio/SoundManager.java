@@ -6,7 +6,7 @@ import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.audio.sound.GameSound;
 import ru.alfabouh.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.alfabouh.jgems3d.engine.audio.sound.data.SoundType;
-import ru.alfabouh.jgems3d.engine.physics.world.object.WorldItem;
+import ru.alfabouh.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 

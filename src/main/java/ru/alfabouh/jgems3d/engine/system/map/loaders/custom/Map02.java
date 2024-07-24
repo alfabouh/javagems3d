@@ -2,11 +2,12 @@ package ru.alfabouh.jgems3d.engine.system.map.loaders.custom;
 
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.physics.jb_objects.RigidBodyObject;
-import ru.alfabouh.jgems3d.engine.physics.objects.entities.common.PhysStaticEntity;
-import ru.alfabouh.jgems3d.engine.physics.objects.materials.Materials;
+import ru.alfabouh.jgems3d.engine.physics.entities.BtStaticMeshBody;
 import ru.alfabouh.jgems3d.engine.physics.world.World;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderObjectData;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
+import ru.alfabouh.jgems3d.engine.physics.world.triggers.Zone;
+import ru.alfabouh.jgems3d.engine.physics.world.triggers.liquids.Water;
+import ru.alfabouh.jgems3d.engine.system.JGemsHelper;
 import ru.alfabouh.jgems3d.engine.system.map.MapInfo;
 import ru.alfabouh.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -20,9 +21,13 @@ public class Map02 implements IMapLoader {
 
     @Override
     public void createMap(World world) {
-        PhysStaticEntity worldModeledBrush = (PhysStaticEntity) new PhysStaticEntity(world, "grass", RigidBodyObject.PhysProperties.createProperties(Materials.grassGround), new Vector3f(0.0f), JGemsResourceManager.modelAssets.ground2).setCanBeDestroyed(false);
-        JGems.get().getProxy().addItemInWorlds(worldModeledBrush, new RenderObjectData(JGemsResourceManager.renderDataAssets.ground, JGemsResourceManager.modelAssets.ground2));
-        worldModeledBrush.setDebugDrawing(false);
+        BtStaticMeshBody worldModeledBrush = (BtStaticMeshBody) new BtStaticMeshBody(JGemsResourceManager.modelAssets.ground2, world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
+        JGemsHelper.addItemInWorlds(worldModeledBrush, new RenderObjectData(JGemsResourceManager.renderDataAssets.ground, JGemsResourceManager.modelAssets.ground2));
+        worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
+       // worldModeledBrush.setDebugDrawing(false);
+
+        Water water = new Water(new Zone(new Vector3f(0.0f, -5.0f, 0.0f), new Vector3f(8.0f, 6.0f, 8.0f)));
+        JGemsHelper.addLiquidInWorlds(water, JGemsResourceManager.renderDataAssets.water);
     }
 
     @Override

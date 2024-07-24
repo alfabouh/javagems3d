@@ -1,7 +1,9 @@
 package ru.alfabouh.jgems3d.engine.system.resources.yml_loaders;
 
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.base.IRenderFabric;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.ModelRenderParams;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.ModelRenderParams;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObject;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderWorldItem;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.alfabouh.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -35,13 +37,13 @@ public class YMLRenderPropData implements YMLReader<YMLRenderPropDataContainer> 
                     if (render_fabric == null || render_fabric.isEmpty()) {
                         throw new JGemsException("YAML data: " + name + " - NULL RENDER FABRIC");
                     }
-                    Class<? extends IRenderFabric> clazz1;
+                    Class<? extends IRenderObjectFabric> clazz1;
                     try {
-                        clazz1 = (Class<? extends IRenderFabric>) Class.forName("ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.objects." + render_fabric);
+                        clazz1 = (Class<? extends IRenderObjectFabric>) Class.forName(RenderWorldItem.class.getPackage().getName() + "." + render_fabric);
                     } catch (ClassNotFoundException e) {
                         throw new JGemsException(e);
                     }
-                    IRenderFabric renderFabric = null;
+                    IRenderObjectFabric renderFabric = null;
                     try {
                         renderFabric = clazz1.newInstance();
                     } catch (InstantiationException | IllegalAccessException e) {

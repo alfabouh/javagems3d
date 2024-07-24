@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.utils.JGemsSceneUtils;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.IScreen;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.timer.GameRenderTimer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
@@ -54,8 +54,7 @@ public class TBoxScreen implements IScreen {
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL20.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-
-        this.tBoxWindow = new Window(new Window.WindowProperties(Window.defaultW, Window.defaultH, ToolBox.get().toString()));
+        this.tBoxWindow = new Window(new Window.WindowProperties(Window.defaultW, Window.defaultH, ToolBox.get().toString()), "/assets/jgems/icons/icon.png");
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new JGemsException("Failed to create the GLFW window");

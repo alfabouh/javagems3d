@@ -1,9 +1,5 @@
 package ru.alfabouh.jgems3d.engine.system.resources.yml_loaders.containers;
 
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.fabric.render.data.RenderObjectData;
-import ru.alfabouh.jgems3d.engine.math.Pair;
-import ru.alfabouh.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
-
 import java.util.HashMap;
 import java.util.Map;
 

@@ -2,7 +2,7 @@ package ru.alfabouh.jgems3d.engine.graphics.transformation;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.ICamera;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 
 public class TransformationUtils {

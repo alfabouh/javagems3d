@@ -2,13 +2,12 @@ package ru.alfabouh.jgems3d.engine.system.resources.assets.shaders;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.IShaderProgram;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.unifroms.UniformBufferProgram;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.programs.shaders.unifroms.UniformProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.shaders.IShaderProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformProgram;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 

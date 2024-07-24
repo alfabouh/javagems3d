@@ -12,7 +12,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.math.Pair;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.FreeCamera;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.alfabouh.jgems3d.logger.managers.LoggingManager;
 import ru.alfabouh.jgems3d.map_sys.save.objects.MapProperties;

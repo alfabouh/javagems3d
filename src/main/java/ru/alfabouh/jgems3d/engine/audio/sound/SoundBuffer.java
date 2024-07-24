@@ -4,7 +4,6 @@ import org.lwjgl.openal.AL10;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.SoundManager;
 import ru.alfabouh.jgems3d.engine.audio.sound.loaders.ogg.Ogg;
-import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ICached;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.alfabouh.jgems3d.logger.SystemLogging;
@@ -28,6 +27,8 @@ public class SoundBuffer implements ICached {
         SoundBuffer soundBuffer = new SoundBuffer(soundName);
         if (soundBuffer.loadSound(soundFormat)) {
             resourceCache.addObjectInBuffer(soundName, soundBuffer);
+        } else {
+            return null;
         }
         return soundBuffer;
     }
@@ -36,13 +37,14 @@ public class SoundBuffer implements ICached {
         this.buffer = AL10.alGenBuffers();
         SoundManager.checkALonErrors();
         try {
-            return this.readWave(JGems.loadFileJar("/assets/jgems/sounds/" + this.getSoundName()), soundFormat);
+            return this.readOgg(JGems.loadFileJar("/assets/jgems/sounds/" + this.getSoundName()), soundFormat);
         } catch (UnsupportedAudioFileException | IOException e) {
-            throw new JGemsException(e);
+            e.printStackTrace(System.err);
+            return false;
         }
     }
 
-    private boolean readWave(InputStream inputStream, int soundFormat) throws UnsupportedAudioFileException, IOException {
+    private boolean readOgg(InputStream inputStream, int soundFormat) throws UnsupportedAudioFileException, IOException {
         Ogg ogg = (Ogg) Ogg.create(inputStream);
         //Wave wave = (Wave) Wave.create(inputStream);
         if (ogg != null) {

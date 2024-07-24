@@ -1,21 +1,18 @@
 package ru.alfabouh.jgems3d.engine.system.resources.manager;
 
 import ru.alfabouh.jgems3d.engine.JGems;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.elements.base.font.GuiFont;
-import ru.alfabouh.jgems3d.engine.math.Pair;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.alfabouh.jgems3d.engine.system.exception.JGemsException;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.*;
 import ru.alfabouh.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;
 import ru.alfabouh.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.alfabouh.jgems3d.engine.system.resources.manager.objects.GameResources;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.Set;
 
 public class JGemsResourceManager {
     public static ShadersAssetsLoader globalShaderAssets = null;
-    public static TextureAssetsLoader renderAssets = null;
+    public static TextureAssetsLoader textureAssets = null;
     public static ModelAssetsLoader modelAssets = null;
     public static RenderDataLoader renderDataAssets = null;
     public static SoundAssetsLoader soundAssetsLoader = null;
@@ -70,11 +67,11 @@ public class JGemsResourceManager {
     }
 
     public void initGlobalResources() {
-        JGemsResourceManager.renderAssets = new TextureAssetsLoader();
+        JGemsResourceManager.textureAssets = new TextureAssetsLoader();
         JGemsResourceManager.modelAssets = new ModelAssetsLoader();
         JGemsResourceManager.renderDataAssets = new RenderDataLoader();
         JGemsResourceManager.soundAssetsLoader = new SoundAssetsLoader();
-        this.getGlobalResources().addAssetsLoaders(JGemsResourceManager.renderAssets, JGemsResourceManager.modelAssets, JGemsResourceManager.renderDataAssets, JGemsResourceManager.soundAssetsLoader);
+        this.getGlobalResources().addAssetsLoaders(JGemsResourceManager.textureAssets, JGemsResourceManager.modelAssets, JGemsResourceManager.renderDataAssets, JGemsResourceManager.soundAssetsLoader);
     }
 
     public void initLocalResources() {

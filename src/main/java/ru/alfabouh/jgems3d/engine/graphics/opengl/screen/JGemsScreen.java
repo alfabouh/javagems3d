@@ -12,14 +12,14 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.alfabouh.jgems3d.engine.JGems;
 import ru.alfabouh.jgems3d.engine.audio.sound.SoundListener;
-import ru.alfabouh.jgems3d.engine.physics.world.timer.PhysicsTimer;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.JGemsScene;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.elements.UIText;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.elements.base.font.FontCode;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.immediate_gui.elements.base.font.GuiFont;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.utils.JGemsSceneUtils;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.SceneWorld;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.world.camera.ICamera;
+import ru.alfabouh.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIText;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.FontCode;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.timer.GameRenderTimer;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
 import ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window;
@@ -71,7 +71,7 @@ public class JGemsScreen implements IScreen {
             GL.createCapabilities();
             JGemsResourceManager.createShaders();
 
-            this.showGameLoadingScreen();
+            this.showGameLoadingScreen("System01");
             this.setScreenCallbacks();
             this.createObjects(this.getWindow());
 
@@ -103,7 +103,7 @@ public class JGemsScreen implements IScreen {
         this.transformationUtils = new TransformationUtils(this.window, JGemsSceneUtils.FOV, JGemsSceneUtils.Z_NEAR, JGemsSceneUtils.Z_FAR);
     }
 
-    private void createObjects(ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window window) {
+    private void createObjects(Window window) {
         this.controllerDispatcher = new JGemsControllerDispatcher(window);
         this.scene = new JGemsScene(this.getTransformationUtils(), this, new SceneWorld(JGems.get().getPhysicsWorld()));
     }
@@ -134,14 +134,14 @@ public class JGemsScreen implements IScreen {
         }
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         boolean flag = vidMode != null && JGems.get().getGameSettings().windowMode.getValue() == 0;
-        this.window = new ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window(new ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window.WindowProperties(flag ? vidMode.width() : ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window.defaultW, flag ? vidMode.height() : ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window.defaultH, JGems.get().toString()));
+        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : Window.defaultW, flag ? vidMode.height() : Window.defaultH, JGems.get().toString()), "/assets/jgems/icons/icon.png");
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new JGemsException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
-            int x = (vidMode.width() - ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window.defaultW) / 2;
-            int y = (vidMode.height() - ru.alfabouh.jgems3d.engine.graphics.opengl.screen.window.Window.defaultH) / 2;
+            int x = (vidMode.width() - Window.defaultW) / 2;
+            int y = (vidMode.height() - Window.defaultH) / 2;
             GLFW.glfwSetWindowPos(window, x, y);
         } else {
             return false;
@@ -183,8 +183,8 @@ public class JGemsScreen implements IScreen {
         this.getScene().getSceneRender().getShadowScene().createResources();
     }
 
-    public void showGameLoadingScreen() {
-        this.loadingScreen = new LoadingScreen();
+    public void showGameLoadingScreen(String title) {
+        this.loadingScreen = new LoadingScreen(title);
         this.loadingScreen.updateScreen();
     }
 
@@ -262,7 +262,7 @@ public class JGemsScreen implements IScreen {
     private void updateSound() {
         JGems.get().getSoundManager().update();
         if (JGems.get().isValidPlayer()) {
-            SoundListener.updateOrientationAndPosition(JGemsSceneUtils.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
+            //SoundListener.updateOrientationAndPosition(JGemsSceneUtils.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
         }
         SoundListener.updateListenerGain();
     }
@@ -311,13 +311,13 @@ public class JGemsScreen implements IScreen {
         private final GuiFont guiFont;
         private final ArrayList<String> lines;
 
-        public LoadingScreen() {
+        public LoadingScreen(String title) {
             SystemLogging.get().getLogManager().log("Loading screen");
             Font gameFont = JGemsResourceManager.createFontFromJAR("gamefont.ttf");
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(EngineSystem.ENG_NAME + " : " + EngineSystem.ENG_VER);
-            this.lines.add("System01...");
+            this.lines.add(title);
             this.lines.add("...");
         }
 
@@ -336,12 +336,12 @@ public class JGemsScreen implements IScreen {
         }
 
         private void addText(String s) {
-            this.lines.add(s);
-            int max = Math.max(((JGemsScreen.this.getWindowDimensions().y - 135) / 45), 4);
-            if (this.lines.size() > max) {
-                this.lines.remove(3);
-            }
-            this.updateScreen();
+             this.lines.add(s);
+             int max = Math.max(((JGemsScreen.this.getWindowDimensions().y - 135) / 45), 4);
+             if (this.lines.size() > max) {
+                     this.lines.remove(3);
+                 }
+             this.updateScreen();
         }
 
         public void clean() {

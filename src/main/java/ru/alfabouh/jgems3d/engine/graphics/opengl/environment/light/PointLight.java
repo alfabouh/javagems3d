@@ -2,15 +2,15 @@ package ru.alfabouh.jgems3d.engine.graphics.opengl.environment.light;
 
 import org.joml.Vector3f;
 import ru.alfabouh.jgems3d.engine.JGems;
+import ru.alfabouh.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.alfabouh.jgems3d.engine.physics.world.IWorld;
-import ru.alfabouh.jgems3d.engine.graphics.opengl.scene.objects.items.AbstractSceneItemObject;
 
 public class PointLight extends Light {
     private int attachedShadowSceneId = -1;
     private float brightness;
 
     public PointLight() {
-        super(new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(0.0f));
+        super();
     }
 
     public PointLight(Vector3f lightPos, Vector3f lightColor) {
@@ -25,16 +25,16 @@ public class PointLight extends Light {
         super(lightPos, lightColor, offset);
     }
 
-    public PointLight(AbstractSceneItemObject abstractSceneItemObject) {
-        super(abstractSceneItemObject);
+    public PointLight(AbstractSceneEntity abstractSceneEntity) {
+        super(abstractSceneEntity);
     }
 
-    public PointLight(AbstractSceneItemObject abstractSceneItemObject, Vector3f lightColor) {
-        super(abstractSceneItemObject, lightColor);
+    public PointLight(AbstractSceneEntity abstractSceneEntity, Vector3f lightColor) {
+        super(abstractSceneEntity, lightColor);
     }
 
-    public PointLight(AbstractSceneItemObject abstractSceneItemObject, Vector3f lightColor, Vector3f offset) {
-        super(abstractSceneItemObject, lightColor, offset);
+    public PointLight(AbstractSceneEntity abstractSceneEntity, Vector3f lightColor, Vector3f offset) {
+        super(abstractSceneEntity, lightColor, offset);
     }
 
     public int getAttachedShadowSceneId() {
@@ -72,8 +72,5 @@ public class PointLight extends Light {
 
     @Override
     public void onUpdate(IWorld iWorld) {
-        if (this.isAttached()) {
-            this.setLightPos(this.getAttachedTo().getRenderPosition());
-        }
     }
 }
