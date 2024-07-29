@@ -5,6 +5,7 @@ in vec2 out_texture;
 in vec3 mv_vertex_normal;
 in vec3 mv_vertex_pos;
 
+uniform bool use_texturing;
 uniform int texturing_code;
 
 uniform bool showFog;
@@ -38,7 +39,7 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
 
 void main()
 {
-    frag_color = ((texturing_code & (1 << 2)) != 0) ? vec4(texture(diffuse_map, out_texture).rgb, 1.0) : vec4(diffuse_color, 1.0);
+    frag_color = (use_texturing && (texturing_code & (1 << 2)) != 0) ? vec4(texture(diffuse_map, out_texture).rgb, 1.0) : vec4(diffuse_color, 1.0);
     if (selected) {
         frag_color *= vec4(1.25, 0.25, 0.25, 1.0);
     }

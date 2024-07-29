@@ -1,7 +1,6 @@
 in vec2 out_texture;
 layout (location = 0) out vec4 frag_color;
 
-uniform bool show_blood;
 uniform float w_tick;
 uniform vec3 color;
 
