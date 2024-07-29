@@ -1,0 +1,128 @@
+package ru.jgems3d.engine.graphics.opengl.rendering.utils;
+
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
+import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.resources.assets.materials.Material;
+import ru.jgems3d.engine.system.resources.assets.models.Model;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
+
+public class JGemsSceneUtils {
+    public static final float FOV = (float) Math.toRadians(60.0f);
+    public static final float Z_NEAR = 0.1f;
+    public static final float Z_FAR = 100.0f;
+
+    public static Matrix4f getMainCameraViewMatrix() {
+        return JGems.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
+    }
+
+    public static Matrix4f getMainPerspectiveMatrix() {
+        return JGems.get().getScreen().getTransformationUtils().getPerspectiveMatrix();
+    }
+
+    public static Matrix4f getMainOrthographicMatrix() {
+        return JGems.get().getScreen().getTransformationUtils().getOrthographicMatrix();
+    }
+
+    public static boolean isSceneActive() {
+        return JGems.get().getScreen().getWindow().isActive();
+    }
+
+    public static void setCamera(ICamera camera) {
+        JGems.get().getScreen().getScene().setRenderCamera(camera);
+    }
+
+    @SuppressWarnings("all")
+    public static void renderModel(Model<?> model, int code) {
+        for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
+            GL30.glBindVertexArray(modelNode.getMesh().getVao());
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glEnableVertexAttribArray(a);
+            }
+            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glDisableVertexAttribArray(a);
+            }
+            GL30.glBindVertexArray(0);
+        }
+    }
+
+    public static void renderSceneObject(IModeledSceneObject sceneObject) {
+        JGemsSceneUtils.renderSceneObject(sceneObject, null);
+    }
+
+    public static void renderSceneObject(IModeledSceneObject sceneObject, Material overMaterial) {
+        if (sceneObject != null) {
+            Model<Format3D> model = sceneObject.getModel();
+            if (model == null || model.getMeshDataGroup() == null) {
+                return;
+            }
+            JGemsShaderManager shaderManager = sceneObject.getMeshRenderData().getShaderManager();
+            shaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), model);
+            shaderManager.getUtils().performConstraintsOnShader(sceneObject.getMeshRenderData());
+            if (shaderManager.checkUniformInGroup("alpha_discard")) {
+                shaderManager.performUniform("alpha_discard", sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue());
+                if (sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue() > 0) {
+                    GL30.glDisable(GL30.GL_BLEND);
+                } else {
+                    if (sceneObject.getMeshRenderData().getRenderAttributes().isHasTransparency()) {
+                        GL30.glEnable(GL30.GL_BLEND);
+                    }
+                }
+            }
+            for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
+                shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
+                GL30.glBindVertexArray(modelNode.getMesh().getVao());
+                for (int a : modelNode.getMesh().getAttributePointers()) {
+                    GL30.glEnableVertexAttribArray(a);
+                }
+                GL30.glDrawElements(GL30.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+                for (int a : modelNode.getMesh().getAttributePointers()) {
+                    GL30.glDisableVertexAttribArray(a);
+                }
+                GL30.glBindVertexArray(0);
+            }
+            GL30.glDisable(GL30.GL_BLEND);
+        }
+    }
+
+    public static void checkGLErrors() {
+        int errorCode;
+        while ((errorCode = GL11.glGetError()) != GL11.GL_NO_ERROR) {
+            String error;
+            switch (errorCode) {
+                case GL11.GL_INVALID_ENUM:
+                    error = "INVALID_ENUM";
+                    break;
+                case GL11.GL_INVALID_VALUE:
+                    error = "INVALID_VALUE";
+                    break;
+                case GL11.GL_INVALID_OPERATION:
+                    error = "INVALID_OPERATION";
+                    break;
+                case GL11.GL_STACK_OVERFLOW:
+                    error = "STACK_OVERFLOW";
+                    break;
+                case GL11.GL_STACK_UNDERFLOW:
+                    error = "STACK_UNDERFLOW";
+                    break;
+                case GL11.GL_OUT_OF_MEMORY:
+                    error = "OUT_OF_MEMORY";
+                    break;
+                case GL30.GL_INVALID_FRAMEBUFFER_OPERATION:
+                    error = "INVALID_FRAMEBUFFER_OPERATION";
+                    break;
+                default:
+                    error = "UNKNOWN";
+                    break;
+            }
+            JGemsHelper.getLogger().warn("GL ERROR: " + error);
+        }
+    }
+}
