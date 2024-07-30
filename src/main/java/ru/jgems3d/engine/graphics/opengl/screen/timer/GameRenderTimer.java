@@ -2,7 +2,7 @@ package ru.jgems3d.engine.graphics.opengl.screen.timer;
 
 import ru.jgems3d.engine.JGems;
 
-public class GameRenderTimer {
+public final class GameRenderTimer {
     private boolean shouldBeErased;
     private double lastTime;
     private float deltaTime;
@@ -20,7 +20,12 @@ public class GameRenderTimer {
         this.accumulatedTime += this.deltaTime;
     }
 
-    public void delete() {
+    public void reset() {
+        this.lastTime = JGems.glfwTime();
+        this.accumulatedTime = 0.0f;
+    }
+
+    public void dispose() {
         this.shouldBeErased = true;
     }
 

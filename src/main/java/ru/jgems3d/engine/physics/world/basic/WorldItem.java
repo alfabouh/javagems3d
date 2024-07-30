@@ -23,7 +23,6 @@ public abstract class WorldItem implements IWorldObject {
     private final Vector3f prevPosition;
     private final String itemName;
     private final int itemId;
-  //  private final List<Light> attachedLights;
     private int spawnTick;
     private boolean isDead;
     private boolean spawned;
@@ -32,7 +31,6 @@ public abstract class WorldItem implements IWorldObject {
         this.itemName = (itemName == null || itemName.isEmpty()) ? "default_item" : itemName;
 
         this.world = world;
-      //  this.attachedLights = new ArrayList<>();
         this.spawned = false;
         this.isDead = false;
         this.itemId = WorldItem.globalId++;
@@ -74,7 +72,6 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public void onDestroy(IWorld iWorld) {
-   //     this.clearLights();
         if (!this.isParticle()) {
             JGemsHelper.getLogger().log("Removed entity from world - [ " + this + " ]");
         }
@@ -143,34 +140,6 @@ public abstract class WorldItem implements IWorldObject {
         return this instanceof IControllable && ((IControllable) this).isValidController();
     }
 
-   //public final List<Light> getAttachedLights() {
-   //    return new ArrayList<>(this.attachedLights);
-   //}
-
-   //public final boolean hasLight() {
-   //    return !this.attachedLights.isEmpty();
-   //}
-
-   //public final void disableLight(int i) {
-   //    this.getAttachedLights().get(i).stop();
-   //}
-
-   //public final void clearLights() {
-   //    for (Light light : this.attachedLights) {
-   //        light.stop();
-   //    }
-   //    this.attachedLights.clear();
-   //}
-
-   // public final Light attachLight(Light light) {
-   //     this.attachedLights.add(light);
-   //     if (this.relativeRenderObject() == null) {
-   //         throw new JGemsException("Couldn't attach light to NULL render object!");
-   //     }
-   //     light.setAttachedTo(this.relativeRenderObject());
-   //     return light;
-   // }
-
     public boolean isDead() {
         return this.isDead;
     }
@@ -187,16 +156,7 @@ public abstract class WorldItem implements IWorldObject {
         return this.itemName;
     }
 
-  //  public boolean tryAttachRenderCamera(AttachedCamera attachedCamera) {
-  //      if (this.relativeRenderObject() == null) {
-  //          return false;
-  //      }
-  //      attachedCamera.attachCameraToItem(this.relativeRenderObject());
-  //      return true;
-  //  }
-
     public boolean isParticle() {
-        //return this instanceof ParticleFX;
         return false;
     }
 
