@@ -1,19 +1,19 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
 
 import java.util.List;
 
 public class WorldForwardRender extends SceneRenderBase {
-    public WorldForwardRender(JGemsOpenGLRenderer sceneRenderConveyor) {
-        super(1, sceneRenderConveyor, new RenderGroup("WORLD_FORWARD"));
+    public WorldForwardRender(SceneData sceneData) {
+        super(1, sceneData, new RenderGroup("WORLD_FORWARD"));
     }
 
     public void onRender(float partialTicks) {
-        this.render(partialTicks, this.getSceneWorld().getFilteredEntityList(false));
+        this.render(partialTicks, this.getSceneData().getSceneWorld().getFilteredEntityList(false));
     }
 
     public void onStartRender() {
@@ -24,8 +24,8 @@ public class WorldForwardRender extends SceneRenderBase {
         super.onStopRender();
     }
 
-    private void render(float partialTicks, List<IModeledSceneObject> renderObjects) {
-        for (IModeledSceneObject entityItem : renderObjects) {
+    private void render(float partialTicks, List<IModeledSceneObjectKeeper> renderObjects) {
+        for (IModeledSceneObjectKeeper entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {
                     if (entityItem.getMeshRenderData().getRenderAttributes().isHasTransparency()) {

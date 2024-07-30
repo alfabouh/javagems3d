@@ -1,9 +1,17 @@
 package ru.jgems3d.engine;
 
+import org.joml.Math;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
+import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
+import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
+import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
+import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.ParticleFX;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
@@ -20,12 +28,13 @@ import ru.jgems3d.engine.physics.world.triggers.zones.base.ITriggerZone;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
+import ru.jgems3d.engine.system.resources.assets.materials.samples.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.localisation.Lang;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.exceptions.JGemsException;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
@@ -36,7 +45,25 @@ import ru.jgems3d.logger.managers.LoggingManager;
 
 import java.util.List;
 
+@SuppressWarnings("all")
 public abstract class JGemsHelper {
+    public static ICamera getCurrentCamera() {
+        return JGemsHelper.getScreen().getCamera();
+    }
+
+    public static SimpleParticle createSimpleParticle(ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
+        return ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), particleAttributes, particleTexturePack, pos, scaling);
+    }
+
+    public static ParticleFX emitParticle(ParticleFX particleFX) {
+        JGemsHelper.getParticlesEmitter().emitParticle(particleFX);
+        return particleFX;
+    }
+
+    public static ParticlesEmitter getParticlesEmitter() {
+        return JGemsHelper.getScreen().getScene().getSceneWorld().getParticlesEmitter();
+    }
+
     public static Lang createLocalisation(String langName, JGPath path) {
         return Localisation.createLocalisation(langName, path);
     }
@@ -46,7 +73,7 @@ public abstract class JGemsHelper {
     }
 
     public static Localisation getLocalisation() {
-        return JGems.get().getLocalisation();
+        return JGems3D.get().getLocalisation();
     }
 
     public static GameResources getGlobalResources() {
@@ -58,7 +85,7 @@ public abstract class JGemsHelper {
     }
 
     public static JGemsResourceManager getJGemsResourceManager() {
-        return JGems.get().getResourceManager();
+        return JGems3D.get().getResourceManager();
     }
 
     public static void setWindowFocus(boolean focus) {
@@ -93,11 +120,11 @@ public abstract class JGemsHelper {
     }
 
     public static JGemsSettings getGameSettings() {
-        return JGems.get().getGameSettings();
+        return JGems3D.get().getGameSettings();
     }
 
     public static void recreateResources() {
-        JGems.get().recreateResources();
+        JGems3D.get().recreateResources();
     }
 
     public void detachController() {
@@ -105,7 +132,7 @@ public abstract class JGemsHelper {
     }
 
     public static Player getCurrentPlayer() {
-        return JGems.get().getPlayer();
+        return JGems3D.get().getPlayer();
     }
 
     public static JGemsControllerDispatcher getControllerDispatcher() {
@@ -117,51 +144,51 @@ public abstract class JGemsHelper {
     }
 
     public static void closeGame() {
-        JGems.get().destroyGame();
+        JGems3D.get().destroyGame();
     }
 
     public static void pauseGameAndLockUnPausing(boolean pauseSounds) {
-        JGems.get().pauseGameAndLockUnPausing(pauseSounds);
+        JGems3D.get().pauseGameAndLockUnPausing(pauseSounds);
     }
 
     public static void unPauseGameAndUnLockUnPausing() {
-        JGems.get().unPauseGameAndUnLockUnPausing();
+        JGems3D.get().unPauseGameAndUnLockUnPausing();
     }
 
     public static void pauseGame(boolean pauseSounds) {
-        JGems.get().pauseGame(pauseSounds);
+        JGems3D.get().pauseGame(pauseSounds);
     }
 
     public static void unPauseGame() {
-        JGems.get().unPauseGame();
+        JGems3D.get().unPauseGame();
     }
 
     public static void loadMap(String mapName) {
-        JGems.get().loadMap(mapName);
+        JGems3D.get().loadMap(mapName);
     }
 
     public static void loadMap(IMapLoader mapLoader) {
-        JGems.get().loadMap(mapLoader);
+        JGems3D.get().loadMap(mapLoader);
     }
 
     public static void destroyMap() {
-        JGems.get().destroyMap();
+        JGems3D.get().destroyMap();
     }
 
     public static void destroyGame() {
-        JGems.get().destroyGame();
+        JGems3D.get().destroyGame();
     }
 
     public static void removeUIPanel() {
-        JGems.get().removeUIPanel();
+        JGems3D.get().removeUIPanel();
     }
 
     public static void openUIPanel(PanelUI ui) {
-        JGems.get().openUIPanel(ui);
+        JGems3D.get().openUIPanel(ui);
     }
 
     public static void addPropInScene(SceneProp sceneProp) {
-        JGems.get().getScreen().getScene().getSceneWorld().addObjectInWorld(sceneProp);
+        JGems3D.get().getScreen().getScene().getSceneWorld().addObjectInWorld(sceneProp);
     }
 
     public static void addItem(WorldItem worldItem, RenderObjectData renderData) {
@@ -196,9 +223,13 @@ public abstract class JGemsHelper {
         JGemsHelper.getSceneWorld().addWorldItemLight(worldItem, light);
     }
 
+    public static Environment getWorldEnvironment() {
+        return JGemsHelper.getSceneWorld().getEnvironment();
+    }
+
     public static void addLight(Light light) {
         light.start();
-        JGemsHelper.getSceneWorld().getEnvironment().getLightManager().addLight(light);
+        JGemsHelper.getWorldEnvironment().getLightManager().addLight(light);
     }
 
     @SuppressWarnings("all")
@@ -212,19 +243,19 @@ public abstract class JGemsHelper {
 
     //================================================
     public static JGemsScreen getScreen() {
-        return JGems.get().getScreen();
+        return JGems3D.get().getScreen();
     }
 
     public static SceneWorld getSceneWorld() {
-        return JGems.get().getSceneWorld();
+        return JGems3D.get().getSceneWorld();
     }
 
     public static PhysicsWorld getPhysicsWorld() {
-        return JGems.get().getPhysicsWorld();
+        return JGems3D.get().getPhysicsWorld();
     }
 
-    public static JGems getCoreObject() {
-        return JGems.get();
+    public static JGems3D getCoreObject() {
+        return JGems3D.get();
     }
     
     public static LoggingManager getLogger() {
@@ -291,5 +322,38 @@ public abstract class JGemsHelper {
             a[i + 2] = list.get(i).z;
         }
         return a;
+    }
+    public static float lerp(float a, float b, float f)
+    {
+        return a + f * (b - a);
+    }
+
+    public static int clamp(int d1, int d2, int d3) {
+        return d1 < d2 ? d2 : (int) Math.min(d1, d3);
+    }
+
+    public static float clamp(float d1, float d2, float d3) {
+        return d1 < d2 ? d2 : Math.min(d1, d3);
+    }
+
+    public static double clamp(double d1, double d2, double d3) {
+        return d1 < d2 ? d2 : Math.min(d1, d3);
+    }
+
+    public static Vector3f convertV3DV3F(Vector3f vector3f) {
+        return new Vector3f(vector3f.x, vector3f.y, vector3f.z);
+    }
+
+    public static Vector3f convertV3FV3D(Vector3f vector3f) {
+        return new Vector3f(vector3f);
+    }
+
+    public static Vector3f calcLookVector(Vector3f rotations) {
+        float x = rotations.x;
+        float y = rotations.y;
+        float lX = Math.sin(y) * Math.cos(x);
+        float lY = -Math.sin(x);
+        float lZ = -Math.cos(y) * Math.cos(x);
+        return new Vector3f(lX, lY, lZ);
     }
 }

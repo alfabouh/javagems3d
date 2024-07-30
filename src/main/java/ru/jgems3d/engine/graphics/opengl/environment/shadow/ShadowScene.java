@@ -4,8 +4,7 @@ import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
-import ru.jgems3d.engine.JGems;
-import ru.jgems3d.engine.math.MathHelper;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
@@ -49,7 +48,7 @@ public class ShadowScene {
     }
 
     private static float qualityMultiplier() {
-        int i = (int) MathHelper.clamp(JGems.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
+        int i = (int) JGemsHelper.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 
@@ -89,7 +88,7 @@ public class ShadowScene {
 
     private void updateCascadeShadows(List<CascadeShadow> cascadeShadows) {
         final int dimensions = this.getShadowDim().x;
-        JGemsScene scene = JGems.get().getScreen().getScene();
+        JGemsScene scene = JGems3D.get().getScreen().getScene();
 
         Matrix4f view = scene.getTransformationUtils().getMainCameraViewMatrix();
         Matrix4f projection = scene.getTransformationUtils().getPerspectiveMatrix();
@@ -261,7 +260,7 @@ public class ShadowScene {
             this.getShadowPostFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
             this.getShadowFBO2().getTexturePrograms().get(i).bindTexture(GL30.GL_TEXTURE_2D);
             GL30.glActiveTexture(GL30.GL_TEXTURE0);
-            shaderManager.performUniform("blur", JGems.get().getGameSettings().shadowQuality.getValue() + 1.0f);
+            shaderManager.performUniform("blur", JGems3D.get().getGameSettings().shadowQuality.getValue() + 1.0f);
             shaderManager.performUniform("texture_sampler", 0);
             JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         }

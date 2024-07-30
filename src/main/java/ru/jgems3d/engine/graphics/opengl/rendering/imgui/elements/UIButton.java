@@ -5,7 +5,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIAction;
@@ -121,7 +121,7 @@ public class UIButton extends UIInteractiveElement {
     @Override
     protected void onClicked(Vector2f mouseCoordinates) {
         if (this.onClick != null) {
-            JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
+            JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
             this.onClick.action();
         }
     }

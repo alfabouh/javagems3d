@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorldObject, IWorldTicked {
+public abstract class AbstractSceneEntity implements IModeledSceneObjectKeeper, IWorldObject, IWorldTicked {
     private final List<Light> lightList;
     private final SceneWorld sceneWorld;
     private final WorldItem worldItem;
@@ -64,9 +64,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        if (!this.getWorldItem().isParticle()) {
-            JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
-        }
+        JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
         if (this.hasRender()) {
             if (this.getRenderData().getEntityModelConstructor() != null) {
                 this.setModel(new Model<>(new Format3D(), this.getRenderData().getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
@@ -79,9 +77,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        if (!this.getWorldItem().isParticle()) {
-            JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
-        }
+        JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
         if (this.hasRender()) {
             this.renderFabric().onStopRender(this);
         }
@@ -89,7 +85,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
     }
 
     public void clearLights() {
-        Iterator<Light> lightIterator = this.getLightList().iterator();
+        Iterator<Light> lightIterator = this.getLightsList().iterator();
         while (lightIterator.hasNext()) {
             Light l = lightIterator.next();
             l.stop();
@@ -99,16 +95,16 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
     }
 
     public void addLight(Light light) {
-        this.getLightList().add(light);
+        this.getLightsList().add(light);
         light.start();
         this.onAddLight(light);
     }
 
     public void removeLight(Light light) {
-        if (!this.getLightList().contains(light)) {
+        if (!this.getLightsList().contains(light)) {
             throw new JGemsException("Couldn't remove light. Entity doesn't keep it. " + this);
         }
-        this.getLightList().remove(light);
+        this.getLightsList().remove(light);
         light.stop();
         this.onRemoveLight(light);
     }
@@ -206,7 +202,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         return this.getWorldItem() instanceof IControllable && ((IControllable) this.getWorldItem()).isValidController();
     }
 
-    public List<Light> getLightList() {
+    public List<Light> getLightsList() {
         return this.lightList;
     }
 

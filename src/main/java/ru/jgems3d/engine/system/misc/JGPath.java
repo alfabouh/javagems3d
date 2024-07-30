@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.files;
+package ru.jgems3d.engine.system.misc;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;

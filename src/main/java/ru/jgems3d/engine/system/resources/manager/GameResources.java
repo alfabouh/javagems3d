@@ -1,10 +1,10 @@
 package ru.jgems3d.engine.system.resources.manager;
 
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.exceptions.JGemsException;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
@@ -38,7 +38,7 @@ public class GameResources {
     }
 
     public MeshDataGroup createMesh(JGPath modelPath) {
-        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading model: " + modelPath);
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading model: " + modelPath);
         return ModelLoader.createMesh(this, modelPath);
     }
 
@@ -47,12 +47,12 @@ public class GameResources {
     }
 
     public TextureSample createTexture(JGPath path, boolean interpolate, int wrapping) {
-        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
         return TextureSample.createTexture(this.getResourceCache(), path, interpolate, wrapping);
     }
 
     public TextureSample createTextureOrDefault(TextureSample defaultT, JGPath path, boolean interpolate, int wrapping) {
-        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
         try {
             return TextureSample.createTexture(this.getResourceCache(), path, interpolate, wrapping);
         } catch (JGemsException e) {

@@ -3,7 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -56,7 +56,7 @@ public abstract class UIElement implements UIScalable {
     }
 
     protected IController getController() {
-        return JGems.get().getScreen().getControllerDispatcher().getCurrentController();
+        return JGems3D.get().getScreen().getControllerDispatcher().getCurrentController();
     }
 
     public float getZValue() {

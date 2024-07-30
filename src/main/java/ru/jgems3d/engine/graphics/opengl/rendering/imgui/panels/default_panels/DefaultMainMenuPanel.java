@@ -5,9 +5,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
-import ru.jgems3d.engine.JGems;
-import ru.jgems3d.engine.audio.sound.data.SoundType;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
@@ -29,12 +27,12 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
     }
 
     public static void renderMenuBackGround(Vector3f color) {
-        Window window = JGems.get().getScreen().getWindow();
+        Window window = JGems3D.get().getScreen().getWindow();
         Vector2f res = new Vector2f(window.getWindowDimensions().x, window.getWindowDimensions().y);
         Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0);
         JGemsResourceManager.globalShaderAssets.menu.bind();
         JGemsResourceManager.globalShaderAssets.menu.performUniform("color", color);
-        JGemsResourceManager.globalShaderAssets.menu.performUniform("w_tick", JGems.get().getScreen().getRenderTicks());
+        JGemsResourceManager.globalShaderAssets.menu.performUniform("w_tick", JGems3D.get().getScreen().getRenderTicks());
         JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         JGemsResourceManager.globalShaderAssets.menu.unBind();
@@ -61,17 +59,17 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
 
         immediateUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().loadMap(new DefaultMap());
+                    JGems3D.get().loadMap(new DefaultMap());
                 });
 
-        immediateUI.buttonUI(JGems.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
+        immediateUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().openUIPanel(new DefaultSettingsPanel(this));
+                    JGems3D.get().openUIPanel(new DefaultSettingsPanel(this));
                 });
 
-        immediateUI.buttonUI(JGems.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
+        immediateUI.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().openUIPanel(new DefaultLeaveConfirmationPanel(this));
+                    JGems3D.get().openUIPanel(new DefaultLeaveConfirmationPanel(this));
                 });
     }
 
@@ -80,12 +78,12 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
         int windowH = window.getWindowDimensions().y;
 
         DefaultMainMenuPanel.renderMenuBackGround(new Vector3f(1.0f));
-        immediateUI.textUI(JGems.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);
+        immediateUI.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);
     }
 
     @Override
     public void onConstruct(ImmediateUI immediateUI) {
-        this.createFBOs(JGems.get().getScreen().getWindowDimensions());
+        this.createFBOs(JGems3D.get().getScreen().getWindowDimensions());
     }
 
     @Override

@@ -5,10 +5,8 @@ layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
 
 out vec2 texture_coordinates;
-out vec3 m_vertex_normal;
 out vec3 mv_vertex_normal;
 out vec3 mv_vertex_pos;
-out vec4 out_model_position;
 out mat3 TBN;
 
 layout (std140, binding = 2) uniform Misc {
@@ -32,8 +30,5 @@ void main()
 
     texture_coordinates = aTexture;
     mv_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;
-    m_vertex_normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;
     mv_vertex_pos = mv_pos.xyz;
-
-    out_model_position = model_matrix * vec4(aPosition, 1.0f);
 }

@@ -2,7 +2,7 @@ package ru.jgems3d.engine.system.controller.dispatcher;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
@@ -26,7 +26,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     }
 
     public static JGemsBindingManager bindingManager() {
-        return (JGemsBindingManager) JGems.get().getScreen().getControllerDispatcher().getCurrentController().getBindingManager();
+        return (JGemsBindingManager) JGems3D.get().getScreen().getControllerDispatcher().getCurrentController().getBindingManager();
     }
 
     public static IController defaultController() {
@@ -70,7 +70,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     public void updateController(IWindow window) {
         if (this.getCurrentController() != null) {
             this.getCurrentController().updateControllerState(window);
-            if (!JGems.get().getEngineState().isPaused()) {
+            if (!JGems3D.get().getEngineState().isPaused()) {
                 if (this.getCurrentControlledItem() != null) {
                     if (window.isInFocus() && this.getCurrentControlledItem() instanceof IInventoryOwner) {
                         this.getCurrentController().updateItemWithInventory(((IInventoryOwner) this.getCurrentControlledItem()));

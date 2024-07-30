@@ -4,8 +4,7 @@ import javafx.util.Pair;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
-import ru.jgems3d.engine.math.MathHelper;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
@@ -26,7 +25,6 @@ import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 import ru.jgems3d.toolbox.map_table.TBoxMapTable;
 import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
-import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.ToolBox;
@@ -214,7 +212,7 @@ public class TBoxScene {
             TBoxResourceManager.shaderAssets.world_lines.unBind();
             modelSun.clean();
             if (editorContent.currentSelectedObject != null) {
-                Model<Format3D> model = MeshHelper.generateWirebox3DModel(MathHelper.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), MathHelper.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
+                Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
                 TBoxResourceManager.shaderAssets.world_lines.bind();
                 TBoxResourceManager.shaderAssets.world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderAssets.world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
@@ -327,10 +325,10 @@ public class TBoxScene {
         MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
         Vector3f camRot = this.getCamera().getCamRotation();
         Vector3f camPos = this.getCamera().getCamPosition();
-        Vector3f camTo = MathHelper.calcLookVector(camRot).normalize();
+        Vector3f camTo = JGemsHelper.calcLookVector(camRot).normalize();
 
         Format3D format3D = new Format3D();
-        format3D.setPosition(new Vector3f(camPos).add(MathHelper.calcLookVector(camRot).mul(5.0f)));
+        format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.calcLookVector(camRot).mul(5.0f)));
 
         Set<TBoxScene3DObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
         List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < 15.0f).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());

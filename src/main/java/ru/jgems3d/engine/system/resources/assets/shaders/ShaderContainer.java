@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.assets.shaders;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 
 import java.util.HashSet;
 import java.util.List;

@@ -8,15 +8,15 @@ vec4 hdr(vec4, float, float);
 
 void main()
 {
-    frag_color = hdr(texture(texture_sampler, out_texture), 4.0, 0.3);
+    frag_color = hdr(texture(texture_sampler, out_texture), 4., 0.3);
 }
 
 vec4 hdr(vec4 in_col, float exposure, float gamma) {
     vec3 rgb = in_col.rgb;
     vec4 blurSampler = texture(blur_sampler, out_texture);
     vec3 bl_c = blurSampler.rgb;
-    rgb += bl_c * 1f;
+    rgb += bl_c * 1.;
     vec3 mapped = vec3(1.) - exp(-rgb * exposure);
-    mapped = pow(mapped, vec3(1.0 / gamma));
+    mapped = pow(mapped, vec3(1. / gamma));
     return vec4(mapped, in_col.a);
 }

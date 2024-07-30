@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.SoundManager;
 
 public class SoundListener {
@@ -25,6 +25,6 @@ public class SoundListener {
     }
 
     public static void updateListenerGain() {
-        AL10.alListenerf(AL10.AL_GAIN, JGems.get().getGameSettings().soundGain.getValue());
+        AL10.alListenerf(AL10.AL_GAIN, JGems3D.get().getGameSettings().soundGain.getValue());
     }
 }

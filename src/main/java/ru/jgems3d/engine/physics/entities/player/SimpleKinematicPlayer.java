@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObjectPlayer;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.inventory.Inventory;
@@ -245,7 +245,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
     @Override
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
-        if (JGems.DEBUG_MODE) {
+        if (JGems3D.DEBUG_MODE) {
             if (JGemsControllerDispatcher.bindingManager().keyBlock1.isClicked()) {
                 BtDynamicMeshBody entityPropInfo = new BtDynamicMeshBody(JGemsResourceManager.globalModelAssets.cube, this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "test");
                 JGemsHelper.addItem(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);

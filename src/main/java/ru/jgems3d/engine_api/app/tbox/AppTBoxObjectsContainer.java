@@ -2,10 +2,9 @@ package ru.jgems3d.engine_api.app.tbox;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.jgems3d.engine.math.Pair;
+import ru.jgems3d.engine.system.misc.Pair;
 import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
-import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 
 import java.util.HashMap;
 

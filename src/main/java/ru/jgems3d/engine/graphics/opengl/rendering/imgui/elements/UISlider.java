@@ -3,7 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import ru.jgems3d.engine.math.MathHelper;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIInteractiveElement;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIScalable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
@@ -128,7 +128,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
 
     @Override
     protected void onClicked(Vector2f mouseCoordinates) {
-        float value = MathHelper.clamp((mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
+        float value = JGemsHelper.clamp((mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
         this.setOptionValue(value);
     }
 

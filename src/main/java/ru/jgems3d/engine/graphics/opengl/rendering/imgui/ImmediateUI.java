@@ -3,7 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.imgui;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIButton;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIPictureSizable;
@@ -78,8 +78,8 @@ public final class ImmediateUI {
     }
 
     public static float GET_SCREEN_NORMALIZED_SCALING() {
-        double width = JGems.get().getScreen().getWindowDimensions().x;
-        double height = JGems.get().getScreen().getWindowDimensions().y;
+        double width = JGems3D.get().getScreen().getWindowDimensions().x;
+        double height = JGems3D.get().getScreen().getWindowDimensions().y;
         float f1 = (float) (width / Window.defaultW);
         float f2 = (float) (height / Window.defaultH);
         float f1_r = (float) Math.max(Math.ceil(f1 * 2.0f) / 2.0f, 1.0f);

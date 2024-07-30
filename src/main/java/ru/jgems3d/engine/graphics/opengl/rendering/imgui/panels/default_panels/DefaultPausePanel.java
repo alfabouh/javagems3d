@@ -2,7 +2,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels;
 
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
@@ -21,21 +21,21 @@ public class DefaultPausePanel extends AbstractPanelUI {
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
 
-        immediateUI.buttonUI(JGems.get().I18n("menu.pause.continue"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+        immediateUI.buttonUI(JGems3D.get().I18n("menu.pause.continue"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().unPauseGame();
-                    JGems.get().getScreen().getWindow().setInFocus(true);
+                    JGems3D.get().unPauseGame();
+                    JGems3D.get().getScreen().getWindow().setInFocus(true);
                     immediateUI.setPanel(new DefaultGamePanel(null));
                 });
 
-        immediateUI.buttonUI(JGems.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
+        immediateUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().openUIPanel(new DefaultSettingsPanel(this));
+                    JGems3D.get().openUIPanel(new DefaultSettingsPanel(this));
                 });
 
-        immediateUI.buttonUI(JGems.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
+        immediateUI.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems.get().destroyMap();
+                    JGems3D.get().destroyMap();
                 });
     }
 }

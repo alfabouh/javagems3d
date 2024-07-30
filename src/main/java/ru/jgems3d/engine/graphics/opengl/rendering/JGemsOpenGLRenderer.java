@@ -4,16 +4,18 @@ import org.joml.*;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
+import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.TextureProgram;
-import ru.jgems3d.engine.math.MathHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.*;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
@@ -43,13 +45,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JGemsOpenGLRenderer {
+public final class JGemsOpenGLRenderer {
     private static final int SSAO_NOISE_SIZE = 4;
     public static float PSX_SCREEN_OFFSET = 160.0f;
     private final DIMGuiRenderJGems dearImGuiRender;
     private final GuiRender guiRender;
     private final InventoryRender inventoryRender;
-    private final JGemsScene.SceneData sceneData;
+    private final SceneData sceneData;
     private final FBOTexture2DProgram fboPsx;
     private final FBOTexture2DProgram fboBlur;
     private final FBOTexture2DProgram sceneFbo;
@@ -64,12 +66,12 @@ public class JGemsOpenGLRenderer {
     private TextureProgram ssaoKernelTexture;
     private TextureProgram ssaoBufferTexture;
 
-    public JGemsOpenGLRenderer(JGemsScene.SceneData sceneData) {
+    public JGemsOpenGLRenderer(SceneData sceneData) {
         this.sceneRenderBases_deferred = new ArrayList<>();
         this.sceneRenderBases_forward = new ArrayList<>();
 
-        this.guiRender = new GuiRender(this);
-        this.inventoryRender = new InventoryRender(this);
+        this.guiRender = new GuiRender(sceneData);
+        this.inventoryRender = new InventoryRender(sceneData);
 
         this.sceneData = sceneData;
 
@@ -83,7 +85,7 @@ public class JGemsOpenGLRenderer {
 
         this.createResources(this.getWindowDimensions());
 
-        this.dearImGuiRender = new DIMGuiRenderJGems(JGems.get().getScreen().getWindow(), JGemsResourceManager.getGlobalGameResources().getResourceCache());
+        this.dearImGuiRender = new DIMGuiRenderJGems(JGems3D.get().getScreen().getWindow(), JGemsResourceManager.getGlobalGameResources().getResourceCache());
         this.wantsToTakeScreenshot = false;
     }
 
@@ -150,16 +152,16 @@ public class JGemsOpenGLRenderer {
         TextureProgram textureProgram = new TextureProgram();
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
-            float x = JGems.random.nextFloat() * 2.0f - 1.0f;
-            float y = JGems.random.nextFloat() * 2.0f - 1.0f;
-            float z = JGems.random.nextFloat();
+            float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;
+            float y = JGems3D.random.nextFloat() * 2.0f - 1.0f;
+            float z = JGems3D.random.nextFloat();
 
             Vector3f sample = new Vector3f(x, y, z);
             sample.normalize();
-            sample.mul(JGems.random.nextFloat());
+            sample.mul(JGems3D.random.nextFloat());
 
             float scale = (float) i / ((float) size);
-            scale = MathHelper.lerp(0.1f, 1.0f, scale * scale);
+            scale = JGemsHelper.lerp(0.1f, 1.0f, scale * scale);
             sample.mul(scale);
 
             floatBuffer.put(sample.x);
@@ -177,8 +179,8 @@ public class JGemsOpenGLRenderer {
         TextureProgram textureProgram = new TextureProgram();
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
-            float x = JGems.random.nextFloat() * 2.0f - 1.0f;
-            float y = JGems.random.nextFloat() * 2.0f - 1.0f;
+            float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;
+            float y = JGems3D.random.nextFloat() * 2.0f - 1.0f;
             floatBuffer.put(x);
             floatBuffer.put(y);
             floatBuffer.put(0.0f);
@@ -201,13 +203,14 @@ public class JGemsOpenGLRenderer {
     }
 
     private void fillScene() {
-        this.sceneRenderBases_forward.add(new WorldForwardRender(this));
-        this.sceneRenderBases_forward.add(new WorldTransparentRender(this));
-        this.sceneRenderBases_forward.add(new SkyRender(this));
-        this.sceneRenderBases_forward.add(new DebugRender(this));
+        this.sceneRenderBases_forward.add(new WorldForwardRender(this.getSceneData()));
+        this.sceneRenderBases_forward.add(new WorldTransparentRender(this.getSceneData()));
+        this.sceneRenderBases_forward.add(new SkyRender(this.getSceneData()));
+        this.sceneRenderBases_forward.add(new DebugRender(this.getSceneData()));
 
-        this.sceneRenderBases_deferred.add(new WorldRenderLiquids(this));
-        this.sceneRenderBases_deferred.add(new WorldDeferredRender(this));
+        this.sceneRenderBases_deferred.add(new LiquidsRender(this.getSceneData()));
+        this.sceneRenderBases_deferred.add(new WorldDeferredRender(this.getSceneData()));
+        this.sceneRenderBases_deferred.add(new ParticlesRender(this.getSceneData()));
     }
 
     public void onStartRender() {
@@ -261,9 +264,9 @@ public class JGemsOpenGLRenderer {
             this.guiRender.onRender(partialTicks);
             return;
         }
+        JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(this.sceneData.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
 
         try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y), 0)) {
-            JGemsOpenGLRenderer.getGameUboShader().bind();
             this.updateUBOs();
             this.getSceneData().getSceneWorld().getEnvironment().onUpdate(this.getSceneData().getSceneWorld());
 
@@ -273,7 +276,7 @@ public class JGemsOpenGLRenderer {
                 this.getSceneData().getSceneWorld().getEnvironment().setFog(this.getSceneData().getSceneWorld().getEnvironment().getWorldFog());
             }
 
-            if (JGems.get().isPaused()) {
+            if (JGems3D.get().isPaused()) {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
                 this.guiRender.onRender(partialTicks);
             } else {
@@ -287,8 +290,6 @@ public class JGemsOpenGLRenderer {
                 this.inventoryRender.onRender(partialTicks);
                 this.guiRender.onRender(partialTicks);
             }
-
-            JGemsOpenGLRenderer.getGameUboShader().unBind();
         }
 
         this.getImguiRender().render(partialTicks);
@@ -362,7 +363,7 @@ public class JGemsOpenGLRenderer {
         if (this.getWindowDimensions().y <= 0) {
             return null;
         }
-        int ssaoSetting = JGems.get().getGameSettings().ssao.getValue();
+        int ssaoSetting = JGems3D.get().getGameSettings().ssao.getValue();
         float aspect = (float) this.getWindowDimensions().y / this.getWindowDimensions().x;
         Vector3i dim;
         switch (ssaoSetting) {
@@ -421,7 +422,7 @@ public class JGemsOpenGLRenderer {
 
     public void renderScene(float partialTicks, Model<Format2D> model) {
         this.getShadowScene().renderAllModelsInShadowMap(this.getModelsToRenderInShadows(this.getSceneData().getSceneWorld()));
-        JGems.get().getScreen().normalizeViewPort();
+        JGems3D.get().getScreen().normalizeViewPort();
 
         GL30.glEnable(GL30.GL_DEPTH_TEST);
         this.geometryPass(partialTicks);
@@ -446,7 +447,7 @@ public class JGemsOpenGLRenderer {
 
     private List<Model<Format3D>> getModelsToRenderInShadows(SceneWorld sceneWorld) {
         List<Model<Format3D>> models = new ArrayList<>();
-        models.addAll(sceneWorld.getModeledSceneEntities().stream().filter(e -> e.hasRender() && e.getMeshRenderData().getRenderAttributes().isShadowCaster()).map(IModeledSceneObject::getModel).collect(Collectors.toList()));
+        models.addAll(sceneWorld.getModeledSceneEntities().stream().filter(e -> e.hasRender() && e.getMeshRenderData().getRenderAttributes().isShadowCaster()).map(IModeledSceneObjectKeeper::getModel).collect(Collectors.toList()));
         models.addAll(sceneWorld.getLiquids().stream().map(LiquidObject::getModel).collect(Collectors.toList()));
         return models;
     }
@@ -465,7 +466,7 @@ public class JGemsOpenGLRenderer {
         this.getFXAAShader().bind();
         this.getFXAAShader().performUniform("resolution", new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y));
         this.getFXAAShader().performUniform("texture_sampler", 0);
-        this.getFXAAShader().performUniform("FXAA_SPAN_MAX", (float) Math.pow(JGems.get().getGameSettings().fxaa.getValue(), 2));
+        this.getFXAAShader().performUniform("FXAA_SPAN_MAX", (float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2));
         this.getFXAAShader().getUtils().performOrthographicMatrix(model);
         GL30.glActiveTexture(GL30.GL_TEXTURE0);
         this.getFinalRenderedSceneFbo().bindTexture(0);
@@ -493,7 +494,7 @@ public class JGemsOpenGLRenderer {
     }
 
     private void bloomPostProcessing(float partialTicks, Model<Format2D> model) {
-        if (JGems.get().getGameSettings().bloom.getValue() == 0) {
+        if (JGems3D.get().getGameSettings().bloom.getValue() == 0) {
             this.getFboBlur().bindFBO();
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
             this.getFboBlur().unBindFBO();
@@ -538,7 +539,7 @@ public class JGemsOpenGLRenderer {
     }
 
     private void updateUBOs() {
-        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGems.get().getScreen().getRenderTicks()});
+        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGems3D.get().getScreen().getRenderTicks()});
         Environment environment = this.getSceneData().getSceneWorld().getEnvironment();
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(4);
         value1Buffer.put(!GlobalRenderDebugConstants.FULL_BRIGHT ? environment.getFog().getDensity() : 0.0f);
@@ -583,11 +584,11 @@ public class JGemsOpenGLRenderer {
                     image.setRGB(x, dim.y - y - 1, rgb);
                 }
             }
-            Path scrPath = Paths.get(JGems.getGameFilesFolder() + "/screenshots/");
+            Path scrPath = Paths.get(JGems3D.getGameFilesFolder() + "/screenshots/");
             if (!Files.exists(scrPath)) {
                 Files.createDirectories(scrPath);
             }
-            String builder = scrPath + "/screen_" + JGems.systemTime() + ".png";
+            String builder = scrPath + "/screen_" + JGems3D.systemTime() + ".png";
             ImageIO.write(image, "PNG", new File(builder));
         } catch (IOException e) {
             JGemsHelper.getLogger().warn(e.getMessage());
@@ -643,10 +644,10 @@ public class JGemsOpenGLRenderer {
     }
 
     public Vector2i getWindowDimensions() {
-        return JGems.get().getScreen().getWindowDimensions();
+        return JGems3D.get().getScreen().getWindowDimensions();
     }
 
-    public JGemsScene.SceneData getSceneData() {
+    public SceneData getSceneData() {
         return this.sceneData;
     }
 

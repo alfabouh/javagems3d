@@ -3,7 +3,7 @@ package example;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.EntityObject;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
 import ru.jgems3d.engine_api.app.JGemsTBoxApplication;
 import ru.jgems3d.engine_api.app.JGemsTBoxEntry;

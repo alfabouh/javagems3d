@@ -4,16 +4,16 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.IRenderInven
 import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
-public class RenderInventoryItemData {
+public class InventoryItemRenderData {
     private final JGemsShaderManager shaderManager;
     private final IRenderInventoryFabric renderFabric;
     private final TextureSample inventoryIcon;
 
-    public RenderInventoryItemData(JGemsShaderManager shaderManager, IRenderInventoryFabric renderFabric) {
+    public InventoryItemRenderData(JGemsShaderManager shaderManager, IRenderInventoryFabric renderFabric) {
         this(shaderManager, renderFabric, null);
     }
 
-    public RenderInventoryItemData(JGemsShaderManager shaderManager, IRenderInventoryFabric renderFabric, TextureSample inventoryIcon) {
+    public InventoryItemRenderData(JGemsShaderManager shaderManager, IRenderInventoryFabric renderFabric, TextureSample inventoryIcon) {
         this.shaderManager = shaderManager;
         this.renderFabric = renderFabric;
         this.inventoryIcon = inventoryIcon;

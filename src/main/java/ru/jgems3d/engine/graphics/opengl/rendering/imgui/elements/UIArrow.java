@@ -3,7 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIInteractiveElement;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -92,7 +92,7 @@ public class UIArrow extends UIInteractiveElement {
                 this.settingIntSlots.setValue(this.settingIntSlots.getMax());
             }
         }
-        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
+        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
     }
 
     @Override

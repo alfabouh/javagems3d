@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.controller.binding;
 
 import org.lwjgl.glfw.GLFW;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultPausePanel;
 import ru.jgems3d.engine.system.controller.components.FunctionalKey;
@@ -40,7 +40,7 @@ public class JGemsBindingManager extends BindingManager {
         this.keyBlock1 = new Key(GLFW.GLFW_KEY_F);
         this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
         this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
-        this.keyClear = new FunctionalKey(e -> JGems.get().getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
+        this.keyClear = new FunctionalKey(e -> JGems3D.get().getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
         this.keyX = new Key(GLFW.GLFW_KEY_X);
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 
@@ -52,21 +52,21 @@ public class JGemsBindingManager extends BindingManager {
 
         this.keyEsc = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                if (JGems.get().isCurrentMapIsValid()) {
-                    if (JGems.get().getEngineState().isPaused()) {
-                        if (JGems.get().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
+                if (JGems3D.get().isCurrentMapIsValid()) {
+                    if (JGems3D.get().getEngineState().isPaused()) {
+                        if (JGems3D.get().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
                             JGemsControllerDispatcher.mouseKeyboardController.setCursorInCenter();
                             JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptLMB();
                             JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptRMB();
                             JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptMMB();
                         }
-                        JGems.get().unPauseGame();
-                        JGems.get().getScreen().getWindow().setInFocus(true);
-                        JGems.get().getUI().setPanel(new DefaultGamePanel(null));
+                        JGems3D.get().unPauseGame();
+                        JGems3D.get().getScreen().getWindow().setInFocus(true);
+                        JGems3D.get().getUI().setPanel(new DefaultGamePanel(null));
                     } else {
-                        JGems.get().pauseGame(true);
-                        JGems.get().getScreen().getWindow().setInFocus(false);
-                        JGems.get().getUI().setPanel(new DefaultPausePanel(null));
+                        JGems3D.get().pauseGame(true);
+                        JGems3D.get().getScreen().getWindow().setInFocus(false);
+                        JGems3D.get().getUI().setPanel(new DefaultPausePanel(null));
                     }
                 }
             }
@@ -74,23 +74,23 @@ public class JGemsBindingManager extends BindingManager {
 
         this.keyF11 = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                JGems.get().getScreen().switchScreenMode();
+                JGems3D.get().getScreen().switchScreenMode();
             }
         }, GLFW.GLFW_KEY_F11);
 
         this.keyF2 = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                JGems.get().getScreen().getScene().getSceneRenderer().takeScreenShot();
+                JGems3D.get().getScreen().getScene().getSceneRenderer().takeScreenShot();
             }
         }, GLFW.GLFW_KEY_F2);
 
         this.keyT = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                JGems.get().getScreen().getWindow().switchFocus();
+                JGems3D.get().getScreen().getWindow().switchFocus();
             }
         }, GLFW.GLFW_KEY_T);
 
-        if (JGems.DEBUG_MODE) {
+        if (JGems3D.DEBUG_MODE) {
             this.createBinding(this.keyV, "Reload shaders");
             this.createBinding(this.keyT, "Фокус");
             this.createBinding(this.keyClear, "Очистка");

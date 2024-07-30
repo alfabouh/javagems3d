@@ -1,20 +1,18 @@
 package ru.jgems3d.engine.system.resources.assets.loaders;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render.AbstractInventoryZippo;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObject2D3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObjectPlayer;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.WorldEntity;
-import ru.jgems3d.engine.inventory.items.*;
+import ru.jgems3d.engine.inventory.items.ItemZippo;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderParticleD2Data;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.RenderInventoryItemData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render.InventoryZippo;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.EntityObject;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.ParticleObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.PlayerSPObject;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -24,11 +22,7 @@ import ru.jgems3d.engine.system.resources.assets.models.basic.constructor.IEntit
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class RenderDataLoader implements IAssetsLoader {
-    public final InventoryItemRenderTable inventoryItemRenderTable;
     public RenderObjectData entityCube;
     public RenderObjectData player;
     public RenderObjectData ground;
@@ -37,13 +31,11 @@ public class RenderDataLoader implements IAssetsLoader {
     public RenderLiquidData water;
 
     public RenderDataLoader() {
-        this.inventoryItemRenderTable = new InventoryItemRenderTable();
     }
 
     @Override
     public void load(GameResources gameResources) {
-        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading render data...");
-        this.inventoryItemRenderTable.addItem(ItemZippo.class, new RenderInventoryItemData(JGemsResourceManager.globalShaderAssets.inventory_zippo, new InventoryZippo(), JGemsResourceManager.globalTextureAssets.zippo_inventory));
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading render data...");
 
         //IEntityModelConstructor<WorldItem> entityModelConstructor = e -> {
         //    Plane4dBrush plane4dBrush = (Plane4dBrush) e;
@@ -72,7 +64,7 @@ public class RenderDataLoader implements IAssetsLoader {
         this.ground = new RenderObjectData(new RenderObject(), EntityObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);
         this.ground.getMeshRenderData().getRenderAttributes().setAlphaDiscard(0.25f);
 
-        this.particleFlame = new RenderParticleD2Data(new RenderObject(), ParticleObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer, JGemsResourceManager.globalTextureAssets.particleTexturePack, true);
+        JGemsResourceManager.addInventoryItemRenderer(ItemZippo.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_zippo, new AbstractInventoryZippo(), JGemsResourceManager.globalTextureAssets.zippo_inventory));
     }
 
     @Override
@@ -85,23 +77,4 @@ public class RenderDataLoader implements IAssetsLoader {
         return LoadPriority.LOW;
     }
 
-    public static class InventoryItemRenderTable {
-        private final Map<Class<? extends InventoryItem>, RenderInventoryItemData> map;
-
-        public InventoryItemRenderTable() {
-            this.map = new HashMap<>();
-        }
-
-        public boolean hasRender(InventoryItem inventoryItem) {
-            return this.getMap().containsKey(inventoryItem.getClass());
-        }
-
-        public void addItem(Class<? extends InventoryItem> clazz, RenderInventoryItemData renderInventoryItemData) {
-            this.getMap().put(clazz, renderInventoryItemData);
-        }
-
-        public Map<Class<? extends InventoryItem>, RenderInventoryItemData> getMap() {
-            return this.map;
-        }
-    }
 }

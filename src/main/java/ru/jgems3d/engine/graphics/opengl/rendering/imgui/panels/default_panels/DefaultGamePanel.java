@@ -1,11 +1,11 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels;
 
 import org.joml.Vector2i;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.inventory.Inventory;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.RenderInventoryItemData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
@@ -28,7 +28,7 @@ public class DefaultGamePanel extends AbstractPanelUI {
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
 
-        final WorldItem entityPlayerSP = JGems.get().getPlayer();
+        final WorldItem entityPlayerSP = JGems3D.get().getPlayer();
 
         if (entityPlayerSP instanceof SimpleKinematicPlayer) {
             SimpleKinematicPlayer dynamicPlayer = (SimpleKinematicPlayer) entityPlayerSP;
@@ -44,8 +44,8 @@ public class DefaultGamePanel extends AbstractPanelUI {
                 if (slot.getInventoryItem() == null) {
                     continue;
                 }
-                RenderInventoryItemData renderInventoryItemData = JGemsResourceManager.globalRenderDataAssets.inventoryItemRenderTable.getMap().get(slot.getInventoryItem().getClass());
-                immediateUI.imageUI(renderInventoryItemData.getInventoryIcon(), new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
+                InventoryItemRenderData inventoryItemRenderData = JGemsResourceManager.inventoryItemRenderTable.getMap().get(slot.getInventoryItem().getClass());
+                immediateUI.imageUI(inventoryItemRenderData.getInventoryIcon(), new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
                 immediateUI.textUI("[" + j + "]", JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(94 * j, windowH - 132), inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0xffffff, 0.5f);
             }
         }

@@ -13,10 +13,10 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.exceptions.JGemsException;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -45,7 +45,7 @@ public class Window implements IWindow {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);
             IntBuffer channels = stack.mallocInt(1);
-            byte[] stream = ByteStreams.toByteArray(JGems.loadFileJar(iconPath));
+            byte[] stream = ByteStreams.toByteArray(JGems3D.loadFileJar(iconPath));
             ByteBuffer buffer = MemoryUtil.memAlloc(stream.length);
             buffer.put(stream);
             buffer.flip();

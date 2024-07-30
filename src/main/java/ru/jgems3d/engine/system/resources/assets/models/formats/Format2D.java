@@ -57,11 +57,6 @@ public class Format2D implements IFormat {
         return new Format2D(new Vector2f(this.getPosition()), this.getRotation(), new Vector2f(this.getScale()));
     }
 
-    @Override
-    public boolean isOrientedToViewMatrix() {
-        return this.isOrientedToView;
-    }
-
     public void setOrientedToView(boolean orientedToView) {
         isOrientedToView = orientedToView;
     }

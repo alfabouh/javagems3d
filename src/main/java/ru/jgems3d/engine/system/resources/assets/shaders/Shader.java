@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.assets.shaders;
 
-import ru.jgems3d.engine.JGems;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.system.misc.JGPath;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class Shader {
     }
 
     private void loadStructs(JGPath shaderPath) {
-        try (InputStream inputStream = JGems.loadFileJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
+        try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             String structName = null;
@@ -83,7 +83,7 @@ public class Shader {
 
     private String loadStream(JGPath shaderPath) {
         StringBuilder shaderSource = new StringBuilder();
-        try (InputStream inputStream = JGems.loadFileJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
+        try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
 
@@ -162,7 +162,7 @@ public class Shader {
                 GEOMETRIC_BIT = (1 << 4),
                 COMPUTE_BIT = (1 << 5),
 
-                DEFAULT = FRAGMENT_BIT | VERTEX_BIT;
+                DEFAULT_BITS = FRAGMENT_BIT | VERTEX_BIT;
 
         public static final int ALL = FRAGMENT.getBit() | VERTEX.getBit() | GEOMETRIC.getBit() | COMPUTE.getBit();
 

@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.physics.world.thread.timer;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.JGemsHelper;
@@ -32,10 +32,10 @@ public class PhysicsTimer implements IPhysTimer {
         }
         try {
             JGemsHelper.getLogger().log("Starting physics!");
-            while (!JGems.get().isShouldBeClosed()) {
+            while (!JGems3D.get().isShouldBeClosed()) {
                 SyncManager.SyncPhysics.mark();
                 SyncManager.SyncPhysics.blockCurrentThread(true);
-                if (JGems.get().getEngineState().isEngineIsReady() && !JGems.get().getEngineState().isPaused()) {
+                if (JGems3D.get().getEngineState().isEngineIsReady() && !JGems3D.get().getEngineState().isPaused()) {
                     synchronized (PhysicsTimer.lockObject) {
                         this.world.onWorldUpdate();
                         this.dynamicsSystem.step(time, 0);

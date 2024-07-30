@@ -10,7 +10,7 @@ import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
@@ -116,8 +116,8 @@ public class DIMGuiRenderJGems {
     }
 
     public void render(float partialTicks) {
-        JGemsControllerDispatcher controllerDispatcher = JGems.get().getScreen().getControllerDispatcher();
-        if (JGems.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
+        JGemsControllerDispatcher controllerDispatcher = JGems3D.get().getScreen().getControllerDispatcher();
+        if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.drawGui(controllerDispatcher);
 
             ImDrawData drawData = ImGui.getDrawData();
@@ -198,14 +198,14 @@ public class DIMGuiRenderJGems {
     }
 
     private void drawGui(JGemsControllerDispatcher controllerDispatcher) {
-        if (!JGems.get().isValidPlayer()) {
+        if (!JGems3D.get().isValidPlayer()) {
             return;
         }
         MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controllerDispatcher.getCurrentController();
-        ICamera camera = JGems.get().getScreen().getCamera();
-        Player entityPlayerSP = JGems.get().getPlayer();
-        SceneWorld sceneWorld = JGems.get().getSceneWorld();
-        JGemsOpenGLRenderer sceneRender = JGems.get().getScreen().getScene().getSceneRenderer();
+        ICamera camera = JGems3D.get().getScreen().getCamera();
+        Player entityPlayerSP = JGems3D.get().getPlayer();
+        SceneWorld sceneWorld = JGems3D.get().getSceneWorld();
+        JGemsOpenGLRenderer sceneRender = JGems3D.get().getScreen().getScene().getSceneRenderer();
 
         ImGui.newFrame();
 
@@ -235,7 +235,7 @@ public class DIMGuiRenderJGems {
         if (entityPlayerSP instanceof SimpleKinematicPlayer) {
             SimpleKinematicPlayer dynamicPlayer = (SimpleKinematicPlayer) entityPlayerSP;
             ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
-            ImGui.text("entities: " + JGems.get().getPhysicsWorld().countItems());
+            ImGui.text("entities: " + JGems3D.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
            // ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
         }
@@ -243,11 +243,11 @@ public class DIMGuiRenderJGems {
         if (ImGui.checkbox("FreeCam", this.freeCam)) {
             this.freeCam = !this.freeCam;
             if (this.freeCam) {
-                JGems.get().getScreen().getScene().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
-                JGems.get().getScreen().getControllerDispatcher().detachController();
+                JGems3D.get().getScreen().getScene().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
+                JGems3D.get().getScreen().getControllerDispatcher().detachController();
             } else {
-                JGems.get().getScreen().getScene().enableAttachedCamera((WorldItem) JGems.get().getPlayer());
-                JGems.get().getScreen().getControllerDispatcher().attachControllerTo(mouseKeyboardController, JGems.get().getPlayer());
+                JGems3D.get().getScreen().getScene().enableAttachedCamera((WorldItem) JGems3D.get().getPlayer());
+                JGems3D.get().getScreen().getControllerDispatcher().attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
             }
         }
 

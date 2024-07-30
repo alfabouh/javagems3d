@@ -7,11 +7,11 @@ import org.lwjgl.assimp.*;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
 import ru.jgems3d.exceptions.JGemsException;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
@@ -73,7 +73,7 @@ public class ModelLoader {
     public static final AIFileOpenProc AI_FILE_OPEN = AIFileOpenProc.create((pFileIO, fileName, openMode) -> {
         ByteBuffer data;
         try {
-            byte[] stream = ByteStreams.toByteArray(JGems.loadFileJar(new JGPath(MemoryUtil.memUTF8(fileName))));
+            byte[] stream = ByteStreams.toByteArray(JGems3D.loadFileJar(new JGPath(MemoryUtil.memUTF8(fileName))));
             data = MemoryUtil.memAlloc(stream.length);
             data.put(stream);
             data.flip();
@@ -97,13 +97,13 @@ public class ModelLoader {
         final int FLAGS = Assimp.aiProcess_ImproveCacheLocality | Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
         MeshDataGroup meshDataGroup = new MeshDataGroup();
 
-        if (JGems.seekInJar(modelPath)) {
+        if (JGems3D.seekInJar(modelPath)) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 try (AIScene scene = Assimp.aiImportFileEx(modelPath.getSPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoader.AI_FILE_OPEN).CloseProc(ModelLoader.AI_FILE_CLOSE))) {
                     if (scene != null) {
                         int totalMaterials = scene.mNumMaterials();
                         List<Material> materialList = new ArrayList<>();
-                        JGems.get().getScreen().tryAddLineInLoadingScreen("Loading model materials...");
+                        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading model materials...");
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
                                 materialList.add(ModelLoader.readMaterial(gameResources, aiMaterial, modelPath.getParentPath()));

@@ -8,10 +8,10 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.exceptions.JGemsException;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
@@ -52,7 +52,7 @@ public class TextureSample implements IImageSample {
         this.enableAnisotropic = true;
         JGemsHelper.getLogger().log("Loading " + this.getName());
         if (inJar) {
-            try (InputStream inputStream = JGems.loadFileJar(fullPath)) {
+            try (InputStream inputStream = JGems3D.loadFileJar(fullPath)) {
                 this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
                 if (this.imageBuffer != null) {
                     this.createTexture();
@@ -173,8 +173,8 @@ public class TextureSample implements IImageSample {
     }
 
     private void createTexture() {
-        boolean linear = JGems.get().getGameSettings().texturesFiltering.getValue() == 1;
-        boolean anisotropic = JGems.get().getGameSettings().anisotropic.getValue() == 1;
+        boolean linear = JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
+        boolean anisotropic = JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
 
         this.textureId = GL20.glGenTextures();
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());

@@ -1,6 +1,6 @@
 package ru.jgems3d.engine.graphics.opengl.screen.timer;
 
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 
 public final class GameRenderTimer {
     private boolean shouldBeErased;
@@ -9,19 +9,19 @@ public final class GameRenderTimer {
     private double accumulatedTime;
 
     public GameRenderTimer() {
-        this.lastTime = JGems.glfwTime();
+        this.lastTime = JGems3D.glfwTime();
         this.shouldBeErased = false;
     }
 
     public void update() {
-        double currentTime = JGems.glfwTime();
+        double currentTime = JGems3D.glfwTime();
         this.deltaTime = (float) (currentTime - this.lastTime);
         this.lastTime = currentTime;
         this.accumulatedTime += this.deltaTime;
     }
 
     public void reset() {
-        this.lastTime = JGems.glfwTime();
+        this.lastTime = JGems3D.glfwTime();
         this.accumulatedTime = 0.0f;
     }
 

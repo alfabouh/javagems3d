@@ -4,8 +4,9 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
@@ -58,10 +59,11 @@ public class JGemsScene implements IScene {
     @SuppressWarnings("all")
     public void renderScene(float deltaTime) throws InterruptedException {
         if (JGemsSceneUtils.isSceneActive()) {
-            JGems.get().getScreen().normalizeViewPort();
+            JGems3D.get().getScreen().normalizeViewPort();
+            JGemsOpenGLRenderer.getGameUboShader().bind();
             if (this.getCurrentCamera() != null) {
                 if (this.requestDestroyMap) {
-                    JGems.get().destroyMap();
+                    JGems3D.get().destroyMap();
                     this.requestDestroyMap = false;
                     return;
                 }
@@ -75,6 +77,7 @@ public class JGemsScene implements IScene {
             } else {
                 this.getSceneRenderer().onRender(deltaTime);
             }
+            JGemsOpenGLRenderer.getGameUboShader().unBind();
         }
     }
 
@@ -160,31 +163,5 @@ public class JGemsScene implements IScene {
 
     public FrustumCulling getFrustumCulling() {
         return this.frustumCulling;
-    }
-
-    public static class SceneData {
-        private ICamera camera;
-        private SceneWorld sceneWorld;
-
-        public SceneData(SceneWorld sceneWorld, ICamera camera) {
-            this.sceneWorld = sceneWorld;
-            this.camera = camera;
-        }
-
-        public SceneWorld getSceneWorld() {
-            return this.sceneWorld;
-        }
-
-        public void setSceneWorld(SceneWorld sceneWorld) {
-            this.sceneWorld = sceneWorld;
-        }
-
-        public ICamera getCamera() {
-            return this.camera;
-        }
-
-        public void setCamera(ICamera camera) {
-            this.camera = camera;
-        }
     }
 }
