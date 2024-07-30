@@ -18,7 +18,7 @@ import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.exceptions.JGemsException;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_table.TBoxMapTable;

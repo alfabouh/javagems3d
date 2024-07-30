@@ -2,7 +2,7 @@ package ru.jgems3d.logger.managers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.exceptions.JGemsException;
 import ru.jgems3d.logger.SystemLogging;
@@ -44,7 +44,7 @@ public abstract class LoggingManager {
         JButton openLogFolderButton = new JButton("Open logs");
         openLogFolderButton.addActionListener(e -> {
             try {
-                Desktop.getDesktop().open(new File(JGems.getFilesFolder().toFile(), "/log/"));
+                Desktop.getDesktop().open(new File(JGems3D.getFilesFolder().toFile(), "/log/"));
             } catch (IOException ignored) {
                 SystemLogging.get().getLogManager().error("Failed to open logs file");
             }
@@ -55,7 +55,7 @@ public abstract class LoggingManager {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
-        stringBuilder.append(JGems.get());
+        stringBuilder.append(JGems3D.get());
         stringBuilder.append("]: ");
         stringBuilder.append(msg);
 

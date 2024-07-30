@@ -1,6 +1,6 @@
 package ru.jgems3d.toolbox.resources.models;
 
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.toolbox.resources.TBoxResourceManager;
 

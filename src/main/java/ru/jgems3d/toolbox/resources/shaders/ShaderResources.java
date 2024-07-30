@@ -1,10 +1,9 @@
 package ru.jgems3d.toolbox.resources.shaders;
 
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
 import ru.jgems3d.engine.system.resources.assets.shaders.Shader;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
-import ru.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 

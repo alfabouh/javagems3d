@@ -3,8 +3,8 @@ package ru.jgems3d.engine.graphics.opengl.rendering.utils;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
@@ -19,23 +19,23 @@ public class JGemsSceneUtils {
     public static final float Z_FAR = 100.0f;
 
     public static Matrix4f getMainCameraViewMatrix() {
-        return JGems.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
+        return JGems3D.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
     }
 
     public static Matrix4f getMainPerspectiveMatrix() {
-        return JGems.get().getScreen().getTransformationUtils().getPerspectiveMatrix();
+        return JGems3D.get().getScreen().getTransformationUtils().getPerspectiveMatrix();
     }
 
     public static Matrix4f getMainOrthographicMatrix() {
-        return JGems.get().getScreen().getTransformationUtils().getOrthographicMatrix();
+        return JGems3D.get().getScreen().getTransformationUtils().getOrthographicMatrix();
     }
 
     public static boolean isSceneActive() {
-        return JGems.get().getScreen().getWindow().isActive();
+        return JGems3D.get().getScreen().getWindow().isActive();
     }
 
     public static void setCamera(ICamera camera) {
-        JGems.get().getScreen().getScene().setRenderCamera(camera);
+        JGems3D.get().getScreen().getScene().setRenderCamera(camera);
     }
 
     @SuppressWarnings("all")
@@ -53,11 +53,11 @@ public class JGemsSceneUtils {
         }
     }
 
-    public static void renderSceneObject(IModeledSceneObject sceneObject) {
+    public static void renderSceneObject(IModeledSceneObjectKeeper sceneObject) {
         JGemsSceneUtils.renderSceneObject(sceneObject, null);
     }
 
-    public static void renderSceneObject(IModeledSceneObject sceneObject, Material overMaterial) {
+    public static void renderSceneObject(IModeledSceneObjectKeeper sceneObject, Material overMaterial) {
         if (sceneObject != null) {
             Model<Format3D> model = sceneObject.getModel();
             if (model == null || model.getMeshDataGroup() == null) {

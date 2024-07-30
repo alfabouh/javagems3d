@@ -21,6 +21,11 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
         this.meshDataGroup = model.getMeshDataGroup();
     }
 
+    public Model(Model<?> model, T format) {
+        this.format = format;
+        this.meshDataGroup = model.getMeshDataGroup();
+    }
+
     public Model(@NotNull T t, MeshDataGroup meshDataGroup) {
         this.format = t;
         this.meshDataGroup = meshDataGroup;

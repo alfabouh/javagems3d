@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
@@ -14,7 +14,7 @@ public class RenderObjectPlayer implements IRenderObjectFabric {
     private double lastGlfwTime;
 
     public RenderObjectPlayer() {
-        this.lastGlfwTime = JGems.glfwTime();
+        this.lastGlfwTime = JGems3D.glfwTime();
     }
 
     @Override
@@ -23,11 +23,11 @@ public class RenderObjectPlayer implements IRenderObjectFabric {
         WorldItem worldItem = entityObject.getWorldItem();
         if (worldItem instanceof SimpleKinematicPlayer) {
             SimpleKinematicPlayer dynamicPlayer = (SimpleKinematicPlayer) worldItem;
-            double currTime = JGems.glfwTime();
+            double currTime = JGems3D.glfwTime();
             float delta = (float) (currTime - this.lastGlfwTime);
             this.lastGlfwTime = currTime;
-            Vector3f vec3 = JGems.get().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput();
-          // if (!JGems.get().isPaused() && dynamicPlayer.getScalarSpeed() > 0.001f && ((vec3.y < 0 || !dynamicPlayer.isCanPlayerJump()) || Math.abs(vec3.y) <= 0.1f) && vec3.length() > 0.5f) {
+            Vector3f vec3 = JGems3D.get().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput();
+          // if (!JGems3D.get().isPaused() && dynamicPlayer.getScalarSpeed() > 0.001f && ((vec3.y < 0 || !dynamicPlayer.isCanPlayerJump()) || Math.abs(vec3.y) <= 0.1f) && vec3.length() > 0.5f) {
           //     RenderObjectPlayer.stepBobbing += delta * 60.0f * (dynamicPlayer.isRunning() ? 1.25f : 1.0f);
           // }
         }

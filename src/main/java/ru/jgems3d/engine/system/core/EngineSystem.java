@@ -2,10 +2,10 @@ package ru.jgems3d.engine.system.core;
 
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.math.Pair;
+import ru.jgems3d.engine.system.misc.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
@@ -90,7 +90,7 @@ public class EngineSystem implements IEngine {
             this.mapLoader = null;
             return;
         }
-        JGems.get().getScreen().showGameLoadingScreen("Loading Map...");
+        JGems3D.get().getScreen().showGameLoadingScreen("Loading Map...");
         this.startWorlds();
         JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
         PhysicsWorld physicsWorld = JGemsHelper.getPhysicsWorld();
@@ -107,7 +107,7 @@ public class EngineSystem implements IEngine {
 
         JGemsHelper.getLogger().log(this.currentMapName() + ": Map Loaded!");
 
-        Environment environment = JGems.get().getSceneWorld().getEnvironment();
+        Environment environment = JGems3D.get().getSceneWorld().getEnvironment();
         FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
         SkyProp skyProp = this.getMapLoader().getLevelInfo().getMapProperties().getSkyProp();
 
@@ -153,9 +153,9 @@ public class EngineSystem implements IEngine {
 
     public void destroyMap() {
         this.pauseGame();
-        JGems.get().getScreen().showGameLoadingScreen("Exit world...");
+        JGems3D.get().getScreen().showGameLoadingScreen("Exit world...");
         this.clean();
-        JGems.get().getScreen().removeLoadingScreen();
+        JGems3D.get().getScreen().removeLoadingScreen();
         this.mapLoader = null;
     }
 
@@ -177,7 +177,7 @@ public class EngineSystem implements IEngine {
             JGemsHelper.getLogger().warn("Engine thread is not ready to be cleaned!");
             return;
         }
-        JGems.get().getSoundManager().stopAllSounds();
+        JGems3D.get().getSoundManager().stopAllSounds();
         JGemsHelper.getLogger().log("Cleaning worlds!");
         this.endWorlds();
         this.getResourceManager().getLocalResources().cleanCache();
@@ -186,13 +186,13 @@ public class EngineSystem implements IEngine {
     }
 
     private void startWorlds() {
-        JGems.get().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldStart();
-        JGems.get().getScreen().getScene().getSceneWorld().onWorldStart();
+        JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldStart();
+        JGems3D.get().getScreen().getScene().getSceneWorld().onWorldStart();
     }
 
     private void endWorlds() {
-        JGems.get().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldEnd();
-        JGems.get().getScreen().getScene().getSceneWorld().onWorldEnd();
+        JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldEnd();
+        JGems3D.get().getScreen().getScene().getSceneWorld().onWorldEnd();
     }
 
     public JGemsResourceManager getResourceManager() {
@@ -207,19 +207,19 @@ public class EngineSystem implements IEngine {
             return;
         }
         APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent();
-        JGems.get().getLocalisation().setLanguage(JGems.get().getGameSettings().language.getCurrentLanguage());
+        JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
         this.getResourceManager().initGlobalResources();
         this.getResourceManager().initLocalResources();
         this.thread = new Thread(() -> {
             boolean badExit = true;
             try {
-                JGems.get().getSoundManager().createSystem();
-                JGems.get().getPhysicThreadManager().initService();
+                JGems3D.get().getSoundManager().createSystem();
+                JGems3D.get().getPhysicThreadManager().initService();
                 this.createGraphics();
                 this.getEngineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
                 APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent();
-                JGems.get().getScreen().startScreenRenderProcess();
+                JGems3D.get().getScreen().startScreenRenderProcess();
                 badExit = false;
             } catch (Exception e) {
                 JGemsHelper.getLogger().exception(e);
@@ -227,17 +227,17 @@ public class EngineSystem implements IEngine {
             } finally {
                 try {
                     this.clean();
-                    JGems.get().destroyGame();
-                    JGems.get().getSoundManager().stopAllSounds();
-                    JGems.get().getResourceManager().destroy();
-                    JGems.get().getSoundManager().destroy();
-                    if (!JGems.get().getPhysicThreadManager().waitForFullTermination()) {
+                    JGems3D.get().destroyGame();
+                    JGems3D.get().getSoundManager().stopAllSounds();
+                    JGems3D.get().getResourceManager().destroy();
+                    JGems3D.get().getSoundManager().destroy();
+                    if (!JGems3D.get().getPhysicThreadManager().waitForFullTermination()) {
                         JGemsHelper.getLogger().error("Waited for physics termination too long...");
                     }
-                    if (JGems.get().getPhysicThreadManager().badExit) {
+                    if (JGems3D.get().getPhysicThreadManager().badExit) {
                         badExit = true;
                     }
-                    JGems.get().getPhysicThreadManager().getPhysicsTimer().cleanResources();
+                    JGems3D.get().getPhysicThreadManager().getPhysicsTimer().cleanResources();
                     JGemsHelper.getLogger().log("Engine-Off");
                 } catch (Exception e) {
                     JGemsHelper.getLogger().exception(e);
@@ -318,9 +318,9 @@ public class EngineSystem implements IEngine {
     }
 
     private void createGraphics() {
-        JGems.get().getScreen().buildScreen();
+        JGems3D.get().getScreen().buildScreen();
         this.printGraphicsInfo();
-        JGems.get().getResourceManager().loadGlobalResources();
+        JGems3D.get().getResourceManager().loadGlobalResources();
     }
 
     public static class EngineState {

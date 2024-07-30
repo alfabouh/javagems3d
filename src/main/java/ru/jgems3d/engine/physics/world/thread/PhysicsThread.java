@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.physics.world.thread;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
 import ru.jgems3d.engine.JGemsHelper;
 
@@ -35,7 +35,7 @@ public class PhysicsThread {
                 JGemsHelper.getLogger().exception(e);
                 this.badExit = true;
             } finally {
-                JGems.get().destroyGame();
+                JGems3D.get().destroyGame();
                 this.getExecutor().shutdown();
             }
         });

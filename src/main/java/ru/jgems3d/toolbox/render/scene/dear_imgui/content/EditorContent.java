@@ -11,7 +11,7 @@ import imgui.type.ImString;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.math.Pair;
+import ru.jgems3d.engine.system.misc.Pair;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.logger.managers.LoggingManager;

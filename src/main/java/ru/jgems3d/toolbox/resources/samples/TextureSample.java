@@ -7,9 +7,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.exceptions.JGemsException;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.logger.SystemLogging;
@@ -41,7 +41,7 @@ public class TextureSample implements IImageSample {
         this.name = fullPath;
         SystemLogging.get().getLogManager().log("Loading " + this.getName());
         if (inJar) {
-            try (InputStream inputStream = JGems.loadFileJar(new JGPath(fullPath))) {
+            try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(fullPath))) {
                 this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
                 if (this.imageBuffer != null) {
                     this.createTexture();

@@ -67,10 +67,10 @@ public class APILauncher {
 
         Set<Class<?>> annotatedClass = this.reflections.getTypesAnnotatedWith(JGemsGameEntry.class);
         if (annotatedClass.size() > 1) {
-            throw new JGemsException("Couldn't load more than 1 JGems entry class!");
+            throw new JGemsException("Couldn't load more than 1 JGems3D entry class!");
         }
         if (annotatedClass.isEmpty()) {
-            throw new JGemsException("Couldn't find JGems entry class!");
+            throw new JGemsException("Couldn't find JGems3D entry class!");
         }
         Optional<Class<?>> aClass = annotatedClass.stream().findAny();
         JGemsGameEntry jGemsGameEntry = aClass.get().getAnnotation(JGemsGameEntry.class);

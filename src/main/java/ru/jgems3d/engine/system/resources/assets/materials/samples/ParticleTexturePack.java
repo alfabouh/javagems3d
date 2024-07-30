@@ -2,7 +2,7 @@ package ru.jgems3d.engine.system.resources.assets.materials.samples;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;

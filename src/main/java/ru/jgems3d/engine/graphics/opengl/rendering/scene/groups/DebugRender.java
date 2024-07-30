@@ -3,8 +3,8 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.sysgraph.Graph;
@@ -21,14 +21,14 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;
 
-    public DebugRender(JGemsOpenGLRenderer sceneRenderConveyor) {
-        super(50, sceneRenderConveyor, new RenderGroup("DEBUG"));
+    public DebugRender(SceneData sceneData) {
+        super(50, sceneData, new RenderGroup("DEBUG"));
         this.debugShaders = JGemsResourceManager.globalShaderAssets.debug;
     }
 
     public void onRender(float partialTicks) {
         if (GlobalRenderDebugConstants.SHOW_DEBUG_LINES) {
-            DynamicsUtils.btDebugDraw.drawLines(JGems.get().getPhysicsWorld().getDynamics());
+            DynamicsUtils.btDebugDraw.drawLines(JGems3D.get().getPhysicsWorld().getDynamics());
 
             this.debugShaders.bind();
             this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
@@ -50,12 +50,12 @@ public class DebugRender extends SceneRenderBase {
     }
 
     private void renderNavMesh(SceneRenderBase sceneRenderBase) {
-        PhysicsWorld world = JGems.get().getPhysicsWorld();
+        PhysicsWorld world = JGems3D.get().getPhysicsWorld();
         if (world.getMapNavGraph() == null) {
             return;
         }
         for (Graph.GVertex vertex : world.getMapNavGraph().getGraphContainer().keySet()) {
-            if (JGems.get().getScreen().getCamera().getCamPosition().distance(new Vector3f(vertex.getX(), vertex.getY() + 0.1f, vertex.getZ())) > 5.0f) {
+            if (JGems3D.get().getScreen().getCamera().getCamPosition().distance(new Vector3f(vertex.getX(), vertex.getY() + 0.1f, vertex.getZ())) > 5.0f) {
                 continue;
             }
             Model<Format3D> model0 = MeshHelper.generateVector3fModel(new Vector3f(vertex.getX(), vertex.getY(), vertex.getZ()), new Vector3f(vertex.getX(), (float) (vertex.getY() + 1.0d), vertex.getZ()));
@@ -76,7 +76,7 @@ public class DebugRender extends SceneRenderBase {
     }
 
     private void renderDebugSunDirection(SceneRenderBase sceneRenderBase) {
-        Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(sceneRenderBase.getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f));
+        Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(sceneRenderBase.getSceneData().getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f));
         this.debugShaders.performUniform("colour", new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
         JGemsSceneUtils.renderModel(model, GL30.GL_LINES);
         model.clean();

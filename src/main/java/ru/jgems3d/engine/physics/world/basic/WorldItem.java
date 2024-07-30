@@ -2,7 +2,6 @@ package ru.jgems3d.engine.physics.world.basic;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.math.MathHelper;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
@@ -65,16 +64,12 @@ public abstract class WorldItem implements IWorldObject {
 
     public void onSpawn(IWorld iWorld) {
         this.spawnTick = iWorld.getTicks();
-        if (!this.isParticle()) {
-            JGemsHelper.getLogger().log("Add entity in world - [ " + this + " ]");
-        }
+        JGemsHelper.getLogger().log("Add entity in world - [ " + this + " ]");
         this.spawned = true;
     }
 
     public void onDestroy(IWorld iWorld) {
-        if (!this.isParticle()) {
-            JGemsHelper.getLogger().log("Removed entity from world - [ " + this + " ]");
-        }
+        JGemsHelper.getLogger().log("Removed entity from world - [ " + this + " ]");
     }
 
     public boolean isSpawned() {
@@ -122,7 +117,7 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public Vector3f getLookVector() {
-        return MathHelper.calcLookVector(this.getRotation());
+        return JGemsHelper.calcLookVector(this.getRotation());
     }
 
     public void setDead() {
@@ -154,10 +149,6 @@ public abstract class WorldItem implements IWorldObject {
 
     public String getItemName() {
         return this.itemName;
-    }
-
-    public boolean isParticle() {
-        return false;
     }
 
     public String toString() {

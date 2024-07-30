@@ -1,8 +1,8 @@
 package ru.jgems3d.engine.system.resources.localisation;
 
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.exceptions.JGemsException;
 
 import java.io.BufferedReader;
@@ -67,7 +67,7 @@ public class Localisation {
     }
 
     private void readStream(LangMap langMap, JGPath filePath) throws IOException {
-        try (InputStream inputStream = JGems.loadFileJarSilently(filePath)) {
+        try (InputStream inputStream = JGems3D.loadFileJarSilently(filePath)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             int l = 0;

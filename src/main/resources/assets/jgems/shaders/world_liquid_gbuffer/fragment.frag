@@ -1,8 +1,6 @@
 in mat3 TBN;
-in vec4 out_model_position;
 
 in vec2 texture_coordinates;
-in vec3 m_vertex_normal;
 in vec3 mv_vertex_normal;
 in vec3 mv_vertex_pos;
 
@@ -13,7 +11,6 @@ uniform sampler2D normals_map;
 
 uniform bool use_cubemap;
 uniform bool use_normals;
-uniform vec3 camera_pos;
 
 layout (location = 0) out vec4 gPosition;
 layout (location = 1) out vec4 gNormal;

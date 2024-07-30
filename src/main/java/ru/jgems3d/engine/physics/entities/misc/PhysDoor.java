@@ -2,13 +2,10 @@ package ru.jgems3d.engine.physics.entities.misc;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
-import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class PhysDoor extends WorldItem implements IWorldTicked {
     private final Vector3f startingRotation;

@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.math;
+package ru.jgems3d.engine.system.misc;
 
 public class Pair<K, V> {
 

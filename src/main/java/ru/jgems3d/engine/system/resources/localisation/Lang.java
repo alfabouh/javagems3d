@@ -1,8 +1,8 @@
 package ru.jgems3d.engine.system.resources.localisation;
 
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 public final class Lang {
     private static final Map<String, Lang> values = new HashMap<>();
-    public static Lang English = new Lang("English", new JGPath(JGems.Paths.LANG));
+    public static Lang English = new Lang("English", new JGPath(JGems3D.Paths.LANG));
 
     static {
         Lang.values.put(English.getFullName(), Lang.English);

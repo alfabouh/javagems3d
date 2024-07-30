@@ -3,7 +3,7 @@ package ru.jgems3d.engine.system.resources.assets.shaders.manager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.CascadeShadow;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.PointLightShadow;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
@@ -76,7 +76,7 @@ public final class JGemsShaderManager extends ShaderManager {
             IImageSample metallic = material.getMetallic();
             IImageSample normals = material.getNormals();
             IImageSample specular = material.getSpecular();
-            CubeMapProgram cubeMapProgram = JGems.get().getScreen().getSceneWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture();
+            CubeMapProgram cubeMapProgram = JGemsHelper.getWorldEnvironment().getSky().getSkyBox().cubeMapTexture();
 
             int texturing_code = 0;
             for (int i = 0; i < 12; i++) {
@@ -134,12 +134,12 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performCameraData() {
-            JGemsShaderManager.this.performUniformNoWarn("camera_pos", JGems.get().getScreen().getScene().getCurrentCamera().getCamPosition());
+            JGemsShaderManager.this.performUniformNoWarn("camera_pos", JGems3D.get().getScreen().getScene().getCurrentCamera().getCamPosition());
         }
 
         public void performShadowsInfo() {
             int startCode = 7;
-            JGemsScene scene = JGems.get().getScreen().getScene();
+            JGemsScene scene = JGems3D.get().getScreen().getScene();
             for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getShadowScene().getCascadeShadows().get(i);
                 JGemsScene.activeGlTexture(startCode + i);

@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
@@ -28,7 +28,7 @@ public final class RenderLiquidData {
     }
 
     public CubeMapProgram getAmbient() {
-        return JGems.get().getScreen().getSceneWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture();
+        return JGems3D.get().getScreen().getSceneWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture();
     }
 
     public JGemsShaderManager getShaderManager() {

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
 
 public final class TRenderContainer {

@@ -5,7 +5,7 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRen
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 
-public interface IModeledSceneObject extends IRenderObject, ICulled, IKeepLights {
+public interface IModeledSceneObjectKeeper extends IRenderObject, ICulled, ILightsKeeper {
     Model<Format3D> getModel();
 
     MeshRenderData getMeshRenderData();

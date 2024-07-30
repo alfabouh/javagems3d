@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.physics.entities.enemies.ai;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.sysgraph.Graph;
 import ru.jgems3d.engine.sysgraph.pathfind.AStar;
@@ -41,7 +41,7 @@ public class NavigationToPlayerAI extends NavigationAI {
         Thread seekPathThread = new Thread(() -> {
             try {
                 Graph.GVertex randomVertex = world.getMapNavGraph() == null ? null : world.getMapNavGraph().getRandomVertex();
-                while (JGems.get().isCurrentMapIsValid()) {
+                while (JGems3D.get().isCurrentMapIsValid()) {
                     try {
                         if (worldItem.getWorld().getMapNavGraph() == null || this.getCurrentSyncVertex() == null || !this.isActive()) {
                             continue;
@@ -50,7 +50,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                         this.setSpeed(this.getAtomicBoolean().get() ? this.getMaxSpeed() : 0.125f);
 
                         if ((!this.getAtomicBoolean().get() && this.reachedDestination()) || this.isForceChangeWayDirection()) {
-                            randomVertex = JGems.random.nextFloat() <= this.getRandomPlayerChasePercent() ? this.findClosestPlayerVertex(worldItem.getWorld().getMapNavGraph()) : world.getMapNavGraph().getRandomVertex();
+                            randomVertex = JGems3D.random.nextFloat() <= this.getRandomPlayerChasePercent() ? this.findClosestPlayerVertex(worldItem.getWorld().getMapNavGraph()) : world.getMapNavGraph().getRandomVertex();
                             this.setForceChangeWayDirection(false);
                         }
 

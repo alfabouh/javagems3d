@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.inventory.items;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.IWorld;
@@ -18,7 +18,7 @@ public class ItemZippo extends InventoryItem {
     public ItemZippo() {
         super("zippo");
         this.openCd = 0;
-        this.setDescription(JGems.get().I18n("item.description.zippo"));
+        this.setDescription(JGems3D.get().I18n("item.description.zippo"));
     }
 
     @Override
@@ -60,13 +60,13 @@ public class ItemZippo extends InventoryItem {
     }
 
     private void close() {
-        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.zippo_c, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
+        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.zippo_c, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
         this.pointLight.setEnabled(false);
         this.isOpened = false;
     }
 
     private void open() {
-        JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.zippo_o, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
+        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.zippo_o, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
         this.pointLight.setEnabled(true);
         this.isOpened = true;
     }

@@ -23,7 +23,7 @@ public class EntityItem extends WorldItem {
       //             if (e instanceof IInventoryOwner) {
       //                 IInventoryOwner inventory = (IInventoryOwner) e;
       //                 if (inventory.inventory().addItemInInventory(this.getInventoryItem())) {
-      //                     JGems.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.pick, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
+      //                     JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.soundAssetsLoader.pick, SoundType.BACKGROUND_SOUND, 2.0f, 1.0f);
       //                     JGemsHelper.getLogger().log("Put " + this.getInventoryItem().getName() + " in inventory!");
       //                     this.setDead();
       //                 }

@@ -1,29 +1,29 @@
 package ru.jgems3d.engine.system.resources.manager;
 
-import ru.jgems3d.engine.JGems;
-import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.table.InventoryRenderTable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
-import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
+import ru.jgems3d.engine.inventory.items.InventoryItem;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.exceptions.JGemsException;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.*;
 import ru.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.CubeMapTextureArray;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.jgems3d.toolbox.ToolBox;
-import ru.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JGemsResourceManager {
+public final class JGemsResourceManager {
     public static Map<String, CubeMapProgram> skyBoxTexturesMap = new HashMap<>();
+    public static final InventoryRenderTable inventoryItemRenderTable = new InventoryRenderTable();
 
     public static ShadersAssetsLoader globalShaderAssets = null;
     public static TextureAssetsLoader globalTextureAssets = null;
@@ -38,6 +38,10 @@ public class JGemsResourceManager {
         JGemsResourceManager.globalShaderAssets = new ShadersAssetsLoader();
         this.globalResources = new GameResources(new ResourceCache("Global"));
         this.localResources = new GameResources(new ResourceCache("Local"));
+    }
+
+    public static void addInventoryItemRenderer(Class<? extends InventoryItem> itemClass, InventoryItemRenderData inventoryItemRenderData){
+        JGemsResourceManager.inventoryItemRenderTable.addItem(itemClass, inventoryItemRenderData);
     }
 
     public static CubeMapProgram createSkyBoxCubeMap(JGPath pathToSkyBox, String format) {
@@ -69,7 +73,7 @@ public class JGemsResourceManager {
     public static Font createFontFromJAR(JGPath path) {
         Font font1;
         try {
-            font1 = Font.createFont(Font.TRUETYPE_FONT, JGems.loadFileJar(path));
+            font1 = Font.createFont(Font.TRUETYPE_FONT, JGems3D.loadFileJar(path));
         } catch (FontFormatException | IOException e) {
             throw new JGemsException(e);
         }
@@ -79,11 +83,11 @@ public class JGemsResourceManager {
     }
 
     public static GameResources getLocalGameResources() {
-        return JGems.get().getResourceManager().getLocalResources();
+        return JGems3D.get().getResourceManager().getLocalResources();
     }
 
     public static GameResources getGlobalGameResources() {
-        return JGems.get().getResourceManager().getGlobalResources();
+        return JGems3D.get().getResourceManager().getGlobalResources();
     }
 
     public void loadGlobalResources() {

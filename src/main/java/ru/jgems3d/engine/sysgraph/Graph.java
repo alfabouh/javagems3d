@@ -1,9 +1,9 @@
 package ru.jgems3d.engine.sysgraph;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.exceptions.JGemsException;
 
 import java.io.*;
@@ -31,7 +31,7 @@ public class Graph implements Serializable {
     }
 
     public static Graph readFromFile(JGPath path) {
-        InputStream inputStream = JGems.loadFileJarSilently(path);
+        InputStream inputStream = JGems3D.loadFileJarSilently(path);
         if (inputStream == null) {
             JGemsHelper.getLogger().warn("Couldn't find file " + path);
             return null;

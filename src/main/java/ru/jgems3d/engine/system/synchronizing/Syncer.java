@@ -1,6 +1,6 @@
 package ru.jgems3d.engine.system.synchronizing;
 
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.exceptions.JGemsException;
 
 import java.util.concurrent.locks.Condition;
@@ -41,7 +41,7 @@ public final class Syncer {
     }
 
     public void blockCurrentThread(final boolean flagB) throws JGemsException {
-        if (JGems.get().isShouldBeClosed()) {
+        if (JGems3D.get().isShouldBeClosed()) {
             return;
         }
 

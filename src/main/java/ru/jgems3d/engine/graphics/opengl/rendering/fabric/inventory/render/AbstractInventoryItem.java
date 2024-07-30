@@ -2,10 +2,10 @@ package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render;
 
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.IRenderInventoryFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.RenderInventoryItemData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
@@ -14,26 +14,26 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
-public abstract class InventoryItem implements IRenderInventoryFabric {
-    protected void performTransformations(Vector3f pos, Vector3f rot, Vector3f scale, RenderInventoryItemData renderInventoryItemData) {
+public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
+    protected void performTransformations(Vector3f pos, Vector3f rot, Vector3f scale, InventoryItemRenderData inventoryItemRenderData) {
         Format3D format3D = new Format3D();
         format3D.setPosition(pos);
         format3D.setRotation(rot);
         format3D.setScaling(scale);
-        renderInventoryItemData.getShaderManager().getUtils().performModel3DMatrix(Transformation.getModelMatrix(format3D));
+        inventoryItemRenderData.getShaderManager().getUtils().performModel3DMatrix(Transformation.getModelMatrix(format3D));
     }
 
     @Override
-    public void preRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.inventory.items.InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData) {
+    public void preRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
         GL30.glDepthFunc(GL30.GL_ALWAYS);
-        renderInventoryItemData.getShaderManager().bind();
-        renderInventoryItemData.getShaderManager().performUniform("projection_matrix", Transformation.getPerspectiveMatrix(JGems.get().getScreen().getWindow(), JGemsSceneUtils.FOV, 0.1f, 10.0f));
+        inventoryItemRenderData.getShaderManager().bind();
+        inventoryItemRenderData.getShaderManager().performUniform("projection_matrix", Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneUtils.FOV, 0.1f, 10.0f));
     }
 
     @Override
-    public void postRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.inventory.items.InventoryItem inventoryItem, RenderInventoryItemData renderInventoryItemData) {
+    public void postRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
         GL30.glDepthFunc(GL30.GL_LESS);
-        renderInventoryItemData.getShaderManager().unBind();
+        inventoryItemRenderData.getShaderManager().unBind();
     }
 
     protected void renderInventoryModel(MeshDataGroup meshDataGroup, JGemsShaderManager shaderManager) {

@@ -1,6 +1,6 @@
 package ru.jgems3d.engine.physics.world;
 
-import ru.jgems3d.engine.JGems;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.sysgraph.Graph;
@@ -88,7 +88,7 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public PhysicsTimer getPhysicsSystem() {
-        return JGems.get().getPhysicThreadManager().getPhysicsTimer();
+        return JGems3D.get().getPhysicThreadManager().getPhysicsTimer();
     }
 
     public DynamicsSystem getDynamics() {

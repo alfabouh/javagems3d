@@ -2,7 +2,7 @@ package ru.jgems3d.engine_api.app.tbox.containers;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.jgems3d.engine.system.files.JGPath;
+import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
 import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
