@@ -28,7 +28,7 @@ public class TimerPool {
     }
 
     public void deleteTimer(GameRenderTimer gameRenderTimer) {
-        gameRenderTimer.delete();
+        gameRenderTimer.dispose();
     }
 
     public GameRenderTimer createTimer() {

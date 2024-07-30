@@ -49,14 +49,14 @@ public class JGemsResourceManager {
 
     public static void createShaders() {
         JGemsResourceManager.globalShaderAssets.createShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
-        for (ShadersLoader shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
+        for (ShadersLoader<JGemsShaderManager> shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
             shadersLoader.createShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
         }
     }
 
     public static void reloadShaders() {
         JGemsResourceManager.globalShaderAssets.reloadShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
-        for (ShadersLoader shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
+        for (ShadersLoader<JGemsShaderManager> shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
             shadersLoader.reloadShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
         }
     }

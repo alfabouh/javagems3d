@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.assets.models.mesh.data.render;
 
 @SuppressWarnings("all")
-public final class MeshRenderAttributes {
+public class MeshRenderAttributes {
     private boolean lightOpaque;
     private boolean shadowCaster;
     private boolean hasTransparency;
