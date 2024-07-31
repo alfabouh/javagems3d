@@ -119,36 +119,36 @@ public class UIText extends UIElement {
             float startX = 0.0f;
             for (int i = 0; i < chars.length; i++) {
                 GuiFont.CharInfo charInfo = UIText.this.fontTexture.getCharInfo(chars[i]);
-                mesh.putPositionValue(startX);
-                mesh.putPositionValue(0.0f);
-                mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
-                mesh.putTextureCoordinateValue(0.0f);
-                mesh.putIndexValue(i * 4);
+                mesh.pushPosition(startX);
+                mesh.pushPosition(0.0f);
+                mesh.pushPosition(z);
+                mesh.pushTextureCoordinate((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
+                mesh.pushTextureCoordinate(0.0f);
+                mesh.pushIndex(i * 4);
 
-                mesh.putPositionValue(startX);
-                mesh.putPositionValue(this.getHeight());
-                mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
-                mesh.putTextureCoordinateValue(1.0f);
-                mesh.putIndexValue(i * 4 + 1);
+                mesh.pushPosition(startX);
+                mesh.pushPosition(this.getHeight());
+                mesh.pushPosition(z);
+                mesh.pushTextureCoordinate((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
+                mesh.pushTextureCoordinate(1.0f);
+                mesh.pushIndex(i * 4 + 1);
 
-                mesh.putPositionValue(startX + charInfo.getWidth());
-                mesh.putPositionValue(this.getHeight());
-                mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
-                mesh.putTextureCoordinateValue(1.0f);
-                mesh.putIndexValue(i * 4 + 2);
+                mesh.pushPosition(startX + charInfo.getWidth());
+                mesh.pushPosition(this.getHeight());
+                mesh.pushPosition(z);
+                mesh.pushTextureCoordinate((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
+                mesh.pushTextureCoordinate(1.0f);
+                mesh.pushIndex(i * 4 + 2);
 
-                mesh.putPositionValue(startX + charInfo.getWidth());
-                mesh.putPositionValue(0.0f);
-                mesh.putPositionValue(z);
-                mesh.putTextureCoordinateValue((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
-                mesh.putTextureCoordinateValue(0.0f);
-                mesh.putIndexValue(i * 4 + 3);
+                mesh.pushPosition(startX + charInfo.getWidth());
+                mesh.pushPosition(0.0f);
+                mesh.pushPosition(z);
+                mesh.pushTextureCoordinate((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
+                mesh.pushTextureCoordinate(0.0f);
+                mesh.pushIndex(i * 4 + 3);
 
-                mesh.putIndexValue(i * 4);
-                mesh.putIndexValue(i * 4 + 2);
+                mesh.pushIndex(i * 4);
+                mesh.pushIndex(i * 4 + 2);
 
                 startX += charInfo.getWidth();
             }

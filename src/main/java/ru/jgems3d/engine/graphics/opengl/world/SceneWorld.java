@@ -217,10 +217,12 @@ public final class SceneWorld implements IWorld {
 
     @Override
     public void onWorldEnd() {
+        this.getParticlesEmitter().destroy(this);
         this.cleanAll();
     }
 
     public void updateWorldObjects(boolean refresh, float partialTicks) {
+        if (ticks % 60 == 0)
         JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
 
         Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
@@ -258,7 +260,6 @@ public final class SceneWorld implements IWorld {
     }
 
     private void cleanAll() {
-        this.getParticlesEmitter().cleanParticles(this);
         this.getEnvironment().getLightManager().removeAllLights();
 
         Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();

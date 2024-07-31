@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.screen.IScreen;
-import ru.jgems3d.engine.graphics.opengl.screen.timer.GameRenderTimer;
+import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
@@ -110,8 +110,8 @@ public class TBoxScreen implements IScreen {
     }
 
     private void renderLoop() throws InterruptedException {
-        GameRenderTimer deltaTimer = this.getTimerPool().createTimer();
-        GameRenderTimer fpsTimer = this.getTimerPool().createTimer();
+        JGemsTimer deltaTimer = this.getTimerPool().createTimer();
+        JGemsTimer fpsTimer = this.getTimerPool().createTimer();
         GL30.glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
         int fps = 0;
 

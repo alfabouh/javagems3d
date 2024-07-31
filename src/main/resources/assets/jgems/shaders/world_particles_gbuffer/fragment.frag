@@ -19,8 +19,8 @@ void main()
 {
     vec4 diffuse_texture = texture(diffuse_map, scaled_coordinates());
     gEmission = vec4(vec3(brightness), diffuse_texture.a);
-    gNormal = vec4(0.);
+    gNormal = vec4(vec3(0.), diffuse_texture.a <= 0 ? 0. : 1.);
     gPosition = vec4(mv_vertex_pos, diffuse_texture.a);
-    gMetallic = vec4(vec3(0.), diffuse_texture.a);
+    gMetallic = vec4(0.);
     gColor = diffuse_texture;
 }

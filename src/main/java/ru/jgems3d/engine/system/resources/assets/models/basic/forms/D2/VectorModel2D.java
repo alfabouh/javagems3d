@@ -23,14 +23,14 @@ public class VectorModel2D implements BasicMesh<Format2D> {
     @Override
     public Mesh generateMesh() {
         Mesh mesh = new Mesh();
-        mesh.putPositionValue(this.v1.x);
-        mesh.putPositionValue(this.v1.y);
+        mesh.pushPosition(this.v1.x);
+        mesh.pushPosition(this.v1.y);
 
-        mesh.putPositionValue(this.v2.x);
-        mesh.putPositionValue(this.v2.y);
+        mesh.pushPosition(this.v2.x);
+        mesh.pushPosition(this.v2.y);
 
-        mesh.putIndexValue(0);
-        mesh.putIndexValue(1);
+        mesh.pushIndex(0);
+        mesh.pushIndex(1);
 
         mesh.bakeMesh();
         return mesh;

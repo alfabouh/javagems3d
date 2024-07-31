@@ -51,61 +51,61 @@ public final class Mesh {
         this.baked = false;
     }
 
-    public void putPositionValue(float position) {
+    public void pushPosition(float position) {
         this.getAttributePositions().add(position);
     }
 
-    public void putTextureCoordinateValue(float texCoord) {
+    public void pushTextureCoordinate(float texCoord) {
         this.getAttributeTextureCoordinates().add(texCoord);
     }
 
-    public void putNormalValue(float normal) {
+    public void pushNormal(float normal) {
         this.getAttributeNormals().add(normal);
     }
 
-    public void putTangentValue(float tangent) {
+    public void pushTangent(float tangent) {
         this.getAttributeTangents().add(tangent);
     }
 
-    public void putBitangentValue(float bitangent) {
-        this.getAttributeBitangents().add(bitangent);
+    public void pushBiTangent(float biTangent) {
+        this.getAttributeBiTangents().add(biTangent);
     }
 
-    public void putIndexValue(int index) {
+    public void pushIndex(int index) {
         this.getIndexes().add(index);
     }
 
-    public void putPositionValues(float[] positions) {
+    public void pushPositions(float[] positions) {
         for (float f : positions) {
             this.getAttributePositions().add(f);
         }
     }
 
-    public void putTextureCoordinateValues(float[] texCoordinates) {
+    public void pushTextureCoordinates(float[] texCoordinates) {
         for (float f : texCoordinates) {
             this.getAttributeTextureCoordinates().add(f);
         }
     }
 
-    public void putNormalValues(float[] normals) {
+    public void pushNormals(float[] normals) {
         for (float f : normals) {
             this.getAttributeNormals().add(f);
         }
     }
 
-    public void putTangentValues(float[] tangents) {
+    public void pushTangent(float[] tangents) {
         for (float f : tangents) {
             this.getAttributeTangents().add(f);
         }
     }
 
-    public void putBitangentValues(float[] bitangents) {
+    public void pushBiTangent(float[] bitangents) {
         for (float f : bitangents) {
-            this.getAttributeBitangents().add(f);
+            this.getAttributeBiTangents().add(f);
         }
     }
 
-    public void putIndexValues(int[] indexes) {
+    public void pushIndexes(int[] indexes) {
         for (int f : indexes) {
             this.getIndexes().add(f);
         }
@@ -357,7 +357,7 @@ public final class Mesh {
         return this.attributeTextureCoordinates;
     }
 
-    public List<Float> getAttributeBitangents() {
+    public List<Float> getAttributeBiTangents() {
         return this.attributeBitangents;
     }
 
