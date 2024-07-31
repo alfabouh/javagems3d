@@ -9,6 +9,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.models.Model;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.Set;
@@ -19,7 +21,12 @@ public class ParticlesRender extends SceneRenderBase {
     }
 
     public void onRender(float partialTicks) {
+        GL30.glEnable(GL30.GL_BLEND);
+        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+        GL30.glDepthMask(false);
         this.render(partialTicks, this.getSceneData().getSceneWorld().getParticlesEmitter().getCulledParticlesSet(this.getSceneData()));
+        GL30.glDepthMask(true);
+        GL30.glDisable(GL30.GL_BLEND);
     }
 
     public void onStartRender() {
@@ -34,7 +41,10 @@ public class ParticlesRender extends SceneRenderBase {
         for (ParticleFX particleFX : renderObjects) {
             particleFX.getParticleAttributes().getShaderManager().bind();
             this.passDataInDeferredShader(particleFX.getParticleAttributes().getShaderManager(), particleFX);
-            JGemsSceneUtils.renderModel(this.getSceneData().getSceneWorld().getParticlesEmitter().getParticleModel(particleFX), GL30.GL_TRIANGLES);
+            Model<Format3D> model = this.getSceneData().getSceneWorld().getParticlesEmitter().getParticleModel(particleFX);
+            particleFX.getParticleAttributes().getShaderManager().getUtils().performViewAndModelMatricesSeparately(model);
+            particleFX.getParticleAttributes().getShaderManager().getUtils().performPerspectiveMatrix();
+            JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
             particleFX.getParticleAttributes().getShaderManager().unBind();
         }
     }
@@ -44,7 +54,6 @@ public class ParticlesRender extends SceneRenderBase {
         GL30.glActiveTexture(GL30.GL_TEXTURE0);
         imageSample.bindTexture();
         shaderManager.performUniform("diffuse_map", 0);
-
         shaderManager.performUniform("texture_scaling", new Vector2f(1.0f));
         shaderManager.performUniform("brightness", particleFX.getParticleAttributes().getBrightness());
     }

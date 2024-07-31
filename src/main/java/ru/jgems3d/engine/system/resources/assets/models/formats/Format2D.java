@@ -3,17 +3,15 @@ package ru.jgems3d.engine.system.resources.assets.models.formats;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 
-public class Format2D implements IFormat {
+public final class Format2D implements IFormat {
     private final Vector2f position;
     private final Vector2f scale;
     private float rotation;
-    private boolean isOrientedToView;
 
     public Format2D(@NotNull Vector2f position, float rotation, Vector2f scale) {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.isOrientedToView = false;
     }
 
     public Format2D(Vector2f position, float rotation) {
@@ -55,9 +53,5 @@ public class Format2D implements IFormat {
     @Override
     public IFormat copy() {
         return new Format2D(new Vector2f(this.getPosition()), this.getRotation(), new Vector2f(this.getScale()));
-    }
-
-    public void setOrientedToView(boolean orientedToView) {
-        isOrientedToView = orientedToView;
     }
 }

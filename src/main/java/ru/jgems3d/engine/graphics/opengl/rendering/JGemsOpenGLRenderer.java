@@ -5,8 +5,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
-import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.TextureProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
@@ -15,7 +13,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.*;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
@@ -46,8 +44,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class JGemsOpenGLRenderer {
-    private static final int SSAO_NOISE_SIZE = 4;
-    public static float PSX_SCREEN_OFFSET = 160.0f;
+    public static final int SSAO_NOISE_SIZE = 4;
+
     private final DIMGuiRenderJGems dearImGuiRender;
     private final GuiRender guiRender;
     private final InventoryRender inventoryRender;
@@ -264,7 +262,6 @@ public final class JGemsOpenGLRenderer {
             this.guiRender.onRender(partialTicks);
             return;
         }
-        JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(this.sceneData.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
 
         try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowDimensions().x, this.getWindowDimensions().y), 0)) {
             this.updateUBOs();
@@ -447,7 +444,7 @@ public final class JGemsOpenGLRenderer {
 
     private List<Model<Format3D>> getModelsToRenderInShadows(SceneWorld sceneWorld) {
         List<Model<Format3D>> models = new ArrayList<>();
-        models.addAll(sceneWorld.getModeledSceneEntities().stream().filter(e -> e.hasRender() && e.getMeshRenderData().getRenderAttributes().isShadowCaster()).map(IModeledSceneObjectKeeper::getModel).collect(Collectors.toList()));
+        models.addAll(sceneWorld.getModeledSceneEntities().stream().filter(e -> e.hasRender() && e.getMeshRenderData().getRenderAttributes().isShadowCaster()).map(IModeledSceneObject::getModel).collect(Collectors.toList()));
         models.addAll(sceneWorld.getLiquids().stream().map(LiquidObject::getModel).collect(Collectors.toList()));
         return models;
     }

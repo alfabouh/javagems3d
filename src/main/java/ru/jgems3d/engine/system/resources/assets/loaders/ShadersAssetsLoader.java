@@ -81,7 +81,7 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setUseForGBuffer(true);
         this.world_deferred = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_deferred") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight, this.PointLights, this.Fog);
         this.world_liquid_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_liquid_gbuffer") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.Misc);
-        this.world_particles_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_particles_gbuffer") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.Misc);
+        this.world_particles_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_particles_gbuffer") , Shader.ShaderType.DEFAULT_BITS);
 
         this.menu = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "menu") , Shader.ShaderType.DEFAULT_BITS);
 

@@ -1,8 +1,5 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render;
 
-import com.jme3.bounding.BoundingBox;
-import com.jme3.math.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
@@ -12,13 +9,12 @@ import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
 import ru.jgems3d.engine.physics.entities.properties.state.IEntityState;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
-public class RenderObject extends RenderWorldItem {
-    public RenderObject() {
+public class RenderEntity extends RenderWorldItem {
+    public RenderEntity() {
     }
 
     @Override

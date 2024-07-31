@@ -18,7 +18,7 @@ public class ParticleAttributes {
 
     public static ParticleAttributes defaultParticleAttributes() {
         return new ParticleAttributes(JGemsResourceManager.globalShaderAssets.world_particles_gbuffer, 128.0f);
-}
+    }
 
     public ParticleAttributes setBrightness(float brightness) {
         this.brightness = JGemsHelper.clamp(brightness, 0.0f, 1.0f);

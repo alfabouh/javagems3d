@@ -1,7 +1,7 @@
 package example;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.EntityObject;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
@@ -32,6 +32,6 @@ public class TestTBoxApp implements JGemsTBoxApplication {
 
         tBoxObjectsContainer.addObject("test",
                 new TEntityContainer(ModeledObjectData.class, new JGPath("/assets/jgems/models/cube/cube.obj"), new AttributeContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), PHYSICS_OBJECT),
-                new TRenderContainer(RenderObject.class, EntityObject.class, new JGPath("/assets/jgems/models/cube/cube.obj"), new MeshRenderAttributes()));
+                new TRenderContainer(RenderEntity.class, EntityObject.class, new JGPath("/assets/jgems/models/cube/cube.obj"), new MeshRenderAttributes()));
     }
 }

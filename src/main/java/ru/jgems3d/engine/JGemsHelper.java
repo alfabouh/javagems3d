@@ -13,7 +13,7 @@ import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes
 import ru.jgems3d.engine.graphics.opengl.particles.objects.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
@@ -191,7 +191,7 @@ public abstract class JGemsHelper {
         JGems3D.get().getScreen().getScene().getSceneWorld().addObjectInWorld(sceneProp);
     }
 
-    public static void addItem(WorldItem worldItem, RenderObjectData renderData) {
+    public static void addItem(WorldItem worldItem, RenderEntityData renderData) {
         try {
             JGemsHelper.getPhysicsWorld().addItem(worldItem);
             JGemsHelper.getSceneWorld().addItem(worldItem, renderData);

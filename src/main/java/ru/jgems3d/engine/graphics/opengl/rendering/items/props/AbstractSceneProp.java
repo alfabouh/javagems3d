@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneProp implements IModeledSceneObjectKeeper, IWorldObject, IWorldTicked {
+public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldObject, IWorldTicked {
     private final List<Light> lightList;
     private final IRenderObjectFabric renderFabric;
     private Material overObjectMaterial;

@@ -35,11 +35,19 @@ public class Transformation {
     }
 
     public static Matrix4f getModelViewMatrix(Format3D format3D, Matrix4f viewMatrix) {
+        if (format3D.isOrientedToViewMatrix()) {
+            return Transformation.getOrientedToViewModelViewMatrix(format3D, viewMatrix);
+        }
         Vector3f rotation = format3D.getRotation();
         Matrix4f m1 = new Matrix4f().identity().translate(format3D.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format3D.getScaling());
-        if (format3D.isOrientedToViewMatrix()) {
-            viewMatrix.transpose3x3(m1);
-        }
+        Matrix4f viewCurr = new Matrix4f(viewMatrix);
+        return viewCurr.mul(m1);
+    }
+
+    public static Matrix4f getOrientedToViewModelViewMatrix(Format3D format3D, Matrix4f viewMatrix) {
+        Vector3f rotation = format3D.getRotation();
+        Matrix4f m1 = new Matrix4f().identity().translate(format3D.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format3D.getScaling());
+        viewMatrix.transpose3x3(m1);
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(m1);
     }

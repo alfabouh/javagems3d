@@ -4,14 +4,14 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class WorldTransparentRender extends SceneRenderBase {
-    public static List<IModeledSceneObjectKeeper> transparentRenderObjects;
+    public static List<IModeledSceneObject> transparentRenderObjects;
 
     public WorldTransparentRender(SceneData sceneData) {
         super(99, sceneData, new RenderGroup("WORLD_TRANSPARENT"));
@@ -34,8 +34,8 @@ public class WorldTransparentRender extends SceneRenderBase {
         super.onStopRender();
     }
 
-    private void render(float partialTicks, List<IModeledSceneObjectKeeper> renderObjects) {
-        for (IModeledSceneObjectKeeper entityItem : renderObjects) {
+    private void render(float partialTicks, List<IModeledSceneObject> renderObjects) {
+        for (IModeledSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {
                     entityItem.getMeshRenderData().getShaderManager().bind();

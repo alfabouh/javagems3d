@@ -1,12 +1,17 @@
 package ru.jgems3d.engine.physics.world;
 
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
+import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.sysgraph.Graph;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 import ru.jgems3d.engine.api_bridge.events.APIEventsBus;
 

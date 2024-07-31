@@ -18,8 +18,8 @@ import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
@@ -35,7 +35,7 @@ public final class SceneWorld implements IWorld {
     private Set<Pair<WorldItem, Light>> lightAttachmentQueue;
 
     private final Map<Integer, AbstractSceneEntity> objectMap;
-    private final Set<IModeledSceneObjectKeeper> toRenderSet;
+    private final Set<IModeledSceneObject> toRenderSet;
     private final Set<LiquidObject> liquids;
     private final Environment environment;
     private FrustumCulling frustumCulling;
@@ -54,7 +54,7 @@ public final class SceneWorld implements IWorld {
         this.particlesEmitter = new ParticlesEmitter();
     }
 
-    public boolean isItemReachedRenderDistance(IModeledSceneObjectKeeper renderObject) {
+    public boolean isItemReachedRenderDistance(IModeledSceneObject renderObject) {
         if (!renderObject.hasRender()) {
             return true;
         }
@@ -69,12 +69,12 @@ public final class SceneWorld implements IWorld {
         return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.calcRenderSphere()) || !e.canBeCulled()).collect(Collectors.toList());
     }
 
-    public List<IModeledSceneObjectKeeper> getFilteredEntityList(boolean deferredPass) {
-        List<IModeledSceneObjectKeeper> physicsObjects = new ArrayList<>(this.getModeledSceneEntities());
+    public List<IModeledSceneObject> getFilteredEntityList(boolean deferredPass) {
+        List<IModeledSceneObject> physicsObjects = new ArrayList<>(this.getModeledSceneEntities());
         if (this.getFrustumCulling() == null) {
             return physicsObjects;
         }
-        return this.getCollectionFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObjectKeeper) e).filter(e -> e.getMeshRenderData().getShaderManager().isUseForGBuffer() == deferredPass && e.isVisible() && !this.isItemReachedRenderDistance(e)).collect(Collectors.toList());
+        return this.getCollectionFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> e.getMeshRenderData().getShaderManager().isUseForGBuffer() == deferredPass && e.isVisible() && !this.isItemReachedRenderDistance(e)).collect(Collectors.toList());
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {
@@ -96,7 +96,7 @@ public final class SceneWorld implements IWorld {
         return true;
     }
 
-    public void addItem(WorldItem worldItem, RenderObjectData renderData) throws JGemsException {
+    public void addItem(WorldItem worldItem, RenderEntityData renderData) throws JGemsException {
         if (renderData == null) {
             throw new JGemsException("Wrong render parameters: " + worldItem.toString());
         }
@@ -165,11 +165,11 @@ public final class SceneWorld implements IWorld {
         abstractSceneEntity.removeLightById(i);
     }
 
-    public void addObjectInWorld(IModeledSceneObjectKeeper renderObject) {
+    public void addObjectInWorld(IModeledSceneObject renderObject) {
         this.getModeledSceneEntities().add(renderObject);
     }
 
-    public void removeObjectFromWorld(IModeledSceneObjectKeeper renderObject) {
+    public void removeObjectFromWorld(IModeledSceneObject renderObject) {
         if (!this.getModeledSceneEntities().remove(renderObject)) {
             JGemsHelper.getLogger().warn("Couldn't remove a render object from scene rendering!");
         }
@@ -221,9 +221,11 @@ public final class SceneWorld implements IWorld {
     }
 
     public void updateWorldObjects(boolean refresh, float partialTicks) {
-        Iterator<IModeledSceneObjectKeeper> iterator = this.getModeledSceneEntities().iterator();
+        JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
+
+        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
-            IModeledSceneObjectKeeper sceneObject = iterator.next();
+            IModeledSceneObject sceneObject = iterator.next();
             if (sceneObject instanceof IWorldTicked) {
                 IWorldTicked worldTicked = (IWorldTicked) sceneObject;
                 worldTicked.onUpdate(this);
@@ -242,6 +244,7 @@ public final class SceneWorld implements IWorld {
                 abstractSceneEntity.updateRenderPos(partialTicks);
                 abstractSceneEntity.updateRenderTranslation();
             }
+            this.getParticlesEmitter().onUpdateParticles(partialTicks, this);
         }
 
         Iterator<LiquidObject> iterator2 = this.getLiquids().iterator();
@@ -258,9 +261,9 @@ public final class SceneWorld implements IWorld {
         this.getParticlesEmitter().cleanParticles(this);
         this.getEnvironment().getLightManager().removeAllLights();
 
-        Iterator<IModeledSceneObjectKeeper> iterator = this.getModeledSceneEntities().iterator();
+        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
-            IModeledSceneObjectKeeper modeledSceneObject = iterator.next();
+            IModeledSceneObject modeledSceneObject = iterator.next();
             if (modeledSceneObject instanceof AbstractSceneEntity) {
                 AbstractSceneEntity abstractSceneEntity = (AbstractSceneEntity) modeledSceneObject;
                 abstractSceneEntity.onDestroy(this);
@@ -293,7 +296,7 @@ public final class SceneWorld implements IWorld {
         return this.liquids;
     }
 
-    public Set<IModeledSceneObjectKeeper> getModeledSceneEntities() {
+    public Set<IModeledSceneObject> getModeledSceneEntities() {
         return this.toRenderSet;
     }
 

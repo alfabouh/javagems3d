@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
@@ -12,7 +12,7 @@ import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.exceptions.JGemsException;
 import ru.jgems3d.engine.JGemsHelper;
@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneEntity implements IModeledSceneObjectKeeper, IWorldObject, IWorldTicked {
+public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorldObject, IWorldTicked {
     private final List<Light> lightList;
     private final SceneWorld sceneWorld;
     private final WorldItem worldItem;
-    private final RenderObjectData renderData;
+    private final RenderEntityData renderData;
     protected Model<Format3D> model;
     protected Vector3f prevRenderPosition;
     protected Vector3f prevRenderRotation;
@@ -39,7 +39,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObjectKeeper, 
     private boolean isVisible;
     private boolean isDead;
 
-    public AbstractSceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull RenderObjectData renderData) {
+    public AbstractSceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull RenderEntityData renderData) {
         this.lightList = new ArrayList<>();
 
         this.worldItem = worldItem;
@@ -264,7 +264,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObjectKeeper, 
         return this.getRenderData().getRenderFabric();
     }
 
-    public RenderObjectData getRenderData() {
+    public RenderEntityData getRenderData() {
         return this.renderData;
     }
 

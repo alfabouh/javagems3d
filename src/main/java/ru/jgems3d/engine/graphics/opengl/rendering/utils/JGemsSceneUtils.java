@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
@@ -53,11 +53,11 @@ public class JGemsSceneUtils {
         }
     }
 
-    public static void renderSceneObject(IModeledSceneObjectKeeper sceneObject) {
+    public static void renderSceneObject(IModeledSceneObject sceneObject) {
         JGemsSceneUtils.renderSceneObject(sceneObject, null);
     }
 
-    public static void renderSceneObject(IModeledSceneObjectKeeper sceneObject, Material overMaterial) {
+    public static void renderSceneObject(IModeledSceneObject sceneObject, Material overMaterial) {
         if (sceneObject != null) {
             Model<Format3D> model = sceneObject.getModel();
             if (model == null || model.getMeshDataGroup() == null) {
