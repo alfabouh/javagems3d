@@ -78,6 +78,7 @@ void main()
     float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
     float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
     float f1 = pow(AO, (1.25 - gray) * 3.);
+
     vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
 
     frag_color = mix(g_texture, metallic, 0.5) * (lights + emission);
@@ -183,6 +184,9 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
 }
 
 vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal) {
+    if (length(vNormal) <= 0) {
+        return vec4(22.);
+    }
     vec4 diffuseC = vec4(0.);
     vec4 specularC = vec4(0.);
 

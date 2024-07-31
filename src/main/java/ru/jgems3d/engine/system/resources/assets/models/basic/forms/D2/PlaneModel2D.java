@@ -45,56 +45,56 @@ public class PlaneModel2D implements BasicMesh<Format2D> {
     public Mesh generateMesh() {
         Mesh mesh = new Mesh();
 
-        mesh.putPositionValue(this.v1.x);
-        mesh.putPositionValue(this.v1.y);
-        mesh.putPositionValue(this.zLevel);
+        mesh.pushPosition(this.v1.x);
+        mesh.pushPosition(this.v1.y);
+        mesh.pushPosition(this.zLevel);
         if (this.inverted) {
-            mesh.putTextureCoordinateValue(this.textureMin.x);
-            mesh.putTextureCoordinateValue(this.textureMax.y);
+            mesh.pushTextureCoordinate(this.textureMin.x);
+            mesh.pushTextureCoordinate(this.textureMax.y);
         } else {
-            mesh.putTextureCoordinateValue(this.textureMin.x);
-            mesh.putTextureCoordinateValue(this.textureMin.y);
+            mesh.pushTextureCoordinate(this.textureMin.x);
+            mesh.pushTextureCoordinate(this.textureMin.y);
         }
 
-        mesh.putPositionValue(this.v1.x);
-        mesh.putPositionValue(this.v2.y);
-        mesh.putPositionValue(this.zLevel);
+        mesh.pushPosition(this.v1.x);
+        mesh.pushPosition(this.v2.y);
+        mesh.pushPosition(this.zLevel);
         if (this.inverted) {
-            mesh.putTextureCoordinateValue(this.textureMin.x);
-            mesh.putTextureCoordinateValue(this.textureMin.y);
+            mesh.pushTextureCoordinate(this.textureMin.x);
+            mesh.pushTextureCoordinate(this.textureMin.y);
         } else {
-            mesh.putTextureCoordinateValue(this.textureMin.x);
-            mesh.putTextureCoordinateValue(this.textureMax.y);
+            mesh.pushTextureCoordinate(this.textureMin.x);
+            mesh.pushTextureCoordinate(this.textureMax.y);
         }
 
-        mesh.putPositionValue(this.v2.x);
-        mesh.putPositionValue(this.v2.y);
-        mesh.putPositionValue(this.zLevel);
+        mesh.pushPosition(this.v2.x);
+        mesh.pushPosition(this.v2.y);
+        mesh.pushPosition(this.zLevel);
         if (this.inverted) {
-            mesh.putTextureCoordinateValue(this.textureMax.x);
-            mesh.putTextureCoordinateValue(this.textureMin.y);
+            mesh.pushTextureCoordinate(this.textureMax.x);
+            mesh.pushTextureCoordinate(this.textureMin.y);
         } else {
-            mesh.putTextureCoordinateValue(this.textureMax.x);
-            mesh.putTextureCoordinateValue(this.textureMax.y);
+            mesh.pushTextureCoordinate(this.textureMax.x);
+            mesh.pushTextureCoordinate(this.textureMax.y);
         }
 
-        mesh.putPositionValue(this.v2.x);
-        mesh.putPositionValue(this.v1.y);
-        mesh.putPositionValue(this.zLevel);
+        mesh.pushPosition(this.v2.x);
+        mesh.pushPosition(this.v1.y);
+        mesh.pushPosition(this.zLevel);
         if (this.inverted) {
-            mesh.putTextureCoordinateValue(this.textureMax.x);
-            mesh.putTextureCoordinateValue(this.textureMax.y);
+            mesh.pushTextureCoordinate(this.textureMax.x);
+            mesh.pushTextureCoordinate(this.textureMax.y);
         } else {
-            mesh.putTextureCoordinateValue(this.textureMax.x);
-            mesh.putTextureCoordinateValue(this.textureMin.y);
+            mesh.pushTextureCoordinate(this.textureMax.x);
+            mesh.pushTextureCoordinate(this.textureMin.y);
         }
 
-        mesh.putIndexValue(0);
-        mesh.putIndexValue(1);
-        mesh.putIndexValue(2);
-        mesh.putIndexValue(3);
-        mesh.putIndexValue(0);
-        mesh.putIndexValue(2);
+        mesh.pushIndex(0);
+        mesh.pushIndex(1);
+        mesh.pushIndex(2);
+        mesh.pushIndex(3);
+        mesh.pushIndex(0);
+        mesh.pushIndex(2);
 
         mesh.bakeMesh();
         return mesh;

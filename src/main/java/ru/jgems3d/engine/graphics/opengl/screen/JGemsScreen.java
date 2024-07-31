@@ -20,7 +20,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiF
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
-import ru.jgems3d.engine.graphics.opengl.screen.timer.GameRenderTimer;
+import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
@@ -231,9 +231,9 @@ public class JGemsScreen implements IScreen {
 
     private void renderLoop() throws InterruptedException {
         int fps = 0;
-        GameRenderTimer perSecondTimer = this.getTimerPool().createTimer();
-        GameRenderTimer renderTimer = this.getTimerPool().createTimer();
-        GameRenderTimer deltaTimer = this.getTimerPool().createTimer();
+        JGemsTimer perSecondTimer = this.getTimerPool().createTimer();
+        JGemsTimer renderTimer = this.getTimerPool().createTimer();
+        JGemsTimer deltaTimer = this.getTimerPool().createTimer();
         while (!JGems3D.get().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
                 JGems3D.get().destroyGame();

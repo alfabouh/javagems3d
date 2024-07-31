@@ -93,10 +93,10 @@ public class SimpleModelLoader {
         }
 
         Mesh mesh = new Mesh();
-        mesh.putIndexValues(vertices);
-        mesh.putPositionValues(positions);
-        mesh.putNormalValues(normals);
-        mesh.putTextureCoordinateValues(textureCoordinates);
+        mesh.pushIndexes(vertices);
+        mesh.pushPositions(positions);
+        mesh.pushNormals(normals);
+        mesh.pushTextureCoordinates(textureCoordinates);
         mesh.bakeMesh();
         return mesh;
     }

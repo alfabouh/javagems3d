@@ -2,13 +2,13 @@ package ru.jgems3d.engine.graphics.opengl.screen.timer;
 
 import ru.jgems3d.engine.JGems3D;
 
-public final class GameRenderTimer {
+public final class JGemsTimer {
     private boolean shouldBeErased;
     private double lastTime;
     private float deltaTime;
     private double accumulatedTime;
 
-    public GameRenderTimer() {
+    JGemsTimer() {
         this.lastTime = JGems3D.glfwTime();
         this.shouldBeErased = false;
     }

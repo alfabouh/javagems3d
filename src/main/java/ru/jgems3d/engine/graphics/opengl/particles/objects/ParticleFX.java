@@ -4,9 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
-import ru.jgems3d.engine.graphics.opengl.screen.timer.GameRenderTimer;
+import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
@@ -19,8 +20,8 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
     private final Vector2f scaling;
     private final ParticleTexturePack particleTexturePack;
     private final SceneWorld world;
-    private final GameRenderTimer liveTimer;
-    private final GameRenderTimer frameTimer;
+    private final JGemsTimer liveTimer;
+    private final JGemsTimer frameTimer;
     private final ParticleAttributes particleAttributes;
     private int currentFrame;
 
@@ -33,8 +34,8 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         this.world = world;
         this.particleTexturePack = particleTexturePack;
 
-        this.liveTimer = new GameRenderTimer();
-        this.frameTimer = new GameRenderTimer();
+        this.liveTimer = JGemsHelper.createTimer();
+        this.frameTimer = JGemsHelper.createTimer();
     }
 
     public void onUpdateParticle(double partialTicks, IWorld iWorld) {
@@ -44,7 +45,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         }
         if (this.frameTimer.resetTimerAfterReachedSeconds(this.getParticleTexturePack().getAnimationRate())) {
             this.currentFrame += 1;
-            if (this.currentFrame == this.getParticleTexturePack().getTexturesNum()) {
+            if (this.currentFrame >= this.getParticleTexturePack().getTexturesNum()) {
                 this.currentFrame = 0;
             }
         }

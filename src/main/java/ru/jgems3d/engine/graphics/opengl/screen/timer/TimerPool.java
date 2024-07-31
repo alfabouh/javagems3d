@@ -5,20 +5,20 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class TimerPool {
-    private final Set<GameRenderTimer> gameRenderTimerSet;
+    private final Set<JGemsTimer> JGemsTimerSet;
 
     public TimerPool() {
-        this.gameRenderTimerSet = new HashSet<>();
+        this.JGemsTimerSet = new HashSet<>();
     }
 
     public void update() {
-        Iterator<GameRenderTimer> gameRenderTimerIterator = this.gameRenderTimerSet.iterator();
+        Iterator<JGemsTimer> gameRenderTimerIterator = this.JGemsTimerSet.iterator();
         while (gameRenderTimerIterator.hasNext()) {
-            GameRenderTimer gameRenderTimer = gameRenderTimerIterator.next();
-            if (gameRenderTimer.isShouldBeErased()) {
+            JGemsTimer JGemsTimer = gameRenderTimerIterator.next();
+            if (JGemsTimer.isShouldBeErased()) {
                 gameRenderTimerIterator.remove();
             } else {
-                gameRenderTimer.update();
+                JGemsTimer.update();
             }
         }
     }
@@ -27,17 +27,17 @@ public class TimerPool {
         this.getTimerSet().clear();
     }
 
-    public void deleteTimer(GameRenderTimer gameRenderTimer) {
-        gameRenderTimer.dispose();
+    public void deleteTimer(JGemsTimer JGemsTimer) {
+        JGemsTimer.dispose();
     }
 
-    public GameRenderTimer createTimer() {
-        GameRenderTimer gameRenderTimer = new GameRenderTimer();
-        this.getTimerSet().add(gameRenderTimer);
-        return gameRenderTimer;
+    public JGemsTimer createTimer() {
+        JGemsTimer JGemsTimer = new JGemsTimer();
+        this.getTimerSet().add(JGemsTimer);
+        return JGemsTimer;
     }
 
-    public Set<GameRenderTimer> getTimerSet() {
-        return this.gameRenderTimerSet;
+    public Set<JGemsTimer> getTimerSet() {
+        return this.JGemsTimerSet;
     }
 }

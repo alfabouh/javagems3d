@@ -18,6 +18,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
+import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
@@ -47,6 +48,10 @@ import java.util.List;
 
 @SuppressWarnings("all")
 public abstract class JGemsHelper {
+    public static JGemsTimer createTimer() {
+        return JGemsHelper.getScreen().getTimerPool().createTimer();
+    }
+
     public static ICamera getCurrentCamera() {
         return JGemsHelper.getScreen().getCamera();
     }

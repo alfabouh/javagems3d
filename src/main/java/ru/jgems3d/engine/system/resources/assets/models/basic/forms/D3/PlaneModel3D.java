@@ -62,83 +62,83 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
         Vector3f v3 = list.get(2);
         Vector3f v4 = list.get(3);
 
-        mesh.putPositionValue(v1.x);
-        mesh.putPositionValue(v1.y);
-        mesh.putPositionValue(v1.z);
-        mesh.putTextureCoordinateValue(0.0f);
-        mesh.putTextureCoordinateValue(0.0f);
+        mesh.pushPosition(v1.x);
+        mesh.pushPosition(v1.y);
+        mesh.pushPosition(v1.z);
+        mesh.pushTextureCoordinate(0.0f);
+        mesh.pushTextureCoordinate(1.0f);
 
-        mesh.putPositionValue(v2.x);
-        mesh.putPositionValue(v2.y);
-        mesh.putPositionValue(v2.z);
-        mesh.putTextureCoordinateValue(1.0f);
-        mesh.putTextureCoordinateValue(0.0f);
+        mesh.pushPosition(v2.x);
+        mesh.pushPosition(v2.y);
+        mesh.pushPosition(v2.z);
+        mesh.pushTextureCoordinate(1.0f);
+        mesh.pushTextureCoordinate(1.0f);
 
-        mesh.putPositionValue(v3.x);
-        mesh.putPositionValue(v3.y);
-        mesh.putPositionValue(v3.z);
-        mesh.putTextureCoordinateValue(1.0f);
-        mesh.putTextureCoordinateValue(1.0f);
+        mesh.pushPosition(v3.x);
+        mesh.pushPosition(v3.y);
+        mesh.pushPosition(v3.z);
+        mesh.pushTextureCoordinate(1.0f);
+        mesh.pushTextureCoordinate(0.0f);
 
-        mesh.putPositionValue(v4.x);
-        mesh.putPositionValue(v4.y);
-        mesh.putPositionValue(v4.z);
-        mesh.putTextureCoordinateValue(0.0f);
-        mesh.putTextureCoordinateValue(1.0f);
+        mesh.pushPosition(v4.x);
+        mesh.pushPosition(v4.y);
+        mesh.pushPosition(v4.z);
+        mesh.pushTextureCoordinate(0.0f);
+        mesh.pushTextureCoordinate(0.0f);
 
 
-        mesh.putPositionValue(v4.x);
-        mesh.putPositionValue(v4.y);
-        mesh.putPositionValue(v4.z);
-        mesh.putTextureCoordinateValue(0.0f);
-        mesh.putTextureCoordinateValue(1.0f);
+        mesh.pushPosition(v4.x);
+        mesh.pushPosition(v4.y);
+        mesh.pushPosition(v4.z);
+        mesh.pushTextureCoordinate(0.0f);
+        mesh.pushTextureCoordinate(0.0f);
 
-        mesh.putPositionValue(v3.x);
-        mesh.putPositionValue(v3.y);
-        mesh.putPositionValue(v3.z);
-        mesh.putTextureCoordinateValue(1.0f);
-        mesh.putTextureCoordinateValue(1.0f);
+        mesh.pushPosition(v3.x);
+        mesh.pushPosition(v3.y);
+        mesh.pushPosition(v3.z);
+        mesh.pushTextureCoordinate(1.0f);
+        mesh.pushTextureCoordinate(0.0f);
 
-        mesh.putPositionValue(v2.x);
-        mesh.putPositionValue(v2.y);
-        mesh.putPositionValue(v2.z);
-        mesh.putTextureCoordinateValue(1.0f);
-        mesh.putTextureCoordinateValue(0.0f);
+        mesh.pushPosition(v2.x);
+        mesh.pushPosition(v2.y);
+        mesh.pushPosition(v2.z);
+        mesh.pushTextureCoordinate(1.0f);
+        mesh.pushTextureCoordinate(1.0f);
 
-        mesh.putPositionValue(v1.x);
-        mesh.putPositionValue(v1.y);
-        mesh.putPositionValue(v1.z);
-        mesh.putTextureCoordinateValue(0.0f);
-        mesh.putTextureCoordinateValue(0.0f);
+        mesh.pushPosition(v1.x);
+        mesh.pushPosition(v1.y);
+        mesh.pushPosition(v1.z);
+        mesh.pushTextureCoordinate(0.0f);
+        mesh.pushTextureCoordinate(1.0f);
 
-        mesh.putIndexValue(1);
-        mesh.putIndexValue(2);
-        mesh.putIndexValue(0);
-        mesh.putIndexValue(3);
-        mesh.putIndexValue(0);
-        mesh.putIndexValue(2);
+        mesh.pushIndex(1);
+        mesh.pushIndex(2);
+        mesh.pushIndex(0);
+        mesh.pushIndex(3);
+        mesh.pushIndex(0);
+        mesh.pushIndex(2);
 
-        mesh.putIndexValue(5);
-        mesh.putIndexValue(6);
-        mesh.putIndexValue(4);
-        mesh.putIndexValue(7);
-        mesh.putIndexValue(4);
-        mesh.putIndexValue(6);
+        mesh.pushIndex(5);
+        mesh.pushIndex(6);
+        mesh.pushIndex(4);
+        mesh.pushIndex(7);
+        mesh.pushIndex(4);
+        mesh.pushIndex(6);
 
         Vector3f vAB = this.getPosition(mesh.getAttributePositions(), 1).sub(this.getPosition(mesh.getAttributePositions(), 0));
         Vector3f vAD = this.getPosition(mesh.getAttributePositions(), 3).sub(this.getPosition(mesh.getAttributePositions(), 0));
         Vector3f vN = vAB.cross(vAD).normalize();
 
         for (int i = 0; i < 4; i++) {
-            mesh.putNormalValue(vN.x);
-            mesh.putNormalValue(vN.y);
-            mesh.putNormalValue(vN.z);
+            mesh.pushNormal(vN.x);
+            mesh.pushNormal(vN.y);
+            mesh.pushNormal(vN.z);
         }
 
         for (int i = 0; i < 4; i++) {
-            mesh.putNormalValue(-vN.x);
-            mesh.putNormalValue(-vN.y);
-            mesh.putNormalValue(-vN.z);
+            mesh.pushNormal(-vN.x);
+            mesh.pushNormal(-vN.y);
+            mesh.pushNormal(-vN.z);
         }
 
         Vector3f edge1 = new Vector3f(v2).sub(v1);
@@ -171,39 +171,39 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
         float biTan2z = f0 * (-deltaUV4.x * edge3.z + deltaUV3.x * edge4.z);
 
         for (int i = 0; i < 4; i++) {
-            mesh.putTangentValue(tan1x);
-            mesh.putTangentValue(tan1y);
-            mesh.putTangentValue(tan1z);
+            mesh.pushTangent(tan1x);
+            mesh.pushTangent(tan1y);
+            mesh.pushTangent(tan1z);
 
-            mesh.putBitangentValue(biTan1x);
-            mesh.putBitangentValue(biTan1y);
-            mesh.putBitangentValue(biTan1z);
+            mesh.pushBiTangent(biTan1x);
+            mesh.pushBiTangent(biTan1y);
+            mesh.pushBiTangent(biTan1z);
 
-            mesh.putTangentValue(tan2x);
-            mesh.putTangentValue(tan2y);
-            mesh.putTangentValue(tan2z);
+            mesh.pushTangent(tan2x);
+            mesh.pushTangent(tan2y);
+            mesh.pushTangent(tan2z);
 
-            mesh.putBitangentValue(biTan2x);
-            mesh.putBitangentValue(biTan2y);
-            mesh.putBitangentValue(biTan2z);
+            mesh.pushBiTangent(biTan2x);
+            mesh.pushBiTangent(biTan2y);
+            mesh.pushBiTangent(biTan2z);
         }
 
         for (int i = 0; i < 4; i++) {
-            mesh.putTangentValue(-tan1x);
-            mesh.putTangentValue(-tan1y);
-            mesh.putTangentValue(-tan1z);
+            mesh.pushTangent(-tan1x);
+            mesh.pushTangent(-tan1y);
+            mesh.pushTangent(-tan1z);
 
-            mesh.putBitangentValue(-biTan1x);
-            mesh.putBitangentValue(-biTan1y);
-            mesh.putBitangentValue(-biTan1z);
+            mesh.pushBiTangent(-biTan1x);
+            mesh.pushBiTangent(-biTan1y);
+            mesh.pushBiTangent(-biTan1z);
 
-            mesh.putTangentValue(-tan2x);
-            mesh.putTangentValue(-tan2y);
-            mesh.putTangentValue(-tan2z);
+            mesh.pushTangent(-tan2x);
+            mesh.pushTangent(-tan2y);
+            mesh.pushTangent(-tan2z);
 
-            mesh.putBitangentValue(-biTan2x);
-            mesh.putBitangentValue(-biTan2y);
-            mesh.putBitangentValue(-biTan2z);
+            mesh.pushBiTangent(-biTan2x);
+            mesh.pushBiTangent(-biTan2y);
+            mesh.pushBiTangent(-biTan2z);
         }
 
         mesh.bakeMesh();

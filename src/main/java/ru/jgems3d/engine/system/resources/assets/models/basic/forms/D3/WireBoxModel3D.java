@@ -24,73 +24,73 @@ public class WireBoxModel3D implements BasicMesh<Format3D> {
     @Override
     public Mesh generateMesh() {
         Mesh mesh = new Mesh();
-        mesh.putPositionValue(this.min.x);
-        mesh.putPositionValue(this.min.y);
-        mesh.putPositionValue(this.min.z);
+        mesh.pushPosition(this.min.x);
+        mesh.pushPosition(this.min.y);
+        mesh.pushPosition(this.min.z);
 
-        mesh.putPositionValue(this.max.x);
-        mesh.putPositionValue(this.min.y);
-        mesh.putPositionValue(this.min.z);
+        mesh.pushPosition(this.max.x);
+        mesh.pushPosition(this.min.y);
+        mesh.pushPosition(this.min.z);
 
-        mesh.putPositionValue(this.max.x);
-        mesh.putPositionValue(this.max.y);
-        mesh.putPositionValue(this.min.z);
+        mesh.pushPosition(this.max.x);
+        mesh.pushPosition(this.max.y);
+        mesh.pushPosition(this.min.z);
 
-        mesh.putPositionValue(this.min.x);
-        mesh.putPositionValue(this.max.y);
-        mesh.putPositionValue(this.min.z);
+        mesh.pushPosition(this.min.x);
+        mesh.pushPosition(this.max.y);
+        mesh.pushPosition(this.min.z);
 
-        mesh.putPositionValue(this.min.x);
-        mesh.putPositionValue(this.min.y);
-        mesh.putPositionValue(this.max.z);
+        mesh.pushPosition(this.min.x);
+        mesh.pushPosition(this.min.y);
+        mesh.pushPosition(this.max.z);
 
-        mesh.putPositionValue(this.max.x);
-        mesh.putPositionValue(this.min.y);
-        mesh.putPositionValue(this.max.z);
+        mesh.pushPosition(this.max.x);
+        mesh.pushPosition(this.min.y);
+        mesh.pushPosition(this.max.z);
 
-        mesh.putPositionValue(this.max.x);
-        mesh.putPositionValue(this.max.y);
-        mesh.putPositionValue(this.max.z);
+        mesh.pushPosition(this.max.x);
+        mesh.pushPosition(this.max.y);
+        mesh.pushPosition(this.max.z);
 
-        mesh.putPositionValue(this.min.x);
-        mesh.putPositionValue(this.max.y);
-        mesh.putPositionValue(this.max.z);
+        mesh.pushPosition(this.min.x);
+        mesh.pushPosition(this.max.y);
+        mesh.pushPosition(this.max.z);
 
-        mesh.putIndexValue(0);
-        mesh.putIndexValue(1);
+        mesh.pushIndex(0);
+        mesh.pushIndex(1);
 
-        mesh.putIndexValue(1);
-        mesh.putIndexValue(2);
+        mesh.pushIndex(1);
+        mesh.pushIndex(2);
 
-        mesh.putIndexValue(2);
-        mesh.putIndexValue(3);
+        mesh.pushIndex(2);
+        mesh.pushIndex(3);
 
-        mesh.putIndexValue(3);
-        mesh.putIndexValue(0);
+        mesh.pushIndex(3);
+        mesh.pushIndex(0);
 
-        mesh.putIndexValue(4);
-        mesh.putIndexValue(5);
+        mesh.pushIndex(4);
+        mesh.pushIndex(5);
 
-        mesh.putIndexValue(5);
-        mesh.putIndexValue(6);
+        mesh.pushIndex(5);
+        mesh.pushIndex(6);
 
-        mesh.putIndexValue(6);
-        mesh.putIndexValue(7);
+        mesh.pushIndex(6);
+        mesh.pushIndex(7);
 
-        mesh.putIndexValue(7);
-        mesh.putIndexValue(4);
+        mesh.pushIndex(7);
+        mesh.pushIndex(4);
 
-        mesh.putIndexValue(0);
-        mesh.putIndexValue(4);
+        mesh.pushIndex(0);
+        mesh.pushIndex(4);
 
-        mesh.putIndexValue(1);
-        mesh.putIndexValue(5);
+        mesh.pushIndex(1);
+        mesh.pushIndex(5);
 
-        mesh.putIndexValue(2);
-        mesh.putIndexValue(6);
+        mesh.pushIndex(2);
+        mesh.pushIndex(6);
 
-        mesh.putIndexValue(3);
-        mesh.putIndexValue(7);
+        mesh.pushIndex(3);
+        mesh.pushIndex(7);
 
         mesh.bakeMesh();
         return mesh;
