@@ -3,7 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObjectKeeper;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 
 import java.util.List;
 
@@ -24,8 +24,8 @@ public class WorldForwardRender extends SceneRenderBase {
         super.onStopRender();
     }
 
-    private void render(float partialTicks, List<IModeledSceneObjectKeeper> renderObjects) {
-        for (IModeledSceneObjectKeeper entityItem : renderObjects) {
+    private void render(float partialTicks, List<IModeledSceneObject> renderObjects) {
+        for (IModeledSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {
                     if (entityItem.getMeshRenderData().getRenderAttributes().isHasTransparency()) {

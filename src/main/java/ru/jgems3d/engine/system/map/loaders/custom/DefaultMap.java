@@ -4,7 +4,7 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.BtStaticMeshBody;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.liquids.Water;
 import ru.jgems3d.engine.JGemsHelper;
@@ -22,7 +22,7 @@ public class DefaultMap implements IMapLoader {
     @Override
     public void createMap(PhysicsWorld world, SceneWorld sceneWorld) {
         BtStaticMeshBody worldModeledBrush = (BtStaticMeshBody) new BtStaticMeshBody(JGemsResourceManager.globalModelAssets.ground2, world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
-        JGemsHelper.addItem(worldModeledBrush, new RenderObjectData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
+        JGemsHelper.addItem(worldModeledBrush, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
         worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
 
         Water water = new Water(new Zone(new Vector3f(0.0f, -5.0f, 0.0f), new Vector3f(8.0f, 6.0f, 8.0f)));

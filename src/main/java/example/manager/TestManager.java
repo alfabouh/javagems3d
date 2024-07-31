@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderObjectData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.BtDynamicMeshBody;
@@ -42,27 +42,27 @@ public class TestManager extends AppManager {
             MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel());
             JGemsShaderManager shaderManager = localGameResources.getResource(renderContainer.getPathToRenderShader());
 
-            RenderObjectData renderObjectData = new RenderObjectData(renderContainer.getRenderFabricClass().newInstance(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
+            RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabricClass().newInstance(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
 
             if (objectCategory.equals(TestTBoxApp.PHYSICS_OBJECT)) {
                 boolean isStatic = attributeContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
                 JGemsHelper.tryCreateMeshCollisionData(meshDataGroup);
                 if (isStatic) {
                     BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, physicsWorld, pos, id);
-                    JGemsHelper.addItem(worldModeledBrush, new RenderObjectData(renderObjectData, meshDataGroup));
+                    JGemsHelper.addItem(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
                     worldModeledBrush.setCanBeDestroyed(false);
                     worldModeledBrush.setRotation(new Vector3f(rot).negate());
                     worldModeledBrush.setScaling(scale);
                 } else {
                     BtDynamicMeshBody worldModeledBrush = new BtDynamicMeshBody(meshDataGroup, physicsWorld, pos, id);
-                    JGemsHelper.addItem(worldModeledBrush, new RenderObjectData(renderObjectData, meshDataGroup));
+                    JGemsHelper.addItem(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
                     worldModeledBrush.setCanBeDestroyed(false);
                     worldModeledBrush.setRotation(new Vector3f(rot).negate());
                     worldModeledBrush.setScaling(scale);
                 }
             } else if (objectCategory.equals(TestTBoxApp.PROP_OBJECT)) {
                 MeshRenderData meshRenderData = new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
-                IRenderObjectFabric renderFabric = renderObjectData.getRenderFabric();
+                IRenderObjectFabric renderFabric = renderEntityData.getRenderFabric();
 
                 Model<Format3D> model = new Model<>(new Format3D(), meshDataGroup);
                 model.getFormat().setPosition(pos);

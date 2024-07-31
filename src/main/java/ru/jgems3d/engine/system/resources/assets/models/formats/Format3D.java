@@ -3,7 +3,8 @@ package ru.jgems3d.engine.system.resources.assets.models.formats;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-public class Format3D implements IFormat {
+@SuppressWarnings("all")
+public final class Format3D implements IFormat {
     private final Vector3f position;
     private final Vector3f rotation;
     private final Vector3f scaling;

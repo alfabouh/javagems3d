@@ -12,7 +12,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderObjectPlayer;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.inventory.Inventory;
 import ru.jgems3d.engine.inventory.items.ItemZippo;
@@ -300,7 +300,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
     @Override
     public float getEyeHeight() {
-        return (float) (0.45f + Math.sin(RenderObjectPlayer.stepBobbing * 0.2f) * 0.1f);
+        return (float) (0.45f + Math.sin(RenderPlayer.stepBobbing * 0.2f) * 0.1f);
     }
 
     public int getCollisionGroup() {

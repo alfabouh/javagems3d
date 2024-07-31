@@ -9,11 +9,11 @@ import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
 
-public class RenderObjectPlayer implements IRenderObjectFabric {
+public class RenderPlayer implements IRenderObjectFabric {
     public static float stepBobbing = 0.0f;
     private double lastGlfwTime;
 
-    public RenderObjectPlayer() {
+    public RenderPlayer() {
         this.lastGlfwTime = JGems3D.glfwTime();
     }
 
@@ -28,7 +28,7 @@ public class RenderObjectPlayer implements IRenderObjectFabric {
             this.lastGlfwTime = currTime;
             Vector3f vec3 = JGems3D.get().getScreen().getControllerDispatcher().getCurrentController().getNormalizedPositionInput();
           // if (!JGems3D.get().isPaused() && dynamicPlayer.getScalarSpeed() > 0.001f && ((vec3.y < 0 || !dynamicPlayer.isCanPlayerJump()) || Math.abs(vec3.y) <= 0.1f) && vec3.length() > 0.5f) {
-          //     RenderObjectPlayer.stepBobbing += delta * 60.0f * (dynamicPlayer.isRunning() ? 1.25f : 1.0f);
+          //     RenderPlayer.stepBobbing += delta * 60.0f * (dynamicPlayer.isRunning() ? 1.25f : 1.0f);
           // }
         }
     }

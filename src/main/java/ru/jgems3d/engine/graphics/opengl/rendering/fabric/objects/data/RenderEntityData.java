@@ -14,7 +14,7 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 
 import java.lang.reflect.InvocationTargetException;
 
-public class RenderObjectData {
+public class RenderEntityData {
     private final IRenderObjectFabric renderFabric;
     private final Class<? extends AbstractSceneEntity> aClass;
     private IEntityModelConstructor<WorldItem> entityModelConstructor;
@@ -22,7 +22,7 @@ public class RenderObjectData {
     private Material overObjectMaterial;
     private MeshRenderData meshRenderData;
 
-    public RenderObjectData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull JGemsShaderManager shaderManager, MeshDataGroup meshDataGroup) {
+    public RenderEntityData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull JGemsShaderManager shaderManager, MeshDataGroup meshDataGroup) {
         this.aClass = aClass;
         this.renderFabric = renderFabric;
         this.overObjectMaterial = null;
@@ -31,7 +31,7 @@ public class RenderObjectData {
         this.meshRenderData = MeshRenderData.defaultModelRenderConstraints(shaderManager);
     }
 
-    public RenderObjectData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull MeshRenderData meshRenderData, MeshDataGroup meshDataGroup) {
+    public RenderEntityData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull MeshRenderData meshRenderData, MeshDataGroup meshDataGroup) {
         this.aClass = aClass;
         this.renderFabric = renderFabric;
         this.overObjectMaterial = null;
@@ -40,11 +40,11 @@ public class RenderObjectData {
         this.meshRenderData = meshRenderData.copy();
     }
 
-    public RenderObjectData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull JGemsShaderManager shaderManager) {
+    public RenderEntityData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull JGemsShaderManager shaderManager) {
         this(renderFabric, aClass, shaderManager, null);
     }
 
-    public RenderObjectData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull MeshRenderData meshRenderData) {
+    public RenderEntityData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull MeshRenderData meshRenderData) {
         this.aClass = aClass;
         this.renderFabric = renderFabric;
         this.overObjectMaterial = null;
@@ -53,22 +53,22 @@ public class RenderObjectData {
         this.meshRenderData = meshRenderData.copy();
     }
 
-    public RenderObjectData(@NotNull RenderObjectData renderObjectData, MeshDataGroup meshDataGroup) {
-        this(renderObjectData.getRenderFabric(), renderObjectData.getRenderClass(), renderObjectData.getMeshRenderData(), meshDataGroup);
-        this.setOverObjectMaterial(renderObjectData.getOverObjectMaterial());
-        this.setEntityModelConstructor(renderObjectData.getEntityModelConstructor());
+    public RenderEntityData(@NotNull RenderEntityData renderEntityData, MeshDataGroup meshDataGroup) {
+        this(renderEntityData.getRenderFabric(), renderEntityData.getRenderClass(), renderEntityData.getMeshRenderData(), meshDataGroup);
+        this.setOverObjectMaterial(renderEntityData.getOverObjectMaterial());
+        this.setEntityModelConstructor(renderEntityData.getEntityModelConstructor());
     }
 
-    public RenderObjectData(@NotNull RenderObjectData renderObjectData, Material overObjectMaterial) {
-        this(renderObjectData.getRenderFabric(), renderObjectData.getRenderClass(), renderObjectData.getMeshRenderData(), renderObjectData.getMeshDataGroup());
+    public RenderEntityData(@NotNull RenderEntityData renderEntityData, Material overObjectMaterial) {
+        this(renderEntityData.getRenderFabric(), renderEntityData.getRenderClass(), renderEntityData.getMeshRenderData(), renderEntityData.getMeshDataGroup());
         this.setOverObjectMaterial(overObjectMaterial);
-        this.setEntityModelConstructor(renderObjectData.getEntityModelConstructor());
+        this.setEntityModelConstructor(renderEntityData.getEntityModelConstructor());
     }
 
     public AbstractSceneEntity constructPhysicsObject(SceneWorld sceneWorld, WorldItem worldItem) {
-        final RenderObjectData renderObjectData = this.copyObject();
+        final RenderEntityData renderEntityData = this.copyObject();
         try {
-            AbstractSceneEntity abstractSceneEntity = this.aClass.getDeclaredConstructor(SceneWorld.class, WorldItem.class, RenderObjectData.class).newInstance(sceneWorld, worldItem, renderObjectData);
+            AbstractSceneEntity abstractSceneEntity = this.aClass.getDeclaredConstructor(SceneWorld.class, WorldItem.class, RenderEntityData.class).newInstance(sceneWorld, worldItem, renderEntityData);
             this.onPhysicsObjectCreated(abstractSceneEntity);
             return abstractSceneEntity;
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
@@ -88,7 +88,7 @@ public class RenderObjectData {
         return this.meshDataGroup;
     }
 
-    public RenderObjectData setMeshDataGroup(MeshDataGroup meshDataGroup) {
+    public RenderEntityData setMeshDataGroup(MeshDataGroup meshDataGroup) {
         this.meshDataGroup = meshDataGroup;
         this.entityModelConstructor = null;
         return this;
@@ -98,7 +98,7 @@ public class RenderObjectData {
         return this.overObjectMaterial;
     }
 
-    public RenderObjectData setOverObjectMaterial(Material overObjectMaterial) {
+    public RenderEntityData setOverObjectMaterial(Material overObjectMaterial) {
         this.overObjectMaterial = overObjectMaterial;
         return this;
     }
@@ -107,7 +107,7 @@ public class RenderObjectData {
         return this.entityModelConstructor;
     }
 
-    public RenderObjectData setEntityModelConstructor(IEntityModelConstructor<WorldItem> entityModelConstructor) {
+    public RenderEntityData setEntityModelConstructor(IEntityModelConstructor<WorldItem> entityModelConstructor) {
         if (entityModelConstructor != null) {
             this.meshDataGroup = null;
         }
@@ -119,7 +119,7 @@ public class RenderObjectData {
         return this.meshRenderData;
     }
 
-    public RenderObjectData setModelRenderParams(MeshRenderData meshRenderData) {
+    public RenderEntityData setModelRenderParams(MeshRenderData meshRenderData) {
         this.meshRenderData = meshRenderData;
         return this;
     }
@@ -128,11 +128,11 @@ public class RenderObjectData {
         return this.aClass;
     }
 
-    protected RenderObjectData copyObject() {
-        RenderObjectData renderObjectData = new RenderObjectData(this.getRenderFabric(), this.getRenderClass(), this.getMeshRenderData());
-        renderObjectData.setMeshDataGroup(this.getMeshDataGroup());
-        renderObjectData.setOverObjectMaterial(this.getOverObjectMaterial());
-        renderObjectData.setEntityModelConstructor(this.getEntityModelConstructor());
-        return renderObjectData;
+    protected RenderEntityData copyObject() {
+        RenderEntityData renderEntityData = new RenderEntityData(this.getRenderFabric(), this.getRenderClass(), this.getMeshRenderData());
+        renderEntityData.setMeshDataGroup(this.getMeshDataGroup());
+        renderEntityData.setOverObjectMaterial(this.getOverObjectMaterial());
+        renderEntityData.setEntityModelConstructor(this.getEntityModelConstructor());
+        return renderEntityData;
     }
 }

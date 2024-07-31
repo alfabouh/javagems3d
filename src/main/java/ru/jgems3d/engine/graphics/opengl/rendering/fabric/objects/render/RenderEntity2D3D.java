@@ -5,8 +5,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 
-public class RenderObject2D3D extends RenderWorldItem {
-    public RenderObject2D3D() {
+public class RenderEntity2D3D extends RenderWorldItem {
+    public RenderEntity2D3D() {
     }
 
     @Override
