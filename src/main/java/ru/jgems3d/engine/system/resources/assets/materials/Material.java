@@ -6,7 +6,10 @@ import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSa
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.ISample;
 
 public class Material {
+    private boolean useInTransparencyPass;
+    
     private ISample diffuse;
+    private ISample opacity;
     private IImageSample normals;
     private IImageSample emissive;
     private IImageSample specular;
@@ -26,6 +29,24 @@ public class Material {
         this.setDefaultNormals();
         this.setDefaultSpecular();
         this.setDefaultMetallic();
+        this.setDefaultOpacity();
+        this.useInTransparencyPass = false;
+    }
+
+    public void setUseInTransparencyPass(boolean useInTransparencyPass) {
+        this.useInTransparencyPass = useInTransparencyPass;
+    }
+
+    public boolean isUseInTransparencyPass() {
+        return this.useInTransparencyPass;
+    }
+
+    public ISample getOpacity() {
+        return this.opacity;
+    }
+
+    public void setOpacity(ISample opacity) {
+        this.opacity = opacity;
     }
 
     public ISample getDiffuse() {
@@ -86,5 +107,9 @@ public class Material {
 
     public void setDefaultSpecular() {
         this.specular = null;
+    }
+
+    public void setDefaultOpacity() {
+        this.opacity = null;
     }
 }
