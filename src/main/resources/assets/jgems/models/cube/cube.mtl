@@ -2,4 +2,8 @@ newmtl cubemtl
 Kd 0.00 0.00 0.00
 Ka 0.59 0.45 0.35
 Ks 0.59 0.45 0.35
+d 0.5
+Tr 0.5
 map_Kd cube.png
+d 0.5
+Tr 0.5
