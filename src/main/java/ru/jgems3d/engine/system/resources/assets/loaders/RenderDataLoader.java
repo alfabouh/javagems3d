@@ -15,6 +15,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEnt
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.EntityObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.PlayerSPObject;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
@@ -58,7 +60,8 @@ public class RenderDataLoader implements IAssetsLoader {
         this.zippo_world.getMeshRenderData().getRenderAttributes().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
         this.zippo_world.setOverObjectMaterial(zwMat);
 
-        this.entityCube = new RenderEntityData(new RenderEntity(), EntityObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube);
+        this.entityCube = new RenderEntityData(new RenderEntity(), EntityObject.class, new MeshRenderData(new MeshRenderAttributes(false, true), JGemsResourceManager.globalShaderAssets.weighted_oit)).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
+
         this.player = new RenderEntityData(new RenderPlayer(), PlayerSPObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);
 
         this.ground = new RenderEntityData(new RenderEntity(), EntityObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);

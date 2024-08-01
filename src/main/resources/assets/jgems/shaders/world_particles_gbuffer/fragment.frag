@@ -21,6 +21,8 @@ void main()
     gEmission = vec4(vec3(brightness), diffuse_texture.a);
     gNormal = vec4(vec3(0.), diffuse_texture.a <= 0 ? 0. : 1.);
     gPosition = vec4(mv_vertex_pos, diffuse_texture.a);
-    gMetallic = vec4(0.);
+    gMetallic = vec4(vec3(0.), diffuse_texture.a);
     gColor = diffuse_texture;
+
+   // gl_FragDepth = 1. - diffuse_texture.a;
 }

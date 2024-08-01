@@ -54,7 +54,7 @@ public final class SceneWorld implements IWorld {
         this.particlesEmitter = new ParticlesEmitter();
     }
 
-    public boolean isItemReachedRenderDistance(IModeledSceneObject renderObject) {
+    public boolean checkReachedRenderDistance(IModeledSceneObject renderObject) {
         if (!renderObject.hasRender()) {
             return true;
         }
@@ -74,7 +74,7 @@ public final class SceneWorld implements IWorld {
         if (this.getFrustumCulling() == null) {
             return physicsObjects;
         }
-        return this.getCollectionFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> e.getMeshRenderData().getShaderManager().isUseForGBuffer() == deferredPass && e.isVisible() && !this.isItemReachedRenderDistance(e)).collect(Collectors.toList());
+        return this.getCollectionFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> e.getMeshRenderData().getShaderManager().isGBufferShader() == deferredPass && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toList());
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {
@@ -221,7 +221,9 @@ public final class SceneWorld implements IWorld {
         this.cleanAll();
     }
 
-    public void updateWorldObjects(boolean refresh, float partialTicks) {
+    public void updateWorldObjects(boolean refresh, float partialTicks, float deltaTime) {
+        this.getParticlesEmitter().onUpdateParticles(deltaTime, this);
+
         if (ticks % 60 == 0)
         JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
 
@@ -246,7 +248,6 @@ public final class SceneWorld implements IWorld {
                 abstractSceneEntity.updateRenderPos(partialTicks);
                 abstractSceneEntity.updateRenderTranslation();
             }
-            this.getParticlesEmitter().onUpdateParticles(partialTicks, this);
         }
 
         Iterator<LiquidObject> iterator2 = this.getLiquids().iterator();

@@ -2,6 +2,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
@@ -57,6 +58,7 @@ public class SkyRender extends SceneRenderBase {
         Matrix4f.m30(0);
         Matrix4f.m31(0);
         Matrix4f.m32(0);
+
         shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog());
         shaderManager.performUniform("view_mat_inverted", new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert());
         shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);

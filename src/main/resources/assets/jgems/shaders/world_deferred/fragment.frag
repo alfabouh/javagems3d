@@ -161,7 +161,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
 
     float sun_shadow = calcSunShineVSM(world_position, frag_pos);
 
-    vec4 sunFactor = abs(dot(normal, sunPos)) < 0.001 ? vec4(0.0) : calc_sun_light(sunPos, frag_pos, normal);
+    vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal);
 
     vec4 point_light_factor = vec4(0.0);
     for (int i = 0; i < total_plights; i++) {
@@ -184,9 +184,6 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
 }
 
 vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal) {
-    if (length(vNormal) <= 0) {
-        return vec4(22.);
-    }
     vec4 diffuseC = vec4(0.);
     vec4 specularC = vec4(0.);
 
@@ -206,7 +203,10 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
 }
 
 vec4 calc_sun_light(vec3 sunPos, vec3 vPos, vec3 vNormal) {
-    return calc_light_factor(vec3(sunColorR, sunColorG, sunColorB), sunBright, vPos, normalize(sunPos), vNormal);
+    if (length(vNormal) <= 0) {
+        return vec4(vec3(sunColorR, sunColorG, sunColorB), 1.);
+    }
+    return abs(dot(vNormal, sunPos)) < 0.001 ? vec4(0.0) : calc_light_factor(vec3(sunColorR, sunColorG, sunColorB), sunBright, vPos, normalize(sunPos), vNormal);
 }
 
 vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, float linear, float expo, float bright) {
@@ -214,7 +214,7 @@ vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, 
 
     vec3 light_dir = pos - vPos;
     vec3 to_light = normalize(light_dir);
-    vec4 light_c = calc_light_factor(vec3(light.plR, light.plG, light.plB), bright, vPos, to_light, vNormal);
+    vec4 light_c = length(vNormal) <= 0 ? vec4(vec3(light.plR, light.plG, light.plB), 1.) : calc_light_factor(vec3(light.plR, light.plG, light.plB), bright, vPos, to_light, vNormal);
 
     float dist = length(light_dir);
     float attenuation_factor = at_base + linear * dist + expo * pow(dist, 2);

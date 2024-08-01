@@ -26,9 +26,9 @@ public class FreeCamera extends Camera {
     }
 
     @Override
-    public void updateCamera(float deltaTicks) {
+    public void updateCamera(float deltaTime) {
         if (this.getController() != null) {
-            this.moveCamera(this.moveCameraPosInput().mul(deltaTicks));
+            this.moveCamera(this.moveCameraPosInput().mul(deltaTime));
             this.moveCameraRot(this.moveCameraRotInput());
         }
         if (this.camRotation.x > Math.toRadians(90.0f)) {

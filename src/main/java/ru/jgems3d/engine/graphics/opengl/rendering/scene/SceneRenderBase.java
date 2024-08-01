@@ -4,12 +4,12 @@ import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
 
 public abstract class SceneRenderBase {
-    private final int renderPriority;
+    private final int renderOrder;
     private final RenderGroup renderGroup;
     private final SceneData sceneData;
 
-    protected SceneRenderBase(int renderPriority, SceneData sceneData, RenderGroup renderGroup) {
-        this.renderPriority = renderPriority;
+    protected SceneRenderBase(int renderOrder, SceneData sceneData, RenderGroup renderGroup) {
+        this.renderOrder = renderOrder;
         this.renderGroup = renderGroup;
         this.sceneData = sceneData;
     }
@@ -28,8 +28,8 @@ public abstract class SceneRenderBase {
         JGemsHelper.getLogger().log("Scene " + this.getRenderGroup().getId() + ": render stop!");
     }
 
-    public int getRenderPriority() {
-        return this.renderPriority;
+    public int getRenderOrder() {
+        return this.renderOrder;
     }
 
     public RenderGroup getRenderGroup() {

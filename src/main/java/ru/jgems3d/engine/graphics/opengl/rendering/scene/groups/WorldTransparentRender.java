@@ -9,6 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WorldTransparentRender extends SceneRenderBase {
     public static List<IModeledSceneObject> transparentRenderObjects;
@@ -19,10 +20,15 @@ public class WorldTransparentRender extends SceneRenderBase {
     }
 
     public void onRender(float partialTicks) {
-        WorldTransparentRender.transparentRenderObjects.sort(Comparator.comparing(e -> -e.getModel().getFormat().getPosition().distance(this.getCamera().getCamPosition())));
-        GL30.glDepthMask(false);
-        this.render(partialTicks, WorldTransparentRender.transparentRenderObjects);
-        GL30.glDepthMask(true);
+        //WorldTransparentRender.transparentRenderObjects.sort(Comparator.comparing(e -> -e.getModel().getFormat().getPosition().distance(this.getCamera().getCamPosition())));
+        //GL30.glDepthMask(false);
+        //this.render(partialTicks, WorldTransparentRender.transparentRenderObjects);
+        //GL30.glDepthMask(true);
+        //WorldTransparentRender.transparentRenderObjects.clear();
+
+        //GL30.glDepthMask(false);
+        //this.render(partialTicks, this.getSceneData().getSceneWorld().getModeledSceneEntities().stream().filter(e -> e.getMeshRenderData().getRenderAttributes().isHasTransparency()).collect(Collectors.toList()));
+        //GL30.glDepthMask(true);
         WorldTransparentRender.transparentRenderObjects.clear();
     }
 

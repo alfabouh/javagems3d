@@ -38,6 +38,7 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
     public JGemsShaderManager world_liquid_gbuffer;
     public JGemsShaderManager world_particles_gbuffer;
     public JGemsShaderManager world_deferred;
+    public JGemsShaderManager weighted_oit;
     public JGemsShaderManager simple;
     public JGemsShaderManager depth_sun;
     public JGemsShaderManager depth_sun_fix;
@@ -77,6 +78,8 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
         this.skybox = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "skybox") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight);
 
         this.world_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_ssao") , Shader.ShaderType.COMPUTE_BIT);
+
+        this.weighted_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_oit") , Shader.ShaderType.DEFAULT_BITS);
 
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setUseForGBuffer(true);
         this.world_deferred = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_deferred") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight, this.PointLights, this.Fog);
