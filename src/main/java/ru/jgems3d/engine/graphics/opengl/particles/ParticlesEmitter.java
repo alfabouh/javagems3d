@@ -33,7 +33,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
         return new SimpleParticle(sceneWorld, particleAttributes, particleTexturePack, pos, scaling);
     }
 
-    public void onUpdateParticles(double partialTicks, IWorld iWorld) {
+    public void onUpdateParticles(double deltaTime, IWorld iWorld) {
         Iterator<ParticleFX> particleFXIterator = this.getParticlesSet().iterator();
         while (particleFXIterator.hasNext()) {
             ParticleFX particleFX = particleFXIterator.next();
@@ -42,7 +42,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
                 particleFXIterator.remove();
                 continue;
             }
-            particleFX.onUpdateParticle(partialTicks, iWorld);
+            particleFX.onUpdateParticle(deltaTime, iWorld);
         }
     }
 

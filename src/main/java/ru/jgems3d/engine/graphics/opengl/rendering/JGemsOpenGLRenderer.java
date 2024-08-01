@@ -3,6 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering;
 import org.joml.*;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL45;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.TextureProgram;
@@ -56,6 +57,9 @@ public final class JGemsOpenGLRenderer {
     private final FBOTexture2DProgram gBuffer;
     private final FBOTexture2DProgram ssaoBuffer;
     private final FBOTexture2DProgram finalRenderedSceneFbo;
+
+    private final FBOTexture2DProgram transparencyFBO;
+
     private final ShadowScene shadowScene;
     private boolean wantsToTakeScreenshot;
     private List<SceneRenderBase> sceneRenderBases_forward;
@@ -74,6 +78,9 @@ public final class JGemsOpenGLRenderer {
         this.sceneData = sceneData;
 
         this.shadowScene = new ShadowScene(this.getSceneData().getSceneWorld());
+
+        this.transparencyFBO = new FBOTexture2DProgram(true);
+
         this.fboBlur = new FBOTexture2DProgram(true);
         this.sceneFbo = new FBOTexture2DProgram(true);
         this.fboPsx = new FBOTexture2DProgram(true);
@@ -87,8 +94,16 @@ public final class JGemsOpenGLRenderer {
         this.wantsToTakeScreenshot = false;
     }
 
+    // section ResourcesSetup
     public void createResources(Vector2i dim) {
         this.clearResources();
+
+        FBOTexture2DProgram.FBOTextureInfo[] transparencyFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+                {
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED)
+                };
+        this.transparencyFBO.createFrameBuffer2DTexture(dim, transparencyFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
         FBOTexture2DProgram.FBOTextureInfo[] psxFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
                 {
@@ -213,8 +228,8 @@ public final class JGemsOpenGLRenderer {
 
     public void onStartRender() {
         this.fillScene();
-        this.sceneRenderBases_forward = this.sceneRenderBases_forward.stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
-        this.sceneRenderBases_deferred = this.sceneRenderBases_deferred.stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderPriority)).collect(Collectors.toList());
+        this.sceneRenderBases_forward = this.sceneRenderBases_forward.stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderOrder)).collect(Collectors.toList());
+        this.sceneRenderBases_deferred = this.sceneRenderBases_deferred.stream().sorted(Comparator.comparingInt(SceneRenderBase::getRenderOrder)).collect(Collectors.toList());
 
         this.sceneRenderBases_forward.forEach(SceneRenderBase::onStartRender);
         this.sceneRenderBases_deferred.forEach(SceneRenderBase::onStartRender);
@@ -230,7 +245,7 @@ public final class JGemsOpenGLRenderer {
         this.inventoryRender.onStopRender();
         this.guiRender.onStopRender();
 
-        this.getImguiRender().cleanUp();
+        this.getDearImguiRender().cleanUp();
         this.clearResources();
     }
 
@@ -248,6 +263,7 @@ public final class JGemsOpenGLRenderer {
             this.ssaoBufferTexture = null;
         }
 
+        this.getTransparencyFBO().clearFBO();
         this.getSsaoBuffer().clearFBO();
         this.getFboBlur().clearFBO();
         this.getSceneFbo().clearFBO();
@@ -256,6 +272,7 @@ public final class JGemsOpenGLRenderer {
         this.getFinalRenderedSceneFbo().clearFBO();
     }
 
+    // section Render
     public void onRender(float partialTicks) {
         if (this.getSceneData().getCamera() == null) {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
@@ -284,12 +301,15 @@ public final class JGemsOpenGLRenderer {
                 this.postFXAA(model);
 
                 this.renderFinalScene(model);
+                //TODO
+                this.renderTransparentElements();
+
                 this.inventoryRender.onRender(partialTicks);
                 this.guiRender.onRender(partialTicks);
             }
         }
 
-        this.getImguiRender().render(partialTicks);
+        this.getDearImguiRender().render(partialTicks);
 
         if (this.wantsToTakeScreenshot) {
             JGemsHelper.getLogger().log("Took screenshot!");
@@ -298,6 +318,43 @@ public final class JGemsOpenGLRenderer {
         }
     }
 
+    // section Transparency_OI
+    private void renderTransparentElements() {
+        this.getGBuffer().copyFBOtoFBODepth(this.getTransparencyFBO().getFrameBufferId(), this.getWindowDimensions());
+
+        GL30.glEnable(GL30.GL_DEPTH_TEST);
+        GL30.glDepthMask(false);
+        GL30.glEnable(GL30.GL_BLEND);
+        GL45.glBlendFunci(0, GL45.GL_ONE, GL45.GL_ONE);
+        GL45.glBlendFunci(1, GL45.GL_ZERO, GL45.GL_ONE_MINUS_SRC_COLOR);
+        GL45.glBlendEquation(GL30.GL_FUNC_ADD);
+
+        this.getTransparencyFBO().bindFBO();
+        GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[] {0.0f, 0.0f, 0.0f, 0.0f});
+        GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[] {1.0f, 1.0f, 1.0f, 1.0f});
+        List<IModeledSceneObject> modeledSceneObjects = this.getSceneData().getSceneWorld().getModeledSceneEntities().stream().filter(e -> e.getMeshRenderData().getRenderAttributes().isHasTransparency()).collect(Collectors.toList());
+        for (IModeledSceneObject modeledSceneObject : modeledSceneObjects) {
+            this.getOITShader().bind();
+            this.getOITShader().getUtils().performPerspectiveMatrix();
+            this.getOITShader().getUtils().performViewAndModelMatricesSeparately(modeledSceneObject.getModel());
+
+            Vector3f vector3f = modeledSceneObject.getModel().getFormat().getPosition();
+            Vector3f vector3f2 = modeledSceneObject.getModel().getFormat().getRotation();
+
+            this.getOITShader().performUniform("color", new Vector4f(new Vector3f((vector3f.x % 10) * 0.1f, (vector3f.y % 10) * 0.1f, (vector3f.z % 10) * 0.1f), 0.5f));
+
+            JGemsSceneUtils.renderModel(modeledSceneObject.getModel(), GL30.GL_TRIANGLES);
+
+            this.getOITShader().unBind();
+        }
+        this.getTransparencyFBO().unBindFBO();
+
+        GL30.glDisable(GL30.GL_BLEND);
+        GL30.glDepthMask(true);
+        GL30.glDisable(GL30.GL_DEPTH_TEST);
+    }
+
+    // section FinalScene
     private void renderFinalScene(Model<Format2D> model) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.bind();
@@ -309,6 +366,7 @@ public final class JGemsOpenGLRenderer {
         imgShader.unBind();
     }
 
+    // section GeometryPass
     private void geometryPass(float partialTicks) {
         this.getGBuffer().bindFBO();
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
@@ -318,6 +376,7 @@ public final class JGemsOpenGLRenderer {
         this.getGBuffer().unBindFBO();
     }
 
+    // section SSAO
     private void renderSSAO(Model<Format2D> model, Vector3i ssaoParams) {
         if (ssaoParams == null) {
             return;
@@ -384,6 +443,7 @@ public final class JGemsOpenGLRenderer {
         return dim;
     }
 
+    // section LightPass
     private void lightPass(float partialTicks, Model<Format2D> model) {
       this.getDeferredWorldShader().bind();
       this.getDeferredWorldShader().performUniform("view_matrix", JGemsSceneUtils.getMainCameraViewMatrix());
@@ -417,6 +477,7 @@ public final class JGemsOpenGLRenderer {
       this.getDeferredWorldShader().unBind();
     }
 
+    // section RenderScene
     public void renderScene(float partialTicks, Model<Format2D> model) {
         this.getShadowScene().renderAllModelsInShadowMap(this.getModelsToRenderInShadows(this.getSceneData().getSceneWorld()));
         JGems3D.get().getScreen().normalizeViewPort();
@@ -449,6 +510,7 @@ public final class JGemsOpenGLRenderer {
         return models;
     }
 
+    // section ForwardRender
     private void renderForwardScene(float partialTicks) {
         GL30.glEnable(GL30.GL_BLEND);
         GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
@@ -458,6 +520,7 @@ public final class JGemsOpenGLRenderer {
         GL30.glDisable(GL30.GL_BLEND);
     }
 
+    // section FXAA
     public void postFXAA(Model<Format2D> model) {
         this.getFinalRenderedSceneFbo().bindFBO();
         this.getFXAAShader().bind();
@@ -472,24 +535,40 @@ public final class JGemsOpenGLRenderer {
         this.getFinalRenderedSceneFbo().unBindFBO();
     }
 
+    // section HDR
     public void renderSceneWithBloomAndHDR(float partialTicks, Model<Format2D> model) {
+        GL30.glEnable(GL30.GL_BLEND);
+        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+
         this.getFinalRenderedSceneFbo().bindFBO();
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
 
         this.getPostProcessingShader().bind();
         this.getPostProcessingShader().performUniform("texture_sampler", 0);
         this.getPostProcessingShader().performUniform("blur_sampler", 1);
-        GL30.glActiveTexture(GL30.GL_TEXTURE1);
-        this.getFboBlur().bindTexture(0);
+
         GL30.glActiveTexture(GL30.GL_TEXTURE0);
         this.getSceneFbo().bindTexture(0);
+        GL30.glActiveTexture(GL30.GL_TEXTURE1);
+        this.getFboBlur().bindTexture(0);
+
+        this.getPostProcessingShader().performUniform("accumulated_alpha", 2);
+        this.getPostProcessingShader().performUniform("reveal_alpha", 3);
+
+        GL30.glActiveTexture(GL30.GL_TEXTURE2);
+        this.getTransparencyFBO().bindTexture(0);
+        GL30.glActiveTexture(GL30.GL_TEXTURE3);
+        this.getTransparencyFBO().bindTexture(1);
+
         this.getPostProcessingShader().getUtils().performOrthographicMatrix(model);
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         this.getPostProcessingShader().unBind();
 
         this.getFinalRenderedSceneFbo().unBindFBO();
+        GL30.glDisable(GL30.GL_BLEND);
     }
 
+    // section BLOOM
     private void bloomPostProcessing(float partialTicks, Model<Format2D> model) {
         if (JGems3D.get().getGameSettings().bloom.getValue() == 0) {
             this.getFboBlur().bindFBO();
@@ -532,7 +611,7 @@ public final class JGemsOpenGLRenderer {
 
     public void onWindowResize(Vector2i dim) {
         this.createResources(dim);
-        this.getImguiRender().onResize(dim);
+        this.getDearImguiRender().onResize(dim);
     }
 
     private void updateUBOs() {
@@ -628,11 +707,15 @@ public final class JGemsOpenGLRenderer {
         return this.ssaoBuffer;
     }
 
+    public FBOTexture2DProgram getTransparencyFBO() {
+        return this.transparencyFBO;
+    }
+
     public FBOTexture2DProgram getFboBlur() {
         return this.fboBlur;
     }
 
-    public DIMGuiRenderJGems getImguiRender() {
+    public DIMGuiRenderJGems getDearImguiRender() {
         return this.dearImGuiRender;
     }
 
@@ -658,6 +741,10 @@ public final class JGemsOpenGLRenderer {
 
     public JGemsShaderManager getSSAOShader() {
         return JGemsResourceManager.globalShaderAssets.world_ssao;
+    }
+
+    public JGemsShaderManager getOITShader() {
+        return JGemsResourceManager.globalShaderAssets.weighted_oit;
     }
 
     public JGemsShaderManager getDeferredWorldShader() {

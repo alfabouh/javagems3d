@@ -262,7 +262,7 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public boolean isUseForGBuffer() {
+    public boolean isGBufferShader() {
         return this.useForGBuffer;
     }
 

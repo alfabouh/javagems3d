@@ -82,11 +82,11 @@ public class JGemsScene implements IScene {
     }
 
     @SuppressWarnings("all")
-    public void renderSceneInterpolated(final float partialTicks, final float deltaTicks) throws InterruptedException {
+    public void renderSceneInterpolated(final float partialTicks, final float deltaTime) throws InterruptedException {
         this.getFrustumCulling().refreshFrustumCullingState(this.getTransformationUtils().getPerspectiveMatrix(), this.getTransformationUtils().getMainCameraViewMatrix());
-        this.getSceneWorld().updateWorldObjects(this.refresh, partialTicks);
+        this.getSceneWorld().updateWorldObjects(this.refresh, partialTicks, deltaTime);
         this.getSceneWorld().onWorldUpdate();
-        this.getCurrentCamera().updateCamera(deltaTicks);
+        this.getCurrentCamera().updateCamera(deltaTime);
         this.getTransformationUtils().updateCamera(this.getCurrentCamera());
         this.getSceneRenderer().onRender(partialTicks);
         this.refresh = false;

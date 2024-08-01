@@ -23,9 +23,9 @@ public class ParticlesRender extends SceneRenderBase {
     public void onRender(float partialTicks) {
         GL30.glEnable(GL30.GL_BLEND);
         GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
-        GL30.glDepthMask(false);
+        //GL30.glDepthFunc(GL30.GL_NOTEQUAL);
         this.render(partialTicks, this.getSceneData().getSceneWorld().getParticlesEmitter().getCulledParticlesSet(this.getSceneData()));
-        GL30.glDepthMask(true);
+        //GL30.glDepthFunc(GL30.GL_LESS);
         GL30.glDisable(GL30.GL_BLEND);
     }
 

@@ -38,7 +38,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         this.frameTimer = JGemsHelper.createTimer();
     }
 
-    public void onUpdateParticle(double partialTicks, IWorld iWorld) {
+    public void onUpdateParticle(double deltaTime, IWorld iWorld) {
         if (this.liveTimer.resetTimerAfterReachedSeconds(this.getMaxLivingSeconds())) {
             this.kill();
             return;
@@ -49,7 +49,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
                 this.currentFrame = 0;
             }
         }
-        this.updateParticle(partialTicks, iWorld);
+        this.updateParticle(deltaTime, iWorld);
     }
 
     public void onSpawn(IWorld iWorld) {
@@ -65,7 +65,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         this.frameTimer.dispose();
     }
 
-    protected abstract void updateParticle(double partialTicks, IWorld world);
+    protected abstract void updateParticle(double deltaTime, IWorld world);
 
     public abstract double getMaxLivingSeconds();
 
