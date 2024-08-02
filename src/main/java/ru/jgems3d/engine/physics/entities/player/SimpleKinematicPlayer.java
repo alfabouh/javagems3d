@@ -246,7 +246,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     @Override
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
         if (JGems3D.DEBUG_MODE) {
-            if (JGemsControllerDispatcher.bindingManager().keyBlock1.isClicked()) {
+            if (JGemsControllerDispatcher.bindingManager().keyBlock1.isPressed()) {
                 BtDynamicMeshBody entityPropInfo = new BtDynamicMeshBody(JGemsResourceManager.globalModelAssets.cube, this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "test");
                 JGemsHelper.addItem(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
 

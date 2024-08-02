@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
@@ -37,8 +38,8 @@ public class SkyRender extends SceneRenderBase {
 
     public static Model<Format3D> skyBoxModel;
 
-    public SkyRender(SceneData sceneData) {
-        super(12, sceneData, new RenderGroup("SKYBOX"));
+    public SkyRender(JGemsOpenGLRenderer sceneRender) {
+        super(12, sceneRender, new RenderGroup("SKYBOX"));
         Mesh mesh = new Mesh();
         mesh.pushPositions(SkyRender.skyboxPos);
         mesh.pushIndexes(SkyRender.skyboxInd);
@@ -47,7 +48,7 @@ public class SkyRender extends SceneRenderBase {
     }
 
     private void renderCubeMapSkyBox() {
-        Sky sky = this.getSceneData().getSceneWorld().getEnvironment().getSky();
+        Sky sky = this.getSceneWorld().getEnvironment().getSky();
         JGemsShaderManager shaderManager = JGemsResourceManager.globalShaderAssets.skybox;
         Model<Format3D> model = SkyRender.skyBoxModel;
         shaderManager.bind();
@@ -62,7 +63,7 @@ public class SkyRender extends SceneRenderBase {
         shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog());
         shaderManager.performUniform("view_mat_inverted", new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert());
         shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
-        shaderManager.getUtils().performCubeMap(sky.getSkyBox().cubeMapTexture());
+        shaderManager.getUtils().performCubeMapProgram("skybox", sky.getSkyBox().cubeMapTexture());
         //shaderManager.getUtils().setCubeMapTexture(JGems3D.getGame().getScreen().getScene().getSceneRender().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         shaderManager.unBind();

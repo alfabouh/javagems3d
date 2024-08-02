@@ -6,6 +6,7 @@ import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
 import ru.jgems3d.engine.system.resources.assets.shaders.Shader;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
@@ -79,12 +80,12 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
 
         this.world_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_ssao") , Shader.ShaderType.COMPUTE_BIT);
 
-        this.weighted_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_oit") , Shader.ShaderType.DEFAULT_BITS);
+        this.weighted_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
 
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setUseForGBuffer(true);
+        this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.G_BUFFER);
+        this.world_liquid_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_liquid_gbuffer") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.Misc).setShaderRenderPass(RenderPass.G_BUFFER);
+        this.world_particles_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_particles_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.G_BUFFER);
         this.world_deferred = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_deferred") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight, this.PointLights, this.Fog);
-        this.world_liquid_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_liquid_gbuffer") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.Misc);
-        this.world_particles_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_particles_gbuffer") , Shader.ShaderType.DEFAULT_BITS);
 
         this.menu = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "menu") , Shader.ShaderType.DEFAULT_BITS);
 

@@ -13,6 +13,7 @@ import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.jgems3d.toolbox.ToolBox;
@@ -27,8 +28,8 @@ public final class TBoxShaderManager extends ShaderManager {
     }
 
     @Override
-    public TBoxShaderManager setUseForGBuffer(boolean useForGBuffer) {
-        return (TBoxShaderManager) super.setUseForGBuffer(useForGBuffer);
+    public TBoxShaderManager setShaderRenderPass(RenderPass renderPass) {
+        return (TBoxShaderManager) super.setShaderRenderPass(renderPass);
     }
 
     @Override
@@ -85,13 +86,13 @@ public final class TBoxShaderManager extends ShaderManager {
         }
 
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model<Format3D> model) {
-            if (TBoxShaderManager.this.checkUniformInGroup("model_matrix")) {
+            if (TBoxShaderManager.this.isUniformExist("model_matrix")) {
                 this.performModel3DMatrix(model);
             }
-            if (TBoxShaderManager.this.checkUniformInGroup("view_matrix")) {
+            if (TBoxShaderManager.this.isUniformExist("view_matrix")) {
                 this.performViewMatrix(viewMatrix);
             }
-            if (TBoxShaderManager.this.checkUniformInGroup("model_view_matrix")) {
+            if (TBoxShaderManager.this.isUniformExist("model_view_matrix")) {
                 this.performModel3DViewMatrix(model, viewMatrix);
             }
         }

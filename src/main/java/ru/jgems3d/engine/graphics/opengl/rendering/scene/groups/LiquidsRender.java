@@ -2,6 +2,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
@@ -13,13 +14,13 @@ import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class LiquidsRender extends SceneRenderBase {
-    public LiquidsRender(SceneData sceneData) {
-        super(2, sceneData, new RenderGroup("LIQUIDS_DEFERRED"));
+    public LiquidsRender(JGemsOpenGLRenderer sceneRender) {
+        super(2, sceneRender, new RenderGroup("LIQUIDS_DEFERRED"));
     }
 
     public void onRender(float partialTicks) {
-        for (ICulled cullable : this.getSceneData().getSceneWorld().getCollectionFrustumCulledList(this.getSceneData().getSceneWorld().getLiquids())) {
-            LiquidObject liquidObject = (LiquidObject) cullable;
+        for (ICulled culled : this.getSceneWorld().getCollectionFrustumCulledList(this.getSceneWorld().getLiquids())) {
+            LiquidObject liquidObject = (LiquidObject) culled;
             Model<Format3D> model = liquidObject.getModel();
             JGemsShaderManager shaderManager = liquidObject.getRenderLiquidData().getShaderManager();
 
@@ -29,7 +30,6 @@ public class LiquidsRender extends SceneRenderBase {
             shaderManager.getUtils().performShadowsInfo();
             shaderManager.getUtils().performCameraData();
             shaderManager.performUniform("texture_scaling", liquidObject.getTextureScaling());
-            shaderManager.getUtils().performCubeMapProgram("ambient_cubemap", liquidObject.getRenderLiquidData().getAmbient());
             shaderManager.performUniform("use_cubemap", liquidObject.getRenderLiquidData().reflections());
 
             JGemsScene.activeGlTexture(0);

@@ -23,6 +23,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.exceptions.JGemsException;
 
@@ -69,12 +70,12 @@ public final class SceneWorld implements IWorld {
         return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.calcRenderSphere()) || !e.canBeCulled()).collect(Collectors.toList());
     }
 
-    public List<IModeledSceneObject> getFilteredEntityList(boolean deferredPass) {
+    public List<IModeledSceneObject> getFilteredEntityList(RenderPass renderPass) {
         List<IModeledSceneObject> physicsObjects = new ArrayList<>(this.getModeledSceneEntities());
         if (this.getFrustumCulling() == null) {
             return physicsObjects;
         }
-        return this.getCollectionFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> e.getMeshRenderData().getShaderManager().isGBufferShader() == deferredPass && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toList());
+        return this.getCollectionFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> (renderPass == null || e.getMeshRenderData().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toList());
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {

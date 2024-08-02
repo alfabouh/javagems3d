@@ -2,20 +2,26 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene;
 
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 
 public abstract class SceneRenderBase {
     private final int renderOrder;
     private final RenderGroup renderGroup;
-    private final SceneData sceneData;
+    private final JGemsOpenGLRenderer sceneRender;
 
-    protected SceneRenderBase(int renderOrder, SceneData sceneData, RenderGroup renderGroup) {
+    protected SceneRenderBase(int renderOrder, JGemsOpenGLRenderer sceneRender, RenderGroup renderGroup) {
         this.renderOrder = renderOrder;
         this.renderGroup = renderGroup;
-        this.sceneData = sceneData;
+        this.sceneRender = sceneRender;
+    }
+
+    public SceneWorld getSceneWorld() {
+        return this.getSceneRenderer().getSceneData().getSceneWorld();
     }
 
     public ICamera getCamera() {
-        return this.getSceneData().getCamera();
+        return this.getSceneRenderer().getSceneData().getCamera();
     }
 
     public abstract void onRender(float partialTicks);
@@ -36,7 +42,7 @@ public abstract class SceneRenderBase {
         return this.renderGroup;
     }
 
-    public SceneData getSceneData() {
-        return this.sceneData;
+    public JGemsOpenGLRenderer getSceneRenderer() {
+        return this.sceneRender;
     }
 }

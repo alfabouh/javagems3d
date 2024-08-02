@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.resources.assets.materials.samples;
+package ru.jgems3d.engine.system.resources.assets.materials.samples.packs;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGemsHelper;

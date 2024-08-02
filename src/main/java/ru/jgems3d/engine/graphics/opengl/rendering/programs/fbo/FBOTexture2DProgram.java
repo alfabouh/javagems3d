@@ -135,6 +135,10 @@ public class FBOTexture2DProgram {
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
     }
 
+    public int getTextureIDByIndex(int i) {
+        return this.getTexturePrograms().get(i).getTextureId();
+    }
+
     public void bindTexture(int i) {
         this.getTexturePrograms().get(i).bindTexture(GL30.GL_TEXTURE_2D);
     }

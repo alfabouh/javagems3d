@@ -27,10 +27,6 @@ public final class RenderLiquidData {
         return this.reflections;
     }
 
-    public CubeMapProgram getAmbient() {
-        return JGems3D.get().getScreen().getSceneWorld().getEnvironment().getSky().getSkyBox().cubeMapTexture();
-    }
-
     public JGemsShaderManager getShaderManager() {
         return this.shaderManager;
     }

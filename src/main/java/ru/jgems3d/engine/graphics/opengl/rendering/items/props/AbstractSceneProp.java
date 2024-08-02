@@ -22,7 +22,6 @@ import java.util.List;
 public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldObject, IWorldTicked {
     private final List<Light> lightList;
     private final IRenderObjectFabric renderFabric;
-    private Material overObjectMaterial;
     private Model<Format3D> model;
     private MeshRenderData meshRenderData;
     private boolean isVisible;
@@ -34,7 +33,6 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
         this.model = model;
         this.meshRenderData = meshRenderData;
         this.isVisible = true;
-        this.overObjectMaterial = null;
     }
 
     public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
@@ -103,15 +101,6 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
 
     public void setVisible(boolean visible) {
         isVisible = visible;
-    }
-
-    public Material getOverObjectMaterial() {
-        return this.overObjectMaterial;
-    }
-
-    public AbstractSceneProp setOverObjectMaterial(Material overObjectMaterial) {
-        this.overObjectMaterial = overObjectMaterial;
-        return this;
     }
 
     public AbstractSceneProp setModelRenderConstraints(MeshRenderData meshRenderData) {

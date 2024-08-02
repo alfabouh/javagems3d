@@ -90,6 +90,7 @@ public class ModelLoader {
         return MemoryUtil.memPointerBuffer(MemoryUtil.memGetAddress(pFile + AIFile.USERDATA), 3);
     }
 
+    // section MeshLoad
     @SuppressWarnings("all")
     private static MeshDataGroup loadMesh(GameResources gameResources, JGPath modelPath) {
         JGemsHelper.getLogger().log("Loading model " + modelPath);
@@ -257,81 +258,75 @@ public class ModelLoader {
         return data;
     }
 
+    // section Material
     private static Material readMaterial(GameResources gameResources, AIMaterial aiMaterial, String fullPath) {
-        System.out.println(aiMaterial.mProperties());
-
         Material material = new Material();
+
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            try (AIColor4D color4Dd = AIColor4D.create()) {
-                if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
-                    material.setDiffuse(ColorSample.createColor(new Vector4f(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a())));
-                } else {
-                    String diffuse = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
-                    if (diffuse != null) {
-                        TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + diffuse);
-                        if (textureSample == null) {
-                            textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, diffuse), true, GL30.GL_REPEAT);
-                        }
-                        if (textureSample.isValid()) {
-                            material.setDiffuse(textureSample);
-                        } else {
-                            material.setDefaultDiffuse();
+            AIColor4D color4Dd = AIColor4D.create();
+            if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
+                material.setDiffuse(ColorSample.createColor(new Vector4f(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a())));
+            }
+            color4Dd.clear();
+
+            PointerBuffer properties = aiMaterial.mProperties();
+            for (int j = 0; j < properties.limit(); j++) {
+                AIMaterialProperty property = AIMaterialProperty.create(properties.get(j));
+                try (AIString aiString = property.mKey()) {
+                    String s = aiString.dataString();
+                    if (s.equals(Assimp.AI_MATKEY_OPACITY)) {
+                        if (property.mData().remaining() >= 4) {
+                            float opacity = property.mData().getFloat(0);
+                            material.setFullOpacity(opacity);
                         }
                     }
                 }
             }
 
-            try (AIColor4D color4Do = AIColor4D.create()) {
-                PointerBuffer properties = aiMaterial.mProperties();
-                for (int j = 0; j < properties.limit(); j++) {
-                    AIMaterialProperty property = AIMaterialProperty.create(properties.get(j));
-
-                    // Проверка ключа свойства
-                    if (property.mKey().equals(Assimp.AI_MATKEY_OPACITY)) {
-                        // Извлечение значения прозрачности
-                        float opacity = property.mData().getFloat(0);
-                        System.out.println( " opacity: " + opacity);
-                    }
-                }
-
-                if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_TRANSPARENT, Assimp.aiTextureType_NONE, 0, color4Do) == Assimp.aiReturn_SUCCESS) {
-                    material.setOpacity(ColorSample.createColor(new Vector4f(color4Do.r(), color4Do.g(), color4Do.b(), color4Do.a())));
-                } else {
-                    String opacity = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_OPACITY);
-                    if (opacity != null) {
-                        TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + opacity);
-                        if (textureSample == null) {
-                            textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, opacity), true, GL30.GL_REPEAT);
-                        }
-                        if (textureSample.isValid()) {
-                            material.setOpacity(textureSample);
-                        } else {
-                            material.setDefaultOpacity();
-                        }
-                    }
-                }
-            }
-
-            String emissive = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_EMISSIVE);
+            String emission = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_EMISSIVE);
             String metallic = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_AMBIENT);
             String specular = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_SPECULAR);
             String normals = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_NORMALS);
+            String opacity = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_OPACITY);
+            String diffuse = ModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
+            if (diffuse != null) {
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + diffuse);
+                if (textureSample == null) {
+                    textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, diffuse), true, GL30.GL_REPEAT);
+                }
+                if (textureSample.isValid()) {
+                    material.setDiffuse(textureSample);
+                } else {
+                    material.setDefaultDiffuse();
+                }
+            }
+            if (opacity != null) {
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + opacity);
+                if (textureSample == null) {
+                    textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, opacity), true, GL30.GL_REPEAT);
+                }
+                if (textureSample.isValid()) {
+                    material.setOpacityMap(textureSample);
+                } else {
+                    material.setDefaultOpacity();
+                }
+            }
             if (normals != null) {
                 TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + normals);
                 if (textureSample == null) {
                     textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, normals), true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
-                    material.setNormals(textureSample);
+                    material.setNormalsMap(textureSample);
                 }
             }
-            if (emissive != null) {
-                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + emissive);
+            if (emission != null) {
+                TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + emission);
                 if (textureSample == null) {
-                    textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, emissive), true, GL30.GL_REPEAT);
+                    textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, emission), true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
-                    material.setEmissive(textureSample);
+                    material.setEmissionMap(textureSample);
                 }
             }
             if (metallic != null) {
@@ -340,7 +335,7 @@ public class ModelLoader {
                     textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, metallic), true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
-                    material.setMetallic(textureSample);
+                    material.setMetallicMap(textureSample);
                 }
             }
             if (specular != null) {
@@ -349,7 +344,7 @@ public class ModelLoader {
                     textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, specular), true, GL30.GL_REPEAT);
                 }
                 if (textureSample.isValid()) {
-                    material.setSpecular(textureSample);
+                    material.setSpecularMap(textureSample);
                 }
             }
         }

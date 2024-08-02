@@ -3,7 +3,7 @@ layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
 uniform mat4 view_mat_inverted;
-uniform samplerCube cube_map_sampler;
+uniform samplerCube skybox;
 uniform bool covered_by_fog;
 
 layout (std140, binding = 0) uniform SunLight {
@@ -26,7 +26,7 @@ layout (std140, binding = 3) uniform Fog {
 
 void main()
 {
-    vec4 diffuse = texture(cube_map_sampler, out_texture);
+    vec4 diffuse = texture(skybox, out_texture);
 
     vec3 sunDirection = (view_mat_inverted * vec4(normalize(vec3(sunX, sunY, sunZ)), 0.0)).rgb;
     vec3 sunColor = vec3(sunColorR, sunColorG, sunColorB);

@@ -4,13 +4,17 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.misc.Pair;
+import ru.jgems3d.engine.system.misc.Triple;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class JGemsSceneUtils {
@@ -38,57 +42,73 @@ public class JGemsSceneUtils {
         JGems3D.get().getScreen().getScene().setRenderCamera(camera);
     }
 
+    // section SimpleRender
     @SuppressWarnings("all")
     public static void renderModel(Model<?> model, int code) {
         for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
-            GL30.glBindVertexArray(0);
+            JGemsSceneUtils.renderModelNode(modelNode);
         }
     }
 
-    public static void renderSceneObject(IModeledSceneObject sceneObject) {
-        JGemsSceneUtils.renderSceneObject(sceneObject, null);
+    // section TransparencyFilter
+    public static boolean filterObjectTransparency(IModeledSceneObject sceneObject) {
+        if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
+            if (sceneObject.getMeshRenderData().getShaderManager().checkShaderRenderPass(RenderPass.TRANSPARENCY) || sceneObject.getMeshRenderData().getRenderAttributes().getObjectOpacity() < 1.0f) {
+                return true;
+            }
+            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
+            if (overMaterial != null) {
+                return overMaterial.hasTransparency();
+            }
+        }
+        return false;
     }
 
-    public static void renderSceneObject(IModeledSceneObject sceneObject, Material overMaterial) {
+    //section ModelNode
+    public static void renderModelNode(ModelNode modelNode) {
+        GL30.glBindVertexArray(modelNode.getMesh().getVao());
+        for (int a : modelNode.getMesh().getAttributePointers()) {
+            GL30.glEnableVertexAttribArray(a);
+        }
+        GL30.glDrawElements(GL30.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+        for (int a : modelNode.getMesh().getAttributePointers()) {
+            GL30.glDisableVertexAttribArray(a);
+        }
+        GL30.glBindVertexArray(0);
+    }
+
+    // section RenderWithMaterial
+    public static void renderSceneObject(IModeledSceneObject sceneObject) {
         if (sceneObject != null) {
+            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
+            JGemsOpenGLRenderer gemsOpenGLRenderer = JGemsHelper.getScreen().getScene().getSceneRenderer();
             Model<Format3D> model = sceneObject.getModel();
-            if (model == null || model.getMeshDataGroup() == null) {
+            if (model == null || !model.isValid()) {
+                return;
+            }
+            if (JGemsSceneUtils.filterObjectTransparency(sceneObject)) {
+                gemsOpenGLRenderer.addSceneModelObjectInTransparencyPass(sceneObject);
                 return;
             }
             JGemsShaderManager shaderManager = sceneObject.getMeshRenderData().getShaderManager();
             shaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), model);
-            shaderManager.getUtils().performConstraintsOnShader(sceneObject.getMeshRenderData());
-            if (shaderManager.checkUniformInGroup("alpha_discard")) {
+            shaderManager.getUtils().performRenderDataOnShader(sceneObject.getMeshRenderData());
+            if (shaderManager.isUniformExist("alpha_discard")) {
                 shaderManager.performUniform("alpha_discard", sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue());
                 if (sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue() > 0) {
                     GL30.glDisable(GL30.GL_BLEND);
-                } else {
-                    if (sceneObject.getMeshRenderData().getRenderAttributes().isHasTransparency()) {
-                        GL30.glEnable(GL30.GL_BLEND);
-                    }
                 }
             }
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
+                if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
+                    if (modelNode.getMaterial().hasTransparency()) {
+                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(model.getFormat(), modelNode, sceneObject.getMeshRenderData().getOverridenTransparencyShader());
+                        continue;
+                    }
+                }
                 shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
-                GL30.glBindVertexArray(modelNode.getMesh().getVao());
-                for (int a : modelNode.getMesh().getAttributePointers()) {
-                    GL30.glEnableVertexAttribArray(a);
-                }
-                GL30.glDrawElements(GL30.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-                for (int a : modelNode.getMesh().getAttributePointers()) {
-                    GL30.glDisableVertexAttribArray(a);
-                }
-                GL30.glBindVertexArray(0);
+                JGemsSceneUtils.renderModelNode(modelNode);
             }
-            GL30.glDisable(GL30.GL_BLEND);
         }
     }
 

@@ -182,8 +182,6 @@ public class TextureSample implements IImageSample {
         GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA, this.size().x, this.size().y, 0, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, this.getImageBuffer());
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, (linear && this.isInterpolate()) ? GL30.GL_LINEAR_MIPMAP_LINEAR : GL30.GL_NEAREST_MIPMAP_NEAREST);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, (linear && this.isInterpolate()) ? GL30.GL_LINEAR : GL30.GL_NEAREST);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_BASE_LEVEL, 0);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 6);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, this.getWrapping());
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, this.getWrapping());
         if (anisotropic && this.isEnableAnisotropic()) {
@@ -212,7 +210,7 @@ public class TextureSample implements IImageSample {
         if (!this.isValid()) {
             throw new JGemsException("Tried to bind invalid texture");
         }
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, this.getTextureId());
+        GL30.glBindTexture(this.getTextureAttachment(), this.getTextureId());
     }
 
     @Override
@@ -242,6 +240,11 @@ public class TextureSample implements IImageSample {
 
     public int getTextureId() {
         return this.textureId;
+    }
+
+    @Override
+    public int getTextureAttachment() {
+        return GL30.GL_TEXTURE_2D;
     }
 
     public boolean isValid() {

@@ -39,7 +39,7 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
     protected void renderInventoryModel(MeshDataGroup meshDataGroup, JGemsShaderManager shaderManager) {
         for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
             IImageSample sample1 = (IImageSample) modelNode.getMaterial().getDiffuse();
-            IImageSample sample2 = modelNode.getMaterial().getEmissive();
+            IImageSample sample2 = modelNode.getMaterial().getEmissionMap();
             if (sample1 != null) {
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 sample1.bindTexture();
@@ -48,7 +48,7 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
             if (sample2 != null) {
                 GL30.glActiveTexture(GL30.GL_TEXTURE1);
                 sample2.bindTexture();
-                shaderManager.performUniform("emissive_map", 1);
+                shaderManager.performUniform("emission_map", 1);
             }
             GL30.glBindVertexArray(modelNode.getMesh().getVao());
             for (int a : modelNode.getMesh().getAttributePointers()) {

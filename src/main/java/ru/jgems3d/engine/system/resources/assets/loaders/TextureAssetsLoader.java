@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProg
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.ParticleTexturePack;
+import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 
