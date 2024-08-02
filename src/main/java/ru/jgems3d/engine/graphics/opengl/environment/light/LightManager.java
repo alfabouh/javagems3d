@@ -66,6 +66,7 @@ public class LightManager implements ILightManager {
     }
 
     private void updateSunUbo(Matrix4f viewMatrix) {
+        JGemsOpenGLRenderer.getGameUboShader().bind();
         Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunPos(), viewMatrix, 0.0f);
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8);
         value1Buffer.put(this.calcAmbientLight());
@@ -79,9 +80,11 @@ public class LightManager implements ILightManager {
         value1Buffer.flip();
         JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.SunLight, value1Buffer);
         MemoryUtil.memFree(value1Buffer);
+        JGemsOpenGLRenderer.getGameUboShader().unBind();
     }
 
     private void updatePointLightsUbo() {
+        JGemsOpenGLRenderer.getGameUboShader().bind();
         List<PointLight> pointLights = this.getPointLightList().stream().filter(PointLight::isEnabled).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1)).collect(Collectors.toList());
 
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
@@ -106,9 +109,11 @@ public class LightManager implements ILightManager {
         intBuffer.flip();
         JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, LightManager.MAX_POINT_LIGHTS * (8 * 4), intBuffer);
         MemoryUtil.memFree(intBuffer);
+        JGemsOpenGLRenderer.getGameUboShader().unBind();
     }
 
     public void removeAllLights() {
+        JGemsOpenGLRenderer.getGameUboShader().bind();
         FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
         for (int i = 0; i < this.getPointLightList().size(); i++) {
             value1Buffer.put(0.0f);
@@ -123,5 +128,6 @@ public class LightManager implements ILightManager {
             JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * 32, value1Buffer);
         }
         MemoryUtil.memFree(value1Buffer);
+        JGemsOpenGLRenderer.getGameUboShader().unBind();
     }
 }

@@ -46,7 +46,6 @@ uniform sampler2D shadow_map0;
 uniform sampler2D shadow_map1;
 uniform sampler2D shadow_map2;
 uniform float far_plane;
-uniform bool isSsaoValid;
 
 struct PointLight
 {
@@ -104,7 +103,6 @@ uniform sampler2D normals_map;
 uniform sampler2D emissive_map;
 uniform sampler2D specular_map;
 uniform sampler2D metallic_map;
-uniform sampler2D ssaoSampler;
 
 uniform float alpha_factor;
 
@@ -144,19 +142,17 @@ void main()
     vec4 emission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(emissive_map, texture_coordinates) : vec4(vec3(0.0), 1.0);
     vec4 metallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, texture_coordinates) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
 
-    float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
-    float AO = isSsaoValid ? texture(ssaoSampler, texture_coordinates).r : 1.;
-    float f1 = pow(AO, (1.25 - gray) * 3.);
-
-    vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
+    vec4 lights = calc_light(frag_pos, normals);
 
     vec4 frag_color = mix(g_texture, metallic, 0.5) * (lights + emission);
     frag_color = fogDensity > 0 ? calc_fog(frag_pos.xyz, frag_color) : frag_color;
-    frag_color = frag_color;
+    frag_color = vec4(frag_color.xyz, g_texture.a);
+    frag_color = vec4(frag_color.xyz, 1.0);
 
     float a_factor = alpha_factor * frag_color.a;
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * a_factor), a_factor) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200, 4.0)), 1.0e-2f, 3.0e+3f);
     accumulated = vec4(frag_color.rgb * a_factor, a_factor) * weight;
+
     reveal = a_factor;
 
     //float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));

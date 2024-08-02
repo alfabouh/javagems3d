@@ -1,5 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
@@ -21,7 +23,6 @@ public class WorldTransparentRender extends SceneRenderBase {
 
     public WorldTransparentRender(JGemsOpenGLRenderer sceneRender) {
         super(99, sceneRender, new RenderGroup("WORLD_TRANSPARENT"));
-
 
         this.transparentModelModes = new HashSet<>();
         this.transparentModelObjects = new HashSet<>();
@@ -47,9 +48,18 @@ public class WorldTransparentRender extends SceneRenderBase {
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
         for (ModelNode modelNode : object.getModel().getMeshDataGroup().getModelNodeList()) {
+            gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
             gemsShaderManager.performUniform("alpha_factor", modelNode.getMaterial().getFullOpacity() * object.getMeshRenderData().getRenderAttributes().getObjectOpacity());
+
+            boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
+            if (object.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
+                GL30.glDisable(GL11.GL_CULL_FACE);
+            }
             JGemsSceneUtils.renderModelNode(modelNode);
+            if (f) {
+                GL30.glEnable(GL11.GL_CULL_FACE);
+            }
         }
         gemsShaderManager.unBind();
     }
