@@ -11,7 +11,7 @@ import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.ParticleTexturePack;
+import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
 
 public abstract class ParticleFX implements IWorldObject, ICulled {

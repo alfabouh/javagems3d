@@ -29,7 +29,7 @@ import ru.jgems3d.engine.physics.world.triggers.zones.base.ITriggerZone;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.ParticleTexturePack;
+import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.localisation.Lang;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.resources.manager.GameResources;

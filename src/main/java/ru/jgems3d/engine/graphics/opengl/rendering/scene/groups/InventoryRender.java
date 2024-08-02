@@ -1,6 +1,8 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.inventory.items.InventoryItem;
@@ -12,13 +14,13 @@ import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class InventoryRender extends SceneRenderBase {
-    public InventoryRender(SceneData sceneData) {
-        super(100, sceneData, new RenderGroup("INVENTORY"));
+    public InventoryRender(JGemsOpenGLRenderer sceneRender) {
+        super(-1, sceneRender, new RenderGroup("INVENTORY"));
     }
 
     public void onRender(float partialTicks) {
         Player player = JGems3D.get().getPlayer();
-        if (player instanceof IInventoryOwner && !(JGems3D.get().getScreen().getCamera() instanceof FreeCamera)) {
+        if (player instanceof IInventoryOwner && !(JGemsHelper.getCurrentCamera() instanceof FreeCamera)) {
             IInventoryOwner hasInventory = (IInventoryOwner) player;
             InventoryItem current = hasInventory.inventory().getCurrentItem();
             if (hasInventory.inventory().getCurrentItem() != null && JGemsResourceManager.inventoryItemRenderTable.hasRender(current)) {

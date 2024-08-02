@@ -1,43 +1,57 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
-import org.lwjgl.opengl.GL30;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.system.misc.Pair;
+import ru.jgems3d.engine.system.misc.Triple;
+import ru.jgems3d.engine.system.resources.assets.materials.Material;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class WorldTransparentRender extends SceneRenderBase {
-    public static List<IModeledSceneObject> transparentRenderObjects;
+    private final Set<Triple<Format3D, ModelNode, JGemsShaderManager>> transparentModelModes;
+    private final Set<IModeledSceneObject> transparentModelObjects;
 
-    public WorldTransparentRender(SceneData sceneData) {
-        super(99, sceneData, new RenderGroup("WORLD_TRANSPARENT"));
-        WorldTransparentRender.transparentRenderObjects = new ArrayList<>();
+    public WorldTransparentRender(JGemsOpenGLRenderer sceneRender) {
+        super(99, sceneRender, new RenderGroup("WORLD_TRANSPARENT"));
+
+
+        this.transparentModelModes = new HashSet<>();
+        this.transparentModelObjects = new HashSet<>();
     }
 
     public void onRender(float partialTicks) {
-        //WorldTransparentRender.transparentRenderObjects.sort(Comparator.comparing(e -> -e.getModel().getFormat().getPosition().distance(this.getCamera().getCamPosition())));
-        //GL30.glDepthMask(false);
-        //this.render(partialTicks, WorldTransparentRender.transparentRenderObjects);
-        //GL30.glDepthMask(true);
-        //WorldTransparentRender.transparentRenderObjects.clear();
-
-        //GL30.glDepthMask(false);
-        //this.render(partialTicks, this.getSceneData().getSceneWorld().getModeledSceneEntities().stream().filter(e -> e.getMeshRenderData().getRenderAttributes().isHasTransparency()).collect(Collectors.toList()));
-        //GL30.glDepthMask(true);
-        WorldTransparentRender.transparentRenderObjects.clear();
+        Set<IModeledSceneObject> modeledSceneObjects = new HashSet<>(this.transparentModelObjects);
+        modeledSceneObjects.addAll(this.getSceneWorld().getFilteredEntityList(RenderPass.TRANSPARENCY));
+        for (IModeledSceneObject modeledSceneObject : modeledSceneObjects) {
+            this.renderIModeledSceneObject(modeledSceneObject);
+        }
+        this.transparentModelObjects.clear();
+        this.transparentModelModes.clear();
     }
 
-    public void onStartRender() {
-        super.onStartRender();
-    }
-
-    public void onStopRender() {
-        super.onStopRender();
+    private void renderIModeledSceneObject(IModeledSceneObject object) {
+        Material overMaterial = object.getMeshRenderData().getOverlappingMaterial();
+        JGemsShaderManager gemsShaderManager = object.getMeshRenderData().getOverridenTransparencyShader();
+        if (gemsShaderManager == null) {
+            gemsShaderManager = this.getSceneRenderer().getOITShader();
+        }
+        gemsShaderManager.bind();
+        gemsShaderManager.getUtils().performPerspectiveMatrix();
+        gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
+        for (ModelNode modelNode : object.getModel().getMeshDataGroup().getModelNodeList()) {
+            gemsShaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
+            gemsShaderManager.performUniform("alpha_factor", modelNode.getMaterial().getFullOpacity() * object.getMeshRenderData().getRenderAttributes().getObjectOpacity());
+            JGemsSceneUtils.renderModelNode(modelNode);
+        }
+        gemsShaderManager.unBind();
     }
 
     private void render(float partialTicks, List<IModeledSceneObject> renderObjects) {
@@ -51,5 +65,27 @@ public class WorldTransparentRender extends SceneRenderBase {
                 }
             }
         }
+    }
+
+    public void addModelNodeInTransparencyPass(Triple<Format3D, ModelNode, JGemsShaderManager> node) {
+        this.transparentModelModes.add(node);
+    }
+
+    public void addSceneModelObjectInTransparencyPass(IModeledSceneObject sceneObject) {
+        this.transparentModelObjects.add(sceneObject);
+    }
+
+    private void clearSets() {
+        this.transparentModelModes.clear();
+        this.transparentModelObjects.clear();
+    }
+
+    public void onStartRender() {
+        super.onStartRender();
+    }
+
+    public void onStopRender() {
+        super.onStopRender();
+        this.clearSets();
     }
 }

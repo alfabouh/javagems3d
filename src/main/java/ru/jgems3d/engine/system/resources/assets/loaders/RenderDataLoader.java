@@ -57,10 +57,10 @@ public class RenderDataLoader implements IAssetsLoader {
 
         this.zippo_world = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
         this.zippo_world.setEntityModelConstructor(itemPickUpModelConstructor);
-        this.zippo_world.getMeshRenderData().getRenderAttributes().setShadowCaster(false).setRenderDistance(64.0f).setHasTransparency(true);
-        this.zippo_world.setOverObjectMaterial(zwMat);
+        this.zippo_world.getMeshRenderData().getRenderAttributes().setShadowCaster(false).setRenderDistance(64.0f);
+        this.zippo_world.getMeshRenderData().setOverlappingMaterial(zwMat);
 
-        this.entityCube = new RenderEntityData(new RenderEntity(), EntityObject.class, new MeshRenderData(new MeshRenderAttributes(false, true), JGemsResourceManager.globalShaderAssets.weighted_oit)).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
+        this.entityCube = new RenderEntityData(new RenderEntity(), EntityObject.class, JGemsResourceManager.globalShaderAssets.weighted_oit).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
 
         this.player = new RenderEntityData(new RenderPlayer(), PlayerSPObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);
 

@@ -6,14 +6,13 @@ import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSa
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.ISample;
 
 public class Material {
-    private boolean useInTransparencyPass;
-    
+    private float fullOpacity;
     private ISample diffuse;
-    private ISample opacity;
-    private IImageSample normals;
-    private IImageSample emissive;
-    private IImageSample specular;
-    private IImageSample metallic;
+    private IImageSample opacityMap;
+    private IImageSample normalsMap;
+    private IImageSample emissionMap;
+    private IImageSample specularMap;
+    private IImageSample metallicMap;
 
     public Material() {
         this.setDefaults();
@@ -25,28 +24,31 @@ public class Material {
 
     public void setDefaults() {
         this.setDefaultDiffuse();
-        this.setDefaultEmissive();
+        this.setDefaultEmission();
         this.setDefaultNormals();
         this.setDefaultSpecular();
         this.setDefaultMetallic();
         this.setDefaultOpacity();
-        this.useInTransparencyPass = false;
+        this.setFullOpacity(1.0f);
     }
 
-    public void setUseInTransparencyPass(boolean useInTransparencyPass) {
-        this.useInTransparencyPass = useInTransparencyPass;
+    public void setFullOpacity(float fullOpacity) {
+        this.fullOpacity = fullOpacity;
     }
 
-    public boolean isUseInTransparencyPass() {
-        return this.useInTransparencyPass;
+    public float getFullOpacity() {
+        if (this.getDiffuse() instanceof ColorSample) {
+            return ((ColorSample) (this.getDiffuse())).getColor().w;
+        }
+        return this.fullOpacity;
     }
 
-    public ISample getOpacity() {
-        return this.opacity;
+    public ISample getOpacityMap() {
+        return this.opacityMap;
     }
 
-    public void setOpacity(ISample opacity) {
-        this.opacity = opacity;
+    public void setOpacityMap(IImageSample opacityMap) {
+        this.opacityMap = opacityMap;
     }
 
     public ISample getDiffuse() {
@@ -57,40 +59,40 @@ public class Material {
         this.diffuse = diffuse;
     }
 
-    public IImageSample getEmissive() {
-        return this.emissive;
+    public IImageSample getEmissionMap() {
+        return this.emissionMap;
     }
 
-    public void setEmissive(IImageSample emissive) {
-        this.emissive = emissive;
+    public void setEmissionMap(IImageSample emissionMap) {
+        this.emissionMap = emissionMap;
     }
 
-    public IImageSample getMetallic() {
-        return this.metallic;
+    public IImageSample getMetallicMap() {
+        return this.metallicMap;
     }
 
-    public void setMetallic(IImageSample metallic) {
-        this.metallic = metallic;
+    public void setMetallicMap(IImageSample metallicMap) {
+        this.metallicMap = metallicMap;
     }
 
-    public IImageSample getNormals() {
-        return this.normals;
+    public IImageSample getNormalsMap() {
+        return this.normalsMap;
     }
 
-    public void setNormals(IImageSample normals) {
-        this.normals = normals;
+    public void setNormalsMap(IImageSample normalsMap) {
+        this.normalsMap = normalsMap;
     }
 
-    public IImageSample getSpecular() {
-        return this.specular;
+    public IImageSample getSpecularMap() {
+        return this.specularMap;
     }
 
-    public void setSpecular(IImageSample specular) {
-        this.specular = specular;
+    public void setSpecularMap(IImageSample specularMap) {
+        this.specularMap = specularMap;
     }
 
     public void setDefaultMetallic() {
-        this.metallic = null;
+        this.metallicMap = null;
     }
 
     public void setDefaultDiffuse() {
@@ -98,18 +100,22 @@ public class Material {
     }
 
     public void setDefaultNormals() {
-        this.normals = null;
+        this.normalsMap = null;
     }
 
-    public void setDefaultEmissive() {
-        this.emissive = null;
+    public void setDefaultEmission() {
+        this.emissionMap = null;
     }
 
     public void setDefaultSpecular() {
-        this.specular = null;
+        this.specularMap = null;
     }
 
     public void setDefaultOpacity() {
-        this.opacity = null;
+        this.opacityMap = null;
+    }
+
+    public boolean hasTransparency() {
+        return this.getFullOpacity() < 1.0f || this.getOpacityMap() != null;
     }
 }

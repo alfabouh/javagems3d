@@ -1,10 +1,13 @@
 package ru.jgems3d.engine.system.resources.assets.shaders.manager;
 
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.CShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.GShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.misc.Pair;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
@@ -23,19 +26,47 @@ public abstract class ShaderManager implements ICached {
     private ShaderGroup graphicShaderGroup;
     private ShaderGroup computingShaderGroup;
     private final ShaderContainer shaderContainer;
-    private boolean useForGBuffer;
+    private RenderPass renderPass;
+
+    private final Set<Integer> freeTextureSlots;
 
     public ShaderManager(ShaderContainer shaderContainer) {
         this.uniformBufferObjects = new HashSet<>();
         this.shaderContainer = shaderContainer;
-        this.useForGBuffer = false;
+        this.renderPass = RenderPass.FORWARD;
         this.activeShader = ACT_SHADER.NONE;
+
+        this.freeTextureSlots = new HashSet<>();
+    }
+
+    public int getFirstFreeTextureSlot() {
+        Optional<Integer> optionalI = this.freeTextureSlots.stream().findFirst();
+        return optionalI.orElse(-1);
+    }
+
+    public int getFreeTextureSlotsNum() {
+        return this.freeTextureSlots.size();
+    }
+
+    public boolean checkIfTextureSlotIsFree(int slot) {
+        return this.freeTextureSlots.contains(slot);
+    }
+
+    private void clearTextureSlots() {
+        this.freeTextureSlots.clear();
+    }
+
+    private void fillTextureSlots() {
+        int maxAttachments = GL30.glGetInteger(GL30.GL_MAX_TEXTURE_IMAGE_UNITS);
+        for (int i = 0; i < maxAttachments; i++) {
+            this.freeTextureSlots.add(i);
+        }
     }
 
     public abstract ShaderManager copy();
 
-    public ShaderManager setUseForGBuffer(boolean useForGBuffer) {
-        this.useForGBuffer = useForGBuffer;
+    public ShaderManager setShaderRenderPass(RenderPass renderPass) {
+        this.renderPass = renderPass;
         return this;
     }
 
@@ -71,21 +102,25 @@ public abstract class ShaderManager implements ICached {
     }
 
     public void startComputing() {
+        this.fillTextureSlots();
         this.getComputingShaderGroup().getShaderProgram().bind();
         this.activeShader = ACT_SHADER.COMPUTE;
     }
 
     public void endComputing() {
+        this.clearTextureSlots();
         this.getComputingShaderGroup().getShaderProgram().unbind();
         this.activeShader = ACT_SHADER.NONE;
     }
 
     public void bind() {
+        this.fillTextureSlots();
         this.getGraphicShaderGroup().getShaderProgram().bind();
         this.activeShader = ACT_SHADER.GRAPHICAL;
     }
 
     public void unBind() {
+        this.clearTextureSlots();
         this.getGraphicShaderGroup().getShaderProgram().unbind();
         this.activeShader = ACT_SHADER.NONE;
     }
@@ -106,7 +141,7 @@ public abstract class ShaderManager implements ICached {
         return null;
     }
 
-    public boolean checkUniformInGroup(String uniform) {
+    public boolean isUniformExist(String uniform) {
         switch (this.activeShader) {
             case COMPUTE: {
                 return this.getComputingShaderGroup().checkUniformInProgram(uniform);
@@ -122,7 +157,7 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
-    public boolean setUniform(String uniform, Object o) {
+    private boolean setUniform(String uniform, Object o) {
         switch (this.activeShader) {
             case COMPUTE: {
                 return this.getComputingShaderGroup().getUniformProgram().setUniform(uniform, o);
@@ -138,12 +173,52 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
+    public void performUniformTexture(String uniform, int textureID, int textureAttachment) {
+        this.performUniformTexture(uniform, "", -1, textureID, textureAttachment, this.getFirstFreeTextureSlot());
+    }
+
+    public void performUniformTexture(String uniform, int arrayPos, int textureID, int textureAttachment) {
+        this.performUniformTexture(uniform, "", arrayPos, textureID, textureAttachment, this.getFirstFreeTextureSlot());
+    }
+
+    public void performUniformTexture(String uniform, String postfix, int arrayPos, int textureID, int textureAttachment) {
+        this.performUniformTexture(uniform, postfix, arrayPos, textureID, textureAttachment, this.getFirstFreeTextureSlot());
+    }
+
+    public void performUniformTexture(String uniform, String postfix, int arrayPos, int textureID, int textureAttachment, int slot) {
+        if (!this.isUniformExist(uniform)) {
+            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
+            return;
+        }
+        if (slot < 0) {
+            JGemsHelper.getLogger().warn("[" + this + "] Couldn't find available texture attachments!");
+            return;
+        }
+        if (textureID < 0) {
+            JGemsHelper.getLogger().warn("[" + this + "] Wrong textureID!");
+            return;
+        }
+        if (!this.checkIfTextureSlotIsFree(slot)) {
+            JGemsHelper.getLogger().warn("[" + this + "] This texture attachment is used!");
+            return;
+        }
+
+        GL30.glActiveTexture(GL30.GL_TEXTURE0 + slot);
+
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
+        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
+
+        GL30.glBindTexture(textureAttachment, textureID);
+        this.performUniform(uniform, postfix, arrayPos, slot);
+        this.freeTextureSlots.remove(slot);
+    }
+
     public void performUniform(String uniform, String postfix, int arrayPos, Object o) {
         if (o == null) {
             JGemsHelper.getLogger().error("[" + this + "] NULL uniform " + uniform);
             return;
         }
-        if (!this.checkUniformInGroup(uniform)) {
+        if (!this.isUniformExist(uniform)) {
             JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
@@ -187,7 +262,7 @@ public abstract class ShaderManager implements ICached {
     }
 
     public void performUniformNoWarn(String uniform, String postfix, int arrayPos, Object o) {
-        if (this.checkUniformInGroup(uniform)) {
+        if (this.isUniformExist(uniform)) {
             this.performUniform(uniform, postfix, arrayPos, o);
         }
     }
@@ -197,13 +272,13 @@ public abstract class ShaderManager implements ICached {
     }
 
     public void performUniformNoWarn(String uniform, int arrayPos, Object o) {
-        if (this.checkUniformInGroup(uniform)) {
+        if (this.isUniformExist(uniform)) {
             this.performUniform(uniform, "", arrayPos, o);
         }
     }
 
     public void performUniformNoWarn(String uniform, Object o) {
-        if (this.checkUniformInGroup(uniform)) {
+        if (this.isUniformExist(uniform)) {
             this.performUniform(uniform, -1, o);
         }
     }
@@ -262,8 +337,12 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public boolean isGBufferShader() {
-        return this.useForGBuffer;
+    public boolean checkShaderRenderPass(RenderPass renderPass) {
+        return this.getShaderRenderPass().equals(renderPass);
+    }
+
+    public RenderPass getShaderRenderPass() {
+        return this.renderPass;
     }
 
     public ShaderGroup getComputingShaderGroup() {

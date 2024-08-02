@@ -191,6 +191,11 @@ public class TextureSample implements IImageSample {
         return this.textureId;
     }
 
+    @Override
+    public int getTextureAttachment() {
+        return GL30.GL_TEXTURE_2D;
+    }
+
     public boolean isValid() {
         return this.getImageBuffer() != null;
     }

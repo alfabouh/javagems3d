@@ -1,13 +1,13 @@
 package ru.jgems3d.engine.system.resources.assets.shaders.manager;
 
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.CascadeShadow;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.PointLightShadow;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
+import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
@@ -21,6 +21,7 @@ import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 
 public final class JGemsShaderManager extends ShaderManager {
@@ -32,8 +33,8 @@ public final class JGemsShaderManager extends ShaderManager {
     }
 
     @Override
-    public JGemsShaderManager setUseForGBuffer(boolean useForGBuffer) {
-        return (JGemsShaderManager) super.setUseForGBuffer(useForGBuffer);
+    public JGemsShaderManager setShaderRenderPass(RenderPass renderPass) {
+        return (JGemsShaderManager) super.setShaderRenderPass(renderPass);
     }
 
     @Override
@@ -53,8 +54,27 @@ public final class JGemsShaderManager extends ShaderManager {
         public JGemsShaderUtils() {
         }
 
-        public void performConstraintsOnShader(MeshRenderData meshRenderData) {
-            if (!JGemsShaderManager.this.checkUniformInGroup("lighting_code")) {
+        public void performUniformSampleNoWarn(String uniform, ISample sample) {
+            if (!JGemsShaderManager.this.isUniformExist(uniform)) {
+                return;
+            }
+            this.performUniformSample(uniform, sample);
+        }
+
+        public void performUniformSample(String uniform, ISample sample) {
+            if (sample instanceof ColorSample) {
+                ColorSample colorSample = (ColorSample) sample;
+                JGemsShaderManager.this.performUniform(uniform, colorSample.getColor());
+            } else {
+                if (sample instanceof TextureSample) {
+                    TextureSample textureSample = (TextureSample) sample;
+                    JGemsShaderManager.this.performUniformTexture(uniform, textureSample.getTextureId(), textureSample.getTextureAttachment());
+                }
+            }
+        }
+
+        public void performRenderDataOnShader(MeshRenderData meshRenderData) {
+            if (!JGemsShaderManager.this.isUniformExist("lighting_code")) {
                 return;
             }
             int lighting_code = 0;
@@ -69,64 +89,42 @@ public final class JGemsShaderManager extends ShaderManager {
                 return;
             }
 
-            //TBoxShaderManager.this.performUniformNoWarn("show_cascades", JGemsOpenGLRenderer.CURRENT_DEBUG_MODE);
-
             ISample diffuse = material.getDiffuse();
-            IImageSample emissive = material.getEmissive();
-            IImageSample metallic = material.getMetallic();
-            IImageSample normals = material.getNormals();
-            IImageSample specular = material.getSpecular();
+            IImageSample emission = material.getEmissionMap();
+            IImageSample metallic = material.getMetallicMap();
+            IImageSample normals = material.getNormalsMap();
+            IImageSample specular = material.getSpecularMap();
             CubeMapProgram cubeMapProgram = JGemsHelper.getWorldEnvironment().getSky().getSkyBox().cubeMapTexture();
 
             int texturing_code = 0;
-            for (int i = 0; i < 12; i++) {
-                JGemsScene.activeGlTexture(i);
-                GL30.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-            }
 
             this.performCameraData();
             this.performCubeMapProgram("ambient_cubemap", cubeMapProgram);
 
             if (diffuse != null) {
                 if (diffuse instanceof IImageSample) {
-                    final int code = 0;
-                    IImageSample imageSample = ((IImageSample) diffuse);
-                    JGemsScene.activeGlTexture(code);
-                    imageSample.bindTexture();
-                    JGemsShaderManager.this.performUniformNoWarn("diffuse_map", code);
+                    this.performUniformSampleNoWarn("diffuse_map", diffuse);
                     texturing_code |= 1 << 2;
                 } else {
                     if (diffuse instanceof ColorSample) {
-                        JGemsShaderManager.this.performUniformNoWarn("diffuse_color", ((ColorSample) diffuse).getColor());
+                        this.performUniformSampleNoWarn("diffuse_color", diffuse);
                     }
                 }
             }
-            if (emissive != null) {
-                final int code = 1;
-                JGemsScene.activeGlTexture(code);
-                emissive.bindTexture();
-                JGemsShaderManager.this.performUniformNoWarn("emissive_map", code);
+            if (emission != null) {
+                this.performUniformSampleNoWarn("emission_map", emission);
                 texturing_code |= 1 << 3;
             }
             if (metallic != null) {
-                final int code = 2;
-                JGemsScene.activeGlTexture(code);
-                metallic.bindTexture();
-                JGemsShaderManager.this.performUniformNoWarn("metallic_map", code);
+                this.performUniformSampleNoWarn("metallic_map", metallic);
                 texturing_code |= 1 << 4;
             }
             if (normals != null) {
-                final int code = 3;
-                JGemsScene.activeGlTexture(code);
-                normals.bindTexture();
-                JGemsShaderManager.this.performUniformNoWarn("normals_map", code);
+                this.performUniformSampleNoWarn("normals_map", normals);
                 texturing_code |= 1 << 5;
             }
             if (specular != null) {
-                final int code = 4;
-                JGemsScene.activeGlTexture(code);
-                specular.bindTexture();
-                JGemsShaderManager.this.performUniformNoWarn("specular_map", code);
+                this.performUniformSampleNoWarn("specular_map", specular);
                 texturing_code |= 1 << 6;
             }
 
@@ -134,38 +132,48 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performCameraData() {
-            JGemsShaderManager.this.performUniformNoWarn("camera_pos", JGems3D.get().getScreen().getScene().getCurrentCamera().getCamPosition());
+            JGemsShaderManager.this.performUniformNoWarn("camera_pos", JGemsHelper.getCurrentCamera().getCamPosition());
         }
 
         public void performShadowsInfo() {
-            int startCode = 7;
             JGemsScene scene = JGems3D.get().getScreen().getScene();
             for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getShadowScene().getCascadeShadows().get(i);
-                JGemsScene.activeGlTexture(startCode + i);
-                scene.getSceneRenderer().getShadowScene().getShadowPostFBO().bindTexture(i);
-                JGemsShaderManager.this.performUniformNoWarn("shadow_map" + i, startCode + i);
-                JGemsShaderManager.this.performUniformNoWarn("cascade_shadow", ".split_distance", i, cascadeShadow.getSplitDistance());
-                JGemsShaderManager.this.performUniformNoWarn("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
+                if (JGemsShaderManager.this.isUniformExist("shadow_map" + i)) {
+                    JGemsShaderManager.this.performUniformTexture("shadow_map" + i, scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
+                    JGemsShaderManager.this.performUniformNoWarn("cascade_shadow", ".split_distance", i, cascadeShadow.getSplitDistance());
+                    JGemsShaderManager.this.performUniformNoWarn("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
+                }
             }
             for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getShadowScene().getPointLightShadows().get(i);
-                final int code = (startCode + 3) + i;
-                JGemsScene.activeGlTexture(code);
-                pointLightShadow.getPointLightCubeMap().bindCubeMap();
                 JGemsShaderManager.this.performUniformNoWarn("far_plane", pointLightShadow.farPlane());
-                JGemsShaderManager.this.performUniformNoWarn("point_light_cubemap", i, code);
+                if (JGemsShaderManager.this.isUniformExist("point_light_cubemap")) {
+                    this.performCubeMapProgram("point_light_cubemap", i, pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
+                }
             }
         }
 
+        public void performCubeMapProgram(String name, CubeMapProgram cubeMapProgram) {
+            this.performCubeMapProgram(name, -1, cubeMapProgram);
+        }
+
+        public void performCubeMapProgram(String name, int arrayPos, CubeMapProgram cubeMapProgram) {
+            if (cubeMapProgram == null) {
+                JGemsHelper.getLogger().warn("CubeMap is NULL!");
+                return;
+            }
+            JGemsShaderManager.this.performUniformTexture(name, arrayPos, cubeMapProgram.getTextureId(), GL30.GL_TEXTURE_CUBE_MAP);
+        }
+
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model<Format3D> model) {
-            if (JGemsShaderManager.this.checkUniformInGroup("model_matrix")) {
+            if (JGemsShaderManager.this.isUniformExist("model_matrix")) {
                 this.performModel3DMatrix(model);
             }
-            if (JGemsShaderManager.this.checkUniformInGroup("view_matrix")) {
+            if (JGemsShaderManager.this.isUniformExist("view_matrix")) {
                 this.performViewMatrix(viewMatrix);
             }
-            if (JGemsShaderManager.this.checkUniformInGroup("model_view_matrix")) {
+            if (JGemsShaderManager.this.isUniformExist("model_view_matrix")) {
                 this.performModel3DViewMatrix(model, viewMatrix);
             }
         }
@@ -204,29 +212,6 @@ public final class JGemsShaderManager extends ShaderManager {
 
         public void performModel3DMatrix(Matrix4f Matrix4f) {
             JGemsShaderManager.this.performUniform("model_matrix", Matrix4f);
-        }
-
-        public void performCubeMapProgram(String name, CubeMapProgram cubeMapProgram) {
-            if (cubeMapProgram != null) {
-                final int code = 5;
-                JGemsScene.activeGlTexture(code);
-                cubeMapProgram.bindCubeMap();
-                JGemsShaderManager.this.performUniformNoWarn(name, code);
-            }
-        }
-
-        public void performCubeMap(CubeMapProgram cubeMapTexture) {
-            this.performCubeMap(0, cubeMapTexture);
-        }
-
-        public void performCubeMap(int code, CubeMapProgram cubeMapTexture) {
-            if (cubeMapTexture == null) {
-                JGemsHelper.getLogger().warn("CubeMap is NULL!");
-                return;
-            }
-            JGemsShaderManager.this.performUniform("cube_map_sampler", code);
-            GL30.glActiveTexture(GL30.GL_TEXTURE0 + code);
-            GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, cubeMapTexture.getTextureId());
         }
     }
 }

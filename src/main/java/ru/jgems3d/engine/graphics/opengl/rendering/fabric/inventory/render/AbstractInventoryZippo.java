@@ -22,7 +22,7 @@ public class AbstractInventoryZippo extends AbstractInventoryItem {
         Material material1 = Material.createDefault();
         Material material2 = Material.createDefault();
         material1.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo1);
-        material1.setEmissive(JGemsResourceManager.globalTextureAssets.zippo1_emission);
+        material1.setEmissionMap(JGemsResourceManager.globalTextureAssets.zippo1_emission);
         material2.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo2);
         ModelNode modelNode1 = new ModelNode(mesh, material1);
         ModelNode modelNode2 = new ModelNode(mesh, material2);

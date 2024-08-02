@@ -2,13 +2,14 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 
 public class GuiRender extends SceneRenderBase {
-    public GuiRender(SceneData sceneData) {
-        super(3, sceneData, new RenderGroup("GUI"));
+    public GuiRender(JGemsOpenGLRenderer sceneRender) {
+        super(-1, sceneRender, new RenderGroup("GUI"));
     }
 
     public void onRender(float partialTicks) {

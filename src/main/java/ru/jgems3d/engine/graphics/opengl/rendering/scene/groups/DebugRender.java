@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
@@ -21,8 +22,8 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;
 
-    public DebugRender(SceneData sceneData) {
-        super(50, sceneData, new RenderGroup("DEBUG"));
+    public DebugRender(JGemsOpenGLRenderer sceneRender) {
+        super(50, sceneRender, new RenderGroup("DEBUG"));
         this.debugShaders = JGemsResourceManager.globalShaderAssets.debug;
     }
 
@@ -76,7 +77,7 @@ public class DebugRender extends SceneRenderBase {
     }
 
     private void renderDebugSunDirection(SceneRenderBase sceneRenderBase) {
-        Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(sceneRenderBase.getSceneData().getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f));
+        Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(sceneRenderBase.getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f));
         this.debugShaders.performUniform("colour", new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
         JGemsSceneUtils.renderModel(model, GL30.GL_LINES);
         model.clean();

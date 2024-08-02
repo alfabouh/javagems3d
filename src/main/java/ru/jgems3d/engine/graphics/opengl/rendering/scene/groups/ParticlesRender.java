@@ -3,9 +3,8 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.ParticleFX;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
@@ -16,15 +15,15 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 import java.util.Set;
 
 public class ParticlesRender extends SceneRenderBase {
-    public ParticlesRender(SceneData sceneData) {
-        super(3, sceneData, new RenderGroup("WORLD_PARTICLES_DEFERRED"));
+    public ParticlesRender(JGemsOpenGLRenderer sceneRender) {
+        super(3, sceneRender, new RenderGroup("WORLD_PARTICLES_DEFERRED"));
     }
 
     public void onRender(float partialTicks) {
         GL30.glEnable(GL30.GL_BLEND);
         GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
         //GL30.glDepthFunc(GL30.GL_NOTEQUAL);
-        this.render(partialTicks, this.getSceneData().getSceneWorld().getParticlesEmitter().getCulledParticlesSet(this.getSceneData()));
+        this.render(partialTicks, this.getSceneWorld().getParticlesEmitter().getCulledParticlesSet(this.getSceneRenderer().getSceneData()));
         //GL30.glDepthFunc(GL30.GL_LESS);
         GL30.glDisable(GL30.GL_BLEND);
     }
@@ -41,7 +40,7 @@ public class ParticlesRender extends SceneRenderBase {
         for (ParticleFX particleFX : renderObjects) {
             particleFX.getParticleAttributes().getShaderManager().bind();
             this.passDataInDeferredShader(particleFX.getParticleAttributes().getShaderManager(), particleFX);
-            Model<Format3D> model = this.getSceneData().getSceneWorld().getParticlesEmitter().getParticleModel(particleFX);
+            Model<Format3D> model = this.getSceneWorld().getParticlesEmitter().getParticleModel(particleFX);
             particleFX.getParticleAttributes().getShaderManager().getUtils().performViewAndModelMatricesSeparately(model);
             particleFX.getParticleAttributes().getShaderManager().getUtils().performPerspectiveMatrix();
             JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);

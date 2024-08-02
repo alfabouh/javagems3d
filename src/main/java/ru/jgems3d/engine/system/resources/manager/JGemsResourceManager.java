@@ -13,7 +13,7 @@ import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.*;
 import ru.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.CubeMapTextureArray;
+import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.CubeMapTexturePack;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
 import java.awt.*;
@@ -46,7 +46,7 @@ public final class JGemsResourceManager {
 
     public static CubeMapProgram createSkyBoxCubeMap(JGPath pathToSkyBox, String format) {
         CubeMapProgram cubeMap = new CubeMapProgram();
-        cubeMap.generateCubeMapFromTexture(new CubeMapTextureArray(pathToSkyBox, format));
+        cubeMap.generateCubeMapFromTexture(new CubeMapTexturePack(pathToSkyBox, format));
         JGemsResourceManager.skyBoxTexturesMap.put(pathToSkyBox.getSPath(), cubeMap);
         return cubeMap;
     }

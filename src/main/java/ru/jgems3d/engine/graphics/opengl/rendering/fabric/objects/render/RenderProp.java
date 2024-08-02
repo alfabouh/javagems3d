@@ -14,7 +14,7 @@ public class RenderProp extends RenderWorldItem {
         SceneProp sceneObject = (SceneProp) renderItem;
         sceneObject.getMeshRenderData().getShaderManager().bind();
         sceneObject.getMeshRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
-        JGemsSceneUtils.renderSceneObject(sceneObject, sceneObject.getOverObjectMaterial());
+        JGemsSceneUtils.renderSceneObject(sceneObject);
         sceneObject.getMeshRenderData().getShaderManager().unBind();
     }
 }
