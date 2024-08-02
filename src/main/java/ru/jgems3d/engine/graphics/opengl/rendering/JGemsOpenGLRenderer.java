@@ -303,11 +303,10 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
                 this.renderScene(partialTicks, model);
                 this.bloomPostProcessing(partialTicks, model);
+                this.renderTransparentElements(partialTicks);
                 this.renderSceneWithBloomAndHDR(partialTicks, model);
                 this.postFXAA(model);
-
                 this.renderFinalScene(model);
-                this.renderTransparentElements(partialTicks);
 
                 this.inventoryRender.onRender(partialTicks);
                 this.guiRender.onRender(partialTicks);
@@ -444,7 +443,7 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
 
     // section RenderScene
     public void renderScene(float partialTicks, Model<Format2D> model) {
-        this.getShadowScene().renderAllModelsInShadowMap(this.getModelsToRenderInShadows(this.getSceneData().getSceneWorld()));
+        this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getModeledSceneEntities());
         JGems3D.get().getScreen().normalizeViewPort();
 
         GL30.glEnable(GL30.GL_DEPTH_TEST);
@@ -466,13 +465,6 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getSceneFbo().unBindFBO();
 
         GL30.glDisable(GL30.GL_DEPTH_TEST);
-    }
-
-    private List<Model<Format3D>> getModelsToRenderInShadows(SceneWorld sceneWorld) {
-        List<Model<Format3D>> models = new ArrayList<>();
-        models.addAll(sceneWorld.getModeledSceneEntities().stream().filter(e -> e.hasRender() && e.getMeshRenderData().getRenderAttributes().isShadowCaster()).map(IModeledSceneObject::getModel).collect(Collectors.toList()));
-        models.addAll(sceneWorld.getLiquids().stream().map(LiquidObject::getModel).collect(Collectors.toList()));
-        return models;
     }
 
     // section ForwardRender

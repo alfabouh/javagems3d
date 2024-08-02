@@ -99,6 +99,10 @@ public class JGemsSceneUtils {
                     GL30.glDisable(GL30.GL_BLEND);
                 }
             }
+            boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
+            if (sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
+                GL30.glDisable(GL11.GL_CULL_FACE);
+            }
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
                 if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
                     if (modelNode.getMaterial().hasTransparency()) {
@@ -108,6 +112,9 @@ public class JGemsSceneUtils {
                 }
                 shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
                 JGemsSceneUtils.renderModelNode(modelNode);
+            }
+            if (f) {
+                GL30.glEnable(GL11.GL_CULL_FACE);
             }
         }
     }
