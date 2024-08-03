@@ -14,7 +14,7 @@ import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 
 public class JGemsControllerDispatcher implements IControllerDispatcher {
-    public static final float CAM_SENS = 0.0015f;
+    public static float CAM_SENS = 0.0015f;
     public static MouseKeyboardController mouseKeyboardController = null;
     private IController currentController;
     private IControllable currentControlledItem;
