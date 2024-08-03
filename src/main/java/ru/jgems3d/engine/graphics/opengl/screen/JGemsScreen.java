@@ -261,6 +261,7 @@ public class JGemsScreen implements IScreen {
 
     private void renderGameScene(float delta) throws InterruptedException {
         GL30.glEnable(GL30.GL_CULL_FACE);
+        GL30.glEnable(GL30.GL_DEPTH_TEST);
         GL30.glCullFace(GL30.GL_BACK);
         GL11.glDepthFunc(GL11.GL_LESS);
         this.getScene().renderScene(delta);

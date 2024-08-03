@@ -97,10 +97,6 @@ float calcVSM(int idx, vec4 shadow_coord, float bias) {
     vec4 tex = shadow_coord / shadow_coord.w;
     vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, tex.xy);
 
-    if (vsm.g <= 0) {
-        return 1.0;
-    }
-
     float E_x2 = vsm.y;
     float Ex_2 = vsm.x * vsm.x;
     float var = max(E_x2 - Ex_2, bias);

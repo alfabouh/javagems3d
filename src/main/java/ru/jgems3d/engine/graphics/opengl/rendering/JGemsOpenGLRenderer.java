@@ -411,7 +411,7 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
                 break;
             }
             case 3: {
-                dim = new Vector3i((int) (this.getWindowDimensions().x * 0.5f), (int) (this.getWindowDimensions().y * 0.5f), 8);
+                dim = new Vector3i((int) (this.getWindowDimensions().x * 1.0f), (int) (this.getWindowDimensions().y * 1.0f), 8);
                 break;
             }
             case 0:
@@ -614,8 +614,8 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
         }
     }
 
-    public void addModelNodeInTransparencyPass(Format3D format3D, ModelNode modelNode, JGemsShaderManager overriddenTransparencyShader) {
-        this.transparentRender.addModelNodeInTransparencyPass(new Triple<>(format3D, modelNode, overriddenTransparencyShader));
+    public void addModelNodeInTransparencyPass(WorldTransparentRender.RenderNodeInfo node) {
+        this.transparentRender.addModelNodeInTransparencyPass(node);
     }
 
     public void addSceneModelObjectInTransparencyPass(IModeledSceneObject modeledSceneObject) {

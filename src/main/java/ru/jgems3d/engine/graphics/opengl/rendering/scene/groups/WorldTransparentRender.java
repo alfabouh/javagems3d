@@ -1,5 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
@@ -7,8 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
-import ru.jgems3d.engine.system.misc.Pair;
-import ru.jgems3d.engine.system.misc.Triple;
+import ru.jgems3d.engine.graphics.transformation.Transformation;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
@@ -18,7 +19,7 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 import java.util.*;
 
 public class WorldTransparentRender extends SceneRenderBase {
-    private final Set<Triple<Format3D, ModelNode, JGemsShaderManager>> transparentModelModes;
+    private final Set<RenderNodeInfo> transparentModelModes;
     private final Set<IModeledSceneObject> transparentModelObjects;
 
     public WorldTransparentRender(JGemsOpenGLRenderer sceneRender) {
@@ -33,6 +34,9 @@ public class WorldTransparentRender extends SceneRenderBase {
         modeledSceneObjects.addAll(this.getSceneWorld().getFilteredEntityList(RenderPass.TRANSPARENCY));
         for (IModeledSceneObject modeledSceneObject : modeledSceneObjects) {
             this.renderIModeledSceneObject(modeledSceneObject);
+        }
+        for (RenderNodeInfo renderNodeInfo : this.transparentModelModes) {
+            this.renderModelNode(renderNodeInfo.getOverlappingTransparencyShader(), renderNodeInfo.isDisableFaceCulling(), renderNodeInfo.getModelNode(), renderNodeInfo.getModelTransforms());
         }
         this.transparentModelObjects.clear();
         this.transparentModelModes.clear();
@@ -64,20 +68,30 @@ public class WorldTransparentRender extends SceneRenderBase {
         gemsShaderManager.unBind();
     }
 
-    private void render(float partialTicks, List<IModeledSceneObject> renderObjects) {
-        for (IModeledSceneObject entityItem : renderObjects) {
-            if (entityItem.hasRender()) {
-                if (entityItem.isVisible()) {
-                    entityItem.getMeshRenderData().getShaderManager().bind();
-                    entityItem.getMeshRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
-                    entityItem.renderFabric().onRender(partialTicks, this, entityItem);
-                    entityItem.getMeshRenderData().getShaderManager().unBind();
-                }
-            }
+    private void renderModelNode(JGemsShaderManager gemsShaderManager, boolean disableCulling, ModelNode modelNode, Format3D format3D) {
+        if (gemsShaderManager == null) {
+            gemsShaderManager = this.getSceneRenderer().getOITShader();
         }
+        gemsShaderManager.bind();
+        gemsShaderManager.getUtils().performPerspectiveMatrix();
+        gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), Transformation.getModelMatrix(format3D));
+
+        gemsShaderManager.getUtils().performShadowsInfo();
+        gemsShaderManager.getUtils().performModelMaterialOnShader(modelNode.getMaterial());
+        gemsShaderManager.performUniform("alpha_factor", modelNode.getMaterial().getFullOpacity());
+
+        boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
+        if (disableCulling) {
+            GL30.glDisable(GL11.GL_CULL_FACE);
+        }
+        JGemsSceneUtils.renderModelNode(modelNode);
+        if (f) {
+            GL30.glEnable(GL11.GL_CULL_FACE);
+        }
+        gemsShaderManager.unBind();
     }
 
-    public void addModelNodeInTransparencyPass(Triple<Format3D, ModelNode, JGemsShaderManager> node) {
+    public void addModelNodeInTransparencyPass(RenderNodeInfo node) {
         this.transparentModelModes.add(node);
     }
 
@@ -97,5 +111,35 @@ public class WorldTransparentRender extends SceneRenderBase {
     public void onStopRender() {
         super.onStopRender();
         this.clearSets();
+    }
+
+    public static class RenderNodeInfo {
+        private final JGemsShaderManager overlappingTransparencyShader;
+        private final ModelNode modelNode;
+        private final Format3D modelTransforms;
+        private final boolean disableFaceCulling;
+
+        public RenderNodeInfo(@Nullable JGemsShaderManager overlappingTransparencyShader, boolean disableFaceCulling, @NotNull ModelNode modelNode, @NotNull Format3D modelTransforms) {
+            this.overlappingTransparencyShader = overlappingTransparencyShader;
+            this.disableFaceCulling = disableFaceCulling;
+            this.modelNode = modelNode;
+            this.modelTransforms = modelTransforms;
+        }
+
+        public JGemsShaderManager getOverlappingTransparencyShader() {
+            return this.overlappingTransparencyShader;
+        }
+
+        public ModelNode getModelNode() {
+            return this.modelNode;
+        }
+
+        public Format3D getModelTransforms() {
+            return this.modelTransforms;
+        }
+
+        public boolean isDisableFaceCulling() {
+            return this.disableFaceCulling;
+        }
     }
 }

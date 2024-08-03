@@ -53,6 +53,7 @@ public class JGems3D {
         APILauncher.get().launchGameAPI();
         APILauncher.get().launchToolBoxAPI();
         APIContainer.get().getApiTBoxInfo().getAppInstance().fillTBoxObjectsContainer(APIContainer.get().getAppTBoxObjectsContainer());
+        APILauncher.get().disposeReflection();
 
         JGems3D.rngSeed = JGems3D.systemTime();
         JGems3D.random = new Random(JGems3D.rngSeed);

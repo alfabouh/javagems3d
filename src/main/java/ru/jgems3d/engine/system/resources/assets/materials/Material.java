@@ -37,10 +37,11 @@ public class Material {
     }
 
     public float getFullOpacity() {
+        float w1 = 1.0f;
         if (this.getDiffuse() instanceof ColorSample) {
-            return ((ColorSample) (this.getDiffuse())).getColor().w;
+            w1 = ((ColorSample) (this.getDiffuse())).getColor().w;
         }
-        return this.fullOpacity;
+        return this.fullOpacity * w1;
     }
 
     public ISample getOpacityMap() {

@@ -32,9 +32,9 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void onWorldUpdate() {
-        if (APIEventsBus.onPhysWorldTick(new Events.PhysWorldTickEvent(Events.Stage.PRE, this)).isCancelled()) {
-            System.out.println("F");
-        }
+        //if (APIEventsBus.onPhysWorldTick(new Events.PhysWorldTickEvent(Events.Stage.PRE, this)).isCancelled()) {
+        //    System.out.println("F");
+        //}
         this.getWorldObjectsContainer().onUpdate();
         this.ticks += 1;
         //APIEventsBus.onPhysWorldTick(new Events.PhysWorldTickEvent(Events.Stage.POST, this));

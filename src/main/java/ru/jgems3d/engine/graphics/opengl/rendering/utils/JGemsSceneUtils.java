@@ -8,6 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.WorldTransparentRender;
 import ru.jgems3d.engine.system.misc.Pair;
 import ru.jgems3d.engine.system.misc.Triple;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
@@ -106,7 +107,7 @@ public class JGemsSceneUtils {
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
                 if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
                     if (modelNode.getMaterial().hasTransparency()) {
-                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(model.getFormat(), modelNode, sceneObject.getMeshRenderData().getOverridenTransparencyShader());
+                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(new WorldTransparentRender.RenderNodeInfo(sceneObject.getMeshRenderData().getOverridenTransparencyShader(), sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling(), modelNode, model.getFormat()));
                         continue;
                     }
                 }
