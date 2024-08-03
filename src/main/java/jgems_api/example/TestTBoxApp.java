@@ -1,4 +1,4 @@
-package example;
+package jgems_api.example;
 
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderEntity;

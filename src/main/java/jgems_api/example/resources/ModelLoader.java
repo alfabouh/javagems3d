@@ -1,4 +1,4 @@
-package example.resources;
+package jgems_api.example.resources;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;

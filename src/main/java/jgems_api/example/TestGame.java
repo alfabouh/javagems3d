@@ -1,8 +1,8 @@
-package example;
+package jgems_api.example;
 
-import example.events.TestEvents;
-import example.manager.TestManager;
-import example.resources.ModelLoader;
+import jgems_api.example.events.TestEvents;
+import jgems_api.example.manager.TestManager;
+import jgems_api.example.resources.ModelLoader;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.misc.JGPath;

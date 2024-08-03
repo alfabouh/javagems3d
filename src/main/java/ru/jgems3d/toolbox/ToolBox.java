@@ -21,7 +21,9 @@ public class ToolBox {
 
     private ToolBox() {
         SystemLogging.get().setCurrentLogging(SystemLogging.toolBoxLogging);
+
         APILauncher.get().launchToolBoxAPI();
+        APILauncher.get().disposeReflection();
 
         this.tBoxScreen = new TBoxScreen();
 
