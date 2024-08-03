@@ -26,6 +26,7 @@ import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
 import ru.jgems3d.engine.physics.world.triggers.zones.base.ITriggerZone;
+import ru.jgems3d.engine.system.controller.binding.JGemsBindingManager;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
@@ -48,6 +49,10 @@ import java.util.List;
 
 @SuppressWarnings("all")
 public abstract class JGemsHelper {
+    public static JGemsBindingManager bindingManager() {
+        return JGemsControllerDispatcher.bindingManager();
+    }
+
     public static JGemsTimer createTimer() {
         return JGemsHelper.getScreen().getTimerPool().createTimer();
     }

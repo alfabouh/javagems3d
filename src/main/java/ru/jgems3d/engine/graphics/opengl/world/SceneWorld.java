@@ -1,5 +1,6 @@
 package ru.jgems3d.engine.graphics.opengl.world;
 
+import io.netty.util.internal.ConcurrentSet;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
@@ -28,6 +29,7 @@ import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.exceptions.JGemsException;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public final class SceneWorld implements IWorld {

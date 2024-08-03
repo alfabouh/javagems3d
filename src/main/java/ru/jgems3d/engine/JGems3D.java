@@ -264,15 +264,11 @@ public class JGems3D {
     }
 
     public JGemsScreen getScreen() {
-        synchronized (this.screen) {
-            return this.screen;
-        }
+        return this.screen;
     }
 
     public PhysicsThread getPhysicThreadManager() {
-        synchronized (this.physicsThread) {
-            return this.physicsThread;
-        }
+        return this.physicsThread;
     }
 
     public JGemsSettings getGameSettings() {
