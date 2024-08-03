@@ -1,4 +1,4 @@
-package example.events;
+package jgems_api.example.events;
 
 import ru.jgems3d.engine_api.events.SubscribeEvent;
 import ru.jgems3d.engine_api.events.bus.Events;

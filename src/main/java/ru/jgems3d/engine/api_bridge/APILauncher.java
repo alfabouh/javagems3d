@@ -25,9 +25,7 @@ public class APILauncher {
     }
 
     private APILauncher() {
-        this.reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forJavaClassPath())
-                .setScanners(Scanners.TypesAnnotated));
+        this.reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("jgems_api")).setScanners(Scanners.SubTypes.filterResultsBy(s -> s.startsWith("jgems_api")), Scanners.TypesAnnotated));
     }
 
     public void launchGameAPI() {
@@ -51,6 +49,7 @@ public class APILauncher {
 
     public void disposeReflection() {
         this.reflections = null;
+        System.gc();
     }
 
     private APITBoxInfo loadTBoxInfo() throws JGemsException, InstantiationException, IllegalAccessException {

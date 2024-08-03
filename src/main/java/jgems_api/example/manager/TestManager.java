@@ -1,6 +1,6 @@
-package example.manager;
+package jgems_api.example.manager;
 
-import example.TestTBoxApp;
+import jgems_api.example.TestTBoxApp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
