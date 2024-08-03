@@ -199,7 +199,7 @@ public final class SceneWorld implements IWorld {
 
     @Override
     public void onWorldStart() {
-        //JGems3D.get().getScreen().zeroRenderTick();
+        JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
         this.getEnvironment().init(this);
         this.ticks = 0;
@@ -223,10 +223,10 @@ public final class SceneWorld implements IWorld {
     }
 
     public void updateWorldObjects(boolean refresh, float partialTicks, float deltaTime) {
-        this.getParticlesEmitter().onUpdateParticles(deltaTime, this);
+       // this.getParticlesEmitter().onUpdateParticles(deltaTime, this);
 
-        if (ticks % 60 == 0)
-        JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
+       //if (ticks % 60 == 0)
+       //JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
 
         Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {

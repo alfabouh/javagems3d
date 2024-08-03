@@ -111,6 +111,7 @@ vec4 calc_point_light(PointLight, vec3, vec3, float, float, float, float);
 vec4 calc_light_factor(vec3, float, vec3, vec3, vec3);
 vec4 calc_light(vec3, vec3);
 vec4 calc_fog(vec3, vec4);
+float calc_fog_float(vec3, float);
 
 bool checkCode(int i1, int i2) {
     int i3 = i1 & i2;
@@ -153,7 +154,7 @@ void main()
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * a_factor), a_factor) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200, 4.0)), 1.0e-2f, 3.0e+3f);
     accumulated = vec4(frag_color.rgb * a_factor, a_factor) * weight;
 
-    reveal = a_factor;
+    reveal = fogDensity > 0 ? calc_fog_float(frag_pos.xyz, a_factor) : a_factor;
 
     //float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
     //bright_color = brightness >= 1.0 ? frag_color : vec4(0., 0., 0., g_texture.a);
@@ -296,4 +297,11 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
 
     vec3 result = mix(fog_color, color.xyz, fogFactor);
     return vec4(result.xyz, color.w);
+}
+
+float calc_fog_float(vec3 frag_pos, float f) {
+    float distance = length(frag_pos);
+    float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
+    fogFactor = clamp(fogFactor, 0., 1.);
+    return f * fogFactor;
 }

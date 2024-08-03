@@ -166,6 +166,18 @@ public final class JGemsShaderManager extends ShaderManager {
             JGemsShaderManager.this.performUniformTexture(name, arrayPos, cubeMapProgram.getTextureId(), GL30.GL_TEXTURE_CUBE_MAP);
         }
 
+        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Matrix4f model) {
+            if (JGemsShaderManager.this.isUniformExist("model_matrix")) {
+                this.performModel3DMatrix(model);
+            }
+            if (JGemsShaderManager.this.isUniformExist("view_matrix")) {
+                this.performViewMatrix(viewMatrix);
+            }
+            if (JGemsShaderManager.this.isUniformExist("model_view_matrix")) {
+                this.performModel3DViewMatrix(model, viewMatrix);
+            }
+        }
+
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model<Format3D> model) {
             if (JGemsShaderManager.this.isUniformExist("model_matrix")) {
                 this.performModel3DMatrix(model);
@@ -196,6 +208,10 @@ public final class JGemsShaderManager extends ShaderManager {
 
         public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {
             JGemsShaderManager.this.performUniform("model_view_matrix", Transformation.getModelViewMatrix(model.getFormat(), view));
+        }
+
+        public void performModel3DViewMatrix(Matrix4f model, Matrix4f view) {
+            JGemsShaderManager.this.performUniform("model_view_matrix", new Matrix4f(view).mul(model));
         }
 
         public void performModel3DViewMatrix(Matrix4f Matrix4f) {

@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 
 public class PhysicsThread {
     public static final Object locker = new Object();
-    public static final int TICKS_PER_SECOND = 50;
+    public static final int TICKS_PER_SECOND = 60;
     private final PhysicsTimer physicsTimer;
     private final int tps;
     private final ExecutorService executor;

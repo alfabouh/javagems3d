@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class APILauncher {
     private static APILauncher INSTANCE;
-    private final Reflections reflections;
+    private Reflections reflections;
 
     static {
         APILauncher.INSTANCE = new APILauncher();
@@ -49,6 +49,10 @@ public class APILauncher {
         }
     }
 
+    public void disposeReflection() {
+        this.reflections = null;
+    }
+
     private APITBoxInfo loadTBoxInfo() throws JGemsException, InstantiationException, IllegalAccessException {
         Set<Class<?>> annotatedClass = this.reflections.getTypesAnnotatedWith(JGemsTBoxEntry.class);
         if (annotatedClass.size() > 1) {
@@ -64,7 +68,6 @@ public class APILauncher {
     }
 
     private APIGameInfo loadGameInfo() throws JGemsException, InstantiationException, IllegalAccessException {
-
         Set<Class<?>> annotatedClass = this.reflections.getTypesAnnotatedWith(JGemsGameEntry.class);
         if (annotatedClass.size() > 1) {
             throw new JGemsException("Couldn't load more than 1 JGems3D entry class!");
