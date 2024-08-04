@@ -5,10 +5,10 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
 
 public abstract class RenderWorldItem implements IRenderObjectFabric {
     @Override
-    public void onStartRender(IRenderObject renderItem) {
+    public void onPreRender(IRenderObject renderItem) {
     }
 
     @Override
-    public void onStopRender(IRenderObject renderItem) {
+    public void onPostRender(IRenderObject renderItem) {
     }
 }

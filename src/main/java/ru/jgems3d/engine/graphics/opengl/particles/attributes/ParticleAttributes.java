@@ -9,15 +9,22 @@ public class ParticleAttributes {
     private final JGemsShaderManager gBufferParticleShader;
     private float distanceToRender;
     private float brightness;
+    private float opacity;
 
     public ParticleAttributes(JGemsShaderManager gBufferParticleShader, float distanceToRender) {
         this.gBufferParticleShader = gBufferParticleShader;
         this.distanceToRender = distanceToRender;
         this.brightness = 0.0f;
+        this.opacity = 1.0f;
+    }
+
+    public ParticleAttributes setOpacity(float opacity) {
+        this.opacity = opacity;
+        return this;
     }
 
     public static ParticleAttributes defaultParticleAttributes() {
-        return new ParticleAttributes(JGemsResourceManager.globalShaderAssets.world_particles_gbuffer, 128.0f);
+        return new ParticleAttributes(JGemsResourceManager.globalShaderAssets.weighted_particle_oit, 128.0f);
     }
 
     public ParticleAttributes setBrightness(float brightness) {
@@ -28,6 +35,10 @@ public class ParticleAttributes {
     public ParticleAttributes setDistanceToRender(float distanceToRender) {
         this.distanceToRender = distanceToRender;
         return this;
+    }
+
+    public float getOpacity() {
+        return this.opacity;
     }
 
     public JGemsShaderManager getShaderManager() {

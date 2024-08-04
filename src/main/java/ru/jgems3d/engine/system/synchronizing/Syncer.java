@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.synchronizing;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;

@@ -9,7 +9,7 @@ import ru.jgems3d.engine.api_bridge.data.APITBoxInfo;
 import ru.jgems3d.engine.api_bridge.events.APIEventsBus;
 import ru.jgems3d.engine_api.app.JGemsTBoxApplication;
 import ru.jgems3d.engine_api.app.JGemsTBoxEntry;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine_api.app.JGemsGameApplication;
 import ru.jgems3d.engine_api.app.JGemsGameEntry;
 

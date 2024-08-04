@@ -1,9 +1,8 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.entities.player.Player;
@@ -15,7 +14,7 @@ import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class InventoryRender extends SceneRenderBase {
     public InventoryRender(JGemsOpenGLRenderer sceneRender) {
-        super(-1, sceneRender, new RenderGroup("INVENTORY"));
+        super(-1, sceneRender, new RenderGroup("INVENTORY_FORWARD"));
     }
 
     public void onRender(float partialTicks) {

@@ -12,7 +12,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.core.EngineSystem;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;

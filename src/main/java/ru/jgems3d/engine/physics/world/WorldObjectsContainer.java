@@ -4,7 +4,8 @@ import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,8 +18,8 @@ public final class WorldObjectsContainer {
     public WorldObjectsContainer(PhysicsWorld world) {
         this.world = world;
 
-        this.worldObjects = new HashSet<>();
-        this.worldTickedObjects = new HashSet<>();
+        this.worldObjects = SyncManager.createSyncronisedSet();
+        this.worldTickedObjects = SyncManager.createSyncronisedSet();
     }
 
     public void onUpdate() {

@@ -7,7 +7,8 @@ import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.nio.FloatBuffer;
@@ -34,7 +35,7 @@ public class LightManager implements ILightManager {
     }
 
     private void initCollections() {
-        this.pointLightList = new ArrayList<>(LightManager.MAX_POINT_LIGHTS);
+        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(LightManager.MAX_POINT_LIGHTS));
     }
 
     public void addLight(Light light) {

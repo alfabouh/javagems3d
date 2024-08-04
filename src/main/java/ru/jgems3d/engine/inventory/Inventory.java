@@ -3,6 +3,10 @@ package ru.jgems3d.engine.inventory;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.system.synchronizing.SyncManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Inventory {
     private final int maxSlots;
@@ -10,7 +14,7 @@ public class Inventory {
     private final int scrollMaxCd;
     private int currentSlot;
     private InventoryItem currentItem;
-    private Slot[] inventorySlots;
+    private List<Slot> inventorySlots;
     private int scrollCd;
 
     public Inventory(@NotNull IInventoryOwner owner, int maxSlots) {
@@ -23,9 +27,9 @@ public class Inventory {
     }
 
     private void initSlots() {
-        this.inventorySlots = new Slot[maxSlots];
+        this.inventorySlots = SyncManager.createSyncronisedList(new ArrayList<>(this.getMaxSlots()));
         for (int i = 0; i < this.getMaxSlots(); i++) {
-            this.getInventorySlots()[i] = new Slot(i);
+            this.getInventorySlots().add(new Slot(i));
         }
     }
 
@@ -155,22 +159,22 @@ public class Inventory {
     }
 
     public InventoryItem getItemInSlot(int slot) {
-        return this.getInventorySlots()[slot].getInventoryItem();
+        return this.getInventorySlots().get(slot).getInventoryItem();
     }
 
     public void setSlotItem(int slot, InventoryItem inventoryItem) {
         if (inventoryItem != null) {
             inventoryItem.onAddInInventory(this.getOwner());
         }
-        this.getInventorySlots()[slot].setInventoryItem(inventoryItem);
+        this.getInventorySlots().get(slot).setInventoryItem(inventoryItem);
         this.checkCurrItem();
     }
 
     private void checkCurrItem() {
-        this.currentItem = this.getInventorySlots()[this.getCurrentSlot()].getInventoryItem();
+        this.currentItem = this.getInventorySlots().get(this.getCurrentSlot()).getInventoryItem();
     }
 
-    public Slot[] getInventorySlots() {
+    public List<Slot> getInventorySlots() {
         return this.inventorySlots;
     }
 

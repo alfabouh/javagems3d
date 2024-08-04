@@ -1,11 +1,10 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
@@ -15,7 +14,7 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 
 public class LiquidsRender extends SceneRenderBase {
     public LiquidsRender(JGemsOpenGLRenderer sceneRender) {
-        super(2, sceneRender, new RenderGroup("LIQUIDS_DEFERRED"));
+        super(2, sceneRender, new RenderGroup("LIQUIDS_TRANSPARENT"));
     }
 
     public void onRender(float partialTicks) {

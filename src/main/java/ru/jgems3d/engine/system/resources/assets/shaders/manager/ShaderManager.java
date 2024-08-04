@@ -6,9 +6,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.CShaderProgr
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.GShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.Pair;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;

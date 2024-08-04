@@ -11,7 +11,7 @@ import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;

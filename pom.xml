@@ -326,8 +326,8 @@
         </dependency>
     </dependencies>
     <properties>
-        <lwjgl.version>3.3.3</lwjgl.version>
-        <joml.version>1.10.5</joml.version>
+        <lwjgl.version>3.3.4</lwjgl.version>
+        <joml.version>1.10.8</joml.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

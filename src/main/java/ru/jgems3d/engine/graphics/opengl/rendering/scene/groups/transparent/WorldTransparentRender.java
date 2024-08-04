@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,9 +30,8 @@ public class WorldTransparentRender extends SceneRenderBase {
     }
 
     public void onRender(float partialTicks) {
-        Set<IModeledSceneObject> modeledSceneObjects = new HashSet<>(this.transparentModelObjects);
-        modeledSceneObjects.addAll(this.getSceneWorld().getFilteredEntityList(RenderPass.TRANSPARENCY));
-        for (IModeledSceneObject modeledSceneObject : modeledSceneObjects) {
+        this.transparentModelObjects.addAll(this.getSceneWorld().getFilteredEntitySet(RenderPass.TRANSPARENCY));
+        for (IModeledSceneObject modeledSceneObject : this.transparentModelObjects) {
             this.renderIModeledSceneObject(modeledSceneObject);
         }
         for (RenderNodeInfo renderNodeInfo : this.transparentModelModes) {

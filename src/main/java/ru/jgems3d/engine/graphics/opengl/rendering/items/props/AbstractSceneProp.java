@@ -10,7 +10,6 @@ import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -65,7 +64,7 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
     public void onSpawn(IWorld iWorld) {
         JGemsHelper.getLogger().log("[ " + this + " ]" + " - PreRender");
         if (this.hasRender()) {
-            this.renderFabric().onStartRender(this);
+            this.renderFabric().onPreRender(this);
         }
     }
 
@@ -73,7 +72,7 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
     public void onDestroy(IWorld iWorld) {
         JGemsHelper.getLogger().log("[ " + this + " ]" + " - PostRender");
         if (this.hasRender()) {
-            this.renderFabric().onStopRender(this);
+            this.renderFabric().onPostRender(this);
         }
         this.clearLights();
     }

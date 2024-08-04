@@ -12,26 +12,23 @@ import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.*;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.deferred.WorldDeferredRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward.*;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.LiquidsRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.ParticlesRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.WorldTransparentRender;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
-import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.Pair;
-import ru.jgems3d.engine.system.misc.Triple;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
-import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
-import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import javax.imageio.ImageIO;
@@ -66,10 +63,11 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
 
     private final GuiRender guiRender;
     private final InventoryRender inventoryRender;
-    private final WorldTransparentRender transparentRender;
+    private final WorldTransparentRender worldTransparentRender;
 
     private final Set<SceneRenderBase> sceneRenderBases_forward;
     private final Set<SceneRenderBase> sceneRenderBases_deferred;
+    private final Set<SceneRenderBase> sceneRenderBases_transparency;
 
     private TextureProgram ssaoNoiseTexture;
     private TextureProgram ssaoKernelTexture;
@@ -78,10 +76,11 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
     public JGemsOpenGLRenderer(SceneData sceneData) {
         this.sceneRenderBases_deferred = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
         this.sceneRenderBases_forward = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
+        this.sceneRenderBases_transparency = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
 
         this.guiRender = new GuiRender(this);
         this.inventoryRender = new InventoryRender(this);
-        this.transparentRender = new WorldTransparentRender(this);
+        this.worldTransparentRender = new WorldTransparentRender(this);
 
         this.sceneData = sceneData;
 
@@ -223,6 +222,7 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
         this.wantsToTakeScreenshot = true;
     }
 
+    // section sceneGroups
     private void fillScene() {
         this.sceneRenderBases_forward.add(new WorldForwardRender(this));
         this.sceneRenderBases_forward.add(new SkyRender(this));
@@ -230,26 +230,28 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
 
         this.sceneRenderBases_deferred.add(new LiquidsRender(this));
         this.sceneRenderBases_deferred.add(new WorldDeferredRender(this));
-        this.sceneRenderBases_deferred.add(new ParticlesRender(this));
+
+        this.sceneRenderBases_transparency.add(new ParticlesRender(this));
+        this.sceneRenderBases_transparency.add(this.worldTransparentRender);
     }
 
     public void onStartRender() {
         this.fillScene();
         this.sceneRenderBases_forward.forEach(SceneRenderBase::onStartRender);
         this.sceneRenderBases_deferred.forEach(SceneRenderBase::onStartRender);
+        this.sceneRenderBases_transparency.forEach(SceneRenderBase::onStartRender);
 
         this.inventoryRender.onStartRender();
         this.guiRender.onStartRender();
-        this.transparentRender.onStartRender();
     }
 
     public void onStopRender() {
         this.sceneRenderBases_forward.forEach(SceneRenderBase::onStopRender);
         this.sceneRenderBases_deferred.forEach(SceneRenderBase::onStopRender);
+        this.sceneRenderBases_transparency.forEach(SceneRenderBase::onStopRender);
 
         this.inventoryRender.onStopRender();
         this.guiRender.onStopRender();
-        this.transparentRender.onStopRender();
 
         this.getDearImguiRender().cleanUp();
         this.clearResources();
@@ -336,7 +338,7 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getTransparencyFBO().bindFBO();
         GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[] {0.0f, 0.0f, 0.0f, 0.0f});
         GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[] {1.0f, 1.0f, 1.0f, 1.0f});
-        this.transparentRender.onRender(partialTicks);
+        this.sceneRenderBases_transparency.forEach(e -> e.onRender(partialTicks));
         this.getTransparencyFBO().unBindFBO();
 
         GL30.glDisable(GL30.GL_BLEND);
@@ -615,11 +617,11 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
     }
 
     public void addModelNodeInTransparencyPass(WorldTransparentRender.RenderNodeInfo node) {
-        this.transparentRender.addModelNodeInTransparencyPass(node);
+        this.worldTransparentRender.addModelNodeInTransparencyPass(node);
     }
 
     public void addSceneModelObjectInTransparencyPass(IModeledSceneObject modeledSceneObject) {
-        this.transparentRender.addSceneModelObjectInTransparencyPass(modeledSceneObject);
+        this.worldTransparentRender.addSceneModelObjectInTransparencyPass(modeledSceneObject);
     }
 
     public TextureProgram getSsaoBufferTexture() {

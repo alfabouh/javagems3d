@@ -1,6 +1,7 @@
-package ru.jgems3d.engine.graphics.opengl.particles.objects;
+package ru.jgems3d.engine.graphics.opengl.particles.objects.base;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
@@ -18,6 +19,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
     private boolean dead;
     private final Vector3f position;
     private final Vector2f scaling;
+    private final Vector3f colorMask;
     private final ParticleTexturePack particleTexturePack;
     private final SceneWorld world;
     private final JGemsTimer liveTimer;
@@ -25,17 +27,23 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
     private final ParticleAttributes particleAttributes;
     private int currentFrame;
 
-    public ParticleFX(SceneWorld world, @NotNull ParticleAttributes particleAttributes,  @NotNull ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
+    public ParticleFX(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @Nullable ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
         this.dead = false;
         this.position = new Vector3f(pos);
         this.scaling = new Vector2f(scaling);
+        this.colorMask = new Vector3f(1.0f);
 
         this.particleAttributes = particleAttributes;
         this.world = world;
         this.particleTexturePack = particleTexturePack;
 
         this.liveTimer = JGemsHelper.createTimer();
-        this.frameTimer = JGemsHelper.createTimer();
+
+        if (particleTexturePack != null) {
+            this.frameTimer = JGemsHelper.createTimer();
+        } else {
+            this.frameTimer = null;
+        }
     }
 
     public void onUpdateParticle(double deltaTime, IWorld iWorld) {
@@ -43,10 +51,12 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
             this.kill();
             return;
         }
-        if (this.frameTimer.resetTimerAfterReachedSeconds(this.getParticleTexturePack().getAnimationRate())) {
-            this.currentFrame += 1;
-            if (this.currentFrame >= this.getParticleTexturePack().getTexturesNum()) {
-                this.currentFrame = 0;
+        if (this.hasTexturePack()) {
+            if (this.frameTimer.resetTimerAfterReachedSeconds(this.getParticleTexturePack().getAnimationRate())) {
+                this.currentFrame += 1;
+                if (this.currentFrame >= this.getParticleTexturePack().getTexturesNum()) {
+                    this.currentFrame = 0;
+                }
             }
         }
         this.updateParticle(deltaTime, iWorld);
@@ -54,15 +64,19 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
 
     public void onSpawn(IWorld iWorld) {
         this.liveTimer.reset();
-        this.frameTimer.reset();
-        if (this.getParticleTexturePack().getAnimationRate() <= 0.0f) {
-            this.currentFrame = JGems3D.random.nextInt(particleTexturePack.getTexturesNum());
+        if (this.hasTexturePack()) {
+            this.frameTimer.reset();
+            if (this.getParticleTexturePack().getAnimationRate() <= 0.0f) {
+                this.currentFrame = JGems3D.random.nextInt(particleTexturePack.getTexturesNum());
+            }
         }
     }
 
     public void onDestroy(IWorld iWorld) {
         this.liveTimer.dispose();
-        this.frameTimer.dispose();
+        if (this.hasTexturePack()) {
+            this.frameTimer.dispose();
+        }
     }
 
     protected abstract void updateParticle(double deltaTime, IWorld world);
@@ -71,6 +85,11 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
 
     public void kill() {
         this.dead = true;
+    }
+
+    public ParticleFX setColorMask(Vector3f colorMask) {
+        this.colorMask.set(colorMask);
+        return this;
     }
 
     public ParticleFX setScaling(Vector2f scaling) {
@@ -88,12 +107,20 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         return new RenderSphere(radius, this.getPosition());
     }
 
+    public boolean hasTexturePack() {
+        return this.getParticleTexturePack() != null;
+    }
+
     public IImageSample getCurrentFrame() {
         return this.getParticleTexturePack().getiImageSample()[this.currentFrame];
     }
 
     public ParticleAttributes getParticleAttributes() {
         return this.particleAttributes;
+    }
+
+    public Vector3f getColorMask() {
+        return new Vector3f(this.colorMask);
     }
 
     public Vector2f getScaling() {

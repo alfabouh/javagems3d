@@ -11,12 +11,10 @@ import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.camera.AttachedCamera;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
-import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.JGemsHelper;
@@ -25,7 +23,6 @@ import ru.jgems3d.engine.system.synchronizing.SyncManager;
 
 public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;
-    private final Window window;
     private final FrustumCulling frustumCulling;
     private final JGemsOpenGLRenderer sceneRender;
     private final ImmediateUI immediateUI;
@@ -35,8 +32,7 @@ public class JGemsScene implements IScene {
     private boolean refresh;
     private boolean requestDestroyMap;
 
-    public JGemsScene(TransformationUtils transformationUtils, JGemsScreen screen, SceneWorld sceneWorld) {
-        this.window = screen.getWindow();
+    public JGemsScene(TransformationUtils transformationUtils, SceneWorld sceneWorld) {
         this.transformationUtils = transformationUtils;
 
         this.sceneData = new SceneData(sceneWorld, null);
@@ -58,7 +54,7 @@ public class JGemsScene implements IScene {
 
     @SuppressWarnings("all")
     public void renderScene(float deltaTime) throws InterruptedException {
-        if (JGemsSceneUtils.isSceneActive()) {
+        if (JGemsHelper.isSceneActive()) {
             JGems3D.get().getScreen().normalizeViewPort();
             JGemsOpenGLRenderer.getGameUboShader().bind();
             if (this.getCurrentCamera() != null) {
@@ -130,7 +126,9 @@ public class JGemsScene implements IScene {
     }
 
     public ImmediateUI UI() {
-        return this.immediateUI;
+        synchronized (this) {
+            return this.immediateUI;
+        }
     }
 
     public SceneData getSceneData() {
@@ -150,7 +148,7 @@ public class JGemsScene implements IScene {
     }
 
     public Window getWindow() {
-        return this.window;
+        return JGemsHelper.getScreen().getWindow();
     }
 
     public boolean isCameraAttachedToItem(AbstractSceneEntity abstractSceneEntity) {

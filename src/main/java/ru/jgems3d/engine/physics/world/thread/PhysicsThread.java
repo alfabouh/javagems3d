@@ -45,7 +45,7 @@ public class PhysicsThread {
         return this.getExecutor().awaitTermination(10000, TimeUnit.MILLISECONDS);
     }
 
-    public ExecutorService getExecutor() {
+    private ExecutorService getExecutor() {
         return this.executor;
     }
 
