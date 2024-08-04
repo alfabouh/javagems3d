@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.core.EngineSystem;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.translators.StreamOutputTranslation;
 

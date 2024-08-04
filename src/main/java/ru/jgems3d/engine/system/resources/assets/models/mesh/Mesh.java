@@ -3,7 +3,7 @@ package ru.jgems3d.engine.system.resources.assets.models.mesh;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.JGemsHelper;
 
 import java.nio.Buffer;

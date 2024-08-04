@@ -1,12 +1,10 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward;
 
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
@@ -39,7 +37,7 @@ public class SkyRender extends SceneRenderBase {
     public static Model<Format3D> skyBoxModel;
 
     public SkyRender(JGemsOpenGLRenderer sceneRender) {
-        super(12, sceneRender, new RenderGroup("SKYBOX"));
+        super(12, sceneRender, new RenderGroup("SKY_FORWARD"));
         Mesh mesh = new Mesh();
         mesh.pushPositions(SkyRender.skyboxPos);
         mesh.pushIndexes(SkyRender.skyboxInd);

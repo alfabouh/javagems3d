@@ -4,7 +4,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
-import ru.jgems3d.engine.graphics.opengl.particles.objects.ParticleFX;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
@@ -13,8 +13,8 @@ import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.Particl
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.synchronizing.SyncManager;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     private Model<Format3D> commonParticleModel2D;
 
     public ParticlesEmitter() {
-        this.particlesSet = new HashSet<>();
+        this.particlesSet = SyncManager.createSyncronisedSet();
     }
 
     public static SimpleParticle createSimpleParticle(SceneWorld sceneWorld, ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack,  Vector3f pos, Vector2f scaling) {

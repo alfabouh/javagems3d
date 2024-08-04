@@ -1,11 +1,10 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.sysgraph.Graph;
@@ -23,7 +22,7 @@ public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;
 
     public DebugRender(JGemsOpenGLRenderer sceneRender) {
-        super(50, sceneRender, new RenderGroup("DEBUG"));
+        super(50, sceneRender, new RenderGroup("DEBUG_FORWARD"));
         this.debugShaders = JGemsResourceManager.globalShaderAssets.debug;
     }
 

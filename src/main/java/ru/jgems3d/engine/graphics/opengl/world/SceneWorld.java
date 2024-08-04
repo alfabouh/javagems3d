@@ -1,6 +1,5 @@
 package ru.jgems3d.engine.graphics.opengl.world;
 
-import io.netty.util.internal.ConcurrentSet;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
@@ -26,16 +25,16 @@ import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public final class SceneWorld implements IWorld {
     private final ParticlesEmitter particlesEmitter;
 
-    private Set<Pair<WorldItem, Light>> lightAttachmentQueue;
+    private final Set<Pair<WorldItem, Light>> lightAttachmentQueue;
 
     private final Map<Integer, AbstractSceneEntity> objectMap;
     private final Set<IModeledSceneObject> toRenderSet;
@@ -45,16 +44,105 @@ public final class SceneWorld implements IWorld {
     private int ticks;
 
     public SceneWorld() {
-        this.lightAttachmentQueue = new HashSet<>();
-
-        this.objectMap = new HashMap<>();
-        this.liquids = new HashSet<>();
-        this.toRenderSet = new HashSet<>();
+        this.lightAttachmentQueue = SyncManager.createSyncronisedSet();
+        this.objectMap = SyncManager.createSyncronisedMap();
+        this.liquids = SyncManager.createSyncronisedSet();
+        this.toRenderSet = SyncManager.createSyncronisedSet();
 
         this.environment = Environment.createEnvironment();
         this.frustumCulling = null;
 
         this.particlesEmitter = new ParticlesEmitter();
+    }
+
+    //section WorldStart
+    @Override
+    public void onWorldStart() {
+        JGems3D.get().getScreen().zeroRenderTick();
+        this.getParticlesEmitter().create(this);
+        this.getEnvironment().init(this);
+        this.ticks = 0;
+    }
+
+    //section WorldUpdate
+    @Override
+    public void onWorldUpdate() {
+        Iterator<Pair<WorldItem, Light>> iterator = this.lightAttachmentQueue.iterator();
+        while (iterator.hasNext()) {
+            Pair<WorldItem, Light> pair = iterator.next();
+            this.addWorldItemLight(pair.getFirst(), pair.getSecond());
+            iterator.remove();
+        }
+        this.ticks += 1;
+    }
+
+    //section WorldEnd
+    @Override
+    public void onWorldEnd() {
+        this.getParticlesEmitter().destroy(this);
+        this.cleanAll();
+    }
+
+    //section WorldUpdObj
+    public void updateWorldObjects(boolean refresh, float partialTicks, float deltaTime) {
+        this.getParticlesEmitter().onUpdateParticles(deltaTime, this);
+        if (this.ticks % 60 == 0)
+        JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
+
+        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
+        while (iterator.hasNext()) {
+            IModeledSceneObject sceneObject = iterator.next();
+            if (sceneObject instanceof IWorldTicked) {
+                IWorldTicked worldTicked = (IWorldTicked) sceneObject;
+                worldTicked.onUpdate(this);
+            }
+            if (sceneObject instanceof AbstractSceneEntity) {
+                AbstractSceneEntity abstractSceneEntity = (AbstractSceneEntity) sceneObject;
+                if (abstractSceneEntity.isDead()) {
+                    this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
+                    abstractSceneEntity.onDestroy(this);
+                    iterator.remove();
+                    continue;
+                }
+                if (refresh) {
+                    abstractSceneEntity.refreshInterpolatingState();
+                }
+                abstractSceneEntity.updateRenderPos(partialTicks);
+                abstractSceneEntity.updateRenderTranslation();
+            }
+        }
+
+        Iterator<LiquidObject> iterator2 = this.getLiquids().iterator();
+        while (iterator2.hasNext()) {
+            LiquidObject liquidObject = iterator2.next();
+            if (liquidObject.getLiquid().isDead()) {
+                liquidObject.getModel().clean();
+                iterator2.remove();
+            }
+        }
+    }
+
+    //section WorldClean
+    private void cleanAll() {
+        this.getEnvironment().getLightManager().removeAllLights();
+
+        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
+        while (iterator.hasNext()) {
+            IModeledSceneObject modeledSceneObject = iterator.next();
+            if (modeledSceneObject instanceof AbstractSceneEntity) {
+                AbstractSceneEntity abstractSceneEntity = (AbstractSceneEntity) modeledSceneObject;
+                abstractSceneEntity.onDestroy(this);
+            }
+            iterator.remove();
+        }
+
+        Iterator<LiquidObject> iterator1 = this.getLiquids().iterator();
+        while (iterator1.hasNext()) {
+            LiquidObject liquidObject = iterator1.next();
+            liquidObject.getModel().clean();
+            iterator1.remove();
+        }
+        this.getObjectMap().clear();
     }
 
     public boolean checkReachedRenderDistance(IModeledSceneObject renderObject) {
@@ -72,12 +160,11 @@ public final class SceneWorld implements IWorld {
         return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.calcRenderSphere()) || !e.canBeCulled()).collect(Collectors.toList());
     }
 
-    public List<IModeledSceneObject> getFilteredEntityList(RenderPass renderPass) {
-        List<IModeledSceneObject> physicsObjects = new ArrayList<>(this.getModeledSceneEntities());
+    public Set<IModeledSceneObject> getFilteredEntitySet(RenderPass renderPass) {
         if (this.getFrustumCulling() == null) {
-            return physicsObjects;
+            return this.getModeledSceneEntities();
         }
-        return this.getCollectionFrustumCulledList(physicsObjects).stream().map(e -> (IModeledSceneObject) e).filter(e -> (renderPass == null || e.getMeshRenderData().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toList());
+        return this.getCollectionFrustumCulledList(this.getModeledSceneEntities()).stream().map(e -> (IModeledSceneObject) e).filter(e -> (renderPass == null || e.getMeshRenderData().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toSet());
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {
@@ -197,92 +284,6 @@ public final class SceneWorld implements IWorld {
     public void removeLiquid(LiquidObject liquid) {
         liquid.getModel().clean();
         this.getLiquids().remove(liquid);
-    }
-
-    @Override
-    public void onWorldStart() {
-        JGems3D.get().getScreen().zeroRenderTick();
-        this.getParticlesEmitter().create(this);
-        this.getEnvironment().init(this);
-        this.ticks = 0;
-    }
-
-    @Override
-    public void onWorldUpdate() {
-        Iterator<Pair<WorldItem, Light>> iterator = this.lightAttachmentQueue.iterator();
-        while (iterator.hasNext()) {
-            Pair<WorldItem, Light> pair = iterator.next();
-            this.addWorldItemLight(pair.getFirst(), pair.getSecond());
-            iterator.remove();
-        }
-        this.ticks += 1;
-    }
-
-    @Override
-    public void onWorldEnd() {
-        this.getParticlesEmitter().destroy(this);
-        this.cleanAll();
-    }
-
-    public void updateWorldObjects(boolean refresh, float partialTicks, float deltaTime) {
-       // this.getParticlesEmitter().onUpdateParticles(deltaTime, this);
-
-       //if (ticks % 60 == 0)
-       //JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
-
-        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
-        while (iterator.hasNext()) {
-            IModeledSceneObject sceneObject = iterator.next();
-            if (sceneObject instanceof IWorldTicked) {
-                IWorldTicked worldTicked = (IWorldTicked) sceneObject;
-                worldTicked.onUpdate(this);
-            }
-            if (sceneObject instanceof AbstractSceneEntity) {
-                AbstractSceneEntity abstractSceneEntity = (AbstractSceneEntity) sceneObject;
-                if (abstractSceneEntity.isDead()) {
-                    this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
-                    abstractSceneEntity.onDestroy(this);
-                    iterator.remove();
-                    continue;
-                }
-                if (refresh) {
-                    abstractSceneEntity.refreshInterpolatingState();
-                }
-                abstractSceneEntity.updateRenderPos(partialTicks);
-                abstractSceneEntity.updateRenderTranslation();
-            }
-        }
-
-        Iterator<LiquidObject> iterator2 = this.getLiquids().iterator();
-        while (iterator2.hasNext()) {
-            LiquidObject liquidObject = iterator2.next();
-            if (liquidObject.getLiquid().isDead()) {
-                liquidObject.getModel().clean();
-                iterator2.remove();
-            }
-        }
-    }
-
-    private void cleanAll() {
-        this.getEnvironment().getLightManager().removeAllLights();
-
-        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
-        while (iterator.hasNext()) {
-            IModeledSceneObject modeledSceneObject = iterator.next();
-            if (modeledSceneObject instanceof AbstractSceneEntity) {
-                AbstractSceneEntity abstractSceneEntity = (AbstractSceneEntity) modeledSceneObject;
-                abstractSceneEntity.onDestroy(this);
-            }
-            iterator.remove();
-        }
-
-        Iterator<LiquidObject> iterator1 = this.getLiquids().iterator();
-        while (iterator1.hasNext()) {
-            LiquidObject liquidObject = iterator1.next();
-            liquidObject.getModel().clean();
-            iterator1.remove();
-        }
-        this.getObjectMap().clear();
     }
 
     public ParticlesEmitter getParticlesEmitter() {

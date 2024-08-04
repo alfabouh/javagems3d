@@ -1,13 +1,32 @@
 package ru.jgems3d.engine.system.synchronizing;
 
-public class SyncManager {
-    public static final Syncer SyncPhysics = new Syncer();
-    public static final Syncer SyncRender = new Syncer();
-    public static final Syncer PhysicsIteration = new Syncer();
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+public abstract class SyncManager {
+    public static final Set<Syncer> syncerSet = new HashSet<>();
+
+    public static final Syncer SyncPhysics = SyncManager.createNewSyncer();
+
+    public static Syncer createNewSyncer() {
+        Syncer s = new Syncer();
+        SyncManager.syncerSet.add(s);
+        return s;
+    }
 
     public static void freeAll() {
-        SyncManager.SyncRender.free();
-        SyncManager.SyncPhysics.free();
-        SyncManager.PhysicsIteration.free();
+        SyncManager.syncerSet.forEach(Syncer::free);
+    }
+
+    public static <T> List<T> createSyncronisedList(List<T> list) {
+        return Collections.synchronizedList(list);
+    }
+
+    public static <T> Set<T> createSyncronisedSet() {
+        return ConcurrentHashMap.newKeySet();
+    }
+
+    public static <R, T> Map<R, T> createSyncronisedMap() {
+        return new ConcurrentHashMap<>();
     }
 }

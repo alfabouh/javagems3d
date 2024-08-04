@@ -27,7 +27,7 @@ import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
@@ -109,7 +109,7 @@ public class JGemsScreen implements IScreen {
 
     private void createObjects(Window window) {
         this.controllerDispatcher = new JGemsControllerDispatcher(window);
-        this.scene = new JGemsScene(this.getTransformationUtils(), this, new SceneWorld());
+        this.scene = new JGemsScene(this.getTransformationUtils(), new SceneWorld());
     }
 
     private void resizeWindow(Vector2i dim) {
@@ -293,12 +293,14 @@ public class JGemsScreen implements IScreen {
         return this.renderTicks;
     }
 
-    public JGemsControllerDispatcher getControllerDispatcher() {
-        return this.controllerDispatcher;
-    }
-
     public Vector2i getWindowDimensions() {
         return this.getWindow().getWindowDimensions();
+    }
+
+    public JGemsControllerDispatcher getControllerDispatcher() {
+        synchronized (this) {
+            return this.controllerDispatcher;
+        }
     }
 
     public JGemsScene getScene() {
@@ -309,12 +311,12 @@ public class JGemsScreen implements IScreen {
         return this.window;
     }
 
-    public TimerPool getTimerPool() {
-        return this.timerPool;
-    }
-
     public TransformationUtils getTransformationUtils() {
         return this.transformationUtils;
+    }
+
+    public TimerPool getTimerPool() {
+        return this.timerPool;
     }
 
     public class LoadingScreen {

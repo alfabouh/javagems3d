@@ -34,12 +34,12 @@ public class RenderPlayer implements IRenderObjectFabric {
     }
 
     @Override
-    public void onStartRender(IRenderObject renderItem) {
+    public void onPreRender(IRenderObject renderItem) {
 
     }
 
     @Override
-    public void onStopRender(IRenderObject renderItem) {
+    public void onPostRender(IRenderObject renderItem) {
 
     }
 }

@@ -9,7 +9,7 @@ import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.logger.managers.JGemsLogging;
 
 import java.util.ArrayList;

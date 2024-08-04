@@ -3,7 +3,7 @@ package ru.jgems3d.engine.system.resources.manager;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;

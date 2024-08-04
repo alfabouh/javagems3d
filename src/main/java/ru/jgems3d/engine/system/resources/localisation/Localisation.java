@@ -3,7 +3,7 @@ package ru.jgems3d.engine.system.resources.localisation;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.misc.JGPath;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

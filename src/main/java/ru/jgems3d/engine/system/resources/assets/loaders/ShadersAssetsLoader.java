@@ -40,6 +40,7 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
     public JGemsShaderManager world_particles_gbuffer;
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager weighted_oit;
+    public JGemsShaderManager weighted_particle_oit;
     public JGemsShaderManager simple;
     public JGemsShaderManager depth_sun;
     public JGemsShaderManager depth_sun_fix;
@@ -81,6 +82,7 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
         this.world_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_ssao") , Shader.ShaderType.COMPUTE_BIT);
 
         this.weighted_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
+        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_particle_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
 
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.G_BUFFER);
         this.world_liquid_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_liquid_gbuffer") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.Misc).setShaderRenderPass(RenderPass.G_BUFFER);

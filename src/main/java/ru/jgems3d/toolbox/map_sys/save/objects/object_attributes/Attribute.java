@@ -1,7 +1,7 @@
 package ru.jgems3d.toolbox.map_sys.save.objects.object_attributes;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 
 import java.io.*;
 

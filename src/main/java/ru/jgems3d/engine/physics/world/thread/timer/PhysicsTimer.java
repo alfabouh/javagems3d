@@ -5,7 +5,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.synchronizing.SyncManager;
 
 public class PhysicsTimer implements IPhysTimer {
@@ -50,12 +50,6 @@ public class PhysicsTimer implements IPhysTimer {
         }
     }
 
-    public PhysicsWorld getWorld() {
-        synchronized (PhysicsTimer.lockObject) {
-            return this.world;
-        }
-    }
-
     public void cleanResources() {
         JGemsHelper.getLogger().log("Cleaning physics world resources...");
         this.getDynamicsSystem().destroy();
@@ -67,6 +61,10 @@ public class PhysicsTimer implements IPhysTimer {
 
     public void addDynamicsObject(PhysicsCollisionObject physicsCollisionObject) {
         this.getDynamicsSystem().addCollisionObject(physicsCollisionObject);
+    }
+
+    public PhysicsWorld getWorld() {
+        return this.world;
     }
 
     public DynamicsSystem getDynamicsSystem() {

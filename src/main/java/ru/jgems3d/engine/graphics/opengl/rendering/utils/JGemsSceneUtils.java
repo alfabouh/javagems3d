@@ -3,14 +3,10 @@ package ru.jgems3d.engine.graphics.opengl.rendering.utils;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
-import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.WorldTransparentRender;
-import ru.jgems3d.engine.system.misc.Pair;
-import ru.jgems3d.engine.system.misc.Triple;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.WorldTransparentRender;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -18,29 +14,21 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
-public class JGemsSceneUtils {
+public abstract class JGemsSceneUtils {
     public static final float FOV = (float) Math.toRadians(60.0f);
     public static final float Z_NEAR = 0.1f;
     public static final float Z_FAR = 100.0f;
 
-    public static Matrix4f getMainCameraViewMatrix() {
-        return JGems3D.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
+    public synchronized static Matrix4f getMainCameraViewMatrix() {
+        return JGemsHelper.getScreen().getTransformationUtils().getMainCameraViewMatrix();
     }
 
-    public static Matrix4f getMainPerspectiveMatrix() {
-        return JGems3D.get().getScreen().getTransformationUtils().getPerspectiveMatrix();
+    public synchronized static Matrix4f getMainPerspectiveMatrix() {
+        return JGemsHelper.getScreen().getTransformationUtils().getPerspectiveMatrix();
     }
 
-    public static Matrix4f getMainOrthographicMatrix() {
-        return JGems3D.get().getScreen().getTransformationUtils().getOrthographicMatrix();
-    }
-
-    public static boolean isSceneActive() {
-        return JGems3D.get().getScreen().getWindow().isActive();
-    }
-
-    public static void setCamera(ICamera camera) {
-        JGems3D.get().getScreen().getScene().setRenderCamera(camera);
+    public synchronized static Matrix4f getMainOrthographicMatrix() {
+        return JGemsHelper.getScreen().getTransformationUtils().getOrthographicMatrix();
     }
 
     // section SimpleRender

@@ -352,7 +352,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     }
 
     @Override
-    public synchronized Inventory inventory() {
+    public Inventory inventory() {
         return this.inventory;
     }
 }

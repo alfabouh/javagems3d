@@ -10,7 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
-import ru.jgems3d.engine.graphics.opengl.particles.objects.ParticleFX;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
@@ -34,7 +34,7 @@ import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.Particl
 import ru.jgems3d.engine.system.resources.localisation.Lang;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
@@ -135,6 +135,10 @@ public abstract class JGemsHelper {
 
     public static void recreateResources() {
         JGems3D.get().recreateResources();
+    }
+
+    public static boolean isSceneActive() {
+        return JGemsHelper.getScreen().getWindow().isActive();
     }
 
     public void detachController() {

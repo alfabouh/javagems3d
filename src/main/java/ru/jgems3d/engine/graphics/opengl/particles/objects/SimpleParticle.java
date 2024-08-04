@@ -4,11 +4,13 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.base.TexturedParticleFX;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.ParticleTexturePack;
 
-public class SimpleParticle extends ParticleFX {
+public class SimpleParticle extends TexturedParticleFX {
     private double maxLivingSeconds;
 
     public SimpleParticle(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @NotNull ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {

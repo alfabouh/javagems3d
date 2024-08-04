@@ -14,7 +14,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.exceptions.JGemsException;
+import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -71,7 +71,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
             } else {
                 this.initModel();
             }
-            this.renderFabric().onStartRender(this);
+            this.renderFabric().onPreRender(this);
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
     public void onDestroy(IWorld iWorld) {
         JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
         if (this.hasRender()) {
-            this.renderFabric().onStopRender(this);
+            this.renderFabric().onPostRender(this);
         }
         this.clearLights();
     }
