@@ -73,7 +73,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         }
         gemsShaderManager.bind();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
-        gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), Transformation.getModelMatrix(format3D));
+        gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), format3D);
 
         gemsShaderManager.getUtils().performShadowsInfo();
         gemsShaderManager.getUtils().performModelMaterialOnShader(modelNode.getMaterial());

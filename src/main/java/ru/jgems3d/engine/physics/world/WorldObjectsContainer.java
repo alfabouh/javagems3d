@@ -42,6 +42,7 @@ public final class WorldObjectsContainer {
     public void cleanUp() {
         this.getWorldObjects().forEach(e -> e.onDestroy(this.getWorld()));
         this.getWorldObjects().clear();
+        this.getWorldTickedObjects().clear();
     }
 
     public void addObjectInWorld(IWorldObject worldObject) {

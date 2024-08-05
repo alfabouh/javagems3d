@@ -53,7 +53,7 @@ public class RenderDataLoader implements IAssetsLoader {
         Material zwMat = new Material();
         zwMat.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo_world);
 
-        this.water = new RenderLiquidData(JGemsResourceManager.globalTextureAssets.waterNormals, JGemsResourceManager.globalTextureAssets.waterTexture, true, JGemsResourceManager.globalShaderAssets.world_liquid_gbuffer);
+        this.water = new RenderLiquidData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
 
         this.zippo_world = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
         this.zippo_world.setEntityModelConstructor(itemPickUpModelConstructor);

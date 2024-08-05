@@ -77,15 +77,15 @@ void main()
 
     float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
     float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
-    float f1 = pow(AO, (1.25 - gray) * 3.);
+    float f1 = pow(AO, (1.0 - gray) * 3.);
 
     vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
 
-    frag_color = mix(g_texture, metallic, 0.5) * (lights + emission);
+    frag_color = (g_texture + vec4(metallic.xyz, 0.)) * (lights + emission);
     frag_color = fogDensity > 0 ? calc_fog(frag_pos.xyz, frag_color) : frag_color;
 
     float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
-    bright_color = brightness >= 1.0 ? frag_color : vec4(0., 0., 0., g_texture.a);
+    bright_color = brightness >= 2.0 ? frag_color : vec4(0., 0., 0., g_texture.a);
 }
 
 float vsmFixLightBleed(float pMax, float amount)

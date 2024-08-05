@@ -15,22 +15,21 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 
 public class ParticlesRender extends SceneRenderBase {
     public ParticlesRender(JGemsOpenGLRenderer sceneRender) {
-        super(3, sceneRender, new RenderGroup("PARTICLE_TRANSPARENT"));
+        super(122, sceneRender, new RenderGroup("PARTICLE_TRANSPARENT"));
     }
 
     public void onRender(float partialTicks) {
+        GL30.glEnable(GL30.GL_BLEND);
+        GL30.glDepthMask(false);
         for (ParticleFX particleFX : this.getSceneWorld().getParticlesEmitter().getCulledParticlesSet(this.getSceneRenderer().getSceneData())) {
             this.renderParticleSceneObject(particleFX);
         }
+        GL30.glDepthMask(true);
+        GL30.glDisable(GL30.GL_BLEND);
     }
 
     private void renderParticleSceneObject(ParticleFX particleFX) {
         JGemsShaderManager gemsShaderManager = particleFX.getParticleAttributes().getShaderManager();
-        if (!gemsShaderManager.getShaderRenderPass().equals(RenderPass.TRANSPARENCY)) {
-            JGemsHelper.getLogger().warn("Particle should have transparency shader!");
-            return;
-        }
-
         Model<Format3D> model = this.getSceneWorld().getParticlesEmitter().getParticleModel(particleFX);
         gemsShaderManager.bind();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
