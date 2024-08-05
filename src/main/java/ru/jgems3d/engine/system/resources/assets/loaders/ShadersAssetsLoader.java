@@ -31,16 +31,16 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
     public JGemsShaderManager blur9;
     public JGemsShaderManager blur13;
     public JGemsShaderManager blur_box;
+    public JGemsShaderManager blur_ssao;
     public JGemsShaderManager hdr;
     public JGemsShaderManager fxaa;
     public JGemsShaderManager skybox;
     public JGemsShaderManager world_gbuffer;
     public JGemsShaderManager world_ssao;
-    public JGemsShaderManager world_liquid_gbuffer;
-    public JGemsShaderManager world_particles_gbuffer;
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager weighted_oit;
-    public JGemsShaderManager weighted_particle_oit;
+    public JGemsShaderManager world_particle;
+    public JGemsShaderManager weighted_liquid_oit;
     public JGemsShaderManager simple;
     public JGemsShaderManager depth_sun;
     public JGemsShaderManager depth_sun_fix;
@@ -67,6 +67,7 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
         this.gui_image = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui_image") , Shader.ShaderType.DEFAULT_BITS);
         this.gui_image_selectable = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui_image_selectable") , Shader.ShaderType.DEFAULT_BITS);
 
+        this.blur_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur_ssao") , Shader.ShaderType.DEFAULT_BITS);
         this.blur5 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur5") , Shader.ShaderType.DEFAULT_BITS);
         this.blur9 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur9") , Shader.ShaderType.DEFAULT_BITS);
         this.blur13 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur13") , Shader.ShaderType.DEFAULT_BITS);
@@ -81,12 +82,12 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
 
         this.world_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_ssao") , Shader.ShaderType.COMPUTE_BIT);
 
+        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_liquid_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
         this.weighted_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
-        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_particle_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
 
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.G_BUFFER);
-        this.world_liquid_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_liquid_gbuffer") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.Misc).setShaderRenderPass(RenderPass.G_BUFFER);
-        this.world_particles_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_particles_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.G_BUFFER);
+        this.world_particle = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_particle") , Shader.ShaderType.DEFAULT_BITS);
+
+        this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.DEFERRED);
         this.world_deferred = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_deferred") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight, this.PointLights, this.Fog);
 
         this.menu = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "menu") , Shader.ShaderType.DEFAULT_BITS);

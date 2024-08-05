@@ -86,8 +86,6 @@ public final class SceneWorld implements IWorld {
     //section WorldUpdObj
     public void updateWorldObjects(boolean refresh, float partialTicks, float deltaTime) {
         this.getParticlesEmitter().onUpdateParticles(deltaTime, this);
-        if (this.ticks % 60 == 0)
-        JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(0.0f), new Vector2f(1.0f)));
 
         Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {

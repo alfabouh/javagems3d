@@ -166,28 +166,24 @@ public final class JGemsShaderManager extends ShaderManager {
             JGemsShaderManager.this.performUniformTexture(name, arrayPos, cubeMapProgram.getTextureId(), GL30.GL_TEXTURE_CUBE_MAP);
         }
 
-        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Matrix4f model) {
+        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Format3D format3D) {
+            Matrix4f modelM = new Matrix4f(Transformation.getModelMatrix(format3D));
             if (JGemsShaderManager.this.isUniformExist("model_matrix")) {
-                this.performModel3DMatrix(model);
+                if (format3D.isOrientedToViewMatrix()) {
+                    modelM = Transformation.getOrientedToViewModelMatrix(format3D, viewMatrix);
+                }
+                this.performModel3DMatrix(modelM);
             }
             if (JGemsShaderManager.this.isUniformExist("view_matrix")) {
                 this.performViewMatrix(viewMatrix);
             }
             if (JGemsShaderManager.this.isUniformExist("model_view_matrix")) {
-                this.performModel3DViewMatrix(model, viewMatrix);
+                this.performModel3DViewMatrix(modelM, viewMatrix);
             }
         }
 
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model<Format3D> model) {
-            if (JGemsShaderManager.this.isUniformExist("model_matrix")) {
-                this.performModel3DMatrix(model);
-            }
-            if (JGemsShaderManager.this.isUniformExist("view_matrix")) {
-                this.performViewMatrix(viewMatrix);
-            }
-            if (JGemsShaderManager.this.isUniformExist("model_view_matrix")) {
-                this.performModel3DViewMatrix(model, viewMatrix);
-            }
+            this.performViewAndModelMatricesSeparately(viewMatrix, model.getFormat());
         }
 
         public void performViewAndModelMatricesSeparately(Model<Format3D> model) {

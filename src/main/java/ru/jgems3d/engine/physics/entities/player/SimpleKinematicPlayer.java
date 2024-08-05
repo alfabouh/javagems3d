@@ -1,6 +1,8 @@
 package ru.jgems3d.engine.physics.entities.player;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.RayTestFlag;
+import com.jme3.bullet.collision.CollisionFlag;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
@@ -63,7 +65,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         this.characterController = new CharacterController(this.getPhysicsCharacter());
         this.getPhysicsCharacter().setUserObject(this);
         this.getPhysicsCharacter().warp(DynamicsUtils.convertV3F_JME(this.startPos));
-        this.getPhysicsCharacter().setSweepTest(true);
 
         this.getPhysicsCharacter().setStepHeight(this.stepHeight);
         this.getPhysicsCharacter().setMaxSlope((float) Math.toRadians(this.maxSlope));
@@ -154,11 +155,10 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
         this.getWorld().getDynamics().getPhysicsSpace().contactTest(this.getPhysicsCharacter(), (e) -> {
             PhysicsCollisionObject collisionObjectB = e.getObjectB();
-
             if (CollisionFilter.LIQUID.matchMask(collisionObjectB.getCollisionGroup())) {
                 com.jme3.math.Vector3f vector3f = new com.jme3.math.Vector3f();
                 e.getLocalPointB(vector3f);
-                contactPoint.set(DynamicsUtils.convertV3F_JOML(vector3f));
+                contactPoint.set(DynamicsUtils.convertV3F_JOML(vector3f)).add(DynamicsUtils.getObjectBodyPos(collisionObjectB));
             }
         });
 
@@ -170,7 +170,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
             com.jme3.math.Vector3f rayFrom = DynamicsUtils.createV3F_JME(contactPoint.x, this.getPosition().y, contactPoint.z);
             com.jme3.math.Vector3f rayTo = DynamicsUtils.createV3F_JME(contactPoint.x, this.getPosition().y - boundingBox.getYExtent(), contactPoint.z);
 
-            List<PhysicsRayTestResult> rayTestResults = this.getWorld().getDynamics().getPhysicsSpace().rayTest(rayFrom, rayTo);
+            List<PhysicsRayTestResult> rayTestResults = this.getWorld().getDynamics().getPhysicsSpace().rayTestRaw(rayFrom, rayTo);
             for (PhysicsRayTestResult physicsRayTestResult : rayTestResults) {
                 if (CollisionFilter.LIQUID.matchMask(physicsRayTestResult.getCollisionObject().getCollisionGroup())) {
                     return -1.0f;
@@ -180,14 +180,12 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
         com.jme3.math.Vector3f rayFrom = DynamicsUtils.createV3F_JME(contactPoint.x, this.getPosition().y + boundingBox.getYExtent(), contactPoint.z);
         com.jme3.math.Vector3f rayTo = DynamicsUtils.createV3F_JME(contactPoint.x, this.getPosition().y, contactPoint.z);
-        List<PhysicsRayTestResult> rayTestResults = this.getWorld().getDynamics().getPhysicsSpace().rayTest(rayFrom, rayTo);
+        List<PhysicsRayTestResult> rayTestResults = this.getWorld().getDynamics().getPhysicsSpace().rayTestRaw(rayFrom, rayTo);
         for (PhysicsRayTestResult physicsRayTestResult : rayTestResults) {
             if (CollisionFilter.LIQUID.matchMask(physicsRayTestResult.getCollisionObject().getCollisionGroup())) {
                 com.jme3.math.Vector3f hitP = DynamicsUtils.lerp(rayFrom, rayTo, physicsRayTestResult.getHitFraction());
-
                 float f1 = rayFrom.distance(rayTo);
                 float f2 = rayFrom.distance(hitP);
-
                 return (float) Math.pow(1.0f - (f2 / f1), 0.5f);
             }
         }

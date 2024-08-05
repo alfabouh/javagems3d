@@ -36,7 +36,7 @@ public final class LiquidObject implements ICulled {
         } else if (size.x < size.z) {
             this.textureScaling.set(new Vector2f(1.0f, size.z / size.x));
         }
-        float sizeBound = 10.0f;
+        float sizeBound = 5.0f;
         if (size.x > sizeBound) {
             this.textureScaling.mul(size.x / sizeBound, 1.0f);
         }

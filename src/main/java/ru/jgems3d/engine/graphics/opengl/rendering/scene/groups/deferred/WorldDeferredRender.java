@@ -14,7 +14,7 @@ public class WorldDeferredRender extends SceneRenderBase {
     }
 
     public void onRender(float partialTicks) {
-        this.render(partialTicks, this.getSceneWorld().getFilteredEntitySet(RenderPass.G_BUFFER));
+        this.render(partialTicks, this.getSceneWorld().getFilteredEntitySet(RenderPass.DEFERRED));
     }
 
     public void onStartRender() {

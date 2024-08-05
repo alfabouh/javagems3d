@@ -26,7 +26,7 @@ public class Transformation {
     public static Matrix4f getViewMatrix(ICamera camera) {
         Vector3f cameraPos = camera.getCamPosition();
         Vector3f cameraRot = camera.getCamRotation();
-        return new Matrix4f().identity().rotateXYZ((float) cameraRot.x, (float) cameraRot.y, (float) cameraRot.z).translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+        return new Matrix4f().identity().rotateXYZ(cameraRot.x, cameraRot.y, cameraRot.z).translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
     }
 
     public static Matrix4f getModelMatrix(Format3D format) {
@@ -38,18 +38,20 @@ public class Transformation {
         if (format3D.isOrientedToViewMatrix()) {
             return Transformation.getOrientedToViewModelViewMatrix(format3D, viewMatrix);
         }
-        Vector3f rotation = format3D.getRotation();
-        Matrix4f m1 = new Matrix4f().identity().translate(format3D.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format3D.getScaling());
-        Matrix4f viewCurr = new Matrix4f(viewMatrix);
-        return viewCurr.mul(m1);
+        return new Matrix4f(viewMatrix).mul(Transformation.getModelMatrix(format3D));
     }
 
     public static Matrix4f getOrientedToViewModelViewMatrix(Format3D format3D, Matrix4f viewMatrix) {
-        Vector3f rotation = format3D.getRotation();
-        Matrix4f m1 = new Matrix4f().identity().translate(format3D.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format3D.getScaling());
+        Matrix4f m1 = Transformation.getModelMatrix(format3D);
         viewMatrix.transpose3x3(m1);
-        Matrix4f viewCurr = new Matrix4f(viewMatrix);
-        return viewCurr.mul(m1);
+        return new Matrix4f(viewMatrix).mul(m1);
+    }
+
+    public static Matrix4f getOrientedToViewModelMatrix(Format3D format3D, Matrix4f viewMatrix) {
+        Matrix4f m1 = Transformation.getModelMatrix(format3D);
+        Vector3f scaling = new Vector3f();
+        m1.getScale(scaling);
+        return viewMatrix.transpose3x3(m1).scale(scaling);
     }
 
     public static Matrix4f getModelOrthographicMatrix(Format2D format2D, Matrix4f orthographicMatrix) {

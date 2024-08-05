@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ShadowScene {
-    public static float MAX_ALPHA_TO_CULL_SHADOW = 0.65f;
-    public static float MAX_ALPHA_TO_DISCARD_SHADOW_PIXEL = 0.8f;
+    public static float MAX_ALPHA_TO_CULL_SHADOW = 0.3f;
+    public static float MAX_ALPHA_TO_DISCARD_SHADOW_PIXEL = 0.75f;
     public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
     public static final int CASCADE_SPLITS = 3;
     private final SceneWorld sceneWorld;

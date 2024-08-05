@@ -1,5 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.screen.timer;
 
+import ru.jgems3d.engine.system.synchronizing.SyncManager;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -8,7 +10,7 @@ public class TimerPool {
     private final Set<JGemsTimer> JGemsTimerSet;
 
     public TimerPool() {
-        this.JGemsTimerSet = new HashSet<>();
+        this.JGemsTimerSet = SyncManager.createSyncronisedSet();
     }
 
     public void update() {
