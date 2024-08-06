@@ -12,6 +12,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIAction;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIInteractiveElement;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
@@ -53,8 +54,8 @@ public class UIButton extends UIInteractiveElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
-        shaderManager.performUniform("background_color", new Vector4f(0.25f, 0.0f, 0.15f, 0.8f));
-        shaderManager.performUniform("selected", this.isSelected());
+        shaderManager.performUniform(new UniformString("background_color"), new Vector4f(0.25f, 0.0f, 0.15f, 0.8f));
+        shaderManager.performUniform(new UniformString("selected"), this.isSelected());
         JGemsSceneUtils.renderModel(this.buttonModel, GL30.GL_TRIANGLES);
         shaderManager.unBind();
         this.uiText.render(frameDeltaTicks);

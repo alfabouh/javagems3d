@@ -12,6 +12,7 @@ import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSa
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
@@ -27,7 +28,7 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
     public void preRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
         GL30.glDepthFunc(GL30.GL_ALWAYS);
         inventoryItemRenderData.getShaderManager().bind();
-        inventoryItemRenderData.getShaderManager().performUniform("projection_matrix", Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f));
+        inventoryItemRenderData.getShaderManager().performUniform(new UniformString("projection_matrix"), Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f));
     }
 
     @Override
@@ -43,12 +44,12 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
             if (sample1 != null) {
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 sample1.bindTexture();
-                shaderManager.performUniform("diffuse_map", 0);
+                shaderManager.performUniform(new UniformString("diffuse_map"), 0);
             }
             if (sample2 != null) {
                 GL30.glActiveTexture(GL30.GL_TEXTURE1);
                 sample2.bindTexture();
-                shaderManager.performUniform("emission_map", 1);
+                shaderManager.performUniform(new UniformString("emission_map"), 1);
             }
             GL30.glBindVertexArray(modelNode.getMesh().getVao());
             for (int a : modelNode.getMesh().getAttributePointers()) {

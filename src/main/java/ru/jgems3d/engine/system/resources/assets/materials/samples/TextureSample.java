@@ -58,6 +58,7 @@ public class TextureSample implements IImageSample {
                     this.createTexture();
                 }
             } catch (IOException e) {
+                this.imageBuffer = null;
                 throw new JGemsException(e);
             }
         } else {

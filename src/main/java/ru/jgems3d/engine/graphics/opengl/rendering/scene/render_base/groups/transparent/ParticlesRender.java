@@ -9,6 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class ParticlesRender extends SceneRenderBase {
@@ -30,14 +31,14 @@ public class ParticlesRender extends SceneRenderBase {
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(model);
         gemsShaderManager.getUtils().performShadowsInfo();
         if (particleFX.hasTexturePack()) {
-            gemsShaderManager.performUniformTexture("diffuse_map", particleFX.getCurrentFrame().getTextureId(), GL30.GL_TEXTURE_2D);
-            gemsShaderManager.performUniform("use_texture", true);
+            gemsShaderManager.performUniformTexture(new UniformString("diffuse_map"), particleFX.getCurrentFrame().getTextureId(), GL30.GL_TEXTURE_2D);
+            gemsShaderManager.performUniform(new UniformString("use_texture"), true);
         } else {
-            gemsShaderManager.performUniform("use_texture", false);
+            gemsShaderManager.performUniform(new UniformString("use_texture"), false);
         }
-        gemsShaderManager.performUniform("color_mask", particleFX.getColorMask());
-        gemsShaderManager.performUniform("brightness", particleFX.getParticleAttributes().getBrightness());
-        gemsShaderManager.performUniform("alpha_factor", particleFX.getParticleAttributes().getOpacity());
+        gemsShaderManager.performUniform(new UniformString("color_mask"), particleFX.getColorMask());
+        gemsShaderManager.performUniform(new UniformString("brightness"), particleFX.getParticleAttributes().getBrightness());
+        gemsShaderManager.performUniform(new UniformString("alpha_factor"), particleFX.getParticleAttributes().getOpacity());
         JGemsSceneUtils.renderModel(model, GL30.GL_TEXTURE_2D);
         gemsShaderManager.unBind();
     }

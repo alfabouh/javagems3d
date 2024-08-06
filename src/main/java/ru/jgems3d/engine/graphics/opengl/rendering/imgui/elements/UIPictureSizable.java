@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIElement;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
@@ -36,7 +37,7 @@ public class UIPictureSizable extends UIElement {
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
         GL30.glActiveTexture(GL13.GL_TEXTURE0);
         this.iImageSample.bindTexture();
-        shaderManager.performUniform("texture_sampler", 0);
+        shaderManager.performUniform(new UniformString("texture_sampler"), 0);
         JGemsSceneUtils.renderModel(this.imageModel, GL30.GL_TRIANGLES);
         shaderManager.unBind();
     }

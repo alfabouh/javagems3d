@@ -77,7 +77,7 @@ void main()
 
     float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
     float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
-    float f1 = pow(AO, (1.0 - gray) * 3.);
+    float f1 = pow(AO, (1.0 - gray) * 5.);
 
     vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
 
@@ -136,14 +136,16 @@ float calculate_point_light_shadow(samplerCube vsmCubemap, vec3 fragPosition, ve
     float currentDepth = length(fragToLight);
     currentDepth /= far_plane;
 
-    vec3 lightPosViewSpace = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
+    vec4 vsm = texture(vsmCubemap, normalize(fragToLight));
 
-    vec4 vsmValues = texture(vsmCubemap, normalize(fragToLight));
-    float mu = vsmValues.r;
-    float s2 = max(vsmValues.g - mu * mu, 1.0e-5f);
-    float pmax = s2 / (s2 + (currentDepth - mu) * (currentDepth - mu));
+    float E_x2 = vsm.y;
+    float Ex_2 = vsm.x * vsm.x;
+    float var = max(E_x2 - Ex_2, 1.0e-5f);
+    float mD = vsm.x - currentDepth;
+    float mD_2 = mD * mD;
+    float p = var / (var + mD_2);
 
-    return vsmFixLightBleed(pmax, 0.2);
+    return max(vsmFixLightBleed(p, 0.7), int(currentDepth <= vsm.x));
 }
 
 vec4 calc_light(vec3 frag_pos, vec3 normal) {

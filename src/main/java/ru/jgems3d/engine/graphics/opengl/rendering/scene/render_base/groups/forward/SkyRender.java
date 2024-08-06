@@ -9,6 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRender
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -59,10 +60,10 @@ public class SkyRender extends SceneRenderBase {
         Matrix4f.m31(0);
         Matrix4f.m32(0);
 
-        shaderManager.performUniform("covered_by_fog", sky.isCoveredByFog());
-        shaderManager.performUniform("view_mat_inverted", new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert());
+        shaderManager.performUniform(new UniformString("covered_by_fog"), sky.isCoveredByFog());
+        shaderManager.performUniform(new UniformString("view_mat_inverted"), new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert());
         shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
-        shaderManager.getUtils().performCubeMapProgram("skybox", sky.getSkyBox().cubeMapTexture());
+        shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), sky.getSkyBox().cubeMapTexture());
        //shaderManager.getUtils().performCubeMapProgram("skybox", this.getSceneRenderer().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         shaderManager.unBind();

@@ -8,11 +8,12 @@ import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.Uni
 import ru.jgems3d.engine.JGemsHelper;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class ShaderGroup {
-    private Set<Uniform> rawUniforms;
+    private Set<UniformString> rawUniforms;
     private final Map<UniformBufferObject, UniformBufferProgram> uniformBufferProgramMap;
     private UniformProgram uniformProgram;
     private IShaderProgram shaderProgram;
@@ -21,6 +22,7 @@ public class ShaderGroup {
     public ShaderGroup(String id) {
         this.id = id;
         this.uniformBufferProgramMap = new HashMap<>();
+        this.rawUniforms = new HashSet<>();
     }
 
     public void initShaderGroup(IShaderProgram shaderProgram, Set<Uniform> uniforms, Set<UniformBufferObject> uniformBufferObjects) {
@@ -32,16 +34,16 @@ public class ShaderGroup {
     }
 
     @SuppressWarnings("all")
-    private boolean tryCreateUniform(UniformProgram uniformProgram, String value) {
+    private boolean tryCreateUniform(UniformProgram uniformProgram, UniformString value) {
         if (!uniformProgram.createUniform(value)) {
             JGemsHelper.getLogger().warn("[" + this + "] Could not find uniform " + value);
             return false;
         }
+        this.rawUniforms.add(value);
         return true;
     }
 
     private void initUniforms(Set<Uniform> uniforms) {
-        this.rawUniforms = uniforms;
         if (uniforms.isEmpty()) {
             JGemsHelper.getLogger().warn("Warning! No Uniforms found in: " + this);
         }
@@ -50,14 +52,14 @@ public class ShaderGroup {
                 for (int i = 0; i < uniform.getArraySize(); i++) {
                     if (!uniform.getFields().isEmpty()) {
                         for (String field : uniform.getFields()) {
-                            this.tryCreateUniform(this.getUniformProgram(), uniform.getId() + "[" + i + "]." + field);
+                            this.tryCreateUniform(this.getUniformProgram(),  new UniformString(uniform.getId(), "." + field, i));
                         }
                     } else {
-                        this.tryCreateUniform(this.getUniformProgram(), uniform.getId() + "[" + i + "]");
+                        this.tryCreateUniform(this.getUniformProgram(), new UniformString(uniform.getId(), i));
                     }
                 }
             } else {
-                this.tryCreateUniform(this.getUniformProgram(), uniform.getId());
+                this.tryCreateUniform(this.getUniformProgram(), new UniformString(uniform.getId()));
             }
         }
     }
@@ -86,8 +88,8 @@ public class ShaderGroup {
         this.getShaderProgram().clean();
     }
 
-    public boolean checkUniformInProgram(String uniform) {
-        return this.rawUniforms.stream().anyMatch(e -> e.getId().equals(uniform));
+    public boolean checkUniformInProgram(UniformString uniformString) {
+        return this.rawUniforms.stream().anyMatch(e -> e.equals(uniformString));
     }
 
     public boolean checkIsShaderActive() {

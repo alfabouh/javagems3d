@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
@@ -37,7 +38,7 @@ public class BtDebugDraw {
             debugShaders.bind();
             debugShaders.getUtils().performPerspectiveMatrix();
             debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
-            debugShaders.performUniform("colour", new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+            debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
 
             BoundingBox boundingBox = new BoundingBox();
             physicsCollisionObject.boundingBox(boundingBox);

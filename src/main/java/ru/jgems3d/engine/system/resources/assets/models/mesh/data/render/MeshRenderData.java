@@ -22,7 +22,7 @@ public final class MeshRenderData {
         this.overlappingMaterial = null;
     }
 
-    public static MeshRenderData defaultModelRenderConstraints(@NotNull JGemsShaderManager shaderManager) {
+    public static MeshRenderData defaultMeshRenderData(@NotNull JGemsShaderManager shaderManager) {
         return new MeshRenderData(new MeshRenderAttributes(), shaderManager);
     }
 

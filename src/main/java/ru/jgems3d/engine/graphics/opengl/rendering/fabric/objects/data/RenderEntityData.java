@@ -27,7 +27,7 @@ public class RenderEntityData {
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
         this.meshDataGroup = meshDataGroup;
-        this.meshRenderData = MeshRenderData.defaultModelRenderConstraints(shaderManager);
+        this.meshRenderData = MeshRenderData.defaultMeshRenderData(shaderManager);
     }
 
     public RenderEntityData(IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> aClass, @NotNull MeshRenderData meshRenderData, MeshDataGroup meshDataGroup) {
