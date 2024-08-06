@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.deferred;
 
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;

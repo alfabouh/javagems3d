@@ -8,6 +8,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachment;
+import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
@@ -65,12 +66,14 @@ public class ShadowScene {
         this.shadowFBO2.clearFBO();
         this.shadowPostFBO.clearFBO();
 
-        T2DAttachment[] FBOs = new T2DAttachment[]{new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
-                new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
-                new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG)};
-        this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-        this.shadowFBO2.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-        this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        T2DAttachmentContainer shadow = new T2DAttachmentContainer() {{
+           add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+        }};
+        this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.shadowFBO2.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     private Vector2i getShadowDim() {

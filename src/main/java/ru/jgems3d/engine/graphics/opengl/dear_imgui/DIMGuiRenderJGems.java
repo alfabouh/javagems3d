@@ -117,10 +117,10 @@ public class DIMGuiRenderJGems {
         return io;
     }
 
-    public void render(FrameTicking frameTicking) {
+    public void render(Vector2i windowSize, FrameTicking frameTicking) {
         JGemsControllerDispatcher controllerDispatcher = JGems3D.get().getScreen().getControllerDispatcher();
         if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
-            this.drawGui(controllerDispatcher);
+            this.drawGui(windowSize, controllerDispatcher);
 
             ImDrawData drawData = ImGui.getDrawData();
 
@@ -199,7 +199,7 @@ public class DIMGuiRenderJGems {
         }
     }
 
-    private void drawGui(JGemsControllerDispatcher controllerDispatcher) {
+    private void drawGui(Vector2i windowSize, JGemsControllerDispatcher controllerDispatcher) {
         if (!JGems3D.get().isValidPlayer()) {
             return;
         }
@@ -211,10 +211,10 @@ public class DIMGuiRenderJGems {
 
         ImGui.newFrame();
 
-        float logX = (float) sceneRender.getWindowDimensions().x / 3;
-        float logY = (float) sceneRender.getWindowDimensions().y / 1.5f;
+        float logX = (float) windowSize.x / 3;
+        float logY = (float) windowSize.y / 1.5f;
 
-        ImGui.setNextWindowPos(sceneRender.getWindowDimensions().x - logX, 0, ImGuiCond.Always);
+        ImGui.setNextWindowPos(windowSize.x - logX, 0, ImGuiCond.Always);
         ImGui.setNextWindowSize(logX, logY);
         ImGui.setNextWindowCollapsed(true, ImGuiCond.Once);
         ImGui.begin("Output", ImGuiWindowFlags.AlwaysVerticalScrollbar | ImGuiWindowFlags.NoResize);
@@ -284,13 +284,13 @@ public class DIMGuiRenderJGems {
             ImGui.sameLine();
             ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(5).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-            ImGui.image(sceneRender.getSceneFbo().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            ImGui.image(sceneRender.getForwardAndDeferredScenesBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             ImGui.sameLine();
             ImGui.image(sceneRender.getShadowScene().getShadowPostFBO().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-            ImGui.image(sceneRender.getFboBlur().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            ImGui.image(sceneRender.getBloomBlurredBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             ImGui.sameLine();
-            ImGui.image(sceneRender.getTransparencyFBO().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            ImGui.image(sceneRender.getTransparencySceneBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
             if (sceneRender.getSsaoBufferTexture() != null) {
                 ImGui.image(sceneRender.getSsaoBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
