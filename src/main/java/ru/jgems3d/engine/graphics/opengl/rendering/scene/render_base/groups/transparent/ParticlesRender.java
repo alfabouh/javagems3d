@@ -13,7 +13,7 @@ import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderMana
 
 public class ParticlesRender extends SceneRenderBase {
     public ParticlesRender(JGemsOpenGLRenderer sceneRender) {
-        super(122, sceneRender, new RenderGroup("PARTICLE_TRANSPARENT"));
+        super(3, sceneRender, new RenderGroup("PARTICLE_TRANSPARENT"));
     }
 
     public void onRender(FrameTicking frameTicking) {

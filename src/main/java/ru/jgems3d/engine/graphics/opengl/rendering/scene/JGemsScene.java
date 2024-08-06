@@ -34,14 +34,14 @@ public class JGemsScene implements IScene {
     private boolean refresh;
     private boolean requestDestroyMap;
 
-    public JGemsScene(TransformationUtils transformationUtils, SceneWorld sceneWorld) {
+    public JGemsScene(Window window, TransformationUtils transformationUtils, SceneWorld sceneWorld) {
         this.transformationUtils = transformationUtils;
 
         this.sceneData = new SceneData(sceneWorld, null);
         this.frustumCulling = new FrustumCulling();
         this.immediateUI = new ImmediateUI();
 
-        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getSceneData()));
+        this.setSceneRenderer(new JGemsOpenGLRenderer(window, this.getSceneData()));
     }
 
     public static void activeGlTexture(int code) {

@@ -8,6 +8,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachment;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
+import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
@@ -398,15 +399,13 @@ public class TBoxScene {
     }
 
     private void createFBOs(Vector2i dim) {
-        T2DAttachment[] psxFBOs = new T2DAttachment[]
-                {
-                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
-                };
-
+        T2DAttachmentContainer fbo = new T2DAttachmentContainer() {{
+            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
+        }};
         TBoxScene.sceneFbo = new FBOTexture2DProgram(true);
         TBoxScene.previewItemFbo = new FBOTexture2DProgram(true);
-        TBoxScene.sceneFbo.createFrameBuffer2DTexture(dim, psxFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
-        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), psxFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneFbo.createFrameBuffer2DTexture(dim, fbo, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
     }
 
     private void destroyFBOs() {
