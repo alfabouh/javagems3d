@@ -6,10 +6,11 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
 import ru.jgems3d.engine.JGemsHelper;
@@ -31,10 +32,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ShadowScene {
-    public static float MAX_ALPHA_TO_CULL_SHADOW = 0.3f;
-    public static float MAX_ALPHA_TO_DISCARD_SHADOW_PIXEL = 0.75f;
-    public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
-    public static final int CASCADE_SPLITS = 3;
     private final SceneWorld sceneWorld;
     private final FBOTexture2DProgram shadowFBO;
     private final FBOTexture2DProgram shadowFBO2;
@@ -67,9 +64,9 @@ public class ShadowScene {
         this.shadowFBO2.clearFBO();
         this.shadowPostFBO.clearFBO();
 
-        FBOTexture2DProgram.FBOTextureInfo[] FBOs = new FBOTexture2DProgram.FBOTextureInfo[]{new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
-                new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
-                new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG)};
+        FBOTexture2DProgram.Attachment[] FBOs = new FBOTexture2DProgram.Attachment[]{new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
+                new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG),
+                new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG)};
         this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.shadowFBO2.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), FBOs, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
@@ -80,15 +77,15 @@ public class ShadowScene {
     }
 
     private void initPointLightShadows() {
-        this.pointLightShadows = new ArrayList<>(ShadowScene.MAX_POINT_LIGHTS_SHADOWS);
-        for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
+        this.pointLightShadows = new ArrayList<>(JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS);
+        for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
             this.pointLightShadows.add(new PointLightShadow(i, this.getSceneWorld()));
         }
     }
 
     private void initCascades() {
         this.cascadeShadows = new ArrayList<>();
-        for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             this.cascadeShadows.add(new CascadeShadow());
         }
     }
@@ -103,7 +100,7 @@ public class ShadowScene {
         Vector4f sunPos = new Vector4f(this.getSceneWorld().getEnvironment().getSky().getSunPos(), 0.0f);
 
         float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
-        float[] cascadeSplits = new float[ShadowScene.CASCADE_SPLITS];
+        float[] cascadeSplits = new float[JGemsSceneGlobalConstants.CASCADE_SPLITS];
 
         float nearClip = this.nearCascadeClip();
         float farClip = this.farCascadeClip();
@@ -115,8 +112,8 @@ public class ShadowScene {
         float range = maxZ - minZ;
         float ratio = maxZ / minZ;
 
-        for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
-            float p = (i + 1) / (float) ShadowScene.CASCADE_SPLITS;
+        for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
+            float p = (i + 1) / (float) JGemsSceneGlobalConstants.CASCADE_SPLITS;
             float log = (float) (minZ * Math.pow(ratio, p));
             float uniform = minZ + range * p;
             float d = cascadeSplitLambda[i] * (log - uniform) + uniform;
@@ -124,7 +121,7 @@ public class ShadowScene {
         }
 
         float lastSplitDist = 0.0f;
-        for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             float splitDist = cascadeSplits[i];
 
             Vector3f[] frustumCorners = new Vector3f[]{
@@ -203,7 +200,7 @@ public class ShadowScene {
     }
 
     public float farCascadeClip() {
-        return JGemsSceneUtils.Z_FAR;
+        return JGemsSceneGlobalConstants.Z_FAR;
     }
 
     public void renderAllModelsInShadowMap(Set<IModeledSceneObject> modeledSceneObjectSet) {
@@ -222,7 +219,7 @@ public class ShadowScene {
         this.getShadowFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
-        for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
             this.getShadowFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
@@ -247,7 +244,7 @@ public class ShadowScene {
         shaderManager.bind();
         shaderManager.performUniform("projection_model_matrix", Transformation.getModelOrthographicMatrix(model.getFormat(), Transformation.getOrthographic2DMatrix(0, this.getShadowDim().x, this.getShadowDim().y, 0)));
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-        for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT);
             this.getShadowFBO2().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
             shaderManager.performUniformTexture("texture_sampler", this.getShadowFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
@@ -262,10 +259,10 @@ public class ShadowScene {
         shaderManager.bind();
         shaderManager.performUniform("projection_model_matrix", Transformation.getModelOrthographicMatrix(model.getFormat(), Transformation.getOrthographic2DMatrix(0, this.getShadowDim().x, this.getShadowDim().y, 0)));
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-        for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT);
             this.getShadowPostFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
-            shaderManager.performUniform("blur", 1.5f);
+            shaderManager.performUniform("blur", 1.0f);
             shaderManager.performUniformTexture("texture_sampler", this.getShadowFBO2().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
             JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         }
@@ -278,7 +275,7 @@ public class ShadowScene {
         this.getPointLightShadowShader().bind();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
-        for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
+        for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {
                 pointLightShadow.getPointLightCubeMap().bindFBO();
@@ -306,7 +303,7 @@ public class ShadowScene {
     }
 
     private void renderModelForShadow(JGemsShaderManager shaderManager, MeshRenderAttributes meshRenderAttributes, Model<?> model) {
-        shaderManager.performUniform("alpha_discard", ShadowScene.MAX_ALPHA_TO_DISCARD_SHADOW_PIXEL);
+        shaderManager.performUniform("alpha_discard", JGemsSceneGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_PIXEL);
         float alphaValue = meshRenderAttributes.getObjectOpacity();
         for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
             if (modelNode.getMaterial().getDiffuse() instanceof IImageSample) {
@@ -321,7 +318,7 @@ public class ShadowScene {
                 }
                 shaderManager.performUniform("use_texture", false);
             }
-            if (alphaValue * modelNode.getMaterial().getFullOpacity() < ShadowScene.MAX_ALPHA_TO_CULL_SHADOW) {
+            if (alphaValue * modelNode.getMaterial().getFullOpacity() < JGemsSceneGlobalConstants.MAX_ALPHA_TO_CULL_SHADOW) {
                 continue;
             }
             GL30.glBindVertexArray(modelNode.getMesh().getVao());
@@ -337,8 +334,8 @@ public class ShadowScene {
     }
 
     public void bindPointLightToShadowScene(int attachCode, PointLight pointLight) {
-        if (attachCode >= ShadowScene.MAX_POINT_LIGHTS_SHADOWS) {
-            JGemsHelper.getLogger().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + ShadowScene.MAX_POINT_LIGHTS_SHADOWS);
+        if (attachCode >= JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS) {
+            JGemsHelper.getLogger().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS);
             return;
         }
         PointLightShadow pointLightShadow = this.getPointLightShadows().get(attachCode);

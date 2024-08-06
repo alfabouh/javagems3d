@@ -397,9 +397,9 @@ public class TBoxScene {
     }
 
     private void createFBOs(Vector2i dim) {
-        FBOTexture2DProgram.FBOTextureInfo[] psxFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] psxFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
                 };
 
         TBoxScene.sceneFbo = new FBOTexture2DProgram(true);

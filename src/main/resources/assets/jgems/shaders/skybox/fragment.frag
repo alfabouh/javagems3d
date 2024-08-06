@@ -46,5 +46,5 @@ void main()
     vec3 sunEffect = sunColor * sunBrightness * sunFactor;
     frag_color = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * 1.25) + sunEffect, 1.0);
 
-    bright_color = vec4(sunEffect, 1.0);
+    bright_color = vec4(sunEffect, 1.);
 }

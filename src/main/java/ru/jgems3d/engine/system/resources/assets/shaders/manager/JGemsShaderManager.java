@@ -5,12 +5,12 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.CascadeShadow;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.PointLightShadow;
-import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsScene;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
@@ -137,7 +137,7 @@ public final class JGemsShaderManager extends ShaderManager {
 
         public void performShadowsInfo() {
             JGemsScene scene = JGems3D.get().getScreen().getScene();
-            for (int i = 0; i < ShadowScene.CASCADE_SPLITS; i++) {
+            for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getShadowScene().getCascadeShadows().get(i);
                 if (JGemsShaderManager.this.isUniformExist("shadow_map" + i)) {
                     JGemsShaderManager.this.performUniformTexture("shadow_map" + i, scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
@@ -145,7 +145,7 @@ public final class JGemsShaderManager extends ShaderManager {
                     JGemsShaderManager.this.performUniformNoWarn("cascade_shadow", ".projection_view", i, cascadeShadow.getLightProjectionViewMatrix());
                 }
             }
-            for (int i = 0; i < ShadowScene.MAX_POINT_LIGHTS_SHADOWS; i++) {
+            for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getShadowScene().getPointLightShadows().get(i);
                 JGemsShaderManager.this.performUniformNoWarn("far_plane", pointLightShadow.farPlane());
                 if (JGemsShaderManager.this.isUniformExist("point_light_cubemap")) {

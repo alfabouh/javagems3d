@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.graphics.opengl.rendering;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene;
 
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -6,7 +6,8 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.base.IScene;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
@@ -24,7 +25,7 @@ import ru.jgems3d.engine.system.synchronizing.SyncManager;
 public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;
     private final FrustumCulling frustumCulling;
-    private final JGemsOpenGLRenderer sceneRender;
+    private final JGemsOpenGLRenderer sceneRenderer;
     private final ImmediateUI immediateUI;
     private final SceneData sceneData;
 
@@ -38,7 +39,7 @@ public class JGemsScene implements IScene {
         this.sceneData = new SceneData(sceneWorld, null);
         this.frustumCulling = new FrustumCulling();
         this.immediateUI = new ImmediateUI();
-        this.sceneRender = new JGemsOpenGLRenderer(this.getSceneData());
+        this.sceneRenderer = new JGemsOpenGLRenderer(this.getSceneData());
     }
 
     public static void activeGlTexture(int code) {
@@ -156,7 +157,7 @@ public class JGemsScene implements IScene {
     }
 
     public JGemsOpenGLRenderer getSceneRenderer() {
-        return this.sceneRender;
+        return this.sceneRenderer;
     }
 
     public FrustumCulling getFrustumCulling() {

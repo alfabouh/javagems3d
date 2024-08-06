@@ -2,9 +2,9 @@ package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
 import ru.jgems3d.engine.physics.entities.properties.state.IEntityState;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;

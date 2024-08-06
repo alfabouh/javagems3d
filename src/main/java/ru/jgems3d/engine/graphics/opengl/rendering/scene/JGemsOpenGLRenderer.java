@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.graphics.opengl.rendering;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene;
 
 import org.joml.*;
 import org.lwjgl.opengl.GL30;
@@ -6,22 +6,24 @@ import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GL45;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.TextureProgram;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.deferred.WorldDeferredRender;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward.*;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.LiquidsRender;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.ParticlesRender;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.WorldTransparentRender;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.deferred.WorldDeferredRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.forward.*;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.transparent.LiquidsRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.transparent.ParticlesRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.transparent.WorldTransparentRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.base.ISceneRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
 import ru.jgems3d.engine.JGemsHelper;
@@ -45,8 +47,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class JGemsOpenGLRenderer implements ISceneRenderer {
-    public static final int SSAO_NOISE_SIZE = 4;
-
     private final DIMGuiRenderJGems dearImGuiRender;
     private final SceneData sceneData;
 
@@ -105,54 +105,54 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
     public void createResources(Vector2i dim) {
         this.clearResources();
 
-        FBOTexture2DProgram.FBOTextureInfo[] transparencyFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] transparencyFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED)
                 };
         this.transparencyFBO.createFrameBuffer2DTexture(dim, transparencyFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.FBOTextureInfo[] psxFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] psxFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
                 };
         this.fboPsx.createFrameBuffer2DTexture(dim, psxFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
 
-        FBOTexture2DProgram.FBOTextureInfo[] blurFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] blurFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
                 };
         this.fboBlur.createFrameBuffer2DTexture(dim, blurFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.FBOTextureInfo[] sceneFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] sceneFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB16F, GL30.GL_RGB),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB16F, GL30.GL_RGB)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB16F, GL30.GL_RGB),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB16F, GL30.GL_RGB)
                 };
         this.sceneFbo.createFrameBuffer2DTexture(dim, sceneFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.FBOTextureInfo[] gBufferFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] gBufferFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB32F, GL30.GL_RGB),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB32F, GL30.GL_RGB),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT3, GL43.GL_RGB, GL30.GL_RGB),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB),
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT5, GL43.GL_RGB, GL30.GL_RGB)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB32F, GL30.GL_RGB),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB32F, GL30.GL_RGB),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA, GL30.GL_RGBA),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT3, GL43.GL_RGB, GL30.GL_RGB),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB),
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT5, GL43.GL_RGB, GL30.GL_RGB)
                 };
         this.gBuffer.createFrameBuffer2DTexture(new Vector2i(dim), gBufferFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.FBOTextureInfo[] finalRenderedSceneFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] finalRenderedSceneFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
                 };
         this.finalRenderedSceneFbo.createFrameBuffer2DTexture(dim, finalRenderedSceneFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.FBOTextureInfo[] ssaoRenderedSceneFBOs = new FBOTexture2DProgram.FBOTextureInfo[]
+        FBOTexture2DProgram.Attachment[] ssaoRenderedSceneFBOs = new FBOTexture2DProgram.Attachment[]
                 {
-                        new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
+                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_R16F, GL30.GL_RED)
                 };
         this.ssaoBuffer.createFrameBuffer2DTexture(dim, ssaoRenderedSceneFBOs, true, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
@@ -164,7 +164,7 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
             return;
         }
         this.ssaoKernelTexture = this.calcSSAOKernel(ssaoParams.z * ssaoParams.z);
-        this.ssaoNoiseTexture = this.calcSSAONoise(JGemsOpenGLRenderer.SSAO_NOISE_SIZE * JGemsOpenGLRenderer.SSAO_NOISE_SIZE);
+        this.ssaoNoiseTexture = this.calcSSAONoise(JGemsSceneGlobalConstants.SSAO_NOISE_SIZE * JGemsSceneGlobalConstants.SSAO_NOISE_SIZE);
         this.ssaoBufferTexture = this.createSSAOBuffer(new Vector2i(ssaoParams.x, ssaoParams.y));
     }
 
@@ -227,10 +227,10 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
         this.sceneRenderBases_forward.add(new WorldForwardRender(this));
         this.sceneRenderBases_forward.add(new SkyRender(this));
         this.sceneRenderBases_forward.add(new DebugRender(this));
-        this.sceneRenderBases_forward.add(new ParticlesRender(this));
 
         this.sceneRenderBases_deferred.add(new WorldDeferredRender(this));
 
+        this.sceneRenderBases_transparency.add(new ParticlesRender(this));
         this.sceneRenderBases_transparency.add(new LiquidsRender(this));
         this.sceneRenderBases_transparency.add(this.worldTransparentRender);
     }
@@ -372,7 +372,7 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
             return;
         }
         this.getSSAOShader().startComputing();
-        this.getSSAOShader().performUniform("noiseScale", new Vector2f(this.getWindowDimensions()).div((float) JGemsOpenGLRenderer.SSAO_NOISE_SIZE));
+        this.getSSAOShader().performUniform("noiseScale", new Vector2f(this.getWindowDimensions()).div((float) JGemsSceneGlobalConstants.SSAO_NOISE_SIZE));
         this.getSSAOShader().performUniform("projection_matrix", JGemsSceneUtils.getMainPerspectiveMatrix());
         this.getSSAOShader().performUniformTexture("gPositions", this.getGBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         this.getSSAOShader().performUniformTexture("gNormals", this.getGBuffer().getTextureIDByIndex(1), GL30.GL_TEXTURE_2D);

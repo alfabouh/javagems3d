@@ -1,8 +1,8 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base;
 
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 
 public abstract class SceneRenderBase {

@@ -1,20 +1,20 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.deferred;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.forward;
 
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 
 import java.util.Set;
 
-public class WorldDeferredRender extends SceneRenderBase {
-    public WorldDeferredRender(JGemsOpenGLRenderer sceneRender) {
-        super(1, sceneRender, new RenderGroup("WORLD_DEFERRED"));
+public class WorldForwardRender extends SceneRenderBase {
+    public WorldForwardRender(JGemsOpenGLRenderer sceneRender) {
+        super(1, sceneRender, new RenderGroup("WORLD_FORWARD"));
     }
 
     public void onRender(float partialTicks) {
-        this.render(partialTicks, this.getSceneWorld().getFilteredEntitySet(RenderPass.DEFERRED));
+        this.render(partialTicks, this.getSceneWorld().getFilteredEntitySet(RenderPass.FORWARD));
     }
 
     public void onStartRender() {

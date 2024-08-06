@@ -24,7 +24,7 @@ public class ParticleAttributes {
     }
 
     public static ParticleAttributes defaultParticleAttributes() {
-        return new ParticleAttributes(JGemsResourceManager.globalShaderAssets.world_particle, 128.0f);
+        return new ParticleAttributes(JGemsResourceManager.globalShaderAssets.weighted_particle_oit, 128.0f);
     }
 
     public ParticleAttributes setBrightness(float brightness) {

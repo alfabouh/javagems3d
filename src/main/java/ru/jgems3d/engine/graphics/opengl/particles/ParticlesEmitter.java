@@ -6,7 +6,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneData;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.ParticleTexturePack;

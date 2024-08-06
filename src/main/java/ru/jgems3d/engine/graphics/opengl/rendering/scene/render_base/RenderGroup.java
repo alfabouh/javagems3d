@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base;
 
 public class RenderGroup {
     private final String id;

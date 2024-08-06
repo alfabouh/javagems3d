@@ -5,6 +5,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIButton;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIPictureSizable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIPictureStatic;
@@ -25,9 +26,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 public final class ImmediateUI {
-    public static int MAX_TICKS_TO_REMOVE_UNUSED_UI = 3;
-    public static int GLOBAL_UI_SCALING = 0;
-    public static boolean AUTO_SCREEN_SCALING = false;
     private final Map<Integer, UIElement> uiFrameCache;
     private final RenderUIData renderUIData;
     private boolean requestCleanFrame;
@@ -71,8 +69,8 @@ public final class ImmediateUI {
     }
 
     public static float GET_GLOBAL_UI_SCALING() {
-        if (!ImmediateUI.AUTO_SCREEN_SCALING) {
-            return (float) (1.0f / Math.pow(2.0f, ImmediateUI.GLOBAL_UI_SCALING));
+        if (!JGemsSceneGlobalConstants.AUTO_SCREEN_SCALING) {
+            return (float) (1.0f / Math.pow(2.0f, JGemsSceneGlobalConstants.GLOBAL_UI_SCALING));
         }
         return GET_SCREEN_NORMALIZED_SCALING();
     }
@@ -80,8 +78,8 @@ public final class ImmediateUI {
     public static float GET_SCREEN_NORMALIZED_SCALING() {
         double width = JGems3D.get().getScreen().getWindowDimensions().x;
         double height = JGems3D.get().getScreen().getWindowDimensions().y;
-        float f1 = (float) (width / Window.defaultW);
-        float f2 = (float) (height / Window.defaultH);
+        float f1 = (float) (width / JGemsSceneGlobalConstants.defaultW);
+        float f2 = (float) (height / JGemsSceneGlobalConstants.defaultH);
         float f1_r = (float) Math.max(Math.ceil(f1 * 2.0f) / 2.0f, 1.0f);
         float f2_r = (float) Math.max(Math.ceil(f2 * 2.0f) / 2.0f, 1.0f);
         return Math.min(f1_r, f2_r);
@@ -118,7 +116,7 @@ public final class ImmediateUI {
         Iterator<UIElement> uiElementIterator = this.getUiFrameCache().values().iterator();
         while (uiElementIterator.hasNext()) {
             UIElement element = uiElementIterator.next();
-            if (element.getUnUsedTicks() > ImmediateUI.MAX_TICKS_TO_REMOVE_UNUSED_UI) {
+            if (element.getUnUsedTicks() > JGemsSceneGlobalConstants.MAX_TICKS_TO_REMOVE_UNUSED_UI) {
                 element.cleanData();
                 uiElementIterator.remove();
             }

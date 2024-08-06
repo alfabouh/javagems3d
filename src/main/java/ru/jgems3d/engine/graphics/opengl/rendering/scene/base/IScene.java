@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.graphics.opengl.rendering;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.base;
 
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 

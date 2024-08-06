@@ -1,16 +1,13 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.transparent;
 
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
-import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class ParticlesRender extends SceneRenderBase {
@@ -19,13 +16,13 @@ public class ParticlesRender extends SceneRenderBase {
     }
 
     public void onRender(float partialTicks) {
-        GL30.glEnable(GL30.GL_BLEND);
-        GL30.glDepthMask(false);
+       //GL30.glEnable(GL30.GL_BLEND);
+       //GL30.glDepthMask(true);
         for (ParticleFX particleFX : this.getSceneWorld().getParticlesEmitter().getCulledParticlesSet(this.getSceneRenderer().getSceneData())) {
             this.renderParticleSceneObject(particleFX);
         }
-        GL30.glDepthMask(true);
-        GL30.glDisable(GL30.GL_BLEND);
+        //GL30.glDepthMask(true);
+        //GL30.glDisable(GL30.GL_BLEND);
     }
 
     private void renderParticleSceneObject(ParticleFX particleFX) {

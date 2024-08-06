@@ -1,10 +1,10 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.forward;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 
 public class GuiRender extends SceneRenderBase {
     public GuiRender(JGemsOpenGLRenderer sceneRender) {

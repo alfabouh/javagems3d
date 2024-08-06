@@ -10,7 +10,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.screen.IScreen;
 import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
@@ -57,14 +58,14 @@ public class TBoxScreen implements IScreen {
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL20.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        this.tBoxWindow = new Window(new Window.WindowProperties(Window.defaultW, Window.defaultH, ToolBox.get().toString()), new JGPath("/assets/jgems/icons/icon.png"));
+        this.tBoxWindow = new Window(new Window.WindowProperties(JGemsSceneGlobalConstants.defaultW, JGemsSceneGlobalConstants.defaultH, ToolBox.get().toString()), new JGPath("/assets/jgems/icons/icon.png"));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new JGemsException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
-            int x = (vidMode.width() - Window.defaultW) / 2;
-            int y = (vidMode.height() - Window.defaultH) / 2;
+            int x = (vidMode.width() - JGemsSceneGlobalConstants.defaultW) / 2;
+            int y = (vidMode.height() - JGemsSceneGlobalConstants.defaultH) / 2;
             GLFW.glfwSetWindowPos(window, x, y);
         } else {
             return false;
