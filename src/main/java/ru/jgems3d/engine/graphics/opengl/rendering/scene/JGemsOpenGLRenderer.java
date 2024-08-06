@@ -150,7 +150,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
 
     private void updateUBOs(FrameTicking frameTicking) {
-        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{frameTicking.getFrameDeltaTime()});
+        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGemsHelper.getScreen().getRenderTicks()});
         Environment environment = this.getSceneData().getSceneWorld().getEnvironment();
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer value1Buffer = memoryStack.mallocFloat(4);
@@ -223,26 +223,26 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }};
         this.gBuffer.createFrameBuffer2DTexture(new Vector2i(windowSize), gBuffer, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        T2DAttachmentContainer post1 = new T2DAttachmentContainer() {{
+        T2DAttachmentContainer hdr = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
         }};
-        this.hdrBuffer.createFrameBuffer2DTexture(windowSize, post1, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.hdrBuffer.createFrameBuffer2DTexture(windowSize, hdr, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_R16F, GL30.GL_RED);
         }};
-        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, true, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer fxaa = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
         }};
-        this.fxaaBuffer.createFrameBuffer2DTexture(windowSize, fxaa, true, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.fxaaBuffer.createFrameBuffer2DTexture(windowSize, fxaa, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer gluing = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB16F, GL30.GL_RGB);
             add(GL30.GL_COLOR_ATTACHMENT1, GL30.GL_RGB16F, GL30.GL_RGB);
         }};
-        this.sceneGluingBuffer.createFrameBuffer2DTexture(windowSize, gluing, true, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.sceneGluingBuffer.createFrameBuffer2DTexture(windowSize, gluing, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     private void createSSAOResources(Vector3i ssaoParams) {
@@ -344,6 +344,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     public void postFXAA(Model<Format2D> model, Vector2i windowSize) {
         JGemsShaderManager fxaaFilter = JGemsResourceManager.globalShaderAssets.fxaa;
         this.getFxaaBuffer().bindFBO();
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         fxaaFilter.bind();
         fxaaFilter.performUniform("resolution", new Vector2f(windowSize));
         fxaaFilter.performUniformTexture("texture_sampler", this.getHdrBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
@@ -401,9 +402,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     public void renderForwardAndDeferredScenes(FrameTicking frameTicking, Vector2i windowSize, Model<Format2D> model) {
         this.deferredGeometry(frameTicking);
 
-        GL30.glDisable(GL30.GL_DEPTH_TEST);
-        this.calcSSAOValueOnGBuffer(model, windowSize);
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
+        if (this.getSsaoNoiseTexture() != null) {
+            GL30.glDisable(GL30.GL_DEPTH_TEST);
+            this.calcSSAOValueOnGBuffer(model, windowSize);
+            GL30.glEnable(GL30.GL_DEPTH_TEST);
+        }
 
         this.getForwardAndDeferredScenesBuffer().bindFBO();
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);

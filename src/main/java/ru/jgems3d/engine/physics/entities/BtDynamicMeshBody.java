@@ -37,7 +37,7 @@ public class BtDynamicMeshBody extends BtBody {
     protected void onTick(IWorld iWorld) {
         super.onTick(iWorld);
         if (this.getTicksExisted() % 10 == 0) {
-            JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes(), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(this.getPosition()).add(JGems3D.random.nextFloat() - JGems3D.random.nextFloat(), JGems3D.random.nextFloat() - JGems3D.random.nextFloat(), JGems3D.random.nextFloat() - JGems3D.random.nextFloat()), new Vector2f(3.0f)));
+            JGemsHelper.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes().setBrightness(1.0f), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(this.getPosition()).add(JGems3D.random.nextFloat() - JGems3D.random.nextFloat(), JGems3D.random.nextFloat() - JGems3D.random.nextFloat(), JGems3D.random.nextFloat() - JGems3D.random.nextFloat()), new Vector2f(3.0f)));
         }
     }
 
