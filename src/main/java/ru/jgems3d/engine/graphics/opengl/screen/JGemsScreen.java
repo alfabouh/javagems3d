@@ -183,7 +183,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public void reloadSceneAndShadowsFrameBufferObjects() {
-        this.getScene().getSceneRenderer().createResources(this.getWindowDimensions());
+        this.getScene().getSceneRenderer().recreateResources(this.getWindowDimensions());
         this.getScene().getSceneRenderer().getShadowScene().createResources();
     }
 

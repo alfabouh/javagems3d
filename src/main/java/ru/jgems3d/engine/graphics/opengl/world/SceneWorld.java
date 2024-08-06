@@ -1,34 +1,33 @@
 package ru.jgems3d.engine.graphics.opengl.world;
 
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.camera.AttachedCamera;
-import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
-import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.ILightsKeeper;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.system.misc.Pair;
-import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
-import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
-import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
+import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.ILightsKeeper;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
-import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
-import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
 import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.misc.Pair;
+import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.synchronizing.SyncManager;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class SceneWorld implements IWorld {

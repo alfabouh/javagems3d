@@ -25,7 +25,7 @@ import ru.jgems3d.engine.system.synchronizing.SyncManager;
 public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;
     private final FrustumCulling frustumCulling;
-    private final JGemsOpenGLRenderer sceneRenderer;
+    private JGemsOpenGLRenderer sceneRenderer;
     private final ImmediateUI immediateUI;
     private final SceneData sceneData;
 
@@ -39,7 +39,8 @@ public class JGemsScene implements IScene {
         this.sceneData = new SceneData(sceneWorld, null);
         this.frustumCulling = new FrustumCulling();
         this.immediateUI = new ImmediateUI();
-        this.sceneRenderer = new JGemsOpenGLRenderer(this.getSceneData());
+
+        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getSceneData()));
     }
 
     public static void activeGlTexture(int code) {
@@ -108,6 +109,10 @@ public class JGemsScene implements IScene {
     public void onWindowResize(Vector2i dim) {
         this.getSceneRenderer().onWindowResize(dim);
         this.UI().onWindowResize(dim);
+    }
+
+    public void setSceneRenderer(JGemsOpenGLRenderer sceneRenderer) {
+        this.sceneRenderer = sceneRenderer;
     }
 
     public void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
