@@ -23,7 +23,7 @@ public class WorldTransparentRender extends SceneRenderBase {
     private final Set<IModeledSceneObject> transparentModelObjects;
 
     public WorldTransparentRender(JGemsOpenGLRenderer sceneRender) {
-        super(99, sceneRender, new RenderGroup("WORLD_TRANSPARENT"));
+        super(0, sceneRender, new RenderGroup("WORLD_TRANSPARENT"));
 
         this.transparentModelModes = new HashSet<>();
         this.transparentModelObjects = new HashSet<>();
@@ -45,7 +45,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         Material overMaterial = object.getMeshRenderData().getOverlappingMaterial();
         JGemsShaderManager gemsShaderManager = object.getMeshRenderData().getOverridenTransparencyShader();
         if (gemsShaderManager == null) {
-            gemsShaderManager = this.getSceneRenderer().getOITShader();
+            gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
         }
         gemsShaderManager.bind();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
@@ -69,7 +69,7 @@ public class WorldTransparentRender extends SceneRenderBase {
 
     private void renderModelNode(JGemsShaderManager gemsShaderManager, boolean disableCulling, ModelNode modelNode, Format3D format3D) {
         if (gemsShaderManager == null) {
-            gemsShaderManager = this.getSceneRenderer().getOITShader();
+            gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
         }
         gemsShaderManager.bind();
         gemsShaderManager.getUtils().performPerspectiveMatrix();

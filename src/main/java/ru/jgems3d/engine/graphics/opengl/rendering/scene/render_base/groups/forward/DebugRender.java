@@ -23,7 +23,7 @@ public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;
 
     public DebugRender(JGemsOpenGLRenderer sceneRender) {
-        super(50, sceneRender, new RenderGroup("DEBUG_FORWARD"));
+        super(1, sceneRender, new RenderGroup("DEBUG_FORWARD"));
         this.debugShaders = JGemsResourceManager.globalShaderAssets.debug;
     }
 
