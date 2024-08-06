@@ -1,12 +1,12 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.forward;
 
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;

@@ -7,7 +7,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.fog.Fog;
 import ru.jgems3d.engine.graphics.opengl.environment.light.LightManager;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 

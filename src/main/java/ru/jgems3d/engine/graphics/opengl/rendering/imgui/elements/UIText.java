@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIElement;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;

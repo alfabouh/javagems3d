@@ -1,12 +1,12 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.utils;
+package ru.jgems3d.engine.graphics.opengl.rendering;
 
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.transparent.WorldTransparentRender;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.transparent.WorldTransparentRender;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -15,10 +15,6 @@ import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class JGemsSceneUtils {
-    public static final float FOV = (float) Math.toRadians(60.0f);
-    public static final float Z_NEAR = 0.1f;
-    public static final float Z_FAR = 100.0f;
-
     public synchronized static Matrix4f getMainCameraViewMatrix() {
         return JGemsHelper.getScreen().getTransformationUtils().getMainCameraViewMatrix();
     }

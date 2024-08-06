@@ -28,7 +28,8 @@ in vec4 m_vertex_pos;
 in vec3 mv_vertex_pos;
 in mat4 out_view_matrix;
 
-layout (location = 0) out vec4 frag_col;
+layout (location = 0) out vec4 accumulated;
+layout (location = 1) out float reveal;
 
 struct CascadeShadow {
     float split_distance;
@@ -105,13 +106,16 @@ void main()
 
     vec4 lights = calc_light(frag_pos);
 
-    vec4 color = (g_texture * vec4(color_mask, 1.)) * (lights + vec4(vec3(brightness), 0.));
-    color = fogDensity > 0 ? calc_fog(frag_pos.xyz, color) : color;
-    color = vec4(color.xyz, g_texture.a);
+    vec4 frag_color = (g_texture * vec4(color_mask, 1.)) * (lights + vec4(vec3(brightness), 0.));
+    frag_color = fogDensity > 0 ? calc_fog(frag_pos.xyz, frag_color) : frag_color;
+    frag_color = vec4(frag_color.xyz, g_texture.a);
 
-    float a_factor = alpha_factor * color.a;
+    float a_factor = alpha_factor * frag_color.a;
 
-    frag_col = vec4(color.xyz, a_factor);
+    float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * a_factor), a_factor) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200, 4.0)), 1.0e-2f, 3.0e+3f);
+    accumulated = vec4(frag_color.rgb * a_factor, a_factor) * weight;
+
+    reveal = fogDensity > 0 ? calc_fog_float(frag_pos.xyz, a_factor) : a_factor;
 }
 
 float vsmFixLightBleed(float pMax, float amount)

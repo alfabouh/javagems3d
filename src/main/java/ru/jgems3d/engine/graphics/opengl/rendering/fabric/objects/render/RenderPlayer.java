@@ -6,7 +6,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectF
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
 
 public class RenderPlayer implements IRenderObjectFabric {

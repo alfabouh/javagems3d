@@ -3,19 +3,16 @@ package ru.jgems3d.engine.graphics.opengl.rendering.debug.bullet;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
-import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.math.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-
-import java.nio.FloatBuffer;
 
 public class BtDebugDraw {
     private int vao;

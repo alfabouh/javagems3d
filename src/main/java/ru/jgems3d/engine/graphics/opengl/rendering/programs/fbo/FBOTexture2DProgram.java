@@ -56,7 +56,7 @@ public class FBOTexture2DProgram {
         this.unBindFBO();
     }
 
-    public void createFrameBuffer2DTexture(Vector2i size, FBOTextureInfo[] fboTextureInfo, boolean depthBuffer, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
+    public void createFrameBuffer2DTexture(Vector2i size, Attachment[] attachment, boolean depthBuffer, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
         if (size.x <= 0.0f || size.y <= 0.0f) {
             return;
         }
@@ -64,10 +64,10 @@ public class FBOTexture2DProgram {
         this.renderBufferId = GL30.glGenRenderbuffers();
         this.bindFBO();
 
-        for (FBOTextureInfo fboTextureInfo1 : fboTextureInfo) {
+        for (Attachment attachment1 : attachment) {
             TextureProgram textureProgram1 = new TextureProgram();
-            textureProgram1.createTexture(size, fboTextureInfo1.getTextureFormat(), fboTextureInfo1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor);
-            GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, fboTextureInfo1.getAttachment(), GL43.GL_TEXTURE_2D, ((ITextureProgram) textureProgram1).getTextureId(), 0);
+            textureProgram1.createTexture(size, attachment1.getTextureFormat(), attachment1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor);
+            GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment1.getAttachment(), GL43.GL_TEXTURE_2D, ((ITextureProgram) textureProgram1).getTextureId(), 0);
             this.getTexturePrograms().add(textureProgram1);
         }
 
@@ -75,7 +75,7 @@ public class FBOTexture2DProgram {
             GL30.glDrawBuffer(GL30.GL_NONE);
             GL30.glReadBuffer(GL30.GL_NONE);
         } else {
-            GL30.glDrawBuffers(Arrays.stream(fboTextureInfo).filter(e -> e.getAttachment() >= GL30.GL_COLOR_ATTACHMENT0 && e.getAttachment() <= GL30.GL_COLOR_ATTACHMENT31).map(FBOTextureInfo::getAttachment).distinct().mapToInt(Integer::intValue).toArray());
+            GL30.glDrawBuffers(Arrays.stream(attachment).filter(e -> e.getAttachment() >= GL30.GL_COLOR_ATTACHMENT0 && e.getAttachment() <= GL30.GL_COLOR_ATTACHMENT31).map(Attachment::getAttachment).distinct().mapToInt(Integer::intValue).toArray());
         }
 
         if (depthBuffer) {
@@ -164,12 +164,12 @@ public class FBOTexture2DProgram {
         this.frameBufferId = -1;
     }
 
-    public static class FBOTextureInfo {
+    public static class Attachment {
         private final int attachment;
         private final int textureFormat;
         private final int internalFormat;
 
-        public FBOTextureInfo(int attachment, int textureFormat, int internalFormat) {
+        public Attachment(int attachment, int textureFormat, int internalFormat) {
             this.attachment = attachment;
             this.textureFormat = textureFormat;
             this.internalFormat = internalFormat;

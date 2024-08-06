@@ -15,6 +15,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 
@@ -22,8 +23,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class Window implements IWindow {
-    public static final int defaultW = 1280;
-    public static final int defaultH = 720;
     private final long window;
     private final WindowProperties windowProperties;
     private long currentMonitor;
@@ -197,9 +196,9 @@ public class Window implements IWindow {
     public void removeFullScreen() {
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         if (vidMode != null) {
-            int x = (vidMode.width() - Window.defaultW) / 2;
-            int y = (vidMode.height() - Window.defaultH) / 2;
-            GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, Window.defaultW, Window.defaultH, GLFW.GLFW_DONT_CARE);
+            int x = (vidMode.width() - JGemsSceneGlobalConstants.defaultW) / 2;
+            int y = (vidMode.height() - JGemsSceneGlobalConstants.defaultH) / 2;
+            GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, JGemsSceneGlobalConstants.defaultW, JGemsSceneGlobalConstants.defaultH, GLFW.GLFW_DONT_CARE);
             JGemsHelper.getLogger().log("DefaultScreen mode");
         } else {
             throw new JGemsException("Monitor None");

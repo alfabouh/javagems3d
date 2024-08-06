@@ -10,7 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.system.map.loaders.custom.DefaultMap;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -41,7 +41,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
 
     public void createFBOs(Vector2i dim) {
         this.postFbo.clearFBO();
-        FBOTexture2DProgram.FBOTextureInfo[] FBOs = new FBOTexture2DProgram.FBOTextureInfo[]{new FBOTexture2DProgram.FBOTextureInfo(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB, GL30.GL_RGB)};
+        FBOTexture2DProgram.Attachment[] FBOs = new FBOTexture2DProgram.Attachment[]{new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB, GL30.GL_RGB)};
         this.postFbo.createFrameBuffer2DTexture(dim, FBOs, false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
     }
 

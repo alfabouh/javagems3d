@@ -18,8 +18,8 @@ float max3(vec3 v) {
 
 vec4 hdr(vec4 in_col, float exposure, float gamma, vec4 blurFactor) {
     vec3 rgb = in_col.rgb;
-    vec4 blurSampler = texture(blur_sampler, out_texture) * blurFactor;
-    vec3 bl_c = blurSampler.rgb;
+    vec3 blurSampler = (texture(blur_sampler, out_texture) * blurFactor).rgb;
+    vec3 bl_c = blurSampler;
     rgb += bl_c * 1.;
     vec3 mapped = vec3(1.) - exp(-rgb * exposure);
     mapped = pow(mapped, vec3(1. / gamma));

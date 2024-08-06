@@ -284,6 +284,12 @@ public final class SceneWorld implements IWorld {
         this.getLiquids().remove(liquid);
     }
 
+    public Environment getEnvironment() {
+        synchronized (this) {
+            return this.environment;
+        }
+    }
+
     public ParticlesEmitter getParticlesEmitter() {
         return this.particlesEmitter;
     }
@@ -310,9 +316,5 @@ public final class SceneWorld implements IWorld {
 
     public FrustumCulling getFrustumCulling() {
         return this.frustumCulling;
-    }
-
-    public Environment getEnvironment() {
-        return this.environment;
     }
 }

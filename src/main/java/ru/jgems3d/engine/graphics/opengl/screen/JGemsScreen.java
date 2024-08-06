@@ -12,12 +12,13 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.SoundListener;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsScene;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsScene;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIText;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.FontCode;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
@@ -35,7 +36,6 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class JGemsScreen implements IScreen {
-    public static final double RENDER_TICKS_UPD_RATE = 60.0d;
     public static int RENDER_FPS;
     public static int PHYS_TPS;
     private final TimerPool timerPool;
@@ -104,7 +104,7 @@ public class JGemsScreen implements IScreen {
     }
 
     private void createTransformationUtils() {
-        this.transformationUtils = new TransformationUtils(this.window, JGemsSceneUtils.FOV, JGemsSceneUtils.Z_NEAR, JGemsSceneUtils.Z_FAR);
+        this.transformationUtils = new TransformationUtils(this.window, JGemsSceneGlobalConstants.FOV, JGemsSceneGlobalConstants.Z_NEAR, JGemsSceneGlobalConstants.Z_FAR);
     }
 
     private void createObjects(Window window) {
@@ -138,14 +138,14 @@ public class JGemsScreen implements IScreen {
         }
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         boolean flag = vidMode != null && JGems3D.get().getGameSettings().windowMode.getValue() == 0;
-        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : Window.defaultW, flag ? vidMode.height() : Window.defaultH, JGems3D.get().toString()), new JGPath("/assets/jgems/icons/icon.png"));
+        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : JGemsSceneGlobalConstants.defaultW, flag ? vidMode.height() : JGemsSceneGlobalConstants.defaultH, JGems3D.get().toString()), new JGPath("/assets/jgems/icons/icon.png"));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new JGemsException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
-            int x = (vidMode.width() - Window.defaultW) / 2;
-            int y = (vidMode.height() - Window.defaultH) / 2;
+            int x = (vidMode.width() - JGemsSceneGlobalConstants.defaultW) / 2;
+            int y = (vidMode.height() - JGemsSceneGlobalConstants.defaultH) / 2;
             GLFW.glfwSetWindowPos(window, x, y);
         } else {
             return false;
@@ -244,7 +244,7 @@ public class JGemsScreen implements IScreen {
             this.getTimerPool().update();
             this.getTransformationUtils().updateMatrices();
             this.renderGameScene(deltaTimer.getDeltaTime());
-            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsScreen.RENDER_TICKS_UPD_RATE)) {
+            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsSceneGlobalConstants.RENDER_TICKS_UPD_RATE)) {
                 this.renderTicks += 0.01f;
             }
             fps += 1;

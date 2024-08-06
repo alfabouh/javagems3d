@@ -85,7 +85,7 @@ void main()
     frag_color = fogDensity > 0 ? calc_fog(frag_pos.xyz, frag_color) : frag_color;
 
     float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
-    bright_color = brightness >= 2.0 ? frag_color : vec4(0., 0., 0., g_texture.a);
+    bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 }
 
 float vsmFixLightBleed(float pMax, float amount)

@@ -1,17 +1,17 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.scene.groups.forward;
+package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.forward;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.sysgraph.Graph;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.RenderGroup;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
-import ru.jgems3d.engine.graphics.opengl.rendering.utils.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;

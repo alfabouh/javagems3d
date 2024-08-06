@@ -5,7 +5,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.synchronizing.SyncManager;
 import ru.jgems3d.engine.system.exceptions.JGemsException;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LightManager implements ILightManager {
-    public static final int MAX_POINT_LIGHTS = 128;
     private final Environment environment;
     private List<PointLight> pointLightList;
 
@@ -35,13 +35,13 @@ public class LightManager implements ILightManager {
     }
 
     private void initCollections() {
-        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(LightManager.MAX_POINT_LIGHTS));
+        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(JGemsSceneGlobalConstants.MAX_POINT_LIGHTS));
     }
 
     public void addLight(Light light) {
         if ((light.lightCode() & Light.POINT_LIGHT) != 0) {
-            if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= LightManager.MAX_POINT_LIGHTS) {
-                throw new JGemsException("Reached active point lights limit: " + LightManager.MAX_POINT_LIGHTS);
+            if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) {
+                throw new JGemsException("Reached active point lights limit: " + JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
             }
             this.getPointLightList().add((PointLight) light);
         }
@@ -88,7 +88,7 @@ public class LightManager implements ILightManager {
         JGemsOpenGLRenderer.getGameUboShader().bind();
         List<PointLight> pointLights = this.getPointLightList().stream().filter(PointLight::isEnabled).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1)).collect(Collectors.toList());
 
-        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
         int total = pointLights.size();
         for (int i = 0; i < total; i++) {
             PointLight pointLight = pointLights.get(i);
@@ -108,14 +108,14 @@ public class LightManager implements ILightManager {
         IntBuffer intBuffer = MemoryUtil.memAllocInt(1);
         intBuffer.put(total);
         intBuffer.flip();
-        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, LightManager.MAX_POINT_LIGHTS * (8 * 4), intBuffer);
+        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * (8 * 4), intBuffer);
         MemoryUtil.memFree(intBuffer);
         JGemsOpenGLRenderer.getGameUboShader().unBind();
     }
 
     public void removeAllLights() {
         JGemsOpenGLRenderer.getGameUboShader().bind();
-        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * LightManager.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = MemoryUtil.memAllocFloat(8 * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
         for (int i = 0; i < this.getPointLightList().size(); i++) {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
