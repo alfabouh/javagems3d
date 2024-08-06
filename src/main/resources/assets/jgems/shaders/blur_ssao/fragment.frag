@@ -1,4 +1,4 @@
-layout (location = 0) out vec4 frag_color;
+layout (location = 0) out float frag_color;
 
 uniform sampler2D texture_sampler;
 in vec2 texture_coordinates;
@@ -15,5 +15,5 @@ void main()
             result += texture(texture_sampler, texture_coordinates + offset).r;
         }
     }
-    frag_color = vec4(vec3(result / (4.0 * 4.0)), 1.);
+    frag_color = result / (4.0 * 4.0);
 }
