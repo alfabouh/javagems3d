@@ -18,12 +18,12 @@ public class DefaultGamePanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, float partialTicks) {
-        this.renderTextOnScreen(immediateUI, partialTicks);
-        this.renderImagesOnScreen(immediateUI, partialTicks);
+    public void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks) {
+        this.renderTextOnScreen(immediateUI, frameDeltaTicks);
+        this.renderImagesOnScreen(immediateUI, frameDeltaTicks);
     }
 
-    private void renderTextOnScreen(ImmediateUI immediateUI, float partialTicks) {
+    private void renderTextOnScreen(ImmediateUI immediateUI, float frameDeltaTicks) {
         Window window = immediateUI.getWindow();
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
@@ -51,7 +51,7 @@ public class DefaultGamePanel extends AbstractPanelUI {
         }
     }
 
-    private void renderImagesOnScreen(ImmediateUI immediateUI, float partialTicks) {
+    private void renderImagesOnScreen(ImmediateUI immediateUI, float frameDeltaTicks) {
         Window window = immediateUI.getWindow();
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;

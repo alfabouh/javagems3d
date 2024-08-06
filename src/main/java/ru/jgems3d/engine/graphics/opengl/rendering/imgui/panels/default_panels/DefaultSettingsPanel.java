@@ -16,7 +16,7 @@ public class DefaultSettingsPanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, float partialTicks) {
+    public void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks) {
         DefaultMainMenuPanel.renderMenuBackGround(new Vector3f(1.0f, 0.2f, 1.0f));
         Window window = immediateUI.getWindow();
         int windowW = window.getWindowDimensions().x;

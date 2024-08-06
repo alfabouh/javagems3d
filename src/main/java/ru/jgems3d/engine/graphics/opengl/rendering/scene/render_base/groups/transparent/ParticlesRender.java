@@ -6,6 +6,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -15,14 +16,10 @@ public class ParticlesRender extends SceneRenderBase {
         super(122, sceneRender, new RenderGroup("PARTICLE_TRANSPARENT"));
     }
 
-    public void onRender(float partialTicks) {
-       //GL30.glEnable(GL30.GL_BLEND);
-       //GL30.glDepthMask(true);
+    public void onRender(FrameTicking frameTicking) {
         for (ParticleFX particleFX : this.getSceneWorld().getParticlesEmitter().getCulledParticlesSet(this.getSceneRenderer().getSceneData())) {
             this.renderParticleSceneObject(particleFX);
         }
-        //GL30.glDepthMask(true);
-        //GL30.glDisable(GL30.GL_BLEND);
     }
 
     private void renderParticleSceneObject(ParticleFX particleFX) {

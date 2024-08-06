@@ -34,11 +34,11 @@ public class UICarousel extends UIElement {
     }
 
     @Override
-    public void render(float partialTicks) {
-        this.uiText.render(partialTicks);
-        this.uiTitle.render(partialTicks);
-        this.right.render(partialTicks);
-        this.left.render(partialTicks);
+    public void render(float frameDeltaTicks) {
+        this.uiText.render(frameDeltaTicks);
+        this.uiTitle.render(frameDeltaTicks);
+        this.right.render(frameDeltaTicks);
+        this.left.render(frameDeltaTicks);
     }
 
     @Override

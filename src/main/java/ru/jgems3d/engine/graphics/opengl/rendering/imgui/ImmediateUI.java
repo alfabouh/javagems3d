@@ -30,7 +30,7 @@ public final class ImmediateUI {
     private final RenderUIData renderUIData;
     private boolean requestCleanFrame;
     private PanelUI currentPanel;
-    private float partialTicks;
+    private float frameDeltaTicks;
 
     public ImmediateUI() {
         this.uiFrameCache = new HashMap<>();
@@ -100,8 +100,8 @@ public final class ImmediateUI {
         this.setPanel(null);
     }
 
-    public void renderFrame(float partialTicks) {
-        this.partialTicks = partialTicks;
+    public void renderFrame(float frameDeltaTicks) {
+        this.frameDeltaTicks = frameDeltaTicks;
 
         if (this.requestCleanFrame) {
             this.cleanFrame();
@@ -109,7 +109,7 @@ public final class ImmediateUI {
         }
 
         if (this.getCurrentPanel() != null) {
-            this.getCurrentPanel().drawPanel(this, this.partialTicks);
+            this.getCurrentPanel().drawPanel(this, this.frameDeltaTicks);
         }
 
         this.getUiFrameCache().values().forEach(UIElement::incrementUnusedTicks);
@@ -180,7 +180,7 @@ public final class ImmediateUI {
             uiElement.setDefaultScaling();
         }
         T ui = this.addUIInCache(clazz, uiElement);
-        ui.render(this.partialTicks);
+        ui.render(this.frameDeltaTicks);
         return ui;
     }
 

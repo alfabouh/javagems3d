@@ -25,7 +25,7 @@ public abstract class UIElement implements UIScalable {
         this.zeroUnusedTicks();
     }
 
-    public abstract void render(float partialTicks);
+    public abstract void render(float frameDeltaTicks);
 
     public abstract void buildUI();
 

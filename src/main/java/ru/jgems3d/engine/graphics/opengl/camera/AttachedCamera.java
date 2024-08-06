@@ -18,7 +18,7 @@ public class AttachedCamera extends Camera {
     }
 
     @Override
-    public void updateCamera(float partialTicks) {
+    public void updateCamera(float frameDeltaTicks) {
         AbstractSceneEntity abstractSceneEntity = this.getPhysXObject();
         if (abstractSceneEntity != null) {
             Vector3f pos = new Vector3f(this.getPhysXObject().getRenderPosition()).add(this.cameraOffset());

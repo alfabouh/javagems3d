@@ -149,16 +149,16 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         }
     }
 
-    public void updateRenderPos(float partialTicks) {
+    public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
         if (this.getMeshRenderData().getRenderAttributes().isShouldInterpolateMovement()) {
-            this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(partialTicks));
+            this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);
             } else {
                 Vector3f newRotation = new Vector3f();
-                Quaternionf result = this.getQuaternionInterpolated(partialTicks);
+                Quaternionf result = this.getQuaternionInterpolated(physicsSyncTicks);
                 result.getEulerAnglesXYZ(newRotation);
                 this.renderRotation.set(new Vector3f(newRotation.x, newRotation.y, newRotation.z));
             }
@@ -169,7 +169,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         this.adjustLightsTranslation(this.getRenderPosition(), new Vector3f(0.0f));
     }
 
-    private Quaternionf getQuaternionInterpolated(float partialTicks) {
+    private Quaternionf getQuaternionInterpolated(float physicsSyncTicks) {
         Quaternionf start = new Quaternionf();
         Quaternionf end = new Quaternionf();
 
@@ -177,7 +177,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         end.rotateXYZ(this.getCurrentRotState().getEndPoint().x, this.getCurrentRotState().getEndPoint().y, this.getCurrentRotState().getEndPoint().z);
 
         Quaternionf res = new Quaternionf();
-        end.slerp(start, partialTicks, res);
+        end.slerp(start, physicsSyncTicks, res);
         return res;
     }
 
@@ -289,9 +289,9 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
             this.endPoint = endPoint;
         }
 
-        public Vector3f interpolatedPoint(float partialTicks) {
+        public Vector3f interpolatedPoint(float physicsSyncTicks) {
             Vector3f newP = new Vector3f(this.getEndPoint());
-            return newP.lerp(this.getStartPoint(), partialTicks);
+            return newP.lerp(this.getStartPoint(), physicsSyncTicks);
         }
 
         public Vector3f getStartPoint() {

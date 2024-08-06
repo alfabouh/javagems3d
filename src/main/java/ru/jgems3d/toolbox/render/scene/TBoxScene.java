@@ -5,6 +5,7 @@ import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachment;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
@@ -397,9 +398,9 @@ public class TBoxScene {
     }
 
     private void createFBOs(Vector2i dim) {
-        FBOTexture2DProgram.Attachment[] psxFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] psxFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
                 };
 
         TBoxScene.sceneFbo = new FBOTexture2DProgram(true);

@@ -19,8 +19,8 @@ public class SimpleParticle extends TexturedParticleFX {
     }
 
     @Override
-    protected void updateParticle(double deltaTime, IWorld world) {
-        this.setPosition(this.getPosition().add(0.0f, (float) (deltaTime), 0.0f));
+    protected void updateParticle(double frameDeltaTime, IWorld world) {
+        this.setPosition(this.getPosition().add(0.0f, (float) (frameDeltaTime), 0.0f));
     }
 
     public SimpleParticle setMaxLivingSeconds(double maxLivingSeconds) {

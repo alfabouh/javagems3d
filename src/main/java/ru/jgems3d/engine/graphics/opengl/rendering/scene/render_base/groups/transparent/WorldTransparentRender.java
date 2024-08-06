@@ -9,6 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
@@ -28,7 +29,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         this.transparentModelObjects = new HashSet<>();
     }
 
-    public void onRender(float partialTicks) {
+    public void onRender(FrameTicking frameTicking) {
         this.transparentModelObjects.addAll(this.getSceneWorld().getFilteredEntitySet(RenderPass.TRANSPARENCY));
         for (IModeledSceneObject modeledSceneObject : this.transparentModelObjects) {
             this.renderIModeledSceneObject(modeledSceneObject);

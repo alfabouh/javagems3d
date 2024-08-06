@@ -31,7 +31,7 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
     }
 
     @Override
-    public void render(float partialTicks) {
+    public void render(float frameDeltaTicks) {
         this.imageModel.getFormat().setPosition(new Vector2f(this.getPosition()));
         this.imageModel.getFormat().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();

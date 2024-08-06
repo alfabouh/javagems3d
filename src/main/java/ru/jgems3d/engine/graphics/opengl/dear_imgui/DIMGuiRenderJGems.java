@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
@@ -116,7 +117,7 @@ public class DIMGuiRenderJGems {
         return io;
     }
 
-    public void render(float partialTicks) {
+    public void render(FrameTicking frameTicking) {
         JGemsControllerDispatcher controllerDispatcher = JGems3D.get().getScreen().getControllerDispatcher();
         if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.drawGui(controllerDispatcher);

@@ -15,6 +15,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.ILightsKeeper;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
@@ -83,8 +84,8 @@ public final class SceneWorld implements IWorld {
     }
 
     //section WorldUpdObj
-    public void updateWorldObjects(boolean refresh, float partialTicks, float deltaTime) {
-        this.getParticlesEmitter().onUpdateParticles(deltaTime, this);
+    public void updateWorldObjects(boolean refresh, FrameTicking frameTicking) {
+        this.getParticlesEmitter().onUpdateParticles(frameTicking.getFrameDeltaTime(), this);
 
         Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
@@ -104,7 +105,7 @@ public final class SceneWorld implements IWorld {
                 if (refresh) {
                     abstractSceneEntity.refreshInterpolatingState();
                 }
-                abstractSceneEntity.updateRenderPos(partialTicks);
+                abstractSceneEntity.updateRenderPos(frameTicking.getPhysicsSyncTicks());
                 abstractSceneEntity.updateRenderTranslation();
             }
         }

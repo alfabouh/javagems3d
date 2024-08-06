@@ -7,5 +7,5 @@ public interface ICamera {
 
     Vector3f getCamRotation();
 
-    void updateCamera(float partialTicks);
+    void updateCamera(float frameDeltaTicks);
 }
