@@ -109,7 +109,7 @@ public class JGemsScreen implements IScreen {
 
     private void createObjects(Window window) {
         this.controllerDispatcher = new JGemsControllerDispatcher(window);
-        this.scene = new JGemsScene(this.getTransformationUtils(), new SceneWorld());
+        this.scene = new JGemsScene(window, this.getTransformationUtils(), new SceneWorld());
     }
 
     private void resizeWindow(Vector2i dim) {
