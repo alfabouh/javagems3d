@@ -67,7 +67,7 @@ public class ShadowScene {
         this.shadowPostFBO.clearFBO();
 
         T2DAttachmentContainer shadow = new T2DAttachmentContainer() {{
-           add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
             add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
             add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
         }};

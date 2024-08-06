@@ -2,11 +2,13 @@ package ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments;
 
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class T2DAttachmentContainer {
-    private final Set<T2DAttachment> t2DAttachmentSet;
+    private final List<T2DAttachment> t2DAttachmentSet;
 
     public T2DAttachmentContainer(T2DAttachment attachment) {
         this();
@@ -19,7 +21,7 @@ public class T2DAttachmentContainer {
     }
 
     public T2DAttachmentContainer() {
-        this.t2DAttachmentSet = new HashSet<>();
+        this.t2DAttachmentSet = new ArrayList<>();
     }
 
     public void add(int attachment, int textureFormat, int internalFormat) {
@@ -30,7 +32,7 @@ public class T2DAttachmentContainer {
         this.getT2DAttachmentSet().add(attachment);
     }
 
-    public Set<T2DAttachment> getT2DAttachmentSet() {
+    public List<T2DAttachment> getT2DAttachmentSet() {
         return this.t2DAttachmentSet;
     }
 }
