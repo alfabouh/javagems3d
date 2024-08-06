@@ -14,6 +14,7 @@ import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.*;
@@ -53,7 +54,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         for (ModelNode modelNode : object.getModel().getMeshDataGroup().getModelNodeList()) {
             gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
-            gemsShaderManager.performUniform("alpha_factor", modelNode.getMaterial().getFullOpacity() * object.getMeshRenderData().getRenderAttributes().getObjectOpacity());
+            gemsShaderManager.performUniform(new UniformString("alpha_factor"), modelNode.getMaterial().getFullOpacity() * object.getMeshRenderData().getRenderAttributes().getObjectOpacity());
 
             boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
             if (object.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
@@ -63,6 +64,7 @@ public class WorldTransparentRender extends SceneRenderBase {
             if (f) {
                 GL30.glEnable(GL11.GL_CULL_FACE);
             }
+            gemsShaderManager.updateTextureUnitSlots();
         }
         gemsShaderManager.unBind();
     }
@@ -77,7 +79,7 @@ public class WorldTransparentRender extends SceneRenderBase {
 
         gemsShaderManager.getUtils().performShadowsInfo();
         gemsShaderManager.getUtils().performModelMaterialOnShader(modelNode.getMaterial());
-        gemsShaderManager.performUniform("alpha_factor", modelNode.getMaterial().getFullOpacity());
+        gemsShaderManager.performUniform(new UniformString("alpha_factor"), modelNode.getMaterial().getFullOpacity());
 
         boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
         if (disableCulling) {
@@ -87,6 +89,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         if (f) {
             GL30.glEnable(GL11.GL_CULL_FACE);
         }
+        gemsShaderManager.updateTextureUnitSlots();
         gemsShaderManager.unBind();
     }
 

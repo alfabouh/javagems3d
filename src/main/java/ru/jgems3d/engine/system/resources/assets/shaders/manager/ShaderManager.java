@@ -2,15 +2,13 @@ package ru.jgems3d.engine.system.resources.assets.shaders.manager;
 
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.CShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.GShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.resources.assets.shaders.*;
 import ru.jgems3d.engine.system.exceptions.JGemsException;
-import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
-import ru.jgems3d.engine.system.resources.assets.shaders.ShaderGroup;
-import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
@@ -27,7 +25,7 @@ public abstract class ShaderManager implements ICached {
     private final ShaderContainer shaderContainer;
     private RenderPass renderPass;
 
-    private final Set<Integer> freeTextureSlots;
+    private int usedTextureUnits;
 
     public ShaderManager(ShaderContainer shaderContainer) {
         this.uniformBufferObjects = new HashSet<>();
@@ -35,31 +33,11 @@ public abstract class ShaderManager implements ICached {
         this.renderPass = RenderPass.FORWARD;
         this.activeShader = ACT_SHADER.NONE;
 
-        this.freeTextureSlots = new HashSet<>();
+        this.usedTextureUnits = 0;
     }
 
-    public int getFirstFreeTextureSlot() {
-        Optional<Integer> optionalI = this.freeTextureSlots.stream().findFirst();
-        return optionalI.orElse(-1);
-    }
-
-    public int getFreeTextureSlotsNum() {
-        return this.freeTextureSlots.size();
-    }
-
-    public boolean checkIfTextureSlotIsFree(int slot) {
-        return this.freeTextureSlots.contains(slot);
-    }
-
-    private void clearTextureSlots() {
-        this.freeTextureSlots.clear();
-    }
-
-    private void fillTextureSlots() {
-        int maxAttachments = GL30.glGetInteger(GL30.GL_MAX_TEXTURE_IMAGE_UNITS);
-        for (int i = 0; i < maxAttachments; i++) {
-            this.freeTextureSlots.add(i);
-        }
+    public void updateTextureUnitSlots() {
+        this.usedTextureUnits = 0;
     }
 
     public abstract ShaderManager copy();
@@ -101,25 +79,23 @@ public abstract class ShaderManager implements ICached {
     }
 
     public void startComputing() {
-        this.fillTextureSlots();
+        this.updateTextureUnitSlots();
         this.getComputingShaderGroup().getShaderProgram().bind();
         this.activeShader = ACT_SHADER.COMPUTE;
     }
 
     public void endComputing() {
-        this.clearTextureSlots();
         this.getComputingShaderGroup().getShaderProgram().unbind();
         this.activeShader = ACT_SHADER.NONE;
     }
 
     public void bind() {
-        this.fillTextureSlots();
+        this.updateTextureUnitSlots();
         this.getGraphicShaderGroup().getShaderProgram().bind();
         this.activeShader = ACT_SHADER.GRAPHICAL;
     }
 
     public void unBind() {
-        this.clearTextureSlots();
         this.getGraphicShaderGroup().getShaderProgram().unbind();
         this.activeShader = ACT_SHADER.NONE;
     }
@@ -140,7 +116,7 @@ public abstract class ShaderManager implements ICached {
         return null;
     }
 
-    public boolean isUniformExist(String uniform) {
+    public boolean isUniformExist(UniformString uniform) {
         switch (this.activeShader) {
             case COMPUTE: {
                 return this.getComputingShaderGroup().checkUniformInProgram(uniform);
@@ -156,7 +132,7 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
-    private boolean setUniform(String uniform, Object o) {
+    private boolean setUniform(UniformString uniform, Object o) {
         switch (this.activeShader) {
             case COMPUTE: {
                 return this.getComputingShaderGroup().getUniformProgram().setUniform(uniform, o);
@@ -172,61 +148,31 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
-    public void performUniformTexture(String uniform, int textureID, int textureAttachment) {
-        this.performUniformTexture(uniform, "", -1, textureID, textureAttachment, this.getFirstFreeTextureSlot());
+    public void performUniformTexture(UniformString uniform, int textureID, int textureAttachment) {
+        this.performUniformTexture(uniform, textureID, textureAttachment, this.usedTextureUnits++);
     }
 
-    public void performUniformTexture(String uniform, int arrayPos, int textureID, int textureAttachment) {
-        this.performUniformTexture(uniform, "", arrayPos, textureID, textureAttachment, this.getFirstFreeTextureSlot());
-    }
-
-    public void performUniformTexture(String uniform, String postfix, int arrayPos, int textureID, int textureAttachment) {
-        this.performUniformTexture(uniform, postfix, arrayPos, textureID, textureAttachment, this.getFirstFreeTextureSlot());
-    }
-
-    public void performUniformTexture(String uniform, String postfix, int arrayPos, int textureID, int textureAttachment, int slot) {
+    public void performUniformTexture(UniformString uniform, int textureID, int textureAttachment, int textureUnit) {
         if (!this.isUniformExist(uniform)) {
             JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
-        if (slot < 0) {
-            JGemsHelper.getLogger().warn("[" + this + "] Couldn't find available texture attachments!");
+        if (textureUnit < 0 || this.usedTextureUnits >= JGemsSceneUtils.getMaxTextureUnits()) {
+            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow!");
             return;
         }
         if (textureID < 0) {
-            JGemsHelper.getLogger().warn("[" + this + "] Wrong textureID!");
-            return;
-        }
-        if (!this.checkIfTextureSlotIsFree(slot)) {
-            JGemsHelper.getLogger().warn("[" + this + "] This texture attachment is used!");
+            JGemsHelper.getLogger().warn("[" + this + "] Wrong textureID: " + textureID);
             return;
         }
 
-        GL30.glActiveTexture(GL30.GL_TEXTURE0 + slot);
+        GL30.glActiveTexture(GL30.GL_TEXTURE0 + textureUnit);
 
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
 
         GL30.glBindTexture(textureAttachment, textureID);
-        this.performUniform(uniform, postfix, arrayPos, slot);
-        this.freeTextureSlots.remove(slot);
-    }
-
-    public void performUniform(String uniform, String postfix, int arrayPos, Object o) {
-        if (o == null) {
-            JGemsHelper.getLogger().error("[" + this + "] NULL uniform " + uniform);
-            return;
-        }
-        if (!this.isUniformExist(uniform)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
-            return;
-        }
-        if (arrayPos >= 0) {
-            uniform += "[" + arrayPos + "]" + postfix;
-        }
-        if (!this.setUniform(uniform, o)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Wrong arguments! U: " + uniform);
-        }
+        this.performUniform(uniform, textureUnit);
     }
 
     private void initShaders(ShaderContainer shaderContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {
@@ -260,36 +206,24 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public void performUniformNoWarn(String uniform, String postfix, int arrayPos, Object o) {
-        if (this.isUniformExist(uniform)) {
-            this.performUniform(uniform, postfix, arrayPos, o);
+    public void performUniform(UniformString uniform, Object o) {
+        if (o == null) {
+            JGemsHelper.getLogger().error("[" + this + "] NULL uniform " + uniform);
+            return;
+        }
+        if (!this.isUniformExist(uniform)) {
+            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
+            return;
+        }
+        if (!this.setUniform(uniform, o)) {
+            JGemsHelper.getLogger().warn("[" + this + "] Wrong arguments! U: " + uniform);
         }
     }
 
-    public void performUniform(String uniform, int arrayPos, Object o) {
-        this.performUniform(uniform, "", arrayPos, o);
-    }
-
-    public void performUniformNoWarn(String uniform, int arrayPos, Object o) {
-        if (this.isUniformExist(uniform)) {
-            this.performUniform(uniform, "", arrayPos, o);
+    public void performUniformNoWarn(UniformString uniformString, Object o) {
+        if (this.isUniformExist(uniformString)) {
+            this.performUniform(uniformString, o);
         }
-    }
-
-    public void performUniformNoWarn(String uniform, Object o) {
-        if (this.isUniformExist(uniform)) {
-            this.performUniform(uniform, -1, o);
-        }
-    }
-
-    public void performArrayUniform(String uniform, float[] objects) {
-        for (int i = 0; i < objects.length; i++) {
-            this.performUniform(uniform, i, objects[i]);
-        }
-    }
-
-    public void performUniform(String uniform, Object o) {
-        this.performUniform(uniform, -1, o);
     }
 
     public void performUniformBuffer(UniformBufferObject uniform, IntBuffer data) {

@@ -10,6 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIElement;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
@@ -40,8 +41,8 @@ public class UIText extends UIElement {
         shaderManager.getUtils().performOrthographicMatrix(this.textModel.getModel());
         GL30.glActiveTexture(GL13.GL_TEXTURE0);
         this.getFontTexture().getTexture().bindTexture();
-        shaderManager.performUniform("texture_sampler", 0);
-        shaderManager.performUniform("colour", new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f));
+        shaderManager.performUniform(new UniformString("texture_sampler"), 0);
+        shaderManager.performUniform(new UniformString("colour"), new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f));
         JGemsSceneUtils.renderModel(this.textModel.getModel(), GL30.GL_TRIANGLES);
         shaderManager.unBind();
     }

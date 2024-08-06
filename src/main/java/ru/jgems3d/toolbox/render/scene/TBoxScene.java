@@ -18,6 +18,7 @@ import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
@@ -209,7 +210,7 @@ public class TBoxScene {
             TBoxResourceManager.shaderAssets.world_lines.bind();
             TBoxResourceManager.shaderAssets.world_lines.getUtils().performPerspectiveMatrix();
             TBoxResourceManager.shaderAssets.world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-            TBoxResourceManager.shaderAssets.world_lines.performUniform("colour", new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
+            TBoxResourceManager.shaderAssets.world_lines.performUniform(new UniformString("colour"), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
             TBoxSceneUtils.renderModel(modelSun, GL30.GL_LINES);
             TBoxResourceManager.shaderAssets.world_lines.unBind();
             modelSun.clean();
@@ -218,7 +219,7 @@ public class TBoxScene {
                 TBoxResourceManager.shaderAssets.world_lines.bind();
                 TBoxResourceManager.shaderAssets.world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderAssets.world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-                TBoxResourceManager.shaderAssets.world_lines.performUniform("colour", new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
+                TBoxResourceManager.shaderAssets.world_lines.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
                 TBoxSceneUtils.renderModel(model, GL30.GL_LINES);
                 TBoxResourceManager.shaderAssets.world_lines.unBind();
                 model.clean();
@@ -258,7 +259,7 @@ public class TBoxScene {
         TBoxResourceManager.shaderAssets.world_xyz.bind();
         TBoxResourceManager.shaderAssets.world_xyz.getUtils().performOrthographicMatrix(this.getWindow().getWindowDimensions().x / (float) this.getWindow().getWindowDimensions().y, 36.0f);
         TBoxResourceManager.shaderAssets.world_xyz.getUtils().performModel3DMatrix(model);
-        TBoxResourceManager.shaderAssets.world_xyz.performUniform("view_inversed", inversedView);
+        TBoxResourceManager.shaderAssets.world_xyz.performUniform(new UniformString("view_inversed"), inversedView);
         TBoxSceneUtils.renderModelTextured(TBoxResourceManager.shaderAssets.world_xyz, model, GL30.GL_TRIANGLES);
         TBoxResourceManager.shaderAssets.world_xyz.unBind();
         GL30.glDisable(GL30.GL_DEPTH_TEST);
@@ -279,10 +280,10 @@ public class TBoxScene {
     public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshDataGroup meshDataGroup, int code) {
         for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
             if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {
-                shaderManager.performUniform("use_texture", false);
+                shaderManager.performUniform(new UniformString("use_texture"), false);
             } else {
-                shaderManager.performUniform("use_texture", true);
-                shaderManager.performUniformNoWarn("diffuse_map", 0);
+                shaderManager.performUniform(new UniformString("use_texture"), true);
+                shaderManager.performUniformNoWarn(new UniformString("diffuse_map"), 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) modelNode.getMaterial().getDiffuse()).getTextureId());
             }

@@ -30,6 +30,7 @@ in mat4 out_view_matrix;
 
 layout (location = 0) out vec4 accumulated;
 layout (location = 1) out float reveal;
+layout (location = 2) out vec4 bright_color;
 
 struct CascadeShadow {
     float split_distance;
@@ -116,6 +117,9 @@ void main()
     accumulated = vec4(frag_color.rgb * a_factor, a_factor) * weight;
 
     reveal = fogDensity > 0 ? calc_fog_float(frag_pos.xyz, a_factor) : a_factor;
+
+    float brightness = dot(frag_color.rgb, vec3(0.2126, 0.7152, 0.0722)) + brightness;
+    bright_color = brightness >= 0.75 ? accumulated : vec4(0.);
 }
 
 float vsmFixLightBleed(float pMax, float amount)
@@ -126,10 +130,6 @@ float vsmFixLightBleed(float pMax, float amount)
 float calcVSM(int idx, vec4 shadow_coord, float bias) {
     vec4 tex = shadow_coord / shadow_coord.w;
     vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, tex.xy);
-
-    if (vsm.g <= 0) {
-        return 1.0;
-    }
 
     float E_x2 = vsm.y;
     float Ex_2 = vsm.x * vsm.x;
@@ -170,14 +170,16 @@ float calculate_point_light_shadow(samplerCube vsmCubemap, vec3 fragPosition, ve
     float currentDepth = length(fragToLight);
     currentDepth /= far_plane;
 
-    vec3 lightPosViewSpace = (out_view_matrix * vec4(lightPos, 1.0)).xyz;
+    vec4 vsm = texture(vsmCubemap, normalize(fragToLight));
 
-    vec4 vsmValues = texture(vsmCubemap, normalize(fragToLight));
-    float mu = vsmValues.r;
-    float s2 = max(vsmValues.g - mu * mu, 1.0e-5f);
-    float pmax = s2 / (s2 + (currentDepth - mu) * (currentDepth - mu));
+    float E_x2 = vsm.y;
+    float Ex_2 = vsm.x * vsm.x;
+    float var = max(E_x2 - Ex_2, 1.0e-5f);
+    float mD = vsm.x - currentDepth;
+    float mD_2 = mD * mD;
+    float p = var / (var + mD_2);
 
-    return vsmFixLightBleed(pmax, 0.2);
+    return max(vsmFixLightBleed(p, 0.7), int(currentDepth <= vsm.x));
 }
 
 vec4 calc_light(vec3 frag_pos) {

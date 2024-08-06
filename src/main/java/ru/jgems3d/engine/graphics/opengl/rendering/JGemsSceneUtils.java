@@ -12,6 +12,7 @@ import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class JGemsSceneUtils {
@@ -78,8 +79,8 @@ public abstract class JGemsSceneUtils {
             JGemsShaderManager shaderManager = sceneObject.getMeshRenderData().getShaderManager();
             shaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), model);
             shaderManager.getUtils().performRenderDataOnShader(sceneObject.getMeshRenderData());
-            if (shaderManager.isUniformExist("alpha_discard")) {
-                shaderManager.performUniform("alpha_discard", sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue());
+            if (shaderManager.isUniformExist(new UniformString("alpha_discard"))) {
+                shaderManager.performUniform(new UniformString("alpha_discard"), sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue());
                 if (sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue() > 0) {
                     GL30.glDisable(GL30.GL_BLEND);
                 }
@@ -97,11 +98,16 @@ public abstract class JGemsSceneUtils {
                 }
                 shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
                 JGemsSceneUtils.renderModelNode(modelNode);
+                shaderManager.updateTextureUnitSlots();
             }
             if (f) {
                 GL30.glEnable(GL11.GL_CULL_FACE);
             }
         }
+    }
+
+    public static int getMaxTextureUnits() {
+        return GL30.glGetInteger(GL30.GL_MAX_TEXTURE_IMAGE_UNITS);
     }
 
     public static void checkGLErrors() {

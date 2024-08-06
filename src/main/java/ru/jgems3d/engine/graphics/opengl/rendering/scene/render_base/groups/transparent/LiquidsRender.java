@@ -10,6 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class LiquidsRender extends SceneRenderBase {
@@ -36,9 +37,10 @@ public class LiquidsRender extends SceneRenderBase {
         for (ModelNode modelNode : object.getModel().getMeshDataGroup().getModelNodeList()) {
             gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(object.getRenderLiquidData().getLiquidMaterial());
-            gemsShaderManager.performUniform("alpha_factor", object.getRenderLiquidData().getLiquidMaterial().getFullOpacity());
-            gemsShaderManager.performUniform("texture_scaling", object.getTextureScaling());
+            gemsShaderManager.performUniform(new UniformString("alpha_factor"), object.getRenderLiquidData().getLiquidMaterial().getFullOpacity());
+            gemsShaderManager.performUniform(new UniformString("texture_scaling"), object.getTextureScaling());
             JGemsSceneUtils.renderModelNode(modelNode);
+            gemsShaderManager.updateTextureUnitSlots();
         }
         gemsShaderManager.unBind();
     }

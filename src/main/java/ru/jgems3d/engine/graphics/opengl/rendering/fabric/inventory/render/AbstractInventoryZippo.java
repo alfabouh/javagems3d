@@ -7,6 +7,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.inventory.items.ItemZippo;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
@@ -36,7 +37,7 @@ public class AbstractInventoryZippo extends AbstractInventoryItem {
         ItemZippo itemZippo = (ItemZippo) inventoryItem;
         float d1 = (float) (Math.cos(RenderPlayer.stepBobbing * 0.1f) * 0.051f);
         super.performTransformations(new Vector3f(0.1f, -1.0f + d1, -1.4f), new Vector3f(0.0f, (float) Math.toRadians(20.0f), 0.0f), new Vector3f(1.0f), inventoryItemRenderData);
-        inventoryItemRenderData.getShaderManager().performUniform("use_emission", itemZippo.isOpened());
+        inventoryItemRenderData.getShaderManager().performUniform(new UniformString("use_emission"), itemZippo.isOpened());
         super.renderInventoryModel(itemZippo.isOpened() ? this.model1 : this.model2, inventoryItemRenderData.getShaderManager());
     }
 

@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiMesh;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.controller.TBoxControllerDispatcher;
@@ -126,8 +127,8 @@ public class DIMGuiRenderTBox {
         io.getDisplaySize(dSize);
 
         this.getShaderManager().bind();
-        this.getShaderManager().performUniform("scale", new Vector2f(2.0f / dSize.x, -2.0f / dSize.y));
-        this.getShaderManager().performUniform("texture_sampler", 0);
+        this.getShaderManager().performUniform(new UniformString("scale"), new Vector2f(2.0f / dSize.x, -2.0f / dSize.y));
+        this.getShaderManager().performUniform(new UniformString("texture_sampler"), 0);
 
         GL30.glEnable(GL30.GL_BLEND);
         GL30.glBlendEquation(GL30.GL_FUNC_ADD);

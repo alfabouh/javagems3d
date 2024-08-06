@@ -35,7 +35,7 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
     }
 
     public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, model, MeshRenderData.defaultModelRenderConstraints(shaderManager));
+        this(renderFabric, model, MeshRenderData.defaultMeshRenderData(shaderManager));
     }
 
     public void clearLights() {
