@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
@@ -18,7 +19,7 @@ public class RenderPlayer implements IRenderObjectFabric {
     }
 
     @Override
-    public void onRender(float partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
         AbstractSceneEntity entityObject = (AbstractSceneEntity) renderItem;
         WorldItem worldItem = entityObject.getWorldItem();
         if (worldItem instanceof SimpleKinematicPlayer) {

@@ -15,7 +15,7 @@ public abstract class UIInteractiveElement extends UIElement {
         super(currentShader, zValue);
     }
 
-    public void render(float partialTicks) {
+    public void render(float frameDeltaTicks) {
         this.handleInput();
     }
 

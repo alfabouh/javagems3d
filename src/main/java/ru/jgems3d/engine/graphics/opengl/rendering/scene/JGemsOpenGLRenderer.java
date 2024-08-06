@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL45;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachment;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.TextureProgram;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
@@ -25,6 +26,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.tran
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.base.ISceneRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -87,7 +89,6 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
         this.shadowScene = new ShadowScene(this.getSceneData().getSceneWorld());
 
         this.transparencyFBO = new FBOTexture2DProgram(true);
-
         this.fboBlur = new FBOTexture2DProgram(true);
         this.sceneFbo = new FBOTexture2DProgram(true);
         this.fboPsx = new FBOTexture2DProgram(true);
@@ -105,54 +106,54 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
     public void createResources(Vector2i dim) {
         this.clearResources();
 
-        FBOTexture2DProgram.Attachment[] transparencyFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] transparencyFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED)
                 };
         this.transparencyFBO.createFrameBuffer2DTexture(dim, transparencyFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.Attachment[] psxFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] psxFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA)
                 };
         this.fboPsx.createFrameBuffer2DTexture(dim, psxFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
 
-        FBOTexture2DProgram.Attachment[] blurFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] blurFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
                 };
         this.fboBlur.createFrameBuffer2DTexture(dim, blurFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.Attachment[] sceneFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] sceneFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB16F, GL30.GL_RGB),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB16F, GL30.GL_RGB)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB16F, GL30.GL_RGB),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB16F, GL30.GL_RGB)
                 };
         this.sceneFbo.createFrameBuffer2DTexture(dim, sceneFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.Attachment[] gBufferFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] gBufferFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB32F, GL30.GL_RGB),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB32F, GL30.GL_RGB),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA, GL30.GL_RGBA),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT3, GL43.GL_RGB, GL30.GL_RGB),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB),
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT5, GL43.GL_RGB, GL30.GL_RGB)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB32F, GL30.GL_RGB),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB32F, GL30.GL_RGB),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA, GL30.GL_RGBA),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT3, GL43.GL_RGB, GL30.GL_RGB),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB),
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT5, GL43.GL_RGB, GL30.GL_RGB)
                 };
         this.gBuffer.createFrameBuffer2DTexture(new Vector2i(dim), gBufferFBOs, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.Attachment[] finalRenderedSceneFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] finalRenderedSceneFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB)
                 };
         this.finalRenderedSceneFbo.createFrameBuffer2DTexture(dim, finalRenderedSceneFBOs, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
-        FBOTexture2DProgram.Attachment[] ssaoRenderedSceneFBOs = new FBOTexture2DProgram.Attachment[]
+        T2DAttachment[] ssaoRenderedSceneFBOs = new T2DAttachment[]
                 {
-                        new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_R16F, GL30.GL_RED)
+                        new T2DAttachment(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_R16F, GL30.GL_RED)
                 };
         this.ssaoBuffer.createFrameBuffer2DTexture(dim, ssaoRenderedSceneFBOs, true, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
@@ -281,10 +282,10 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
     }
 
     // section Render
-    public void onRender(float partialTicks) {
+    public void onRender(FrameTicking frameTicking) {
         if (this.getSceneData().getCamera() == null) {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-            this.guiRender.onRender(partialTicks);
+            this.guiRender.onRender(frameTicking);
             return;
         }
 
@@ -300,17 +301,17 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
 
             if (JGems3D.get().isPaused()) {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                this.guiRender.onRender(partialTicks);
+                this.guiRender.onRender(frameTicking);
             } else {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
-                this.renderScene(partialTicks, model);
-                this.bloomPostProcessing(partialTicks, model);
-                this.renderTransparentElements(partialTicks);
-                this.renderSceneWithBloomAndHDR(partialTicks, model);
+                this.renderScene(frameTicking, model);
+                this.bloomPostProcessing(frameTicking, model);
+                this.renderTransparentElements(frameTicking);
+                this.renderSceneWithBloomAndHDR(frameTicking, model);
                 this.postFXAA(model);
                 this.renderFinalScene(model);
 
-                this.inventoryRender.onRender(partialTicks);
+                this.inventoryRender.onRender(frameTicking);
                 this.guiRender.onRender(partialTicks);
             }
         }
@@ -394,31 +395,21 @@ public final class JGemsOpenGLRenderer implements ISceneRenderer {
     }
 
     private Vector3i getSSAOParams() {
-        if (this.getWindowDimensions().y <= 0) {
-            return null;
-        }
-        int ssaoSetting = JGems3D.get().getGameSettings().ssao.getValue();
-        float aspect = (float) this.getWindowDimensions().y / this.getWindowDimensions().x;
-        Vector3i dim;
-        switch (ssaoSetting) {
+        switch (JGems3D.get().getGameSettings().ssao.getValue()) {
             case 1: {
-                dim = new Vector3i((int) (this.getWindowDimensions().x * 0.5f), (int) (this.getWindowDimensions().y * 0.5f), 4);
-                break;
+                return new Vector3i((int) (this.getWindowDimensions().x * 0.5f), (int) (this.getWindowDimensions().y * 0.5f), 4);
             }
             case 2: {
-                dim = new Vector3i((int) (this.getWindowDimensions().x * 0.5f), (int) (this.getWindowDimensions().y * 0.5f), 6);
-                break;
+                return new Vector3i((int) (this.getWindowDimensions().x * 0.5f), (int) (this.getWindowDimensions().y * 0.5f), 6);
             }
             case 3: {
-                dim = new Vector3i((int) (this.getWindowDimensions().x * 0.5f), (int) (this.getWindowDimensions().y * 0.5f), 8);
-                break;
+                return new Vector3i((int) (this.getWindowDimensions().x * 0.5f), (int) (this.getWindowDimensions().y * 0.5f), 8);
             }
             case 0:
             default: {
                return null;
             }
         }
-        return dim;
     }
 
     // section LightPass

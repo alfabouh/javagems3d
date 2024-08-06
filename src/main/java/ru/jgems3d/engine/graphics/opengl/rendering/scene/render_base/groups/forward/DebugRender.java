@@ -7,6 +7,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.sysgraph.Graph;
@@ -26,7 +27,7 @@ public class DebugRender extends SceneRenderBase {
         this.debugShaders = JGemsResourceManager.globalShaderAssets.debug;
     }
 
-    public void onRender(float partialTicks) {
+    public void onRender(FrameTicking frameTicking) {
         if (GlobalRenderDebugConstants.SHOW_DEBUG_LINES) {
             DynamicsUtils.btDebugDraw.drawLines(JGems3D.get().getPhysicsWorld().getDynamics());
 

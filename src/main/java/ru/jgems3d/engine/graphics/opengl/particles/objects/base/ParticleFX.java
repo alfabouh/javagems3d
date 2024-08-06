@@ -46,7 +46,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         }
     }
 
-    public void onUpdateParticle(double deltaTime, IWorld iWorld) {
+    public void onUpdateParticle(double frameDeltaTime, IWorld iWorld) {
         if (this.liveTimer.resetTimerAfterReachedSeconds(this.getMaxLivingSeconds())) {
             this.kill();
             return;
@@ -59,7 +59,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
                 }
             }
         }
-        this.updateParticle(deltaTime, iWorld);
+        this.updateParticle(frameDeltaTime, iWorld);
     }
 
     public void onSpawn(IWorld iWorld) {
@@ -79,7 +79,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         }
     }
 
-    protected abstract void updateParticle(double deltaTime, IWorld world);
+    protected abstract void updateParticle(double frameDeltaTime, IWorld world);
 
     public abstract double getMaxLivingSeconds();
 

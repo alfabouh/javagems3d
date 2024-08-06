@@ -34,7 +34,7 @@ public class UIText extends UIElement {
     }
 
     @Override
-    public void render(float partialTicks) {
+    public void render(float frameDeltaTicks) {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(this.textModel.getModel());

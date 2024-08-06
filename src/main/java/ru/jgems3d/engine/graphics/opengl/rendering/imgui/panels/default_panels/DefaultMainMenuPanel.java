@@ -9,8 +9,10 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
+import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachment;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.system.map.loaders.custom.DefaultMap;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -41,8 +43,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
 
     public void createFBOs(Vector2i dim) {
         this.postFbo.clearFBO();
-        FBOTexture2DProgram.Attachment[] FBOs = new FBOTexture2DProgram.Attachment[]{new FBOTexture2DProgram.Attachment(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB, GL30.GL_RGB)};
-        this.postFbo.createFrameBuffer2DTexture(dim, FBOs, false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        this.postFbo.createFrameBuffer2DTexture(dim, new T2DAttachmentContainer(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB, GL30.GL_RGB), false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
     }
 
     public void onWindowResize(Vector2i dim) {
@@ -50,12 +51,12 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, float partialTicks) {
+    public void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks) {
         Window window = immediateUI.getWindow();
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
 
-        this.renderContent(immediateUI, window, partialTicks);
+        this.renderContent(immediateUI, window, frameDeltaTicks);
 
         immediateUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
@@ -73,7 +74,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
                 });
     }
 
-    private void renderContent(ImmediateUI immediateUI, Window window, float partialTicks) {
+    private void renderContent(ImmediateUI immediateUI, Window window, float frameDeltaTicks) {
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
 

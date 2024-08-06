@@ -33,6 +33,7 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
     public JGemsShaderManager blur_box;
     public JGemsShaderManager blur_ssao;
     public JGemsShaderManager hdr;
+    public JGemsShaderManager scene_gluing;
     public JGemsShaderManager fxaa;
     public JGemsShaderManager skybox;
     public JGemsShaderManager world_gbuffer;
@@ -57,49 +58,50 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
         this.Misc = this.createUBO("Misc", 2, 4);
         this.Fog = this.createUBO("Fog", 3, 16);
 
-        this.world_enemy = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_enemy") , Shader.ShaderType.DEFAULT_BITS);
-        this.world_pickable = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_pickable") , Shader.ShaderType.DEFAULT_BITS);
+        this.world_enemy = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/world_enemy") , Shader.ShaderType.DEFAULT_BITS);
+        this.world_pickable = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/world_pickable") , Shader.ShaderType.DEFAULT_BITS);
         this.debug = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "debug") , Shader.ShaderType.DEFAULT_BITS);
-        this.gui_text = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui_text") , Shader.ShaderType.DEFAULT_BITS);
-        this.gui_noised = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui_noised") , Shader.ShaderType.DEFAULT_BITS);
+        this.gui_text = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui/gui_text") , Shader.ShaderType.DEFAULT_BITS);
+        this.gui_noised = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui/gui_noised") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.gui_button = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui_button") , Shader.ShaderType.DEFAULT_BITS);
-        this.gui_image = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui_image") , Shader.ShaderType.DEFAULT_BITS);
-        this.gui_image_selectable = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui_image_selectable") , Shader.ShaderType.DEFAULT_BITS);
+        this.gui_button = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui/gui_button") , Shader.ShaderType.DEFAULT_BITS);
+        this.gui_image = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui/gui_image") , Shader.ShaderType.DEFAULT_BITS);
+        this.gui_image_selectable = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui/gui_image_selectable") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.blur_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur_ssao") , Shader.ShaderType.DEFAULT_BITS);
-        this.blur5 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur5") , Shader.ShaderType.DEFAULT_BITS);
-        this.blur9 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur9") , Shader.ShaderType.DEFAULT_BITS);
-        this.blur13 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur13") , Shader.ShaderType.DEFAULT_BITS);
-        this.blur_box = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "blur_box") , Shader.ShaderType.DEFAULT_BITS);
+        this.blur_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/blur_ssao") , Shader.ShaderType.DEFAULT_BITS);
+        this.blur5 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/blur5") , Shader.ShaderType.DEFAULT_BITS);
+        this.blur9 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/blur9") , Shader.ShaderType.DEFAULT_BITS);
+        this.blur13 = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/blur13") , Shader.ShaderType.DEFAULT_BITS);
+        this.blur_box = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/blur_box") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.imgui = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "imgui") , Shader.ShaderType.DEFAULT_BITS);
+        this.imgui = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui/imgui") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.fxaa = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "fxaa") , Shader.ShaderType.DEFAULT_BITS);
-        this.hdr = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "hdr") , Shader.ShaderType.DEFAULT_BITS);
+        this.fxaa = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/fxaa") , Shader.ShaderType.DEFAULT_BITS);
+        this.hdr = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/hdr") , Shader.ShaderType.DEFAULT_BITS);
+        this.scene_gluing = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/scene_gluing") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.skybox = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "skybox") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight);
+        this.skybox = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/skybox") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight);
 
-        this.world_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_ssao") , Shader.ShaderType.COMPUTE_BIT);
+        this.world_ssao = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "post/screen_ssao") , Shader.ShaderType.COMPUTE_BIT);
 
-        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_liquid_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
-        this.weighted_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
-        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "weighted_particle_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
+        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "oit/weighted_liquid_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
+        this.weighted_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "oit/weighted_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
+        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "oit/weighted_particle_oit") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.TRANSPARENCY);
 
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.DEFERRED);
-        this.world_deferred = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_deferred") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight, this.PointLights, this.Fog);
+        this.world_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/world_gbuffer") , Shader.ShaderType.DEFAULT_BITS).setShaderRenderPass(RenderPass.DEFERRED);
+        this.world_deferred = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/world_deferred") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight, this.PointLights, this.Fog);
 
-        this.menu = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "menu") , Shader.ShaderType.DEFAULT_BITS);
+        this.menu = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gui/menu") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.inventory_zippo = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "inventory_zippo") , Shader.ShaderType.DEFAULT_BITS);
-        this.inventory_common_item = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "inventory_common_item") , Shader.ShaderType.DEFAULT_BITS);
+        this.inventory_zippo = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "inventory/inventory_zippo") , Shader.ShaderType.DEFAULT_BITS);
+        this.inventory_common_item = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "inventory/inventory_common_item") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.simple = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "simple") , Shader.ShaderType.DEFAULT_BITS);
-        this.depth_sun = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "depth_sun") , Shader.ShaderType.DEFAULT_BITS);
-        this.depth_sun_fix = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "depth_sun_fix") , Shader.ShaderType.DEFAULT_BITS);
+        this.simple = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/simple") , Shader.ShaderType.DEFAULT_BITS);
+        this.depth_sun = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "shadows/depth_sun") , Shader.ShaderType.DEFAULT_BITS);
+        this.depth_sun_fix = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "shadows/depth_sun_fix") , Shader.ShaderType.DEFAULT_BITS);
 
-        this.world_selected_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world_selected_gbuffer") , Shader.ShaderType.DEFAULT_BITS);
-        this.depth_plight = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "depth_plight") , Shader.ShaderType.DEFAULT_BITS);
+        this.world_selected_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/world_selected_gbuffer") , Shader.ShaderType.DEFAULT_BITS);
+        this.depth_plight = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "shadows/depth_plight") , Shader.ShaderType.DEFAULT_BITS);
 
         this.gameUbo = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "gameubo") , Shader.ShaderType.DEFAULT_BITS).attachUBOs(this.SunLight, this.Misc, this.PointLights, this.Fog);
     }

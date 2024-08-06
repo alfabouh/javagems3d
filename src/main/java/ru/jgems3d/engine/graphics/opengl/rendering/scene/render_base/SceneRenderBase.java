@@ -3,6 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 
 public abstract class SceneRenderBase {
@@ -24,7 +25,7 @@ public abstract class SceneRenderBase {
         return this.getSceneRenderer().getSceneData().getCamera();
     }
 
-    public abstract void onRender(float partialTicks);
+    public abstract void onRender(FrameTicking frameTicking);
 
     public void onStartRender() {
         JGemsHelper.getLogger().log("Scene " + this.getRenderGroup().getId() + ": render start!");

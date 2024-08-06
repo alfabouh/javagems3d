@@ -28,12 +28,12 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    public void render(float partialTicks) {
-        super.render(partialTicks);
+    public void render(float frameDeltaTicks) {
+        super.render(frameDeltaTicks);
 
         this.imageStaticUI.setScaling(this.getScaling());
         this.imageStaticUI.setSelected(this.isSelected());
-        this.imageStaticUI.render(partialTicks);
+        this.imageStaticUI.render(frameDeltaTicks);
     }
 
     @Override

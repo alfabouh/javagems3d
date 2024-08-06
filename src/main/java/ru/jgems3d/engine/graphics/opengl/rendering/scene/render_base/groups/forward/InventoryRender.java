@@ -5,6 +5,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.entities.player.Player;
@@ -17,7 +18,7 @@ public class InventoryRender extends SceneRenderBase {
         super(-1, sceneRender, new RenderGroup("INVENTORY_FORWARD"));
     }
 
-    public void onRender(float partialTicks) {
+    public void onRender(FrameTicking frameTicking) {
         Player player = JGems3D.get().getPlayer();
         if (player instanceof IInventoryOwner && !(JGemsHelper.getCurrentCamera() instanceof FreeCamera)) {
             IInventoryOwner hasInventory = (IInventoryOwner) player;
@@ -26,7 +27,7 @@ public class InventoryRender extends SceneRenderBase {
                 InventoryItemRenderData inventoryItemRenderData = JGemsResourceManager.inventoryItemRenderTable.getMap().get(current.getClass());
                 if (inventoryItemRenderData.getRenderFabric() != null) {
                     inventoryItemRenderData.getRenderFabric().preRender(this, current, inventoryItemRenderData);
-                    inventoryItemRenderData.getRenderFabric().onRender(partialTicks, this, current, inventoryItemRenderData);
+                    inventoryItemRenderData.getRenderFabric().onRender(frameTicking, this, current, inventoryItemRenderData);
                     inventoryItemRenderData.getRenderFabric().postRender(this, current, inventoryItemRenderData);
                 }
             }

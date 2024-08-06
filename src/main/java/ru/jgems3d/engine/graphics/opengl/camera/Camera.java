@@ -32,6 +32,6 @@ public class Camera implements ICamera {
     }
 
     @Override
-    public void updateCamera(float partialTicks) {
+    public void updateCamera(float frameDeltaTicks) {
     }
 }

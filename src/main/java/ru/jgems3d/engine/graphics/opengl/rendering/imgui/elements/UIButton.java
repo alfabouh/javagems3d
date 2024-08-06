@@ -47,8 +47,8 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    public void render(float partialTicks) {
-        super.render(partialTicks);
+    public void render(float frameDeltaTicks) {
+        super.render(frameDeltaTicks);
 
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
@@ -57,7 +57,7 @@ public class UIButton extends UIInteractiveElement {
         shaderManager.performUniform("selected", this.isSelected());
         JGemsSceneUtils.renderModel(this.buttonModel, GL30.GL_TRIANGLES);
         shaderManager.unBind();
-        this.uiText.render(partialTicks);
+        this.uiText.render(frameDeltaTicks);
     }
 
     @Override

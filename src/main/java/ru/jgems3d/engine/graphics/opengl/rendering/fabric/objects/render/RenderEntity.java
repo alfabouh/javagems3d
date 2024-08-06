@@ -5,6 +5,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEn
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
 import ru.jgems3d.engine.physics.entities.properties.state.IEntityState;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
@@ -18,7 +19,7 @@ public class RenderEntity extends RenderWorldItem {
     }
 
     @Override
-    public void onRender(float partialTicks, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
         AbstractSceneEntity entityObject = (AbstractSceneEntity) renderItem;
         GL30.glClearStencil(0);
         GL30.glClear(GL30.GL_STENCIL_BUFFER_BIT);

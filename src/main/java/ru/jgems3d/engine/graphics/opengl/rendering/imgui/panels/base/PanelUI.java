@@ -8,7 +8,7 @@ public interface PanelUI {
 
     void onDestruct(ImmediateUI immediateUI);
 
-    void drawPanel(ImmediateUI immediateUI, float partialTicks);
+    void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks);
 
     void onWindowResize(Vector2i dim);
 }

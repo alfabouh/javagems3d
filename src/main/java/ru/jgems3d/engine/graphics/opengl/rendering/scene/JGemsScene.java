@@ -8,6 +8,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.base.IScene;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
@@ -55,7 +56,7 @@ public class JGemsScene implements IScene {
     }
 
     @SuppressWarnings("all")
-    public void renderScene(float deltaTime) throws InterruptedException {
+    public void renderScene(float frameDeltaTime) throws InterruptedException {
         if (JGemsHelper.isSceneActive()) {
             JGems3D.get().getScreen().normalizeViewPort();
             JGemsOpenGLRenderer.getGameUboShader().bind();
@@ -65,29 +66,29 @@ public class JGemsScene implements IScene {
                     this.requestDestroyMap = false;
                     return;
                 }
-                this.elapsedTime += deltaTime / PhysicsThread.getFrameTime();
+                this.elapsedTime += frameDeltaTime / PhysicsThread.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
                     SyncManager.SyncPhysics.free();
                     this.refresh = true;
                     this.elapsedTime %= 1.0d;
                 }
-                this.renderSceneInterpolated(this.elapsedTime, deltaTime);
+                this.updateSceneComponents(new FrameTicking(this.elapsedTime, frameDeltaTime));
             } else {
-                this.getSceneRenderer().onRender(deltaTime);
+                this.elapsedTime = 0.0f;
             }
+            this.getSceneRenderer().onRender(new FrameTicking(this.elapsedTime, frameDeltaTime), this.getWindowDimensions());
             JGemsOpenGLRenderer.getGameUboShader().unBind();
         }
     }
 
     @SuppressWarnings("all")
-    public void renderSceneInterpolated(final float partialTicks, final float deltaTime) throws InterruptedException {
+    public void updateSceneComponents(final FrameTicking frameTicking) throws InterruptedException {
         this.getFrustumCulling().refreshFrustumCullingState(this.getTransformationUtils().getPerspectiveMatrix(), this.getTransformationUtils().getMainCameraViewMatrix());
-        this.getSceneWorld().updateWorldObjects(this.refresh, partialTicks, deltaTime);
-        this.getSceneWorld().onWorldUpdate();
-        this.getCurrentCamera().updateCamera(deltaTime);
-        this.getTransformationUtils().updateCamera(this.getCurrentCamera());
-        this.getSceneRenderer().onRender(partialTicks);
+        this.getSceneWorld().updateWorldObjects(this.refresh, frameTicking);
         this.refresh = false;
+        this.getSceneWorld().onWorldUpdate();
+        this.getCurrentCamera().updateCamera(frameTicking.getFrameDeltaTime());
+        this.getTransformationUtils().updateCamera(this.getCurrentCamera());
     }
 
     public void postRender() {
