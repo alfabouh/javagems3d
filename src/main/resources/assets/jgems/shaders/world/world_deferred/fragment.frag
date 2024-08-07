@@ -88,23 +88,21 @@ void main()
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 }
 
-float vsmFixLightBleed(float pMax, float amount)
-{
+float vsmFixLightBleed(float pMax, float amount) {
     return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
 }
 
 float calcVSM(int idx, vec4 shadow_coord, float bias) {
-    vec4 tex = shadow_coord / shadow_coord.w;
-    vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, tex.xy);
+    vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord.xy);
 
     float E_x2 = vsm.y;
     float Ex_2 = vsm.x * vsm.x;
     float var = max(E_x2 - Ex_2, bias);
-    float mD = vsm.x - tex.z;
+    float mD = vsm.x - shadow_coord.z;
     float mD_2 = mD * mD;
     float p = var / (var + mD_2);
 
-    return max(vsmFixLightBleed(p, 0.7), int(tex.z <= vsm.x));
+    return max(vsmFixLightBleed(p, 0.7), int(shadow_coord.z <= vsm.x));
 }
 
 float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
