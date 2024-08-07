@@ -47,7 +47,7 @@ public class ObjectsTable {
         for (Map.Entry<String, Pair<TEntityContainer, TRenderContainer>> entry : pairEntry) {
             TEntityContainer tEntityContainer = entry.getValue().getFirst();
             ObjectCategory objectCategory = tEntityContainer.getObjectCategory();
-            TBoxShaderManager shaderManager = (tEntityContainer.getPathToTBoxShader() == null) ? (TBoxResourceManager.shaderAssets.world_object) : tBoxResourceManager.createShaderManager(tEntityContainer.getPathToTBoxShader(), Shader.ShaderType.DEFAULT_BITS);
+            TBoxShaderManager shaderManager = (tEntityContainer.getPathToTBoxShader() == null) ? (TBoxResourceManager.shaderAssets.world_object) : tBoxResourceManager.createShaderManager(tEntityContainer.getPathToTBoxShader());
             AttributeContainer attributeContainer = tEntityContainer.getAttributeContainer();
             MeshDataGroup meshDataGroup = TBoxResourceManager.createModel(tEntityContainer.getPathToTBoxModel());
 

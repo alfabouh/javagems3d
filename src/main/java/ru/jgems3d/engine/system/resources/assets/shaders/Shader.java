@@ -28,6 +28,10 @@ public class Shader {
         this.shaderText = "";
     }
 
+    public static boolean checkIfShaderExistsInJar(JGPath directoryPath, ShaderType shaderType) {
+        return JGems3D.seekInJar(new JGPath(directoryPath, shaderType.getFile()));
+    }
+
     public Map<String, Set<String>> getStructs() {
         return this.structs;
     }
@@ -152,30 +156,15 @@ public class Shader {
     }
 
     public enum ShaderType {
-        FRAGMENT("/fragment.frag", ShaderType.FRAGMENT_BIT),
-        VERTEX("/vertex.vert", ShaderType.VERTEX_BIT),
-        GEOMETRIC("/geometric.geom", ShaderType.GEOMETRIC_BIT),
-        COMPUTE("/compute.comp", ShaderType.COMPUTE_BIT);
-        public static final int
-                FRAGMENT_BIT = (1 << 2),
-                VERTEX_BIT = (1 << 3),
-                GEOMETRIC_BIT = (1 << 4),
-                COMPUTE_BIT = (1 << 5),
-
-                DEFAULT_BITS = FRAGMENT_BIT | VERTEX_BIT;
-
-        public static final int ALL = FRAGMENT.getBit() | VERTEX.getBit() | GEOMETRIC.getBit() | COMPUTE.getBit();
+        FRAGMENT("/fragment.frag"),
+        VERTEX("/vertex.vert"),
+        GEOMETRIC("/geometric.geom"),
+        COMPUTE("/compute.comp");
 
         public final String file;
-        private final int flag;
 
-        ShaderType(String file, int flag) {
+        ShaderType(String file) {
             this.file = file;
-            this.flag = flag;
-        }
-
-        public int getBit() {
-            return this.flag;
         }
 
         public String getFile() {

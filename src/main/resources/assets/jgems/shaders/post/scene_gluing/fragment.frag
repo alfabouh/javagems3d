@@ -33,7 +33,7 @@ void main() {
     vec4 sceneColor = texture(texture_sampler, out_texture) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
 
     vec3 accumBloomColor = accum_blur.rgb / max(accum_blur.a, 1e-5f);
-    vec4 mixedBloomTransparency = vec4(accumBloomColor, reveal);
+    vec4 mixedBloomTransparency = vec4(accumBloomColor, reveal <= 0.0 ? 1. : reveal);
 
     frag_color = sceneColor;
 

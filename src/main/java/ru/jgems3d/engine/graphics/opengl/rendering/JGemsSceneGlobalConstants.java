@@ -1,6 +1,9 @@
 package ru.jgems3d.engine.graphics.opengl.rendering;
 
 public abstract class JGemsSceneGlobalConstants {
+    //section Particles
+    public static int MAX_PARTICLES = 256;
+
     //section Screen
     public static final double RENDER_TICKS_UPD_RATE = 60.0d;
 

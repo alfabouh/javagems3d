@@ -691,11 +691,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         private final Set<SceneRenderBase> inventoryRenderSet;
 
         public SceneRenderBaseContainer() {
-            this.forwardRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
-            this.deferredRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
-            this.transparencyRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
-            this.guiRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
-            this.inventoryRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder));
+            this.forwardRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
+            this.deferredRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
+            this.transparencyRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
+            this.guiRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
+            this.inventoryRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
         }
 
         public static void renderSceneRenderSet(FrameTicking frameTicking, Set<SceneRenderBase> sceneRenderBases) {

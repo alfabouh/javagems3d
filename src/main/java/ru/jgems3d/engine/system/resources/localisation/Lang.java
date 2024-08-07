@@ -18,11 +18,11 @@ public final class Lang {
     }
 
     private final String fullName;
-    private JGPath filePath;
+    private JGPath fileDirectoryPath;
 
-    private Lang(String fullName, JGPath filePath) {
+    private Lang(String fullName, JGPath fileDirectoryPath) {
         this.fullName = fullName;
-        this.filePath = filePath;
+        this.fileDirectoryPath = fileDirectoryPath;
     }
 
     public static boolean checkLangInSet(String fullName) {
@@ -60,19 +60,19 @@ public final class Lang {
             JGemsHelper.getLogger().warn("Couldn't find language " + lang + " in lang-list!");
             return;
         }
-        lang1.setFilePath(path);
+        lang1.setFileDirectoryPath(path);
     }
 
     public String getFullName() {
         return this.fullName;
     }
 
-    public void setFilePath(JGPath filePath) {
-        this.filePath = filePath;
+    public void setFileDirectoryPath(JGPath fileDirectoryPath) {
+        this.fileDirectoryPath = fileDirectoryPath;
     }
 
-    public JGPath getFilePath() {
-        return this.filePath;
+    public JGPath getFileDirectoryPath() {
+        return this.fileDirectoryPath;
     }
 
     @Override

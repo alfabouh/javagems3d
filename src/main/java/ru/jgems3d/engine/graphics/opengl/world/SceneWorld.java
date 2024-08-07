@@ -9,6 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
 import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
+import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.ILightsKeeper;
@@ -58,6 +59,7 @@ public final class SceneWorld implements IWorld {
     //section WorldStart
     @Override
     public void onWorldStart() {
+        GlobalRenderDebugConstants.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
         this.getEnvironment().init(this);

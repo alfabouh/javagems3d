@@ -12,7 +12,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Mesh {
+public class Mesh {
     private final List<Integer> indexes;
     private final List<Integer> attributePointers;
     private final List<Float> attributePositions;
@@ -130,7 +130,7 @@ public final class Mesh {
         float[] normals = JGemsHelper.convertFloatsArray(this.attributeNormals);
         float[] tangent = JGemsHelper.convertFloatsArray(this.attributeTangents);
         float[] bitangent = JGemsHelper.convertFloatsArray(this.attributeBitangents);
-        float[] avaragedNormals = null;
+        float[] avaragedNormals;
 
         this.totalVertices = index.length;
 

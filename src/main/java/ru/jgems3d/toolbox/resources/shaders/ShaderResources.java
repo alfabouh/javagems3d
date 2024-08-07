@@ -15,15 +15,15 @@ public class ShaderResources extends ShadersLoader<TBoxShaderManager> {
     public TBoxShaderManager imgui;
 
     protected void initObjects(ResourceCache resourceCache) {
-        this.world_isometric_object = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_isometric_object"), Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.world_object = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_object"), Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.world_lines = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_lines"), Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.world_xyz = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_xyz"), Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
-        this.imgui = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/imgui"), Shader.ShaderType.FRAGMENT_BIT | Shader.ShaderType.VERTEX_BIT);
+        this.world_isometric_object = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_isometric_object"));
+        this.world_object = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_object"));
+        this.world_lines = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_lines"));
+        this.world_xyz = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_xyz"));
+        this.imgui = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/imgui"));
     }
 
     @Override
-    public TBoxShaderManager createShaderObject(JGPath shaderPath, int types) {
-        return new TBoxShaderManager(new ShaderContainer(shaderPath, types));
+    public TBoxShaderManager createShaderObject(JGPath shaderPath) {
+        return new TBoxShaderManager(new ShaderContainer(shaderPath));
     }
 }
