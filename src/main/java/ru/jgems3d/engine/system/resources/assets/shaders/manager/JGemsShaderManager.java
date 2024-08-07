@@ -149,7 +149,7 @@ public final class JGemsShaderManager extends ShaderManager {
             for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getShadowScene().getPointLightShadows().get(i);
                 JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), pointLightShadow.farPlane());
-                if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap"))) {
+                if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap", i))) {
                     this.performCubeMapProgram(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
                 }
             }

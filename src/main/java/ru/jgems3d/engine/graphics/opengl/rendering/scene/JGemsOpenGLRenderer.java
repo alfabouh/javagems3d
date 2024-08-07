@@ -207,7 +207,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         T2DAttachmentContainer blur = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
         }};
-        this.bloomBlurredBuffer.createFrameBuffer2DTexture(windowSize, blur, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.bloomBlurredBuffer.createFrameBuffer2DTexture(windowSize, blur, false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer allScene = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB16F, GL30.GL_RGB);
