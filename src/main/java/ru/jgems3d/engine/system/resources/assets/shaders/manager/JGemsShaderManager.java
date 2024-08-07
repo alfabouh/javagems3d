@@ -140,8 +140,8 @@ public final class JGemsShaderManager extends ShaderManager {
             JGemsScene scene = JGems3D.get().getScreen().getScene();
             for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getShadowScene().getCascadeShadows().get(i);
-                if (JGemsShaderManager.this.isUniformExist(new UniformString("shadow_map" + i))) {
-                    JGemsShaderManager.this.performUniformTexture(new UniformString("shadow_map" + i), scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
+                if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
+                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), cascadeShadow.getSplitDistance());
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), cascadeShadow.getLightProjectionViewMatrix());
                 }

@@ -29,14 +29,15 @@ public class DebugRender extends SceneRenderBase {
     }
 
     public void onRender(FrameTicking frameTicking) {
+        GL30.glHint(GL30.GL_LINE_SMOOTH_HINT, GL30.GL_NICEST);
+        GL30.glEnable(GL30.GL_LINE_SMOOTH);
         if (GlobalRenderDebugConstants.SHOW_DEBUG_LINES) {
             DynamicsUtils.btDebugDraw.drawLines(JGems3D.get().getPhysicsWorld().getDynamics());
-
             this.debugShaders.bind();
+            this.debugShaders.getUtils().performPerspectiveMatrix();
             this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
             this.renderDebugSunDirection(this);
-            this.renderNavMesh(this);
-            this.debugShaders.getUtils().performPerspectiveMatrix();
+            //this.renderNavMesh(this);
             this.debugShaders.unBind();
         }
     }
@@ -78,9 +79,9 @@ public class DebugRender extends SceneRenderBase {
     }
 
     private void renderDebugSunDirection(SceneRenderBase sceneRenderBase) {
-        Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(sceneRenderBase.getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f));
-        this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
-        JGemsSceneUtils.renderModel(model, GL30.GL_LINES);
-        model.clean();
+        try (Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(this.getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f))) {
+            this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
+            JGemsSceneUtils.renderModel(model, GL30.GL_LINES);
+        }
     }
 }

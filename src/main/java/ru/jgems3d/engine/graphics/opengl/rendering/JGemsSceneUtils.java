@@ -32,7 +32,15 @@ public abstract class JGemsSceneUtils {
     @SuppressWarnings("all")
     public static void renderModel(Model<?> model, int code) {
         for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-            JGemsSceneUtils.renderModelNode(modelNode);
+            GL30.glBindVertexArray(modelNode.getMesh().getVao());
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glEnableVertexAttribArray(a);
+            }
+            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glDisableVertexAttribArray(a);
+            }
+            GL30.glBindVertexArray(0);
         }
     }
 

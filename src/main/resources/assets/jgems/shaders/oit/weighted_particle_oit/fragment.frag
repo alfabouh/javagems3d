@@ -39,9 +39,7 @@ struct CascadeShadow {
 
 uniform CascadeShadow cascade_shadow[3];
 uniform samplerCube point_light_cubemap[3];
-uniform sampler2D shadow_map0;
-uniform sampler2D shadow_map1;
-uniform sampler2D shadow_map2;
+uniform sampler2D sun_shadow_map[3];
 uniform float far_plane;
 
 struct PointLight
@@ -125,8 +123,7 @@ void main()
 float calcSunShineVSM(vec4 world_position, int idx, vec3 frag_pos) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * world_position;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    vec4 tex = shadow_coord / shadow_coord.w;
-    float closest = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, tex.xy).r;
+    float closest = texture(sun_shadow_map[idx], world_position.xy).r;
     float currD = shadow_coord.z;
     return currD - 0.005 > closest ? 0. : 1.;
 }

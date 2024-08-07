@@ -39,7 +39,7 @@ public class ParticlesRender extends SceneRenderBase {
         gemsShaderManager.performUniform(new UniformString("color_mask"), particleFX.getColorMask());
         gemsShaderManager.performUniform(new UniformString("brightness"), particleFX.getParticleAttributes().getBrightness());
         gemsShaderManager.performUniform(new UniformString("alpha_factor"), particleFX.getParticleAttributes().getOpacity());
-        JGemsSceneUtils.renderModel(model, GL30.GL_TEXTURE_2D);
+        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         gemsShaderManager.unBind();
     }
 

@@ -39,7 +39,7 @@ public class Localisation {
     }
 
     public static void setLangLocalisationPath(Lang lang, JGPath path) {
-        lang.setFilePath(path);
+        lang.setFileDirectoryPath(path);
         if (JGemsHelper.getLocalisation().getCurrentlang().equals(lang)) {
             JGemsHelper.getLocalisation().setLanguage(lang);
         }
@@ -59,7 +59,7 @@ public class Localisation {
     private void readLangFileInTable(Lang lang) {
         LangMap langMap = new LangMap();
         try {
-            this.readStream(langMap, new JGPath(lang.getFilePath(), (lang.getFullName().toLowerCase() + ".lang")));
+            this.readStream(langMap, new JGPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
         } catch (IOException e) {
             throw new JGemsException(e);
         }

@@ -6,6 +6,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
@@ -47,6 +48,9 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     @Override
     public void emitParticle(ParticleFX particleFX) {
         this.getParticlesSet().add(particleFX);
+        if (this.getParticlesSet().size() > JGemsSceneGlobalConstants.MAX_PARTICLES) {
+            this.getParticlesSet().remove(this.getParticlesSet().stream().findAny().get());
+        }
     }
 
     @Override

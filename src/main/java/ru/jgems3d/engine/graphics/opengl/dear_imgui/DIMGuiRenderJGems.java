@@ -232,6 +232,7 @@ public class DIMGuiRenderJGems {
         }
         ImGui.end();
 
+        ImGui.setNextWindowSize(JGemsSceneGlobalConstants.defaultW / 3.0f, JGemsSceneGlobalConstants.defaultH / 3.0f, ImGuiCond.Once);
         ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
         ImGui.begin("Debug");
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
@@ -243,60 +244,83 @@ public class DIMGuiRenderJGems {
            // ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
         }
 
-        if (ImGui.checkbox("FreeCam", this.freeCam)) {
-            this.freeCam = !this.freeCam;
-            if (this.freeCam) {
-                JGems3D.get().getScreen().getScene().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
-                JGems3D.get().getScreen().getControllerDispatcher().detachController();
-            } else {
-                JGems3D.get().getScreen().getScene().enableAttachedCamera((WorldItem) JGems3D.get().getPlayer());
-                JGems3D.get().getScreen().getControllerDispatcher().attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
+        if (ImGui.collapsingHeader("Util Checkboxes")) {
+            if (ImGui.checkbox("FreeCam", this.freeCam)) {
+                this.freeCam = !this.freeCam;
+                if (this.freeCam) {
+                    JGems3D.get().getScreen().getScene().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
+                    JGems3D.get().getScreen().getControllerDispatcher().detachController();
+                } else {
+                    JGems3D.get().getScreen().getScene().enableAttachedCamera((WorldItem) JGems3D.get().getPlayer());
+                    JGems3D.get().getScreen().getControllerDispatcher().attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
+                }
             }
-        }
 
-        if (ImGui.checkbox("Full Bright", this.fullBright)) {
-            this.fullBright = !this.fullBright;
-            GlobalRenderDebugConstants.FULL_BRIGHT = this.fullBright;
-        }
+            if (ImGui.checkbox("Full Bright", this.fullBright)) {
+                this.fullBright = !this.fullBright;
+                GlobalRenderDebugConstants.FULL_BRIGHT = this.fullBright;
+            }
 
-        if (ImGui.checkbox("Show Debug Lines", this.debugLines)) {
-            this.debugLines = !this.debugLines;
-            GlobalRenderDebugConstants.SHOW_DEBUG_LINES = this.debugLines;
-        }
-
-        if (ImGui.checkbox("PSX", this.psx)) {
-            this.psx = !this.psx;
-            GlobalRenderDebugConstants.ENABLE_PSX = this.psx;
+            if (ImGui.checkbox("Show Debug Lines", this.debugLines)) {
+                this.debugLines = !this.debugLines;
+                GlobalRenderDebugConstants.SHOW_DEBUG_LINES = this.debugLines;
+            }
         }
 
         if (ImGui.collapsingHeader("Frame Buffers")) {
             GL30.glScissor(0, 0, 1, 1);
-            ImGui.beginChild("Images", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, 600.0f, true);
+            ImGui.beginChild("inner1");
+            if (ImGui.collapsingHeader("GBuffer")) {
+                ImGui.beginChild("Images1", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);
 
-            ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            ImGui.sameLine();
-            ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
+                ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-            ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(2).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            ImGui.sameLine();
-            ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(3).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(2).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
+                ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(3).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-            ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(4).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            ImGui.sameLine();
-            ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(5).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(4).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
 
-            ImGui.image(sceneRender.getForwardAndDeferredScenesBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            ImGui.sameLine();
-            ImGui.image(sceneRender.getHdrBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(5).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.endChild();
+            }
 
-            ImGui.image(sceneRender.getSceneGluingBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            ImGui.sameLine();
-            ImGui.image(sceneRender.getTransparencySceneBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+            if (ImGui.collapsingHeader("Scene")) {
+                ImGui.beginChild("Images2", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);
 
-            ImGui.image(sceneRender.getSsaoBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            ImGui.sameLine();
-            ImGui.image(sceneRender.getShadowScene().getShadowPostFBO().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getSceneGluingBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
+                ImGui.image(sceneRender.getTransparencySceneBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
+                ImGui.image(sceneRender.getForwardAndDeferredScenesBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
+
+                ImGui.image(sceneRender.getHdrBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.endChild();
+            }
+
+            if (ImGui.collapsingHeader("Shadows")) {
+                ImGui.beginChild("Images3", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);
+
+                ImGui.image(sceneRender.getShadowScene().getShadowPostFBO().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
+                ImGui.image(sceneRender.getShadowScene().getShadowPostFBO().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+
+
+                ImGui.image(sceneRender.getShadowScene().getShadowPostFBO().getTexturePrograms().get(2).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.endChild();
+            }
+
+            if (ImGui.collapsingHeader("SSAO")) {
+                ImGui.beginChild("Images4", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);
+
+                ImGui.image(sceneRender.getSsaoBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+
+                ImGui.endChild();
+            }
             ImGui.endChild();
         }
 

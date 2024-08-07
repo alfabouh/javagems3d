@@ -12,9 +12,7 @@ struct CascadeShadow {
 
 uniform CascadeShadow cascade_shadow[3];
 uniform samplerCube point_light_cubemap[3];
-uniform sampler2D shadow_map0;
-uniform sampler2D shadow_map1;
-uniform sampler2D shadow_map2;
+uniform sampler2D sun_shadow_map[3];
 uniform float far_plane;
 uniform bool isSsaoValid;
 
@@ -77,7 +75,7 @@ void main()
 
     float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
     float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
-    float f1 = pow(AO, (1.0 - gray) * 5.);
+    float f1 = pow(AO, (1.0 - gray) * 3.);
 
     vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
 
@@ -93,7 +91,7 @@ float vsmFixLightBleed(float pMax, float amount) {
 }
 
 float calcVSM(int idx, vec4 shadow_coord, float bias) {
-    vec4 vsm = texture(idx == 0 ? shadow_map0 : idx == 1 ? shadow_map1 : shadow_map2, shadow_coord.xy);
+    vec4 vsm = texture(sun_shadow_map[idx], shadow_coord.xy);
 
     float E_x2 = vsm.y;
     float Ex_2 = vsm.x * vsm.x;

@@ -8,16 +8,16 @@ import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
 public abstract class ShadersLoader <T extends ShaderManager> {
     protected abstract void initObjects(ResourceCache resourceCache);
-    protected abstract T createShaderObject(JGPath shaderPath, int types);
+    protected abstract T createShaderObject(JGPath shaderPath);
 
     @SuppressWarnings("unchecked")
-    public T createShaderManager(ResourceCache resourceCache, JGPath shaderPath, int types) {
+    public T createShaderManager(ResourceCache resourceCache, JGPath shaderPath) {
         if (resourceCache.checkObjectInCache(shaderPath)) {
             JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists!");
             return (T) resourceCache.getCachedObject(shaderPath);
         }
         JGemsHelper.getLogger().log("Creating shader " + shaderPath + "...");
-        T shaderManager = (T) this.createShaderObject(shaderPath, types);
+        T shaderManager = (T) this.createShaderObject(shaderPath);
         resourceCache.addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }

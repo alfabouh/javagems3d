@@ -16,7 +16,7 @@ public final class ShaderContainer {
     private final Shader computeShader;
     private final String id;
 
-    public ShaderContainer(JGPath shaderPath, int types) {
+    public ShaderContainer(JGPath shaderPath) {
         this.id = shaderPath.getSPath();
         this.gUniformsFullSet = new HashSet<>();
         this.cUniformsFullSet = new HashSet<>();
@@ -25,16 +25,16 @@ public final class ShaderContainer {
         Shader fragmentShader1 = null;
         Shader computeShader1 = null;
 
-        if ((types & Shader.ShaderType.FRAGMENT_BIT) != 0) {
+        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.FRAGMENT)) {
             fragmentShader1 = new Shader(Shader.ShaderType.FRAGMENT, shaderPath);
         }
-        if ((types & Shader.ShaderType.VERTEX_BIT) != 0) {
+        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.VERTEX)) {
             vertexShader1 = new Shader(Shader.ShaderType.VERTEX, shaderPath);
         }
-        if ((types & Shader.ShaderType.GEOMETRIC_BIT) != 0) {
+        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.GEOMETRIC)) {
             geometricShader1 = new Shader(Shader.ShaderType.GEOMETRIC, shaderPath);
         }
-        if ((types & Shader.ShaderType.COMPUTE_BIT) != 0) {
+        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.COMPUTE)) {
             computeShader1 = new Shader(Shader.ShaderType.COMPUTE, shaderPath);
         }
 
