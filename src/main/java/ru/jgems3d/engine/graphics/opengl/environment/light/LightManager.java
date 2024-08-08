@@ -9,9 +9,9 @@ import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

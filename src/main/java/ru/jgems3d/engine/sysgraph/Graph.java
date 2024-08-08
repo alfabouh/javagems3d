@@ -2,11 +2,8 @@ package ru.jgems3d.engine.sysgraph;
 
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.misc.JGPath;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 import java.io.*;
 import java.util.*;
@@ -29,7 +26,7 @@ public class Graph implements Serializable {
     }
 
     public static Graph readFromFile(JGPath path) throws JGemsNullException, IOException, ClassNotFoundException {
-        try (InputStream inputStream = JGems3D.loadFileJar(path)) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
             try (ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
                 return (Graph) objectInputStream.readObject();
             }

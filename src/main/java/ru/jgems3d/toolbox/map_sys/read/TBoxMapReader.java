@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 public class TBoxMapReader {
     @SuppressWarnings("unchecked")
-    public static SaveContainer readMapFolder(File file) throws IOException, ClassNotFoundException {
+    public static SaveContainer readMapFolder(File file) {
         MapProperties mapProperties = null;
         HashSet<SaveObject> saveObjectSet = null;
         try {
@@ -39,12 +39,12 @@ public class TBoxMapReader {
     public static SaveContainer readMapFolderFromJAR(String mapName) throws IOException, ClassNotFoundException {
         MapProperties mapProperties = null;
         HashSet<SaveObject> saveObjectSet = null;
-        try (InputStream stream = JGems3D.loadFileJar(new JGPath("/assets/jgems/maps/" + mapName + "/map_prop.json"))){
+        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath("/assets/jgems/maps/" + mapName + "/map_prop.json"))){
             mapProperties = SerializeHelper.readFromJSON(stream, MapProperties.class); //TODO
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        try (InputStream stream = JGems3D.loadFileJar(new JGPath("/assets/jgems/maps/" + mapName + "/objects.ser"))) {
+        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath("/assets/jgems/maps/" + mapName + "/objects.ser"))) {
             saveObjectSet = SerializeHelper.readFromBytes(stream, HashSet.class);
         } catch (Exception e) {
             e.printStackTrace(System.err);

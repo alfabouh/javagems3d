@@ -19,7 +19,7 @@ import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.settings.JGemsSettings;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.JGemsLogging;
 
@@ -145,11 +145,11 @@ public class JGems3D {
         return new File(JGems3D.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
     }
 
-    public static boolean seekInJar(JGPath path) {
+    public static boolean checkFileInJar(JGPath path) {
         return JGems3D.class.getResourceAsStream(path.getSPath()) != null;
     }
 
-    public static InputStream loadFileJar(JGPath path) {
+    public static InputStream loadFileFromJar(JGPath path) {
         InputStream inputStream = JGems3D.class.getResourceAsStream(path.getSPath());
         if (inputStream == null) {
             throw new JGemsNullException("Couldn't find: " + path);

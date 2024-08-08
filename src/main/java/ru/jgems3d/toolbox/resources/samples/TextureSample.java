@@ -42,7 +42,7 @@ public class TextureSample implements IImageSample {
         this.name = fullPath;
         SystemLogging.get().getLogManager().log("Loading " + this.getName());
         if (inJar) {
-            try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(fullPath))) {
+            try (InputStream inputStream = JGems3D.loadFileFromJar(new JGPath(fullPath))) {
                 this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
                 if (this.imageBuffer != null) {
                     this.createTexture();
