@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.translators.StreamOutputTranslation;
 
@@ -27,7 +29,7 @@ public abstract class LoggingManager {
         try {
             this.initStreams(this.log);
         } catch (IOException e) {
-            throw new JGemsException(e);
+            throw new JGemsIOException(e);
         }
     }
 
@@ -78,7 +80,7 @@ public abstract class LoggingManager {
                 integer.set(JOptionPane.showConfirmDialog(null, message));
             });
         } catch (InterruptedException | InvocationTargetException e) {
-            throw new JGemsException(e);
+            throw new JGemsRuntimeException(e);
         }
         return integer.get() == 0;
     }

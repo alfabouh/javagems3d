@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.settings.objects;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.misc.Pair;
+import ru.jgems3d.engine.system.service.misc.Pair;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -9,7 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIElement
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;

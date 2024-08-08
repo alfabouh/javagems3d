@@ -8,6 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.synchronizing.SyncManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -41,7 +42,7 @@ public class LightManager implements ILightManager {
     public void addLight(Light light) {
         if ((light.lightCode() & Light.POINT_LIGHT) != 0) {
             if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) {
-                throw new JGemsException("Reached active point lights limit: " + JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
+                throw new JGemsRuntimeException("Reached active point lights limit: " + JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
             }
             this.getPointLightList().add((PointLight) light);
         }

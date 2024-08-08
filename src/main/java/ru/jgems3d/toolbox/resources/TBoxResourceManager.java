@@ -1,7 +1,7 @@
 package ru.jgems3d.toolbox.resources;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.jgems3d.engine.system.resources.cache.ICached;

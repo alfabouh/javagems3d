@@ -1,10 +1,10 @@
-package ru.jgems3d.engine.system.resources.assets.materials.samples.packs;
+package ru.jgems3d.engine.system.resources.assets.material.samples.packs;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class ParticleTexturePack {

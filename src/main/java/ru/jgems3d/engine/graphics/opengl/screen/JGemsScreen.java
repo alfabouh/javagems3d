@@ -29,7 +29,8 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.awt.*;
@@ -84,7 +85,7 @@ public class JGemsScreen implements IScreen {
 
             JGemsHelper.getLogger().log("JGemsScreen built successful");
         } else {
-            throw new JGemsException("Caught service, while building screen!!");
+            throw new JGemsRuntimeException("Caught service, while building screen!!");
         }
     }
 
@@ -123,7 +124,7 @@ public class JGemsScreen implements IScreen {
     public boolean tryToBuildScreen() {
         GLFWErrorCallback.createPrint(System.err).set();
         if (!GLFW.glfwInit()) {
-            throw new JGemsException("Error, while initializing GLFW");
+            throw new JGemsRuntimeException("Error, while initializing GLFW");
         }
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
@@ -141,7 +142,7 @@ public class JGemsScreen implements IScreen {
         this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : JGemsSceneGlobalConstants.defaultW, flag ? vidMode.height() : JGemsSceneGlobalConstants.defaultH, JGems3D.get().toString()), new JGPath("/assets/jgems/icons/icon.png"));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
-            throw new JGemsException("Failed to create the GLFW window");
+            throw new JGemsRuntimeException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
             int x = (vidMode.width() - JGemsSceneGlobalConstants.defaultW) / 2;
@@ -218,7 +219,7 @@ public class JGemsScreen implements IScreen {
         try {
             this.renderLoop();
         } catch (InterruptedException e) {
-            throw new JGemsException(e);
+            throw new JGemsRuntimeException(e);
         } finally {
             this.getScene().postRender();
             JGemsHelper.getLogger().log("Destroying screen...");

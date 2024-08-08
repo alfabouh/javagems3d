@@ -2,7 +2,7 @@ package ru.jgems3d.engine.system.resources.assets.models;
 
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
+import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.models.formats.IFormat;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;

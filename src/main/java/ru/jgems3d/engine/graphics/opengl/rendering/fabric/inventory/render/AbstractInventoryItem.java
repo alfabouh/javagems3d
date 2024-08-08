@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.IRenderInven
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;

@@ -19,6 +19,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -102,7 +103,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
 
     public void removeLight(Light light) {
         if (!this.getLightsList().contains(light)) {
-            throw new JGemsException("Couldn't remove light. Entity doesn't keep it. " + this);
+            throw new JGemsRuntimeException("Couldn't remove light. Entity doesn't keep it. " + this);
         }
         this.getLightsList().remove(light);
         light.stop();

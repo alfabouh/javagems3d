@@ -17,8 +17,10 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -41,23 +43,25 @@ public class Window implements IWindow {
 
     private void loadIcon(@NotNull JGPath iconPath) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer width = stack.mallocInt(1);
-            IntBuffer height = stack.mallocInt(1);
-            IntBuffer channels = stack.mallocInt(1);
-            byte[] stream = ByteStreams.toByteArray(JGems3D.loadFileJar(iconPath));
-            ByteBuffer buffer = MemoryUtil.memAlloc(stream.length);
-            buffer.put(stream);
-            buffer.flip();
-            ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
-            if (imageBuffer == null) {
-                throw new NullPointerException("Window icon is NULL");
+            try (InputStream inputStream = JGems3D.loadFileJar(iconPath)) {
+                IntBuffer width = stack.mallocInt(1);
+                IntBuffer height = stack.mallocInt(1);
+                IntBuffer channels = stack.mallocInt(1);
+                byte[] stream = ByteStreams.toByteArray(inputStream);
+                ByteBuffer buffer = MemoryUtil.memAlloc(stream.length);
+                buffer.put(stream);
+                buffer.flip();
+                ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
+                if (imageBuffer == null) {
+                    throw new NullPointerException("Window icon is NULL");
+                }
+                GLFWImage.Buffer iconBuffer = GLFWImage.malloc(1);
+                iconBuffer.width(width.get(0));
+                iconBuffer.height(height.get(0));
+                iconBuffer.pixels(imageBuffer);
+                GLFW.glfwSetWindowIcon(window, iconBuffer);
+                STBImage.stbi_image_free(imageBuffer);
             }
-            GLFWImage.Buffer iconBuffer = GLFWImage.malloc(1);
-            iconBuffer.width(width.get(0));
-            iconBuffer.height(height.get(0));
-            iconBuffer.pixels(imageBuffer);
-            GLFW.glfwSetWindowIcon(window, iconBuffer);
-            STBImage.stbi_image_free(imageBuffer);
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
@@ -185,24 +189,22 @@ public class Window implements IWindow {
 
     public void makeFullScreen() {
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        if (vidMode != null) {
-            GLFW.glfwSetWindowMonitor(this.getDescriptor(), GLFW.glfwGetPrimaryMonitor(), 0, 0, vidMode.width(), vidMode.height(), GLFW.GLFW_DONT_CARE);
-            JGemsHelper.getLogger().log("FullScreen mode");
-        } else {
-            throw new JGemsException("Monitor None");
+        if (vidMode == null) {
+            throw new JGemsNullException("Null Monitor");
         }
+        GLFW.glfwSetWindowMonitor(this.getDescriptor(), GLFW.glfwGetPrimaryMonitor(), 0, 0, vidMode.width(), vidMode.height(), GLFW.GLFW_DONT_CARE);
+        JGemsHelper.getLogger().log("FullScreen mode");
     }
 
     public void removeFullScreen() {
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        if (vidMode != null) {
-            int x = (vidMode.width() - JGemsSceneGlobalConstants.defaultW) / 2;
-            int y = (vidMode.height() - JGemsSceneGlobalConstants.defaultH) / 2;
-            GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, JGemsSceneGlobalConstants.defaultW, JGemsSceneGlobalConstants.defaultH, GLFW.GLFW_DONT_CARE);
-            JGemsHelper.getLogger().log("DefaultScreen mode");
-        } else {
-            throw new JGemsException("Monitor None");
+        if (vidMode == null) {
+            throw new JGemsNullException("Null Monitor");
         }
+        int x = (vidMode.width() - JGemsSceneGlobalConstants.defaultW) / 2;
+        int y = (vidMode.height() - JGemsSceneGlobalConstants.defaultH) / 2;
+        GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, JGemsSceneGlobalConstants.defaultW, JGemsSceneGlobalConstants.defaultH, GLFW.GLFW_DONT_CARE);
+        JGemsHelper.getLogger().log("DefaultScreen mode");
     }
 
     public WindowProperties getWindowProperties() {

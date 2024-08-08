@@ -10,7 +10,9 @@ import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.ITexturePro
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.MSAATextureProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.TextureProgram;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
+import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +54,7 @@ public class FBOTexture2DProgram {
 
         if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
             int errCode = GL43.glGetError();
-            throw new JGemsException("Failed to create framebuffer: " + Integer.toHexString(errCode));
+            throw new JGemsRuntimeException("Failed to create framebuffer: " + Integer.toHexString(errCode));
         }
 
         this.unBindFBO();
@@ -89,7 +91,7 @@ public class FBOTexture2DProgram {
 
         if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
             int errCode = GL43.glGetError();
-            throw new JGemsException("Failed to create framebuffer: " + Integer.toHexString(errCode));
+            throw new JGemsRuntimeException("Failed to create framebuffer: " + Integer.toHexString(errCode));
         }
 
         this.unBindFBO();

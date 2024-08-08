@@ -11,6 +11,7 @@ import ru.jgems3d.engine.system.resources.assets.shaders.*;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -183,7 +184,7 @@ public abstract class ShaderManager implements ICached {
                 if (gShaderProgram.link()) {
                     JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked");
                 } else {
-                    throw new JGemsException("Found problems in g-shader " + this);
+                    throw new JGemsRuntimeException("Found problems in g-shader " + this);
                 }
                 flag = true;
             }
@@ -195,14 +196,14 @@ public abstract class ShaderManager implements ICached {
                 if (cShaderProgram.link()) {
                     JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked");
                 } else {
-                    throw new JGemsException("Found problems in c-shader " + this);
+                    throw new JGemsRuntimeException("Found problems in c-shader " + this);
                 }
                 flag = true;
             }
             this.getComputingShaderGroup().initShaderGroup(cShaderProgram, shaderContainer.getCUniformsFullSet(), this.uniformBufferObjects);
         }
         if (!flag) {
-            throw new JGemsException("Wrong ShaderManager passed in system!");
+            throw new JGemsRuntimeException("Wrong ShaderManager passed in system!");
         }
     }
 

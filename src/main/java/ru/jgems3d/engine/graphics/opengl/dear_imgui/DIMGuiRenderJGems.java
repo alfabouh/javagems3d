@@ -26,7 +26,7 @@ import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.logger.managers.LoggingManager;

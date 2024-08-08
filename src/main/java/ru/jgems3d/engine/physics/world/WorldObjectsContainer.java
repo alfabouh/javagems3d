@@ -46,11 +46,7 @@ public final class WorldObjectsContainer {
     }
 
     public void addObjectInWorld(IWorldObject worldObject) {
-        if (worldObject == null) {
-            throw new JGemsException("Tried to pass NULL item in world");
-        }
         worldObject.onSpawn(this.getWorld());
-
         this.getWorldObjects().add(worldObject);
         if (worldObject instanceof IWorldTicked) {
             this.getWorldTickedObjects().add(((IWorldTicked) worldObject));
@@ -58,11 +54,7 @@ public final class WorldObjectsContainer {
     }
 
     public void removeObjectFromWorld(IWorldObject worldObject) {
-        if (worldObject == null) {
-            throw new JGemsException("Tried to pass NULL item in world");
-        }
         worldObject.onDestroy(this.getWorld());
-
         this.getWorldObjects().remove(worldObject);
         this.getWorldTickedObjects().remove(((IWorldTicked) worldObject));
     }

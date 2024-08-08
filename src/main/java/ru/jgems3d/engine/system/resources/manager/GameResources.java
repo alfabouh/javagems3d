@@ -4,9 +4,11 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.utils.ModelLoader;
 import ru.jgems3d.engine.system.resources.cache.ICached;
@@ -117,7 +119,7 @@ public class GameResources {
             try {
                 e.join();
             } catch (InterruptedException ex) {
-                throw new JGemsException(ex);
+                throw new JGemsRuntimeException(ex);
             }
         });
         for (IAssetsLoader assets : normalLoad) {
@@ -128,14 +130,14 @@ public class GameResources {
 
     public void addAssetsLoaders(IAssetsLoader... a) {
         if (a == null) {
-            throw new JGemsException("Caught NULL AssetsLoader!");
+            throw new JGemsNullException("Caught NULL AssetsLoader!");
         }
         this.assetsLoaderSet.addAll(Arrays.asList(a));
     }
 
     public void addAssetsLoaders(Collection<IAssetsLoader> a) {
         if (a == null) {
-            throw new JGemsException("Caught NULL AssetsLoader Collection!");
+            throw new JGemsNullException("Caught NULL AssetsLoader Collection!");
         }
         this.assetsLoaderSet.addAll(a);
     }

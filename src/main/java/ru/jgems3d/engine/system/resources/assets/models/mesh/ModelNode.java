@@ -1,6 +1,6 @@
 package ru.jgems3d.engine.system.resources.assets.models.mesh;
 
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
+import ru.jgems3d.engine.system.resources.assets.material.Material;
 
 public class ModelNode {
     private final Mesh mesh;

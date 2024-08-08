@@ -2,6 +2,7 @@ package ru.jgems3d.engine.system.settings.objects;
 
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.io.Serializable;
 
@@ -21,7 +22,7 @@ public abstract class SettingObject <T extends Serializable> {
     @SuppressWarnings("all")
     public void setValue(Object value) {
         if (!value.getClass().isAssignableFrom(this.value.getClass())) {
-            throw new JGemsException("Couldn't cast value");
+            throw new JGemsRuntimeException("Couldn't cast value");
         }
         this.value = (T) value;
     }

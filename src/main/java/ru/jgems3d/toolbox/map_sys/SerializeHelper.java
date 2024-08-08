@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.io.*;
 
@@ -35,7 +36,7 @@ public final class SerializeHelper {
                 T castedObj = (T) obj;
                 return castedObj;
             } else {
-                throw new JGemsException("Deserialized object has another type: " + tClass.getName());
+                throw new JGemsRuntimeException("Deserialized object has another type: " + tClass.getName());
             }
         }
     }
@@ -65,7 +66,7 @@ public final class SerializeHelper {
                     T castedObj = (T) obj;
                     return castedObj;
                 } else {
-                    throw new JGemsException("Deserialized object has another type: " + tClass.getName());
+                    throw new JGemsRuntimeException("Deserialized object has another type: " + tClass.getName());
                 }
             }
         }

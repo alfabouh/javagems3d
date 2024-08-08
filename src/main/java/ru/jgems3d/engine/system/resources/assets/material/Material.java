@@ -1,9 +1,9 @@
-package ru.jgems3d.engine.system.resources.assets.materials;
+package ru.jgems3d.engine.system.resources.assets.material;
 
 import org.joml.Vector4f;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.ISample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ISample;
 
 @SuppressWarnings("all")
 public class Material {

@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL43;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.shaders.Shader;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 public class CShaderProgram implements IShaderProgram {
     private final int programId;
@@ -13,7 +14,7 @@ public class CShaderProgram implements IShaderProgram {
     public CShaderProgram() {
         this.programId = GL20.glCreateProgram();
         if (this.programId == 0) {
-            throw new JGemsException("Could not create shader program!");
+            throw new JGemsRuntimeException("Could not create shader program!");
         }
     }
 
@@ -32,13 +33,13 @@ public class CShaderProgram implements IShaderProgram {
     private int createShader(String shader, int type) {
         int id = GL20.glCreateShader(type);
         if (id == 0) {
-            throw new JGemsException("Could not create Shader: " + type);
+            throw new JGemsRuntimeException("Could not create Shader: " + type);
         }
         GL20.glShaderSource(id, shader);
         GL20.glCompileShader(id);
         if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == 0) {
             JGemsHelper.getLogger().warn(shader);
-            throw new JGemsException("Compile shader error: " + GL20.glGetShaderInfoLog(id, 4096));
+            throw new JGemsRuntimeException("Compile shader error: " + GL20.glGetShaderInfoLog(id, 4096));
         }
         GL20.glAttachShader(this.programId, id);
         return id;

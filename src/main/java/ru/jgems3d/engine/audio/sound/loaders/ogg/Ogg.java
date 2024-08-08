@@ -8,6 +8,8 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.audio.sound.loaders.ISoundLoader;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import sun.misc.IOUtils;
 
 import java.io.IOException;
@@ -27,7 +29,7 @@ public class Ogg implements ISoundLoader {
                 this.pcm = this.readOGG(stream, info);
                 this.sampleRate = info.sample_rate();
             } catch (IOException e) {
-                throw new JGemsException(e);
+                throw new JGemsIOException(e);
             }
         }
     }
@@ -58,7 +60,7 @@ public class Ogg implements ISoundLoader {
             IntBuffer error = stack.mallocInt(1);
             long decoder = STBVorbis.stb_vorbis_open_memory(byteBuffer, error, null);
             if (decoder == MemoryUtil.NULL) {
-                throw new JGemsException("Failed to open Ogg sound. Error code: " + error.get(0));
+                throw new JGemsRuntimeException("Failed to open Ogg sound. Error code: " + error.get(0));
             }
 
             STBVorbis.stb_vorbis_get_info(decoder, info);

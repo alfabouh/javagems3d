@@ -6,6 +6,7 @@ import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 
 public class DynamicMeshCollider implements IColliderConstructor {
     private final MeshDataGroup meshDataGroup;
@@ -18,7 +19,7 @@ public class DynamicMeshCollider implements IColliderConstructor {
     public CollisionShape createGeom(DynamicsSystem dynamicsSystem) {
         MeshCollisionData meshCollisionData = this.meshDataGroup.getMeshDataContainer(MeshCollisionData.class);
         if (meshCollisionData == null) {
-            throw new JGemsException("Couldn't get mesh collision data! " + this.meshDataGroup);
+            throw new JGemsNullException("Couldn't get mesh collision data! " + this.meshDataGroup);
         }
         HullCollisionShape hullCollisionShape = new HullCollisionShape(meshCollisionData.getAllPositions());
         hullCollisionShape.setMargin(0.01f);
