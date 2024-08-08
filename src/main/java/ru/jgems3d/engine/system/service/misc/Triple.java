@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.misc;
+package ru.jgems3d.engine.system.service.misc;
 
 public class Triple<K, V, R> {
 

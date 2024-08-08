@@ -2,6 +2,7 @@ package ru.jgems3d.toolbox.map_sys.save.objects.object_attributes;
 
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.io.*;
 
@@ -85,7 +86,7 @@ public final class Attribute<T extends Serializable> implements Serializable {
                 ObjectInputStream ois = new ObjectInputStream(bis);
                 return (T) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
-                throw new JGemsException("Deep copy failed", e);
+                throw new JGemsRuntimeException("Deep copy failed", e);
             }
         }
     }

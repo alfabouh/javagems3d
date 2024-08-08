@@ -8,9 +8,10 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.logger.SystemLogging;
 
@@ -47,7 +48,7 @@ public class TextureSample implements IImageSample {
                     this.createTexture();
                 }
             } catch (IOException e) {
-                throw new JGemsException(e);
+                throw new JGemsIOException(e);
             }
         } else {
             this.imageBuffer = this.readTextureOutsideJar(this.getName());
@@ -63,7 +64,11 @@ public class TextureSample implements IImageSample {
             SystemLogging.get().getLogManager().warn("Error, while loading texture " + id + " InputStream is NULL");
             this.imageBuffer = null;
         } else {
-            this.imageBuffer = this.readTextureFromMemory(id, inputStream);
+            try {
+                this.imageBuffer = this.readTextureFromMemory(id, inputStream);
+            } catch (IOException e) {
+                throw new JGemsIOException(e);
+            }
             if (this.imageBuffer != null) {
                 this.createTexture();
             }
@@ -78,7 +83,7 @@ public class TextureSample implements IImageSample {
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
-            throw new JGemsException("Couldn't add invalid texture in cache!");
+            throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
     }
@@ -91,12 +96,12 @@ public class TextureSample implements IImageSample {
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(name, textureSample);
         } else {
-            throw new JGemsException("Couldn't add invalid texture in cache!");
+            throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
     }
 
-    private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) {
+    private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) throws IOException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);
@@ -116,8 +121,6 @@ public class TextureSample implements IImageSample {
                 this.height = height.get();
                 return imageBuffer;
             }
-        } catch (IOException e) {
-            throw new JGemsException(e);
         }
         return null;
     }
@@ -173,7 +176,7 @@ public class TextureSample implements IImageSample {
 
     public void bindTexture() {
         if (!this.isValid()) {
-            throw new JGemsException("Tried to bind invalid texture");
+            throw new JGemsRuntimeException("Tried to bind invalid texture");
         }
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, this.getTextureId());
     }

@@ -30,13 +30,12 @@ import ru.jgems3d.engine.system.controller.binding.JGemsBindingManager;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.ParticleTexturePack;
+import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.localisation.Lang;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
@@ -206,12 +205,8 @@ public abstract class JGemsHelper {
     }
 
     public static void addItem(WorldItem worldItem, RenderEntityData renderData) {
-        try {
-            JGemsHelper.getPhysicsWorld().addItem(worldItem);
-            JGemsHelper.getSceneWorld().addItem(worldItem, renderData);
-        } catch (JGemsException e) {
-            throw new JGemsException(e);
-        }
+        JGemsHelper.getPhysicsWorld().addItem(worldItem);
+        JGemsHelper.getSceneWorld().addItem(worldItem, renderData);
     }
 
     public static void addPointLight(WorldItem worldItem, PointLight light, int attachShadowScene) {

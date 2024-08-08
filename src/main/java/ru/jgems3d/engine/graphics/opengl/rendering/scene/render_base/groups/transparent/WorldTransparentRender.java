@@ -10,7 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRender
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
+import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;

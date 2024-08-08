@@ -5,10 +5,10 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.resources.assets.material.Material;
+import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
@@ -56,7 +56,7 @@ public class SimpleModelLoader {
                             }
                         }
                     } else {
-                        throw new JGemsException();
+                        throw new JGemsRuntimeException("Couldn't create assimp scene!");
                     }
                 } catch (RuntimeException e) {
                     SystemLogging.get().getLogManager().error("Error, while loading " + modelPath);

@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.map;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.system.misc.Pair;
+import ru.jgems3d.engine.system.service.misc.Pair;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 
 import java.util.ArrayList;

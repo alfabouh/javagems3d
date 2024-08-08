@@ -1,9 +1,9 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font;
 
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -28,7 +28,11 @@ public class GuiFont {
 
     public GuiFont(ResourceCache resourceCache, Font font, FontCode fontCode) {
         this.fontCode = fontCode;
-        this.initFontTexture(font);
+        try {
+            this.initFontTexture(font);
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
         GuiFont.allCreatedFonts.add(this);
         if (resourceCache != null) {
             resourceCache.addObjectInBuffer("font" + GuiFont.globalFonts++, this.getTexture());
@@ -39,7 +43,7 @@ public class GuiFont {
         this(null, font, fontCode);
     }
 
-    private void initFontTexture(Font font) {
+    private void initFontTexture(Font font) throws IOException {
         BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(font);
@@ -69,9 +73,10 @@ public class GuiFont {
             byteArrayOutputStream.flush();
             inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         } catch (IOException e) {
-            throw new JGemsException(e.getMessage());
+            throw new JGemsIOException(e);
         }
         this.texture = TextureSample.createTextureIS("font", inputStream, false, GL30.GL_CLAMP_TO_EDGE);
+        inputStream.close();
     }
 
     protected void setFontParams(Graphics2D graphics2D) {

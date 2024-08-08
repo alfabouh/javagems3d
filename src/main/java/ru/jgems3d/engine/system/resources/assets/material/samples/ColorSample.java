@@ -1,8 +1,8 @@
-package ru.jgems3d.engine.system.resources.assets.materials.samples;
+package ru.jgems3d.engine.system.resources.assets.material.samples;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.ISample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ISample;
 
 public class ColorSample implements ISample {
     private final Vector4f color;

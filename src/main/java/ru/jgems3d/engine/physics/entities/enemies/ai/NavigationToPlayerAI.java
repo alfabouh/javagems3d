@@ -10,6 +10,7 @@ import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.logger.managers.JGemsLogging;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class NavigationToPlayerAI extends NavigationAI {
 
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        throw new JGemsException(e);
+                        throw new JGemsRuntimeException(e);
                     }
                 }
             } catch (Exception e) {

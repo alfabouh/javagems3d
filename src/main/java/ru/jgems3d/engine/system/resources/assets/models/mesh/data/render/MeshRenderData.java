@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.assets.models.mesh.data.render;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
+import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 @SuppressWarnings("all")

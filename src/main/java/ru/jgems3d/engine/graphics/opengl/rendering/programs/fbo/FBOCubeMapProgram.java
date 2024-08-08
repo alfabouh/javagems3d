@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 public class FBOCubeMapProgram {
     private final CubeMapProgram cubeMapProgram;
@@ -27,7 +28,7 @@ public class FBOCubeMapProgram {
         GL30.glReadBuffer(GL30.GL_NONE);
 
         if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            throw new JGemsException("Failed to create framebuffer!");
+            throw new JGemsRuntimeException("Failed to create framebuffer!");
         }
 
         this.unBindFBO();
@@ -52,7 +53,7 @@ public class FBOCubeMapProgram {
         }
 
         if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            throw new JGemsException("Failed to create framebuffer!");
+            throw new JGemsRuntimeException("Failed to create framebuffer!");
         }
 
         this.unBindFBO();

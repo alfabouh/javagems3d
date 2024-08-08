@@ -2,6 +2,7 @@ package ru.jgems3d.engine.system.synchronizing;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -51,7 +52,7 @@ public final class Syncer {
                 this.condition.await();
             }
         } catch (InterruptedException e) {
-            throw new JGemsException(e);
+            throw new JGemsRuntimeException(e);
         } finally {
             this.lock.unlock();
         }

@@ -10,14 +10,15 @@ import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
@@ -94,11 +95,11 @@ public class TBoxScene {
 
                 MapProperties mapObjectProperties = saveContainer.getSaveMapProperties();
                 if (mapObjectProperties == null) {
-                    throw new JGemsException("Invalid deserialization!");
+                    throw new JGemsNullException("Invalid deserialization!");
                 }
 
                 if (mapObjectProperties.getMapName() == null || mapObjectProperties.getMapName().isEmpty()) {
-                    throw new JGemsException("Invalid file provided");
+                    throw new JGemsNullException("Invalid file provided");
                 }
 
                 Set<SaveObject> saveObjects = saveContainer.getSaveObjectsSet();
@@ -316,7 +317,7 @@ public class TBoxScene {
 
         TBoxScene3DObject closestObject = intersections.get(0).getValue();
         if (!editorContent.trySelectObject(closestObject)) {
-            throw new JGemsException("Occurred error while trying to select NULL object");
+            throw new JGemsRuntimeException("Occurred error while trying to select NULL object");
         }
 
         return true;
@@ -345,7 +346,7 @@ public class TBoxScene {
 
         Attribute<Vector3f> attribute = tBoxObject.getAttributeContainer().tryGetAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (attribute == null) {
-            throw new JGemsException("Caught attribute with NULL position!");
+            throw new JGemsNullException("Caught attribute with NULL position!");
         }
         attribute.setValue(format3D.getPosition());
 

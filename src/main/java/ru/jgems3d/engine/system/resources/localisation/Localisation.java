@@ -2,7 +2,9 @@ package ru.jgems3d.engine.system.resources.localisation;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 import java.io.BufferedReader;
@@ -61,13 +63,13 @@ public class Localisation {
         try {
             this.readStream(langMap, new JGPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
         } catch (IOException e) {
-            throw new JGemsException(e);
+            throw new JGemsIOException(e);
         }
         this.currentLangTable = langMap;
     }
 
     private void readStream(LangMap langMap, JGPath filePath) throws IOException {
-        try (InputStream inputStream = JGems3D.loadFileJarSilently(filePath)) {
+        try (InputStream inputStream = JGems3D.loadFileJar(filePath)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             int l = 0;
@@ -85,8 +87,6 @@ public class Localisation {
                 }
             }
             reader.close();
-        } catch (IOException ex) {
-            ex.printStackTrace(System.err);
         }
     }
 

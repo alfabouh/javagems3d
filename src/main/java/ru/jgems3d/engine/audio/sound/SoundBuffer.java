@@ -5,7 +5,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.SoundManager;
 import ru.jgems3d.engine.audio.sound.loaders.ogg.Ogg;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
@@ -38,7 +38,9 @@ public class SoundBuffer implements ICached {
         this.buffer = AL10.alGenBuffers();
         SoundManager.checkALonErrors();
         try {
-            return this.readOgg(JGems3D.loadFileJar(this.getSoundPath()), soundFormat);
+            try (InputStream inputStream = JGems3D.loadFileJar(this.getSoundPath())) {
+                return this.readOgg(inputStream, soundFormat);
+            }
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace(System.err);
             return false;

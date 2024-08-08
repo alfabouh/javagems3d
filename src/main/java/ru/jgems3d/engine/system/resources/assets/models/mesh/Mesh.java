@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -121,7 +122,7 @@ public class Mesh {
 
     public void bakeMesh() {
         if (this.isBaked()) {
-            throw new JGemsException("Tried to bake model, that is already had been baked!");
+            throw new JGemsRuntimeException("Tried to bake model, that is already had been baked!");
         }
         int[] index = JGemsHelper.convertIntsArray(this.indexes);
 

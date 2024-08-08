@@ -19,7 +19,8 @@ import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_table.TBoxMapTable;
@@ -48,7 +49,7 @@ public class TBoxScreen implements IScreen {
     public boolean tryToBuildScreen() {
         GLFWErrorCallback.createPrint(System.err).set();
         if (!GLFW.glfwInit()) {
-            throw new JGemsException("Error, while initializing GLFW");
+            throw new JGemsRuntimeException("Error, while initializing GLFW");
         }
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
@@ -61,7 +62,7 @@ public class TBoxScreen implements IScreen {
         this.tBoxWindow = new Window(new Window.WindowProperties(JGemsSceneGlobalConstants.defaultW, JGemsSceneGlobalConstants.defaultH, ToolBox.get().toString()), new JGPath("/assets/jgems/icons/icon.png"));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
-            throw new JGemsException("Failed to create the GLFW window");
+            throw new JGemsRuntimeException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
             int x = (vidMode.width() - JGemsSceneGlobalConstants.defaultW) / 2;
@@ -87,7 +88,7 @@ public class TBoxScreen implements IScreen {
         try {
             TBoxMapTable.INSTANCE.init(this.getResourceManager());
         } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-            throw new JGemsException(e);
+            throw new JGemsRuntimeException(e);
         }
     }
 
@@ -100,7 +101,7 @@ public class TBoxScreen implements IScreen {
         try {
             this.renderLoop();
         } catch (InterruptedException e) {
-            throw new JGemsException(e);
+            throw new JGemsRuntimeException(e);
         } finally {
             this.getScene().postRender();
             SystemLogging.get().getLogManager().log("Destroying screen...");
@@ -198,7 +199,7 @@ public class TBoxScreen implements IScreen {
 
                 SystemLogging.get().getLogManager().log("TBoxScreen built successful");
             } else {
-                throw new JGemsException("Caught service, while building screen!!");
+                throw new JGemsRuntimeException("Caught service, while building screen!!");
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);

@@ -1,5 +1,6 @@
 package ru.jgems3d.engine.inventory.items;
 
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
@@ -31,7 +32,8 @@ public abstract class InventoryItem {
 
     public void onAddInInventory(IInventoryOwner hasInventory) {
         if (this.itemOwner() != null) {
-            throw new JGemsException("Item " + this.getName() + " already exists in someone's inventory");
+            JGemsHelper.getLogger().error("Item " + this.getName() + " already exists in someone's inventory");
+            return;
         }
         this.itemOwner = hasInventory;
     }

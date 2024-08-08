@@ -16,7 +16,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UICarousel;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UISlider;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.settings.objects.SettingSlot;
 import ru.jgems3d.engine.system.settings.objects.SettingFloatBar;

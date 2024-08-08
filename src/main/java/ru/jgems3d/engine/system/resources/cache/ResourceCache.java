@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.cache;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.api_bridge.data.APIGameInfo;
 import ru.jgems3d.engine.api_bridge.data.APITBoxInfo;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.app.tbox.AppTBoxObjectsContainer;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine_api.events.AppEventSubscriber;
@@ -54,7 +55,7 @@ public class APIContainer {
             try {
                 method.invoke(Events.IEvent.class, event);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new JGemsException(e);
+                throw new JGemsRuntimeException(e);
             }
         }
     }

@@ -11,10 +11,12 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.resources.assets.material.Material;
+import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
@@ -22,6 +24,7 @@ import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -72,13 +75,13 @@ public class ModelLoader {
     });
     public static final AIFileOpenProc AI_FILE_OPEN = AIFileOpenProc.create((pFileIO, fileName, openMode) -> {
         ByteBuffer data;
-        try {
-            byte[] stream = ByteStreams.toByteArray(JGems3D.loadFileJar(new JGPath(MemoryUtil.memUTF8(fileName))));
+        try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(MemoryUtil.memUTF8(fileName)))){
+            byte[] stream = ByteStreams.toByteArray(inputStream);
             data = MemoryUtil.memAlloc(stream.length);
             data.put(stream);
             data.flip();
         } catch (IOException e) {
-            throw new JGemsException(e);
+            throw new JGemsIOException(e);
         }
         MemoryStack stack = MemoryStack.stackGet();
         return AIFile.calloc(stack).ReadProc(AI_FILE_READ).WriteProc(AI_FILE_WRITE).TellProc(AI_FILE_TELL).FileSizeProc(AI_FILE_SIZE).SeekProc(AI_FILE_SEEK).FlushProc(AI_FILE_FLUSH).UserData(stack.mallocPointer(3).put(0, MemoryUtil.memAddress(data)).put(1, 0L).put(2, data.remaining()).address()).address();
@@ -104,7 +107,7 @@ public class ModelLoader {
                     if (scene != null) {
                         int totalMaterials = scene.mNumMaterials();
                         List<Material> materialList = new ArrayList<>();
-                        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading model materials...");
+                        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading model material...");
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
                                 materialList.add(ModelLoader.readMaterial(gameResources, aiMaterial, modelPath.getParentPath()));
@@ -124,7 +127,7 @@ public class ModelLoader {
                             }
                         }
                     } else {
-                        throw new JGemsException();
+                        throw new JGemsRuntimeException("Couldn't create assimp scene!");
                     }
                 } catch (RuntimeException e) {
                     JGemsHelper.getLogger().error("Error, while loading " + modelPath);

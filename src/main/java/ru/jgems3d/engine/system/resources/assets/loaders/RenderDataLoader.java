@@ -15,10 +15,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEnt
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.EntityObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.PlayerSPObject;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.resources.assets.materials.Material;
+import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.basic.constructor.IEntityModelConstructor;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;

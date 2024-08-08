@@ -2,6 +2,7 @@ package ru.jgems3d.engine.system.settings.base;
 
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.settings.objects.SettingObject;
 
 import java.io.*;
@@ -30,7 +31,7 @@ public abstract class Settings {
             }
             printwriter.close();
         } catch (Exception e) {
-            throw new JGemsException(e);
+            throw new JGemsRuntimeException(e);
         }
         JGemsHelper.getLogger().log("Settings successfully saved!");
     }
@@ -39,7 +40,7 @@ public abstract class Settings {
         try {
             if (!this.getOptionsFile().exists()) {
                 if (!this.getOptionsFile().mkdirs()) {
-                    throw new JGemsException("Failed to create settings file!");
+                    throw new JGemsRuntimeException("Failed to create settings file!");
                 }
                 this.saveOptions();
                 return;

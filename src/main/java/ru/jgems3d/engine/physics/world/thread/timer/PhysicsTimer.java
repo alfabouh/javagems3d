@@ -6,6 +6,8 @@ import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.synchronizing.SyncManager;
 
 public class PhysicsTimer implements IPhysTimer {
@@ -28,7 +30,7 @@ public class PhysicsTimer implements IPhysTimer {
         this.getDynamicsSystem().init();
 
         if (dynamicsSystem == null) {
-            throw new JGemsException("Current Dynamics PhysicsWorld is NULL!");
+            throw new JGemsNullException("Current Dynamics PhysicsWorld is NULL!");
         }
         try {
             JGemsHelper.getLogger().log("Starting physics!");
@@ -46,7 +48,7 @@ public class PhysicsTimer implements IPhysTimer {
             }
             JGemsHelper.getLogger().log("Stopping physics!");
         } catch (JGemsException e) {
-            throw new JGemsException(e);
+            throw new JGemsRuntimeException(e);
         }
     }
 

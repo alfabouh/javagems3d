@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data;
 
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.IRenderInventoryFabric;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class InventoryItemRenderData {

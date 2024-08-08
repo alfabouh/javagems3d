@@ -3,7 +3,9 @@ package ru.jgems3d.engine.sysgraph;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 import java.io.*;
@@ -19,31 +21,18 @@ public class Graph implements Serializable {
         this.start = null;
     }
 
-    public static void saveInFile(Graph graph, String name) {
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(name + ".nmesh");
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(graph);
-            fileOutputStream.close();
-        } catch (IOException e) {
-            throw new JGemsException(e);
-        }
+    public static void saveInFile(Graph graph, String name) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(name + ".nmesh");
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(graph);
+        fileOutputStream.close();
     }
 
-    public static Graph readFromFile(JGPath path) {
-        InputStream inputStream = JGems3D.loadFileJarSilently(path);
-        if (inputStream == null) {
-            JGemsHelper.getLogger().warn("Couldn't find file " + path);
-            return null;
-        }
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-            Graph graph1 = (Graph) objectInputStream.readObject();
-            objectInputStream.close();
-            inputStream.close();
-            return graph1;
-        } catch (IOException | ClassNotFoundException e) {
-            throw new JGemsException(e);
+    public static Graph readFromFile(JGPath path) throws JGemsNullException, IOException, ClassNotFoundException {
+        try (InputStream inputStream = JGems3D.loadFileJar(path)) {
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
+                return (Graph) objectInputStream.readObject();
+            }
         }
     }
 
