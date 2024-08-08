@@ -28,7 +28,7 @@ import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
@@ -84,7 +84,7 @@ public class JGemsScreen implements IScreen {
 
             JGemsHelper.getLogger().log("JGemsScreen built successful");
         } else {
-            throw new JGemsException("Caught exceptions, while building screen!!");
+            throw new JGemsException("Caught service, while building screen!!");
         }
     }
 
@@ -184,7 +184,6 @@ public class JGemsScreen implements IScreen {
 
     public void reloadSceneAndShadowsFrameBufferObjects() {
         this.getScene().getSceneRenderer().recreateResources(this.getWindowDimensions());
-        this.getScene().getSceneRenderer().getShadowScene().createResources();
     }
 
     public void showGameLoadingScreen(String title) {
@@ -312,7 +311,9 @@ public class JGemsScreen implements IScreen {
     }
 
     public TransformationUtils getTransformationUtils() {
-        return this.transformationUtils;
+        synchronized (this) {
+            return this.transformationUtils;
+        }
     }
 
     public TimerPool getTimerPool() {

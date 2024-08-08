@@ -5,7 +5,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.ColorSample;

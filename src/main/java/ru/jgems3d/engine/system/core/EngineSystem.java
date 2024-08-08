@@ -244,7 +244,7 @@ public class EngineSystem implements IEngine {
                     badExit = true;
                 } finally {
                     if (badExit) {
-                        JGemsLogging.showExceptionDialog("An exceptions occurred inside the system. Open the logs folder to find out the details.");
+                        JGemsLogging.showExceptionDialog("An service occurred inside the system. Open the logs folder to find out the details.");
                     }
                 }
             }

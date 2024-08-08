@@ -79,18 +79,19 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private TextureProgram ssaoKernelTexture;
     private TextureProgram ssaoBufferTexture;
 
+    private Model<Format2D> screenModel;
 
     public JGemsOpenGLRenderer(Window window, SceneData sceneData) {
         this.fboSet = new HashSet<>();
 
         this.sceneData = sceneData;
         this.sceneRenderBaseContainer = new SceneRenderBaseContainer();
+        this.shadowScene = new ShadowScene(this.getSceneData().getSceneWorld());
         this.createFBOObjects();
 
         this.createResources(window.getWindowDimensions());
 
         this.dearImGuiRender = new DIMGuiRenderJGems(window, JGemsResourceManager.getGlobalGameResources().getResourceCache());
-        this.shadowScene = new ShadowScene(this.getSceneData().getSceneWorld());
     }
 
     public FBOTexture2DProgram getSceneGluingBuffer() {
@@ -195,6 +196,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     @Override
     public void createResources(Vector2i windowSize) {
+        this.getShadowScene().createResources();
         this.createSSAOResources(this.getSSAOParams(windowSize));
 
         T2DAttachmentContainer transparency = new T2DAttachmentContainer() {{
@@ -273,6 +275,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     @Override
     public void destroyResources() {
+        this.getShadowScene().destroyResources();
         this.destroySsaoTextures();
         this.getFboSet().forEach(FBOTexture2DProgram::clearFBO);
     }
@@ -298,6 +301,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     @Override
     public void onStartRender() {
+        this.screenModel = JGemsSceneUtils.createScreenModel();
         this.fillScene();
         this.getSceneRenderBaseContainer().startAll();
     }
@@ -307,6 +311,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getDearImGuiRender().cleanUp();
         this.getSceneRenderBaseContainer().endAll();
         this.destroyResources();
+        this.screenModel.clean();
     }
 
     //section HDR
@@ -552,8 +557,15 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
     }
 
+    private void remakeScreenModel() {
+        this.screenModel.clean();
+        this.screenModel = JGemsSceneUtils.createScreenModel();
+    }
+
+    //section WinResize
     @Override
     public void onWindowResize(Vector2i windowSize) {
+        this.remakeScreenModel();
         this.recreateResources(windowSize);
         this.getDearImGuiRender().onResize(windowSize);
     }

@@ -1,6 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
@@ -9,6 +10,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.transparent.WorldTransparentRender;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
+import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
@@ -16,15 +19,15 @@ import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class JGemsSceneUtils {
-    public synchronized static Matrix4f getMainCameraViewMatrix() {
+    public static Matrix4f getMainCameraViewMatrix() {
         return JGemsHelper.getScreen().getTransformationUtils().getMainCameraViewMatrix();
     }
 
-    public synchronized static Matrix4f getMainPerspectiveMatrix() {
+    public static Matrix4f getMainPerspectiveMatrix() {
         return JGemsHelper.getScreen().getTransformationUtils().getPerspectiveMatrix();
     }
 
-    public synchronized static Matrix4f getMainOrthographicMatrix() {
+    public static Matrix4f getMainOrthographicMatrix() {
         return JGemsHelper.getScreen().getTransformationUtils().getOrthographicMatrix();
     }
 
@@ -116,6 +119,10 @@ public abstract class JGemsSceneUtils {
 
     public static int getMaxTextureUnits() {
         return GL30.glGetInteger(GL30.GL_MAX_TEXTURE_IMAGE_UNITS);
+    }
+
+    public static Model<Format2D> createScreenModel() {
+        return MeshHelper.generatePlane2DModel(new Vector2f(0.0f), new Vector2f(JGemsHelper.getScreen().getWindowDimensions()), 0);
     }
 
     public static void checkGLErrors() {

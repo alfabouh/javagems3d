@@ -4,7 +4,7 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 public class FBOCubeMapProgram {
     private final CubeMapProgram cubeMapProgram;

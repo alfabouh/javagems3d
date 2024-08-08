@@ -1,6 +1,6 @@
-package ru.jgems3d.engine.system.exceptions;
+package ru.jgems3d.engine.system.service.exceptions;
 
-public class JGemsException extends RuntimeException {
+public abstract class JGemsException extends RuntimeException {
     public JGemsException() {
     }
 

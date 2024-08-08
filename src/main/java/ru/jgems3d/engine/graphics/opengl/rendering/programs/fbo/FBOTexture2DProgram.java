@@ -9,7 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DA
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.ITextureProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.MSAATextureProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.TextureProgram;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

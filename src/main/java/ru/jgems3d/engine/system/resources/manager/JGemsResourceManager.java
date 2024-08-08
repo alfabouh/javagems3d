@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiF
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.engine.inventory.items.InventoryItem;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.*;
 import ru.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;

@@ -34,7 +34,7 @@ import ru.jgems3d.engine.system.resources.assets.materials.samples.packs.Particl
 import ru.jgems3d.engine.system.resources.localisation.Lang;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
