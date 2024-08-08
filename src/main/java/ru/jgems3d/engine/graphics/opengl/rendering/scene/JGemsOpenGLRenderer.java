@@ -500,7 +500,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture().getTextureId(), GL30.GL_TEXTURE_2D);
         ssaoComputeShader.performUniformTexture(new UniformString("ssaoKernel"), this.getSsaoKernelTexture().getTextureId(), GL30.GL_TEXTURE_2D);
         GL43.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL30.GL_WRITE_ONLY, GL30.GL_RGBA16F);
-        ssaoComputeShader.dispatchComputeShader(windowSize.x / 16, windowSize.y / 16, 1, GL43.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        ssaoComputeShader.dispatchComputeShader(windowSize.x / 8, windowSize.y / 8, 1, GL43.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         ssaoComputeShader.endComputing();
 
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;

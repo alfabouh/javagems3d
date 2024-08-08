@@ -14,7 +14,7 @@ import ru.jgems3d.engine.system.resources.assets.material.samples.packs.Particle
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.util.Iterator;
 import java.util.Set;

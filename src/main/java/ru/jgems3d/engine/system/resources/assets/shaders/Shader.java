@@ -29,7 +29,7 @@ public class Shader {
     }
 
     public static boolean checkIfShaderExistsInJar(JGPath directoryPath, ShaderType shaderType) {
-        return JGems3D.seekInJar(new JGPath(directoryPath, shaderType.getFile()));
+        return JGems3D.checkFileInJar(new JGPath(directoryPath, shaderType.getFile()));
     }
 
     public Map<String, Set<String>> getStructs() {
@@ -47,7 +47,7 @@ public class Shader {
     }
 
     private void loadStructs(JGPath shaderPath) {
-        try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             String structName = null;
@@ -87,7 +87,7 @@ public class Shader {
 
     private String loadStream(JGPath shaderPath) {
         StringBuilder shaderSource = new StringBuilder();
-        try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
 

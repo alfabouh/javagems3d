@@ -21,7 +21,7 @@ import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.controller.objects.IController;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;

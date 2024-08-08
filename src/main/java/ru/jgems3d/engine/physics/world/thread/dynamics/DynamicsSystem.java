@@ -7,7 +7,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.system.NativeLibraryLoader;
 import ru.jgems3d.engine.physics.world.triggers.ICollideTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
 
 import java.io.File;
 import java.util.*;
