@@ -53,7 +53,7 @@ public class TextureSample implements IImageSample {
         this.enableAnisotropic = true;
         JGemsHelper.getLogger().log("Loading " + this.getName());
         if (inJar) {
-            try (InputStream inputStream = JGems3D.loadFileJar(fullPath)) {
+            try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
                 this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
                 if (this.imageBuffer != null) {
                     this.createTexture();

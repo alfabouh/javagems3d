@@ -74,7 +74,7 @@ public final class JGemsResourceManager {
     public static Font createFontFromJAR(JGPath path) {
         Font font1;
         try {
-            try (InputStream inputStream = JGems3D.loadFileJar(path)) {
+            try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
                 font1 = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             }
         } catch (FontFormatException | IOException e) {

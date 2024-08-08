@@ -16,7 +16,6 @@ import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.engine.system.service.misc.JGPath;
 
@@ -43,7 +42,7 @@ public class Window implements IWindow {
 
     private void loadIcon(@NotNull JGPath iconPath) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            try (InputStream inputStream = JGems3D.loadFileJar(iconPath)) {
+            try (InputStream inputStream = JGems3D.loadFileFromJar(iconPath)) {
                 IntBuffer width = stack.mallocInt(1);
                 IntBuffer height = stack.mallocInt(1);
                 IntBuffer channels = stack.mallocInt(1);

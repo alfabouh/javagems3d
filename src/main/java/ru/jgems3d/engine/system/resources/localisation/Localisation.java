@@ -3,9 +3,7 @@ package ru.jgems3d.engine.system.resources.localisation;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.misc.JGPath;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,7 +67,7 @@ public class Localisation {
     }
 
     private void readStream(LangMap langMap, JGPath filePath) throws IOException {
-        try (InputStream inputStream = JGems3D.loadFileJar(filePath)) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(filePath)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             int l = 0;

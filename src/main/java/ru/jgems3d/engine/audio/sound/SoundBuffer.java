@@ -38,7 +38,7 @@ public class SoundBuffer implements ICached {
         this.buffer = AL10.alGenBuffers();
         SoundManager.checkALonErrors();
         try {
-            try (InputStream inputStream = JGems3D.loadFileJar(this.getSoundPath())) {
+            try (InputStream inputStream = JGems3D.loadFileFromJar(this.getSoundPath())) {
                 return this.readOgg(inputStream, soundFormat);
             }
         } catch (UnsupportedAudioFileException | IOException e) {

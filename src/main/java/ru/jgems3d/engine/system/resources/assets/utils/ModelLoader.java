@@ -75,7 +75,7 @@ public class ModelLoader {
     });
     public static final AIFileOpenProc AI_FILE_OPEN = AIFileOpenProc.create((pFileIO, fileName, openMode) -> {
         ByteBuffer data;
-        try (InputStream inputStream = JGems3D.loadFileJar(new JGPath(MemoryUtil.memUTF8(fileName)))){
+        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGPath(MemoryUtil.memUTF8(fileName)))){
             byte[] stream = ByteStreams.toByteArray(inputStream);
             data = MemoryUtil.memAlloc(stream.length);
             data.put(stream);
@@ -101,7 +101,7 @@ public class ModelLoader {
         final int FLAGS = Assimp.aiProcess_ImproveCacheLocality | Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
         MeshDataGroup meshDataGroup = new MeshDataGroup();
 
-        if (JGems3D.seekInJar(modelPath)) {
+        if (JGems3D.checkFileInJar(modelPath)) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 try (AIScene scene = Assimp.aiImportFileEx(modelPath.getSPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoader.AI_FILE_OPEN).CloseProc(ModelLoader.AI_FILE_CLOSE))) {
                     if (scene != null) {
