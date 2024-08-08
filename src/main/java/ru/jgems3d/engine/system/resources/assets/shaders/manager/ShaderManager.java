@@ -11,6 +11,9 @@ import ru.jgems3d.engine.system.resources.assets.shaders.*;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
+import ru.jgems3d.engine.system.service.exceptions.JGemsValidationException;
+import ru.jgems3d.engine.system.service.validation.OnFail;
+import ru.jgems3d.engine.system.service.validation.Validator;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -68,8 +71,7 @@ public abstract class ShaderManager implements ICached {
     }
 
     public void dispatchComputeShader(int grX, int grY, int grZ, int barrier) {
-        if (this.getShaderContainer().getComputeShader() == null) {
-            JGemsHelper.getLogger().warn("[" + this + "]" + " doesn't have compute program!");
+        if (!Validator.notNull(this.getShaderContainer().getComputeShader(), this + " Compute program", OnFail.CONSOLE)) {
             return;
         }
         GL43.glDispatchCompute(grX, grY, grZ);
@@ -180,11 +182,8 @@ public abstract class ShaderManager implements ICached {
         if (gShaderProgram != null) {
             this.graphicShaderGroup = new ShaderGroup(this.getShaderContainer().getId());
             if (gShaderProgram.createShader(this.getShaderContainer().getFragmentShader(), this.getShaderContainer().getVertexShader(), this.getShaderContainer().getGeometricShader())) {
-                if (gShaderProgram.link()) {
-                    JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked");
-                } else {
-                    throw new JGemsException("Found problems in g-shader " + this);
-                }
+                Validator.validate(cShaderProgram.link(), "G-Shader linking", OnFail.EXCEPTION);
+                JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked");
                 flag = true;
             }
             this.getGraphicShaderGroup().initShaderGroup(gShaderProgram, shaderContainer.getGUniformsFullSet(), this.uniformBufferObjects);
@@ -192,27 +191,22 @@ public abstract class ShaderManager implements ICached {
         if (cShaderProgram != null) {
             this.computingShaderGroup = new ShaderGroup(this.getShaderContainer().getId());
             if (cShaderProgram.createShader(this.getShaderContainer().getComputeShader())) {
-                if (cShaderProgram.link()) {
-                    JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked");
-                } else {
-                    throw new JGemsException("Found problems in c-shader " + this);
-                }
+                Validator.validate(cShaderProgram.link(), "C-Shader linking", OnFail.EXCEPTION);
+                JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked");
                 flag = true;
             }
             this.getComputingShaderGroup().initShaderGroup(cShaderProgram, shaderContainer.getCUniformsFullSet(), this.uniformBufferObjects);
         }
         if (!flag) {
-            throw new JGemsException("Wrong ShaderManager passed in system!");
+            throw new JGemsValidationException("Wrong ShaderManager passed in system!");
         }
     }
 
     public void performUniform(UniformString uniform, Object o) {
-        if (o == null) {
-            JGemsHelper.getLogger().error("[" + this + "] NULL uniform " + uniform);
+        if (!Validator.notNull(o, this + " Uniform", OnFail.CONSOLE)) {
             return;
         }
-        if (!this.isUniformExist(uniform)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
+        if (Validator.validate(!this.isUniformExist(uniform), "Uniform not found", OnFail.CONSOLE)) {
             return;
         }
         if (!this.setUniform(uniform, o)) {

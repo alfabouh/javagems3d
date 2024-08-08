@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 

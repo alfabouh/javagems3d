@@ -4,7 +4,7 @@ import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 import java.util.HashSet;

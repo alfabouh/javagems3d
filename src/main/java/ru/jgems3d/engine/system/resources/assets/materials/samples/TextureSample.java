@@ -11,7 +11,7 @@ import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.materials.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
@@ -52,7 +52,7 @@ public class TextureSample implements IImageSample {
         this.enableAnisotropic = true;
         JGemsHelper.getLogger().log("Loading " + this.getName());
         if (inJar) {
-            try (InputStream inputStream = JGems3D.loadFileJar(fullPath)) {
+            try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
                 this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
                 if (this.imageBuffer != null) {
                     this.createTexture();

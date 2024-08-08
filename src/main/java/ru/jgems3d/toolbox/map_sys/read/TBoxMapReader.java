@@ -1,7 +1,7 @@
 package ru.jgems3d.toolbox.map_sys.read;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.toolbox.map_sys.SerializeHelper;
 import ru.jgems3d.toolbox.map_sys.save.container.SaveContainer;
@@ -39,12 +39,12 @@ public class TBoxMapReader {
         MapProperties mapProperties = null;
         HashSet<SaveObject> saveObjectSet = null;
         try {
-            mapProperties = SerializeHelper.readFromJSON(JGems3D.loadFileJar(new JGPath("/assets/jgems/maps/" + mapName + "/map_prop.json")), MapProperties.class); //TODO
+            mapProperties = SerializeHelper.readFromJSON(JGems3D.loadFileFromJar(new JGPath("/assets/jgems/maps/" + mapName + "/map_prop.json")), MapProperties.class); //TODO
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
         try {
-            saveObjectSet = SerializeHelper.readFromBytes(JGems3D.loadFileJar(new JGPath("/assets/jgems/maps/" + mapName + "/objects.ser")), HashSet.class);
+            saveObjectSet = SerializeHelper.readFromBytes(JGems3D.loadFileFromJar(new JGPath("/assets/jgems/maps/" + mapName + "/objects.ser")), HashSet.class);
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

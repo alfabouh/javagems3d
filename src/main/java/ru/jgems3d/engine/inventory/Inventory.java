@@ -3,7 +3,7 @@ package ru.jgems3d.engine.inventory;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.util.ArrayList;
 import java.util.List;

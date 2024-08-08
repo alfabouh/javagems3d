@@ -22,9 +22,9 @@ import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.Pair;
+import ru.jgems3d.engine.system.service.misc.Pair;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.util.Collection;
 import java.util.Iterator;

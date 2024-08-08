@@ -2,7 +2,8 @@ package ru.jgems3d.engine.system.resources.localisation;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.exceptions.JGemsPathNotFoundException;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 import java.io.BufferedReader;
@@ -56,18 +57,14 @@ public class Localisation {
         this.currentlang = lang;
     }
 
-    private void readLangFileInTable(Lang lang) {
+    private void readLangFileInTable(Lang lang) throws IOException {
         LangMap langMap = new LangMap();
-        try {
-            this.readStream(langMap, new JGPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
-        } catch (IOException e) {
-            throw new JGemsException(e);
-        }
+        this.readStream(langMap, new JGPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
         this.currentLangTable = langMap;
     }
 
-    private void readStream(LangMap langMap, JGPath filePath) throws IOException {
-        try (InputStream inputStream = JGems3D.loadFileJarSilently(filePath)) {
+    private void readStream(LangMap langMap, JGPath filePath) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(filePath)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             int l = 0;
@@ -85,7 +82,7 @@ public class Localisation {
                 }
             }
             reader.close();
-        } catch (IOException ex) {
+        } catch (JGemsPathNotFoundException ex) {
             ex.printStackTrace(System.err);
         }
     }

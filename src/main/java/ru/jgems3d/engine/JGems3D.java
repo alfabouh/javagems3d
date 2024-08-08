@@ -12,13 +12,14 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.core.EngineSystem;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.validation.OnFail;
+import ru.jgems3d.engine.system.service.validation.Validator;
 import ru.jgems3d.engine.system.settings.JGemsSettings;
-import ru.jgems3d.engine.system.synchronizing.SyncManager;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.JGemsLogging;
 
@@ -47,7 +48,7 @@ public class JGems3D {
     private boolean shouldBeClosed;
     private EngineSystem engineSystem;
 
-    private JGems3D(String[] startArgs) {
+    private JGems3D(String[] startArgs) throws IOException {
         SystemLogging.get().setCurrentLogging(SystemLogging.jGemsLogging);
 
         APILauncher.get().launchGameAPI();
@@ -78,8 +79,12 @@ public class JGems3D {
         return GLFW.glfwGetTime();
     }
 
-    public static void main(String[] args) throws IOException {
-        JGems3D.mainObject = new JGems3D(args);
+    public static void main(String[] args) {
+        try {
+            JGems3D.mainObject = new JGems3D(args);
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
         JGems3D.start();
     }
 
@@ -105,13 +110,9 @@ public class JGems3D {
         }
     }
 
-    public static void checkFilesDirectory() {
+    public static void checkFilesDirectory() throws IOException {
         if (!Files.exists(JGems3D.getGameFilesFolder())) {
-            try {
-                Files.createDirectories(JGems3D.getGameFilesFolder());
-            } catch (IOException e) {
-                throw new JGemsException(e);
-            }
+            Files.createDirectories(JGems3D.getGameFilesFolder());
             JGemsHelper.getLogger().log("Created system folder");
         }
     }
@@ -132,7 +133,7 @@ public class JGems3D {
         String s1 = JGems3D.getGameTitle();
         String s2 = JGems3D.getGameVersion();
         String s3 = JGems3D.getGameDev();
-        return String.format("%s %s (%s)", s1, s2, s3);
+        return s1 + " " + s2 + " - " + s3;
     }
 
     public static String date() {
@@ -144,20 +145,14 @@ public class JGems3D {
         return new File(JGems3D.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
     }
 
-    public static boolean seekInJar(JGPath path) {
+    public static boolean checkFileInJar(JGPath path) {
         return JGems3D.class.getResourceAsStream(path.getSPath()) != null;
     }
 
-    public static InputStream loadFileJar(JGPath path) {
+    public static InputStream loadFileFromJar(JGPath path) {
         InputStream inputStream = JGems3D.class.getResourceAsStream(path.getSPath());
-        if (inputStream == null) {
-            throw new JGemsException("Couldn't find: " + path);
-        }
+        Validator.pathExists(inputStream, path, OnFail.EXCEPTION);
         return inputStream;
-    }
-
-    public static InputStream loadFileJarSilently(JGPath path) {
-        return JGems3D.class.getResourceAsStream(path.getSPath());
     }
 
     public static Path getGameFilesFolder() {
