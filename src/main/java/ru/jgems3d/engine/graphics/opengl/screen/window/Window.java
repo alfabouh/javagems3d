@@ -17,7 +17,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -44,7 +44,7 @@ public class Window implements IWindow {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);
             IntBuffer channels = stack.mallocInt(1);
-            byte[] stream = ByteStreams.toByteArray(JGems3D.loadFileJar(iconPath));
+            byte[] stream = ByteStreams.toByteArray(JGems3D.loadFileFromJar(iconPath));
             ByteBuffer buffer = MemoryUtil.memAlloc(stream.length);
             buffer.put(stream);
             buffer.flip();

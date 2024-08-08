@@ -36,7 +36,7 @@ import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
@@ -205,13 +205,9 @@ public abstract class JGemsHelper {
         JGems3D.get().getScreen().getScene().getSceneWorld().addObjectInWorld(sceneProp);
     }
 
-    public static void addItem(WorldItem worldItem, RenderEntityData renderData) {
-        try {
-            JGemsHelper.getPhysicsWorld().addItem(worldItem);
-            JGemsHelper.getSceneWorld().addItem(worldItem, renderData);
-        } catch (JGemsException e) {
-            throw new JGemsException(e);
-        }
+    public static void addItem(WorldItem worldItem, RenderEntityData renderData) throws JGemsException {
+        JGemsHelper.getPhysicsWorld().addItem(worldItem);
+        JGemsHelper.getSceneWorld().addItem(worldItem, renderData);
     }
 
     public static void addPointLight(WorldItem worldItem, PointLight light, int attachShadowScene) {

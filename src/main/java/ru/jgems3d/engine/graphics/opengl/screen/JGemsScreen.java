@@ -29,7 +29,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.awt.*;

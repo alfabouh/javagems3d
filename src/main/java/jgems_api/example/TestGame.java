@@ -5,7 +5,7 @@ import jgems_api.example.manager.TestManager;
 import jgems_api.example.resources.ModelLoader;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine_api.app.JGemsGameApplication;
 import ru.jgems3d.engine_api.app.JGemsGameEntry;
 import ru.jgems3d.engine_api.events.IAppEventSubscriber;

@@ -2,7 +2,7 @@ package ru.jgems3d.engine.system.resources.localisation;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 
 import java.util.HashMap;
 import java.util.HashSet;

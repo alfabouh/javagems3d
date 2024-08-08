@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.synchronizing;
+package ru.jgems3d.engine.system.service.synchronizing;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

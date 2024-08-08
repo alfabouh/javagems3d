@@ -9,7 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProg
 import ru.jgems3d.engine.inventory.items.InventoryItem;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.misc.JGPath;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.*;
 import ru.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
@@ -73,7 +73,7 @@ public final class JGemsResourceManager {
     public static Font createFontFromJAR(JGPath path) {
         Font font1;
         try {
-            font1 = Font.createFont(Font.TRUETYPE_FONT, JGems3D.loadFileJar(path));
+            font1 = Font.createFont(Font.TRUETYPE_FONT, JGems3D.loadFileFromJar(path));
         } catch (FontFormatException | IOException e) {
             throw new JGemsException(e);
         }
