@@ -9,7 +9,7 @@ import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.logger.managers.JGemsLogging;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                 }
             } catch (Exception e) {
                 JGemsHelper.getLogger().exception(e);
-                JGemsLogging.showExceptionDialog("An exceptions occurred inside the system. Open the logs folder for details.");
+                JGemsLogging.showExceptionDialog("An service occurred inside the system. Open the logs folder for details.");
             }
         });
         seekPathThread.setDaemon(true);

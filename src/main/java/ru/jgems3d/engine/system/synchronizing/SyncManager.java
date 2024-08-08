@@ -6,7 +6,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class SyncManager {
     public static final Set<Syncer> syncerSet = new HashSet<>();
 
-    public static final Syncer SyncPhysics = SyncManager.createNewSyncer();
+    public static Syncer SyncPhysics;
+
+    static {
+        SyncManager.SyncPhysics = SyncManager.createNewSyncer();
+    }
 
     public static Syncer createNewSyncer() {
         Syncer s = new Syncer();

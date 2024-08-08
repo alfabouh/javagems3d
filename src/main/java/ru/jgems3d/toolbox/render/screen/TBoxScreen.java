@@ -18,7 +18,7 @@ import ru.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
@@ -198,7 +198,7 @@ public class TBoxScreen implements IScreen {
 
                 SystemLogging.get().getLogManager().log("TBoxScreen built successful");
             } else {
-                throw new JGemsException("Caught exceptions, while building screen!!");
+                throw new JGemsException("Caught service, while building screen!!");
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);

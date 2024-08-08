@@ -1,9 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
 import ru.jgems3d.engine.system.resources.assets.materials.Material;
-import ru.jgems3d.engine.system.resources.assets.materials.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public final class RenderLiquidData {

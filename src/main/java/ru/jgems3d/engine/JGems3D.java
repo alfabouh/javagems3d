@@ -12,7 +12,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.core.EngineSystem;
-import ru.jgems3d.engine.system.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.misc.JGPath;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
@@ -101,7 +101,7 @@ public class JGems3D {
             JGems3D.get().getEngineSystem().startSystem();
         } catch (Exception e) {
             JGemsHelper.getLogger().exception(e);
-            JGemsLogging.showExceptionDialog("An exceptions occurred inside the system. Open the logs folder for details.");
+            JGemsLogging.showExceptionDialog("An service occurred inside the system. Open the logs folder for details.");
         }
     }
 
