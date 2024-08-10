@@ -1,7 +1,7 @@
-package ru.jgems3d.engine.inventory;
+package ru.jgems3d.engine.system.inventory;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.engine.inventory.items.InventoryItem;
+import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 

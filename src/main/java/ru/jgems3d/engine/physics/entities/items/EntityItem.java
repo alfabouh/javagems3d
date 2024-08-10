@@ -2,7 +2,7 @@ package ru.jgems3d.engine.physics.entities.items;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.inventory.items.InventoryItem;
+import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;

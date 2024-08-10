@@ -1,9 +1,8 @@
-package ru.jgems3d.engine.inventory.items;
+package ru.jgems3d.engine.system.inventory.items;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.inventory.IInventoryOwner;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 
 public abstract class InventoryItem {
     private final String name;

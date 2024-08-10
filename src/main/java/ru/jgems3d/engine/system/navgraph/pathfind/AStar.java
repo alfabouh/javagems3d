@@ -1,6 +1,6 @@
-package ru.jgems3d.engine.sysgraph.pathfind;
+package ru.jgems3d.engine.system.navgraph.pathfind;
 
-import ru.jgems3d.engine.sysgraph.Graph;
+import ru.jgems3d.engine.system.navgraph.Graph;
 
 import java.util.*;
 

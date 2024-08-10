@@ -6,7 +6,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.Invento
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.table.InventoryRenderTable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
-import ru.jgems3d.engine.inventory.items.InventoryItem;
+import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.misc.JGPath;

@@ -3,13 +3,12 @@ package ru.jgems3d.engine.physics.entities.enemies.ai;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.sysgraph.Graph;
-import ru.jgems3d.engine.sysgraph.pathfind.AStar;
+import ru.jgems3d.engine.system.navgraph.Graph;
+import ru.jgems3d.engine.system.navgraph.pathfind.AStar;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.logger.managers.JGemsLogging;
 

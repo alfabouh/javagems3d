@@ -1,9 +1,4 @@
-package ru.jgems3d.engine.sysgraph.pathgen;
-
-import ru.jgems3d.engine.sysgraph.Graph;
-
-
-import java.util.Stack;
+package ru.jgems3d.engine.system.navgraph.pathgen;
 
 public class TerrainGraphGenerator {
  // private final Graph graph;
