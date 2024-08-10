@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory;
 
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-import ru.jgems3d.engine.inventory.items.InventoryItem;
+import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 

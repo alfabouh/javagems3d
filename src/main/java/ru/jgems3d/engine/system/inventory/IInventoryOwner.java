@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.inventory;
+package ru.jgems3d.engine.system.inventory;
 
 import ru.jgems3d.engine.physics.world.IWorld;
 

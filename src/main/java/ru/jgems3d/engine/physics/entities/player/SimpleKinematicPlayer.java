@@ -1,8 +1,6 @@
 package ru.jgems3d.engine.physics.entities.player;
 
 import com.jme3.bounding.BoundingBox;
-import com.jme3.bullet.RayTestFlag;
-import com.jme3.bullet.collision.CollisionFlag;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
@@ -13,12 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
-import ru.jgems3d.engine.inventory.IInventoryOwner;
-import ru.jgems3d.engine.inventory.Inventory;
-import ru.jgems3d.engine.inventory.items.ItemZippo;
-import ru.jgems3d.engine.physics.entities.BtDynamicMeshBody;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
+import ru.jgems3d.engine.system.inventory.Inventory;
+import ru.jgems3d.engine.system.inventory.items.ItemZippo;
 import ru.jgems3d.engine.physics.entities.IBtEntity;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
 import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
@@ -28,10 +24,7 @@ import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
-import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.IController;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

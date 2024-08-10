@@ -4,7 +4,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
-import ru.jgems3d.engine.inventory.IInventoryOwner;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;

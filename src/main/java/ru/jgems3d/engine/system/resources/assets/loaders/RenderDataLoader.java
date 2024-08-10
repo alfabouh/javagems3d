@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderE
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.WorldEntity;
-import ru.jgems3d.engine.inventory.items.ItemZippo;
+import ru.jgems3d.engine.system.inventory.items.ItemZippo;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;

@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.table;
 
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import ru.jgems3d.engine.inventory.items.InventoryItem;
+import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 
 import java.util.HashMap;
 import java.util.Map;

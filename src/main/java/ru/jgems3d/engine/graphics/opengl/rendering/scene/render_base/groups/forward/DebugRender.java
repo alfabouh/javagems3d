@@ -10,7 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRender
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
-import ru.jgems3d.engine.sysgraph.Graph;
+import ru.jgems3d.engine.system.navgraph.Graph;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;

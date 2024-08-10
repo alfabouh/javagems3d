@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.sysgraph;
+package ru.jgems3d.engine.system.navgraph;
 
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;

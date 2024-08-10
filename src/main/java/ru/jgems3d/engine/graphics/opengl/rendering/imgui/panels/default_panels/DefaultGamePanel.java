@@ -2,7 +2,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels;
 
 import org.joml.Vector2i;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.inventory.Inventory;
+import ru.jgems3d.engine.system.inventory.Inventory;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;

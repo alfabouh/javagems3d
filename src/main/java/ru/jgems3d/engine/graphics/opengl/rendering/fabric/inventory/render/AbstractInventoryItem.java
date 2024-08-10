@@ -25,14 +25,14 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
     }
 
     @Override
-    public void preRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
+    public void preRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
         GL30.glDepthFunc(GL30.GL_ALWAYS);
         inventoryItemRenderData.getShaderManager().bind();
         inventoryItemRenderData.getShaderManager().performUniform(new UniformString("projection_matrix"), Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f));
     }
 
     @Override
-    public void postRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
+    public void postRender(SceneRenderBase sceneRenderBase, ru.jgems3d.engine.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
         GL30.glDepthFunc(GL30.GL_LESS);
         inventoryItemRenderData.getShaderManager().unBind();
     }

@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 public class ShadowScene implements IShadowScene {
     private final SceneWorld sceneWorld;
     private final FBOTexture2DProgram shadowFBO;
-    private final FBOTexture2DProgram shadowFBO2;
     private final FBOTexture2DProgram shadowPostFBO;
     private Vector2i shadowDimensions;
     private List<CascadeShadow> cascadeShadows;
@@ -46,7 +45,6 @@ public class ShadowScene implements IShadowScene {
     public ShadowScene(SceneWorld sceneWorld) {
         this.sceneWorld = sceneWorld;
         this.shadowFBO = new FBOTexture2DProgram(true);
-        this.shadowFBO2 = new FBOTexture2DProgram(true);
         this.shadowPostFBO = new FBOTexture2DProgram(true);
         this.initCascades();
         this.initPointLightShadows();
@@ -69,14 +67,12 @@ public class ShadowScene implements IShadowScene {
             add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
         }};
         this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
-        this.shadowFBO2.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     public void destroyResources() {
         this.sunPostModel.clean();
         this.shadowFBO.clearFBO();
-        this.shadowFBO2.clearFBO();
         this.shadowPostFBO.clearFBO();
     }
 
@@ -351,10 +347,6 @@ public class ShadowScene implements IShadowScene {
 
     public List<CascadeShadow> getCascadeShadows() {
         return this.cascadeShadows;
-    }
-
-    public FBOTexture2DProgram getShadowFBO2() {
-        return this.shadowFBO2;
     }
 
     public FBOTexture2DProgram getShadowFBO() {
