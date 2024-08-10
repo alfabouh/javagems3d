@@ -32,16 +32,13 @@ void main()
     vec3 sunColor = vec3(sunColorR, sunColorG, sunColorB);
     float sunBrightness = sunBright;
 
-    float sunFactor = max(dot(normalize(out_texture), sunDirection), 0.0);
-
-    sunFactor = pow(sunFactor, 256.0);
+    float cos = dot(normalize(out_texture), sunDirection);
+    float sunFactor = pow(smoothstep(0.98, 1.0, cos), 32.);
 
     vec4 color = vec4(vec3(fogColorR, fogColorG, fogColorB) * sunColor, 1.0);
 
     float fogFactor = fogDensity * 100.0;
     float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
-
-    sunFactor *= max((1. - f), 0.25);
 
     vec3 sunEffect = sunColor * sunBrightness * sunFactor;
     frag_color = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * 2.) + sunEffect, 1.0);
