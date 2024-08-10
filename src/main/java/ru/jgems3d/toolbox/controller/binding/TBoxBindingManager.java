@@ -24,13 +24,43 @@ public class TBoxBindingManager extends BindingManager {
         this.keyCtrl = new Key(GLFW.GLFW_KEY_LEFT_CONTROL);
         this.keyDelete = new Key(GLFW.GLFW_KEY_DELETE);
 
-        this.createBinding(this.keyA);
-        this.createBinding(this.keyD);
-        this.createBinding(this.keyW);
-        this.createBinding(this.keyS);
-        this.createBinding(this.keyUp);
-        this.createBinding(this.keyShift);
-        this.createBinding(this.keyCtrl);
-        this.createBinding(this.keyDelete);
+        this.addBinding(this.keyA);
+        this.addBinding(this.keyD);
+        this.addBinding(this.keyW);
+        this.addBinding(this.keyS);
+        this.addBinding(this.keyUp);
+        this.addBinding(this.keyShift);
+        this.addBinding(this.keyCtrl);
+        this.addBinding(this.keyDelete);
+    }
+
+    @Override
+    public Key keyMoveLeft() {
+        return this.keyA;
+    }
+
+    @Override
+    public Key keyMoveRight() {
+        return this.keyD;
+    }
+
+    @Override
+    public Key keyMoveForward() {
+        return this.keyW;
+    }
+
+    @Override
+    public Key keyMoveBackward() {
+        return this.keyS;
+    }
+
+    @Override
+    public Key keyMoveUp() {
+        return this.keyUp;
+    }
+
+    @Override
+    public Key keyMoveDown() {
+        return this.keyShift;
     }
 }

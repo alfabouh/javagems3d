@@ -11,6 +11,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
@@ -62,7 +64,7 @@ public class DIMGuiRenderJGems {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = TextureSample.createTexture(resourceCache, "imgui_fonts", width.get(), height.get(), buffer);
+        this.textureSample = TextureSample.createTexture(resourceCache, "imgui_fonts", new Vector2i(width.get(), height.get()), buffer, new TextureSample.Params(false, false, false, false));
         this.dearImGuiMesh = new DIMGuiMesh();
     }
 
@@ -118,7 +120,7 @@ public class DIMGuiRenderJGems {
         return io;
     }
 
-    public void render(Vector2i windowSize, FrameTicking frameTicking) {
+    public void onRender(Vector2i windowSize, FrameTicking frameTicking) {
         JGemsControllerDispatcher controllerDispatcher = JGems3D.get().getScreen().getControllerDispatcher();
         if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.drawGui(windowSize, controllerDispatcher);
@@ -238,7 +240,11 @@ public class DIMGuiRenderJGems {
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
         if (entityPlayerSP instanceof SimpleKinematicPlayer) {
             SimpleKinematicPlayer dynamicPlayer = (SimpleKinematicPlayer) entityPlayerSP;
-            ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
+            if (JGemsHelper.getCurrentCamera() instanceof FreeCamera) {
+                ImGui.text(String.format("%s %s %s", JGemsHelper.getCurrentCamera().getCamPosition().x, JGemsHelper.getCurrentCamera().getCamPosition().y, JGemsHelper.getCurrentCamera().getCamPosition().z));
+            } else {
+                ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
+            }
             ImGui.text("entities: " + JGems3D.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
            // ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));

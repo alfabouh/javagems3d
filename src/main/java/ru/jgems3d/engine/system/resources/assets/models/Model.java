@@ -13,7 +13,7 @@ import java.io.Serializable;
 public final class Model<T extends IFormat> implements Serializable, AutoCloseable {
     private static final long serialVersionUID = -228L;
     private final T format;
-    private final MeshDataGroup meshDataGroup;
+    private MeshDataGroup meshDataGroup;
 
     @SuppressWarnings("unchecked")
     public Model(Model<?> model) {
@@ -74,7 +74,8 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
             JGemsHelper.getLogger().warn("Trying to get data from NULL mesh!");
             return;
         }
-        this.getMeshDataGroup().getModelNodeList().forEach(e -> e.getMesh().clean());
+        this.getMeshDataGroup().clean();
+        this.meshDataGroup = null;
     }
 
     @Override

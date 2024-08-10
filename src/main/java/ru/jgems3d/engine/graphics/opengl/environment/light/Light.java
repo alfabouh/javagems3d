@@ -31,7 +31,7 @@ public abstract class Light implements IWorldTicked {
         this.lightPos = new Vector3f(lightPos);
         this.offset = new Vector3f(offset);
         this.enabled = true;
-        this.isActive = false;
+        this.isActive = true;
     }
 
     public Light(AbstractSceneEntity abstractSceneEntity) {

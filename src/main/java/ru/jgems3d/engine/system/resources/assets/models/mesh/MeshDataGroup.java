@@ -51,9 +51,13 @@ public class MeshDataGroup implements ICached {
         return this.meshDataContainer;
     }
 
-    @Override
-    public void onCleaningCache(ResourceCache resourceCache) {
+    public void clean() {
         this.getModelNodeList().forEach(ModelNode::cleanMesh);
         this.getModelNodeList().clear();
+    }
+
+    @Override
+    public void onCleaningCache(ResourceCache resourceCache) {
+        this.clean();
     }
 }

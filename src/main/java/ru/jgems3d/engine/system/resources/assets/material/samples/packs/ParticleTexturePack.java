@@ -2,6 +2,7 @@ package ru.jgems3d.engine.system.resources.assets.material.samples.packs;
 
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
@@ -38,7 +39,7 @@ public class ParticleTexturePack {
     private void loadTextures() {
         JGemsHelper.getLogger().log("Loading particle texture pack: " + this.pathToTexturePath);
         for (int i = 0; i < this.texturesNum; i++) {
-            this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(this.pathToTexturePath, String.format("%s%d%s", "particle_", i, this.format)), true, GL30.GL_REPEAT);
+            this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(this.pathToTexturePath, String.format("%s%d%s", "particle_", i, this.format)), new TextureSample.Params(true));
         }
     }
 }

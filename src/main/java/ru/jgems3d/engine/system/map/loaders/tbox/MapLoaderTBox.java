@@ -1,8 +1,10 @@
 package ru.jgems3d.engine.system.map.loaders.tbox;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.service.misc.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.JGemsHelper;
@@ -48,7 +50,7 @@ public class MapLoaderTBox implements IMapLoader {
     }
 
     @Override
-    public void createMap(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+    public void createMap(GameResources localResources, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         AppTBoxObjectsContainer appTBoxObjectsContainer = APIContainer.get().getAppTBoxObjectsContainer();
 
         if (saveObjectSet != null) {
@@ -74,7 +76,7 @@ public class MapLoaderTBox implements IMapLoader {
                             //TODO
                         }
                     } else {
-                        APIContainer.get().getApiGameInfo().getAppManager().putIncomingObjectOnMap(sceneWorld, physicsWorld, JGemsHelper.getLocalResources(), id, type, tEntityContainer.getAttributeContainer(), tRenderContainer);
+                        APIContainer.get().getApiGameInfo().getAppManager().placeObjectInTBoxMap(sceneWorld, physicsWorld, localResources, id, type, tEntityContainer.getAttributeContainer(), tRenderContainer);
                     }
                 }
             }
@@ -87,7 +89,7 @@ public class MapLoaderTBox implements IMapLoader {
     }
 
     @Override
-    public MapInfo getLevelInfo() {
+    public @NotNull MapInfo getLevelInfo() {
         return this.mapInfo;
     }
 }

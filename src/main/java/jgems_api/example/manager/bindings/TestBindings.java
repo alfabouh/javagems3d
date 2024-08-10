@@ -1,9 +1,10 @@
-package ru.jgems3d.engine.system.controller.binding;
+package jgems_api.example.manager.bindings;
 
 import org.lwjgl.glfw.GLFW;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultPausePanel;
+import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.controller.components.FunctionalKey;
 import ru.jgems3d.engine.system.controller.components.IKeyAction;
 import ru.jgems3d.engine.system.controller.components.Key;
@@ -11,7 +12,7 @@ import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
-public class JGemsBindingManager extends BindingManager {
+public class TestBindings extends BindingManager {
     public final Key keyA;
     public final Key keyD;
     public final Key keyW;
@@ -30,7 +31,7 @@ public class JGemsBindingManager extends BindingManager {
     public final Key keyF2;
     public final Key keySelection;
 
-    public JGemsBindingManager() {
+    public TestBindings() {
         this.keyA = new Key(GLFW.GLFW_KEY_A);
         this.keyD = new Key(GLFW.GLFW_KEY_D);
         this.keyW = new Key(GLFW.GLFW_KEY_W);
@@ -91,24 +92,54 @@ public class JGemsBindingManager extends BindingManager {
         }, GLFW.GLFW_KEY_T);
 
         if (JGems3D.DEBUG_MODE) {
-            this.createBinding(this.keyV, "Reload shaders");
-            this.createBinding(this.keyT, "Фокус");
-            this.createBinding(this.keyClear, "Очистка");
-            this.createBinding(this.keyBlock1, "Куб статичный");
-            this.createBinding(this.keyBlock2, "Куб-фонарь");
-            this.createBinding(this.keyBlock3, "Куб реалистичный");
-            this.createBinding(this.keyF2, "Screenshot");
+            this.addBinding(this.keyV);
+            this.addBinding(this.keyT);
+            this.addBinding(this.keyClear);
+            this.addBinding(this.keyBlock1);
+            this.addBinding(this.keyBlock2);
+            this.addBinding(this.keyBlock3);
+            this.addBinding(this.keyF2);
         }
 
-        this.createBinding(this.keyA, "Шаг влево");
-        this.createBinding(this.keyD, "Шаг вправо");
-        this.createBinding(this.keyW, "Шаг вперед");
-        this.createBinding(this.keyS, "Шаг назад");
-        this.createBinding(this.keyEsc, "Закрыть экран");
-        this.createBinding(this.keyUp, "Лететь вверх");
-        this.createBinding(this.keyDown, "Лететь вниз");
-        this.createBinding(this.keyX, "X");
-        this.createBinding(this.keyF11, "FullScreen");
-        this.createBinding(this.keySelection, "Выбрать объект");
+        this.addBinding(this.keyA);
+        this.addBinding(this.keyD);
+        this.addBinding(this.keyW);
+        this.addBinding(this.keyS);
+        this.addBinding(this.keyEsc);
+        this.addBinding(this.keyUp);
+        this.addBinding(this.keyDown);
+        this.addBinding(this.keyX);
+        this.addBinding(this.keyF11);
+        this.addBinding(this.keySelection);
+    }
+
+    @Override
+    public Key keyMoveLeft() {
+        return this.keyA;
+    }
+
+    @Override
+    public Key keyMoveRight() {
+        return this.keyD;
+    }
+
+    @Override
+    public Key keyMoveForward() {
+        return this.keyW;
+    }
+
+    @Override
+    public Key keyMoveBackward() {
+        return this.keyS;
+    }
+
+    @Override
+    public Key keyMoveUp() {
+        return this.keyUp;
+    }
+
+    @Override
+    public Key keyMoveDown() {
+        return this.keyDown;
     }
 }

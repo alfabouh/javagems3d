@@ -16,7 +16,7 @@ public class CubeMapTexturePack {
             builder.append("sky_");
             builder.append(i + 1);
             builder.append(format);
-            this.textures[i] = JGemsResourceManager.getGlobalGameResources().createTexture(new JGPath(pathToSkyBox, builder.toString()), true, GL30.GL_REPEAT);
+            this.textures[i] = JGemsResourceManager.getGlobalGameResources().createTexture(new JGPath(pathToSkyBox, builder.toString()), new TextureSample.Params());
         }
     }
 

@@ -95,13 +95,13 @@ public class EngineSystem implements IEngine {
         JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
         PhysicsWorld physicsWorld = JGemsHelper.getPhysicsWorld();
         SceneWorld sceneWorld = JGemsHelper.getSceneWorld();
-        this.getMapLoader().createMap(physicsWorld, sceneWorld);
+        this.getMapLoader().createMap(this.getResourceManager().getLocalResources(), physicsWorld, sceneWorld);
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
 
         Vector3f startPos = new Vector3f(pair.getFirst()).add(0.0f, 0.6f, 0.0f);
         Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
 
-        this.localPlayer = new LocalPlayer(APIContainer.get().getApiGameInfo().getAppManager().createPlayer(this.getMapLoader().getLevelInfo().getMapProperties().getMapName()));
+        this.localPlayer = new LocalPlayer(APIContainer.get().getApiGameInfo().getAppManager().createPlayer(this.getMapLoader()));
 
         this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
 

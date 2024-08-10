@@ -23,40 +23,32 @@ import java.nio.IntBuffer;
 
 public class TextureSample implements IImageSample {
     private final String name;
-    private final boolean interpolate;
-    private final int wrapping;
     private ByteBuffer imageBuffer;
-    private int width;
-    private int height;
+    private Vector2i size;
     private int textureId;
-    private boolean enableAnisotropic;
+    private final Params params;
 
-    private TextureSample(String name, int width, int height, ByteBuffer buffer) {
+    private TextureSample(String name, Vector2i size, ByteBuffer buffer, Params params) {
         this.name = name;
-        this.width = width;
-        this.height = height;
+        this.size = size;
         this.imageBuffer = buffer;
 
-        this.wrapping = GL30.GL_CLAMP_TO_BORDER;
-        this.enableAnisotropic = false;
-        this.interpolate = false;
+        this.params = params;
 
         if (this.imageBuffer != null) {
-            this.createTexture();
+            this.createTexture(params);
         }
     }
 
-    private TextureSample(boolean inJar, JGPath fullPath, boolean interpolate, int wrapping) {
+    private TextureSample(boolean inJar, JGPath fullPath, Params params) {
         this.name = fullPath.getSPath();
-        this.interpolate = interpolate;
-        this.wrapping = wrapping;
-        this.enableAnisotropic = true;
+        this.params = params;
         JGemsHelper.getLogger().log("Loading " + this.getName());
         if (inJar) {
             try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
                 this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
                 if (this.imageBuffer != null) {
-                    this.createTexture();
+                    this.createTexture(params);
                 }
             } catch (IOException e) {
                 this.imageBuffer = null;
@@ -65,16 +57,14 @@ public class TextureSample implements IImageSample {
         } else {
             this.imageBuffer = this.readTextureOutsideJar(this.getName());
             if (this.imageBuffer != null) {
-                this.createTexture();
+                this.createTexture(params);
             }
         }
     }
 
-    private TextureSample(String id, InputStream inputStream, boolean interpolate, int wrapping) {
+    private TextureSample(String id, InputStream inputStream, Params params) {
         this.name = id + "_inputStream";
-        this.interpolate = interpolate;
-        this.wrapping = wrapping;
-        this.enableAnisotropic = true;
+        this.params = params;
         if (inputStream == null) {
             JGemsHelper.getLogger().warn("Error, while loading texture " + id + " InputStream is NULL");
             this.imageBuffer = null;
@@ -85,16 +75,16 @@ public class TextureSample implements IImageSample {
                 throw new JGemsIOException(e);
             }
             if (this.imageBuffer != null) {
-                this.createTexture();
+                this.createTexture(params);
             }
         }
     }
 
-    public static TextureSample createTextureOutsideJar(ResourceCache resourceCache, JGPath fullPath, boolean interpolate, int wrapping) {
+    public static TextureSample createTextureOutsideJar(ResourceCache resourceCache, JGPath fullPath, Params params) {
         if (resourceCache.checkObjectInCache(fullPath)) {
             return (TextureSample) resourceCache.getCachedObject(fullPath);
         }
-        TextureSample textureSample = new TextureSample(false, fullPath, interpolate, wrapping);
+        TextureSample textureSample = new TextureSample(false, fullPath, params);
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
@@ -103,11 +93,11 @@ public class TextureSample implements IImageSample {
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache resourceCache, JGPath fullPath, boolean interpolate, int wrapping) {
+    public static TextureSample createTexture(ResourceCache resourceCache, JGPath fullPath, Params params) {
         if (resourceCache.checkObjectInCache(fullPath)) {
             return (TextureSample) resourceCache.getCachedObject(fullPath);
         }
-        TextureSample textureSample = new TextureSample(true, fullPath, interpolate, wrapping);
+        TextureSample textureSample = new TextureSample(true, fullPath, params);
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
@@ -116,11 +106,11 @@ public class TextureSample implements IImageSample {
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache resourceCache, String name, int width, int height, ByteBuffer buffer) {
+    public static TextureSample createTexture(ResourceCache resourceCache, String name, Vector2i size, ByteBuffer buffer, Params params) {
         if (resourceCache.checkObjectInCache(name)) {
             return (TextureSample) resourceCache.getCachedObject(name);
         }
-        TextureSample textureSample = new TextureSample(name, width, height, buffer);
+        TextureSample textureSample = new TextureSample(name, size, buffer, params);
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(name, textureSample);
         } else {
@@ -129,11 +119,11 @@ public class TextureSample implements IImageSample {
         return textureSample;
     }
 
-    public static TextureSample createTextureIS(String id, InputStream inputStream, boolean interpolate, int wrapping) {
-        return new TextureSample(id, inputStream, interpolate, wrapping);
+    public static TextureSample createTexture(String id, InputStream inputStream, Params params) {
+        return new TextureSample(id, inputStream, params);
     }
 
-    public ByteBuffer readTextureFromMemory(String name, InputStream inputStream) throws IOException {
+    private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) throws IOException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);
@@ -149,8 +139,7 @@ public class TextureSample implements IImageSample {
                 JGemsHelper.getLogger().warn("Couldn't create texture " + name);
                 JGemsHelper.getLogger().bigWarn(STBImage.stbi_failure_reason());
             } else {
-                this.width = width.get();
-                this.height = height.get();
+                this.size = new Vector2i(width.get(), height.get());
                 return imageBuffer;
             }
         }
@@ -168,37 +157,39 @@ public class TextureSample implements IImageSample {
                 JGemsHelper.getLogger().warn("Couldn't create texture " + path);
                 JGemsHelper.getLogger().bigWarn(STBImage.stbi_failure_reason());
             } else {
-                this.width = width.get();
-                this.height = height.get();
+                this.size = new Vector2i(width.get(), height.get());
                 return imageBuffer;
             }
         }
         return null;
     }
 
-    private void createTexture() {
-        boolean linear = JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
-        boolean anisotropic = JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
+    private void createTexture(Params params) {
+        int quality = params.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
+        boolean linear = params.isLinearFilter() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
+        boolean anisotropic = params.isAnisotropicFilter() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
 
         this.textureId = GL20.glGenTextures();
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
         GL20.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
         GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA, this.size().x, this.size().y, 0, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, this.getImageBuffer());
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, (linear && this.isInterpolate()) ? GL30.GL_LINEAR_MIPMAP_LINEAR : GL30.GL_NEAREST_MIPMAP_NEAREST);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, (linear && this.isInterpolate()) ? GL30.GL_LINEAR : GL30.GL_NEAREST);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, this.getWrapping());
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, this.getWrapping());
-        if (anisotropic && this.isEnableAnisotropic()) {
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, linear ? GL30.GL_LINEAR_MIPMAP_LINEAR : GL30.GL_NEAREST_MIPMAP_NEAREST);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, linear ? GL30.GL_LINEAR : GL30.GL_NEAREST);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, params.isRepeat() ? GL30.GL_REPEAT : GL30.GL_CLAMP_TO_EDGE);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, params.isRepeat() ? GL30.GL_REPEAT : GL30.GL_CLAMP_TO_EDGE);
+        if (anisotropic) {
             GL30.glTexParameterf(GL30.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL30.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
         }
         GL30.glGenerateMipmap(GL20.GL_TEXTURE_2D);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_BASE_LEVEL, quality);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 11);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
         JGemsHelper.getLogger().log("Texture " + this.getName() + " successfully created!");
     }
 
     public void recreateTexture() {
         GL30.glDeleteTextures(this.getTextureId());
-        this.createTexture();
+        this.createTexture(this.params);
     }
 
     public void clear() {
@@ -219,23 +210,7 @@ public class TextureSample implements IImageSample {
 
     @Override
     public Vector2i size() {
-        return new Vector2i(this.width, this.height);
-    }
-
-    public boolean isEnableAnisotropic() {
-        return this.enableAnisotropic;
-    }
-
-    public void setEnableAnisotropic(boolean enableAnisotropic) {
-        this.enableAnisotropic = enableAnisotropic;
-    }
-
-    public int getWrapping() {
-        return this.wrapping;
-    }
-
-    public boolean isInterpolate() {
-        return this.interpolate;
+        return new Vector2i(this.size);
     }
 
     public String getName() {
@@ -262,5 +237,43 @@ public class TextureSample implements IImageSample {
     @Override
     public void onCleaningCache(ResourceCache resourceCache) {
         this.clear();
+    }
+
+    public static class Params {
+        private final boolean linearFilter;
+        private final boolean repeat;
+        private final boolean anisotropicFilter;
+        private final boolean qualityAffected;
+
+        public Params(boolean qualityAffected) {
+            this(true, true, true, qualityAffected);
+        }
+
+        public Params() {
+            this(true, true, true, false);
+        }
+
+        public Params(boolean linearFilter, boolean repeat, boolean anisotropicFilter, boolean qualityAffected) {
+            this.linearFilter = linearFilter;
+            this.repeat = repeat;
+            this.anisotropicFilter = anisotropicFilter;
+            this.qualityAffected = qualityAffected;
+        }
+
+        public boolean isLinearFilter() {
+            return this.linearFilter;
+        }
+
+        public boolean isRepeat() {
+            return this.repeat;
+        }
+
+        public boolean isAnisotropicFilter() {
+            return this.anisotropicFilter;
+        }
+
+        public boolean isQualityAffected() {
+            return this.qualityAffected;
+        }
     }
 }

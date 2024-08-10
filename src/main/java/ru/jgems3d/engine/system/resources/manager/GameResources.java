@@ -1,5 +1,6 @@
 package ru.jgems3d.engine.system.resources.manager;
 
+import org.joml.Vector2i;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.JGemsHelper;
@@ -44,27 +45,27 @@ public class GameResources {
         return ModelLoader.createMesh(this, modelPath);
     }
 
-    public TextureSample createTextureOutsideJar(JGPath path, boolean interpolate, int wrapping) {
-        return TextureSample.createTextureOutsideJar(this.getResourceCache(), path, interpolate, wrapping);
+    public TextureSample createTextureOutsideJar(JGPath path, TextureSample.Params params) {
+        return TextureSample.createTextureOutsideJar(this.getResourceCache(), path, params);
     }
 
-    public TextureSample createTexture(JGPath path, boolean interpolate, int wrapping) {
+    public TextureSample createTexture(JGPath path, TextureSample.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
-        return TextureSample.createTexture(this.getResourceCache(), path, interpolate, wrapping);
+        return TextureSample.createTexture(this.getResourceCache(), path, params);
     }
 
-    public TextureSample createTextureOrDefault(TextureSample defaultT, JGPath path, boolean interpolate, int wrapping) {
+    public TextureSample createTextureOrDefault(TextureSample defaultT, JGPath path, TextureSample.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
         try {
-            return TextureSample.createTexture(this.getResourceCache(), path, interpolate, wrapping);
+            return TextureSample.createTexture(this.getResourceCache(), path, params);
         } catch (JGemsException e) {
             e.printStackTrace(System.err);
             return defaultT;
         }
     }
 
-    public TextureSample createTexture(String name, int width, int height, ByteBuffer buffer) {
-        return TextureSample.createTexture(this.getResourceCache(), name, width, height, buffer);
+    public TextureSample createTexture(String name, Vector2i size, ByteBuffer buffer, TextureSample.Params params) {
+        return TextureSample.createTexture(this.getResourceCache(), name, size, buffer, params);
     }
 
     @SuppressWarnings("all")

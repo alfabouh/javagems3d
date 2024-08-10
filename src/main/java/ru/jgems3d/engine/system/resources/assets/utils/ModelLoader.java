@@ -296,7 +296,7 @@ public class ModelLoader {
                 if (diffuse != null) {
                     TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + diffuse);
                     if (textureSample == null) {
-                        textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, diffuse), true, GL30.GL_REPEAT);
+                        textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(fullPath, diffuse), new TextureSample.Params(true));
                     }
                     if (textureSample.isValid()) {
                         material.setDiffuse(textureSample);
@@ -305,7 +305,7 @@ public class ModelLoader {
                 if (opacity != null) {
                     TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + opacity);
                     if (textureSample == null) {
-                        textureSample = gameResources.createTexture(new JGPath(fullPath, opacity), true, GL30.GL_REPEAT);
+                        textureSample = gameResources.createTexture(new JGPath(fullPath, opacity), new TextureSample.Params(true));
                     }
                     if (textureSample.isValid()) {
                         material.setOpacityMap(textureSample);
@@ -314,7 +314,7 @@ public class ModelLoader {
                 if (normals != null) {
                     TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + normals);
                     if (textureSample == null) {
-                        textureSample = gameResources.createTexture(new JGPath(fullPath, normals), true, GL30.GL_REPEAT);
+                        textureSample = gameResources.createTexture(new JGPath(fullPath, normals), new TextureSample.Params(true));
                     }
                     if (textureSample.isValid()) {
                         material.setNormalsMap(textureSample);
@@ -323,7 +323,7 @@ public class ModelLoader {
                 if (emission != null) {
                     TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + emission);
                     if (textureSample == null) {
-                        textureSample = gameResources.createTexture(new JGPath(fullPath, emission), true, GL30.GL_REPEAT);
+                        textureSample = gameResources.createTexture(new JGPath(fullPath, emission), new TextureSample.Params(true));
                     }
                     if (textureSample.isValid()) {
                         material.setEmissionMap(textureSample);
@@ -332,7 +332,7 @@ public class ModelLoader {
                 if (metallic != null) {
                     TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + metallic);
                     if (textureSample == null) {
-                        textureSample = gameResources.createTexture(new JGPath(fullPath, metallic), true, GL30.GL_REPEAT);
+                        textureSample = gameResources.createTexture(new JGPath(fullPath, metallic), new TextureSample.Params(true));
                     }
                     if (textureSample.isValid()) {
                         material.setMetallicMap(textureSample);
@@ -341,7 +341,7 @@ public class ModelLoader {
                 if (specular != null) {
                     TextureSample textureSample = (TextureSample) gameResources.getResourceCache().getCachedObject(fullPath + specular);
                     if (textureSample == null) {
-                        textureSample = gameResources.createTexture(new JGPath(fullPath, specular), true, GL30.GL_REPEAT);
+                        textureSample = gameResources.createTexture(new JGPath(fullPath, specular), new TextureSample.Params(true));
                     }
                     if (textureSample.isValid()) {
                         material.setSpecularMap(textureSample);
