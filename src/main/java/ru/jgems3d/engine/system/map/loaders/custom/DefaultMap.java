@@ -27,7 +27,7 @@ public class DefaultMap implements IMapLoader {
         JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
         worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
 
-        Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 16.0f)));
+        Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
         JGemsHelper.WORLD.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
     }
 
