@@ -20,7 +20,7 @@ public class InventoryRender extends SceneRenderBase {
 
     public void onRender(FrameTicking frameTicking) {
         Player player = JGems3D.get().getPlayer();
-        if (player instanceof IInventoryOwner && !(JGemsHelper.getCurrentCamera() instanceof FreeCamera)) {
+        if (player instanceof IInventoryOwner && !(JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera)) {
             IInventoryOwner hasInventory = (IInventoryOwner) player;
             InventoryItem current = hasInventory.inventory().getCurrentItem();
             if (hasInventory.inventory().getCurrentItem() != null && JGemsResourceManager.inventoryItemRenderTable.hasRender(current)) {

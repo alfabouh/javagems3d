@@ -52,7 +52,7 @@ public class Window implements IWindow {
                 buffer.flip();
                 ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
                 if (imageBuffer == null) {
-                    throw new NullPointerException("Window icon is NULL");
+                    throw new NullPointerException("WINDOW icon is NULL");
                 }
                 GLFWImage.Buffer iconBuffer = GLFWImage.malloc(1);
                 iconBuffer.width(width.get(0));
@@ -108,7 +108,7 @@ public class Window implements IWindow {
     }
 
     public boolean isInFocus() {
-        return this.isActive() && this.isInFocus;
+        return this.isWindowActive() && this.isInFocus;
     }
 
     public void setInFocus(boolean inFocus) {

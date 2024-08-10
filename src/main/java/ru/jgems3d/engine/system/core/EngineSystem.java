@@ -107,14 +107,14 @@ public class EngineSystem implements IEngine {
 
         JGemsHelper.getLogger().log(this.currentMapName() + ": Map Loaded!");
 
-        Environment environment = JGems3D.get().getSceneWorld().getEnvironment();
+        Environment environment = sceneWorld.getEnvironment();
         FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
         SkyProp skyProp = this.getMapLoader().getLevelInfo().getMapProperties().getSkyProp();
 
         if (fogProp != null) {
             if (fogProp.isFogEnabled()) {
-                environment.getWorldFog().setColor(fogProp.getFogColor());
-                environment.getWorldFog().setDensity(fogProp.getFogDensity());
+                environment.getFog().setColor(fogProp.getFogColor());
+                environment.getFog().setDensity(fogProp.getFogDensity());
                 environment.getSky().setCoveredByFog(fogProp.isSkyCoveredByFog());
             } else {
                 environment.getFog().disable();
@@ -134,14 +134,14 @@ public class EngineSystem implements IEngine {
             environment.getSky().setSunBrightness(skyProp.getSunBrightness());
         }
 
-        JGemsHelper.setCursorInCenter();
-        JGemsHelper.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
-        JGemsHelper.enableAttachedCamera(this.getLocalPlayer().getEntityPlayer());
+        JGemsHelper.CONTROLLER.setCursorInCenter();
+        JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
+        JGemsHelper.CAMERA.enableAttachedCamera(this.getLocalPlayer().getEntityPlayer());
 
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
 
-        JGemsHelper.setWindowFocus(true);
-        JGemsHelper.openUIPanel(new DefaultGamePanel(null));
+        JGemsHelper.WINDOW.setWindowFocus(true);
+        JGemsHelper.UI.openUIPanel(new DefaultGamePanel(null));
         JGemsHelper.getScreen().removeLoadingScreen();
 
         this.unPauseGame();

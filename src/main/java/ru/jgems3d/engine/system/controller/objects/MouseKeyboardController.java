@@ -99,7 +99,7 @@ public class MouseKeyboardController implements IController {
 
     @Override
     public void updateItemWithInventory(IInventoryOwner hasInventory) {
-        if (JGemsHelper.getCurrentCamera() instanceof FreeCamera) {
+        if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera) {
             return;
         }
         Inventory inventory = hasInventory.inventory();

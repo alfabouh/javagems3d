@@ -606,7 +606,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
             sample.mul(JGems3D.random.nextFloat());
 
             float scale = (float) i / ((float) size);
-            scale = JGemsHelper.lerp(0.1f, 1.0f, scale * scale);
+            scale = JGemsHelper.UTILS.lerp(0.1f, 1.0f, scale * scale);
             sample.mul(scale);
 
             floatBuffer.put(sample.x);

@@ -101,8 +101,8 @@ public class DynamicsUtils {
         CompoundMesh compoundMesh = new CompoundMesh();
         List<IndexedMesh> indexedMeshList = new ArrayList<>();
         for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            float[] positions = JGemsHelper.convertFloatsArray(modelNode.getMesh().getAttributePositions());
-            int[] indexes = JGemsHelper.convertIntsArray(modelNode.getMesh().getIndexes());
+            float[] positions = JGemsHelper.UTILS.convertFloatsArray(modelNode.getMesh().getAttributePositions());
+            int[] indexes = JGemsHelper.UTILS.convertIntsArray(modelNode.getMesh().getIndexes());
             indexedMeshList.add(DynamicsUtils.getIndexMesh(positions, indexes));
         }
         for (IndexedMesh indexedMesh : indexedMeshList) {

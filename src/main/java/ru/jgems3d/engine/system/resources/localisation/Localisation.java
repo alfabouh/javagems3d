@@ -40,8 +40,8 @@ public class Localisation {
 
     public static void setLangLocalisationPath(Lang lang, JGPath path) {
         lang.setFileDirectoryPath(path);
-        if (JGemsHelper.getLocalisation().getCurrentlang().equals(lang)) {
-            JGemsHelper.getLocalisation().setLanguage(lang);
+        if (JGemsHelper.LOCALISATION.getLocalisation().getCurrentlang().equals(lang)) {
+            JGemsHelper.LOCALISATION.getLocalisation().setLanguage(lang);
         }
     }
 

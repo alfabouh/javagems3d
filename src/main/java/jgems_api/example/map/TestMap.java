@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderProp;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
@@ -33,7 +32,7 @@ public class TestMap implements IMapLoader {
 
     @Override
     public void postLoad(PhysicsWorld world, SceneWorld sceneWorld) {
-        JGemsHelper.enableFreeCamera(JGemsHelper.getCurrentController(), new Vector3f(), new Vector3f());
+        JGemsHelper.CAMERA.enableFreeCamera(JGemsHelper.CONTROLLER.getCurrentController(), new Vector3f(), new Vector3f());
     }
 
     @Override

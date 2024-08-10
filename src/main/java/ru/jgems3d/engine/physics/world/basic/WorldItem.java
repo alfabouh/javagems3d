@@ -117,7 +117,7 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public Vector3f getLookVector() {
-        return JGemsHelper.calcLookVector(this.getRotation());
+        return JGemsHelper.UTILS.calcLookVector(this.getRotation());
     }
 
     public void setDead() {

@@ -16,7 +16,7 @@ public class LocalPlayer {
 
     public void addPlayerInWorlds(PhysicsWorld world, Vector3f startPos, Vector3f startRot) {
         Player dynamicPlayer = this.playerConstructor.constructPlayer(world, new Vector3f(startPos), new Vector3f(startRot));
-        JGemsHelper.addItem(dynamicPlayer, JGemsResourceManager.globalRenderDataAssets.player);
+        JGemsHelper.WORLD.addItemInWorld(dynamicPlayer, JGemsResourceManager.globalRenderDataAssets.player);
         this.player = dynamicPlayer;
     }
 

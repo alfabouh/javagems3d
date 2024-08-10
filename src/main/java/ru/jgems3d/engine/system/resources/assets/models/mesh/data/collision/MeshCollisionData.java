@@ -24,7 +24,7 @@ public class MeshCollisionData implements IMeshDataContainer {
         for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
             floats.addAll(modelNode.getMesh().getAttributePositions());
         }
-        return JGemsHelper.convertFloatsArray(floats);
+        return JGemsHelper.UTILS.convertFloatsArray(floats);
     }
 
     public CompoundMesh getCompoundMesh() {

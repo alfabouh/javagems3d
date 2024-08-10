@@ -22,7 +22,7 @@ public class TestPlayer extends SimpleKinematicPlayer {
         if (JGems3D.DEBUG_MODE) {
             if (((TestBindings) JGemsControllerDispatcher.bindingManager()).keyBlock1.isPressed()) {
                 BtDynamicMeshBody entityPropInfo = new BtDynamicMeshBody(JGemsResourceManager.globalModelAssets.cube, this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "test");
-                JGemsHelper.addItem(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
+                JGemsHelper.WORLD.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
                 Vector3f v3 = this.getLookVector().mul(50.0f);
                 entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
             }

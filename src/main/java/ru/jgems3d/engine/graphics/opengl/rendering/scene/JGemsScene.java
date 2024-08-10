@@ -57,7 +57,7 @@ public class JGemsScene implements IScene {
 
     @SuppressWarnings("all")
     public void renderScene(float frameDeltaTime) throws InterruptedException {
-        if (JGemsHelper.isSceneActive()) {
+        if (JGemsHelper.WINDOW.isWindowActive()) {
             JGems3D.get().getScreen().normalizeViewPort();
             JGemsOpenGLRenderer.getGameUboShader().bind();
             if (this.getCurrentCamera() != null) {

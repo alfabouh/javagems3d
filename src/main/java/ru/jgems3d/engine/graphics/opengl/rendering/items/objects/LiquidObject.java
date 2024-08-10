@@ -72,6 +72,6 @@ public final class LiquidObject implements ICulled {
         if (!this.getModel().isValid()) {
             return null;
         }
-        return new RenderSphere(JGemsHelper.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), new Vector3f(1.0f)), this.getModel().getFormat().getPosition());
+        return new RenderSphere(JGemsHelper.UTILS.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), new Vector3f(1.0f)), this.getModel().getFormat().getPosition());
     }
 }

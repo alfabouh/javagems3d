@@ -12,16 +12,12 @@ import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class Environment implements IEnvironment, IWorldTicked {
-    private final Fog worldFog;
-    private final Fog waterFog;
     private LightManager lightManager;
     private Sky sky;
     private Fog fog;
 
     public Environment() {
-        this.worldFog = new Fog();
-        this.waterFog = new Fog();
-        this.setFog(this.getWorldFog());
+        this.setFog(new Fog());
     }
 
     public static Environment createEnvironment() {
@@ -32,16 +28,6 @@ public class Environment implements IEnvironment, IWorldTicked {
     public void init(SceneWorld sceneWorld) {
         this.sky = new Sky(new SkyBox2D(JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap), new Vector3f(0.95f, 1.0f, 0.98f), new Vector3f(0.0f, 1.0f, -1.0f), 1.0f);
         this.lightManager = new LightManager(this);
-        this.getWaterFog().setDensity(0.5f);
-        this.getWaterFog().setColor(new Vector3f(0.05f, 0.1f, 0.6f));
-    }
-
-    public Fog getWaterFog() {
-        return this.waterFog;
-    }
-
-    public Fog getWorldFog() {
-        return this.worldFog;
     }
 
     public Fog getFog() {
