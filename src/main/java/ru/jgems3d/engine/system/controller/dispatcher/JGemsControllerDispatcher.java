@@ -3,13 +3,14 @@ package ru.jgems3d.engine.system.controller.dispatcher;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.controller.binding.JGemsBindingManager;
+import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 
@@ -20,13 +21,13 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     private IControllable currentControlledItem;
 
     public JGemsControllerDispatcher(Window window) {
-        JGemsControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window, new JGemsBindingManager());
+        JGemsControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window, APIContainer.get().getApiGameInfo().getAppManager().createBindingManager());
         this.setController(JGemsControllerDispatcher.defaultController());
         JGemsHelper.getLogger().log("Created controller dispatcher!");
     }
 
-    public static JGemsBindingManager bindingManager() {
-        return (JGemsBindingManager) JGems3D.get().getScreen().getControllerDispatcher().getCurrentController().getBindingManager();
+    public static BindingManager bindingManager() {
+        return JGems3D.get().getScreen().getControllerDispatcher().getCurrentController().getBindingManager();
     }
 
     public static IController defaultController() {

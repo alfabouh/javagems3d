@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.controller.objects.components;
+package ru.jgems3d.engine.system.controller.objects.devices;
 
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;

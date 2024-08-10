@@ -43,7 +43,6 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
     public JGemsShaderManager weighted_liquid_oit;
     public JGemsShaderManager simple;
     public JGemsShaderManager depth_sun;
-    public JGemsShaderManager depth_sun_fix;
     public JGemsShaderManager depth_plight;
     public JGemsShaderManager debug;
     public JGemsShaderManager world_selected_gbuffer;
@@ -97,7 +96,6 @@ public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
 
         this.simple = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/simple"));
         this.depth_sun = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "shadows/depth_sun"));
-        this.depth_sun_fix = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "shadows/depth_sun_fix"));
 
         this.world_selected_gbuffer = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "world/world_selected_gbuffer"));
         this.depth_plight = this.createShaderManager(resourceCache, new JGPath(JGems3D.Paths.SHADERS, "shadows/depth_plight"));

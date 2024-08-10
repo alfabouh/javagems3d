@@ -19,7 +19,7 @@ void main() {
 
     vec2 uv = vec2(id) / vec2(size);
 
-    const float radius = 1.25;
+    const float radius = 1.5;
     const float bias = 0.025;
 
     vec3 frag_pos = texture(gPositions, uv).xyz;

@@ -1,19 +1,26 @@
 package jgems_api.example.manager;
 
 import jgems_api.example.TestTBoxApp;
+import jgems_api.example.entities.TestPlayer;
+import jgems_api.example.gui.TestMainMenuPanel;
+import jgems_api.example.manager.bindings.TestBindings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
+import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
+import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultMainMenuPanel;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.BtDynamicMeshBody;
 import ru.jgems3d.engine.physics.entities.BtStaticMeshBody;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
+import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.core.player.IPlayerConstructor;
+import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
@@ -33,7 +40,21 @@ public class TestManager extends AppManager {
     }
 
     @Override
-    public void putIncomingObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributeContainer attributeContainer, TRenderContainer renderContainer) {
+    public BindingManager createBindingManager() {
+        return new TestBindings();
+    }
+
+    @Override
+    public @NotNull IPlayerConstructor createPlayer(IMapLoader mapLoader) {
+        return (TestPlayer::new);
+    }
+
+    public @NotNull PanelUI openMainMenu() {
+        return new TestMainMenuPanel(null);
+    }
+
+    @Override
+    public void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributeContainer attributeContainer, TRenderContainer renderContainer) {
         try {
             Vector3f pos = attributeContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
             Vector3f rot = attributeContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
@@ -73,10 +94,5 @@ public class TestManager extends AppManager {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public @NotNull IPlayerConstructor createPlayer(String mapName) {
-        return (SimpleKinematicPlayer::new);
     }
 }

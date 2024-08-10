@@ -111,7 +111,7 @@ public abstract class LoggingManager {
     }
 
     public void exception(Exception e) {
-        this.bigWarn("Process caught an service!");
+        this.bigWarn("Process caught an exception!");
         System.err.println("\n****************************************Exception****************************************");
         e.printStackTrace(System.err);
         System.err.println("\n****************************************Exception****************************************");

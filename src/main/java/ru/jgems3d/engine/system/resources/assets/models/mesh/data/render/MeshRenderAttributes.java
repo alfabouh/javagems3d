@@ -33,12 +33,14 @@ public class MeshRenderAttributes {
         return this;
     }
 
-    public void faceCullingDisabled(boolean disableFaceCulling) {
+    public MeshRenderAttributes faceCullingDisabled(boolean disableFaceCulling) {
         this.disableFaceCulling = disableFaceCulling;
+        return this;
     }
 
-    public void setLightOpaque(boolean lightOpaque) {
+    public MeshRenderAttributes setLightOpaque(boolean lightOpaque) {
         this.lightOpaque = lightOpaque;
+        return this;
     }
 
     public MeshRenderAttributes setObjectOpacity(float objectOpacity) {

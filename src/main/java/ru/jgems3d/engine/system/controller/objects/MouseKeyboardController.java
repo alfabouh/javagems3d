@@ -3,13 +3,14 @@ package ru.jgems3d.engine.system.controller.objects;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.inventory.IInventoryOwner;
 import ru.jgems3d.engine.inventory.Inventory;
 import ru.jgems3d.engine.system.controller.binding.BindingManager;
-import ru.jgems3d.engine.system.controller.binding.JGemsBindingManager;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
-import ru.jgems3d.engine.system.controller.objects.components.MouseKeyboard;
+import ru.jgems3d.engine.system.controller.objects.devices.MouseKeyboard;
 
 public class MouseKeyboardController implements IController {
     protected final Vector2f normalizedRotationInput;
@@ -60,7 +61,6 @@ public class MouseKeyboardController implements IController {
 
     @Override
     public void updateControllerState(IWindow window) {
-        JGemsBindingManager gemsBindingManager = (JGemsBindingManager) this.getBindingManager();
         this.getMouseAndKeyboard().update(this.getBindingManager());
         this.getPositionInput().set(0.0d);
         this.getRotationInput().set(0.0d);
@@ -75,22 +75,22 @@ public class MouseKeyboardController implements IController {
         float d2 = (float) (xy[1] - posM.y);
         this.getRotationInput().set(new Vector2f(d2, d1));
         this.setCursorInCenter();
-        if (gemsBindingManager.keyA.isPressed()) {
+        if (this.getBindingManager().keyMoveLeft().isPressed()) {
             this.getPositionInput().add(-1.0f, 0.0f, 0.0f);
         }
-        if (gemsBindingManager.keyD.isPressed()) {
+        if (this.getBindingManager().keyMoveRight().isPressed()) {
             this.getPositionInput().add(1.0f, 0.0f, 0.0f);
         }
-        if (gemsBindingManager.keyW.isPressed()) {
+        if (this.getBindingManager().keyMoveForward().isPressed()) {
             this.getPositionInput().add(0.0f, 0.0f, -1.0f);
         }
-        if (gemsBindingManager.keyS.isPressed()) {
+        if (this.getBindingManager().keyMoveBackward().isPressed()) {
             this.getPositionInput().add(0.0f, 0.0f, 1.0f);
         }
-        if (gemsBindingManager.keyUp.isPressed()) {
+        if (this.getBindingManager().keyMoveUp().isPressed()) {
             this.getPositionInput().add(0.0f, 1.0f, 0.0f);
         }
-        if (gemsBindingManager.keyDown.isPressed()) {
+        if (this.getBindingManager().keyMoveDown().isPressed()) {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
         this.normalizedPositionInput.set(new Vector3f(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
@@ -99,6 +99,9 @@ public class MouseKeyboardController implements IController {
 
     @Override
     public void updateItemWithInventory(IInventoryOwner hasInventory) {
+        if (JGemsHelper.getCurrentCamera() instanceof FreeCamera) {
+            return;
+        }
         Inventory inventory = hasInventory.inventory();
         if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
             inventory.onMouseLeftClick(hasInventory.getWorld());

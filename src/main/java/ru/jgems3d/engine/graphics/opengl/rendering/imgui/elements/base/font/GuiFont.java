@@ -75,7 +75,7 @@ public class GuiFont {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
-        this.texture = TextureSample.createTextureIS("font", inputStream, false, GL30.GL_CLAMP_TO_EDGE);
+        this.texture = TextureSample.createTexture("font", inputStream, new TextureSample.Params(false, false, false, false));
         inputStream.close();
     }
 

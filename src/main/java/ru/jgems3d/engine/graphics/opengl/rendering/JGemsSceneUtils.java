@@ -122,7 +122,7 @@ public abstract class JGemsSceneUtils {
     }
 
     public static Model<Format2D> createScreenModel() {
-        return MeshHelper.generatePlane2DModel(new Vector2f(0.0f), new Vector2f(JGemsHelper.getScreen().getWindowDimensions()), 0);
+        return MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(JGemsHelper.getScreen().getWindowDimensions()), 0);
     }
 
     public static void checkGLErrors() {

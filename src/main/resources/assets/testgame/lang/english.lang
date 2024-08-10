@@ -13,8 +13,10 @@ menu.settings.bloom=Bloom Effect
 menu.settings.window=Window Mode
 menu.settings.textureQ=Texture Quality
 menu.settings.shadowQ=Shadow Quality
+menu.settings.ssao=SSAO
 menu.settings.vsync=V-Sync
 menu.settings.language=Language
+menu.settings.filtering=Linear Filtration
 
 menu.save=Save
 menu.back=Go Back

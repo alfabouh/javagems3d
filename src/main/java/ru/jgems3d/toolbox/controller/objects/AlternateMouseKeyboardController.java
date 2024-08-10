@@ -39,22 +39,22 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
 
         this.prevMouseCoord.set(xy[0], xy[1]);
 
-        if (TBoxControllerDispatcher.bindingManager().keyA.isPressed()) {
+        if (TBoxControllerDispatcher.bindingManager().keyMoveLeft().isPressed()) {
             this.getPositionInput().add(-1.0f, 0.0f, 0.0f);
         }
-        if (TBoxControllerDispatcher.bindingManager().keyD.isPressed()) {
+        if (TBoxControllerDispatcher.bindingManager().keyMoveRight().isPressed()) {
             this.getPositionInput().add(1.0f, 0.0f, 0.0f);
         }
-        if (TBoxControllerDispatcher.bindingManager().keyW.isPressed()) {
+        if (TBoxControllerDispatcher.bindingManager().keyMoveForward().isPressed()) {
             this.getPositionInput().add(0.0f, 0.0f, -1.0f);
         }
-        if (TBoxControllerDispatcher.bindingManager().keyS.isPressed()) {
+        if (TBoxControllerDispatcher.bindingManager().keyMoveBackward().isPressed()) {
             this.getPositionInput().add(0.0f, 0.0f, 1.0f);
         }
-        if (TBoxControllerDispatcher.bindingManager().keyUp.isPressed()) {
+        if (TBoxControllerDispatcher.bindingManager().keyMoveUp().isPressed()) {
             this.getPositionInput().add(0.0f, 1.0f, 0.0f);
         }
-        if (TBoxControllerDispatcher.bindingManager().keyShift.isPressed()) {
+        if (TBoxControllerDispatcher.bindingManager().keyMoveDown().isPressed()) {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
 

@@ -12,15 +12,32 @@ public abstract class BindingManager {
         this.bindingSet = new HashSet<>();
     }
 
-    public void createBinding(Key key) {
-        this.createBinding(Binding.createBinding(key, ""));
+    public abstract Key keyMoveLeft();
+    public abstract Key keyMoveRight();
+    public abstract Key keyMoveForward();
+    public abstract Key keyMoveBackward();
+    public abstract Key keyMoveUp();
+    public abstract Key keyMoveDown();
+
+    @SuppressWarnings("all")
+    public void removeBinding(Key key) {
+        this.getBindingSet().remove(key);
     }
 
-    public void createBinding(Key key, String description) {
-        this.createBinding(Binding.createBinding(key, description));
+    @SuppressWarnings("all")
+    public void removeBinding(int keyCode) {
+        this.getBindingSet().remove(keyCode);
     }
 
-    public void createBinding(Binding binding) {
+    public void addBinding(Key key) {
+        this.addBinding(Binding.createBinding(key, ""));
+    }
+
+    public void addBinding(Key key, String description) {
+        this.addBinding(Binding.createBinding(key, description));
+    }
+
+    public void addBinding(Binding binding) {
         this.getBindingSet().add(binding);
     }
 

@@ -32,11 +32,9 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.tran
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import javax.imageio.ImageIO;
@@ -373,33 +371,31 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.updateUBOs(frameTicking);
         if (this.getSceneData().getCamera() == null) {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-            this.guiRender.onRender(frameTicking);
+            this.getGuiRender().onRender(frameTicking);
             this.takeScreenShotIfNeeded(windowSize);
             return;
         }
         this.getSceneData().getSceneWorld().getEnvironment().onUpdate(this.getSceneData().getSceneWorld());
-        try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(windowSize), 0)) {
-            if (JGems3D.get().isPaused()) {
-                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                this.guiRender.onRender(frameTicking);
-            } else {
-                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
-                this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getModeledSceneEntities());
-                JGems3D.get().getScreen().normalizeViewPort();
+        if (JGems3D.get().isPaused()) {
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+            this.getGuiRender().onRender(frameTicking);
+        } else {
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
+            this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getModeledSceneEntities());
+            JGems3D.get().getScreen().normalizeViewPort();
 
-                this.renderForwardAndDeferredScenes(frameTicking, windowSize, model);
-                this.renderTransparentObjects(frameTicking, windowSize);
-                this.sceneGluing(model);
-                this.blurBloomBuffer(model, windowSize);
-                this.screenBloomHDRCorrection(model);
-                this.postFXAA(model, windowSize);
-                this.renderFinalSceneInMainBuffer(model);
+            this.renderForwardAndDeferredScenes(frameTicking, windowSize, this.screenModel);
+            this.renderTransparentObjects(frameTicking, windowSize);
+            this.sceneGluing(this.screenModel);
+            this.blurBloomBuffer(this.screenModel, windowSize);
+            this.screenBloomHDRCorrection(this.screenModel);
+            this.postFXAA(this.screenModel, windowSize);
+            this.renderFinalSceneInMainBuffer(this.screenModel);
 
-                this.getInventoryRender().onRender(frameTicking);
-                this.getGuiRender().onRender(frameTicking);
-            }
+            this.getInventoryRender().onRender(frameTicking);
+            this.getGuiRender().onRender(frameTicking);
         }
-        this.getDearImGuiRender().render(windowSize, frameTicking);
+        this.getDearImGuiRender().onRender(windowSize, frameTicking);
         this.takeScreenShotIfNeeded(windowSize);
     }
 
@@ -558,8 +554,10 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     }
 
     private void remakeScreenModel() {
-        this.screenModel.clean();
-        this.screenModel = JGemsSceneUtils.createScreenModel();
+        if (this.screenModel != null) {
+            this.screenModel.clean();
+            this.screenModel = JGemsSceneUtils.createScreenModel();
+        }
     }
 
     //section WinResize
