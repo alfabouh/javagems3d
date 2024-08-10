@@ -1,23 +1,25 @@
-package ru.jgems3d.engine.system.navgraph.pathfind;
+package ru.jgems3d.engine.system.map.navigation.pathfind;
 
-import ru.jgems3d.engine.system.navgraph.Graph;
+import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.graph.GraphEdge;
+import ru.jgems3d.engine.system.graph.GraphVertex;
 
 import java.util.*;
 
-public class AStar {
+public class MapPathFinder {
     private final Graph graph;
-    private final Graph.GVertex start;
-    private final Graph.GVertex end;
+    private final GraphVertex start;
+    private final GraphVertex end;
 
-    public AStar(Graph graph, Graph.GVertex start, Graph.GVertex end) {
+    public MapPathFinder(Graph graph, GraphVertex start, GraphVertex end) {
         this.graph = graph;
         this.start = start;
         this.end = end;
     }
 
-    public List<Graph.GVertex> findPath() {
-        PriorityQueue<Graph.GVertex> openList = new PriorityQueue<>(Comparator.comparingDouble(Graph.GVertex::getF));
-        HashSet<Graph.GVertex> closedList = new HashSet<>();
+    public List<GraphVertex> findPath() {
+        PriorityQueue<GraphVertex> openList = new PriorityQueue<>(Comparator.comparingDouble(GraphVertex::getF));
+        HashSet<GraphVertex> closedList = new HashSet<>();
 
         this.start.setParent(null);
         this.start.setG(0);
@@ -27,7 +29,7 @@ public class AStar {
         openList.add(this.start);
 
         while (!openList.isEmpty()) {
-            Graph.GVertex current = openList.poll();
+            GraphVertex current = openList.poll();
 
             if (current.equals(this.end)) {
                 return this.buildPath(current);
@@ -35,8 +37,8 @@ public class AStar {
 
             closedList.add(current);
 
-            for (Graph.GEdge edge : graph.getNeighbors(current)) {
-                Graph.GVertex neighbor = edge.getTarget();
+            for (GraphEdge edge : graph.getNeighbors(current)) {
+                GraphVertex neighbor = edge.getTarget();
 
                 if (closedList.contains(neighbor)) {
                     continue;
@@ -60,8 +62,8 @@ public class AStar {
         return null;
     }
 
-    private List<Graph.GVertex> buildPath(Graph.GVertex vertex) {
-        List<Graph.GVertex> path = new ArrayList<>();
+    private List<GraphVertex> buildPath(GraphVertex vertex) {
+        List<GraphVertex> path = new ArrayList<>();
 
         while (vertex != null) {
             path.add(vertex);
@@ -72,7 +74,7 @@ public class AStar {
         return path;
     }
 
-    private float heuristic(Graph.GVertex v1, Graph.GVertex v2) {
+    private float heuristic(GraphVertex v1, GraphVertex v2) {
         int dx = (int) Math.abs(v1.getX() - v2.getX());
         int dy = (int) Math.abs(v1.getZ() - v2.getZ());
         return dx + dy;

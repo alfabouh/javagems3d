@@ -14,7 +14,6 @@ import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -133,7 +132,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         if (!this.hasRender() || !this.hasModel()) {
             return null;
         }
-        return new RenderSphere(JGemsHelper.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), this.getScale()), this.getRenderPosition());
+        return new RenderSphere(JGemsHelper.UTILS.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), this.getScale()), this.getRenderPosition());
     }
 
     @Override

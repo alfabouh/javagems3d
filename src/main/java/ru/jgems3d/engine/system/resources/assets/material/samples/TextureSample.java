@@ -187,7 +187,7 @@ public class TextureSample implements IImageSample {
         JGemsHelper.getLogger().log("Texture " + this.getName() + " successfully created!");
     }
 
-    public void recreateTexture() {
+    public void reloadTexture() {
         GL30.glDeleteTextures(this.getTextureId());
         this.createTexture(this.params);
     }

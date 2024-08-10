@@ -95,7 +95,7 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
         if (!this.getModel().isValid()) {
             return null;
         }
-        return new RenderSphere(JGemsHelper.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), this.getModel().getFormat().getScaling()), this.getModel().getFormat().getPosition());
+        return new RenderSphere(JGemsHelper.UTILS.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), this.getModel().getFormat().getScaling()), this.getModel().getFormat().getPosition());
     }
 
     public void setVisible(boolean visible) {

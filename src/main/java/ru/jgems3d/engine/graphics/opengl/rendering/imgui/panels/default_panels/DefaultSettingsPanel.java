@@ -41,7 +41,7 @@ public class DefaultSettingsPanel extends AbstractPanelUI {
         immediateUI.buttonUI(JGems3D.get().I18n("menu.save"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW / 2 - 150, y += 50), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().getGameSettings().saveOptions();
-                    JGemsHelper.recreateResources();
+                    JGemsHelper.RESOURCES.reloadResources();
                     this.goBack(immediateUI);
                 });
 

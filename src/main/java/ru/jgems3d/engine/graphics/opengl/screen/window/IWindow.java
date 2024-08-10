@@ -10,7 +10,7 @@ public interface IWindow {
 
     boolean isInFocus();
 
-    default boolean isActive() {
+    default boolean isWindowActive() {
         if (this.getWindowDimensions().x == 0 || this.getWindowDimensions().y == 0) {
             return false;
         }

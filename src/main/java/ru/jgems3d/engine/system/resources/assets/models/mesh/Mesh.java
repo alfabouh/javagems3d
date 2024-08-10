@@ -3,7 +3,6 @@ package ru.jgems3d.engine.system.resources.assets.models.mesh;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
@@ -124,13 +123,13 @@ public class Mesh {
         if (this.isBaked()) {
             throw new JGemsRuntimeException("Tried to bake model, that is already had been baked!");
         }
-        int[] index = JGemsHelper.convertIntsArray(this.indexes);
+        int[] index = JGemsHelper.UTILS.convertIntsArray(this.indexes);
 
-        float[] position = JGemsHelper.convertFloatsArray(this.attributePositions);
-        float[] texCoord = JGemsHelper.convertFloatsArray(this.attributeTextureCoordinates);
-        float[] normals = JGemsHelper.convertFloatsArray(this.attributeNormals);
-        float[] tangent = JGemsHelper.convertFloatsArray(this.attributeTangents);
-        float[] bitangent = JGemsHelper.convertFloatsArray(this.attributeBitangents);
+        float[] position = JGemsHelper.UTILS.convertFloatsArray(this.attributePositions);
+        float[] texCoord = JGemsHelper.UTILS.convertFloatsArray(this.attributeTextureCoordinates);
+        float[] normals = JGemsHelper.UTILS.convertFloatsArray(this.attributeNormals);
+        float[] tangent = JGemsHelper.UTILS.convertFloatsArray(this.attributeTangents);
+        float[] bitangent = JGemsHelper.UTILS.convertFloatsArray(this.attributeBitangents);
         float[] avaragedNormals;
 
         this.totalVertices = index.length;

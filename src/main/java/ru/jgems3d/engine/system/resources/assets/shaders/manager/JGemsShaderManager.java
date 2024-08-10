@@ -95,7 +95,7 @@ public final class JGemsShaderManager extends ShaderManager {
             IImageSample metallic = material.getMetallicMap();
             IImageSample normals = material.getNormalsMap();
             IImageSample specular = material.getSpecularMap();
-            CubeMapProgram cubeMapProgram = JGemsHelper.getWorldEnvironment().getSky().getSkyBox().cubeMapTexture();
+            CubeMapProgram cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSky().getSkyBox().cubeMapTexture();
 
             int texturing_code = 0;
 
@@ -133,7 +133,7 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performCameraData() {
-            JGemsShaderManager.this.performUniformNoWarn(new UniformString("camera_pos"), JGemsHelper.getCurrentCamera().getCamPosition());
+            JGemsShaderManager.this.performUniformNoWarn(new UniformString("camera_pos"), JGemsHelper.CAMERA.getCurrentCamera().getCamPosition());
         }
 
         public void performShadowsInfo() {

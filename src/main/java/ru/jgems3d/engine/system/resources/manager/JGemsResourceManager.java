@@ -130,17 +130,17 @@ public final class JGemsResourceManager {
         this.cleanGlobalCache();
     }
 
-    public void recreateTexturesInGlobalCache() {
-        this.getGlobalResources().recreateTexturesInCache();
+    public void reloadTexturesInGlobalCache() {
+        this.getGlobalResources().reloadTexturesInCache();
     }
 
-    public void recreateTexturesInLocalCache() {
-        this.getLocalResources().recreateTexturesInCache();
+    public void reloadTexturesInLocalCache() {
+        this.getLocalResources().reloadTexturesInCache();
     }
 
     public void recreateTexturesInAllCaches() {
-        this.recreateTexturesInGlobalCache();
-        this.recreateTexturesInLocalCache();
+        this.reloadTexturesInGlobalCache();
+        this.reloadTexturesInLocalCache();
     }
 
     public GameResources getLocalResources() {

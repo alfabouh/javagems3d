@@ -55,7 +55,7 @@ public class ItemZippo extends InventoryItem {
         super.onAddInInventory(hasInventory);
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3f(1.0f, 0.475f, 0.375f));
         pointLight.setBrightness(4.0f);
-        JGemsHelper.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
+        JGemsHelper.WORLD.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
     }
 

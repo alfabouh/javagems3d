@@ -215,7 +215,7 @@ public class TBoxScene {
             TBoxResourceManager.shaderAssets.world_lines.unBind();
             modelSun.clean();
             if (editorContent.currentSelectedObject != null) {
-                Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
+                Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
                 TBoxResourceManager.shaderAssets.world_lines.bind();
                 TBoxResourceManager.shaderAssets.world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderAssets.world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
@@ -328,10 +328,10 @@ public class TBoxScene {
         MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
         Vector3f camRot = this.getCamera().getCamRotation();
         Vector3f camPos = this.getCamera().getCamPosition();
-        Vector3f camTo = JGemsHelper.calcLookVector(camRot).normalize();
+        Vector3f camTo = JGemsHelper.UTILS.calcLookVector(camRot).normalize();
 
         Format3D format3D = new Format3D();
-        format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.calcLookVector(camRot).mul(5.0f)));
+        format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
 
         Set<TBoxScene3DObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
         List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < 15.0f).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
@@ -388,7 +388,7 @@ public class TBoxScene {
     }
 
     public boolean isActiveScene() {
-        return this.getWindow().isActive();
+        return this.getWindow().isWindowActive();
     }
 
     public void createGUI() {

@@ -35,7 +35,7 @@ public class GameResources {
     public MeshDataGroup createMesh(JGPath modelPath, boolean constructCollisionMesh) {
         MeshDataGroup meshDataGroup = this.createMesh(modelPath);
         if (constructCollisionMesh) {
-            JGemsHelper.tryCreateMeshCollisionData(meshDataGroup);
+            JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
         }
         return meshDataGroup;
     }
@@ -87,9 +87,9 @@ public class GameResources {
         this.getResourceCache().cleanCache();
     }
 
-    public void recreateTexturesInCache() {
+    public void reloadTexturesInCache() {
         for (TextureSample cached : this.getResourceCache().getAllCachedObjectsCollection(TextureSample.class)) {
-            cached.recreateTexture();
+            cached.reloadTexture();
         }
     }
 

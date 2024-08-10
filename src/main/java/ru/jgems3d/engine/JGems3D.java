@@ -177,14 +177,14 @@ public class JGems3D {
         return String.format(this.getLocalisation().format(key), objects);
     }
 
-    public void recreateResources() {
+    public void reloadResources() {
         JGems3D.get().getScreen().showGameLoadingScreen("System01");
         JGems3D.get().getScreen().tryAddLineInLoadingScreen("Performing settings...");
         JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
         JGems3D.get().getScreen().reloadSceneAndShadowsFrameBufferObjects();
         JGems3D.get().getScreen().checkScreenMode();
         JGems3D.get().getScreen().checkVSync();
-        JGems3D.get().getLocalisation().setLanguage(JGemsHelper.getGameSettings().language.getCurrentLanguage());
+        JGems3D.get().getLocalisation().setLanguage(JGemsHelper.GAME.getGameSettings().language.getCurrentLanguage());
         JGems3D.get().getScreen().removeLoadingScreen();
     }
 

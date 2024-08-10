@@ -240,8 +240,8 @@ public class DIMGuiRenderJGems {
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
         if (entityPlayerSP instanceof SimpleKinematicPlayer) {
             SimpleKinematicPlayer dynamicPlayer = (SimpleKinematicPlayer) entityPlayerSP;
-            if (JGemsHelper.getCurrentCamera() instanceof FreeCamera) {
-                ImGui.text(String.format("%s %s %s", JGemsHelper.getCurrentCamera().getCamPosition().x, JGemsHelper.getCurrentCamera().getCamPosition().y, JGemsHelper.getCurrentCamera().getCamPosition().z));
+            if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera) {
+                ImGui.text(String.format("%s %s %s", JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().x, JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().y, JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().z));
             } else {
                 ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
             }

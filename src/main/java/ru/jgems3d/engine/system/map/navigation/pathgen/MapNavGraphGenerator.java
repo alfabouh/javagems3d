@@ -1,10 +1,10 @@
-package ru.jgems3d.engine.system.navgraph.pathgen;
+package ru.jgems3d.engine.system.map.navigation.pathgen;
 
-public class TerrainGraphGenerator {
+public class MapNavGraphGenerator {
  // private final Graph graph;
  // private final btDynamicsWorld world;
 
- // public TerrainGraphGenerator(btDynamicsWorld world, Graph graph) {
+ // public MapNavGraphGenerator(btDynamicsWorld world, Graph graph) {
  //     this.graph = graph;
  //     this.world = world;
  // }

@@ -19,7 +19,7 @@ public class ModelLoader implements IAssetsLoader {
     private MeshDataGroup createMesh(GameResources gameResources, JGPath path, boolean constructCollisionMesh) {
         MeshDataGroup meshDataGroup = gameResources.createMesh(path);
         if (constructCollisionMesh) {
-            JGemsHelper.tryCreateMeshCollisionData(meshDataGroup);
+            JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
         }
         return meshDataGroup;
     }

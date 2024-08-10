@@ -1,10 +1,10 @@
 package ru.jgems3d.engine.physics.entities.enemies.ai;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.system.navgraph.Graph;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.jgems3d.engine.system.graph.GraphVertex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,9 @@ public class NavigationAI implements AI {
     private final WorldItem worldItem;
     private boolean isActive;
     private double currentPosDelta;
-    private Graph.GVertex currentVertex;
-    private Graph.GVertex nextVertex;
-    private List<Graph.GVertex> pathToVertex;
+    private GraphVertex currentVertex;
+    private GraphVertex nextVertex;
+    private List<GraphVertex> pathToVertex;
     private double speed;
 
     public NavigationAI(double speed, WorldItem worldItem, PhysicsWorld world) {
@@ -38,11 +38,11 @@ public class NavigationAI implements AI {
         this.speed = speed;
     }
 
-    public Graph.GVertex getCurrentVertex() {
+    public GraphVertex getCurrentVertex() {
         return this.currentVertex;
     }
 
-    public void setCurrentVertex(Graph.GVertex currentVertex) {
+    public void setCurrentVertex(GraphVertex currentVertex) {
         this.target().setPosition(new Vector3f(currentVertex.getX(), currentVertex.getY(), currentVertex.getZ()));
         this.currentVertex = currentVertex;
     }
@@ -54,15 +54,15 @@ public class NavigationAI implements AI {
         return this.getPathToVertex().size() <= 1;
     }
 
-    public Graph.GVertex getNextVertex() {
+    public GraphVertex getNextVertex() {
         return this.nextVertex;
     }
 
-    public List<Graph.GVertex> getPathToVertex() {
+    public List<GraphVertex> getPathToVertex() {
         return this.pathToVertex;
     }
 
-    public void setPathToVertex(List<Graph.GVertex> pathToVertex) {
+    public void setPathToVertex(List<GraphVertex> pathToVertex) {
         if (pathToVertex == null || pathToVertex.isEmpty()) {
             return;
         }
@@ -80,7 +80,7 @@ public class NavigationAI implements AI {
         if (this.getCurrentVertex() == null) {
             this.setCurrentVertex(this.getWorld().getMapNavGraph().getClosestVertex(this.target().getPosition()));
         }
-        List<Graph.GVertex> path = this.getPathToVertex();
+        List<GraphVertex> path = this.getPathToVertex();
         if (path != null && !path.isEmpty()) {
             if (this.getNextVertex() == null) {
                 if (this.getCurrentVertex().equals(path.get(0))) {

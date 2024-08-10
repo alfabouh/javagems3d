@@ -10,9 +10,10 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRender
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
-import ru.jgems3d.engine.system.navgraph.Graph;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.system.graph.GraphEdge;
+import ru.jgems3d.engine.system.graph.GraphVertex;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
@@ -57,7 +58,7 @@ public class DebugRender extends SceneRenderBase {
         if (world.getMapNavGraph() == null) {
             return;
         }
-        for (Graph.GVertex vertex : world.getMapNavGraph().getGraphContainer().keySet()) {
+        for (GraphVertex vertex : world.getMapNavGraph().getGraphContainer().keySet()) {
             if (JGems3D.get().getScreen().getCamera().getCamPosition().distance(new Vector3f(vertex.getX(), vertex.getY() + 0.1f, vertex.getZ())) > 5.0f) {
                 continue;
             }
@@ -65,7 +66,7 @@ public class DebugRender extends SceneRenderBase {
             this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
             JGemsSceneUtils.renderModel(model0, GL30.GL_LINES);
             model0.clean();
-            for (Graph.GEdge edge : world.getMapNavGraph().getNeighbors(vertex)) {
+            for (GraphEdge edge : world.getMapNavGraph().getNeighbors(vertex)) {
                 Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(vertex.getX(), vertex.getY() + 0.1f, vertex.getZ()), new Vector3f(edge.getTarget().getX(), edge.getTarget().getY() + 0.1f, edge.getTarget().getZ()));
                 this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
                 this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));

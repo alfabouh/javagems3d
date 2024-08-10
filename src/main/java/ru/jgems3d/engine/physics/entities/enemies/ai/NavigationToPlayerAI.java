@@ -3,8 +3,9 @@ package ru.jgems3d.engine.physics.entities.enemies.ai;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.system.navgraph.Graph;
-import ru.jgems3d.engine.system.navgraph.pathfind.AStar;
+import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.graph.GraphVertex;
+import ru.jgems3d.engine.system.map.navigation.pathfind.MapPathFinder;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NavigationToPlayerAI extends NavigationAI {
     private final Vector3f playerPos;
-    private final List<Graph.GVertex> queuePath;
+    private final List<GraphVertex> queuePath;
     private final AtomicBoolean atomicBoolean;
     private boolean forceChangeWayDirection;
     private Player player;
@@ -40,7 +41,7 @@ public class NavigationToPlayerAI extends NavigationAI {
 
         Thread seekPathThread = new Thread(() -> {
             try {
-                Graph.GVertex randomVertex = world.getMapNavGraph() == null ? null : world.getMapNavGraph().getRandomVertex();
+                GraphVertex randomVertex = world.getMapNavGraph() == null ? null : world.getMapNavGraph().getRandomVertex();
                 while (JGems3D.get().isCurrentMapIsValid()) {
                     try {
                         if (worldItem.getWorld().getMapNavGraph() == null || this.getCurrentSyncVertex() == null || !this.isActive()) {
@@ -54,8 +55,8 @@ public class NavigationToPlayerAI extends NavigationAI {
                             this.setForceChangeWayDirection(false);
                         }
 
-                        AStar aStar = new AStar(worldItem.getWorld().getMapNavGraph(), this.getCurrentSyncVertex(), this.getAtomicBoolean().get() ? this.findClosestPlayerVertex(worldItem.getWorld().getMapNavGraph()) : randomVertex);
-                        List<Graph.GVertex> path = aStar.findPath();
+                        MapPathFinder mapPathFinder = new MapPathFinder(worldItem.getWorld().getMapNavGraph(), this.getCurrentSyncVertex(), this.getAtomicBoolean().get() ? this.findClosestPlayerVertex(worldItem.getWorld().getMapNavGraph()) : randomVertex);
+                        List<GraphVertex> path = mapPathFinder.findPath();
                         this.getQueuePath().clear();
 
                         if (path != null) {
@@ -81,12 +82,12 @@ public class NavigationToPlayerAI extends NavigationAI {
 
     private void refreshPath() {
         if (this.getQueuePath() != null && this.getNextVertex() == null) {
-            ArrayList<Graph.GVertex> gVertices = new ArrayList<>(this.getQueuePath());
+            ArrayList<GraphVertex> gVertices = new ArrayList<>(this.getQueuePath());
             if (!gVertices.isEmpty()) {
                 if (gVertices.get(0) != null && !gVertices.get(0).equals(this.getCurrentVertex())) {
-                    Iterator<Graph.GVertex> gVertexIterator = gVertices.iterator();
+                    Iterator<GraphVertex> gVertexIterator = gVertices.iterator();
                     while (gVertexIterator.hasNext()) {
-                        Graph.GVertex vertex = gVertexIterator.next();
+                        GraphVertex vertex = gVertexIterator.next();
                         if (!vertex.equals(this.getCurrentVertex())) {
                             gVertexIterator.remove();
                         } else {
@@ -199,10 +200,10 @@ public class NavigationToPlayerAI extends NavigationAI {
         return true;
     }
 
-    private Graph.GVertex findClosestPlayerVertex(Graph graph) {
-        Graph.GVertex closest = graph.getStart();
+    private GraphVertex findClosestPlayerVertex(Graph graph) {
+        GraphVertex closest = graph.getStart();
         double closestDist = this.getPlayerPos().distance(closest.getX(), closest.getY(), closest.getZ());
-        for (Graph.GVertex vertex : graph.getGraphContainer().keySet()) {
+        for (GraphVertex vertex : graph.getGraphContainer().keySet()) {
             double currDist = this.getPlayerPos().distance(vertex.getX(), vertex.getY(), vertex.getZ());
             if (currDist < closestDist) {
                 closest = vertex;
@@ -220,11 +221,11 @@ public class NavigationToPlayerAI extends NavigationAI {
         return this.atomicBoolean;
     }
 
-    private synchronized Graph.GVertex getCurrentSyncVertex() {
+    private synchronized GraphVertex getCurrentSyncVertex() {
         return this.getCurrentVertex();
     }
 
-    private synchronized List<Graph.GVertex> getQueuePath() {
+    private synchronized List<GraphVertex> getQueuePath() {
         return this.queuePath;
     }
 

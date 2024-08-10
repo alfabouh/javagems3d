@@ -51,7 +51,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     private static float qualityMultiplier() {
-        int i = (int) JGemsHelper.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
+        int i = (int) JGemsHelper.UTILS.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 

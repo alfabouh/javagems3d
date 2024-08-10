@@ -7,7 +7,7 @@ public abstract class JGemsSceneGlobalConstants {
     //section Screen
     public static final double RENDER_TICKS_UPD_RATE = 60.0d;
 
-    //section Window
+    //section WINDOW
     public static final int defaultW = 1280;
     public static final int defaultH = 720;
 
