@@ -3,7 +3,6 @@ package ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.ByteBuffer;

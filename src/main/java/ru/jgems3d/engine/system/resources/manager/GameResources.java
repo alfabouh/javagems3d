@@ -41,21 +41,34 @@ public class GameResources {
     }
 
     public MeshDataGroup createMesh(JGPath modelPath) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading model: " + modelPath);
-        return ModelLoader.createMesh(this, modelPath);
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
+        MeshDataGroup meshDataGroup = ModelLoader.createMesh(this, modelPath);
+        if (meshDataGroup == null) {
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
+        }
+        return meshDataGroup;
     }
 
     public TextureSample createTextureOutsideJar(JGPath path, TextureSample.Params params) {
-        return TextureSample.createTextureOutsideJar(this.getResourceCache(), path, params);
+        TextureSample textureSample = TextureSample.createTextureOutsideJar(this.getResourceCache(), path, params);
+        if (textureSample == null || !textureSample.isValid()) {
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + path);
+        }
+        return textureSample;
     }
 
     public TextureSample createTexture(JGPath path, TextureSample.Params params) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
-        return TextureSample.createTexture(this.getResourceCache(), path, params);
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
+        try {
+            return TextureSample.createTexture(this.getResourceCache(), path, params);
+        } catch (Exception e) {
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + path);
+        }
+        return null;
     }
 
     public TextureSample createTextureOrDefault(TextureSample defaultT, JGPath path, TextureSample.Params params) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading texture: " + path);
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
         try {
             return TextureSample.createTexture(this.getResourceCache(), path, params);
         } catch (JGemsException e) {

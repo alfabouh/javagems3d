@@ -1,11 +1,7 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments;
 
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class T2DAttachmentContainer {
     private final List<T2DAttachment> t2DAttachmentSet;

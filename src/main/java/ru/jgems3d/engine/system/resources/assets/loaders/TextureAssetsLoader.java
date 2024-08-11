@@ -1,6 +1,5 @@
 package ru.jgems3d.engine.system.resources.assets.loaders;
 
-import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.FontCode;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
@@ -36,7 +35,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
     public TextureSample zippo_inventory;
 
     public void load(GameResources gameResources) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading textures...");
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading textures...");
         TextureAssetsLoader.DEFAULT = gameResources.createTexture(new JGPath(JGems3D.Paths.TEXTURES, "default.png"), new TextureSample.Params(false, true, false, false));
 
         Font gameFont = JGemsResourceManager.createFontFromJAR(new JGPath("/assets/jgems/gamefont.ttf"));

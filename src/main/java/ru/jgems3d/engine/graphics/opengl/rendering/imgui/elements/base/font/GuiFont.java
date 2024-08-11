@@ -1,6 +1,5 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font;
 
-import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;

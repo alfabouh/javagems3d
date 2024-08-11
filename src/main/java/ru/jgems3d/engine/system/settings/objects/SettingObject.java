@@ -1,7 +1,6 @@
 package ru.jgems3d.engine.system.settings.objects;
 
 import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.io.Serializable;

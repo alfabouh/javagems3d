@@ -18,7 +18,6 @@ import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
 import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
-import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;

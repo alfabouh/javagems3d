@@ -8,7 +8,6 @@ import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.ByteBuffer;

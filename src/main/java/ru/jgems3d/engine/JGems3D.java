@@ -179,7 +179,7 @@ public class JGems3D {
 
     public void reloadResources() {
         JGems3D.get().getScreen().showGameLoadingScreen("System01");
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Performing settings...");
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
         JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
         JGems3D.get().getScreen().reloadSceneAndShadowsFrameBufferObjects();
         JGems3D.get().getScreen().checkScreenMode();

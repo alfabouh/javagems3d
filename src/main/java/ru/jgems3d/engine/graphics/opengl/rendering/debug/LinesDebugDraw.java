@@ -11,14 +11,12 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.graph.GraphEdge;
 import ru.jgems3d.engine.system.graph.GraphVertex;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
