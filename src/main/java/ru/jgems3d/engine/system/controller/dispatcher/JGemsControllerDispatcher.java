@@ -71,7 +71,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     public void updateController(IWindow window) {
         if (this.getCurrentController() != null) {
             this.getCurrentController().updateControllerState(window);
-            if (!JGems3D.get().getEngineState().isPaused()) {
+            if (!JGems3D.get().isPaused()) {
                 if (this.getCurrentControlledItem() != null) {
                     if (window.isInFocus() && this.getCurrentControlledItem() instanceof IInventoryOwner) {
                         this.getCurrentController().updateItemWithInventory(((IInventoryOwner) this.getCurrentControlledItem()));

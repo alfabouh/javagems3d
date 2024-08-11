@@ -20,7 +20,7 @@ import ru.jgems3d.toolbox.map_table.TBoxMapTable;
 import ru.jgems3d.toolbox.map_table.ObjectsTable;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeTarget;
 import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.controller.TBoxControllerDispatcher;
@@ -190,8 +190,8 @@ public class EditorContent implements ImGuiContent {
                 ImGui.separator();
                 ImGui.beginChild("obj_prop");
                 if (this.currentSelectedObject.hasAttributes()) {
-                    AttributeContainer attributeContainer = this.currentSelectedObject.getAttributeContainer();
-                    for (Attribute<?> attribute : attributeContainer.getAttributeSet().values()) {
+                    AttributesContainer attributesContainer = this.currentSelectedObject.getAttributeContainer();
+                    for (Attribute<?> attribute : attributesContainer.getAttributeSet().values()) {
                         if (attribute.getAttributeType().equals(AttributeTarget.STATIC_NO_EDIT)) {
                             continue;
                         }

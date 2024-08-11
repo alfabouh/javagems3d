@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.yaml;
+package ru.jgems3d.engine.system.service.yaml;
 
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 

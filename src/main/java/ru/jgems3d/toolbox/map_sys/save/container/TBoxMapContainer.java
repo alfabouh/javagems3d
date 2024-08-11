@@ -6,11 +6,11 @@ import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class SaveContainer {
+public final class TBoxMapContainer {
     private final MapProperties mapProperties;
     private Set<SaveObject> saveObjectsSet;
 
-    public SaveContainer(MapProperties mapProperties) {
+    public TBoxMapContainer(MapProperties mapProperties) {
         this.mapProperties = mapProperties;
         this.saveObjectsSet = new HashSet<>();
     }

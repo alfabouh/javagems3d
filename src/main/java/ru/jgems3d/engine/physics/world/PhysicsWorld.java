@@ -1,6 +1,7 @@
 package ru.jgems3d.engine.physics.world;
 
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.graph.Graph;
@@ -56,6 +57,11 @@ public final class PhysicsWorld implements IWorld {
     public void setMapNavGraph(Graph mapNavGraph) {
         synchronized (this) {
             this.mapNavGraph = mapNavGraph;
+        }
+        if (JGems3D.DEBUG_MODE) {
+            if (mapNavGraph != null) {
+                GlobalRenderDebugConstants.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
+            }
         }
     }
 

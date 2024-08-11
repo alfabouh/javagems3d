@@ -1,6 +1,6 @@
 package ru.jgems3d.toolbox.map_sys.save.objects;
 
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 
 import java.io.Serializable;
 
@@ -8,10 +8,10 @@ public class SaveObject implements Serializable {
     private static final long serialVersionUID = -228L;
 
     private final String objectId;
-    private final AttributeContainer attributeContainer;
+    private final AttributesContainer attributesContainer;
 
-    public SaveObject(AttributeContainer attributeContainer, String objectId) {
-        this.attributeContainer = attributeContainer;
+    public SaveObject(AttributesContainer attributesContainer, String objectId) {
+        this.attributesContainer = attributesContainer;
         this.objectId = objectId;
     }
 
@@ -19,7 +19,7 @@ public class SaveObject implements Serializable {
         return this.objectId;
     }
 
-    public AttributeContainer getAttributeContainer() {
-        return this.attributeContainer;
+    public AttributesContainer getAttributeContainer() {
+        return this.attributesContainer;
     }
 }

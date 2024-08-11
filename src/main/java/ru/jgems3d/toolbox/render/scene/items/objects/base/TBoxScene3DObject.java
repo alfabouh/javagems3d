@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.render.scene.items.collision.LocalCollision;
 import ru.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
@@ -17,7 +17,7 @@ public abstract class TBoxScene3DObject {
     private final TBoxObjectRenderData renderData;
     private final LocalCollision localCollision;
     private boolean selected;
-    private AttributeContainer attributeContainer;
+    private AttributesContainer attributesContainer;
 
     public TBoxScene3DObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
         this.name = name;
@@ -26,7 +26,7 @@ public abstract class TBoxScene3DObject {
         this.model = model;
         this.renderData = renderData;
         this.localCollision = new LocalCollision(model);
-        this.attributeContainer = new AttributeContainer();
+        this.attributesContainer = new AttributesContainer();
     }
 
     public abstract TBoxScene3DObject copy();
@@ -62,12 +62,12 @@ public abstract class TBoxScene3DObject {
         return this.getAttributeContainer() != null && this.getAttributeContainer().hasAttributes();
     }
 
-    public AttributeContainer getAttributeContainer() {
-        return this.attributeContainer;
+    public AttributesContainer getAttributeContainer() {
+        return this.attributesContainer;
     }
 
-    public TBoxScene3DObject setAttributeContainer(AttributeContainer attributeContainer) {
-        this.attributeContainer = attributeContainer;
+    public TBoxScene3DObject setAttributeContainer(AttributesContainer attributesContainer) {
+        this.attributesContainer = attributesContainer;
         return this;
     }
 

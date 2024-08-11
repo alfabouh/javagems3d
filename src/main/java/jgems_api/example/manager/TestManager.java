@@ -28,7 +28,7 @@ import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.engine_api.manager.AppManager;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
@@ -52,11 +52,11 @@ public class TestManager extends AppManager {
     }
 
     @Override
-    public void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributeContainer attributeContainer, TRenderContainer renderContainer) {
+    public void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer) {
         try {
-            Vector3f pos = attributeContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
-            Vector3f rot = attributeContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
-            Vector3f scale = attributeContainer.tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+            Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+            Vector3f rot = attributesContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+            Vector3f scale = attributesContainer.tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
 
             MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel());
             JGemsShaderManager shaderManager = localGameResources.getResource(renderContainer.getPathToRenderShader());
@@ -64,7 +64,7 @@ public class TestManager extends AppManager {
             RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabricClass().newInstance(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
 
             if (objectCategory.equals(TestTBoxApp.PHYSICS_OBJECT)) {
-                boolean isStatic = attributeContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
+                boolean isStatic = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
                 JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
                 if (isStatic) {
                     BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, physicsWorld, pos, id);

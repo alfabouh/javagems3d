@@ -2,7 +2,7 @@ package ru.jgems3d.toolbox.map_table.object;
 
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.render.scene.items.renderers.ITBoxObjectRenderer;
 import ru.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 
@@ -10,17 +10,17 @@ public abstract class AbstractObjectData {
     private final TBoxShaderManager shaderManager;
     private final MeshDataGroup meshDataGroup;
     private final ObjectCategory objectCategory;
-    private final AttributeContainer attributeContainer;
+    private final AttributesContainer attributesContainer;
 
-    public AbstractObjectData(@NotNull AttributeContainer attributeContainer, @NotNull TBoxShaderManager shaderManager, @NotNull MeshDataGroup meshDataGroup, ObjectCategory objectCategory) {
-        this.attributeContainer = attributeContainer;
+    public AbstractObjectData(@NotNull AttributesContainer attributesContainer, @NotNull TBoxShaderManager shaderManager, @NotNull MeshDataGroup meshDataGroup, ObjectCategory objectCategory) {
+        this.attributesContainer = attributesContainer;
         this.shaderManager = shaderManager;
         this.meshDataGroup = meshDataGroup;
         this.objectCategory = objectCategory;
     }
 
     public AbstractObjectData(@NotNull TBoxShaderManager shaderManager, @NotNull MeshDataGroup meshDataGroup, ObjectCategory objectCategory) {
-        this(new AttributeContainer(), shaderManager, meshDataGroup, objectCategory);
+        this(new AttributesContainer(), shaderManager, meshDataGroup, objectCategory);
     }
 
     public TBoxShaderManager getShaderManager() {
@@ -29,12 +29,12 @@ public abstract class AbstractObjectData {
 
     public abstract ITBoxObjectRenderer getObjectRenderer();
 
-    public AttributeContainer getDefaultAttributeContainer() {
-        return this.attributeContainer;
+    public AttributesContainer getDefaultAttributeContainer() {
+        return this.attributesContainer;
     }
 
-    public AttributeContainer copyAttributeContainer() {
-        return new AttributeContainer(this.getDefaultAttributeContainer());
+    public AttributesContainer copyAttributeContainer() {
+        return new AttributesContainer(this.getDefaultAttributeContainer());
     }
 
     public MeshDataGroup meshDataGroup() {

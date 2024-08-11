@@ -9,7 +9,6 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.util.BufferUtils;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.graphics.opengl.rendering.debug.bullet.BtDebugDraw;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DynamicsUtils {
-    public static BtDebugDraw btDebugDraw = new BtDebugDraw();
 
     public static com.jme3.math.Vector3f lerp(com.jme3.math.Vector3f a, com.jme3.math.Vector3f b, float t) {
         return new com.jme3.math.Vector3f(a).mult(1.0f - t).add(new com.jme3.math.Vector3f(b).mult(t));

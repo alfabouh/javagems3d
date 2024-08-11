@@ -3,6 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.debug;
 public abstract class GlobalRenderDebugConstants {
     public static boolean FULL_BRIGHT;
     public static boolean SHOW_DEBUG_LINES;
+    public static LinesDebugDraw linesDebugDraw = new LinesDebugDraw();
 
     static {
         GlobalRenderDebugConstants.reset();

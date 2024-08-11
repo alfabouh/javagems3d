@@ -37,7 +37,7 @@ public class PhysicsTimer implements IPhysTimer {
             while (!JGems3D.get().isShouldBeClosed()) {
                 SyncManager.SyncPhysics.mark();
                 SyncManager.SyncPhysics.blockCurrentThread(true);
-                if (JGems3D.get().getEngineState().isEngineIsReady() && !JGems3D.get().getEngineState().isPaused()) {
+                if (JGems3D.get().getEngineSystem().engineState().isEngineIsReady() && !JGems3D.get().getEngineSystem().engineState().isPaused()) {
                     synchronized (PhysicsTimer.lockObject) {
                         this.world.onWorldUpdate();
                         this.dynamicsSystem.step(time, 0);

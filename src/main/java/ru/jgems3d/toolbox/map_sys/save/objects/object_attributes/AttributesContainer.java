@@ -6,25 +6,25 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class AttributeContainer implements Serializable {
+public final class AttributesContainer implements Serializable {
     private static final long serialVersionUID = -228L;
     private final Map<String, Attribute<?>> attributeSet;
 
-    public AttributeContainer(Attribute<?>... a) {
+    public AttributesContainer(Attribute<?>... a) {
         this.attributeSet = new LinkedHashMap<>();
         for (Attribute<?> attribute : a) {
             this.attributeSet.put(attribute.getId(), attribute);
         }
     }
 
-    public AttributeContainer(AttributeContainer toCopy) {
+    public AttributesContainer(AttributesContainer toCopy) {
         this.attributeSet = new LinkedHashMap<>();
         for (Map.Entry<String, Attribute<?>> attribute : toCopy.getAttributeSet().entrySet()) {
             this.attributeSet.put(attribute.getKey(), attribute.getValue().copy());
         }
     }
 
-    public AttributeContainer() {
+    public AttributesContainer() {
         this.attributeSet = new LinkedHashMap<>();
     }
 
@@ -62,7 +62,7 @@ public final class AttributeContainer implements Serializable {
         return attribute.getValue();
     }
 
-    public AttributeContainer addAttribute(Attribute<?> attribute) {
+    public AttributesContainer addAttribute(Attribute<?> attribute) {
         this.getAttributeSet().put(attribute.getId(), attribute);
         return this;
     }

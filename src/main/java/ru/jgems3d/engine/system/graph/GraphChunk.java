@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class GraphChunk implements Serializable {
     private static final long serialVersionUID = -228L;
-    public static final int CHUNK_SIZE_XZ = 16;
+    public static final int CHUNK_SIZE_XZ = 8;
     private final Vector2i chunkIJ;
 
     public GraphChunk(Vector2i chunkIJ) {
@@ -24,11 +24,28 @@ public class GraphChunk implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof GraphChunk)) {
+            return false;
+        }
+        GraphChunk chunk = (GraphChunk) o;
+        return chunk.getChunkIJ().equals(this.getChunkIJ());
+    }
+
+    @Override
     public int hashCode() {
         return this.getChunkIJ().hashCode();
     }
 
     public Vector2i getChunkIJ() {
         return this.chunkIJ;
+    }
+
+    @Override
+    public String toString() {
+        return this.getChunkIJ().toString();
     }
 }

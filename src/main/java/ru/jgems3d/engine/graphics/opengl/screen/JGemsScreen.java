@@ -239,6 +239,8 @@ public class JGemsScreen implements IScreen {
                 JGems3D.get().destroyGame();
                 break;
             }
+            JGems3D.get().getEngineSystem().update();
+
             this.updateController();
             this.getWindow().refreshFocusState();
             this.getTimerPool().update();

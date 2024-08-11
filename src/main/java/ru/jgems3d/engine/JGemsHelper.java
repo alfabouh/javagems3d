@@ -221,10 +221,6 @@ public abstract class JGemsHelper {
             JGems3D.get().unPauseGame();
         }
 
-        public static void loadMap(String mapName) {
-            JGems3D.get().loadMap(mapName);
-        }
-
         public static void loadMap(IMapLoader mapLoader) {
             JGems3D.get().loadMap(mapLoader);
         }

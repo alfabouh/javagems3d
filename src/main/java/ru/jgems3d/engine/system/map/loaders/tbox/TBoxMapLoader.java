@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
+import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.service.misc.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.JGemsHelper;
@@ -15,7 +17,8 @@ import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
-import ru.jgems3d.toolbox.map_sys.save.container.SaveContainer;
+import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
@@ -23,30 +26,32 @@ import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 import java.io.IOException;
 import java.util.Set;
 
-public class MapLoaderTBox implements IMapLoader {
+public class TBoxMapLoader implements IMapLoader {
     private MapInfo mapInfo;
     private Set<SaveObject> saveObjectSet;
+    private Graph navMesh;
 
-    public MapLoaderTBox(SaveContainer saveContainer) {
-        if (saveContainer != null) {
-            this.readMap(saveContainer);
+    public TBoxMapLoader(MapObject mapObject) {
+        if (mapObject != null) {
+            this.readMap(mapObject);
         }
     }
 
-    public static SaveContainer readMapFromJar(String mapName) {
+    public static MapObject readMapFromJar(JGPath pathToMap) {
         try {
-            return TBoxMapReader.readMapFolderFromJAR(mapName);
+            return new MapObject(Graph.readFromFile(new JGPath(pathToMap, "nav.mesh")), TBoxMapReader.readMapFolderFromJAR(pathToMap));
         } catch (IOException | ClassNotFoundException e) {
             LoggingManager.showExceptionDialog("Failed to lad map!");
-            JGemsHelper.getLogger().error("Failed to load map: " + mapName);
+            JGemsHelper.getLogger().error("Failed to load map: " + pathToMap);
             e.printStackTrace(System.err);
         }
         return null;
     }
 
-    public void readMap(SaveContainer saveContainer) {
-        this.mapInfo = new MapInfo(saveContainer.getSaveMapProperties());
-        this.saveObjectSet = saveContainer.getSaveObjectsSet();
+    public void readMap(MapObject mapObject) {
+        this.mapInfo = new MapInfo(mapObject.getMapContainer().getSaveMapProperties());
+        this.saveObjectSet = mapObject.getMapContainer().getSaveObjectsSet();
+        this.navMesh = mapObject.getNavMesh();
     }
 
     @Override
@@ -80,6 +85,11 @@ public class MapLoaderTBox implements IMapLoader {
                     }
                 }
             }
+
+            if (this.navMesh != null) {
+                physicsWorld.setMapNavGraph(this.navMesh);
+                this.navMesh = null;
+            }
         }
     }
 
@@ -91,5 +101,23 @@ public class MapLoaderTBox implements IMapLoader {
     @Override
     public @NotNull MapInfo getLevelInfo() {
         return this.mapInfo;
+    }
+
+    public static class MapObject {
+        private final Graph navMesh;
+        private final TBoxMapContainer mapContainer;
+
+        public MapObject(Graph navMesh, TBoxMapContainer mapContainer) {
+            this.navMesh = navMesh;
+            this.mapContainer = mapContainer;
+        }
+
+        public Graph getNavMesh() {
+            return this.navMesh;
+        }
+
+        public TBoxMapContainer getMapContainer() {
+            return this.mapContainer;
+        }
     }
 }

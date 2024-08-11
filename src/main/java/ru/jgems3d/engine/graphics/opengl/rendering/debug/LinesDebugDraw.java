@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.graphics.opengl.rendering.debug.bullet;
+package ru.jgems3d.engine.graphics.opengl.rendering.debug;
 
 
 import com.jme3.bounding.BoundingBox;
@@ -9,22 +9,25 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.JGems3D;
+import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
-import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
-import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
+import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.graph.GraphEdge;
 import ru.jgems3d.engine.system.graph.GraphVertex;
-import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
-import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
-public class BtDebugDraw {
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LinesDebugDraw {
+    private FloatBuffer navMeshFloatBuffer;
+    private int navMeshPointsSize;
+
     private int vao;
     private int vbo;
 
@@ -34,19 +37,15 @@ public class BtDebugDraw {
 
         GL30.glBindVertexArray(this.vao);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 6 * Float.BYTES, GL15.GL_DYNAMIC_DRAW);
+
         GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
-        GL20.glEnableVertexAttribArray(0);
+
         GL30.glBindVertexArray(0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
 
-    public void drawLines(DynamicsSystem dynamicsSystem) {
+    public void drawAABBLines(JGemsShaderManager debugShaders, DynamicsSystem dynamicsSystem) {
         for (PhysicsCollisionObject physicsCollisionObject : dynamicsSystem.getPhysicsSpace().getPcoList()) {
-            JGemsShaderManager debugShaders = JGemsResourceManager.globalShaderAssets.debug;
-            debugShaders.bind();
-            debugShaders.getUtils().performPerspectiveMatrix();
-            debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
             debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
 
             BoundingBox boundingBox = new BoundingBox();
@@ -55,12 +54,49 @@ public class BtDebugDraw {
             boundingBox.getMin(min);
             Vector3f max = new Vector3f();
             boundingBox.getMax(max);
-            this.drawLine(min, max);
-            debugShaders.unBind();
+            this.drawAABB(min, max);
         }
     }
 
-    private void drawLine(Vector3f min, Vector3f max) {
+    public void constructNavMeshFloatBuffer(Graph graph) {
+        List<Float> points = new ArrayList<>();
+
+        for (GraphVertex vertex : graph.getGraphContainer().keySet()) {
+            for (GraphEdge edge : graph.getNeighbors(vertex)) {
+                points.add(vertex.getPosition().x);
+                points.add(vertex.getPosition().y + 0.1f);
+                points.add(vertex.getPosition().z);
+
+                points.add(edge.getTarget().getPosition().x);
+                points.add(edge.getTarget().getPosition().y + 0.1f);
+                points.add(edge.getTarget().getPosition().z);
+            }
+        }
+
+        float[] aPoints = JGemsHelper.UTILS.convertFloatsArray(points);
+
+        this.navMeshFloatBuffer = MemoryUtil.memAllocFloat(aPoints.length);
+        this.navMeshFloatBuffer.put(aPoints).flip();
+        this.navMeshPointsSize = aPoints.length / 3;
+    }
+
+    public void drawNavMeshLines(JGemsShaderManager debugShaders) {
+        if (this.navMeshFloatBuffer == null) {
+            return;
+        }
+        debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.navMeshFloatBuffer, GL15.GL_DYNAMIC_DRAW);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+        GL30.glBindVertexArray(this.vao);
+        GL20.glEnableVertexAttribArray(0);
+        GL11.glDrawArrays(GL11.GL_LINES, 0, this.navMeshPointsSize);
+        GL20.glDisableVertexAttribArray(0);
+        GL30.glBindVertexArray(0);
+    }
+
+    private void drawAABB(Vector3f min, Vector3f max) {
         Vector3f[] vertices = {
                 new Vector3f(min.x, min.y, min.z),
                 new Vector3f(max.x, min.y, min.z),
@@ -94,11 +130,14 @@ public class BtDebugDraw {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
         GL30.glBindVertexArray(this.vao);
+        GL20.glEnableVertexAttribArray(0);
         GL11.glDrawArrays(GL11.GL_LINES, 0, vertexArray.length / 3);
+        GL20.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);
     }
 
     public void cleanup() {
+        MemoryUtil.memFree(this.navMeshFloatBuffer);
         GL30.glDeleteBuffers(this.vbo);
         GL30.glDeleteVertexArrays(this.vao);
     }

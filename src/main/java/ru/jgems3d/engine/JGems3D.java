@@ -233,23 +233,12 @@ public class JGems3D {
         }
     }
 
-    public void loadMap(String mapName) {
-        this.getEngineSystem().loadMap(mapName);
-    }
-
     public void loadMap(IMapLoader mapLoader) {
         this.getEngineSystem().loadMap(mapLoader);
     }
 
     public void destroyMap() {
-        if (GLFW.glfwGetCurrentContext() == 0L) {
-            JGems3D.get().getScreen().getScene().requestDestroyMap();
-            return;
-        }
-        JGems3D.get().getScreen().getScene().setRenderCamera(null);
-        JGems3D.get().getScreen().getWindow().setInFocus(false);
         this.getEngineSystem().destroyMap();
-        JGems3D.get().showMainMenu();
     }
 
     public void destroyGame() {
@@ -300,10 +289,6 @@ public class JGems3D {
         return this.getEngineSystem().getMapLoader() != null;
     }
 
-    public EngineSystem.EngineState getEngineState() {
-        return this.getEngineSystem().getEngineState();
-    }
-
     public JGemsResourceManager getResourceManager() {
         return this.getEngineSystem().getResourceManager();
     }
@@ -334,7 +319,7 @@ public class JGems3D {
     }
 
     public boolean isPaused() {
-        return this.getEngineState().isPaused();
+        return this.getEngineSystem().engineState().isPaused();
     }
 
     public String toString() {

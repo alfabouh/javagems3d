@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.yaml;
+package ru.jgems3d.engine.system.service.yaml;
 
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;

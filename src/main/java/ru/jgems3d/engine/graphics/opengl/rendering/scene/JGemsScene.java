@@ -21,6 +21,7 @@ import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.controller.objects.IController;
+import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 public class JGemsScene implements IScene {
@@ -32,7 +33,7 @@ public class JGemsScene implements IScene {
 
     private float elapsedTime;
     private boolean refresh;
-    private boolean requestDestroyMap;
+
 
     public JGemsScene(Window window, TransformationUtils transformationUtils, SceneWorld sceneWorld) {
         this.transformationUtils = transformationUtils;
@@ -61,11 +62,6 @@ public class JGemsScene implements IScene {
             JGems3D.get().getScreen().normalizeViewPort();
             JGemsOpenGLRenderer.getGameUboShader().bind();
             if (this.getCurrentCamera() != null) {
-                if (this.requestDestroyMap) {
-                    JGems3D.get().destroyMap();
-                    this.requestDestroyMap = false;
-                    return;
-                }
                 this.elapsedTime += frameDeltaTime / PhysicsThread.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
                     SyncManager.SyncPhysics.free();
@@ -103,10 +99,6 @@ public class JGemsScene implements IScene {
         this.getSceneData().setCamera(camera);
     }
 
-    public void requestDestroyMap() {
-        this.requestDestroyMap = true;
-    }
-
     public void onWindowResize(Vector2i dim) {
         this.getSceneRenderer().onWindowResize(dim);
         this.UI().onWindowResize(dim);
@@ -133,9 +125,7 @@ public class JGemsScene implements IScene {
     }
 
     public ImmediateUI UI() {
-        synchronized (this) {
-            return this.immediateUI;
-        }
+        return this.immediateUI;
     }
 
     public SceneData getSceneData() {
