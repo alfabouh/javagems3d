@@ -35,4 +35,9 @@ public class MapInfo {
     public ArrayList<Pair<Vector3f, Double>> getPlayerSpawnPoints() {
         return new ArrayList<>(this.spawnPoints);
     }
+
+    @Override
+    public String toString() {
+        return this.getMapProperties().getMapName();
+    }
 }

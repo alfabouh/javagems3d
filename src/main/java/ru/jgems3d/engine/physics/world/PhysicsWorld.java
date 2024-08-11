@@ -54,10 +54,15 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void setMapNavGraph(Graph mapNavGraph) {
-        if (mapNavGraph == null) {
-            JGemsHelper.getLogger().warn("Map Nav Mesh is NULL");
+        synchronized (this) {
+            this.mapNavGraph = mapNavGraph;
         }
-        this.mapNavGraph = mapNavGraph;
+    }
+
+    public Graph getMapNavGraph() {
+        synchronized (this) {
+            return this.mapNavGraph;
+        }
     }
 
     public WorldItem getItemByID(int id) {
@@ -73,10 +78,6 @@ public final class PhysicsWorld implements IWorld {
         return this.worldObjectsContainer;
     }
 
-    public Graph getMapNavGraph() {
-        return this.mapNavGraph;
-    }
-
     public int countItems() {
         return this.getWorldObjectsContainer().getWorldObjects().size();
     }
@@ -85,11 +86,7 @@ public final class PhysicsWorld implements IWorld {
         return this.ticks;
     }
 
-    public PhysicsTimer getPhysicsSystem() {
-        return JGems3D.get().getPhysicThreadManager().getPhysicsTimer();
-    }
-
     public DynamicsSystem getDynamics() {
-        return this.getPhysicsSystem().getDynamicsSystem();
+        return JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getDynamicsSystem();
     }
 }

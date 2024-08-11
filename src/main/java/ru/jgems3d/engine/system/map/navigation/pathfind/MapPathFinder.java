@@ -75,8 +75,8 @@ public class MapPathFinder {
     }
 
     private float heuristic(GraphVertex v1, GraphVertex v2) {
-        int dx = (int) Math.abs(v1.getX() - v2.getX());
-        int dy = (int) Math.abs(v1.getZ() - v2.getZ());
+        int dx = (int) Math.abs(v1.getPosition().x - v2.getPosition().x);
+        int dy = (int) Math.abs(v1.getPosition().z - v2.getPosition().z);
         return dx + dy;
     }
 }

@@ -37,8 +37,10 @@ public class DebugRender extends SceneRenderBase {
             this.debugShaders.bind();
             this.debugShaders.getUtils().performPerspectiveMatrix();
             this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
-            this.renderDebugSunDirection(this);
-            //this.renderNavMesh(this);
+
+            this.renderDebugSunDirection();
+            this.renderNavMesh();
+
             this.debugShaders.unBind();
         }
     }
@@ -53,33 +55,29 @@ public class DebugRender extends SceneRenderBase {
         DynamicsUtils.btDebugDraw.cleanup();
     }
 
-    private void renderNavMesh(SceneRenderBase sceneRenderBase) {
+    private void renderNavMesh() {
         PhysicsWorld world = JGems3D.get().getPhysicsWorld();
         if (world.getMapNavGraph() == null) {
             return;
         }
         for (GraphVertex vertex : world.getMapNavGraph().getGraphContainer().keySet()) {
-            if (JGems3D.get().getScreen().getCamera().getCamPosition().distance(new Vector3f(vertex.getX(), vertex.getY() + 0.1f, vertex.getZ())) > 5.0f) {
+            if (this.getCamera().getCamPosition().distance(vertex.getPosition()) > 16.0f) {
                 continue;
             }
-            Model<Format3D> model0 = MeshHelper.generateVector3fModel(new Vector3f(vertex.getX(), vertex.getY(), vertex.getZ()), new Vector3f(vertex.getX(), (float) (vertex.getY() + 1.0d), vertex.getZ()));
-            this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
-            JGemsSceneUtils.renderModel(model0, GL30.GL_LINES);
-            model0.clean();
-            for (GraphEdge edge : world.getMapNavGraph().getNeighbors(vertex)) {
-                Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(vertex.getX(), vertex.getY() + 0.1f, vertex.getZ()), new Vector3f(edge.getTarget().getX(), edge.getTarget().getY() + 0.1f, edge.getTarget().getZ()));
-                this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
-                this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
-                //if (Map01.entityManiac != null && Map01.entityManiac.getNavigationAI().getPathToVertex() != null && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(vertex) && Map01.entityManiac.getNavigationAI().getPathToVertex().contains(edge.getTarget())) {
-                //    this.debugShaders.performUniform("colour", news Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
-                //}
-                JGemsSceneUtils.renderModel(model, GL30.GL_LINES);
-                model.clean();
+            try (Model<Format3D> model0 = MeshHelper.generateVector3fModel(vertex.getPosition(), new Vector3f(vertex.getPosition()).add(0.0f, 1.0f, 0.0f))) {
+                this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
+                JGemsSceneUtils.renderModel(model0, GL30.GL_LINES);
+                for (GraphEdge edge : world.getMapNavGraph().getNeighbors(vertex)) {
+                    try (Model<Format3D> model1 = MeshHelper.generateVector3fModel(new Vector3f(vertex.getPosition()).add(0.0f, 0.1f, 0.0f),new Vector3f(edge.getTarget().getPosition()).add(0.0f, 0.1f, 0.0f))) {
+                        this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
+                        JGemsSceneUtils.renderModel(model1, GL30.GL_LINES);
+                    }
+                }
             }
         }
     }
 
-    private void renderDebugSunDirection(SceneRenderBase sceneRenderBase) {
+    private void renderDebugSunDirection() {
         try (Model<Format3D> model = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(this.getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f))) {
             this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
             JGemsSceneUtils.renderModel(model, GL30.GL_LINES);

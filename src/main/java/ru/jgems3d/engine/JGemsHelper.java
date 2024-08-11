@@ -26,12 +26,15 @@ import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
 import ru.jgems3d.engine.physics.world.triggers.zones.base.ITriggerZone;
 import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
+import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.map.navigation.pathgen.MapNavGraphGenerator;
 import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.localisation.Lang;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
@@ -133,7 +136,6 @@ public abstract class JGemsHelper {
 
     // section Particles
     public static abstract class PARTICLES {
-
         public static SimpleParticle createSimpleParticle(ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
             return ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), particleAttributes, particleTexturePack, pos, scaling);
         }
@@ -203,6 +205,10 @@ public abstract class JGemsHelper {
             JGems3D.get().pauseGameAndLockUnPausing(pauseSounds);
         }
 
+        public static IMapLoader getCurrentMap() {
+            return JGems3D.get().getEngineSystem().getMapLoader();
+        }
+
         public static void unPauseGameAndUnLockUnPausing() {
             JGems3D.get().unPauseGameAndUnLockUnPausing();
         }
@@ -260,6 +266,10 @@ public abstract class JGemsHelper {
 
     // section World
     public static abstract class WORLD {
+        public static Graph genSimpleMapGraphFromStartPoint(Vector3f start) {
+            return MapNavGraphGenerator.createGraphWithStartPoint(JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getDynamicsSystem(), DynamicsUtils.convertV3F_JME(start));
+        }
+
         public static void addPropInScene(SceneProp sceneProp) {
             JGems3D.get().getScreen().getScene().getSceneWorld().addObjectInWorld(sceneProp);
         }
