@@ -21,6 +21,8 @@ import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
+import java.util.List;
+
 public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;
 
@@ -60,10 +62,11 @@ public class DebugRender extends SceneRenderBase {
         if (world.getMapNavGraph() == null) {
             return;
         }
-        for (GraphVertex vertex : world.getMapNavGraph().getGraphContainer().keySet()) {
-            if (this.getCamera().getCamPosition().distance(vertex.getPosition()) > 16.0f) {
-                continue;
-            }
+        List<GraphVertex> vertices = world.getMapNavGraph().getVerticesInChunk(this.getCamera().getCamPosition());
+        if (vertices == null) {
+            return;
+        }
+        for (GraphVertex vertex : vertices) {
             try (Model<Format3D> model0 = MeshHelper.generateVector3fModel(vertex.getPosition(), new Vector3f(vertex.getPosition()).add(0.0f, 1.0f, 0.0f))) {
                 this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
                 JGemsSceneUtils.renderModel(model0, GL30.GL_LINES);
