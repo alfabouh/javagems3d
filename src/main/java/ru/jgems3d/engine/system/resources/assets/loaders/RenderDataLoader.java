@@ -35,7 +35,7 @@ public class RenderDataLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading render data...");
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading render data...");
 
         //IEntityModelConstructor<WorldItem> entityModelConstructor = e -> {
         //    Plane4dBrush plane4dBrush = (Plane4dBrush) e;

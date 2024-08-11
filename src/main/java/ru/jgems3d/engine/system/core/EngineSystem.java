@@ -6,8 +6,6 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.system.graph.Graph;
-import ru.jgems3d.engine.system.map.navigation.pathgen.MapNavGraphGenerator;
 import ru.jgems3d.engine.system.service.misc.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;

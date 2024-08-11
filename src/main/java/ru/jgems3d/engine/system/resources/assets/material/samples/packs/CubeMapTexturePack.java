@@ -1,6 +1,5 @@
 package ru.jgems3d.engine.system.resources.assets.material.samples.packs;
 
-import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;

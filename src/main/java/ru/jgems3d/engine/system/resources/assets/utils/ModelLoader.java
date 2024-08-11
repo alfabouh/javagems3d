@@ -4,7 +4,6 @@ import com.google.common.io.ByteStreams;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
@@ -107,7 +106,6 @@ public class ModelLoader {
                     if (scene != null) {
                         int totalMaterials = scene.mNumMaterials();
                         List<Material> materialList = new ArrayList<>();
-                        JGems3D.get().getScreen().tryAddLineInLoadingScreen("Loading model material...");
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
                                 materialList.add(ModelLoader.readMaterial(gameResources, aiMaterial, modelPath.getParentPath()));

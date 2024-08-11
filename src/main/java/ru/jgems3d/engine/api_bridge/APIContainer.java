@@ -6,7 +6,6 @@ import ru.jgems3d.engine.api_bridge.data.APIGameInfo;
 import ru.jgems3d.engine.api_bridge.data.APITBoxInfo;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.app.tbox.AppTBoxObjectsContainer;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine_api.events.AppEventSubscriber;
 import ru.jgems3d.engine_api.events.SubscribeEvent;
 import ru.jgems3d.engine_api.events.bus.Events;

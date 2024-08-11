@@ -1,7 +1,6 @@
 package ru.jgems3d.engine.system.settings.base;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.settings.objects.SettingObject;
 

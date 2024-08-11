@@ -18,7 +18,6 @@ import ru.jgems3d.engine.graphics.opengl.screen.timer.TimerPool;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.logger.SystemLogging;

@@ -1,6 +1,5 @@
 package ru.jgems3d.engine.system.graph;
 
-import org.checkerframework.checker.units.qual.C;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 

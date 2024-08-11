@@ -28,10 +28,10 @@ import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.misc.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -54,14 +54,14 @@ public class JGemsScreen implements IScreen {
     }
 
     @SuppressWarnings("all")
-    public boolean tryAddLineInLoadingScreen(String s) {
+    public boolean tryAddLineInLoadingScreen(int color, String s) {
         if (GLFW.glfwGetCurrentContext() == 0L) {
             return false;
         }
         if (this.loadingScreen == null) {
             return false;
         }
-        this.loadingScreen.addText(s);
+        this.loadingScreen.addText(color, s);
         return true;
     }
 
@@ -325,24 +325,24 @@ public class JGemsScreen implements IScreen {
 
     public class LoadingScreen {
         private final GuiFont guiFont;
-        private final ArrayList<String> lines;
+        private final ArrayList<Pair<Integer, String>> lines;
 
         public LoadingScreen(String title) {
             JGemsHelper.getLogger().log("Loading screen");
             Font gameFont = JGemsResourceManager.createFontFromJAR(new JGPath("/assets/jgems/gamefont.ttf"));
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
-            this.lines.add(EngineSystem.ENG_NAME + " : " + EngineSystem.ENG_VER);
-            this.lines.add(title);
-            this.lines.add("...");
+            this.lines.add(new Pair<>(0x00ff00, EngineSystem.ENG_NAME + " : " + EngineSystem.ENG_VER));
+            this.lines.add(new Pair<>(0x00ff00, title));
+            this.lines.add(new Pair<>(0x00ff00, "..."));
         }
 
         public void updateScreen() {
             GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
             int strokes = 0;
-            for (String s : this.lines) {
-                UIText textUI = new UIText(s, this.guiFont, 0x00ff00, new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
+            for (Pair<Integer, String> s : this.lines) {
+                UIText textUI = new UIText(s.getSecond(), this.guiFont, s.getFirst(), new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
                 textUI.buildUI();
                 textUI.render(0.0f);
                 textUI.cleanData();
@@ -351,13 +351,13 @@ public class JGemsScreen implements IScreen {
             GLFW.glfwPollEvents();
         }
 
-        private void addText(String s) {
-             this.lines.add(s);
-             int max = Math.max(((JGemsScreen.this.getWindowDimensions().y - 135) / 45), 4);
-             if (this.lines.size() > max) {
-                     this.lines.remove(3);
-                 }
-             this.updateScreen();
+        private void addText(int color, String s) {
+            this.lines.add(new Pair<>(color, s));
+            int max = Math.max(((JGemsScreen.this.getWindowDimensions().y - 135) / 45), 4);
+            if (this.lines.size() > max) {
+                this.lines.remove(3);
+            }
+            this.updateScreen();
         }
 
         public void clean() {

@@ -6,8 +6,6 @@ import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
-import ru.jgems3d.engine.JGemsHelper;
 
 import java.util.*;
 
