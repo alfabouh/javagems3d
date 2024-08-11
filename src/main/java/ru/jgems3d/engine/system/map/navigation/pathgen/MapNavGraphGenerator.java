@@ -1,136 +1,133 @@
 package ru.jgems3d.engine.system.map.navigation.pathgen;
 
+import com.jme3.bullet.collision.PhysicsRayTestResult;
+import com.jme3.math.Vector3f;
+import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
+import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
+import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
+import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.graph.GraphVertex;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
+
 public class MapNavGraphGenerator {
- // private final Graph graph;
- // private final btDynamicsWorld world;
+    private final Graph graph;
+    private final DynamicsSystem dynamicsSystem;
 
- // public MapNavGraphGenerator(btDynamicsWorld world, Graph graph) {
- //     this.graph = graph;
- //     this.world = world;
- // }
+    public static Graph createGraphWithStartPoint(DynamicsSystem dynamicsSystem, Vector3f pos) {
+        MapNavGraphGenerator mapNavGraphGenerator = new MapNavGraphGenerator(dynamicsSystem);
+        mapNavGraphGenerator.generate(mapNavGraphGenerator.startPos(pos));
+        return mapNavGraphGenerator.getGraph();
+    }
 
- // public void generate(Graph.GVertex start) {
- //     Stack<Graph.GVertex> stack = new Stack<>();
- //     stack.push(start);
+    private MapNavGraphGenerator(DynamicsSystem dynamicsSystem) {
+        this.graph = new Graph();
+        this.dynamicsSystem = dynamicsSystem;
+    }
 
- //     while (!stack.isEmpty()) {
- //         Graph.GVertex current = stack.pop();
- //         this.getGraph().addVertex(current);
- //         float off = 1.0f;
+    private void generate(GraphVertex start) {
+        Stack<GraphVertex> stack = new Stack<>();
+        stack.push(start);
 
- //         Graph.GVertex[] vertices = new Graph.GVertex[4];
- //         vertices[0] = this.tryPlaceVertex(current, current.getX() - off, current.getY(), current.getZ());
- //         vertices[1] = this.tryPlaceVertex(current, current.getX() + off, current.getY(), current.getZ());
- //         vertices[2] = this.tryPlaceVertex(current, current.getX(), current.getY(), current.getZ() - off);
- //         vertices[3] = this.tryPlaceVertex(current, current.getX(), current.getY(), current.getZ() + off);
+        while (!stack.isEmpty()) {
+            GraphVertex current = stack.pop();
+            this.getGraph().addVertex(current);
+            float off = 1.0f;
 
- //         for (Graph.GVertex vertex : vertices) {
- //             if (vertex != null) {
- //                 Graph.GVertex v = this.checkNeighbors(vertex);
- //                 if (v != null) {
- //                     this.getGraph().addEdge(v, current);
- //                     this.getGraph().addEdge(current, v);
- //                 } else {
- //                     stack.push(vertex);
- //                 }
- //             }
- //         }
- //     }
- // }
+            GraphVertex[] vertices = new GraphVertex[4];
+            vertices[0] = this.tryPlaceVertex(current, current.getPosition().x - off, current.getPosition().y, current.getPosition().z);
+            vertices[1] = this.tryPlaceVertex(current, current.getPosition().x + off, current.getPosition().y, current.getPosition().z);
+            vertices[2] = this.tryPlaceVertex(current, current.getPosition().x, current.getPosition().y, current.getPosition().z - off);
+            vertices[3] = this.tryPlaceVertex(current, current.getPosition().x, current.getPosition().y, current.getPosition().z + off);
 
- // public Graph.GVertex startPos(float x, float y, float z) {
- //     btVector3 va1 = new btVector3(x, y, z);
- //     btVector3 va2 = new btVector3(x, y - 100.0d, z);
- //     btVector3 hit = null;
+            for (GraphVertex vertex : vertices) {
+                if (vertex != null) {
+                    GraphVertex v = this.checkNeighbors(vertex);
+                    if (v != null) {
+                        this.getGraph().addEdge(v, current);
+                        this.getGraph().addEdge(current, v);
+                    } else {
+                        stack.push(vertex);
+                    }
+                }
+            }
+        }
+    }
 
- //     btCollisionWorld.ClosestRayResultCallback rayResultCallback = new btCollisionWorld.ClosestRayResultCallback(va1, va2);
- //     rayResultCallback.m_collisionFilterMask(btBroadphaseProxy.DefaultFilter & ~BodyGroup.PlayerFilter & ~BodyGroup.LiquidFilter & ~BodyGroup.GhostFilter & ~BodyGroup.DefaultByPassNavChecks);
- //     this.getWorld().rayTest(va1, va2, rayResultCallback);
+    private GraphVertex startPos(Vector3f pos) {
+        com.jme3.math.Vector3f vectorCheck1 = new com.jme3.math.Vector3f(pos);
+        com.jme3.math.Vector3f vectorCheck2 = new com.jme3.math.Vector3f(pos.x, pos.y - 100.0f, pos.z);
 
- //     if (rayResultCallback.hasHit()) {
- //         hit = rayResultCallback.m_hitPointWorld();
- //     }
+        List<PhysicsRayTestResult> rayTestResults = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck1, vectorCheck2);
+        Optional<PhysicsRayTestResult> optional = rayTestResults.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
+        PhysicsRayTestResult rayTestResult = optional.orElse(null);
+        if (rayTestResult == null) {
+            return null;
+        }
 
- //     va1.deallocate();
- //     va2.deallocate();
- //     rayResultCallback.deallocate();
+        com.jme3.math.Vector3f hitPoint = DynamicsUtils.lerp(vectorCheck1, vectorCheck2, rayTestResult.getHitFraction());
+        return new GraphVertex(new org.joml.Vector3f(hitPoint.x, hitPoint.y, hitPoint.z));
+    }
 
- //     if (hit == null) {
- //         return new Graph.GVertex(x, y, z);
- //     } else {
- //         Graph.GVertex gVertex = new Graph.GVertex((float) hit.x(), (float) hit.y(), (float) hit.z());
- //         hit.deallocate();
- //         return gVertex;
- //     }
- // }
+    private GraphVertex tryPlaceVertex(GraphVertex current, float x, float y, float z) {
+        com.jme3.math.Vector3f vectorCheck1 = new com.jme3.math.Vector3f(x, y + 1.5f, z);
+        com.jme3.math.Vector3f vectorCheck2 = new com.jme3.math.Vector3f(x, y - 3.0f, z);
 
- // private Graph.GVertex tryPlaceVertex(Graph.GVertex current, float x, float y, float z) {
- //     Graph.GVertex vertex = null;
- //     btVector3 va1 = new btVector3(x, y + 1.5d, z);
- //     btVector3 va2 = new btVector3(x, y - 3.0d, z);
- //     btVector3 va3 = new btVector3(current.getX(), current.getY() + 0.1d, current.getZ());
- //     btVector3 va4 = new btVector3(x, y + 1.5d, z);
+        com.jme3.math.Vector3f vectorCheck3 = DynamicsUtils.convertV3F_JME(current.getPosition()).add(0.0f, 0.1f, 0.0f);
+        com.jme3.math.Vector3f vectorCheck4 = new com.jme3.math.Vector3f(x, y + 1.5f, z);
 
- //     btCollisionWorld.ClosestRayResultCallback rayResultCallback = new btCollisionWorld.ClosestRayResultCallback(va1, va2);
- //     final int setter = btBroadphaseProxy.DefaultFilter & ~BodyGroup.PlayerFilter & ~BodyGroup.LiquidFilter & ~BodyGroup.GhostFilter & ~BodyGroup.DefaultByPassNavChecks;
+        List<PhysicsRayTestResult> rayPathToPoint = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3, vectorCheck4);
+        Optional<PhysicsRayTestResult> optional = rayPathToPoint.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
+        PhysicsRayTestResult rayTestResult1 = optional.orElse(null);
 
- //     rayResultCallback.m_collisionFilterMask(setter);
- //     btCollisionWorld.ClosestRayResultCallback rayResultCallback2 = new btCollisionWorld.ClosestRayResultCallback(va3, va4);
- //     rayResultCallback2.m_collisionFilterMask(setter);
+        if (rayTestResult1 == null) {
+            List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck1, vectorCheck2);
+            Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
+            PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
+            if (rayTestResult2 == null) {
+                return null;
+            }
+            com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck1, vectorCheck2, rayTestResult2.getHitFraction());
+            return new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
+        } else {
+            com.jme3.math.Vector3f hitPoint1 = DynamicsUtils.lerp(vectorCheck3, vectorCheck4, rayTestResult1.getHitFraction());
+            com.jme3.math.Vector3f hitPointPath = new com.jme3.math.Vector3f(hitPoint1).subtract(vectorCheck3);
 
- //     this.getWorld().rayTest(va1, va2, rayResultCallback);
- //     this.getWorld().rayTest(va3, va4, rayResultCallback2);
- //     if (rayResultCallback.hasHit() && !rayResultCallback2.hasHit()) {
- //         btVector3 v = rayResultCallback.m_hitPointWorld();
- //         vertex = new Graph.GVertex((float) v.x(), (float) v.y(), (float) v.z());
- //     } else {
- //         if (rayResultCallback2.hasHit()) {
- //             btVector3 v1 = rayResultCallback2.m_hitPointWorld();
- //             btVector3 v1_s = new btVector3(v1.x(), v1.y(), v1.z());
- //             v1_s.subtractPut(va3).multiplyPut(0.5d);
- //             v1.subtractPut(v1_s);
- //             v1_s.deallocate();
- //             btVector3 va5 = new btVector3(v1.x(), y + 1.0d, v1.z());
- //             btVector3 va6 = new btVector3(v1.x(), y - 2.0d, v1.z());
- //             btCollisionWorld.ClosestRayResultCallback rayResultCallback3 = new btCollisionWorld.ClosestRayResultCallback(va5, va6);
- //             rayResultCallback3.m_collisionFilterMask(setter);
- //             this.getWorld().rayTest(va5, va6, rayResultCallback3);
+            com.jme3.math.Vector3f hitPointHalfWay = new com.jme3.math.Vector3f(vectorCheck3).add(hitPointPath.mult(0.5f));
 
- //             if (rayResultCallback3.hasHit()) {
- //                 btVector3 v2 = rayResultCallback3.m_hitPointWorld();
- //                 if (v2.y() <= v1.y() + 0.5d && v2.distance(va3) > 0.25d) {
- //                     Graph.GVertex v = new Graph.GVertex((float) v2.x(), (float) v2.y(), (float) v2.z());
- //                     this.getGraph().addVertex(v);
- //                     this.getGraph().addEdge(v, current);
- //                     this.getGraph().addEdge(current, v);
- //                 }
- //             }
- //         }
- //     }
- //     va1.deallocate();
- //     va2.deallocate();
- //     rayResultCallback.deallocate();
- //     va3.deallocate();
- //     va4.deallocate();
- //     rayResultCallback2.deallocate();
+            com.jme3.math.Vector3f vectorCheck3_1 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y + 1.0f, hitPointHalfWay.z);
+            com.jme3.math.Vector3f vectorCheck3_2 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y - 2.0f, hitPointHalfWay.z);
 
- //     return vertex;
- // }
+            List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3_1, vectorCheck3_2);
+            Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
+            PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
+            if (rayTestResult2 == null) {
+                return null;
+            }
 
- // private Graph.GVertex checkNeighbors(Graph.GVertex vertex) {
- //     for (Graph.GVertex v : this.getGraph().getGraphContainer().keySet()) {
- //         if (v != vertex && v.distanceTo(vertex) <= 0.01d) {
- //             return v;
- //         }
- //     }
- //     return null;
- // }
+            com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck3_1, vectorCheck3_2, rayTestResult2.getHitFraction());
+            if (hitPointSurface.y <= hitPoint1.y + 0.5d && hitPointSurface.distance(vectorCheck3) > 0.25d) {
+                GraphVertex v = new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
+                this.getGraph().addVertex(v);
+                this.getGraph().addEdge(v, current);
+                this.getGraph().addEdge(current, v);
+            }
+        }
+        return null;
+    }
 
- // public btDynamicsWorld getWorld() {
- //     return this.world;
- // }
+    private GraphVertex checkNeighbors(GraphVertex vertex) {
+        for (GraphVertex v : this.getGraph().getGraphContainer().keySet()) {
+            if (v != vertex && v.distanceTo(vertex) <= 0.01d) {
+                return v;
+            }
+        }
+        return null;
+    }
 
- // public Graph getGraph() {
- //     return this.graph;
- // }
+    private Graph getGraph() {
+        return this.graph;
+    }
 }

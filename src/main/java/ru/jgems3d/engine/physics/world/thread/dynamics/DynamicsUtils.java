@@ -17,7 +17,7 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DynamicsUtils {
+public abstract class DynamicsUtils {
     public static BtDebugDraw btDebugDraw = new BtDebugDraw();
 
     public static com.jme3.math.Vector3f lerp(com.jme3.math.Vector3f a, com.jme3.math.Vector3f b, float t) {

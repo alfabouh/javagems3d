@@ -43,7 +43,7 @@ public class NavigationAI implements AI {
     }
 
     public void setCurrentVertex(GraphVertex currentVertex) {
-        this.target().setPosition(new Vector3f(currentVertex.getX(), currentVertex.getY(), currentVertex.getZ()));
+        this.target().setPosition(new Vector3f(currentVertex.getPosition()));
         this.currentVertex = currentVertex;
     }
 
@@ -91,8 +91,8 @@ public class NavigationAI implements AI {
                 }
             }
             if (this.getNextVertex() != null) {
-                Vector3f target = new Vector3f(this.getNextVertex().getX(), this.getNextVertex().getY(), this.getNextVertex().getZ());
-                Vector3f dist = new Vector3f(this.getCurrentVertex().getX(), this.getCurrentVertex().getY(), this.getCurrentVertex().getZ()).lerp(target, (float) Math.min(this.currentPosDelta, 1.0f));
+                Vector3f target = new Vector3f(this.getNextVertex().getPosition());
+                Vector3f dist = new Vector3f(this.getCurrentVertex().getPosition()).lerp(target, (float) Math.min(this.currentPosDelta, 1.0f));
                 this.currentPosDelta += this.getSpeed();
                 if (this.currentPosDelta >= 1.0d) {
                     this.reachedVertex();

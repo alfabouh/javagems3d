@@ -26,13 +26,17 @@ import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
+import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.map.navigation.pathgen.MapNavGraphGenerator;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.logger.managers.LoggingManager;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class DIMGuiRenderJGems {
@@ -248,6 +252,29 @@ public class DIMGuiRenderJGems {
             ImGui.text("entities: " + JGems3D.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
            // ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
+        }
+
+        if (ImGui.collapsingHeader("Tools")) {
+            if (ImGui.button("Generate NavMesh")) {
+                Graph graph = JGemsHelper.WORLD.genSimpleMapGraphFromStartPoint(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition());
+                String mapName = JGemsHelper.GAME.getCurrentMap().getLevelInfo().toString();
+                try {
+                    Graph.saveInFile(graph, mapName);
+                } catch (IOException e) {
+                    throw new JGemsRuntimeException(e);
+                }
+                if (graph == null || graph.getGraphContainer().isEmpty()) {
+                    LoggingManager.showWindowInfo("Couldn't create NavMesh!");
+                } else {
+                    LoggingManager.showWindowInfo("Created NavMesh(" + graph.getGraphContainer().size() + ") and saved in game folder. " + mapName + ".nav");
+                }
+                JGemsHelper.getPhysicsWorld().setMapNavGraph(graph);
+            }
+            if (ImGui.isItemHovered()) {
+                ImGui.beginTooltip();
+                ImGui.setTooltip("Generates NavMesh, starting from current camera position!");
+                ImGui.endTooltip();
+            }
         }
 
         if (ImGui.collapsingHeader("Util Checkboxes")) {
