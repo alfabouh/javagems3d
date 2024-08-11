@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
 import ru.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 
@@ -16,7 +16,7 @@ public final class TBoxObject extends TBoxScene3DObject {
     @Override
     public TBoxObject copy() {
         TBoxObject tBoxObject = new TBoxObject(this.objectId(), this.getRenderData(), new Model<>(this.getModel()));
-        tBoxObject.setAttributeContainer(new AttributeContainer(this.getAttributeContainer()));
+        tBoxObject.setAttributeContainer(new AttributesContainer(this.getAttributeContainer()));
         tBoxObject.setPositionWithAttribute(new Vector3f(tBoxObject.getModel().getFormat().getPosition()).add(0.0f, 2.5f, 0.0f));
         return tBoxObject;
     }

@@ -1,10 +1,13 @@
 package ru.jgems3d.engine.system.core;
 
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.map.navigation.pathgen.MapNavGraphGenerator;
 import ru.jgems3d.engine.system.service.misc.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
@@ -15,7 +18,6 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.core.player.LocalPlayer;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.map.loaders.tbox.MapLoaderTBox;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.logger.managers.JGemsLogging;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
@@ -37,6 +39,7 @@ public class EngineSystem implements IEngine {
     private IMapLoader mapLoader;
     private LocalPlayer localPlayer;
     private boolean lockedUnPausing;
+    private final RequestsFromThreads requestsFromThreads;
 
     public EngineSystem() {
         this.thread = null;
@@ -44,34 +47,28 @@ public class EngineSystem implements IEngine {
         this.resourceManager = new JGemsResourceManager();
         this.mapLoader = null;
         this.lockedUnPausing = false;
-    }
 
-    public EngineState getEngineState() {
-        return this.engineState;
-    }
-
-    public String currentMapName() {
-        return this.getMapLoader().getLevelInfo().getMapProperties().getMapName();
-    }
-
-    public IMapLoader getMapLoader() {
-        return this.mapLoader;
-    }
-
-    @SuppressWarnings("all")
-    public boolean isLockedUnPausing() {
-        return this.lockedUnPausing;
+        this.requestsFromThreads = new RequestsFromThreads();
     }
 
     public void setLockedUnPausing(boolean lockedUnPausing) {
         this.lockedUnPausing = lockedUnPausing;
     }
 
-    public void loadMap(String mapName) {
-        this.loadMap(new MapLoaderTBox(MapLoaderTBox.readMapFromJar(mapName)));
+    public void update() {
+        this.requestsFromThreads.update();
+    }
+
+    @SuppressWarnings("all")
+    private boolean isCurrentThreadOGL() {
+        return GLFW.glfwGetCurrentContext() != 0L;
     }
 
     public void loadMap(IMapLoader mapLoader) {
+        if (!this.isCurrentThreadOGL()) {
+            this.requestsFromThreads.loadMap = mapLoader;
+            return;
+        }
         if (this.getMapLoader() != null) {
             JGemsHelper.getLogger().warn("Firstly, the current map should be destroyed!");
             return;
@@ -80,8 +77,19 @@ public class EngineSystem implements IEngine {
         this.initMap();
     }
 
-    public Thread getThread() {
-        return this.thread;
+    public void destroyMap() {
+        if (!this.isCurrentThreadOGL()) {
+            this.requestsFromThreads.destroyMap = true;
+            return;
+        }
+        this.pauseGame();
+        JGems3D.get().getScreen().showGameLoadingScreen("Exit world...");
+        this.clean();
+        JGems3D.get().getScreen().getScene().setRenderCamera(null);
+        JGems3D.get().getScreen().getWindow().setInFocus(false);
+        JGems3D.get().getScreen().removeLoadingScreen();
+        this.mapLoader = null;
+        JGems3D.get().showMainMenu();
     }
 
     private void initMap() {
@@ -151,14 +159,6 @@ public class EngineSystem implements IEngine {
         return this.localPlayer;
     }
 
-    public void destroyMap() {
-        this.pauseGame();
-        JGems3D.get().getScreen().showGameLoadingScreen("Exit world...");
-        this.clean();
-        JGems3D.get().getScreen().removeLoadingScreen();
-        this.mapLoader = null;
-    }
-
     public void pauseGame() {
         this.engineState().paused = true;
     }
@@ -216,7 +216,7 @@ public class EngineSystem implements IEngine {
                 JGems3D.get().getSoundManager().createSystem();
                 JGems3D.get().getPhysicThreadManager().initService();
                 this.createGraphics();
-                this.getEngineState().gameResourcesLoaded = true;
+                this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
                 APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent();
                 JGems3D.get().getScreen().startScreenRenderProcess();
@@ -251,6 +251,23 @@ public class EngineSystem implements IEngine {
         });
         this.thread.setName("system");
         this.thread.start();
+    }
+
+    public String currentMapName() {
+        return this.getMapLoader().getLevelInfo().getMapProperties().getMapName();
+    }
+
+    public Thread getThread() {
+        return this.thread;
+    }
+
+    public IMapLoader getMapLoader() {
+        return this.mapLoader;
+    }
+
+    @SuppressWarnings("all")
+    public boolean isLockedUnPausing() {
+        return this.lockedUnPausing;
     }
 
     private void printSystemInfo() {
@@ -321,6 +338,21 @@ public class EngineSystem implements IEngine {
         JGems3D.get().getScreen().buildScreen();
         this.printGraphicsInfo();
         JGems3D.get().getResourceManager().loadGlobalResources();
+    }
+
+    private class RequestsFromThreads {
+        public boolean destroyMap;
+        public IMapLoader loadMap;
+
+        public void update() {
+            if (this.destroyMap) {
+                EngineSystem.this.destroyMap();
+                return;
+            }
+            if (this.loadMap != null) {
+                EngineSystem.this.loadMap(this.loadMap);
+            }
+        }
     }
 
     public static class EngineState {

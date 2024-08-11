@@ -1,9 +1,13 @@
 package ru.jgems3d.engine.system.graph;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
+import ru.jgems3d.engine.system.service.json.JSONGraphDeserializer;
 import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.logger.managers.LoggingManager;
 
 import java.io.*;
 import java.util.*;
@@ -11,8 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Graph implements Serializable {
     private static final long serialVersionUID = -228L;
-    private final Map<GraphVertex, List<GraphEdge>> graph;
-    private final Map<GraphChunk, List<GraphVertex>> graphChunkGroups;
+    private Map<GraphVertex, List<GraphEdge>> graph;
+    private Map<GraphChunk, List<GraphVertex>> graphChunkGroups;
     private GraphVertex start;
 
     public Graph() {
@@ -21,23 +25,41 @@ public class Graph implements Serializable {
         this.start = null;
     }
 
-    public static void saveInFile(Graph graph, String name) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(name + ".nav");
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(graph);
-        fileOutputStream.close();
-    }
-
-    public static Graph readFromFile(JGPath path) throws IOException, ClassNotFoundException {
-        try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
-            try (ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
-                return (Graph) objectInputStream.readObject();
-            }
+    public static void saveInFile(Graph graph){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(graph);
+        try (FileWriter fileWriter = new FileWriter("nav.nav")) {
+            fileWriter.write(json);
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+            LoggingManager.showExceptionDialog("Couldn't save NavMesh!");
         }
     }
 
-    public GraphVertex getStart() {
-        return this.start;
+    public static Graph readFromFile(JGPath path) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
+            try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(Graph.class, new JSONGraphDeserializer());
+                Gson gson = gsonBuilder.create();
+                return gson.fromJson(reader, Graph.class);
+            }
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+            return null;
+        }
+    }
+
+    public void setGraphChunkGroups(Map<GraphChunk, List<GraphVertex>> graphChunkGroups) {
+        this.graphChunkGroups = graphChunkGroups;
+    }
+
+    public void setGraph(Map<GraphVertex, List<GraphEdge>> graph) {
+        this.graph = graph;
+    }
+
+    public void setStart(GraphVertex start) {
+        this.start = start;
     }
 
     public void addVertex(GraphVertex gVertex) {
@@ -84,6 +106,10 @@ public class Graph implements Serializable {
 
     public Map<GraphVertex, List<GraphEdge>> getGraphContainer() {
         return this.graph;
+    }
+
+    public GraphVertex getStart() {
+        return this.start;
     }
 
     @SuppressWarnings("all")

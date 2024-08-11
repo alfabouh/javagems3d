@@ -86,13 +86,13 @@ public class MapNavGraphGenerator {
             List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck1, vectorCheck2);
             Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
             PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
-            if (rayTestResult2 == null) {
-                return null;
+            if (rayTestResult2 != null) {
+                com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck1, vectorCheck2, rayTestResult2.getHitFraction());
+                return new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
             }
-            com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck1, vectorCheck2, rayTestResult2.getHitFraction());
-            return new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
-        } else {
-            com.jme3.math.Vector3f hitPoint1 = DynamicsUtils.lerp(vectorCheck3, vectorCheck4, rayTestResult1.getHitFraction());
+        }
+
+            com.jme3.math.Vector3f hitPoint1 = rayTestResult1 == null ? (vectorCheck4) : DynamicsUtils.lerp(vectorCheck3, vectorCheck4, rayTestResult1.getHitFraction());
             com.jme3.math.Vector3f hitPointPath = new com.jme3.math.Vector3f(hitPoint1).subtract(vectorCheck3);
 
             com.jme3.math.Vector3f hitPointHalfWay = new com.jme3.math.Vector3f(vectorCheck3).add(hitPointPath.mult(0.5f));
@@ -114,7 +114,6 @@ public class MapNavGraphGenerator {
                 this.getGraph().addEdge(v, current);
                 this.getGraph().addEdge(current, v);
             }
-        }
         return null;
     }
 

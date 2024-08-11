@@ -23,7 +23,7 @@ import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
 import ru.jgems3d.toolbox.map_sys.save.TBoxMapSaver;
-import ru.jgems3d.toolbox.map_sys.save.container.SaveContainer;
+import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 import ru.jgems3d.toolbox.map_table.TBoxMapTable;
@@ -75,7 +75,7 @@ public class TBoxScene {
     }
 
     public void tryLoadMap(File file) {
-        SaveContainer saveContainer;
+        TBoxMapContainer TBoxMapContainer;
         try {
             if (file == null || !Files.exists(file.toPath())) {
                 JFileChooser jFileChooser = new JFileChooser();
@@ -89,11 +89,11 @@ public class TBoxScene {
                 }
             }
             if (file != null) {
-                saveContainer = TBoxMapReader.readMapFolder(file);
+                TBoxMapContainer = TBoxMapReader.readMapFolder(file);
 
                 ToolBox.get().getTBoxSettings().recentPathOpen.setValue(new File(file.toString()).getAbsolutePath());
 
-                MapProperties mapObjectProperties = saveContainer.getSaveMapProperties();
+                MapProperties mapObjectProperties = TBoxMapContainer.getSaveMapProperties();
                 if (mapObjectProperties == null) {
                     throw new JGemsNullException("Invalid deserialization!");
                 }
@@ -102,7 +102,7 @@ public class TBoxScene {
                     throw new JGemsNullException("Invalid file provided");
                 }
 
-                Set<SaveObject> saveObjects = saveContainer.getSaveObjectsSet();
+                Set<SaveObject> saveObjects = TBoxMapContainer.getSaveObjectsSet();
                 this.clear();
 
                 if (saveObjects != null) {
@@ -147,10 +147,10 @@ public class TBoxScene {
             return;
         }
 
-        SaveContainer saveContainer = new SaveContainer(this.getSceneContainer().getMapProperties());
+        TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(this.getSceneContainer().getMapProperties());
 
         for (TBoxObject tBoxObject : this.getSceneContainer().getObjectsFromContainer(TBoxObject.class)) {
-            saveContainer.addSaveObject(new SaveObject(tBoxObject.getAttributeContainer(), tBoxObject.objectId()));
+            TBoxMapContainer.addSaveObject(new SaveObject(tBoxObject.getAttributeContainer(), tBoxObject.objectId()));
         }
 
         try {
@@ -164,7 +164,7 @@ public class TBoxScene {
                 }
             }
             if (file != null) {
-                TBoxMapSaver.saveEditorToJSON(saveContainer, file);
+                TBoxMapSaver.saveEditorToJSON(TBoxMapContainer, file);
                 String path = new File(file.toString()).getAbsolutePath();
                 ToolBox.get().getTBoxSettings().recentPathSave.setValue(path);
             }

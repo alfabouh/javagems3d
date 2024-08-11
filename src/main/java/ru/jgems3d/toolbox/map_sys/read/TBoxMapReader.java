@@ -4,7 +4,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.service.misc.JGPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.toolbox.map_sys.SerializeHelper;
-import ru.jgems3d.toolbox.map_sys.save.container.SaveContainer;
+import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 
@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 public class TBoxMapReader {
     @SuppressWarnings("unchecked")
-    public static SaveContainer readMapFolder(File file) {
+    public static TBoxMapContainer readMapFolder(File file) {
         MapProperties mapProperties = null;
         HashSet<SaveObject> saveObjectSet = null;
         try {
@@ -28,31 +28,31 @@ public class TBoxMapReader {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        SaveContainer saveContainer = new SaveContainer(mapProperties);
-        saveContainer.setSaveObjectSet(saveObjectSet);
+        TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
+        TBoxMapContainer.setSaveObjectSet(saveObjectSet);
 
         SystemLogging.get().getLogManager().log("Read map file: " + file);
-        return saveContainer;
+        return TBoxMapContainer;
     }
 
     @SuppressWarnings("unchecked")
-    public static SaveContainer readMapFolderFromJAR(String mapName) throws IOException, ClassNotFoundException {
+    public static TBoxMapContainer readMapFolderFromJAR(JGPath pathToMap) throws IOException, ClassNotFoundException {
         MapProperties mapProperties = null;
         HashSet<SaveObject> saveObjectSet = null;
-        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath("/assets/jgems/maps/" + mapName + "/map_prop.json"))){
+        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath(pathToMap + "/map_prop.json"))){
             mapProperties = SerializeHelper.readFromJSON(stream, MapProperties.class); //TODO
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath("/assets/jgems/maps/" + mapName + "/objects.ser"))) {
+        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath(pathToMap + "/objects.ser"))) {
             saveObjectSet = SerializeHelper.readFromBytes(stream, HashSet.class);
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        SaveContainer saveContainer = new SaveContainer(mapProperties);
-        saveContainer.setSaveObjectSet(saveObjectSet);
+        TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
+        TBoxMapContainer.setSaveObjectSet(saveObjectSet);
 
-        SystemLogging.get().getLogManager().log("Read map file(from jar): " + mapName);
-        return saveContainer;
+        SystemLogging.get().getLogManager().log("Read map file(from jar): " + pathToMap);
+        return TBoxMapContainer;
     }
 }

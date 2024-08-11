@@ -73,7 +73,7 @@ public final class SerializeHelper {
     }
 
     public static void saveToJSON(File path, String fileName, Object object) throws IOException {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String jsonString = gson.toJson(object);
         try (FileWriter fileWriter = new FileWriter(path + "//" + fileName)) {
             fileWriter.write(jsonString);

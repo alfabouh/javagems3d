@@ -258,11 +258,7 @@ public class DIMGuiRenderJGems {
             if (ImGui.button("Generate NavMesh")) {
                 Graph graph = JGemsHelper.WORLD.genSimpleMapGraphFromStartPoint(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition());
                 String mapName = JGemsHelper.GAME.getCurrentMap().getLevelInfo().toString();
-                try {
-                    Graph.saveInFile(graph, mapName);
-                } catch (IOException e) {
-                    throw new JGemsRuntimeException(e);
-                }
+                Graph.saveInFile(graph);
                 if (graph == null || graph.getGraphContainer().isEmpty()) {
                     LoggingManager.showWindowInfo("Couldn't create NavMesh!");
                 } else {

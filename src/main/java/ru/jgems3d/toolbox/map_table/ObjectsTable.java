@@ -11,7 +11,7 @@ import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_table.object.MarkerObjectData;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeTarget;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.ToolBox;
@@ -47,16 +47,16 @@ public class ObjectsTable {
             TEntityContainer tEntityContainer = entry.getValue().getFirst();
             ObjectCategory objectCategory = tEntityContainer.getObjectCategory();
             TBoxShaderManager shaderManager = (tEntityContainer.getPathToTBoxShader() == null) ? (TBoxResourceManager.shaderAssets.world_object) : tBoxResourceManager.createShaderManager(tEntityContainer.getPathToTBoxShader());
-            AttributeContainer attributeContainer = tEntityContainer.getAttributeContainer();
+            AttributesContainer attributesContainer = tEntityContainer.getAttributeContainer();
             MeshDataGroup meshDataGroup = TBoxResourceManager.createModel(tEntityContainer.getPathToTBoxModel());
 
-            AbstractObjectData abstractObjectData = tEntityContainer.getAbstractObjectDataClass().getConstructor(AttributeContainer.class, TBoxShaderManager.class, MeshDataGroup.class, ObjectCategory.class).newInstance(attributeContainer, shaderManager, meshDataGroup, objectCategory);
+            AbstractObjectData abstractObjectData = tEntityContainer.getAbstractObjectDataClass().getConstructor(AttributesContainer.class, TBoxShaderManager.class, MeshDataGroup.class, ObjectCategory.class).newInstance(attributesContainer, shaderManager, meshDataGroup, objectCategory);
             this.addObject(entry.getKey(), abstractObjectData);
         }
 
-        this.addObject("player_start", new MarkerObjectData(new AttributeContainer(transformPosXYZ, rotationPlayerAttribute, colorPlayerStaticAttribute), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().player, ObjectCategory.GENERIC));
-        this.addObject("generic_marker", new MarkerObjectData(new AttributeContainer(transformPosXYZ, colorAttribute), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().pointer, ObjectCategory.GENERIC));
-        this.addObject("ambient_sound", new MarkerObjectData(new AttributeContainer(transformPosXYZ, soundVolume, soundAttribute, colorAttributeSound), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().cubic, ObjectCategory.GENERIC));
+        this.addObject("player_start", new MarkerObjectData(new AttributesContainer(transformPosXYZ, rotationPlayerAttribute, colorPlayerStaticAttribute), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().player, ObjectCategory.GENERIC));
+        this.addObject("generic_marker", new MarkerObjectData(new AttributesContainer(transformPosXYZ, colorAttribute), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().pointer, ObjectCategory.GENERIC));
+        this.addObject("ambient_sound", new MarkerObjectData(new AttributesContainer(transformPosXYZ, soundVolume, soundAttribute, colorAttributeSound), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().cubic, ObjectCategory.GENERIC));
     }
 
     public void addObject(String key, AbstractObjectData mapObject) {

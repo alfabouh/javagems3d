@@ -54,7 +54,7 @@ public class TestBindings extends BindingManager {
         this.keyEsc = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
                 if (JGems3D.get().isCurrentMapIsValid()) {
-                    if (JGems3D.get().getEngineState().isPaused()) {
+                    if (JGems3D.get().isPaused()) {
                         if (JGems3D.get().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
                             JGemsControllerDispatcher.mouseKeyboardController.setCursorInCenter();
                             JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptLMB();

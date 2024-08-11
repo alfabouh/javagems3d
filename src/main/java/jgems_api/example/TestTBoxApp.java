@@ -11,7 +11,7 @@ import ru.jgems3d.engine_api.app.tbox.IAppTBoxObjectsContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeContainer;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeTarget;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_table.object.ModeledObjectData;
@@ -31,7 +31,7 @@ public class TestTBoxApp implements JGemsTBoxApplication {
         Attribute<Vector3f> transformScaleXYZ = new Attribute<>(AttributeTarget.SCALING_XYZ, AttributeID.SCALING_XYZ, new Vector3f(1.0f));
 
         tBoxObjectsContainer.addObject("test",
-                new TEntityContainer(ModeledObjectData.class, new JGPath("/assets/jgems/models/cube/cube.obj"), new AttributeContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), PHYSICS_OBJECT),
+                new TEntityContainer(ModeledObjectData.class, new JGPath("/assets/jgems/models/cube/cube.obj"), new AttributesContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), PHYSICS_OBJECT),
                 new TRenderContainer(RenderEntity.class, EntityObject.class, new JGPath("/assets/jgems/models/cube/cube.obj"), new MeshRenderAttributes()));
     }
 }
