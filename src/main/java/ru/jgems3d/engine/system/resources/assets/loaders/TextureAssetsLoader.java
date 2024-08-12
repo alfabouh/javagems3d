@@ -4,7 +4,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.FontCode;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
@@ -36,30 +36,30 @@ public class TextureAssetsLoader implements IAssetsLoader {
 
     public void load(GameResources gameResources) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading textures...");
-        TextureAssetsLoader.DEFAULT = gameResources.createTexture(new JGPath(JGems3D.Paths.TEXTURES, "default.png"), new TextureSample.Params(false, true, false, false));
+        TextureAssetsLoader.DEFAULT = gameResources.createTexture(new JGemsPath(JGems3D.Paths.TEXTURES, "default.png"), new TextureSample.Params(false, true, false, false));
 
-        Font gameFont = JGemsResourceManager.createFontFromJAR(new JGPath("/assets/jgems/gamefont.ttf"));
+        Font gameFont = JGemsResourceManager.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
 
         this.standardFont2 = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);
         this.standardFont = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
         this.buttonFont = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
 
-        this.zippo_inventory = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo_inventory.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo_inventory = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo_inventory.png"), new TextureSample.Params(false, false, false, false));
 
-        this.waterNormals = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "liquids/water_n.png"), new TextureSample.Params(true));
-        this.waterTexture = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "liquids/water.png"), new TextureSample.Params(true));
-        this.crosshair = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "gui/crosshair.png"), new TextureSample.Params(false, false, false, false));
-        this.gui1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "gui/gui1.png"), new TextureSample.Params(false, false, false, false));
-        this.zippo1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1.png"), new TextureSample.Params(false, false, false, false));
-        this.zippo_world = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo_world.png"), new TextureSample.Params(false, false, false, false));
+        this.waterNormals = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water_n.png"), new TextureSample.Params(true));
+        this.waterTexture = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water.png"), new TextureSample.Params(true));
+        this.crosshair = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/crosshair.png"), new TextureSample.Params(false, false, false, false));
+        this.gui1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/gui1.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo_world = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo_world.png"), new TextureSample.Params(false, false, false, false));
 
-        this.zippo1_emission = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1_emission.png"), new TextureSample.Params(false, false, false, false));
-        this.zippo2 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo2.png"), new TextureSample.Params(false, false, false, false));
-        this.particleTexturePack = new ParticleTexturePack(new JGPath(JGems3D.Paths.PARTICLES, "flame"), ".png", 4, 0.25f);
+        this.zippo1_emission = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1_emission.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo2 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo2.png"), new TextureSample.Params(false, false, false, false));
+        this.particleTexturePack = new ParticleTexturePack(new JGemsPath(JGems3D.Paths.PARTICLES, "flame"), ".png", 4, 0.25f);
 
-        this.defaultSkyboxCubeMap = JGemsResourceManager.createSkyBoxCubeMap(new JGPath(JGems3D.Paths.CUBE_MAPS, "default"), ".png");
-        this.skyboxCubeMap = JGemsResourceManager.createSkyBoxCubeMap(new JGPath(JGems3D.Paths.CUBE_MAPS, "skyDay"), ".png");
-        this.skyboxCubeMap2 = JGemsResourceManager.createSkyBoxCubeMap(new JGPath(JGems3D.Paths.CUBE_MAPS, "skyNight"), ".bmp");
+        this.defaultSkyboxCubeMap = JGemsResourceManager.createSkyBoxCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "default"), ".png");
+        this.skyboxCubeMap = JGemsResourceManager.createSkyBoxCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyDay"), ".png");
+        this.skyboxCubeMap2 = JGemsResourceManager.createSkyBoxCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyNight"), ".bmp");
     }
 
     @Override

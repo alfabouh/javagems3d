@@ -1,7 +1,7 @@
 package ru.jgems3d.toolbox.map_sys.read;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.toolbox.map_sys.SerializeHelper;
 import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
@@ -36,15 +36,15 @@ public class TBoxMapReader {
     }
 
     @SuppressWarnings("unchecked")
-    public static TBoxMapContainer readMapFolderFromJAR(JGPath pathToMap) throws IOException, ClassNotFoundException {
+    public static TBoxMapContainer readMapFolderFromJAR(JGemsPath pathToMap) throws IOException, ClassNotFoundException {
         MapProperties mapProperties = null;
         HashSet<SaveObject> saveObjectSet = null;
-        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath(pathToMap + "/map_prop.json"))){
+        try (InputStream stream = JGems3D.loadFileFromJar(new JGemsPath(pathToMap + "/map_prop.json"))){
             mapProperties = SerializeHelper.readFromJSON(stream, MapProperties.class); //TODO
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-        try (InputStream stream = JGems3D.loadFileFromJar(new JGPath(pathToMap + "/objects.ser"))) {
+        try (InputStream stream = JGems3D.loadFileFromJar(new JGemsPath(pathToMap + "/objects.ser"))) {
             saveObjectSet = SerializeHelper.readFromBytes(stream, HashSet.class);
         } catch (Exception e) {
             e.printStackTrace(System.err);

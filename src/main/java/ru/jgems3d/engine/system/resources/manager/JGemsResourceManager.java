@@ -9,7 +9,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProg
 import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.*;
 import ru.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
@@ -45,10 +45,10 @@ public final class JGemsResourceManager {
         JGemsResourceManager.inventoryItemRenderTable.addItem(itemClass, inventoryItemRenderData);
     }
 
-    public static CubeMapProgram createSkyBoxCubeMap(JGPath pathToSkyBox, String format) {
+    public static CubeMapProgram createSkyBoxCubeMap(JGemsPath pathToSkyBox, String format) {
         CubeMapProgram cubeMap = new CubeMapProgram();
         cubeMap.generateCubeMapFromTexture(new CubeMapTexturePack(pathToSkyBox, format));
-        JGemsResourceManager.skyBoxTexturesMap.put(pathToSkyBox.getSPath(), cubeMap);
+        JGemsResourceManager.skyBoxTexturesMap.put(pathToSkyBox.getFullPath(), cubeMap);
         return cubeMap;
     }
 
@@ -71,7 +71,7 @@ public final class JGemsResourceManager {
         this.cleanAllCaches();
     }
 
-    public static Font createFontFromJAR(JGPath path) {
+    public static Font createFontFromJAR(JGemsPath path) {
         Font font1;
         try {
             try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {

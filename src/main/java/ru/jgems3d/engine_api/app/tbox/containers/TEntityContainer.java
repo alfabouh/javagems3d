@@ -2,23 +2,23 @@ package ru.jgems3d.engine_api.app.tbox.containers;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 public final class TEntityContainer {
     private final Class<? extends AbstractObjectData> abstractObjectDataClass;
-    private final JGPath pathToTBoxShader;
-    private final JGPath pathToTBoxModel;
+    private final JGemsPath pathToTBoxShader;
+    private final JGemsPath pathToTBoxModel;
     private final AttributesContainer attributesContainer;
     private final ObjectCategory objectCategory;
 
-    public TEntityContainer(@NotNull Class<? extends AbstractObjectData> abstractObjectDataClass, @NotNull JGPath pathToTBoxModel, @NotNull AttributesContainer attributesContainer, @NotNull ObjectCategory objectCategory) {
+    public TEntityContainer(@NotNull Class<? extends AbstractObjectData> abstractObjectDataClass, @NotNull JGemsPath pathToTBoxModel, @NotNull AttributesContainer attributesContainer, @NotNull ObjectCategory objectCategory) {
         this(abstractObjectDataClass, null, pathToTBoxModel, attributesContainer, objectCategory);
     }
 
-    public TEntityContainer(@NotNull Class<? extends AbstractObjectData> abstractObjectDataClass, @Nullable JGPath pathToTBoxShader, @NotNull JGPath pathToTBoxModel, @NotNull AttributesContainer attributesContainer, @NotNull ObjectCategory objectCategory) {
+    public TEntityContainer(@NotNull Class<? extends AbstractObjectData> abstractObjectDataClass, @Nullable JGemsPath pathToTBoxShader, @NotNull JGemsPath pathToTBoxModel, @NotNull AttributesContainer attributesContainer, @NotNull ObjectCategory objectCategory) {
         this.abstractObjectDataClass = abstractObjectDataClass;
         this.pathToTBoxModel = pathToTBoxModel;
         this.pathToTBoxShader = pathToTBoxShader;
@@ -30,7 +30,7 @@ public final class TEntityContainer {
         return this.abstractObjectDataClass;
     }
 
-    public JGPath getPathToTBoxModel() {
+    public JGemsPath getPathToTBoxModel() {
         return this.pathToTBoxModel;
     }
 
@@ -38,7 +38,7 @@ public final class TEntityContainer {
         return this.objectCategory;
     }
 
-    public JGPath getPathToTBoxShader() {
+    public JGemsPath getPathToTBoxShader() {
         return this.pathToTBoxShader;
     }
 

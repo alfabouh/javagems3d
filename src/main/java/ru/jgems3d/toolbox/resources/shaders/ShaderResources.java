@@ -1,6 +1,6 @@
 package ru.jgems3d.toolbox.resources.shaders;
 
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
@@ -14,15 +14,15 @@ public class ShaderResources extends ShadersLoader<TBoxShaderManager> {
     public TBoxShaderManager imgui;
 
     protected void initObjects(ResourceCache resourceCache) {
-        this.world_isometric_object = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_isometric_object"));
-        this.world_object = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_object"));
-        this.world_lines = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_lines"));
-        this.world_xyz = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/world_xyz"));
-        this.imgui = this.createShaderManager(resourceCache, new JGPath("/assets/toolbox/shaders/imgui"));
+        this.world_isometric_object = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_isometric_object"));
+        this.world_object = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_object"));
+        this.world_lines = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_lines"));
+        this.world_xyz = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_xyz"));
+        this.imgui = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/imgui"));
     }
 
     @Override
-    public TBoxShaderManager createShaderObject(JGPath shaderPath) {
+    public TBoxShaderManager createShaderObject(JGemsPath shaderPath) {
         return new TBoxShaderManager(new ShaderContainer(shaderPath));
     }
 }

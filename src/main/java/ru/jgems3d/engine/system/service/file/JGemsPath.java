@@ -1,21 +1,21 @@
-package ru.jgems3d.engine.system.service.misc;
+package ru.jgems3d.engine.system.service.file;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
-public final class JGPath {
-    private final String finalPath;
+public final class JGemsPath {
+    private final String fullPath;
 
-    public JGPath(JGPath path, String... other) {
-        this(path.getSPath(), other);
+    public JGemsPath(JGemsPath path, String... other) {
+        this(path.getFullPath(), other);
     }
 
-    public JGPath(String root, String... other) {
-        this.finalPath = this.concatenate(root, other);
+    public JGemsPath(String root, String... other) {
+        this.fullPath = this.concatenate(root, other);
     }
 
-    public JGPath(String path) {
-        this.finalPath = this.concatenate(path);
+    public JGemsPath(String path) {
+        this.fullPath = this.concatenate(path);
     }
 
     private String concatenate(String root, String... other) {
@@ -43,15 +43,15 @@ public final class JGPath {
     }
 
     public Path getPath() {
-        return FileSystems.getDefault().getPath(this.getSPath());
+        return FileSystems.getDefault().getPath(this.getFullPath());
     }
 
-    public String getSPath() {
-        return this.finalPath;
+    public String getFullPath() {
+        return this.fullPath;
     }
 
     @Override
     public String toString() {
-        return this.getSPath();
+        return this.getFullPath();
     }
 }

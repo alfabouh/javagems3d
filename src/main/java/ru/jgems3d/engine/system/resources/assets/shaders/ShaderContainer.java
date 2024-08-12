@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.assets.shaders;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +16,8 @@ public final class ShaderContainer {
     private final Shader computeShader;
     private final String id;
 
-    public ShaderContainer(JGPath shaderPath) {
-        this.id = shaderPath.getSPath();
+    public ShaderContainer(JGemsPath shaderPath) {
+        this.id = shaderPath.getFullPath();
         this.gUniformsFullSet = new HashSet<>();
         this.cUniformsFullSet = new HashSet<>();
         Shader geometricShader1 = null;

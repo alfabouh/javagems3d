@@ -6,7 +6,7 @@ import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.service.misc.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.JGemsHelper;
@@ -36,9 +36,9 @@ public class TBoxMapLoader implements IMapLoader {
         }
     }
 
-    public static MapObject readMapFromJar(JGPath pathToMap) {
+    public static MapObject readMapFromJar(JGemsPath pathToMap) {
         try {
-            return new MapObject(Graph.readFromFile(new JGPath(pathToMap, "nav.mesh")), TBoxMapReader.readMapFolderFromJAR(pathToMap));
+            return new MapObject(Graph.readFromFile(new JGemsPath(pathToMap, "nav.mesh")), TBoxMapReader.readMapFolderFromJAR(pathToMap));
         } catch (IOException | ClassNotFoundException e) {
             LoggingManager.showExceptionDialog("Failed to lad map!");
             JGemsHelper.getLogger().error("Failed to load map: " + pathToMap);

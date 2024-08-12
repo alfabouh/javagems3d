@@ -12,9 +12,10 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.core.EngineSystem;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNotFoundException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -133,7 +134,7 @@ public class JGems3D {
         String s1 = JGems3D.getGameTitle();
         String s2 = JGems3D.getGameVersion();
         String s3 = JGems3D.getGameDev();
-        return String.format("%s %s (%s)", s1, s2, s3);
+        return s1 + " " + s2 + " " + s3;
     }
 
     public static String date() {
@@ -145,14 +146,14 @@ public class JGems3D {
         return new File(JGems3D.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
     }
 
-    public static boolean checkFileInJar(JGPath path) {
-        return JGems3D.class.getResourceAsStream(path.getSPath()) != null;
+    public static boolean checkFileExistsInJar(JGemsPath path) {
+        return JGems3D.class.getResourceAsStream(path.getFullPath()) != null;
     }
 
-    public static InputStream loadFileFromJar(JGPath path) {
-        InputStream inputStream = JGems3D.class.getResourceAsStream(path.getSPath());
+    public static InputStream loadFileFromJar(JGemsPath path) throws JGemsNotFoundException {
+        InputStream inputStream = JGems3D.class.getResourceAsStream(path.getFullPath());
         if (inputStream == null) {
-            throw new JGemsNullException("Couldn't find: " + path);
+            throw new JGemsNotFoundException("Couldn't find: " + path);
         }
         return inputStream;
     }
@@ -329,7 +330,6 @@ public class JGems3D {
     public static class Paths {
         public static final String PARTICLES = "/assets/jgems/textures/particles/";
         public static final String CUBE_MAPS = "/assets/jgems/textures/cubemaps/";
-        public static final String MAP_CONFIGS = "/assets/jgems/map_configs/";
         public static final String TEXTURES = "/assets/jgems/textures/";
         public static final String MODELS = "/assets/jgems/models/";
         public static final String SHADERS = "/assets/jgems/shaders/";

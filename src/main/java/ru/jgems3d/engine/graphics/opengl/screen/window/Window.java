@@ -17,7 +17,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -29,7 +29,7 @@ public class Window implements IWindow {
     private long currentMonitor;
     private boolean isInFocus;
 
-    public Window(WindowProperties windowProperties, JGPath iconPath) {
+    public Window(WindowProperties windowProperties, JGemsPath iconPath) {
         this.isInFocus = false;
         this.window = GLFW.glfwCreateWindow(windowProperties.getWidth(), windowProperties.getHeight(), windowProperties.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
         this.windowProperties = windowProperties;
@@ -40,7 +40,7 @@ public class Window implements IWindow {
         }
     }
 
-    private void loadIcon(@NotNull JGPath iconPath) {
+    private void loadIcon(@NotNull JGemsPath iconPath) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             try (InputStream inputStream = JGems3D.loadFileFromJar(iconPath)) {
                 IntBuffer width = stack.mallocInt(1);

@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.service.json.JSONGraphDeserializer;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.logger.managers.LoggingManager;
 
 import java.io.*;
@@ -36,7 +36,7 @@ public class Graph implements Serializable {
         }
     }
 
-    public static Graph readFromFile(JGPath path) {
+    public static Graph readFromFile(JGemsPath path) {
         try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
             try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
                 GsonBuilder gsonBuilder = new GsonBuilder();

@@ -40,7 +40,7 @@ import ru.jgems3d.engine.system.resources.localisation.Lang;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
@@ -121,11 +121,11 @@ public abstract class JGemsHelper {
 
     // section Localisation
     public static abstract class LOCALISATION {
-        public static Lang createLocalisation(String langName, JGPath path) {
+        public static Lang createLocalisation(String langName, JGemsPath path) {
             return Localisation.createLocalisation(langName, path);
         }
 
-        public static void setLangLocalisationPath(Lang lang, JGPath path) {
+        public static void setLangLocalisationPath(Lang lang, JGemsPath path) {
             Localisation.setLangLocalisationPath(lang, path);
         }
 
@@ -401,7 +401,7 @@ public abstract class JGemsHelper {
 
         @SuppressWarnings("all")
         public static boolean createMeshCollisionData(MeshDataGroup meshDataGroup) {
-            if (meshDataGroup.getMeshDataContainer() == null) {
+            if (meshDataGroup != null && meshDataGroup.getMeshDataContainer() == null) {
                 meshDataGroup.setMeshDataContainer(new MeshCollisionData(meshDataGroup));
                 return true;
             }

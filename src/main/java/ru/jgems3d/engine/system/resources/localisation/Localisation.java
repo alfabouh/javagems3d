@@ -3,7 +3,7 @@ package ru.jgems3d.engine.system.resources.localisation;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class Localisation {
         this.currentlang = null;
     }
 
-    public static Lang createLocalisation(String langName, JGPath path) {
+    public static Lang createLocalisation(String langName, JGemsPath path) {
         if (Lang.checkLangInSet(langName)) {
             Lang l = Lang.getLangByName(langName);
             Localisation.setLangLocalisationPath(l, path);
@@ -38,7 +38,7 @@ public class Localisation {
         }
     }
 
-    public static void setLangLocalisationPath(Lang lang, JGPath path) {
+    public static void setLangLocalisationPath(Lang lang, JGemsPath path) {
         lang.setFileDirectoryPath(path);
         if (JGemsHelper.LOCALISATION.getLocalisation().getCurrentlang().equals(lang)) {
             JGemsHelper.LOCALISATION.getLocalisation().setLanguage(lang);
@@ -59,14 +59,14 @@ public class Localisation {
     private void readLangFileInTable(Lang lang) {
         LangMap langMap = new LangMap();
         try {
-            this.readStream(langMap, new JGPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
+            this.readStream(langMap, new JGemsPath(lang.getFileDirectoryPath(), (lang.getFullName().toLowerCase() + ".lang")));
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
         this.currentLangTable = langMap;
     }
 
-    private void readStream(LangMap langMap, JGPath filePath) throws IOException {
+    private void readStream(LangMap langMap, JGemsPath filePath) throws IOException {
         try (InputStream inputStream = JGems3D.loadFileFromJar(filePath)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
