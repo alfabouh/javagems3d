@@ -1,6 +1,6 @@
 package ru.jgems3d.engine.system.resources.assets.material.samples.packs;
 
-import ru.jgems3d.engine.system.service.file.JGemsPath;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 

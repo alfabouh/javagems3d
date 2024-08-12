@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.service.json.JSONGraphDeserializer;
-import ru.jgems3d.engine.system.service.file.JGemsPath;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.logger.managers.LoggingManager;
 
 import java.io.*;

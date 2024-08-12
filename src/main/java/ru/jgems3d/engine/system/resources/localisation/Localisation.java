@@ -3,7 +3,7 @@ package ru.jgems3d.engine.system.resources.localisation;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
-import ru.jgems3d.engine.system.service.file.JGemsPath;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -81,7 +81,7 @@ public class Localisation {
                 if (strings.length == 2) {
                     langMap.addPair(strings[0], strings[1]);
                 } else {
-                    JGemsHelper.getLogger().warn("Error in lang file " + filePath + " on line: " + l);
+                    JGemsHelper.getLogger().warn("Error in lang path " + filePath + " on line: " + l);
                 }
             }
             reader.close();

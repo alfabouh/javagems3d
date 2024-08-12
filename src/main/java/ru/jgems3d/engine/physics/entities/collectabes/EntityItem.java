@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.physics.entities.items;
+package ru.jgems3d.engine.physics.entities.collectabes;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;

@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.service.misc;
+package ru.jgems3d.engine.system.service.collections;
 
 public class Pair<K, V> {
 

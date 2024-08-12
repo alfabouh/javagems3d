@@ -1,9 +1,9 @@
-package ru.jgems3d.engine.physics.entities.enemies;
+package ru.jgems3d.engine.physics.world.ai.OLDAI.enemies;
 
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.physics.entities.enemies.ai.NavigationAI;
-import ru.jgems3d.engine.physics.entities.enemies.ai.NavigationToPlayerAI;
+import ru.jgems3d.engine.physics.world.ai.OLDAI.NavigationAI;
+import ru.jgems3d.engine.physics.world.ai.OLDAI.NavigationToPlayerAI;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 
 public class EntityManiac extends EntityWithAI {

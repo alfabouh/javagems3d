@@ -58,7 +58,7 @@ public class ToolBox {
             ToolBox.get().getScreen().startScreenRenderProcess();
         } catch (Exception e) {
             SystemLogging.get().getLogManager().exception(e);
-            JGemsLogging.showExceptionDialog("An service occurred inside the system. Open the logs folder to find out the details.");
+            JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.");
         } finally {
             ToolBox.get().getTBoxSettings().saveOptions();
         }

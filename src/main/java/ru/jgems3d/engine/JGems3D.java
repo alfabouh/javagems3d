@@ -13,9 +13,8 @@ import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNotFoundException;
-import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine.system.service.file.JGemsPath;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -100,14 +99,14 @@ public class JGems3D {
             JGemsHelper.getLogger().log(JGems3D.getGameString() + ": " + EngineSystem.ENG_NAME + " - " + EngineSystem.ENG_VER);
             JGemsHelper.getLogger().log("===============================================================");
             JGemsHelper.getLogger().log("Run args: " + Arrays.toString(JGems3D.get().getStartArgs()));
-            JGemsHelper.getLogger().log("Loading settings from file...");
+            JGemsHelper.getLogger().log("Loading settings from path...");
             JGems3D.get().getGameSettings().loadOptions();
             JGems3D.get().checkArgs(JGems3D.get().getStartArgs());
             JGems3D.get().engineSystem = new EngineSystem();
             JGems3D.get().getEngineSystem().startSystem();
         } catch (Exception e) {
             JGemsHelper.getLogger().exception(e);
-            JGemsLogging.showExceptionDialog("An service occurred inside the system. Open the logs folder for details.");
+            JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
         }
     }
 

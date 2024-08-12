@@ -2,7 +2,7 @@ package ru.jgems3d.engine_api.app.tbox;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.jgems3d.engine.system.service.misc.Pair;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
 

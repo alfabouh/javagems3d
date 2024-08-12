@@ -1,7 +1,7 @@
-package ru.jgems3d.engine.physics.entities.enemies;
+package ru.jgems3d.engine.physics.world.ai.OLDAI.enemies;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.physics.entities.enemies.ai.AI;
+import ru.jgems3d.engine.physics.world.ai.OLDAI.AI;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;

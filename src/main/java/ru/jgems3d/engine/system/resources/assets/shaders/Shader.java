@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.assets.shaders;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.file.JGemsPath;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 import java.io.BufferedReader;
 import java.io.IOException;

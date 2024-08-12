@@ -47,7 +47,7 @@ public abstract class LoggingManager {
             try {
                 Desktop.getDesktop().open(new File(JGems3D.getFilesFolder().toFile(), "/log/"));
             } catch (IOException ignored) {
-                SystemLogging.get().getLogManager().error("Failed to open logs file");
+                SystemLogging.get().getLogManager().error("Failed to open logs path");
             }
         });
 

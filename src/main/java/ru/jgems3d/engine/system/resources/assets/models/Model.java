@@ -71,7 +71,7 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
 
     public void clean() {
         if (this.getMeshDataGroup() == null) {
-            JGemsHelper.getLogger().warn("Trying to get data from NULL mesh!");
+            JGemsHelper.getLogger().warn("Trying to get collections from NULL mesh!");
             return;
         }
         this.getMeshDataGroup().clean();

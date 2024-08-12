@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.physics.entities.enemies.ai;
+package ru.jgems3d.engine.physics.world.ai.OLDAI;
 
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
@@ -72,7 +72,7 @@ public class NavigationToPlayerAI extends NavigationAI {
                 }
             } catch (Exception e) {
                 JGemsHelper.getLogger().exception(e);
-                JGemsLogging.showExceptionDialog("An service occurred inside the system. Open the logs folder for details.");
+                JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
             }
         });
         seekPathThread.setDaemon(true);

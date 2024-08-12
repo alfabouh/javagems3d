@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.physics.entities.enemies.ai;
+package ru.jgems3d.engine.physics.world.ai.OLDAI;
 
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
