@@ -18,7 +18,7 @@ public class DynamicMeshCollider implements IColliderConstructor {
     public CollisionShape createGeom(DynamicsSystem dynamicsSystem) {
         MeshCollisionData meshCollisionData = this.meshDataGroup.getMeshDataContainer(MeshCollisionData.class);
         if (meshCollisionData == null) {
-            throw new JGemsNullException("Couldn't get mesh collision data! " + this.meshDataGroup);
+            throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshDataGroup);
         }
         HullCollisionShape hullCollisionShape = new HullCollisionShape(meshCollisionData.getAllPositions());
         hullCollisionShape.setMargin(0.01f);

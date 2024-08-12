@@ -99,7 +99,7 @@ public class TBoxScene {
                 }
 
                 if (mapObjectProperties.getMapName() == null || mapObjectProperties.getMapName().isEmpty()) {
-                    throw new JGemsNullException("Invalid file provided");
+                    throw new JGemsNullException("Invalid path provided");
                 }
 
                 Set<SaveObject> saveObjects = TBoxMapContainer.getSaveObjectsSet();
@@ -129,8 +129,8 @@ public class TBoxScene {
                         }
                     }
                 } else {
-                    SystemLogging.get().getLogManager().error("Couldn't read objects file from map!");
-                    LoggingManager.showExceptionDialog("Couldn't read objects file from map!");
+                    SystemLogging.get().getLogManager().error("Couldn't read objects path from map!");
+                    LoggingManager.showExceptionDialog("Couldn't read objects path from map!");
                 }
 
                 this.getSceneContainer().setMapProperties(mapObjectProperties);

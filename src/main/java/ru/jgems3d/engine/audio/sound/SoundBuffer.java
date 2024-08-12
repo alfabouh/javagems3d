@@ -5,7 +5,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.SoundManager;
 import ru.jgems3d.engine.audio.sound.loaders.ogg.Ogg;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.file.JGemsPath;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 

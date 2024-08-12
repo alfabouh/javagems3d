@@ -2,7 +2,7 @@ package ru.jgems3d.toolbox.map_table;
 
 import org.joml.Vector3f;
 import ru.jgems3d.engine.api_bridge.APIContainer;
-import ru.jgems3d.engine.system.service.misc.Pair;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine_api.app.tbox.AppTBoxObjectsContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;

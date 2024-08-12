@@ -39,7 +39,7 @@ public abstract class Settings {
         try {
             if (!this.getOptionsFile().exists()) {
                 if (!this.getOptionsFile().mkdirs()) {
-                    throw new JGemsRuntimeException("Failed to create settings file!");
+                    throw new JGemsRuntimeException("Failed to create settings path!");
                 }
                 this.saveOptions();
                 return;

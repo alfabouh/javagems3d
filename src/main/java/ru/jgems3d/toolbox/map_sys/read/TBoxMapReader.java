@@ -1,7 +1,7 @@
 package ru.jgems3d.toolbox.map_sys.read;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.file.JGemsPath;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.toolbox.map_sys.SerializeHelper;
 import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
@@ -31,7 +31,7 @@ public class TBoxMapReader {
         TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
         TBoxMapContainer.setSaveObjectSet(saveObjectSet);
 
-        SystemLogging.get().getLogManager().log("Read map file: " + file);
+        SystemLogging.get().getLogManager().log("Read map path: " + file);
         return TBoxMapContainer;
     }
 
@@ -52,7 +52,7 @@ public class TBoxMapReader {
         TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
         TBoxMapContainer.setSaveObjectSet(saveObjectSet);
 
-        SystemLogging.get().getLogManager().log("Read map file(from jar): " + pathToMap);
+        SystemLogging.get().getLogManager().log("Read map path(from jar): " + pathToMap);
         return TBoxMapContainer;
     }
 }

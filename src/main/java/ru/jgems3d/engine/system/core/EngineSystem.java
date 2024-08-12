@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.system.service.misc.Pair;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
@@ -242,7 +242,7 @@ public class EngineSystem implements IEngine {
                     badExit = true;
                 } finally {
                     if (badExit) {
-                        JGemsLogging.showExceptionDialog("An service occurred inside the system. Open the logs folder to find out the details.");
+                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.");
                     }
                 }
             }
