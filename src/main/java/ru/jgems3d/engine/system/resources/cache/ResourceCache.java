@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.cache;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,8 +41,8 @@ public class ResourceCache {
         return this.cache;
     }
 
-    public void addObjectInBuffer(JGPath key, ICached object) {
-        this.addObjectInBuffer(key.getSPath(), object);
+    public void addObjectInBuffer(JGemsPath key, ICached object) {
+        this.addObjectInBuffer(key.getFullPath(), object);
     }
 
     public void addObjectInBuffer(String key, ICached object) {
@@ -62,8 +62,8 @@ public class ResourceCache {
         return this.cache.values().stream().filter(tClass::isInstance).map(e -> (T) e).collect(Collectors.toList());
     }
 
-    public ICached getCachedObject(JGPath key) {
-        return this.getCachedObject(key.getSPath());
+    public ICached getCachedObject(JGemsPath key) {
+        return this.getCachedObject(key.getFullPath());
     }
 
     public ICached getCachedObject(String key) {
@@ -75,8 +75,8 @@ public class ResourceCache {
         return cached;
     }
 
-    public boolean checkObjectInCache(JGPath key) {
-        return this.checkObjectInCache(key.getSPath());
+    public boolean checkObjectInCache(JGemsPath key) {
+        return this.checkObjectInCache(key.getFullPath());
     }
 
     @SuppressWarnings("all")

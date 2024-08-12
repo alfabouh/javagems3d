@@ -28,21 +28,18 @@ public class GuiFont {
     public GuiFont(ResourceCache resourceCache, Font font, FontCode fontCode) {
         this.fontCode = fontCode;
         try {
-            this.initFontTexture(font);
+            this.initFontTexture(resourceCache, font);
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
         GuiFont.allCreatedFonts.add(this);
-        if (resourceCache != null) {
-            resourceCache.addObjectInBuffer("font" + GuiFont.globalFonts++, this.getTexture());
-        }
     }
 
     public GuiFont(Font font, FontCode fontCode) {
         this(null, font, fontCode);
     }
 
-    private void initFontTexture(Font font) throws IOException {
+    private void initFontTexture(ResourceCache resourceCache, Font font) throws IOException {
         BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(font);
@@ -74,7 +71,7 @@ public class GuiFont {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
-        this.texture = TextureSample.createTexture("font", inputStream, new TextureSample.Params(false, false, false, false));
+        this.texture = TextureSample.createTexture(resourceCache, "font" + GuiFont.globalFonts++, inputStream, new TextureSample.Params(false, false, false, false));
         inputStream.close();
     }
 

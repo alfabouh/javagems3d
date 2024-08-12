@@ -5,7 +5,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.SoundManager;
 import ru.jgems3d.engine.audio.sound.loaders.ogg.Ogg;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
@@ -14,14 +14,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class SoundBuffer implements ICached {
-    private final JGPath soundPath;
+    private final JGemsPath soundPath;
     private int buffer;
 
-    public SoundBuffer(JGPath soundPath) {
+    public SoundBuffer(JGemsPath soundPath) {
         this.soundPath = soundPath;
     }
 
-    public static SoundBuffer createSoundBuffer(ResourceCache resourceCache, JGPath soundPath, int soundFormat) {
+    public static SoundBuffer createSoundBuffer(ResourceCache resourceCache, JGemsPath soundPath, int soundFormat) {
         if (resourceCache.checkObjectInCache(soundPath)) {
             return (SoundBuffer) resourceCache.getCachedObject(soundPath);
         }
@@ -65,7 +65,7 @@ public class SoundBuffer implements ICached {
         return this.buffer;
     }
 
-    public JGPath getSoundPath() {
+    public JGemsPath getSoundPath() {
         return this.soundPath;
     }
 

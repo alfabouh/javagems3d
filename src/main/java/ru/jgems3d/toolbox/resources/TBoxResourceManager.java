@@ -1,7 +1,7 @@
 package ru.jgems3d.toolbox.resources;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.jgems3d.engine.system.resources.cache.ICached;
@@ -25,7 +25,7 @@ public class TBoxResourceManager {
         this.modelResources = new ModelResources();
     }
 
-    public TBoxShaderManager createShaderManager(JGPath shaderPath) {
+    public TBoxShaderManager createShaderManager(JGemsPath shaderPath) {
         if (ToolBox.get().getResourceManager().getCache().checkObjectInCache(shaderPath)) {
             JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists!");
             return (TBoxShaderManager) this.getCache().getCachedObject(shaderPath);
@@ -44,7 +44,7 @@ public class TBoxResourceManager {
         return TextureSample.createTexture(false, ToolBox.get().getScreen().getResourceManager().getCache(), fullPath);
     }
 
-    public static MeshDataGroup createModel(JGPath modelPath) {
+    public static MeshDataGroup createModel(JGemsPath modelPath) {
         return SimpleModelLoader.createMesh(ToolBox.get().getScreen().getResourceManager().getCache(), modelPath);
     }
 

@@ -1,7 +1,7 @@
 package ru.jgems3d.engine.system.resources.assets.shaders;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,11 +16,11 @@ public class Shader {
     public static final String VERSION = "#version 460 core\n\n";
     private final Map<String, Set<String>> structs;
     private final List<Uniform> uniforms;
-    private final JGPath pathToShader;
+    private final JGemsPath pathToShader;
     private final ShaderType shaderType;
     private String shaderText;
 
-    public Shader(ShaderType shaderType, JGPath pathToShader) {
+    public Shader(ShaderType shaderType, JGemsPath pathToShader) {
         this.shaderType = shaderType;
         this.pathToShader = pathToShader;
         this.uniforms = new ArrayList<>();
@@ -28,8 +28,8 @@ public class Shader {
         this.shaderText = "";
     }
 
-    public static boolean checkIfShaderExistsInJar(JGPath directoryPath, ShaderType shaderType) {
-        return JGems3D.checkFileInJar(new JGPath(directoryPath, shaderType.getFile()));
+    public static boolean checkIfShaderExistsInJar(JGemsPath directoryPath, ShaderType shaderType) {
+        return JGems3D.checkFileExistsInJar(new JGemsPath(directoryPath, shaderType.getFile()));
     }
 
     public Map<String, Set<String>> getStructs() {
@@ -46,8 +46,8 @@ public class Shader {
         this.uniforms.clear();
     }
 
-    private void loadStructs(JGPath shaderPath) {
-        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
+    private void loadStructs(JGemsPath shaderPath) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(shaderPath, this.getShaderType().getFile()))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             String structName = null;
@@ -85,9 +85,9 @@ public class Shader {
         }
     }
 
-    private String loadStream(JGPath shaderPath) {
+    private String loadStream(JGemsPath shaderPath) {
         StringBuilder shaderSource = new StringBuilder();
-        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGPath(shaderPath, this.getShaderType().getFile()))) {
+        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(shaderPath, this.getShaderType().getFile()))) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
 
@@ -143,7 +143,7 @@ public class Shader {
         return this.shaderText;
     }
 
-    public JGPath getShaderPath() {
+    public JGemsPath getShaderPath() {
         return this.pathToShader;
     }
 

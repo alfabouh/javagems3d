@@ -7,11 +7,11 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
-import ru.jgems3d.engine.system.resources.assets.utils.ModelLoader;
+import ru.jgems3d.engine.system.resources.assets.models.loader.ModelLoader;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
@@ -28,11 +28,11 @@ public class GameResources {
         this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsLoader) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
     }
 
-    public SoundBuffer createSoundBuffer(JGPath soundPath, int soundFormat) {
+    public SoundBuffer createSoundBuffer(JGemsPath soundPath, int soundFormat) {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshDataGroup createMesh(JGPath modelPath, boolean constructCollisionMesh) {
+    public MeshDataGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh) {
         MeshDataGroup meshDataGroup = this.createMesh(modelPath);
         if (constructCollisionMesh) {
             JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
@@ -40,7 +40,7 @@ public class GameResources {
         return meshDataGroup;
     }
 
-    public MeshDataGroup createMesh(JGPath modelPath) {
+    public MeshDataGroup createMesh(JGemsPath modelPath) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
         MeshDataGroup meshDataGroup = ModelLoader.createMesh(this, modelPath);
         if (meshDataGroup == null) {
@@ -49,40 +49,37 @@ public class GameResources {
         return meshDataGroup;
     }
 
-    public TextureSample createTextureOutsideJar(JGPath path, TextureSample.Params params) {
-        TextureSample textureSample = TextureSample.createTextureOutsideJar(this.getResourceCache(), path, params);
-        if (textureSample == null || !textureSample.isValid()) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + path);
-        }
-        return textureSample;
-    }
-
-    public TextureSample createTexture(JGPath path, TextureSample.Params params) {
+    public TextureSample createTexture(JGemsPath path, TextureSample.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
         try {
             return TextureSample.createTexture(this.getResourceCache(), path, params);
         } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + path);
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + path);
+            throw e;
         }
-        return null;
     }
 
-    public TextureSample createTextureOrDefault(TextureSample defaultT, JGPath path, TextureSample.Params params) {
+    public TextureSample createTextureOrDefault(TextureSample defaultT, JGemsPath path, TextureSample.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
         try {
             return TextureSample.createTexture(this.getResourceCache(), path, params);
-        } catch (JGemsException e) {
-            e.printStackTrace(System.err);
+        } catch (Exception e) {
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + path);
             return defaultT;
         }
     }
 
     public TextureSample createTexture(String name, Vector2i size, ByteBuffer buffer, TextureSample.Params params) {
-        return TextureSample.createTexture(this.getResourceCache(), name, size, buffer, params);
+        try {
+            return TextureSample.createTexture(this.getResourceCache(), name, size, buffer, params);
+        } catch (Exception e) {
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
+            throw e;
+        }
     }
 
     @SuppressWarnings("all")
-    public <S extends ICached> S getResource(JGPath key) {
+    public <S extends ICached> S getResource(JGemsPath key) {
         return (S) this.getResourceCache().getCachedObject(key);
     }
 

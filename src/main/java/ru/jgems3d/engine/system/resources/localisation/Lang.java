@@ -2,7 +2,7 @@ package ru.jgems3d.engine.system.resources.localisation;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,16 +11,16 @@ import java.util.Set;
 
 public final class Lang {
     private static final Map<String, Lang> values = new HashMap<>();
-    public static Lang English = new Lang("English", new JGPath(JGems3D.Paths.LANG));
+    public static Lang English = new Lang("English", new JGemsPath(JGems3D.Paths.LANG));
 
     static {
         Lang.values.put(English.getFullName(), Lang.English);
     }
 
     private final String fullName;
-    private JGPath fileDirectoryPath;
+    private JGemsPath fileDirectoryPath;
 
-    private Lang(String fullName, JGPath fileDirectoryPath) {
+    private Lang(String fullName, JGemsPath fileDirectoryPath) {
         this.fullName = fullName;
         this.fileDirectoryPath = fileDirectoryPath;
     }
@@ -33,7 +33,7 @@ public final class Lang {
         return Lang.English;
     }
 
-    public static Lang createLang(String fullName, JGPath filePath) {
+    public static Lang createLang(String fullName, JGemsPath filePath) {
         Lang lang = new Lang(fullName, filePath);
         Lang.values.put(fullName, lang);
         JGemsHelper.getLogger().log("Created lang: " + fullName);
@@ -54,7 +54,7 @@ public final class Lang {
         return lang == null ? Lang.defaultLang() : lang;
     }
 
-    public static void setFilePath(Lang lang, JGPath path) {
+    public static void setFilePath(Lang lang, JGemsPath path) {
         Lang lang1 = Lang.values.get(lang.getFullName());
         if (lang1 == null) {
             JGemsHelper.getLogger().warn("Couldn't find language " + lang + " in lang-list!");
@@ -67,11 +67,11 @@ public final class Lang {
         return this.fullName;
     }
 
-    public void setFileDirectoryPath(JGPath fileDirectoryPath) {
+    public void setFileDirectoryPath(JGemsPath fileDirectoryPath) {
         this.fileDirectoryPath = fileDirectoryPath;
     }
 
-    public JGPath getFileDirectoryPath() {
+    public JGemsPath getFileDirectoryPath() {
         return this.fileDirectoryPath;
     }
 

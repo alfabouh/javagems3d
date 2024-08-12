@@ -6,13 +6,13 @@ import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
-import ru.jgems3d.engine.system.resources.assets.utils.ModelLoader;
+import ru.jgems3d.engine.system.resources.assets.models.loader.ModelLoader;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.toolbox.resources.TBoxResourceManager;
@@ -25,15 +25,15 @@ import java.util.Objects;
 
 public class SimpleModelLoader {
     @SuppressWarnings("all")
-    private static MeshDataGroup loadMesh(JGPath modelPath) {
+    private static MeshDataGroup loadMesh(JGemsPath modelPath) {
         SystemLogging.get().getLogManager().log("Loading model " + modelPath);
 
         final int FLAGS = Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
         MeshDataGroup meshDataGroup = new MeshDataGroup();
 
-        if (JGems3D.checkFileInJar(modelPath)) {
+        if (JGems3D.checkFileExistsInJar(modelPath)) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
-                try (AIScene scene = Assimp.aiImportFileEx(modelPath.getSPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoader.AI_FILE_OPEN).CloseProc(ModelLoader.AI_FILE_CLOSE))) {
+                try (AIScene scene = Assimp.aiImportFileEx(modelPath.getFullPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoader.AI_FILE_OPEN).CloseProc(ModelLoader.AI_FILE_CLOSE))) {
                     if (scene != null) {
                         int totalMaterials = scene.mNumMaterials();
                         List<Material> materialList = new ArrayList<>();
@@ -72,7 +72,7 @@ public class SimpleModelLoader {
     }
 
     @SuppressWarnings("all")
-    public static MeshDataGroup createMesh(ResourceCache resourceCache, JGPath modelPath) {
+    public static MeshDataGroup createMesh(ResourceCache resourceCache, JGemsPath modelPath) {
         if (resourceCache.checkObjectInCache(modelPath)) {
             return (MeshDataGroup) resourceCache.getCachedObject(modelPath);
         }

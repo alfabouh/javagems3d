@@ -1,17 +1,17 @@
 package ru.jgems3d.engine.system.resources.assets.loaders.base;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
 public abstract class ShadersLoader <T extends ShaderManager> {
     protected abstract void initObjects(ResourceCache resourceCache);
-    protected abstract T createShaderObject(JGPath shaderPath);
+    protected abstract T createShaderObject(JGemsPath shaderPath);
 
     @SuppressWarnings("unchecked")
-    public T createShaderManager(ResourceCache resourceCache, JGPath shaderPath) {
+    public T createShaderManager(ResourceCache resourceCache, JGemsPath shaderPath) {
         if (resourceCache.checkObjectInCache(shaderPath)) {
             JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists!");
             return (T) resourceCache.getCachedObject(shaderPath);

@@ -12,7 +12,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
@@ -28,102 +28,87 @@ public class TextureSample implements IImageSample {
     private int textureId;
     private final Params params;
 
-    private TextureSample(String name, Vector2i size, ByteBuffer buffer, Params params) {
-        this.name = name;
-        this.size = size;
-        this.imageBuffer = buffer;
 
-        this.params = params;
-
-        if (this.imageBuffer != null) {
-            this.createTexture(params);
-        }
-    }
-
-    private TextureSample(boolean inJar, JGPath fullPath, Params params) {
-        this.name = fullPath.getSPath();
-        this.params = params;
-        JGemsHelper.getLogger().log("Loading " + this.getName());
-        if (inJar) {
-            try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
-                this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
-                if (this.imageBuffer != null) {
-                    this.createTexture(params);
-                }
-            } catch (IOException e) {
-                this.imageBuffer = null;
-                throw new JGemsIOException(e);
+    public static TextureSample createTexture(ResourceCache resourceCache, JGemsPath fullPath, Params params) {
+        TextureSample textureSample = new TextureSample(fullPath, params);
+        if (resourceCache != null) {
+            if (resourceCache.checkObjectInCache(fullPath)) {
+                return (TextureSample) resourceCache.getCachedObject(fullPath);
             }
-        } else {
-            this.imageBuffer = this.readTextureOutsideJar(this.getName());
-            if (this.imageBuffer != null) {
-                this.createTexture(params);
+            if (textureSample.isValid()) {
+                resourceCache.addObjectInBuffer(fullPath, textureSample);
+            } else {
+                throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
             }
-        }
-    }
-
-    private TextureSample(String id, InputStream inputStream, Params params) {
-        this.name = id + "_inputStream";
-        this.params = params;
-        if (inputStream == null) {
-            JGemsHelper.getLogger().warn("Error, while loading texture " + id + " InputStream is NULL");
-            this.imageBuffer = null;
-        } else {
-            try {
-                this.imageBuffer = this.readTextureFromMemory(id, inputStream);
-            } catch (IOException e) {
-                throw new JGemsIOException(e);
-            }
-            if (this.imageBuffer != null) {
-                this.createTexture(params);
-            }
-        }
-    }
-
-    public static TextureSample createTextureOutsideJar(ResourceCache resourceCache, JGPath fullPath, Params params) {
-        if (resourceCache.checkObjectInCache(fullPath)) {
-            return (TextureSample) resourceCache.getCachedObject(fullPath);
-        }
-        TextureSample textureSample = new TextureSample(false, fullPath, params);
-        if (textureSample.isValid()) {
-            resourceCache.addObjectInBuffer(fullPath, textureSample);
-        } else {
-            throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
-        }
-        return textureSample;
-    }
-
-    public static TextureSample createTexture(ResourceCache resourceCache, JGPath fullPath, Params params) {
-        if (resourceCache.checkObjectInCache(fullPath)) {
-            return (TextureSample) resourceCache.getCachedObject(fullPath);
-        }
-        TextureSample textureSample = new TextureSample(true, fullPath, params);
-        if (textureSample.isValid()) {
-            resourceCache.addObjectInBuffer(fullPath, textureSample);
-        } else {
-            throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
         }
         return textureSample;
     }
 
     public static TextureSample createTexture(ResourceCache resourceCache, String name, Vector2i size, ByteBuffer buffer, Params params) {
-        if (resourceCache.checkObjectInCache(name)) {
-            return (TextureSample) resourceCache.getCachedObject(name);
-        }
         TextureSample textureSample = new TextureSample(name, size, buffer, params);
-        if (textureSample.isValid()) {
-            resourceCache.addObjectInBuffer(name, textureSample);
-        } else {
-            throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
+        if (resourceCache != null) {
+            if (resourceCache.checkObjectInCache(buffer.toString())) {
+                return (TextureSample) resourceCache.getCachedObject(buffer.toString());
+            }
+            if (textureSample.isValid()) {
+                resourceCache.addObjectInBuffer(buffer.toString(), textureSample);
+            } else {
+                throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
+            }
         }
         return textureSample;
     }
 
-    public static TextureSample createTexture(String id, InputStream inputStream, Params params) {
-        return new TextureSample(id, inputStream, params);
+    public static TextureSample createTexture(ResourceCache resourceCache, String name, InputStream inputStream, Params params) {
+        TextureSample textureSample = new TextureSample(name, inputStream, params);
+        if (resourceCache != null) {
+            if (resourceCache.checkObjectInCache(name)) {
+                return (TextureSample) resourceCache.getCachedObject(name);
+            }
+            if (textureSample.isValid()) {
+                resourceCache.addObjectInBuffer(name, textureSample);
+            } else {
+                throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
+            }
+        }
+        return textureSample;
     }
 
-    private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) throws IOException {
+
+    private TextureSample(String name, Vector2i size, ByteBuffer buffer, Params params) {
+        this.name = name;
+        this.size = size;
+        this.imageBuffer = buffer;
+        this.params = params;
+        this.createTexture(params);
+    }
+
+    private TextureSample(JGemsPath fullPath, Params params) {
+        this.name = fullPath.getFullPath();
+        this.params = params;
+        JGemsHelper.getLogger().log("Loading " + this.getName());
+        try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
+            this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
+            this.createTexture(params);
+        } catch (JGemsIOException | IOException e) {
+            this.imageBuffer = null;
+            throw new JGemsIOException(e);
+        }
+    }
+
+    private TextureSample(String name, InputStream inputStream, Params params) {
+        this.name = name;
+        this.params = params;
+        try {
+            this.imageBuffer = this.readTextureFromMemory(name, inputStream);
+            this.createTexture(params);
+        } catch (JGemsIOException e) {
+            this.imageBuffer = null;
+            throw new JGemsIOException(e);
+        }
+    }
+
+    private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) throws JGemsIOException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);
@@ -136,32 +121,14 @@ public class TextureSample implements IImageSample {
 
             ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
             if (imageBuffer == null) {
-                JGemsHelper.getLogger().warn("Couldn't create texture " + name);
-                JGemsHelper.getLogger().bigWarn(STBImage.stbi_failure_reason());
+                throw new JGemsIOException("Couldn't create texture " + name + ". \n" + STBImage.stbi_failure_reason());
             } else {
                 this.size = new Vector2i(width.get(), height.get());
                 return imageBuffer;
             }
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
         }
-        return null;
-    }
-
-    private ByteBuffer readTextureOutsideJar(String path) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer width = stack.mallocInt(1);
-            IntBuffer height = stack.mallocInt(1);
-            IntBuffer channels = stack.mallocInt(1);
-
-            ByteBuffer imageBuffer = STBImage.stbi_load(path, width, height, channels, STBImage.STBI_rgb_alpha);
-            if (imageBuffer == null) {
-                JGemsHelper.getLogger().warn("Couldn't create texture " + path);
-                JGemsHelper.getLogger().bigWarn(STBImage.stbi_failure_reason());
-            } else {
-                this.size = new Vector2i(width.get(), height.get());
-                return imageBuffer;
-            }
-        }
-        return null;
     }
 
     private void createTexture(Params params) {

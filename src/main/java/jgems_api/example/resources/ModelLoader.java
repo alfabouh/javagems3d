@@ -2,7 +2,7 @@ package jgems_api.example.resources;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
@@ -13,10 +13,10 @@ public class ModelLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        this.ground2 = this.createMesh(gameResources, new JGPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true);
+        this.ground2 = this.createMesh(gameResources, new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true);
     }
 
-    private MeshDataGroup createMesh(GameResources gameResources, JGPath path, boolean constructCollisionMesh) {
+    private MeshDataGroup createMesh(GameResources gameResources, JGemsPath path, boolean constructCollisionMesh) {
         MeshDataGroup meshDataGroup = gameResources.createMesh(path);
         if (constructCollisionMesh) {
             JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);

@@ -17,7 +17,7 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRen
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.service.misc.JGPath;
+import ru.jgems3d.engine.system.service.file.JGemsPath;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.SkyProp;
@@ -25,7 +25,7 @@ import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.SkyProp;
 public class TestMap implements IMapLoader {
     @Override
     public void createMap(GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshDataGroup meshDataGroup = localResources.createMesh(new JGPath(JGems3D.Paths.MODELS, "sponza/sponza.obj"));
+        MeshDataGroup meshDataGroup = localResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "sponza/sponza.obj"));
         sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshDataGroup),
                 new MeshRenderData(new MeshRenderAttributes().setAlphaDiscard(0.7f), JGemsResourceManager.globalShaderAssets.world_gbuffer)));
     }
@@ -39,7 +39,7 @@ public class TestMap implements IMapLoader {
     public @NotNull MapInfo getLevelInfo() {
         SkyProp skyProp = new SkyProp();
         skyProp.setSunPos(new Vector3f(0.35f, 1.0f, 0.125f));
-        skyProp.setSunColor(new Vector3f(1.0f, 0.97f, 0.96f));
+        skyProp.setSunColor(new Vector3f(1.0f, 0.95f, 0.91f));
 
         FogProp fogProp = new FogProp();
         return new MapInfo(new MapProperties("sponza", skyProp, fogProp));
