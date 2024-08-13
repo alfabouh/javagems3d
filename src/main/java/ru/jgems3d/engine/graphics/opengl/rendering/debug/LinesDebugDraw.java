@@ -63,7 +63,7 @@ public class LinesDebugDraw {
     public void constructNavMeshFloatBuffer(Graph graph) {
         List<Float> points = new ArrayList<>();
 
-        for (GraphVertex vertex : graph.getGraphContainer().keySet()) {
+        for (GraphVertex vertex : graph.getGraph().keySet()) {
             for (GraphEdge edge : graph.getNeighbors(vertex)) {
                 points.add(vertex.getPosition().x);
                 points.add(vertex.getPosition().y + 0.1f);

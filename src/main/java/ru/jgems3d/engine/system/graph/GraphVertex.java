@@ -64,7 +64,7 @@ public class GraphVertex implements Serializable {
 
     @Override
     public int hashCode() {
-        return this.getPosition().hashCode();
+        return this.toString().hashCode();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class GraphVertex implements Serializable {
             return false;
         }
         GraphVertex vertex = (GraphVertex) o;
-        return vertex.getPosition().equals(this.getPosition());
+        return vertex.toString().equals(this.toString());
     }
 
     public String toString() {

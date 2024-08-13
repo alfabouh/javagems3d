@@ -31,6 +31,7 @@ public abstract class AIBasedWorldItem extends WorldItem implements IWorldTicked
     @Override
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
+        this.init(this);
         this.getEntityAIList().forEach(e -> e.onStartAI(this));
     }
 

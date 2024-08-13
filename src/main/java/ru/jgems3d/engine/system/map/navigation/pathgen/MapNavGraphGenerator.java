@@ -118,7 +118,7 @@ public class MapNavGraphGenerator {
     }
 
     private GraphVertex checkNeighbors(GraphVertex vertex) {
-        for (GraphVertex v : this.getGraph().getGraphContainer().keySet()) {
+        for (GraphVertex v : this.getGraph().getGraph().keySet()) {
             if (v != vertex && v.distanceTo(vertex) <= 0.01d) {
                 return v;
             }
