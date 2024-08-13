@@ -95,6 +95,7 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
     }
 
     public void clearPath() {
+        this.destination = null;
         this.path = null;
     }
 
