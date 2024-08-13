@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.service.json.JSONGraphDeserializer;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.logger.managers.LoggingManager;
@@ -28,7 +29,7 @@ public class Graph implements Serializable {
     public static void saveInFile(Graph graph){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(graph);
-        try (FileWriter fileWriter = new FileWriter("nav.nav")) {
+        try (FileWriter fileWriter = new FileWriter("nav.mesh")) {
             fileWriter.write(json);
         } catch (IOException e) {
             e.printStackTrace(System.err);
@@ -37,6 +38,7 @@ public class Graph implements Serializable {
     }
 
     public static Graph readFromFile(JGemsPath path) {
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Reading NavMesh...");
         try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
             try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
                 GsonBuilder gsonBuilder = new GsonBuilder();

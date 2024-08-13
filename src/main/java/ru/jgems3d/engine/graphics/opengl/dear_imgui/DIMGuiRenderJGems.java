@@ -41,10 +41,6 @@ public class DIMGuiRenderJGems {
     private DIMGuiMesh dearImGuiMesh;
     private TextureSample textureSample;
     private GLFWKeyCallback prevKeyCallback;
-    private boolean fullBright;
-    private boolean debugLines;
-    private boolean freeCam;
-    private boolean psx = true;
 
     public DIMGuiRenderJGems(Window window, ResourceCache resourceCache) {
         this.shaderManager = JGemsResourceManager.globalShaderAssets.imgui;
@@ -270,26 +266,24 @@ public class DIMGuiRenderJGems {
             }
         }
 
+        boolean flag = JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera;
         if (ImGui.collapsingHeader("Util Checkboxes")) {
-            if (ImGui.checkbox("FreeCam", this.freeCam)) {
-                this.freeCam = !this.freeCam;
-                if (this.freeCam) {
-                    JGems3D.get().getScreen().getScene().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
-                    JGems3D.get().getScreen().getControllerDispatcher().detachController();
+            if (ImGui.checkbox("FreeCam", flag)) {
+                if (!flag) {
+                    JGemsHelper.CAMERA.enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
+                    JGemsHelper.CONTROLLER.detachController();
                 } else {
-                    JGems3D.get().getScreen().getScene().enableAttachedCamera((WorldItem) JGems3D.get().getPlayer());
-                    JGems3D.get().getScreen().getControllerDispatcher().attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
+                    JGemsHelper.CAMERA.enableAttachedCamera(JGems3D.get().getPlayer());
+                    JGemsHelper.CONTROLLER.attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
                 }
             }
 
-            if (ImGui.checkbox("Full Bright", this.fullBright)) {
-                this.fullBright = !this.fullBright;
-                GlobalRenderDebugConstants.FULL_BRIGHT = this.fullBright;
+            if (ImGui.checkbox("Full Bright", GlobalRenderDebugConstants.FULL_BRIGHT)) {
+                GlobalRenderDebugConstants.FULL_BRIGHT = !GlobalRenderDebugConstants.FULL_BRIGHT;
             }
 
-            if (ImGui.checkbox("Show Debug Lines", this.debugLines)) {
-                this.debugLines = !this.debugLines;
-                GlobalRenderDebugConstants.SHOW_DEBUG_LINES = this.debugLines;
+            if (ImGui.checkbox("Show Debug Lines", GlobalRenderDebugConstants.SHOW_DEBUG_LINES)) {
+                GlobalRenderDebugConstants.SHOW_DEBUG_LINES = !GlobalRenderDebugConstants.SHOW_DEBUG_LINES;
             }
         }
 

@@ -7,9 +7,9 @@ import java.io.Serializable;
 public class GraphVertex implements Serializable {
     private static final long serialVersionUID = -228L;
     private final Vector3f position;
-    private float g;
-    private float h;
-    private float f;
+    private transient float g;
+    private transient float h;
+    private transient float f;
     private GraphVertex parent;
 
     public GraphVertex(Vector3f position) {
