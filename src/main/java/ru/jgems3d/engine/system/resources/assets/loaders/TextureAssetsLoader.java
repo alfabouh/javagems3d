@@ -44,17 +44,17 @@ public class TextureAssetsLoader implements IAssetsLoader {
         this.standardFont = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
         this.buttonFont = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
 
-        this.zippo_inventory = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "collectabes/zippo/zippo_inventory.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo_inventory = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo_inventory.png"), new TextureSample.Params(false, false, false, false));
 
         this.waterNormals = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water_n.png"), new TextureSample.Params(true));
         this.waterTexture = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water.png"), new TextureSample.Params(true));
         this.crosshair = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/crosshair.png"), new TextureSample.Params(false, false, false, false));
         this.gui1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/gui1.png"), new TextureSample.Params(false, false, false, false));
-        this.zippo1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "collectabes/zippo/zippo1.png"), new TextureSample.Params(false, false, false, false));
-        this.zippo_world = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "collectabes/zippo/zippo_world.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo_world = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo_world.png"), new TextureSample.Params(false, false, false, false));
 
-        this.zippo1_emission = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "collectabes/zippo/zippo1_emission.png"), new TextureSample.Params(false, false, false, false));
-        this.zippo2 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "collectabes/zippo/zippo2.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo1_emission = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1_emission.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo2 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo2.png"), new TextureSample.Params(false, false, false, false));
         this.particleTexturePack = new ParticleTexturePack(new JGemsPath(JGems3D.Paths.PARTICLES, "flame"), ".png", 4, 0.25f);
 
         this.defaultSkyboxCubeMap = JGemsResourceManager.createSkyBoxCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "default"), ".png");

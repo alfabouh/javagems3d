@@ -56,6 +56,10 @@ public class LinesDebugDraw {
         }
     }
 
+    public void destroyNavMeshFloatBuffer() {
+        this.navMeshFloatBuffer.clear();
+    }
+
     public void constructNavMeshFloatBuffer(Graph graph) {
         List<Float> points = new ArrayList<>();
 

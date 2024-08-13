@@ -63,7 +63,9 @@ public class GameResources {
         try {
             return TextureSample.createTexture(this.getResourceCache(), path, params);
         } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + path);
+            String s = "Couldn't load: " + path + ". Default texture returned!";
+            JGemsHelper.getLogger().error(s);
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, s);
             return defaultT;
         }
     }

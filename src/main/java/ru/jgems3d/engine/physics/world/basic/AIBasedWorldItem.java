@@ -2,7 +2,7 @@ package ru.jgems3d.engine.physics.world.basic;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.physics.world.ai.EntityAI;
+import ru.jgems3d.engine.physics.world.ai.IEntityAI;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 
@@ -11,11 +11,11 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class AIBasedWorldItem extends WorldItem implements IWorldTicked {
-    private final List<EntityAI> entityAIList;
+    private final List<IEntityAI<? extends WorldItem>> entityAIs;
 
     public AIBasedWorldItem(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scaling, String itemName) {
         super(world, pos, rot, scaling, itemName);
-        this.entityAIList = new ArrayList<>();
+        this.entityAIs = new ArrayList<>();
     }
 
     public AIBasedWorldItem(PhysicsWorld world, Vector3f pos, Vector3f rot, String itemName) {
@@ -42,19 +42,19 @@ public abstract class AIBasedWorldItem extends WorldItem implements IWorldTicked
 
     @Override
     public void onUpdate(IWorld iWorld) {
-        for (EntityAI entityAI : this.getEntityAIList()) {
-            if (entityAI.getState() == EntityAI.State.ENABLED) {
+        for (IEntityAI<? extends WorldItem> entityAI : this.getEntityAIList()) {
+            if (entityAI.getState() == IEntityAI.State.ENABLED) {
                 entityAI.onUpdateAI(this);
             }
         }
     }
 
-    public void addNewAI(EntityAI ai) {
+    public void addNewAI(IEntityAI<? extends WorldItem> ai) {
         this.getEntityAIList().add(ai);
-        this.getEntityAIList().sort(Comparator.comparingInt(EntityAI::priority).thenComparingInt(System::identityHashCode));
+        this.getEntityAIList().sort(Comparator.comparingInt(e -> ((IEntityAI<?>) e).priority()).thenComparingInt(System::identityHashCode));
     }
 
-    public List<EntityAI> getEntityAIList() {
-        return this.entityAIList;
+    public List<IEntityAI<? extends WorldItem>> getEntityAIList() {
+        return this.entityAIs;
     }
 }

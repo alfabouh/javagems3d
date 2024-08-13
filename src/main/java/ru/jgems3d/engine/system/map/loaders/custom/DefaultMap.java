@@ -9,10 +9,12 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEnt
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.liquids.Water;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.map.MapInfo;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.SkyProp;
@@ -33,6 +35,7 @@ public class DefaultMap implements IMapLoader {
 
     @Override
     public void postLoad(PhysicsWorld world, SceneWorld sceneWorld) {
+        world.setMapNavGraph(Graph.readFromFile(new JGemsPath("/assets/jgems/nav.mesh")));
     }
 
     @Override
