@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.service.json.JSONGraphDeserializer;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.logger.managers.LoggingManager;
@@ -65,7 +64,7 @@ public class Graph implements Serializable {
     }
 
     public void addVertex(GraphVertex gVertex) {
-        this.getGraphContainer().putIfAbsent(gVertex, new ArrayList<>());
+        this.getGraph().putIfAbsent(gVertex, new ArrayList<>());
         GraphChunk graphChunk = GraphChunk.getChunkIJByCoordinates(gVertex.getPosition());
         if (this.getGraphChunkGroups().containsKey(graphChunk)) {
             this.getGraphChunkGroups().get(graphChunk).add(gVertex);
@@ -77,9 +76,9 @@ public class Graph implements Serializable {
         }
     }
 
-    public void addEdge(GraphVertex vertex1, GraphVertex vertex2, float w) {
-        GraphEdge edge = new GraphEdge(vertex2, w);
-        this.getGraphContainer().get(vertex1).add(edge);
+    public void addEdge(GraphVertex vertex1, GraphVertex vertex2, float weight) {
+        GraphEdge edge = new GraphEdge(vertex2, weight);
+        this.getGraph().get(vertex1).add(edge);
     }
 
     public void addEdge(GraphVertex vertex1, GraphVertex vertex2) {
@@ -87,7 +86,7 @@ public class Graph implements Serializable {
             return;
         }
         GraphEdge edge = new GraphEdge(vertex2);
-        List<GraphEdge> edges = this.getGraphContainer().get(vertex1);
+        List<GraphEdge> edges = this.getGraph().get(vertex1);
         if (edges != null) {
             for (GraphEdge edge1 : edges) {
                 if (edge1.getTarget().equals(vertex2)) {
@@ -99,14 +98,14 @@ public class Graph implements Serializable {
     }
 
     public List<GraphEdge> getNeighbors(GraphVertex vertex) {
-        return this.getGraphContainer().get(vertex);
+        return this.getGraph().get(vertex);
     }
 
     public Map<GraphChunk, List<GraphVertex>> getGraphChunkGroups() {
         return this.graphChunkGroups;
     }
 
-    public Map<GraphVertex, List<GraphEdge>> getGraphContainer() {
+    public Map<GraphVertex, List<GraphEdge>> getGraph() {
         return this.graph;
     }
 

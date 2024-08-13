@@ -1,5 +1,6 @@
 package ru.jgems3d.engine.system.map.navigation.pathfind;
 
+import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.graph.GraphEdge;
 import ru.jgems3d.engine.system.graph.GraphVertex;
@@ -11,7 +12,7 @@ public class MapPathFinder {
     private final GraphVertex start;
     private final GraphVertex end;
 
-    public MapPathFinder(Graph graph, GraphVertex start, GraphVertex end) {
+    public MapPathFinder(@NotNull Graph graph, GraphVertex start, GraphVertex end) {
         this.graph = graph;
         this.start = start;
         this.end = end;

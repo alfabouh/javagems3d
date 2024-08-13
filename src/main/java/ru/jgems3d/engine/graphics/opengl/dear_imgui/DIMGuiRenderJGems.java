@@ -18,7 +18,6 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
@@ -252,10 +251,10 @@ public class DIMGuiRenderJGems {
                 Graph graph = JGemsHelper.WORLD.genSimpleMapGraphFromStartPoint(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition());
                 String mapName = JGemsHelper.GAME.getCurrentMap().getLevelInfo().toString();
                 Graph.saveInFile(graph);
-                if (graph == null || graph.getGraphContainer().isEmpty()) {
+                if (graph == null || graph.getGraph().isEmpty()) {
                     LoggingManager.showWindowInfo("Couldn't create NavMesh!");
                 } else {
-                    LoggingManager.showWindowInfo("Created NavMesh(" + graph.getGraphContainer().size() + ") and saved in game folder. " + mapName + ".nav");
+                    LoggingManager.showWindowInfo("Created NavMesh(" + graph.getGraph().size() + ") and saved in game folder. " + mapName + ".nav");
                 }
                 JGemsHelper.getPhysicsWorld().setMapNavGraph(graph);
             }

@@ -22,10 +22,11 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
     public NavigationAI(T owner, int priority) {
         super(owner, priority);
         this.offsetFromVertexPos = new Vector3f(0.0f);
+        this.speed = 0.05f;
     }
 
     private List<GraphVertex> buildPath(GraphVertex destination) {
-        if (destination == null) {
+        if (destination == null || this.getCurrentVertex() == null) {
             return null;
         }
         if (destination == this.getCurrentVertex()) {
@@ -54,7 +55,7 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
             Graph graph = worldItem.getWorld().getMapNavGraph();
             if (graph != null) {
                 this.pathPos = 0;
-                this.currentVertex = graph.getClosestVertex(worldItem.getPosition());
+                this.currentVertex = graph.getRandomVertex();
                 this.setOwnerPos(this.getVertexPosWithOffset(this.getCurrentVertex()));
             }
         }
@@ -66,18 +67,22 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
             this.path = this.buildPath(this.getDestination());
         }
         if (this.hasPath()) {
-            if (this.pathPos > this.getPath().size()) {
+            if (this.pathPos >= this.getPath().size()) {
                 this.clearPath();
                 return;
             }
+
+            GraphVertex nextVertex = this.getPath().get(this.pathPos);
             Vector3f position = this.getVertexPosWithOffset(this.getCurrentVertex());
-            Vector3f nextPos = this.getVertexPosWithOffset(this.getPath().get(this.pathPos));
+            Vector3f nextPos = this.getVertexPosWithOffset(nextVertex);
             
             Vector3f interPos = position.lerp(nextPos, this.delta);
             this.setOwnerPos(interPos);
 
+            this.speed = 0.1f;
             this.delta += this.getSpeed();
             if (this.delta > 1.0f) {
+                this.currentVertex = nextVertex;
                 this.delta %= 1.0f;
                 this.pathPos += 1;
             }
@@ -93,7 +98,7 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         this.path = null;
     }
 
-    public List<GraphVertex> getPath() {
+    protected List<GraphVertex> getPath() {
         return this.path;
     }
 
@@ -105,7 +110,13 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         this.speed = speed;
     }
 
+    public void setDestination(WorldItem worldItem) {
+        GraphVertex graphVertex = worldItem.getWorld().getMapNavGraph().getClosestVertex(worldItem.getPosition());
+        this.setDestination(graphVertex);
+    }
+
     public void setDestination(GraphVertex destination) {
+        this.clearPath();
         this.destination = destination;
     }
 

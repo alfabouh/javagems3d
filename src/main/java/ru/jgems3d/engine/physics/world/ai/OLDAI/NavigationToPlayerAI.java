@@ -203,7 +203,7 @@ public class NavigationToPlayerAI extends NavigationAI {
     private GraphVertex findClosestPlayerVertex(Graph graph) {
         GraphVertex closest = graph.getStart();
         double closestDist = this.getPlayerPos().distance(closest.getPosition());
-        for (GraphVertex vertex : graph.getGraphContainer().keySet()) {
+        for (GraphVertex vertex : graph.getGraph().keySet()) {
             double currDist = this.getPlayerPos().distance(vertex.getPosition());
             if (currDist < closestDist) {
                 closest = vertex;
