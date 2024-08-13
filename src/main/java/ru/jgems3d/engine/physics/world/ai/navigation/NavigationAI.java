@@ -1,5 +1,6 @@
 package ru.jgems3d.engine.physics.world.ai.navigation;
 
+import org.joml.Vector3f;
 import ru.jgems3d.engine.physics.world.ai.AbstractAI;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.graph.Graph;
@@ -12,21 +13,39 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
     private float speed;
     private float delta;
     private List<GraphVertex> path;
+    private Vector3f offsetFromVertexPos;
     private GraphVertex destination;
 
-    private GraphVertex nextVertex;
+    private int pathPos;
     private GraphVertex currentVertex;
 
     public NavigationAI(T owner, int priority) {
         super(owner, priority);
+        this.offsetFromVertexPos = new Vector3f(0.0f);
     }
 
-    private List<GraphVertex> buildPath(GraphVertex vertex) {
-        if (vertex == null) {
+    private List<GraphVertex> buildPath(GraphVertex destination) {
+        if (destination == null) {
+            return null;
+        }
+        if (destination == this.getCurrentVertex()) {
             return null;
         }
         Graph graph = this.getAIOwner().getWorld().getMapNavGraph();
-        return (new MapPathFinder(graph, this.getCurrentVertex(), vertex)).findPath();
+        this.pathPos = 0;
+        return (new MapPathFinder(graph, this.getCurrentVertex(), destination)).findPath();
+    }
+
+    private Vector3f getVertexPosWithOffset(GraphVertex vertex) {
+        return new Vector3f(vertex.getPosition()).add(this.getOffsetFromVertexPos());
+    }
+
+    private Vector3f getVectorWithOffset(Vector3f vector3f) {
+        return new Vector3f(vector3f).add(this.getOffsetFromVertexPos());
+    }
+
+    private void setOwnerPos(Vector3f pos) {
+        this.getAIOwner().setPosition(pos);
     }
 
     @Override
@@ -34,24 +53,44 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         if (this.currentVertex == null) {
             Graph graph = worldItem.getWorld().getMapNavGraph();
             if (graph != null) {
+                this.pathPos = 0;
                 this.currentVertex = graph.getClosestVertex(worldItem.getPosition());
+                this.setOwnerPos(this.getVertexPosWithOffset(this.getCurrentVertex()));
             }
         }
     }
 
     @Override
     public void onUpdateAI(WorldItem worldItem) {
-        if (this.path == null) {
+        if (this.getPath() == null) {
             this.path = this.buildPath(this.getDestination());
         }
         if (this.hasPath()) {
+            if (this.pathPos > this.getPath().size()) {
+                this.clearPath();
+                return;
+            }
+            Vector3f position = this.getVertexPosWithOffset(this.getCurrentVertex());
+            Vector3f nextPos = this.getVertexPosWithOffset(this.getPath().get(this.pathPos));
+            
+            Vector3f interPos = position.lerp(nextPos, this.delta);
+            this.setOwnerPos(interPos);
 
+            this.delta += this.getSpeed();
+            if (this.delta > 1.0f) {
+                this.delta %= 1.0f;
+                this.pathPos += 1;
+            }
         }
     }
 
     @Override
     public void onEndAI(WorldItem worldItem) {
 
+    }
+
+    public void clearPath() {
+        this.path = null;
     }
 
     public List<GraphVertex> getPath() {
@@ -68,6 +107,14 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
 
     public void setDestination(GraphVertex destination) {
         this.destination = destination;
+    }
+
+    public void setOffsetFromVertexPos(Vector3f offsetFromVertexPos) {
+        this.offsetFromVertexPos = offsetFromVertexPos;
+    }
+
+    public Vector3f getOffsetFromVertexPos() {
+        return this.offsetFromVertexPos;
     }
 
     public GraphVertex getCurrentVertex() {
