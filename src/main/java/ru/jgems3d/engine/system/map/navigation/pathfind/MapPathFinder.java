@@ -71,6 +71,9 @@ public class MapPathFinder {
         }
 
         Collections.reverse(path);
+        if (path.isEmpty()) {
+            return null;
+        }
         return path;
     }
 
