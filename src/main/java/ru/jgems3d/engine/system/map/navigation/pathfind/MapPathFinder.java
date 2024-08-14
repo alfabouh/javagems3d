@@ -38,7 +38,7 @@ public class MapPathFinder {
 
             closedList.add(current);
 
-            for (GraphEdge edge : graph.getNeighbors(current)) {
+            for (GraphEdge edge : this.graph.getNeighbors(current)) {
                 GraphVertex neighbor = edge.getTarget();
 
                 if (closedList.contains(neighbor)) {

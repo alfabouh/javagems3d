@@ -101,11 +101,11 @@ public class Graph implements Serializable {
         return this.getGraph().get(vertex);
     }
 
-    public Map<GraphChunk, List<GraphVertex>> getGraphChunkGroups() {
+    public synchronized Map<GraphChunk, List<GraphVertex>> getGraphChunkGroups() {
         return this.graphChunkGroups;
     }
 
-    public Map<GraphVertex, List<GraphEdge>> getGraph() {
+    public synchronized Map<GraphVertex, List<GraphEdge>> getGraph() {
         return this.graph;
     }
 
