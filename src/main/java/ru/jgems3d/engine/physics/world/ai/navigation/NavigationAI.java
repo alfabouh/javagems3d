@@ -12,9 +12,7 @@ import java.util.List;
 public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
     protected float speed;
     protected float delta;
-    protected boolean requestPathRebuild;
 
-    protected List<GraphVertex> nextGeneratedPath;
 
     protected List<GraphVertex> path;
     protected Vector3f offsetFromVertexPos;
@@ -76,11 +74,6 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         }
     }
 
-    protected void reBuildPath() {
-        this.path = null;
-        this.tryBuildPath();
-    }
-
     @Override
     public void onUpdateAI(WorldItem worldItem) {
        this.tryBuildPath();
@@ -97,16 +90,11 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
             Vector3f interPos = position.lerp(nextPos, this.delta);
             this.setOwnerPos(interPos);
 
-            this.speed = 0.1f;
             this.delta += this.getSpeed();
             if (this.delta > 1.0f) {
                 this.setCurrentVertex(nextVertex);
                 this.delta %= 1.0f;
                 this.setPathPos(this.getPathPos() + 1);
-                if (this.requestPathRebuild) {
-                    this.reBuildPath();
-                    this.requestPathRebuild = false;
-                }
             }
         }
     }
@@ -129,10 +117,6 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         this.pathPos = pathPos;
     }
 
-    public void setNextGeneratedPath(List<GraphVertex> nextGeneratedPath) {
-        this.nextGeneratedPath = nextGeneratedPath;
-    }
-
     public void setPath(List<GraphVertex> path) {
         this.path = path;
     }
@@ -147,8 +131,8 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
 
     public void setDestination(WorldItem worldItem) {
         GraphVertex graphVertex = worldItem.getWorld().getMapNavGraph().getClosestVertex(worldItem.getPosition());
+        this.clearPath();
         this.setDestination(graphVertex);
-        this.requestPathRebuild = true;
     }
 
     public void setDestination(GraphVertex destination) {
@@ -164,10 +148,6 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
 
     public int getPathPos() {
         return this.pathPos;
-    }
-
-    public List<GraphVertex> getNextGeneratedPath() {
-        return this.nextGeneratedPath;
     }
 
     protected List<GraphVertex> getPath() {
