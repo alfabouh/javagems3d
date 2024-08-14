@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
+import ru.jgems3d.engine.physics.world.ai.navigation.MTNavigationAI;
 import ru.jgems3d.engine.physics.world.ai.navigation.NavigationAI;
 import ru.jgems3d.engine.physics.world.basic.AIBasedWorldItem;
 
@@ -31,14 +32,12 @@ public class CubeAI extends AIBasedWorldItem {
     @Override
     public void onUpdate(IWorld iWorld) {
         super.onUpdate(iWorld);
-        if (!this.ai.hasPath()) {
-            this.ai.setDestination(JGems3D.get().getPlayer());
-        }
+        this.ai.setDestination(JGems3D.get().getPlayer());
     }
 
     @Override
     public void init(AIBasedWorldItem aiBasedWorldItem) {
-        this.ai = new NavigationAI<>(this, 0);
+        this.ai = new MTNavigationAI<>(this, 0);
         this.addNewAI(this.ai);
     }
 }
