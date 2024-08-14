@@ -1,10 +1,12 @@
 package ru.jgems3d.engine.physics.world;
 
+import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
 import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
+import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +32,10 @@ public final class WorldObjectsContainer {
                 }
                 worldItem1.setPrevPosition(worldItem1.getPosition());
             }
-            worldTicked.onUpdate(world);
+            if (!APIEventsPusher.pushEvent(new Events.WorldItemUpdatePre(worldTicked)).isCancelled()) {
+                worldTicked.onUpdate(world);
+            }
+            APIEventsPusher.pushEvent(new Events.WorldItemUpdatePost(worldTicked));
         }
     }
 

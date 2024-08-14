@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
+import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
@@ -11,6 +12,7 @@ import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
+import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -45,6 +47,7 @@ public class LightManager implements ILightManager {
             }
             this.getPointLightList().add((PointLight) light);
         }
+        APIEventsPusher.pushEvent(new Events.LightAdded(light));
     }
 
     public void removeLight(Light light) {

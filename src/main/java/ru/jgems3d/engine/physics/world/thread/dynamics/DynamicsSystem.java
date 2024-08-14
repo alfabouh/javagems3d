@@ -5,8 +5,10 @@ import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import com.jme3.system.NativeLibraryLoader;
-import ru.jgems3d.engine.physics.world.triggers.ICollideTrigger;
+import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.physics.world.triggers.IHasCollisionTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
+import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.io.File;
 import java.util.*;
@@ -28,30 +30,33 @@ public class DynamicsSystem {
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
         this.physicsSpace = new PhysicsSpace(new Vector3f(-1024.0f, -1024.0f, -1024.0f), new Vector3f(1024.0f, 1024.0f, 1024.0f), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);
         this.physicsSpace.setGravity(new Vector3f(0.0f, -10.0f, 0.0f));
-        this.physicsSpace.useScr(true);
     }
 
     public void collideTest() {
         for (PhysicsCollisionObject physicsCollisionObject : this.getObjectsWithCollideTriggers()) {
-            ICollideTrigger trigger = (ICollideTrigger) physicsCollisionObject.getUserObject();
+            IHasCollisionTrigger trigger = (IHasCollisionTrigger) physicsCollisionObject.getUserObject();
             if (!trigger.isValid()) {
                 continue;
             }
             this.getPhysicsSpace().contactTest(physicsCollisionObject, event -> {
                 Object obA = event.getObjectA().getUserObject();
                 Object obB = event.getObjectB().getUserObject();
-                if (obA instanceof ICollideTrigger) {
-                    ICollideTrigger collideTrigger = (ICollideTrigger) obA;
+                if (obA instanceof IHasCollisionTrigger) {
+                    IHasCollisionTrigger collideTrigger = (IHasCollisionTrigger) obA;
                     ITriggerAction triggerAction = collideTrigger.onColliding();
                     if (triggerAction != null) {
-                        triggerAction.action(obB);
+                        if (!APIEventsPusher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
+                            triggerAction.action(obB);
+                        }
                     }
                 }
-                if (obB instanceof ICollideTrigger) {
-                    ICollideTrigger collideTrigger = (ICollideTrigger) obB;
+                if (obB instanceof IHasCollisionTrigger) {
+                    IHasCollisionTrigger collideTrigger = (IHasCollisionTrigger) obB;
                     ITriggerAction triggerAction = collideTrigger.onColliding();
                     if (triggerAction != null) {
-                        triggerAction.action(obA);
+                        if (!APIEventsPusher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
+                            triggerAction.action(obA);
+                        }
                     }
                 }
             });
@@ -69,7 +74,7 @@ public class DynamicsSystem {
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         this.getPhysicsSpace().addCollisionObject(collisionObject);
 
-        if (collisionObject.getUserObject() instanceof ICollideTrigger) {
+        if (collisionObject.getUserObject() instanceof IHasCollisionTrigger) {
             this.getObjectsWithCollideTriggers().add(collisionObject);
         }
     }

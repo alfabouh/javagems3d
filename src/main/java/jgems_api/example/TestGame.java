@@ -5,6 +5,7 @@ import jgems_api.example.manager.TestManager;
 import jgems_api.example.resources.ModelLoader;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine_api.app.JGemsGameApplication;
 import ru.jgems3d.engine_api.app.JGemsGameEntry;
@@ -28,12 +29,12 @@ public class TestGame implements JGemsGameApplication {
     }
 
     @Override
-    public void preInitEvent() {
+    public void preInitEvent(EngineSystem engineSystem) {
 
     }
 
     @Override
-    public void postInitEvent() {
+    public void postInitEvent(EngineSystem engineSystem) {
         JGemsHelper.LOCALISATION.createLocalisation("English", new JGemsPath("/assets/testgame/lang/"));
     }
 

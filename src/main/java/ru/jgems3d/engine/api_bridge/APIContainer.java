@@ -1,5 +1,6 @@
 package ru.jgems3d.engine.api_bridge;
 
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.api_bridge.data.APIGameInfo;
@@ -14,6 +15,7 @@ import ru.jgems3d.logger.SystemLogging;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Set;
@@ -45,6 +47,9 @@ public class APIContainer {
     }
 
     public static void pushEvent(Events.IEvent event) {
+        if (!APIContainer.INSTANCE.eventMap.containsKey(event.getClass())) {
+            return;
+        }
         for (PriorityMethod priorityMethod : APIContainer.INSTANCE.eventMap.get(event.getClass())) {
             Method method = priorityMethod.getMethod();
             if (method == null) {
@@ -60,21 +65,27 @@ public class APIContainer {
     }
 
     @SuppressWarnings("all")
-    static void loadEventClasses(Class<?> eventsBusClass, Set<Class<?>> classSet) {
+    static void loadEventClasses(Class<?> APIEventsClass, Set<Class<?>> classSet) {
         {
-            Method[] methods = eventsBusClass.getDeclaredMethods();
-            for (Method method : methods) {
-                Class<?>[] parameters = method.getParameterTypes();
-                if (parameters.length != 1) {
-                    JGemsHelper.getLogger().error("Method has more(or less) than 1 argument(? -> IEvent): " + method.getName());
-                    continue;
+            Class<?>[] eventClasses = APIEventsClass.getClasses();
+            for (Class<?> cl : eventClasses) {
+                Class<?>[] interfaces = cl.getInterfaces();
+                if (interfaces.length == 1 && interfaces[0] == Events.IEvent.class) {
+                    if (!Modifier.isFinal(cl.getModifiers())) {
+                        JGemsHelper.getLogger().error(cl.getName() + " should be final class");
+                        continue;
+                    }
+                    if (!Modifier.isPublic(cl.getModifiers())) {
+                        JGemsHelper.getLogger().error(cl.getName() + " should be public class");
+                        continue;
+                    }
+                    if (!Modifier.isStatic(cl.getModifiers())) {
+                        JGemsHelper.getLogger().error(cl.getName() + " should be static class");
+                        continue;
+                    }
+                    APIContainer.INSTANCE.eventMap.put((Class<Events.IEvent>) cl, new TreeSet<PriorityMethod>(Comparator.comparingInt(PriorityMethod::getPriority).thenComparingInt(System::identityHashCode)));
+                    JGemsHelper.getLogger().debug("Created API ClassEvent: " + cl.getName());
                 }
-                Class<?>[] interfaces = parameters[0].getInterfaces();
-                if (interfaces.length != 1 || interfaces[0] != Events.IEvent.class) {
-                    JGemsHelper.getLogger().error("Method has wrong argument(? -> IEvent): " + method.getName());
-                    continue;
-                }
-                APIContainer.INSTANCE.eventMap.put((Class<Events.IEvent>) parameters[0], new TreeSet<PriorityMethod>(Comparator.comparingInt(PriorityMethod::getPriority).thenComparingInt(System::identityHashCode)));
             }
         }
         {

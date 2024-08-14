@@ -6,6 +6,21 @@ uniform bool use_texture;
 
 in vec2 out_texture;
 
+void VSM() {
+    float d = gl_FragCoord.z;
+    float dx = dFdx(d);
+    float dy = dFdy(d);
+    float moment2 = d * d + 0.25 * (dx * dx + dy * dy);
+    frag_color0 = vec4(d, moment2, 0., 0.);
+}
+
+void ESM() {
+    float d = gl_FragCoord.z;
+    float c = 80.0;
+    float expDepth = exp(c * d);
+    frag_color0 = vec4(expDepth, 0., 0., 0.);
+}
+
 void main()
 {
     vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, out_texture);
@@ -13,9 +28,5 @@ void main()
         discard;
     }
 
-    float d = gl_FragCoord.z;
-    float dx = dFdx(d);
-    float dy = dFdy(d);
-    float moment2 = d * d + 0.25 * (dx * dx + dy * dy);
-    frag_color0 = vec4(d, moment2, 0., 0.);
+    ESM();
 }

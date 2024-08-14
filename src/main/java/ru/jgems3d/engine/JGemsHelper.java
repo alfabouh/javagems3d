@@ -17,6 +17,7 @@ import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
@@ -266,8 +267,16 @@ public abstract class JGemsHelper {
             return MapNavGraphGenerator.createGraphWithStartPoint(JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getDynamicsSystem(), DynamicsUtils.convertV3F_JME(start));
         }
 
+        public static void removePropFromScene(SceneProp sceneProp) {
+            JGems3D.get().getScreen().getScene().getSceneWorld().removeObjectFromWorld(sceneProp);
+        }
+
         public static void addPropInScene(SceneProp sceneProp) {
             JGems3D.get().getScreen().getScene().getSceneWorld().addObjectInWorld(sceneProp);
+        }
+
+        public static void removeItemFromWorld(WorldItem worldItem) {
+            worldItem.setDead();
         }
 
         public static void addItemInWorld(WorldItem worldItem, RenderEntityData renderData) {

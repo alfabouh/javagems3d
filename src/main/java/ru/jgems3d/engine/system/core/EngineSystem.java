@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
+import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
@@ -17,6 +18,7 @@ import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.core.player.LocalPlayer;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine_api.events.bus.Events;
 import ru.jgems3d.logger.managers.JGemsLogging;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.SkyProp;
@@ -63,6 +65,7 @@ public class EngineSystem implements IEngine {
     }
 
     public void loadMap(IMapLoader mapLoader) {
+        APIEventsPusher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
         if (!this.isCurrentThreadOGL()) {
             this.requestsFromThreads.loadMap = mapLoader;
             return;
@@ -73,9 +76,11 @@ public class EngineSystem implements IEngine {
         }
         this.mapLoader = mapLoader;
         this.initMap();
+        APIEventsPusher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
     }
 
     public void destroyMap() {
+        APIEventsPusher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
         if (!this.isCurrentThreadOGL()) {
             this.requestsFromThreads.destroyMap = true;
             return;
@@ -88,6 +93,7 @@ public class EngineSystem implements IEngine {
         JGems3D.get().getScreen().removeLoadingScreen();
         this.mapLoader = null;
         JGems3D.get().showMainMenu();
+        APIEventsPusher.pushEvent(new Events.MapDestroy(Events.Stage.POST, mapLoader));
     }
 
     private void initMap() {
@@ -204,7 +210,7 @@ public class EngineSystem implements IEngine {
             JGemsHelper.getLogger().warn("Engine thread is currently running!");
             return;
         }
-        APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent();
+        APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent(this);
         JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
         this.getResourceManager().initGlobalResources();
         this.getResourceManager().initLocalResources();
@@ -216,7 +222,7 @@ public class EngineSystem implements IEngine {
                 this.createGraphics();
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
-                APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent();
+                APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent(this);
                 JGems3D.get().getScreen().startScreenRenderProcess();
                 badExit = false;
             } catch (Exception e) {
