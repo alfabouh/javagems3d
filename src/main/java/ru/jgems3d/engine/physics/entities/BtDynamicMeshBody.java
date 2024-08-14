@@ -36,15 +36,7 @@ public class BtDynamicMeshBody extends BtBody {
     @Override
     protected void onTick(IWorld iWorld) {
         super.onTick(iWorld);
-        if (this.getTicksExisted() % 10 == 0) {
-            JGemsHelper.PARTICLES.emitParticle(ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), ParticleAttributes.defaultParticleAttributes().setBrightness(1.0f), JGemsResourceManager.globalTextureAssets.particleTexturePack, new Vector3f(this.getPosition()).add(JGems3D.random.nextFloat() - JGems3D.random.nextFloat(), JGems3D.random.nextFloat() - JGems3D.random.nextFloat(), JGems3D.random.nextFloat() - JGems3D.random.nextFloat()), new Vector2f(3.0f)));
-        }
     }
-
-    // @Override
-   // public ITriggerAction onEndColliding() {
-   //     return e -> System.out.println("F");
-   // }
 
     @Override
     protected void postInit(DynamicsSystem dynamicsSystem, JGemsPhysicsRigidBody jGemsPhysicsRigidBody) {
