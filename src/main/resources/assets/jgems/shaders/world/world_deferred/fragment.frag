@@ -90,7 +90,14 @@ float vsmFixLightBleed(float pMax, float amount) {
     return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
 }
 
-float calcVSM(int idx, vec4 shadow_coord, float bias) {
+float ESM(int idx, vec4 shadow_coord, float bias) {
+    float esm = texture(sun_shadow_map[idx], shadow_coord.xy).x;
+    float currentDepth = exp(80. * (shadow_coord.z + bias));
+    float shadowFactor = esm / currentDepth;
+    return clamp(shadowFactor, 0.0, 1.0);
+}
+
+float VSM(int idx, vec4 shadow_coord, float bias) {
     vec4 vsm = texture(sun_shadow_map[idx], shadow_coord.xy);
 
     float E_x2 = vsm.y;
@@ -103,10 +110,14 @@ float calcVSM(int idx, vec4 shadow_coord, float bias) {
     return max(vsmFixLightBleed(p, 0.7), int(shadow_coord.z <= vsm.x));
 }
 
+float calcShadowDepth(int idx, vec4 shadow_coord, float bias) {
+    return ESM(idx, shadow_coord, bias);
+}
+
 float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    float c0 = calcVSM(idx, shadow_coord, bias);
+    float c0 = calcShadowDepth(idx, shadow_coord, bias);
     return c0;
 }
 

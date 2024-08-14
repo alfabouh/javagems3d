@@ -11,6 +11,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowScene;
@@ -36,6 +37,7 @@ import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine_api.events.bus.Events;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -369,32 +371,35 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     @Override
     public void onRender(FrameTicking frameTicking, Vector2i windowSize) {
         this.updateUBOs(frameTicking);
-        if (this.getSceneData().getCamera() == null) {
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-            this.getGuiRender().onRender(frameTicking);
-            this.takeScreenShotIfNeeded(windowSize);
-            return;
-        }
-        this.getSceneData().getSceneWorld().getEnvironment().onUpdate(this.getSceneData().getSceneWorld());
-        if (JGems3D.get().isPaused()) {
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-            this.getGuiRender().onRender(frameTicking);
-        } else {
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
-            this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getModeledSceneEntities());
-            JGems3D.get().getScreen().normalizeViewPort();
+        if (!APIEventsPusher.pushEvent(new Events.RenderScenePre(this)).isCancelled()) {
+            if (this.getSceneData().getCamera() == null) {
+                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                this.getGuiRender().onRender(frameTicking);
+                this.takeScreenShotIfNeeded(windowSize);
+                return;
+            }
+            this.getSceneData().getSceneWorld().getEnvironment().onUpdate(this.getSceneData().getSceneWorld());
+            if (JGems3D.get().isPaused()) {
+                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                this.getGuiRender().onRender(frameTicking);
+            } else {
+                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
+                this.getShadowScene().renderAllModelsInShadowMap(this.getSceneData().getSceneWorld().getModeledSceneEntities());
+                JGems3D.get().getScreen().normalizeViewPort();
 
-            this.renderForwardAndDeferredScenes(frameTicking, windowSize, this.screenModel);
-            this.renderTransparentObjects(frameTicking, windowSize);
-            this.sceneGluing(this.screenModel);
-            this.blurBloomBuffer(this.screenModel, windowSize);
-            this.screenBloomHDRCorrection(this.screenModel);
-            this.postFXAA(this.screenModel, windowSize);
-            this.renderFinalSceneInMainBuffer(this.screenModel);
+                this.renderForwardAndDeferredScenes(frameTicking, windowSize, this.screenModel);
+                this.renderTransparentObjects(frameTicking, windowSize);
+                this.sceneGluing(this.screenModel);
+                this.blurBloomBuffer(this.screenModel, windowSize);
+                this.screenBloomHDRCorrection(this.screenModel);
+                this.postFXAA(this.screenModel, windowSize);
+                this.renderFinalSceneInMainBuffer(this.screenModel);
 
-            this.getInventoryRender().onRender(frameTicking);
-            this.getGuiRender().onRender(frameTicking);
+                this.getInventoryRender().onRender(frameTicking);
+                this.getGuiRender().onRender(frameTicking);
+            }
         }
+        APIEventsPusher.pushEvent(new Events.RenderScenePost(this));
         this.getDearImGuiRender().onRender(windowSize, frameTicking);
         this.takeScreenShotIfNeeded(windowSize);
     }

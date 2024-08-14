@@ -2,6 +2,7 @@ package ru.jgems3d.engine.graphics.opengl.world;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
 import ru.jgems3d.engine.graphics.opengl.camera.AttachedCamera;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
@@ -25,6 +26,7 @@ import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
+import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -59,30 +61,37 @@ public final class SceneWorld implements IWorld {
     //section WorldStart
     @Override
     public void onWorldStart() {
+        APIEventsPusher.pushEvent(new Events.RenderWorldStart(Events.Stage.PRE, this));
         GlobalRenderDebugConstants.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
         this.getEnvironment().init(this);
         this.ticks = 0;
+        APIEventsPusher.pushEvent(new Events.RenderWorldStart(Events.Stage.POST, this));
     }
 
     //section WorldUpdate
     @Override
     public void onWorldUpdate() {
-        Iterator<Pair<WorldItem, Light>> iterator = this.lightAttachmentQueue.iterator();
-        while (iterator.hasNext()) {
-            Pair<WorldItem, Light> pair = iterator.next();
-            this.addWorldItemLight(pair.getFirst(), pair.getSecond());
-            iterator.remove();
+        if (!APIEventsPusher.pushEvent(new Events.RenderWorldTickPre(this)).isCancelled()) {
+            Iterator<Pair<WorldItem, Light>> iterator = this.lightAttachmentQueue.iterator();
+            while (iterator.hasNext()) {
+                Pair<WorldItem, Light> pair = iterator.next();
+                this.addWorldItemLight(pair.getFirst(), pair.getSecond());
+                iterator.remove();
+            }
+            this.ticks += 1;
         }
-        this.ticks += 1;
+        APIEventsPusher.pushEvent(new Events.RenderWorldTickPost(this));
     }
 
     //section WorldEnd
     @Override
     public void onWorldEnd() {
+        APIEventsPusher.pushEvent(new Events.RenderWorldEnd(Events.Stage.PRE, this));
         this.getParticlesEmitter().destroy(this);
         this.cleanAll();
+        APIEventsPusher.pushEvent(new Events.RenderWorldEnd(Events.Stage.POST, this));
     }
 
     //section WorldUpdObj

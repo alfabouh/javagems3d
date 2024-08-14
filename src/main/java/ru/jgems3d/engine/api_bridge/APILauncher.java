@@ -6,13 +6,14 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import ru.jgems3d.engine.api_bridge.data.APIGameInfo;
 import ru.jgems3d.engine.api_bridge.data.APITBoxInfo;
-import ru.jgems3d.engine.api_bridge.events.APIEventsBus;
+import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.app.JGemsTBoxApplication;
 import ru.jgems3d.engine_api.app.JGemsTBoxEntry;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine_api.app.JGemsGameApplication;
 import ru.jgems3d.engine_api.app.JGemsGameEntry;
+import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class APILauncher {
             APIContainer.get().setApiGameInfo(this.loadGameInfo());
             APIContainer.get().getApiGameInfo().getAppInstance().loadResources(APIContainer.get().getAppResourceLoader());
             APIContainer.get().getApiGameInfo().getAppInstance().subscribeEvents(APIContainer.get().getAppEventSubscriber());
-            APIContainer.loadEventClasses(APIEventsBus.class, APIContainer.get().getAppEventSubscriber().getClassesWithEvents());
+            APIContainer.loadEventClasses(Events.class, APIContainer.get().getAppEventSubscriber().getClassesWithEvents());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new JGemsRuntimeException(e);
         }

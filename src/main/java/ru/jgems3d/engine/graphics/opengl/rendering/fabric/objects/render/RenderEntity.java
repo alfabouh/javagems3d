@@ -7,7 +7,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
-import ru.jgems3d.engine.physics.entities.properties.state.IEntityState;
+import ru.jgems3d.engine.physics.entities.properties.state.IHasEntityState;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -27,8 +27,8 @@ public class RenderEntity extends RenderWorldItem {
             GL30.glStencilFunc(GL30.GL_ALWAYS, 1, 0xFF);
             GL30.glStencilMask(0xFF);
             WorldItem worldItem = entityObject.getWorldItem();
-            if (worldItem instanceof IEntityState) {
-                IEntityState entityState = (IEntityState) entityObject.getWorldItem();
+            if (worldItem instanceof IHasEntityState) {
+                IHasEntityState entityState = (IHasEntityState) entityObject.getWorldItem();
                 if (entityState.getEntityState().checkState(EntityState.Type.IS_SELECTED_BY_PLAYER)) {
                     GL30.glStencilOp(GL30.GL_KEEP, GL30.GL_REPLACE, GL30.GL_REPLACE);
                     GL30.glEnable(GL30.GL_STENCIL_TEST);

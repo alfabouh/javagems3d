@@ -33,7 +33,6 @@ public class CubeAI extends AIBasedWorldItem {
     public void onUpdate(IWorld iWorld) {
         super.onUpdate(iWorld);
         if (!this.ai.hasPath()) {
-            System.out.println("FF");
             this.ai.setDestination(JGems3D.get().getPlayer());
         }
     }

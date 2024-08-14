@@ -1,6 +1,6 @@
 package ru.jgems3d.engine.physics.entities.properties.collision;
 
-public interface ICollisionFilter {
+public interface IHasCollisionFilter {
     int getCollisionGroup();
     int getCollisionFilter();
     void setCollisionFilter(CollisionFilter... collisionFilters);
