@@ -15,10 +15,22 @@ void VSM() {
 }
 
 void ESM() {
-    float d = gl_FragCoord.z;
-    float c = 80.0;
-    float expDepth = exp(c * d);
-    frag_color0 = vec4(expDepth, 0., 0., 0.);
+    //  float d = gl_FragCoord.z;
+    //
+    //  float depth1 = exp(80. * d);
+    //  float depth2 = exp(80. * d * d);
+    //
+    //  frag_color0 = vec4(depth1, depth2, 0., 0.);
+
+    float positiveExponent = 80.0f;
+    float negativeExponent = 5.0f;
+    float depth = gl_FragCoord.z;
+    vec2 exponents = vec2(positiveExponent, negativeExponent);
+    depth = 2.0f * depth - 1.0f;
+    float pos = exp(exponents.x * depth);
+    float neg = -exp(-exponents.y * depth);
+    vec2 warpDepth = vec2(pos, neg);
+    frag_color0 = vec4(warpDepth, warpDepth * warpDepth);
 }
 
 void main()

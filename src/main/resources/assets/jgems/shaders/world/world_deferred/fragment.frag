@@ -90,11 +90,49 @@ float vsmFixLightBleed(float pMax, float amount) {
     return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
 }
 
+vec2 warpDepth(vec2 exponents, float depth)
+{
+    depth = 2.0f * depth - 1.0f;
+    float pos = exp(exponents.x * depth);
+    float neg = -exp(-exponents.y * depth);
+    vec2 wDepth = vec2(pos, neg);
+    return wDepth;
+}
+
+float Chebyshev(vec2 moments, float mean, float minVariance)
+{
+    float shadow = 1.0f;
+    if(mean <= moments.x)
+    {
+        shadow = 1.0f;
+        return shadow;
+    }
+    else
+    {
+        float variance = moments.y - (moments.x * moments.x);
+        variance = max(variance, minVariance);
+        float d = mean - moments.x;
+        shadow = variance / (variance + (d * d));
+        return shadow;
+    }
+}
+
 float ESM(int idx, vec4 shadow_coord, float bias) {
-    float esm = texture(sun_shadow_map[idx], shadow_coord.xy).x;
-    float currentDepth = exp(80. * (shadow_coord.z + bias));
-    float shadowFactor = esm / currentDepth;
-    return clamp(shadowFactor, 0.0, 1.0);
+    float positiveExponent = 80.0f;
+    float negativeExponent = 5.0f;
+    vec2 exponents = vec2(positiveExponent, negativeExponent);
+
+    vec4 moments = texture(sun_shadow_map[idx], shadow_coord.xy).xyzw;
+    vec2 posMoments = vec2(moments.x, moments.z);
+    vec2 negMoments = vec2(moments.y, moments.w);
+    vec2 wDepth = warpDepth(exponents, shadow_coord.z);
+    //float minVariance = 0.000001f;
+    //Edit
+    vec2 depthScale = 0.0001f * exponents * wDepth;
+    vec2 minVariance = depthScale * depthScale;
+    float posResult = Chebyshev(posMoments, wDepth.x, minVariance.x);
+    float negResult = Chebyshev(negMoments, wDepth.y, minVariance.y);
+    return min(posResult, negResult);
 }
 
 float VSM(int idx, vec4 shadow_coord, float bias) {
