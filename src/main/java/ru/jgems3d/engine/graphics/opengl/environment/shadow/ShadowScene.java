@@ -62,9 +62,9 @@ public class ShadowScene implements IShadowScene {
         this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
 
         T2DAttachmentContainer shadow = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
         }};
         this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
@@ -226,7 +226,7 @@ public class ShadowScene implements IShadowScene {
         for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
             this.getShadowFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
-            GL30.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
+            GL30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
             this.getSunShadowShader().performUniform(new UniformString("projection_view_matrix"), new Matrix4f(cascadeShadow.getLightProjectionViewMatrix()));
             GL30.glCullFace(GL30.GL_BACK);
