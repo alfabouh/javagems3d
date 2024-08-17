@@ -10,7 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
 import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
-import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.ILightsKeeper;
@@ -52,7 +52,7 @@ public final class SceneWorld implements IWorld {
         this.liquids = SyncManager.createSyncronisedSet();
         this.toRenderSet = SyncManager.createSyncronisedSet();
 
-        this.environment = Environment.createEnvironment();
+        this.environment = new Environment(this);
         this.frustumCulling = null;
 
         this.particlesEmitter = new ParticlesEmitter();
@@ -62,7 +62,7 @@ public final class SceneWorld implements IWorld {
     @Override
     public void onWorldStart() {
         APIEventsPusher.pushEvent(new Events.RenderWorldStart(Events.Stage.PRE, this));
-        GlobalRenderDebugConstants.reset();
+        JGemsDebugGlobalConstants.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
         this.getEnvironment().init(this);
@@ -90,6 +90,7 @@ public final class SceneWorld implements IWorld {
     public void onWorldEnd() {
         APIEventsPusher.pushEvent(new Events.RenderWorldEnd(Events.Stage.PRE, this));
         this.getParticlesEmitter().destroy(this);
+        this.getEnvironment().destroy(this);
         this.cleanAll();
         APIEventsPusher.pushEvent(new Events.RenderWorldEnd(Events.Stage.POST, this));
     }
@@ -133,8 +134,6 @@ public final class SceneWorld implements IWorld {
 
     //section WorldClean
     private void cleanAll() {
-        this.getEnvironment().getLightManager().removeAllLights();
-
         Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
             IModeledSceneObject modeledSceneObject = iterator.next();

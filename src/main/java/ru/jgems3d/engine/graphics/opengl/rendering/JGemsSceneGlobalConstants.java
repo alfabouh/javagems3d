@@ -32,4 +32,11 @@ public abstract class JGemsSceneGlobalConstants {
     public static int MAX_TICKS_TO_REMOVE_UNUSED_UI = 3;
     public static int GLOBAL_UI_SCALING = 0;
     public static boolean AUTO_SCREEN_SCALING = false;
+
+    //section Render
+    public static boolean USE_HDR = true;
+    public static boolean USE_SSAO = true;
+    public static boolean USE_BLOOM = true;
+    public static boolean USE_FXAA = true;
+    public static boolean USE_SHADOWS = true;
 }

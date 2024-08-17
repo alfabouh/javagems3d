@@ -75,7 +75,7 @@ public class TBoxScene {
     }
 
     public void tryLoadMap(File file) {
-        TBoxMapContainer TBoxMapContainer;
+        TBoxMapContainer mapContainer;
         try {
             if (file == null || !Files.exists(file.toPath())) {
                 JFileChooser jFileChooser = new JFileChooser();
@@ -89,11 +89,11 @@ public class TBoxScene {
                 }
             }
             if (file != null) {
-                TBoxMapContainer = TBoxMapReader.readMapFolder(file);
+                mapContainer = TBoxMapReader.readMapFolder(file);
 
                 ToolBox.get().getTBoxSettings().recentPathOpen.setValue(new File(file.toString()).getAbsolutePath());
 
-                MapProperties mapObjectProperties = TBoxMapContainer.getSaveMapProperties();
+                MapProperties mapObjectProperties = mapContainer.getSaveMapProperties();
                 if (mapObjectProperties == null) {
                     throw new JGemsNullException("Invalid deserialization!");
                 }
@@ -102,7 +102,7 @@ public class TBoxScene {
                     throw new JGemsNullException("Invalid path provided");
                 }
 
-                Set<SaveObject> saveObjects = TBoxMapContainer.getSaveObjectsSet();
+                Set<SaveObject> saveObjects = mapContainer.getSaveObjectsSet();
                 this.clear();
 
                 if (saveObjects != null) {
