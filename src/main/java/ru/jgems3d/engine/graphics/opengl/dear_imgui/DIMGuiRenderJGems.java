@@ -18,7 +18,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.entities.player.SimpleKinematicPlayer;
-import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
@@ -246,7 +246,44 @@ public class DIMGuiRenderJGems {
            // ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
         }
 
+        if (ImGui.collapsingHeader("Scene")) {
+            if (ImGui.checkbox("HDR", JGemsSceneGlobalConstants.USE_HDR)) {
+                JGemsSceneGlobalConstants.USE_HDR = !JGemsSceneGlobalConstants.USE_HDR;
+            }
+            if (ImGui.checkbox("FXAA", JGemsSceneGlobalConstants.USE_FXAA)) {
+                JGemsSceneGlobalConstants.USE_FXAA = !JGemsSceneGlobalConstants.USE_FXAA;
+            }
+            if (ImGui.checkbox("Bloom", JGemsSceneGlobalConstants.USE_BLOOM)) {
+                JGemsSceneGlobalConstants.USE_BLOOM = !JGemsSceneGlobalConstants.USE_BLOOM;
+            }
+            if (ImGui.checkbox("SSAO", JGemsSceneGlobalConstants.USE_SSAO)) {
+                JGemsSceneGlobalConstants.USE_SSAO = !JGemsSceneGlobalConstants.USE_SSAO;
+            }
+            if (ImGui.checkbox("Shadows", JGemsSceneGlobalConstants.USE_SHADOWS)) {
+                JGemsSceneGlobalConstants.USE_SHADOWS = !JGemsSceneGlobalConstants.USE_SHADOWS;
+            }
+        }
+
+        boolean flag = JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera;
         if (ImGui.collapsingHeader("Tools")) {
+            if (ImGui.checkbox("FreeCam", flag)) {
+                if (!flag) {
+                    JGemsHelper.CAMERA.enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
+                    JGemsHelper.CONTROLLER.detachController();
+                } else {
+                    JGemsHelper.CAMERA.enableAttachedCamera(JGems3D.get().getPlayer());
+                    JGemsHelper.CONTROLLER.attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
+                }
+            }
+
+            if (ImGui.checkbox("Full Bright", JGemsDebugGlobalConstants.FULL_BRIGHT)) {
+                JGemsDebugGlobalConstants.FULL_BRIGHT = !JGemsDebugGlobalConstants.FULL_BRIGHT;
+            }
+
+            if (ImGui.checkbox("Show Debug Lines", JGemsDebugGlobalConstants.SHOW_DEBUG_LINES)) {
+                JGemsDebugGlobalConstants.SHOW_DEBUG_LINES = !JGemsDebugGlobalConstants.SHOW_DEBUG_LINES;
+            }
+
             if (ImGui.button("Generate NavMesh")) {
                 Graph graph = JGemsHelper.WORLD.genSimpleMapGraphFromStartPoint(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition());
                 String mapName = JGemsHelper.GAME.getCurrentMap().getLevelInfo().toString();
@@ -262,27 +299,6 @@ public class DIMGuiRenderJGems {
                 ImGui.beginTooltip();
                 ImGui.setTooltip("Generates NavMesh, starting from current camera position!");
                 ImGui.endTooltip();
-            }
-        }
-
-        boolean flag = JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera;
-        if (ImGui.collapsingHeader("Util Checkboxes")) {
-            if (ImGui.checkbox("FreeCam", flag)) {
-                if (!flag) {
-                    JGemsHelper.CAMERA.enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
-                    JGemsHelper.CONTROLLER.detachController();
-                } else {
-                    JGemsHelper.CAMERA.enableAttachedCamera(JGems3D.get().getPlayer());
-                    JGemsHelper.CONTROLLER.attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
-                }
-            }
-
-            if (ImGui.checkbox("Full Bright", GlobalRenderDebugConstants.FULL_BRIGHT)) {
-                GlobalRenderDebugConstants.FULL_BRIGHT = !GlobalRenderDebugConstants.FULL_BRIGHT;
-            }
-
-            if (ImGui.checkbox("Show Debug Lines", GlobalRenderDebugConstants.SHOW_DEBUG_LINES)) {
-                GlobalRenderDebugConstants.SHOW_DEBUG_LINES = !GlobalRenderDebugConstants.SHOW_DEBUG_LINES;
             }
         }
 

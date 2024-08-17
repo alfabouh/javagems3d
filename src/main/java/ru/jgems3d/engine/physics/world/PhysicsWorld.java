@@ -2,7 +2,7 @@ package ru.jgems3d.engine.physics.world;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
-import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.graph.Graph;
@@ -66,7 +66,7 @@ public final class PhysicsWorld implements IWorld {
         }
         if (JGems3D.DEBUG_MODE) {
             if (mapNavGraph != null) {
-                GlobalRenderDebugConstants.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
+                JGemsDebugGlobalConstants.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
             }
         }
     }
@@ -74,7 +74,7 @@ public final class PhysicsWorld implements IWorld {
     public void removeNavGraph() {
         if (JGems3D.DEBUG_MODE) {
             if (this.mapNavGraph != null) {
-                GlobalRenderDebugConstants.linesDebugDraw.destroyNavMeshFloatBuffer();
+                JGemsDebugGlobalConstants.linesDebugDraw.destroyNavMeshFloatBuffer();
             }
         }
         synchronized (this) {

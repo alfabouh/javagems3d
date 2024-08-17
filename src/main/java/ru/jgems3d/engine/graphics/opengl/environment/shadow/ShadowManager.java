@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ShadowScene implements IShadowScene {
+public class ShadowManager implements IShadowScene {
     private final SceneWorld sceneWorld;
     private final FBOTexture2DProgram shadowFBO;
     private final FBOTexture2DProgram shadowPostFBO;
@@ -42,7 +42,7 @@ public class ShadowScene implements IShadowScene {
     private List<PointLightShadow> pointLightShadows;
     private Model<Format2D> sunPostModel;
 
-    public ShadowScene(SceneWorld sceneWorld) {
+    public ShadowManager(SceneWorld sceneWorld) {
         this.sceneWorld = sceneWorld;
         this.shadowFBO = new FBOTexture2DProgram(true);
         this.shadowPostFBO = new FBOTexture2DProgram(true);
@@ -56,7 +56,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void createResources() {
-        this.shadowDimensions = new Vector2i((int) (2048 * ShadowScene.qualityMultiplier()));
+        this.shadowDimensions = new Vector2i((int) (2048 * ShadowManager.qualityMultiplier()));
 
         this.sunPostModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getShadowDim()), 0);
         this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
@@ -212,6 +212,29 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void renderSceneInShadowMap(Set<IModeledSceneObject> modeledSceneObjectSet) {
+        if (!JGemsSceneGlobalConstants.USE_SHADOWS) {
+            GL30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            this.getShadowPostFBO().bindFBO();
+            for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
+                this.getShadowPostFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
+                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+            }
+            this.getShadowPostFBO().unBindFBO();
+
+            for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
+                PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
+                pointLightShadow.getPointLightCubeMap().bindFBO();
+                for (int j = 0; j < 6; j++) {
+                    pointLightShadow.getPointLightCubeMap().connectCubeMapToBuffer(GL30.GL_COLOR_ATTACHMENT0, j);
+                    GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                }
+                pointLightShadow.getPointLightCubeMap().unBindFBO();
+            }
+
+            GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            return;
+        }
+
         this.updateCascadeShadows(this.getCascadeShadows());
         Set<IModeledSceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.getMeshRenderData().getRenderAttributes().isShadowCaster()).collect(Collectors.toSet());
         this.sunScene(filtered);
@@ -238,7 +261,7 @@ public class ShadowScene implements IShadowScene {
                 this.getSunShadowShader().getUtils().performModel3DMatrix(model);
                 this.renderModelForShadow(this.getSunShadowShader(), modeledSceneObject.getMeshRenderData().getRenderAttributes(), model);
             }
-            GL30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
         this.getShadowFBO().unBindFBO();
         this.getSunShadowShader().unBind();
@@ -285,7 +308,7 @@ public class ShadowScene implements IShadowScene {
                         this.getPointLightShadowShader().getUtils().performModel3DMatrix(model);
                         this.renderModelForShadow(this.getPointLightShadowShader(), modeledSceneObject.getMeshRenderData().getRenderAttributes(), model);
                     }
-                    GL30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                    GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 }
                 pointLightShadow.getPointLightCubeMap().unBindFBO();
             }

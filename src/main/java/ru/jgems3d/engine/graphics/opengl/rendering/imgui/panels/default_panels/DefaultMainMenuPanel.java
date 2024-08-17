@@ -31,14 +31,14 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
     public static void renderMenuBackGround(Vector3f color) {
         Window window = JGems3D.get().getScreen().getWindow();
         Vector2f res = new Vector2f(window.getWindowDimensions().x, window.getWindowDimensions().y);
-        Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0);
-        JGemsResourceManager.globalShaderAssets.menu.bind();
-        JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), color);
-        JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), JGems3D.get().getScreen().getRenderTicks());
-        JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
-        JGemsResourceManager.globalShaderAssets.menu.unBind();
-        model.clean();
+        try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
+            JGemsResourceManager.globalShaderAssets.menu.bind();
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), color);
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), JGems3D.get().getScreen().getRenderTicks());
+            JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
+            JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+            JGemsResourceManager.globalShaderAssets.menu.unBind();
+        }
     }
 
     public void createFBOs(Vector2i dim) {

@@ -7,10 +7,9 @@ const float FXAA_THRESHOLD = (1.0/256.0);
 uniform sampler2D texture_sampler;
 uniform vec2 resolution;
 uniform float FXAA_SPAN_MAX;
+uniform bool use_fxaa;
 
-void main()
-{
-    vec2 inverse_resolution = vec2(1.0 / resolution.x, 1.0 / resolution.y);
+vec4 calcFxaa(vec2 inverse_resolution) {
     vec3 luma = vec3(0.2126, 0.7152, 0.0722);
 
     vec3 rgbNW = texture(texture_sampler, (gl_FragCoord.xy + vec2(-1.0, -1.0)) * inverse_resolution).xyz;
@@ -31,8 +30,7 @@ void main()
     float lumaRange = lumaMax - lumaMin;
     if (lumaRange <= FXAA_THRESHOLD)
     {
-        frag_color = vec4(rgbM, 1.0);
-        return;
+        return vec4(rgbM, 1.0);
     }
 
     vec2 dir;
@@ -46,5 +44,11 @@ void main()
     vec3 rgbA = 0.5 * (texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * (1.0 / 3.0 - 0.5)).xyz + texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * (2.0 / 3.0 - 0.5)).xyz);
     vec3 rgbB = rgbA * 0.5 + 0.25 * (texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * -0.5).xyz + texture(texture_sampler, gl_FragCoord.xy * inverse_resolution + dir * 0.5).xyz);
 
-    frag_color = vec4(rgbB, 1.0);
+    return vec4(rgbB, 1.0);
+}
+
+void main()
+{
+    vec2 inverse_resolution = vec2(1.0 / resolution.x, 1.0 / resolution.y);
+    frag_color = use_fxaa ? calcFxaa(inverse_resolution) : texture(texture_sampler, gl_FragCoord.xy * inverse_resolution);
 }

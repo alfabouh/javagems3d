@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.ISkyBox;
-import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 
 public class Sky implements IWorldTicked {
     private final ISkyBox skyBox;
@@ -51,7 +51,7 @@ public class Sky implements IWorldTicked {
     }
 
     public float getSunBrightness() {
-        return GlobalRenderDebugConstants.FULL_BRIGHT ? 1.0f : this.sunBrightness;
+        return JGemsDebugGlobalConstants.FULL_BRIGHT ? 1.0f : this.sunBrightness;
     }
 
     public void setSunBrightness(float sunBrightness) {

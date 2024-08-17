@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-import ru.jgems3d.engine.graphics.opengl.rendering.debug.GlobalRenderDebugConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
@@ -28,13 +28,13 @@ public class DebugRender extends SceneRenderBase {
     public void onRender(FrameTicking frameTicking) {
         GL30.glHint(GL30.GL_LINE_SMOOTH_HINT, GL30.GL_NICEST);
         GL30.glEnable(GL30.GL_LINE_SMOOTH);
-        if (GlobalRenderDebugConstants.SHOW_DEBUG_LINES) {
+        if (JGemsDebugGlobalConstants.SHOW_DEBUG_LINES) {
             this.debugShaders.bind();
             this.debugShaders.getUtils().performPerspectiveMatrix();
             this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
 
-            GlobalRenderDebugConstants.linesDebugDraw.drawAABBLines(this.debugShaders, JGems3D.get().getPhysicsWorld().getDynamics());
-            GlobalRenderDebugConstants.linesDebugDraw.drawNavMeshLines(this.debugShaders);
+            JGemsDebugGlobalConstants.linesDebugDraw.drawAABBLines(this.debugShaders, JGems3D.get().getPhysicsWorld().getDynamics());
+            JGemsDebugGlobalConstants.linesDebugDraw.drawNavMeshLines(this.debugShaders);
 
             this.renderDebugSunDirection();
 
@@ -44,12 +44,12 @@ public class DebugRender extends SceneRenderBase {
 
     public void onStartRender() {
         super.onStartRender();
-        GlobalRenderDebugConstants.linesDebugDraw.setupBuffers();
+        JGemsDebugGlobalConstants.linesDebugDraw.setupBuffers();
     }
 
     public void onStopRender() {
         super.onStopRender();
-        GlobalRenderDebugConstants.linesDebugDraw.cleanup();
+        JGemsDebugGlobalConstants.linesDebugDraw.cleanup();
     }
 
     private void renderDebugSunDirection() {
