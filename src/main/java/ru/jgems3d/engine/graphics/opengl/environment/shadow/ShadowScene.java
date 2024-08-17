@@ -19,7 +19,7 @@ import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
@@ -62,9 +62,9 @@ public class ShadowScene implements IShadowScene {
         this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
 
         T2DAttachmentContainer shadow = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
         }};
         this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
@@ -297,10 +297,10 @@ public class ShadowScene implements IShadowScene {
         shaderManager.performUniform(new UniformString("alpha_discard"), JGemsSceneGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_PIXEL);
         float alphaValue = meshRenderAttributes.getObjectOpacity();
         for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-            if (modelNode.getMaterial().getDiffuse() instanceof IImageSample) {
+            if (modelNode.getMaterial().getDiffuse() instanceof ITextureSample) {
                 shaderManager.performUniform(new UniformString("texture_sampler"), 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                ((IImageSample) modelNode.getMaterial().getDiffuse()).bindTexture();
+                ((ITextureSample) modelNode.getMaterial().getDiffuse()).bindTexture();
                 shaderManager.performUniform(new UniformString("use_texture"), true);
             } else {
                 if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {

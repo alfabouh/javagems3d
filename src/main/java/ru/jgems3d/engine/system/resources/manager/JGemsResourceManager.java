@@ -7,6 +7,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.table.Invent
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.engine.system.inventory.items.InventoryItem;
+import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class JGemsResourceManager {
-    public static Map<String, CubeMapProgram> skyBoxTexturesMap = new HashMap<>();
     public static final InventoryRenderTable inventoryItemRenderTable = new InventoryRenderTable();
 
     public static ShadersAssetsLoader globalShaderAssets = null;
@@ -43,13 +43,6 @@ public final class JGemsResourceManager {
 
     public static void addInventoryItemRenderer(Class<? extends InventoryItem> itemClass, InventoryItemRenderData inventoryItemRenderData){
         JGemsResourceManager.inventoryItemRenderTable.addItem(itemClass, inventoryItemRenderData);
-    }
-
-    public static CubeMapProgram createSkyBoxCubeMap(JGemsPath pathToSkyBox, String format) {
-        CubeMapProgram cubeMap = new CubeMapProgram();
-        cubeMap.generateCubeMapFromTexture(new CubeMapTexturePack(pathToSkyBox, format));
-        JGemsResourceManager.skyBoxTexturesMap.put(pathToSkyBox.getFullPath(), cubeMap);
-        return cubeMap;
     }
 
     public static void createShaders() {

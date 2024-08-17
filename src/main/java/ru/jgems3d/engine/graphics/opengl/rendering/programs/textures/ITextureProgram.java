@@ -5,10 +5,7 @@ import org.lwjgl.opengl.GL30;
 public interface ITextureProgram {
     int getTextureId();
 
-    default void cleanUp() {
-        GL30.glDeleteTextures(this.getTextureId());
-        this.unBindTexture();
-    }
+    void cleanUp();
 
     default void bindTexture(int code) {
         GL30.glBindTexture(code, this.getTextureId());

@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.IRenderInven
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
@@ -39,8 +39,8 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
 
     protected void renderInventoryModel(MeshDataGroup meshDataGroup, JGemsShaderManager shaderManager) {
         for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            IImageSample sample1 = (IImageSample) modelNode.getMaterial().getDiffuse();
-            IImageSample sample2 = modelNode.getMaterial().getEmissionMap();
+            ITextureSample sample1 = (ITextureSample) modelNode.getMaterial().getDiffuse();
+            ITextureSample sample2 = modelNode.getMaterial().getEmissionMap();
             if (sample1 != null) {
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 sample1.bindTexture();

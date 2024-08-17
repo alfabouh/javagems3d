@@ -4,18 +4,18 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class ParticleTexturePack {
-    private final IImageSample[] iImageSample;
+    private final ITextureSample[] iImageSample;
     private final int texturesNum;
     private final float animationRateSeconds;
     private final JGemsPath pathToTexturePath;
     private final String format;
 
     public ParticleTexturePack(JGemsPath pathToTexturePath, String format, int texturesNum, float animationRateSeconds) {
-        this.iImageSample = new IImageSample[texturesNum];
+        this.iImageSample = new ITextureSample[texturesNum];
         this.pathToTexturePath = pathToTexturePath;
         this.format = format;
         this.texturesNum = texturesNum;
@@ -31,7 +31,7 @@ public class ParticleTexturePack {
         return this.texturesNum;
     }
 
-    public IImageSample[] getiImageSample() {
+    public ITextureSample[] getiImageSample() {
         return this.iImageSample;
     }
 

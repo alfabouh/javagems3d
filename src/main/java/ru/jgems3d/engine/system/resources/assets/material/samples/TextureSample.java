@@ -13,7 +13,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
 import java.io.IOException;
@@ -21,15 +21,13 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public class TextureSample implements IImageSample {
+public class TextureSample implements ITextureSample {
     private final String name;
-    private ByteBuffer imageBuffer;
     private Vector2i size;
     private int textureId;
     private final Params params;
 
-
-    public static TextureSample createTexture(ResourceCache resourceCache, JGemsPath fullPath, Params params) {
+    public static TextureSample registerTexture(ResourceCache resourceCache, JGemsPath fullPath, Params params) {
         TextureSample textureSample = new TextureSample(fullPath, params);
         if (resourceCache != null) {
             if (resourceCache.checkObjectInCache(fullPath)) {
@@ -44,7 +42,7 @@ public class TextureSample implements IImageSample {
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache resourceCache, String name, Vector2i size, ByteBuffer buffer, Params params) {
+    public static TextureSample registerTexture(ResourceCache resourceCache, String name, Vector2i size, ByteBuffer buffer, Params params) {
         TextureSample textureSample = new TextureSample(name, size, buffer, params);
         if (resourceCache != null) {
             if (resourceCache.checkObjectInCache(buffer.toString())) {
@@ -59,7 +57,7 @@ public class TextureSample implements IImageSample {
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache resourceCache, String name, InputStream inputStream, Params params) {
+    public static TextureSample registerTexture(ResourceCache resourceCache, String name, InputStream inputStream, Params params) {
         TextureSample textureSample = new TextureSample(name, inputStream, params);
         if (resourceCache != null) {
             if (resourceCache.checkObjectInCache(name)) {
@@ -78,9 +76,8 @@ public class TextureSample implements IImageSample {
     private TextureSample(String name, Vector2i size, ByteBuffer buffer, Params params) {
         this.name = name;
         this.size = size;
-        this.imageBuffer = buffer;
         this.params = params;
-        this.createTexture(params);
+        this.registerTexture(buffer, params);
     }
 
     private TextureSample(JGemsPath fullPath, Params params) {
@@ -88,10 +85,8 @@ public class TextureSample implements IImageSample {
         this.params = params;
         JGemsHelper.getLogger().log("Loading " + this.getName());
         try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
-            this.imageBuffer = this.readTextureFromMemory(this.getName(), inputStream);
-            this.createTexture(params);
+            this.registerTexture(this.readTextureFromMemory(this.getName(), inputStream), params);
         } catch (JGemsIOException | IOException e) {
-            this.imageBuffer = null;
             throw new JGemsIOException(e);
         }
     }
@@ -100,10 +95,8 @@ public class TextureSample implements IImageSample {
         this.name = name;
         this.params = params;
         try {
-            this.imageBuffer = this.readTextureFromMemory(name, inputStream);
-            this.createTexture(params);
+            this.registerTexture(this.readTextureFromMemory(name, inputStream), params);
         } catch (JGemsIOException e) {
-            this.imageBuffer = null;
             throw new JGemsIOException(e);
         }
     }
@@ -120,6 +113,7 @@ public class TextureSample implements IImageSample {
             buffer.flip();
 
             ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
+            MemoryUtil.memFree(buffer);
             if (imageBuffer == null) {
                 throw new JGemsIOException("Couldn't create texture " + name + ". \n" + STBImage.stbi_failure_reason());
             } else {
@@ -131,15 +125,12 @@ public class TextureSample implements IImageSample {
         }
     }
 
-    private void createTexture(Params params) {
+    private void setTextureParams(Params params) {
         int quality = params.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
         boolean linear = params.isLinearFilter() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
         boolean anisotropic = params.isAnisotropicFilter() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
 
-        this.textureId = GL20.glGenTextures();
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
-        GL20.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
-        GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA, this.size().x, this.size().y, 0, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, this.getImageBuffer());
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, linear ? GL30.GL_LINEAR_MIPMAP_LINEAR : GL30.GL_NEAREST_MIPMAP_NEAREST);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, linear ? GL30.GL_LINEAR : GL30.GL_NEAREST);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, params.isRepeat() ? GL30.GL_REPEAT : GL30.GL_CLAMP_TO_EDGE);
@@ -151,21 +142,29 @@ public class TextureSample implements IImageSample {
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_BASE_LEVEL, quality);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 11);
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
+    }
+
+    private void registerTexture(ByteBuffer buffer, Params params) {
+        if (buffer == null) {
+            throw new JGemsIOException("Couldn't create texture " + this.getName());
+        }
+        this.textureId = GL20.glGenTextures();
+        GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
+        GL20.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
+        GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA, this.size().x, this.size().y, 0, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, buffer);
+        GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
+        STBImage.stbi_image_free(buffer);
+        this.setTextureParams(params);
         JGemsHelper.getLogger().log("Texture " + this.getName() + " successfully created!");
+    }
+    public void clear() {
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
+        GL30.glDeleteTextures(this.getTextureId());
+        this.textureId = 0;
     }
 
     public void reloadTexture() {
-        GL30.glDeleteTextures(this.getTextureId());
-        this.createTexture(this.params);
-    }
-
-    public void clear() {
-        if (this.isValid()) {
-            STBImage.stbi_image_free(this.getImageBuffer());
-            this.imageBuffer = null;
-        }
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
-        GL30.glDeleteTextures(this.getTextureId());
+        this.setTextureParams(this.params);
     }
 
     public void bindTexture() {
@@ -194,11 +193,7 @@ public class TextureSample implements IImageSample {
     }
 
     public boolean isValid() {
-        return this.getImageBuffer() != null;
-    }
-
-    public ByteBuffer getImageBuffer() {
-        return this.imageBuffer;
+        return this.getTextureId() > 0;
     }
 
     @Override

@@ -7,7 +7,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsScene;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ISample;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
@@ -65,9 +65,9 @@ public final class TBoxShaderManager extends ShaderManager {
             this.performCameraData();
 
             if (diffuse != null) {
-                if (diffuse instanceof IImageSample) {
+                if (diffuse instanceof ITextureSample) {
                     final int code = 0;
-                    IImageSample imageSample = ((IImageSample) diffuse);
+                    ITextureSample imageSample = ((ITextureSample) diffuse);
                     JGemsScene.activeGlTexture(code);
                     imageSample.bindTexture();
                     TBoxShaderManager.this.performUniformNoWarn(new UniformString("diffuse_map"), code);

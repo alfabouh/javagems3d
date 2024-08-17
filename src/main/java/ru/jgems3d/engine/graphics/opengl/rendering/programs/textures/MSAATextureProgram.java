@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
 public class MSAATextureProgram implements ITextureProgram {
-    private final int textureId;
+    private int textureId;
     private final int msaa;
 
     public MSAATextureProgram(int msaa) {
@@ -17,6 +17,13 @@ public class MSAATextureProgram implements ITextureProgram {
         this.bindTexture(GL43.GL_TEXTURE_2D_MULTISAMPLE);
         GL43.glTexImage2DMultisample(GL43.GL_TEXTURE_2D_MULTISAMPLE, this.msaa, internalFormat, size.x, size.y, true);
         this.unBindTexture();
+    }
+
+    @Override
+    public void cleanUp() {
+        this.unBindTexture();
+        GL30.glDeleteTextures(this.getTextureId());
+        this.textureId = 0;
     }
 
     public int getTextureId() {

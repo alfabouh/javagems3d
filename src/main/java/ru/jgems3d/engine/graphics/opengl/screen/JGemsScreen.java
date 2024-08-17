@@ -326,6 +326,7 @@ public class JGemsScreen implements IScreen {
     public class LoadingScreen {
         private final GuiFont guiFont;
         private final ArrayList<Pair<Integer, String>> lines;
+        private int counter;
 
         public LoadingScreen(String title) {
             JGemsHelper.getLogger().log("Loading screen");
@@ -335,6 +336,7 @@ public class JGemsScreen implements IScreen {
             this.lines.add(new Pair<>(0x00ff00, EngineSystem.ENG_NAME + " : " + EngineSystem.ENG_VER));
             this.lines.add(new Pair<>(0x00ff00, title));
             this.lines.add(new Pair<>(0x00ff00, "..."));
+            this.counter = 0;
         }
 
         public void updateScreen() {
@@ -342,7 +344,8 @@ public class JGemsScreen implements IScreen {
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
             int strokes = 0;
             for (Pair<Integer, String> s : this.lines) {
-                UIText textUI = new UIText(s.getSecond(), this.guiFont, s.getFirst(), new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
+                String textPre = strokes < 3 ? "[*] " : "[" + ++this.counter + "] ";
+                UIText textUI = new UIText(textPre + s.getSecond(), this.guiFont, s.getFirst(), new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
                 textUI.buildUI();
                 textUI.render(0.0f);
                 textUI.cleanData();

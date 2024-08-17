@@ -30,22 +30,8 @@ public class CubeMapProgram {
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
     }
 
-    public void generateCubeMapFromTexture(CubeMapTexturePack cubeMapTexturePack) {
-        this.textureId = GL30.glGenTextures();
-
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, this.textureId);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_T, GL30.GL_CLAMP_TO_EDGE);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_S, GL30.GL_CLAMP_TO_EDGE);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_R, GL30.GL_CLAMP_TO_EDGE);
-
-        for (int i = 0; i < 6; i++) {
-            TextureSample textureSample = cubeMapTexturePack.getTextureArray()[i];
-            GL30.glTexImage2D(GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL30.GL_RGB16, textureSample.size().x, textureSample.size().y, 0, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, textureSample.getImageBuffer());
-        }
-
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
+    public boolean isValid() {
+        return this.textureId > 0;
     }
 
     public void unBindCubeMap() {
@@ -61,7 +47,8 @@ public class CubeMapProgram {
     }
 
     public void cleanCubeMap() {
-        GL30.glDeleteTextures(this.getTextureId());
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
+        GL30.glDeleteTextures(this.getTextureId());
+        this.textureId = 0;
     }
 }

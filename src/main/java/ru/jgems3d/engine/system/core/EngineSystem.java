@@ -7,12 +7,13 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
+import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
-import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.core.player.LocalPlayer;
@@ -65,11 +66,11 @@ public class EngineSystem implements IEngine {
     }
 
     public void loadMap(IMapLoader mapLoader) {
-        APIEventsPusher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
         if (!this.isCurrentThreadOGL()) {
             this.requestsFromThreads.loadMap = mapLoader;
             return;
         }
+        APIEventsPusher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
         if (this.getMapLoader() != null) {
             JGemsHelper.getLogger().warn("Firstly, the current map should be destroyed!");
             return;
@@ -80,11 +81,11 @@ public class EngineSystem implements IEngine {
     }
 
     public void destroyMap() {
-        APIEventsPusher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
         if (!this.isCurrentThreadOGL()) {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
+        APIEventsPusher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
         this.pauseGame();
         JGems3D.get().getScreen().showGameLoadingScreen("Exit world...");
         this.clean();
@@ -102,12 +103,16 @@ public class EngineSystem implements IEngine {
             this.mapLoader = null;
             return;
         }
+
+        GameResources globalRes = this.getResourceManager().getGlobalResources();
+        GameResources localRes = this.getResourceManager().getLocalResources();
+
         JGems3D.get().getScreen().showGameLoadingScreen("Loading Map...");
         this.startWorlds();
         JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
         PhysicsWorld physicsWorld = JGemsHelper.getPhysicsWorld();
         SceneWorld sceneWorld = JGemsHelper.getSceneWorld();
-        this.getMapLoader().createMap(this.getResourceManager().getLocalResources(), physicsWorld, sceneWorld);
+        this.getMapLoader().createMap(localRes, physicsWorld, sceneWorld);
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
 
         Vector3f startPos = new Vector3f(pair.getFirst()).add(0.0f, 0.6f, 0.0f);
@@ -136,7 +141,7 @@ public class EngineSystem implements IEngine {
         if (skyProp != null) {
             if (environment.getSky().getSkyBox() instanceof SkyBox2D) {
                 SkyBox2D skyBox2D = (SkyBox2D) environment.getSky().getSkyBox();
-                CubeMapProgram cubeMapProgram = JGemsResourceManager.skyBoxTexturesMap.get(skyProp.getSkyBoxName());
+                CubeMapSample cubeMapProgram = globalRes.getResource(skyProp.getSkyBoxPath());
                 if (cubeMapProgram != null) {
                     skyBox2D.setCubeMapTexture(cubeMapProgram);
                 }

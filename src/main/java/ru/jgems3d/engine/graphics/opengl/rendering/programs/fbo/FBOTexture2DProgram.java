@@ -150,7 +150,7 @@ public class FBOTexture2DProgram {
     }
 
     public boolean isValid() {
-        return this.frameBufferId != -1;
+        return this.frameBufferId > 0;
     }
 
     public void clearFBO() {

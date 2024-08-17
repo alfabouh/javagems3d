@@ -63,7 +63,7 @@ public class SkyRender extends SceneRenderBase {
         shaderManager.performUniform(new UniformString("covered_by_fog"), sky.isCoveredByFog());
         shaderManager.performUniform(new UniformString("view_mat_inverted"), new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert());
         shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
-        shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), sky.getSkyBox().cubeMapTexture());
+        shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), sky.getSkyBox().cubeMapTexture().getTextureId());
        //shaderManager.getUtils().performCubeMapProgram("skybox", this.getSceneRenderer().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         shaderManager.unBind();

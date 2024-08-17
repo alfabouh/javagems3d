@@ -1,30 +1,33 @@
 package ru.jgems3d.toolbox.map_sys.save.objects.map_prop;
 
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 public class SkyProp {
     private final Vector3f sunPos;
     private final Vector3f sunColor;
     private float sunBrightness;
-    private String skyBoxName;
+    private String skyBoxPath;
 
     public SkyProp() {
-        this("default", new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f), 1.0f);
+        this(TextureAssetsLoader.defaultSkyCubeMapPath.toString(), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f), 1.0f);
     }
 
-    public SkyProp(String skyBoxName, Vector3f sunPos, Vector3f sunColor, float sunBrightness) {
-        this.skyBoxName = skyBoxName;
+    public SkyProp(String skyBoxPath, Vector3f sunPos, Vector3f sunColor, float sunBrightness) {
+        this.skyBoxPath = skyBoxPath;
         this.sunPos = sunPos;
         this.sunColor = sunColor;
         this.sunBrightness = sunBrightness;
     }
 
-    public String getSkyBoxName() {
-        return this.skyBoxName;
+    public String getSkyBoxPath() {
+        return this.skyBoxPath;
     }
 
-    public void setSkyBoxName(String skyBoxName) {
-        this.skyBoxName = skyBoxName;
+    public void setSkyBoxPath(String skyBoxPath) {
+        this.skyBoxPath = skyBoxPath;
     }
 
     public float getSunBrightness() {

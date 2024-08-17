@@ -60,7 +60,7 @@ public class DIMGuiRenderJGems {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = TextureSample.createTexture(resourceCache, "imgui_fonts", new Vector2i(width.get(), height.get()), buffer, new TextureSample.Params(false, false, false, false));
+        this.textureSample = TextureSample.registerTexture(resourceCache, "imgui_fonts", new Vector2i(width.get(), height.get()), buffer, new TextureSample.Params(false, false, false, false));
         this.dearImGuiMesh = new DIMGuiMesh();
     }
 

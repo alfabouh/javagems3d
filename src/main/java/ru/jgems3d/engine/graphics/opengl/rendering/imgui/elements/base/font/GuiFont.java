@@ -71,7 +71,7 @@ public class GuiFont {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
-        this.texture = TextureSample.createTexture(resourceCache, "font" + GuiFont.globalFonts++, inputStream, new TextureSample.Params(false, false, false, false));
+        this.texture = TextureSample.registerTexture(resourceCache, "font" + GuiFont.globalFonts++, inputStream, new TextureSample.Params(false, false, false, false));
         inputStream.close();
     }
 

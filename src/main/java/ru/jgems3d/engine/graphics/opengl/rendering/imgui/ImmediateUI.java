@@ -16,7 +16,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UICarousel;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UISlider;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.settings.objects.SettingSlot;
 import ru.jgems3d.engine.system.settings.objects.SettingFloatBar;
@@ -143,11 +143,11 @@ public final class ImmediateUI {
         return this.checkUIInCacheAndRender(UIText.class, new UIText(text, guiFont, hexColor, position, zValue));
     }
 
-    public UIPictureStatic imageUI(IImageSample iImageSample, Vector2i position, Vector2f textureXY, Vector2f textureWH, float zValue) {
+    public UIPictureStatic imageUI(ITextureSample iImageSample, Vector2i position, Vector2f textureXY, Vector2f textureWH, float zValue) {
         return this.checkUIInCacheAndRender(UIPictureStatic.class, new UIPictureStatic(iImageSample, position, textureXY, textureWH, zValue));
     }
 
-    public UIPictureSizable imageUI(IImageSample iImageSample, Vector2i position, Vector2i size, float zValue) {
+    public UIPictureSizable imageUI(ITextureSample iImageSample, Vector2i position, Vector2i size, float zValue) {
         return this.checkUIInCacheAndRender(UIPictureSizable.class, new UIPictureSizable(iImageSample, position, size, zValue));
     }
 

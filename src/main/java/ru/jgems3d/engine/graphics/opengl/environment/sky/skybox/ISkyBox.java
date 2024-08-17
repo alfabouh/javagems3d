@@ -1,9 +1,9 @@
 package ru.jgems3d.engine.graphics.opengl.environment.sky.skybox;
 
-import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
+import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
 
 public interface ISkyBox {
-    CubeMapProgram cubeMapTexture();
+    CubeMapSample cubeMapTexture();
 
     SkyboxType skyboxType();
 

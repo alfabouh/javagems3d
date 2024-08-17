@@ -32,6 +32,13 @@ public class TextureProgram implements ITextureProgram {
         this.unBindTexture();
     }
 
+    @Override
+    public void cleanUp() {
+        this.unBindTexture();
+        GL30.glDeleteTextures(this.getTextureId());
+        this.textureId = 0;
+    }
+
     public int getTextureId() {
         return this.textureId;
     }
