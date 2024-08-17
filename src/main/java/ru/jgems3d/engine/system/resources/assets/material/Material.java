@@ -2,18 +2,18 @@ package ru.jgems3d.engine.system.resources.assets.material;
 
 import org.joml.Vector4f;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ISample;
 
 @SuppressWarnings("all")
 public class Material {
     private float fullOpacity;
     private ISample diffuse;
-    private IImageSample opacityMap;
-    private IImageSample normalsMap;
-    private IImageSample emissionMap;
-    private IImageSample specularMap;
-    private IImageSample metallicMap;
+    private ITextureSample opacityMap;
+    private ITextureSample normalsMap;
+    private ITextureSample emissionMap;
+    private ITextureSample specularMap;
+    private ITextureSample metallicMap;
 
     public Material(ISample diffuse) {
         this.setDefaults().setDiffuse(diffuse);
@@ -38,7 +38,7 @@ public class Material {
         return this;
     }
 
-    public Material setSpecularMap(IImageSample specularMap) {
+    public Material setSpecularMap(ITextureSample specularMap) {
         this.specularMap = specularMap;
         return this;
     }
@@ -78,12 +78,12 @@ public class Material {
         return this;
     }
 
-    public Material setOpacityMap(IImageSample opacityMap) {
+    public Material setOpacityMap(ITextureSample opacityMap) {
         this.opacityMap = opacityMap;
         return this;
     }
 
-    public Material setNormalsMap(IImageSample normalsMap) {
+    public Material setNormalsMap(ITextureSample normalsMap) {
         this.normalsMap = normalsMap;
         return this;
     }
@@ -93,29 +93,29 @@ public class Material {
         return this;
     }
 
-    public Material setMetallicMap(IImageSample metallicMap) {
+    public Material setMetallicMap(ITextureSample metallicMap) {
         this.metallicMap = metallicMap;
         return this;
     }
 
-    public Material setEmissionMap(IImageSample emissionMap) {
+    public Material setEmissionMap(ITextureSample emissionMap) {
         this.emissionMap = emissionMap;
         return this;
     }
 
-    public IImageSample getEmissionMap() {
+    public ITextureSample getEmissionMap() {
         return this.emissionMap;
     }
 
-    public IImageSample getMetallicMap() {
+    public ITextureSample getMetallicMap() {
         return this.metallicMap;
     }
 
-    public IImageSample getNormalsMap() {
+    public ITextureSample getNormalsMap() {
         return this.normalsMap;
     }
 
-    public IImageSample getSpecularMap() {
+    public ITextureSample getSpecularMap() {
         return this.specularMap;
     }
 

@@ -13,7 +13,7 @@ import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 
 public abstract class ParticleFX implements IWorldObject, ICulled {
     private boolean dead;
@@ -111,7 +111,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         return this.getParticleTexturePack() != null;
     }
 
-    public IImageSample getCurrentFrame() {
+    public ITextureSample getCurrentFrame() {
         return this.getParticleTexturePack().getiImageSample()[this.currentFrame];
     }
 

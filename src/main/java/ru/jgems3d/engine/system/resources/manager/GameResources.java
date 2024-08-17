@@ -4,6 +4,8 @@ import org.joml.Vector2i;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.packs.CubeMapTexturePack;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
@@ -51,9 +53,19 @@ public class GameResources {
     public TextureSample createTexture(JGemsPath path, TextureSample.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
         try {
-            return TextureSample.createTexture(this.getResourceCache(), path, params);
+            return TextureSample.registerTexture(this.getResourceCache(), path, params);
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + path);
+            throw e;
+        }
+    }
+
+    public CubeMapSample createCubeMap(JGemsPath pathToCubeMap, String type) {
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading CubeMap: " + pathToCubeMap);
+        try {
+            return CubeMapSample.createCubeMap(this.getResourceCache(), new CubeMapTexturePack(pathToCubeMap, type));
+        } catch (Exception e) {
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + pathToCubeMap);
             throw e;
         }
     }
@@ -61,7 +73,7 @@ public class GameResources {
     public TextureSample createTextureOrDefault(TextureSample defaultT, JGemsPath path, TextureSample.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
         try {
-            return TextureSample.createTexture(this.getResourceCache(), path, params);
+            return TextureSample.registerTexture(this.getResourceCache(), path, params);
         } catch (Exception e) {
             String s = "Couldn't load: " + path + ". Default texture returned!";
             JGemsHelper.getLogger().error(s);
@@ -72,7 +84,7 @@ public class GameResources {
 
     public TextureSample createTexture(String name, Vector2i size, ByteBuffer buffer, TextureSample.Params params) {
         try {
-            return TextureSample.createTexture(this.getResourceCache(), name, size, buffer, params);
+            return TextureSample.registerTexture(this.getResourceCache(), name, size, buffer, params);
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
             throw e;

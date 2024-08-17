@@ -1,20 +1,20 @@
 package ru.jgems3d.engine.graphics.opengl.environment.sky.skybox;
 
-import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
+import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
 
 public class SkyBox2D implements ISkyBox {
-    private CubeMapProgram cubeMapTexture;
+    private CubeMapSample cubeMapTexture;
 
-    public SkyBox2D(CubeMapProgram cubeMapTexture) {
+    public SkyBox2D(CubeMapSample cubeMapTexture) {
         this.cubeMapTexture = cubeMapTexture;
     }
 
-    public void setCubeMapTexture(CubeMapProgram cubeMapTexture) {
+    public void setCubeMapTexture(CubeMapSample cubeMapTexture) {
         this.cubeMapTexture = cubeMapTexture;
     }
 
     @Override
-    public CubeMapProgram cubeMapTexture() {
+    public CubeMapSample cubeMapTexture() {
         return this.cubeMapTexture;
     }
 

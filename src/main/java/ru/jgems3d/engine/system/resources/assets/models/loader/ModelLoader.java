@@ -73,18 +73,24 @@ public class ModelLoader {
     });
     public static final AIFileOpenProc AI_FILE_OPEN = AIFileOpenProc.create((pFileIO, fileName, openMode) -> {
         ByteBuffer data;
-        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(MemoryUtil.memUTF8(fileName)))){
-            byte[] stream = ByteStreams.toByteArray(inputStream);
-            data = MemoryUtil.memAlloc(stream.length);
-            data.put(stream);
-            data.flip();
-        } catch (IOException e) {
-            throw new JGemsIOException(e);
-        }
-        MemoryStack stack = MemoryStack.stackGet();
-        return AIFile.calloc(stack).ReadProc(AI_FILE_READ).WriteProc(AI_FILE_WRITE).TellProc(AI_FILE_TELL).FileSizeProc(AI_FILE_SIZE).SeekProc(AI_FILE_SEEK).FlushProc(AI_FILE_FLUSH).UserData(stack.mallocPointer(3).put(0, MemoryUtil.memAddress(data)).put(1, 0L).put(2, data.remaining()).address()).address();
+       try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(MemoryUtil.memUTF8(fileName)))){
+          byte[] stream = ByteStreams.toByteArray(inputStream);
+          data = MemoryUtil.memCalloc(stream.length);
+          data.put(stream);
+          data.flip();
+       } catch (IOException e) {
+           throw new JGemsIOException(e);
+       }
+       MemoryStack stack = MemoryStack.stackGet();
+       return AIFile.calloc(stack).ReadProc(AI_FILE_READ).WriteProc(AI_FILE_WRITE).TellProc(AI_FILE_TELL).FileSizeProc(AI_FILE_SIZE).SeekProc(AI_FILE_SEEK).FlushProc(AI_FILE_FLUSH).UserData(stack.mallocPointer(3).put(0, MemoryUtil.memAddress(data)).put(1, 0L).put(2, data.remaining()).address()).address();
     });
     public static final AIFileCloseProc AI_FILE_CLOSE = AIFileCloseProc.create((pFileIO, pFile) -> {
+        PointerBuffer meta = getAIFileMeta(pFile);
+        long dataAddress = meta.get(0);
+        if (dataAddress != 0L) {
+            MemoryUtil.nmemFree(dataAddress);
+            meta.put(0, 0L);
+        }
     });
 
     public static PointerBuffer getAIFileMeta(long pFile) {
@@ -101,35 +107,30 @@ public class ModelLoader {
 
         if (JGems3D.checkFileExistsInJar(modelPath)) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
-                try (AIScene scene = Assimp.aiImportFileEx(modelPath.getFullPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoader.AI_FILE_OPEN).CloseProc(ModelLoader.AI_FILE_CLOSE))) {
-                    if (scene != null) {
-                        int totalMaterials = scene.mNumMaterials();
-                        List<Material> materialList = new ArrayList<>();
-                        for (int i = 0; i < totalMaterials; i++) {
-                            try (AIMaterial aiMaterial = AIMaterial.create(scene.mMaterials().get(i))) {
-                                materialList.add(ModelLoader.readMaterial(gameResources, aiMaterial, modelPath.getParentPath()));
-                            }
-                        }
-                        int totalMeshes = scene.mNumMeshes();
-                        PointerBuffer aiMeshes = scene.mMeshes();
-                        for (int i = 0; i < totalMeshes; i++) {
-                            try (AIMesh aiMesh = AIMesh.create(aiMeshes.get(i))) {
-                                Mesh mesh = ModelLoader.readMesh(aiMesh);
-                                int matIdx = aiMesh.mMaterialIndex();
-                                Material material = new Material();
-                                if (matIdx >= 0 && matIdx < materialList.size()) {
-                                    material = materialList.get(matIdx);
-                                }
-                                meshDataGroup.putNode(new ModelNode(mesh, material));
-                            }
-                        }
-                    } else {
-                        throw new JGemsRuntimeException("Couldn't create assimp scene!");
+                AIScene scene = Assimp.aiImportFileEx(modelPath.getFullPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoader.AI_FILE_OPEN).CloseProc(ModelLoader.AI_FILE_CLOSE));
+                if (scene != null) {
+                    int totalMaterials = scene.mNumMaterials();
+                    List<Material> materialList = new ArrayList<>();
+                    for (int i = 0; i < totalMaterials; i++) {
+                        AIMaterial aiMaterial = AIMaterial.create(scene.mMaterials().get(i));
+                        materialList.add(ModelLoader.readMaterial(gameResources, aiMaterial, modelPath.getParentPath()));
                     }
-                } catch (RuntimeException e) {
-                    JGemsHelper.getLogger().error("Error, while loading " + modelPath);
-                    e.printStackTrace();
-                    return null;
+                    JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Writing mesh...");
+                    int totalMeshes = scene.mNumMeshes();
+                    PointerBuffer aiMeshes = scene.mMeshes();
+                    for (int i = 0; i < totalMeshes; i++) {
+                        AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+                        Mesh mesh = ModelLoader.readMesh(aiMesh);
+                        int matIdx = aiMesh.mMaterialIndex();
+                        Material material = new Material();
+                        if (matIdx >= 0 && matIdx < materialList.size()) {
+                            material = materialList.get(matIdx);
+                        }
+                        meshDataGroup.putNode(new ModelNode(mesh, material));
+                    }
+                    Assimp.aiReleaseImport(scene);
+                } else {
+                    throw new JGemsRuntimeException("Couldn't create assimp scene!");
                 }
             }
         } else {
@@ -156,7 +157,7 @@ public class ModelLoader {
         float[] positions = ModelLoader.readPositions(aiMesh);
         float[] normals = ModelLoader.readNormals(aiMesh);
         float[] tangents = ModelLoader.readTangents(aiMesh);
-        float[] bitangents = ModelLoader.readBitangents(aiMesh);
+        float[] biTangents = ModelLoader.readBiTangents(aiMesh);
 
         if (textureCoordinates.length == 0) {
             int totalElements = (positions.length / 3) * 2;
@@ -169,7 +170,7 @@ public class ModelLoader {
         mesh.pushNormals(normals);
         mesh.pushTextureCoordinates(textureCoordinates);
         mesh.pushTangent(tangents);
-        mesh.pushBiTangent(bitangents);
+        mesh.pushBiTangent(biTangents);
         mesh.bakeMesh();
         return mesh;
     }
@@ -182,9 +183,9 @@ public class ModelLoader {
         float[] data = new float[buffer.remaining() * 2];
         int pos = 0;
         while (buffer.remaining() > 0) {
-            AIVector3D textCoord = buffer.get();
-            data[pos++] = textCoord.x();
-            data[pos++] = 1 - textCoord.y();
+            AIVector3D textCd = buffer.get();
+            data[pos++] = textCd.x();
+            data[pos++] = 1 - textCd.y();
         }
         return data;
     }
@@ -231,16 +232,16 @@ public class ModelLoader {
         return data;
     }
 
-    private static float[] readBitangents(AIMesh aiMesh) {
+    private static float[] readBiTangents(AIMesh aiMesh) {
         AIVector3D.Buffer buffer = aiMesh.mBitangents();
         assert buffer != null;
         float[] data = new float[buffer.remaining() * 3];
         int pos = 0;
         while (buffer.remaining() > 0) {
-            AIVector3D bitangent = buffer.get();
-            data[pos++] = bitangent.x();
-            data[pos++] = bitangent.y();
-            data[pos++] = bitangent.z();
+            AIVector3D biTangent = buffer.get();
+            data[pos++] = biTangent.x();
+            data[pos++] = biTangent.y();
+            data[pos++] = biTangent.z();
         }
         return data;
     }
@@ -267,18 +268,16 @@ public class ModelLoader {
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
                 material.setDiffuse(ColorSample.createColor(new Vector4f(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a())));
             }
-            color4Dd.clear();
 
             PointerBuffer properties = aiMaterial.mProperties();
             for (int j = 0; j < properties.limit(); j++) {
                 AIMaterialProperty property = AIMaterialProperty.create(properties.get(j));
-                try (AIString aiString = property.mKey()) {
-                    String s = aiString.dataString();
-                    if (s.equals(Assimp.AI_MATKEY_OPACITY)) {
-                        if (property.mData().remaining() >= 4) {
-                            float opacity = property.mData().getFloat(0);
-                            material.setFullOpacity(opacity);
-                        }
+                AIString aiString = property.mKey();
+                String s = aiString.dataString();
+                if (s.equals(Assimp.AI_MATKEY_OPACITY)) {
+                    if (property.mData().remaining() >= 4) {
+                        float opacity = property.mData().getFloat(0);
+                        material.setFullOpacity(opacity);
                     }
                 }
             }

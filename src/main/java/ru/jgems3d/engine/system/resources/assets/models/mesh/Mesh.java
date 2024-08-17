@@ -126,11 +126,11 @@ public class Mesh {
         int[] index = JGemsHelper.UTILS.convertIntsArray(this.indexes);
 
         float[] position = JGemsHelper.UTILS.convertFloatsArray(this.attributePositions);
-        float[] texCoord = JGemsHelper.UTILS.convertFloatsArray(this.attributeTextureCoordinates);
+        float[] textureCoordinates = JGemsHelper.UTILS.convertFloatsArray(this.attributeTextureCoordinates);
         float[] normals = JGemsHelper.UTILS.convertFloatsArray(this.attributeNormals);
         float[] tangent = JGemsHelper.UTILS.convertFloatsArray(this.attributeTangents);
-        float[] bitangent = JGemsHelper.UTILS.convertFloatsArray(this.attributeBitangents);
-        float[] avaragedNormals;
+        float[] biTangent = JGemsHelper.UTILS.convertFloatsArray(this.attributeBitangents);
+        float[] avarageNormals;
 
         this.totalVertices = index.length;
 
@@ -149,15 +149,15 @@ public class Mesh {
             posBuffer.put(position).flip();
         }
 
-        if (texCoord != null) {
-            texBuffer = MemoryUtil.memAllocFloat(texCoord.length);
-            texBuffer.put(texCoord).flip();
+        if (textureCoordinates != null) {
+            texBuffer = MemoryUtil.memAllocFloat(textureCoordinates.length);
+            texBuffer.put(textureCoordinates).flip();
         }
 
         if (normals != null) {
-            avaragedNormals = this.avaragedNormals(normals);
-            avaragedNormalsBuffer = MemoryUtil.memAllocFloat(avaragedNormals.length);
-            avaragedNormalsBuffer.put(avaragedNormals).flip();
+            avarageNormals = this.avaragedNormals(normals);
+            avaragedNormalsBuffer = MemoryUtil.memAllocFloat(avarageNormals.length);
+            avaragedNormalsBuffer.put(avarageNormals).flip();
 
             normalsBuffer = MemoryUtil.memAllocFloat(normals.length);
             normalsBuffer.put(normals).flip();
@@ -168,9 +168,9 @@ public class Mesh {
             tangentBuffer.put(tangent).flip();
         }
 
-        if (bitangent != null) {
-            bitangentBuffer = MemoryUtil.memAllocFloat(bitangent.length);
-            bitangentBuffer.put(bitangent).flip();
+        if (biTangent != null) {
+            bitangentBuffer = MemoryUtil.memAllocFloat(biTangent.length);
+            bitangentBuffer.put(biTangent).flip();
         }
 
         this.vao = GL30.glGenVertexArrays();
@@ -188,7 +188,7 @@ public class Mesh {
             this.attributePointers.add(0);
         }
 
-        if (texCoord != null) {
+        if (textureCoordinates != null) {
             this.textureCoordinatesVbo = GL30.glGenBuffers();
             GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getTextureCoordinatesVbo());
             GL30.glBufferData(GL30.GL_ARRAY_BUFFER, texBuffer, GL30.GL_STATIC_DRAW);
@@ -220,7 +220,7 @@ public class Mesh {
             this.attributePointers.add(3);
         }
 
-        if (bitangent != null) {
+        if (biTangent != null) {
             this.bitangentsVbo = GL30.glGenBuffers();
             GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getBitangentsVbo());
             GL30.glBufferData(GL30.GL_ARRAY_BUFFER, bitangentBuffer, GL30.GL_STATIC_DRAW);
@@ -250,7 +250,6 @@ public class Mesh {
         this.attributeBitangents.clear();
         this.attributePointers.clear();
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glDeleteBuffers(this.getIndexVbo());
         GL30.glDeleteBuffers(this.getPositionVbo());
         GL30.glDeleteBuffers(this.getAvaragedNormalsVbo());
@@ -258,6 +257,8 @@ public class Mesh {
         GL30.glDeleteBuffers(this.getNormalsVbo());
         GL30.glDeleteBuffers(this.getTangentsVbo());
         GL30.glDeleteBuffers(this.getBitangentsVbo());
+
+        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
         GL30.glDeleteVertexArrays(this.getVao());
     }

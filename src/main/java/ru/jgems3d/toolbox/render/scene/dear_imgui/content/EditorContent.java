@@ -448,9 +448,9 @@ public class EditorContent implements ImGuiContent {
             if (ImGui.collapsingHeader("Sky")) {
 
                 ImString imString2 = new ImString();
-                imString2.set(mapProperties.getSkyProp().getSkyBoxName());
+                imString2.set(mapProperties.getSkyProp().getSkyBoxPath());
                 if (ImGui.inputText("Skybox Texture Name", imString2)) {
-                    mapProperties.getSkyProp().setSkyBoxName(imString2.get());
+                    mapProperties.getSkyProp().setSkyBoxPath(imString2.get());
                 }
 
                 float[] f1 = new float[]{mapProperties.getSkyProp().getSunBrightness()};

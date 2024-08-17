@@ -13,6 +13,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.system.core.EngineSystem;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNotFoundException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
@@ -148,7 +149,11 @@ public class JGems3D {
     }
 
     public static boolean checkFileExistsInJar(JGemsPath path) {
-        return JGems3D.class.getResourceAsStream(path.getFullPath()) != null;
+        try (InputStream inputStream = JGems3D.class.getResourceAsStream(path.getFullPath())) {
+            return inputStream != null;
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
     }
 
     public static InputStream loadFileFromJar(JGemsPath path) throws JGemsNotFoundException {

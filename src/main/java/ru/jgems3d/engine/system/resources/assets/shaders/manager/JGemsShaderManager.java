@@ -7,15 +7,15 @@ import ru.jgems3d.engine.graphics.opengl.environment.shadow.CascadeShadow;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.PointLightShadow;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsScene;
+import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
-import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.IImageSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ISample;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
@@ -91,19 +91,19 @@ public final class JGemsShaderManager extends ShaderManager {
             }
 
             ISample diffuse = material.getDiffuse();
-            IImageSample emission = material.getEmissionMap();
-            IImageSample metallic = material.getMetallicMap();
-            IImageSample normals = material.getNormalsMap();
-            IImageSample specular = material.getSpecularMap();
-            CubeMapProgram cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSky().getSkyBox().cubeMapTexture();
+            ITextureSample emission = material.getEmissionMap();
+            ITextureSample metallic = material.getMetallicMap();
+            ITextureSample normals = material.getNormalsMap();
+            ITextureSample specular = material.getSpecularMap();
+            CubeMapSample cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSky().getSkyBox().cubeMapTexture();
 
             int texturing_code = 0;
 
             this.performCameraData();
-            this.performCubeMapProgram(new UniformString("ambient_cubemap"), cubeMapProgram);
+            this.performCubeMapProgram(new UniformString("ambient_cubemap"), cubeMapProgram.getTextureId());
 
             if (diffuse != null) {
-                if (diffuse instanceof IImageSample) {
+                if (diffuse instanceof ITextureSample) {
                     this.performUniformSampleNoWarn(new UniformString("diffuse_map"), diffuse);
                     texturing_code |= 1 << 2;
                 } else {
@@ -150,17 +150,13 @@ public final class JGemsShaderManager extends ShaderManager {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getShadowScene().getPointLightShadows().get(i);
                 JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), pointLightShadow.farPlane());
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap", i))) {
-                    this.performCubeMapProgram(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
+                    this.performCubeMapProgram(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram().getTextureId());
                 }
             }
         }
 
-        public void performCubeMapProgram(UniformString uniform, CubeMapProgram cubeMapProgram) {
-            if (cubeMapProgram == null) {
-                JGemsHelper.getLogger().warn("CubeMap is NULL!");
-                return;
-            }
-            JGemsShaderManager.this.performUniformTexture(uniform, cubeMapProgram.getTextureId(), GL30.GL_TEXTURE_CUBE_MAP);
+        public void performCubeMapProgram(UniformString uniform, int cubeMapTextureId) {
+            JGemsShaderManager.this.performUniformTexture(uniform, cubeMapTextureId, GL30.GL_TEXTURE_CUBE_MAP);
         }
 
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Format3D format3D) {
