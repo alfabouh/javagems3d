@@ -1,3 +1,14 @@
+/*
+ * *
+ *  * @author alfabouh
+ *  * @since 2024
+ *  * @link https://github.com/alfabouh/JavaGems3D
+ *  *
+ *  * This software is provided 'as-is', without any express or implied warranty.
+ *  * In no event will the authors be held liable for any damages arising from the use of this software.
+ *
+ */
+
 package ru.jgems3d.engine.system.core;
 
 import org.joml.Vector3f;
@@ -288,12 +299,13 @@ public class EngineSystem implements IEngine {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long maxMemory = Runtime.getRuntime().maxMemory();
 
-        JGemsHelper.getLogger().log("");
+        JGemsHelper.getLogger().log(JGems3D.checkIfSys64B() ? "x64" : "x32");
         JGemsHelper.getLogger().log("==========================================================");
         JGemsHelper.getLogger().log("****DATA***");
         JGemsHelper.getLogger().log("==========================================================");
 
         JGemsHelper.getLogger().log("SYSTEM INFO");
+        JGemsHelper.getLogger().log(osBean.getName());
         JGemsHelper.getLogger().log("System: " + osBean.getName());
         JGemsHelper.getLogger().log("System architecture: " + osBean.getArch());
         JGemsHelper.getLogger().log("System version: " + osBean.getVersion());
