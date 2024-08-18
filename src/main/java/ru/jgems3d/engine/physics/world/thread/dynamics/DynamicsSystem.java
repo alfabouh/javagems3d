@@ -1,3 +1,14 @@
+/*
+ * *
+ *  * @author alfabouh
+ *  * @since 2024
+ *  * @link https://github.com/alfabouh/JavaGems3D
+ *  *
+ *  * This software is provided 'as-is', without any express or implied warranty.
+ *  * In no event will the authors be held liable for any damages arising from the use of this software.
+ *
+ */
+
 package ru.jgems3d.engine.physics.world.thread.dynamics;
 import com.jme3.bullet.CollisionConfiguration;
 import com.jme3.bullet.PhysicsSpace;
@@ -5,13 +16,19 @@ import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import com.jme3.system.NativeLibraryLoader;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
+import ru.jgems3d.engine.physics.world.thread.dynamics.extractor.DLLExtractor;
 import ru.jgems3d.engine.physics.world.triggers.IHasCollisionTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class DynamicsSystem {
@@ -24,9 +41,16 @@ public class DynamicsSystem {
 
     public void init() {
         boolean dist = true;
-        String buildType = "Debug";
-        String flavor = "Sp";
-        NativeLibraryLoader.loadLibbulletjme(dist, new File("dlls"), buildType, flavor);
+        String buildType = JGems3D.DEBUG_MODE ? "Debug" : "Release";
+        Path path = Paths.get(JGems3D.getEngineFilesFolder().toString(), "dlls");
+        try {
+            DLLExtractor.extractDll(path, JGems3D.checkIfSys64B() ? "64" : "32", buildType);
+        } catch (IOException e) {
+            throw new JGemsRuntimeException(e);
+        }
+        if (!NativeLibraryLoader.loadLibbulletjme(dist, path.toFile(), buildType, "Sp")) {
+            throw new JGemsRuntimeException("Couldn't load Bullet DLL!");
+        }
 
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
         this.physicsSpace = new PhysicsSpace(new Vector3f(-1024.0f, -1024.0f, -1024.0f), new Vector3f(1024.0f, 1024.0f, 1024.0f), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);

@@ -1,3 +1,14 @@
+/*
+ * *
+ *  * @author alfabouh
+ *  * @since 2024
+ *  * @link https://github.com/alfabouh/JavaGems3D
+ *  *
+ *  * This software is provided 'as-is', without any express or implied warranty.
+ *  * In no event will the authors be held liable for any damages arising from the use of this software.
+ *
+ */
+
 package ru.jgems3d.engine.system.resources.assets.models.helper;
 
 import org.joml.Vector2f;
@@ -13,7 +24,7 @@ import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 
-public class MeshHelper {
+public abstract class MeshHelper {
     public static Model<Format2D> generatePlane2DModel(Vector2f v1, Vector2f v2, float zLevel) {
         PlaneModel2D planeModel2D = new PlaneModel2D(v1, v2, zLevel);
         return planeModel2D.generateModel();

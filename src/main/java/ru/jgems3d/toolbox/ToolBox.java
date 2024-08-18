@@ -1,3 +1,14 @@
+/*
+ * *
+ *  * @author alfabouh
+ *  * @since 2024
+ *  * @link https://github.com/alfabouh/JavaGems3D
+ *  *
+ *  * This software is provided 'as-is', without any express or implied warranty.
+ *  * In no event will the authors be held liable for any damages arising from the use of this software.
+ *
+ */
+
 package ru.jgems3d.toolbox;
 
 import ru.jgems3d.engine.api_bridge.APILauncher;
@@ -13,7 +24,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class ToolBox {
+public final class ToolBox {
     private static ToolBox toolBox;
     private final TBoxScreen tBoxScreen;
     private final TBoxSettings tBoxSettings;
@@ -31,7 +42,7 @@ public class ToolBox {
         this.shouldBeClosed = false;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         ToolBox.toolBox = new ToolBox();
         ToolBox.get().startSystem();
     }

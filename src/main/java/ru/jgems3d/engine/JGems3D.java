@@ -1,5 +1,17 @@
+/*
+ * *
+ *  * @author alfabouh
+ *  * @since 2024
+ *  * @link https://github.com/alfabouh/JavaGems3D
+ *  *
+ *  * This software is provided 'as-is', without any express or implied warranty.
+ *  * In no event will the authors be held liable for any damages arising from the use of this software.
+ *
+ */
+
 package ru.jgems3d.engine;
 
+import com.jme3.system.JmeSystem;
 import org.lwjgl.glfw.GLFW;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.api_bridge.APILauncher;
@@ -25,17 +37,20 @@ import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.JGemsLogging;
+import ru.jgems3d.toolbox.ToolBox;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Random;
 
-public class JGems3D {
+public final class JGems3D {
     public static boolean DEBUG_MODE = false;
     public static long rngSeed;
     public static Random random;
@@ -87,6 +102,10 @@ public class JGems3D {
     }
 
     public static void main(String[] args) {
+        if (args.length > 0 && args[0].equals("toolbox")) {
+            ToolBox.main(args);
+            return;
+        }
         JGems3D.mainObject = new JGems3D(args);
         JGems3D.start();
     }
@@ -115,7 +134,7 @@ public class JGems3D {
 
     public static void checkFilesDirectory() throws IOException {
         if (!Files.exists(JGems3D.getGameFilesFolder())) {
-            Files.createDirectories(JGems3D.getGameFilesFolder());
+            JGems3D.getGameFilesFolder().toFile().mkdirs();
             JGemsHelper.getLogger().log("Created system folder");
         }
     }
@@ -137,6 +156,11 @@ public class JGems3D {
         String s2 = JGems3D.getGameVersion();
         String s3 = JGems3D.getGameDev();
         return s1 + " " + s2 + " " + s3;
+    }
+
+    public static boolean checkIfSys64B() {
+        RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+        return runtimeBean.getVmName().toLowerCase().contains("64");
     }
 
     public static String date() {
@@ -162,6 +186,12 @@ public class JGems3D {
             throw new JGemsNotFoundException("Couldn't find: " + path);
         }
         return inputStream;
+    }
+
+    public static Path getEngineFilesFolder() {
+        String appdataPath = System.getProperty("user.home");
+        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase();
+        return java.nio.file.Paths.get(appdataPath, folderPath);
     }
 
     public static Path getGameFilesFolder() {
