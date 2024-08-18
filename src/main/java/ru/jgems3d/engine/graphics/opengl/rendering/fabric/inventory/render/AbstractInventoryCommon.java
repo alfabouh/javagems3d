@@ -8,7 +8,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.Invento
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;

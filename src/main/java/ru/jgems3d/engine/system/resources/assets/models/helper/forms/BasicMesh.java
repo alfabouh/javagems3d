@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.resources.assets.models.basic.forms;
+package ru.jgems3d.engine.system.resources.assets.models.helper.forms;
 
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.IFormat;

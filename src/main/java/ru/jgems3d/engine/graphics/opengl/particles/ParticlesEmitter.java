@@ -12,7 +12,7 @@ import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 

@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class WorldForwardRender extends SceneRenderBase {
     public WorldForwardRender(JGemsOpenGLRenderer sceneRender) {
-        super(1, sceneRender, new RenderGroup("WORLD_FORWARD"));
+        super(4, sceneRender, new RenderGroup("WORLD_FORWARD"));
     }
 
     public void onRender(FrameTicking frameTicking) {

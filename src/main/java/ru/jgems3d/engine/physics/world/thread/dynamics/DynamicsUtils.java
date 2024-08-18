@@ -3,6 +3,7 @@ package ru.jgems3d.engine.physics.world.thread.dynamics;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.infos.CompoundMesh;
 import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
+import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
@@ -64,6 +65,13 @@ public abstract class DynamicsUtils {
 
     public static void scaleRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f scale) {
         physicsRigidBody.setPhysicsScale(DynamicsUtils.convertV3F_JME(scale));
+    }
+    public static void translateGhost(PhysicsGhostObject physicsGhostObject, Vector3f pos) {
+        physicsGhostObject.setPhysicsLocation(DynamicsUtils.convertV3F_JME(pos));
+    }
+
+    public static void rotateGhost(PhysicsGhostObject physicsGhostObject, Vector3f rot) {
+        physicsGhostObject.setPhysicsRotation(new Quaternion().fromAngles(rot.x, rot.y, rot.z));
     }
 
     public static Vector3f getObjectBodyPos(PhysicsCollisionObject physicsRigidBody) {

@@ -96,7 +96,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         PhysicsWorld world = (PhysicsWorld) iWorld;
         this.createPlayer();
         world.getDynamics().addCollisionObject(this.getPhysicsCharacter());
-        this.inventory().addItemInInventory(new ItemZippo());
     }
 
     public void onDestroy(IWorld iWorld) {

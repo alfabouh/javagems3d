@@ -1,4 +1,4 @@
-package ru.jgems3d.engine.system.resources.assets.models.basic.constructor;
+package ru.jgems3d.engine.system.resources.assets.models.helper.constructor;
 
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 

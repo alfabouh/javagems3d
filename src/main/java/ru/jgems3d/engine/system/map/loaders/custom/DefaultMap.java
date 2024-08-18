@@ -5,12 +5,15 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.BtStaticMeshBody;
 import ru.jgems3d.engine.physics.entities.ai.CubeAI;
+import ru.jgems3d.engine.physics.entities.collectabes.EntityCollectableItem;
+import ru.jgems3d.engine.physics.entities.misc.EntityDoor;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.liquids.Water;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.inventory.items.ItemZippo;
 import ru.jgems3d.engine.system.map.MapInfo;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
@@ -37,6 +40,9 @@ public class DefaultMap implements IMapLoader {
 
         CubeAI cubeAI = new CubeAI(world, new Vector3f(0.0f), "grass");
         JGemsHelper.WORLD.addItemInWorld(cubeAI, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.entityCube, JGemsResourceManager.globalModelAssets.cube));
+
+        EntityCollectableItem collectableItem = new EntityCollectableItem(world, new ItemZippo(), new Vector3f(3.0f, -4.5f, 0.0f), "zippo");
+        JGemsHelper.WORLD.addItemInWorld(collectableItem, JGemsResourceManager.globalRenderDataAssets.zippo_world);
     }
 
     @Override
