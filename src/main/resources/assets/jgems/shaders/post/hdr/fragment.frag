@@ -5,6 +5,9 @@ uniform sampler2D texture_sampler;
 uniform sampler2D bloom_sampler;
 uniform bool use_hdr;
 
+uniform float exposure;
+uniform float gamma;
+
 vec4 hdr(vec4 in_col, float exposure, float gamma) {
     vec3 rgb = in_col.rgb;
     vec3 bl_c = texture(bloom_sampler, out_texture).rgb;
@@ -22,5 +25,5 @@ vec4 no_hdr(vec4 in_col) {
 }
 
 void main() {
-    frag_color = use_hdr ? hdr(texture(texture_sampler, out_texture), 2.5, 0.3) : no_hdr(texture(texture_sampler, out_texture));
+    frag_color = use_hdr ? hdr(texture(texture_sampler, out_texture), exposure, gamma) : no_hdr(texture(texture_sampler, out_texture));
 }

@@ -247,18 +247,43 @@ public class DIMGuiRenderJGems {
         }
 
         if (ImGui.collapsingHeader("Scene")) {
+
             if (ImGui.checkbox("HDR", JGemsSceneGlobalConstants.USE_HDR)) {
                 JGemsSceneGlobalConstants.USE_HDR = !JGemsSceneGlobalConstants.USE_HDR;
             }
+            if (ImGui.treeNode("HDR Settings")) {
+                float[] exposure = new float[]{JGemsSceneGlobalConstants.HDR_EXPOSURE};
+                ImGui.sliderFloat("exposure", exposure, 0.0f, 5.0f);
+                JGemsSceneGlobalConstants.HDR_EXPOSURE = exposure[0];
+                float[] gamma = new float[]{JGemsSceneGlobalConstants.HDR_GAMMA};
+                ImGui.sliderFloat("gamma", gamma, 0.0f, 3.0f);
+                JGemsSceneGlobalConstants.HDR_GAMMA = gamma[0];
+                ImGui.treePop();
+            }
+
             if (ImGui.checkbox("FXAA", JGemsSceneGlobalConstants.USE_FXAA)) {
                 JGemsSceneGlobalConstants.USE_FXAA = !JGemsSceneGlobalConstants.USE_FXAA;
             }
             if (ImGui.checkbox("Bloom", JGemsSceneGlobalConstants.USE_BLOOM)) {
                 JGemsSceneGlobalConstants.USE_BLOOM = !JGemsSceneGlobalConstants.USE_BLOOM;
             }
+
             if (ImGui.checkbox("SSAO", JGemsSceneGlobalConstants.USE_SSAO)) {
                 JGemsSceneGlobalConstants.USE_SSAO = !JGemsSceneGlobalConstants.USE_SSAO;
             }
+            if (ImGui.treeNode("SSAO Settings")) {
+                float[] radius = new float[]{JGemsSceneGlobalConstants.SSAO_RADIUS};
+                ImGui.sliderFloat("radius", radius, 0.0f, 5.0f);
+                JGemsSceneGlobalConstants.SSAO_RADIUS = radius[0];
+                float[] bias = new float[]{JGemsSceneGlobalConstants.SSAO_BIAS};
+                ImGui.sliderFloat("bias", bias, 0.0f, 0.1f);
+                JGemsSceneGlobalConstants.SSAO_BIAS = bias[0];
+                float[] range = new float[]{JGemsSceneGlobalConstants.SSAO_RANGE};
+                ImGui.sliderFloat("range", range, 1.0f, 10.0f);
+                JGemsSceneGlobalConstants.SSAO_RANGE = range[0];
+                ImGui.treePop();
+            }
+
             if (ImGui.checkbox("Shadows", JGemsSceneGlobalConstants.USE_SHADOWS)) {
                 JGemsSceneGlobalConstants.USE_SHADOWS = !JGemsSceneGlobalConstants.USE_SHADOWS;
             }

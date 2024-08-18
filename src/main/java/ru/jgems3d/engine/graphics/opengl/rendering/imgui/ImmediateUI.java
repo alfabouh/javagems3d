@@ -116,7 +116,7 @@ public final class ImmediateUI {
         Iterator<UIElement> uiElementIterator = this.getUiFrameCache().values().iterator();
         while (uiElementIterator.hasNext()) {
             UIElement element = uiElementIterator.next();
-            if (element.getUnUsedTicks() > JGemsSceneGlobalConstants.MAX_TICKS_TO_REMOVE_UNUSED_UI) {
+            if (element.getUnUsedTicks() > JGemsSceneGlobalConstants.TICKS_TO_CLEAN_UNUSED_UI) {
                 element.cleanData();
                 uiElementIterator.remove();
             }

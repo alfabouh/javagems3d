@@ -10,6 +10,10 @@ layout (binding = 4, rgba16f) writeonly uniform image2D img_output;
 uniform mat4 projection_matrix;
 uniform vec2 noiseScale;
 
+uniform float ssao_bias;
+uniform float ssao_radius;
+uniform float ssao_range;
+
 void main() {
     ivec2 id = ivec2(gl_GlobalInvocationID.xy);
     ivec2 size = imageSize(img_output);
@@ -19,8 +23,8 @@ void main() {
 
     vec2 uv = vec2(id) / vec2(size);
 
-    const float radius = 1.5;
-    const float bias = 0.025;
+    const float radius = ssao_radius;
+    const float bias = ssao_bias;
 
     vec3 frag_pos = texture(gPositions, uv).xyz;
     vec3 normals = texture(gNormals, uv).xyz;
@@ -44,7 +48,7 @@ void main() {
         offset.xyz = offset.xyz * 0.5 + 0.5;
 
         float depth = texture(gPositions, offset.xy).z;
-        float rangeCheck = smoothstep(0.0, 5.0, radius / abs(frag_pos.z - depth));
+        float rangeCheck = smoothstep(0.0, ssao_range, radius / abs(frag_pos.z - depth));
         occlusion += (depth >= tex.z + bias ? 1.0 : 0.0) * rangeCheck;
     }
 

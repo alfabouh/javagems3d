@@ -195,13 +195,13 @@ public class EngineSystem implements IEngine {
     }
 
     private void startWorlds() {
-        JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldStart();
-        JGems3D.get().getScreen().getScene().getSceneWorld().onWorldStart();
+        JGemsHelper.getPhysicsWorld().onWorldStart();
+        JGemsHelper.getSceneWorld().onWorldStart();
     }
 
     private void endWorlds() {
-        JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getWorld().onWorldEnd();
-        JGems3D.get().getScreen().getScene().getSceneWorld().onWorldEnd();
+        JGemsHelper.getPhysicsWorld().onWorldEnd();
+        JGemsHelper.getSceneWorld().onWorldEnd();
     }
 
     public JGemsResourceManager getResourceManager() {

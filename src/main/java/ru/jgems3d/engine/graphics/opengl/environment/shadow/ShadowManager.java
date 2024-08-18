@@ -317,7 +317,7 @@ public class ShadowManager implements IShadowScene {
     }
 
     private void renderModelForShadow(JGemsShaderManager shaderManager, MeshRenderAttributes meshRenderAttributes, Model<?> model) {
-        shaderManager.performUniform(new UniformString("alpha_discard"), JGemsSceneGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_PIXEL);
+        shaderManager.performUniform(new UniformString("alpha_discard"), JGemsSceneGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT);
         float alphaValue = meshRenderAttributes.getObjectOpacity();
         for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
             if (modelNode.getMaterial().getDiffuse() instanceof ITextureSample) {
