@@ -3,7 +3,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering.items.objects;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
@@ -75,12 +75,12 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
             }
             this.renderFabric().onPreRender(this);
         }
-        APIEventsPusher.pushEvent(new Events.ItemSpawnInRenderWorld(this));
+        APIEventsLauncher.pushEvent(new Events.ItemSpawnInRenderWorld(this));
     }
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        APIEventsPusher.pushEvent(new Events.ItemDestroyInRenderWorld(this));
+        APIEventsLauncher.pushEvent(new Events.ItemDestroyInRenderWorld(this));
         JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
         if (this.hasRender()) {
             this.renderFabric().onPostRender(this);
