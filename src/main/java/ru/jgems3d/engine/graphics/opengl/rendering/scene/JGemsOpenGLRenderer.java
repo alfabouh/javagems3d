@@ -321,6 +321,8 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         JGemsShaderManager hdr = JGemsResourceManager.globalShaderAssets.hdr;
         hdr.bind();
+        hdr.performUniform(new UniformString("exposure"), JGemsSceneGlobalConstants.HDR_EXPOSURE);
+        hdr.performUniform(new UniformString("gamma"), JGemsSceneGlobalConstants.HDR_GAMMA);
         hdr.performUniform(new UniformString("use_hdr"), JGemsSceneGlobalConstants.USE_HDR);
         hdr.performUniformTexture(new UniformString("texture_sampler"), this.getSceneGluingBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         hdr.performUniformTexture(new UniformString("bloom_sampler"), this.getBloomBlurredBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
@@ -501,6 +503,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
         JGemsShaderManager ssaoComputeShader = JGemsResourceManager.globalShaderAssets.world_ssao;
         ssaoComputeShader.startComputing();
+
+        ssaoComputeShader.performUniform(new UniformString("ssao_bias"), JGemsSceneGlobalConstants.SSAO_BIAS);
+        ssaoComputeShader.performUniform(new UniformString("ssao_radius"), JGemsSceneGlobalConstants.SSAO_RADIUS);
+        ssaoComputeShader.performUniform(new UniformString("ssao_range"), JGemsSceneGlobalConstants.SSAO_RANGE);
+
         ssaoComputeShader.performUniform(new UniformString("noiseScale"), new Vector2f(windowSize).div((float) JGemsSceneGlobalConstants.SSAO_NOISE_SIZE));
         ssaoComputeShader.performUniform(new UniformString("projection_matrix"), JGemsSceneUtils.getMainPerspectiveMatrix());
         ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), this.getGBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
