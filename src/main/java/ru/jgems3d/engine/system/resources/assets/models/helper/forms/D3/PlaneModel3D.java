@@ -1,10 +1,10 @@
-package ru.jgems3d.engine.system.resources.assets.models.basic.forms.D3;
+package ru.jgems3d.engine.system.resources.assets.models.helper.forms.D3;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.forms.BasicMesh;
+import ru.jgems3d.engine.system.resources.assets.models.helper.forms.BasicMesh;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 

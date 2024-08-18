@@ -17,7 +17,7 @@ import ru.jgems3d.engine.system.map.loaders.custom.DefaultMap;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 
 public class DefaultMainMenuPanel extends AbstractPanelUI {

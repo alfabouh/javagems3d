@@ -100,7 +100,9 @@ public final class JGemsShaderManager extends ShaderManager {
             int texturing_code = 0;
 
             this.performCameraData();
-            this.performCubeMapProgram(new UniformString("ambient_cubemap"), cubeMapProgram.getTextureId());
+            if (JGemsShaderManager.this.isUniformExist(new UniformString("ambient_cubemap"))) {
+                this.performCubeMapProgram(new UniformString("ambient_cubemap"), cubeMapProgram.getTextureId());
+            }
 
             if (diffuse != null) {
                 if (diffuse instanceof ITextureSample) {

@@ -29,7 +29,7 @@ public abstract class SceneRenderBase {
 
     protected abstract void onRender(FrameTicking frameTicking);
 
-    public void onRenderBase(FrameTicking frameTicking) {
+    public void onBaseRender(FrameTicking frameTicking) {
         if (!APIEventsLauncher.pushEvent(new Events.RenderBaseRender(frameTicking, this)).isCancelled()) {
             this.onRender(frameTicking);
         }

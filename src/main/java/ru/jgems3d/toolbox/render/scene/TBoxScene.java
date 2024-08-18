@@ -13,7 +13,7 @@ import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
@@ -206,7 +206,7 @@ public class TBoxScene {
             EditorContent editorContent = (EditorContent) this.getDimGuiRenderTBox().getCurrentContentToRender();
             this.getSceneContainer().render(deltaTime);
             Vector3f v3 = this.getMapProperties().getSkyProp().getSunPos();
-            Model<Format3D> modelSun = MeshHelper.generateVector3fModel(new Vector3f(0.0f), new Vector3f(v3.x, v3.y, v3.z).mul(300.0f));
+            Model<Format3D> modelSun = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(v3.x, v3.y, v3.z).mul(300.0f));
             TBoxResourceManager.shaderAssets.world_lines.bind();
             TBoxResourceManager.shaderAssets.world_lines.getUtils().performPerspectiveMatrix();
             TBoxResourceManager.shaderAssets.world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());

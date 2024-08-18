@@ -8,6 +8,7 @@ import com.jme3.system.NativeLibraryLoader;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.physics.world.triggers.IHasCollisionTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.io.File;
@@ -18,7 +19,7 @@ public class DynamicsSystem {
     private final Set<PhysicsCollisionObject> objectsWithCollideTriggers;
 
     public DynamicsSystem() {
-        this.objectsWithCollideTriggers = new HashSet<>();
+        this.objectsWithCollideTriggers = SyncManager.createSyncronisedSet();
     }
 
     public void init() {

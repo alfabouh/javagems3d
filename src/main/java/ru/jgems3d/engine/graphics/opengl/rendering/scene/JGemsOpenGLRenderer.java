@@ -753,7 +753,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
 
         public static void renderSceneRenderSet(FrameTicking frameTicking, Set<SceneRenderBase> sceneRenderBases) {
-            sceneRenderBases.forEach(e -> e.onRenderBase(frameTicking));
+            sceneRenderBases.forEach(e -> e.onBaseRender(frameTicking));
         }
 
         public void endAll() {

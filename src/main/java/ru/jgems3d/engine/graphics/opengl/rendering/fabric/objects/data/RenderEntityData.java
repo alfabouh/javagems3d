@@ -7,7 +7,7 @@ import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
-import ru.jgems3d.engine.system.resources.assets.models.basic.constructor.IEntityModelConstructor;
+import ru.jgems3d.engine.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;

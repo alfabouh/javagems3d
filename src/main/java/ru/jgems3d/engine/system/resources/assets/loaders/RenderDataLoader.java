@@ -17,8 +17,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.PlayerSPObject;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
-import ru.jgems3d.engine.system.resources.assets.models.basic.constructor.IEntityModelConstructor;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 
@@ -26,7 +26,6 @@ public class RenderDataLoader implements IAssetsLoader {
     public RenderEntityData entityCube;
     public RenderEntityData player;
     public RenderEntityData ground;
-    public RenderEntityData particleFlame;
     public RenderEntityData zippo_world;
     public RenderLiquidData water;
 
@@ -42,10 +41,10 @@ public class RenderDataLoader implements IAssetsLoader {
         //    return new MeshDataGroup(MeshHelper.generatePlane3DMesh(MathHelper.convertV3DV3F(plane4dBrush.getVertices()[0]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[1]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[2]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[3])));
         //};
         IEntityModelConstructor<WorldItem> enemyModelConstructor = e -> {
-            return new MeshDataGroup(MeshHelper.generatePlane3DMesh(new Vector3f(-1.0f, 0.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f), new Vector3f(-1.0f, 2.0f, 0.0f), new Vector3f(1.0f, 2.0f, 0.0f)));
+            return new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-1.0f, 0.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f), new Vector3f(-1.0f, 2.0f, 0.0f), new Vector3f(1.0f, 2.0f, 0.0f)));
         };
         IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
-            return new MeshDataGroup(MeshHelper.generatePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
+            return new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
         };
 
         Material zwMat = new Material();
@@ -55,7 +54,7 @@ public class RenderDataLoader implements IAssetsLoader {
 
         this.zippo_world = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
         this.zippo_world.setEntityModelConstructor(itemPickUpModelConstructor);
-        this.zippo_world.getMeshRenderData().getRenderAttributes().setShadowCaster(false).setRenderDistance(64.0f);
+        this.zippo_world.getMeshRenderData().allowMoveMeshesIntoTransparencyPass(false).getRenderAttributes().setAlphaDiscard(0.6f).setShadowCaster(false).setRenderDistance(64.0f);
         this.zippo_world.getMeshRenderData().setOverlappingMaterial(zwMat);
 
         this.entityCube = new RenderEntityData(new RenderEntity(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_gbuffer).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO

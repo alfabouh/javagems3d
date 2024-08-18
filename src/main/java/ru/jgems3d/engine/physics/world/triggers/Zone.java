@@ -2,7 +2,7 @@ package ru.jgems3d.engine.physics.world.triggers;
 
 import org.joml.Vector3f;
 
-public class Zone {
+public final class Zone {
     private final Vector3f location;
     private final Vector3f size;
 

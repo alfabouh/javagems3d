@@ -60,7 +60,9 @@ public final class WorldObjectsContainer {
     public void removeObjectFromWorld(IWorldObject worldObject) {
         worldObject.onDestroy(this.getWorld());
         this.getWorldObjects().remove(worldObject);
-        this.getWorldTickedObjects().remove(((IWorldTicked) worldObject));
+        if (worldObject instanceof IWorldTicked) {
+            this.getWorldTickedObjects().remove(((IWorldTicked) worldObject));
+        }
     }
 
     public Set<IWorldObject> getWorldObjects() {

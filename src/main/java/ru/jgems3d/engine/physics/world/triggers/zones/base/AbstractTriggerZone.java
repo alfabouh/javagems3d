@@ -2,6 +2,7 @@ package ru.jgems3d.engine.physics.world.triggers.zones.base;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.objects.PhysicsGhostObject;
+import org.joml.Vector3f;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.IWorld;
@@ -10,10 +11,11 @@ import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.JGemsHelper;
 
 public abstract class AbstractTriggerZone implements ITriggerZone {
-    protected final Zone zone;
+    protected Zone zone;
     private PhysicsGhostObject ghostObject;
 
     public AbstractTriggerZone(Zone zone) {
+        this.initZone(zone);
         this.zone = zone;
     }
 
@@ -45,7 +47,6 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
     @Override
     public void onSpawn(IWorld iWorld) {
         JGemsHelper.getLogger().log("Add trigger in world - [ " + this + " ]");
-        this.initZone(this.getZone());
         ((PhysicsWorld) iWorld).getDynamics().addCollisionObject(this.getGhostObject());
     }
 
@@ -53,6 +54,11 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
     public void onDestroy(IWorld iWorld) {
         JGemsHelper.getLogger().log("Removed trigger from world - [ " + this + " ]");
         ((PhysicsWorld) iWorld).getDynamics().removeCollisionObject(this.getGhostObject());
+    }
+
+    public void setLocation(Vector3f location) {
+        this.zone = new Zone(location, this.getZone().getSize());
+        DynamicsUtils.translateGhost(this.getGhostObject(), location);
     }
 
     public PhysicsGhostObject getGhostObject() {

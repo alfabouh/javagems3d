@@ -10,7 +10,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.transparent.WorldTransparentRender;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.basic.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
@@ -101,13 +101,14 @@ public abstract class JGemsSceneUtils {
                 GL30.glDisable(GL11.GL_CULL_FACE);
             }
             for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
+                Material material = overMaterial != null ? overMaterial : modelNode.getMaterial();
                 if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
-                    if (modelNode.getMaterial().hasTransparency()) {
+                    if (material.hasTransparency()) {
                         gemsOpenGLRenderer.addModelNodeInTransparencyPass(new WorldTransparentRender.RenderNodeInfo(sceneObject.getMeshRenderData().getOverridenTransparencyShader(), sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling(), modelNode, model.getFormat()));
                         continue;
                     }
                 }
-                shaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : modelNode.getMaterial());
+                shaderManager.getUtils().performModelMaterialOnShader(material);
                 JGemsSceneUtils.renderModelNode(modelNode);
                 shaderManager.updateTextureUnitSlots();
             }
