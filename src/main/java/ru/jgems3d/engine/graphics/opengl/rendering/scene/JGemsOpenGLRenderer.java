@@ -11,14 +11,14 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.light.LightManager;
 import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowManager;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -74,6 +74,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private FBOTexture2DProgram fxaaBuffer;
     private FBOTexture2DProgram hdrBuffer;
     private FBOTexture2DProgram transparencySceneBuffer;
+    private FBOTexture2DProgram finalizingBuffer;
 
     private TextureProgram ssaoNoiseTexture;
     private TextureProgram ssaoKernelTexture;
@@ -137,6 +138,10 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         return this.bloomBlurredBuffer;
     }
 
+    public FBOTexture2DProgram getFinalizingBuffer() {
+        return this.finalizingBuffer;
+    }
+
     protected WorldTransparentRender getWorldTransparentRender() {
         return this.worldTransparentRender;
     }
@@ -181,6 +186,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.hdrBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
         this.sceneGluingBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
         this.fxaaBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
+        this.finalizingBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
     }
 
     private FBOTexture2DProgram addFBOInSet(FBOTexture2DProgram fboTexture2DProgram) {
@@ -246,6 +252,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
             add(GL30.GL_COLOR_ATTACHMENT1, GL30.GL_RGB, GL30.GL_RGB);
         }};
         this.sceneGluingBuffer.createFrameBuffer2DTexture(windowSize, gluing, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+
+        T2DAttachmentContainer finalB = new T2DAttachmentContainer() {{
+            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
+        }};
+        this.finalizingBuffer.createFrameBuffer2DTexture(windowSize, finalB, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     private void createSSAOResources(Vector3i ssaoParams) {
@@ -374,7 +385,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     @Override
     public void onRender(FrameTicking frameTicking, Vector2i windowSize) {
         this.updateUBOs(frameTicking);
-        if (!APIEventsPusher.pushEvent(new Events.RenderScenePre(this)).isCancelled()) {
+        if (!APIEventsLauncher.pushEvent(new Events.RenderScenePre(frameTicking, windowSize, this)).isCancelled()) {
             if (this.getSceneData().getCamera() == null) {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
                 this.getGuiRender().onRender(frameTicking);
@@ -394,22 +405,32 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
                 this.blurBloomBuffer(this.screenModel, windowSize);
                 this.screenBloomHDRCorrection(this.screenModel);
                 this.postFXAA(this.screenModel, windowSize);
+                this.postProcessing(frameTicking, windowSize);
                 this.renderFinalSceneInMainBuffer(this.screenModel);
 
                 this.getInventoryRender().onRender(frameTicking);
                 this.getGuiRender().onRender(frameTicking);
             }
         }
-        APIEventsPusher.pushEvent(new Events.RenderScenePost(this));
+        APIEventsLauncher.pushEvent(new Events.RenderScenePost(frameTicking, windowSize, this));
         this.getDearImGuiRender().onRender(windowSize, frameTicking);
         this.takeScreenShotIfNeeded(windowSize);
+    }
+
+    // section Post
+    private void postProcessing(FrameTicking frameTicking, Vector2i size) {
+        this.getFinalizingBuffer().bindFBO();
+        if (!APIEventsLauncher.pushEvent(new Events.RenderPostProcessing(frameTicking, size, this.getFxaaBuffer().getTextureIDByIndex(0), this)).isCancelled()) {
+            this.getFxaaBuffer().copyFBOtoFBOColor(this.getFinalizingBuffer().getFrameBufferId(), new int[] {GL30.GL_COLOR_ATTACHMENT0}, size);
+        }
+        this.getFinalizingBuffer().unBindFBO();
     }
 
     //section FinalRender
     private void renderFinalSceneInMainBuffer(Model<Format2D> model) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.bind();
-        imgShader.performUniformTexture(new UniformString("texture_sampler"), this.getFxaaBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
+        imgShader.performUniformTexture(new UniformString("texture_sampler"), this.getFinalizingBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         imgShader.getUtils().performOrthographicMatrix(model);
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         imgShader.unBind();
@@ -732,7 +753,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
 
         public static void renderSceneRenderSet(FrameTicking frameTicking, Set<SceneRenderBase> sceneRenderBases) {
-            sceneRenderBases.forEach(e -> e.onRender(frameTicking));
+            sceneRenderBases.forEach(e -> e.onRenderBase(frameTicking));
         }
 
         public void endAll() {

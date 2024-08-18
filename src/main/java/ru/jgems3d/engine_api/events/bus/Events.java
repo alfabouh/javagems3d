@@ -1,8 +1,12 @@
 package ru.jgems3d.engine_api.events.bus;
 
+import org.joml.Vector2i;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
+import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
@@ -171,6 +175,21 @@ public abstract class Events {
         }
     }
 
+    // section RenderPostProcessing
+    public static final class RenderPostProcessing implements IEvent {
+        public final JGemsOpenGLRenderer jGemsOpenGLRenderer;
+        public final FrameTicking ticking;
+        public final int sceneBufferTextureID;
+        public final Vector2i windowSize;
+
+        public RenderPostProcessing(FrameTicking ticking, Vector2i windowSize, int sceneBufferTextureID, JGemsOpenGLRenderer jGemsOpenGLRenderer) {
+            this.jGemsOpenGLRenderer = jGemsOpenGLRenderer;
+            this.ticking = ticking;
+            this.sceneBufferTextureID = sceneBufferTextureID;
+            this.windowSize = windowSize;
+        }
+    }
+
     // section Render
 
     public static final class RenderWorldStart implements IEvent {
@@ -235,17 +254,51 @@ public abstract class Events {
 
     public static final class RenderScenePre extends Cancellable implements IEvent {
         public final JGemsOpenGLRenderer jGemsOpenGLRenderer;
+        public final FrameTicking ticking;
+        public final Vector2i windowSize;
 
-        public RenderScenePre(JGemsOpenGLRenderer jGemsOpenGLRenderer) {
+        public RenderScenePre(FrameTicking ticking, Vector2i windowSize, JGemsOpenGLRenderer jGemsOpenGLRenderer) {
             this.jGemsOpenGLRenderer = jGemsOpenGLRenderer;
+            this.ticking = ticking;
+            this.windowSize = windowSize;
         }
     }
 
     public static final class RenderScenePost implements IEvent {
         public final JGemsOpenGLRenderer jGemsOpenGLRenderer;
+        public final FrameTicking ticking;
+        public final Vector2i windowSize;
 
-        public RenderScenePost(JGemsOpenGLRenderer jGemsOpenGLRenderer) {
+        public RenderScenePost(FrameTicking ticking, Vector2i windowSize, JGemsOpenGLRenderer jGemsOpenGLRenderer) {
             this.jGemsOpenGLRenderer = jGemsOpenGLRenderer;
+            this.ticking = ticking;
+            this.windowSize = windowSize;
+        }
+    }
+
+    public static final class RenderBaseStartRender implements IEvent {
+        public final SceneRenderBase base;
+
+        public RenderBaseStartRender(SceneRenderBase base) {
+            this.base = base;
+        }
+    }
+
+    public static final class RenderBaseEndRender implements IEvent {
+        public final SceneRenderBase base;
+
+        public RenderBaseEndRender(SceneRenderBase base) {
+            this.base = base;
+        }
+    }
+
+    public static final class RenderBaseRender extends Cancellable implements IEvent {
+        public final SceneRenderBase base;
+        public final FrameTicking ticking;
+
+        public RenderBaseRender(FrameTicking ticking, SceneRenderBase base) {
+            this.base = base;
+            this.ticking = ticking;
         }
     }
 }

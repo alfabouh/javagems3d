@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
@@ -70,14 +70,14 @@ public class EngineSystem implements IEngine {
             this.requestsFromThreads.loadMap = mapLoader;
             return;
         }
-        APIEventsPusher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
+        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
         if (this.getMapLoader() != null) {
             JGemsHelper.getLogger().warn("Firstly, the current map should be destroyed!");
             return;
         }
         this.mapLoader = mapLoader;
         this.initMap();
-        APIEventsPusher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
+        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
     }
 
     public void destroyMap() {
@@ -85,7 +85,7 @@ public class EngineSystem implements IEngine {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
-        APIEventsPusher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
+        APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
         this.pauseGame();
         JGems3D.get().getScreen().showGameLoadingScreen("Exit world...");
         this.clean();
@@ -94,7 +94,7 @@ public class EngineSystem implements IEngine {
         JGems3D.get().getScreen().removeLoadingScreen();
         this.mapLoader = null;
         JGems3D.get().showMainMenu();
-        APIEventsPusher.pushEvent(new Events.MapDestroy(Events.Stage.POST, mapLoader));
+        APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.POST, mapLoader));
     }
 
     private void initMap() {

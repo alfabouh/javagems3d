@@ -1,10 +1,12 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base;
 
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine_api.events.bus.Events;
 
 public abstract class SceneRenderBase {
     private final int renderOrder;
@@ -25,13 +27,21 @@ public abstract class SceneRenderBase {
         return this.getSceneRenderer().getSceneData().getCamera();
     }
 
-    public abstract void onRender(FrameTicking frameTicking);
+    protected abstract void onRender(FrameTicking frameTicking);
+
+    public void onRenderBase(FrameTicking frameTicking) {
+        if (!APIEventsLauncher.pushEvent(new Events.RenderBaseRender(frameTicking, this)).isCancelled()) {
+            this.onRender(frameTicking);
+        }
+    }
 
     public void onStartRender() {
+        APIEventsLauncher.pushEvent(new Events.RenderBaseStartRender(this));
         JGemsHelper.getLogger().log("Scene " + this.getRenderGroup().getId() + ": render start!");
     }
 
     public void onStopRender() {
+        APIEventsLauncher.pushEvent(new Events.RenderBaseEndRender(this));
         JGemsHelper.getLogger().log("Scene " + this.getRenderGroup().getId() + ": render stop!");
     }
 

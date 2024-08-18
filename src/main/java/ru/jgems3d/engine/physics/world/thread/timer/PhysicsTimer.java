@@ -3,7 +3,7 @@ package ru.jgems3d.engine.physics.world.thread.timer;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
@@ -42,7 +42,7 @@ public class PhysicsTimer implements IPhysTimer {
                 if (JGems3D.get().getEngineSystem().engineState().isEngineIsReady() && !JGems3D.get().getEngineSystem().engineState().isPaused()) {
                     synchronized (PhysicsTimer.lockObject) {
                         this.world.onWorldUpdate();
-                        APIEventsPusher.pushEvent(new Events.BulletUpdate(this.dynamicsSystem));
+                        APIEventsLauncher.pushEvent(new Events.BulletUpdate(this.dynamicsSystem));
                         this.dynamicsSystem.step(time, 0);
                         this.dynamicsSystem.collideTest();
                     }

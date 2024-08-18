@@ -1,6 +1,6 @@
 package ru.jgems3d.engine.physics.world;
 
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
@@ -32,10 +32,10 @@ public final class WorldObjectsContainer {
                 }
                 worldItem1.setPrevPosition(worldItem1.getPosition());
             }
-            if (!APIEventsPusher.pushEvent(new Events.WorldItemUpdatePre(worldTicked)).isCancelled()) {
+            if (!APIEventsLauncher.pushEvent(new Events.WorldItemUpdatePre(worldTicked)).isCancelled()) {
                 worldTicked.onUpdate(world);
             }
-            APIEventsPusher.pushEvent(new Events.WorldItemUpdatePost(worldTicked));
+            APIEventsLauncher.pushEvent(new Events.WorldItemUpdatePost(worldTicked));
         }
     }
 

@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
@@ -47,7 +47,7 @@ public class LightManager implements ILightManager {
             }
             this.getPointLightList().add((PointLight) light);
         }
-        APIEventsPusher.pushEvent(new Events.LightAdded(light));
+        APIEventsLauncher.pushEvent(new Events.LightAdded(light));
     }
 
     public void removeLight(Light light) {

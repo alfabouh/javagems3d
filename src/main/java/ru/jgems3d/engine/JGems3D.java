@@ -3,7 +3,7 @@ package ru.jgems3d.engine;
 import org.lwjgl.glfw.GLFW;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.api_bridge.APILauncher;
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.audio.SoundManager;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
@@ -185,7 +185,7 @@ public class JGems3D {
     }
 
     public void reloadResources() {
-        APIEventsPusher.pushEvent(new Events.ReloadResourcesEvent());
+        APIEventsLauncher.pushEvent(new Events.ReloadResourcesEvent());
         JGems3D.get().getScreen().showGameLoadingScreen("System01");
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
         JGems3D.get().getResourceManager().recreateTexturesInAllCaches();

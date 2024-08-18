@@ -5,7 +5,7 @@ import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import com.jme3.system.NativeLibraryLoader;
-import ru.jgems3d.engine.api_bridge.events.APIEventsPusher;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.physics.world.triggers.IHasCollisionTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 import ru.jgems3d.engine_api.events.bus.Events;
@@ -45,7 +45,7 @@ public class DynamicsSystem {
                     IHasCollisionTrigger collideTrigger = (IHasCollisionTrigger) obA;
                     ITriggerAction triggerAction = collideTrigger.onColliding();
                     if (triggerAction != null) {
-                        if (!APIEventsPusher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
+                        if (!APIEventsLauncher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
                             triggerAction.action(obB);
                         }
                     }
@@ -54,7 +54,7 @@ public class DynamicsSystem {
                     IHasCollisionTrigger collideTrigger = (IHasCollisionTrigger) obB;
                     ITriggerAction triggerAction = collideTrigger.onColliding();
                     if (triggerAction != null) {
-                        if (!APIEventsPusher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
+                        if (!APIEventsLauncher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
                             triggerAction.action(obA);
                         }
                     }
