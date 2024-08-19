@@ -18,6 +18,9 @@ import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesConta
 import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
+/**
+ * This class represents the properties of an object inside the ToolBox system (its render and attributes)
+ */
 public final class TEntityContainer {
     private final Class<? extends AbstractObjectData> abstractObjectDataClass;
     private final JGemsPath pathToTBoxShader;
@@ -37,22 +40,42 @@ public final class TEntityContainer {
         this.objectCategory = objectCategory;
     }
 
+    /**
+     * A class based on which an object is created that represents an object in theTBox scene
+     */
     public Class<? extends AbstractObjectData> getAbstractObjectDataClass() {
         return this.abstractObjectDataClass;
     }
 
+    /**
+     * Path to object's model
+     */
     public JGemsPath getPathToTBoxModel() {
         return this.pathToTBoxModel;
     }
 
+    /**
+     * Object's category. You can make your own categories. In the program, objects are sorted by categories
+     */
     public ObjectCategory getObjectCategory() {
         return this.objectCategory;
     }
 
+    /**
+     * Path to object's TBox shader
+     */
     public JGemsPath getPathToTBoxShader() {
         return this.pathToTBoxShader;
     }
 
+    /**
+     * Object's attributes. If you want to get the attribute value, you can do it like this
+     * <pre>
+     *     {@code
+     *           Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+     *     }
+     * </pre>
+     */
     public AttributesContainer getAttributeContainer() {
         return this.attributesContainer;
     }

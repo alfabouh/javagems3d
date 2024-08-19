@@ -22,6 +22,10 @@ import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.util.*;
 
+/**
+ * In the physical world, the logic of the behavior of entities is being updated.
+ */
+
 public final class PhysicsWorld implements IWorld {
     private final WorldObjectsContainer worldObjectsContainer;
     private Graph mapNavGraph;

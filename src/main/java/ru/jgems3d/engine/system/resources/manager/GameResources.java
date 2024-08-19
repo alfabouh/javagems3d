@@ -31,6 +31,9 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The GameResources class contains a cache, as well as tools for loading resources
+ */
 public class GameResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsLoader> assetsLoaderSet;

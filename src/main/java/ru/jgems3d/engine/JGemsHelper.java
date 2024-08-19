@@ -64,6 +64,12 @@ import ru.jgems3d.logger.managers.LoggingManager;
 
 import java.util.List;
 
+/**
+ * Using the JGemsHelper class, you can conveniently access most of the most important functions for managing the state of the engine. This utility class is divided into sections for easier navigation.
+ * @see ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils
+ * @see ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper
+ */
+
 @SuppressWarnings("all")
 public abstract class JGemsHelper {
     public static JGemsTimer createTimer() {

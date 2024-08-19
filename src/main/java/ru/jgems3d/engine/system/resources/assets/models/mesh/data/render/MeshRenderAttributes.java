@@ -11,6 +11,9 @@
 
 package ru.jgems3d.engine.system.resources.assets.models.mesh.data.render;
 
+/**
+ * These are the attributes that affect the rendering of the mesh in the JGems pipeline
+ */
 @SuppressWarnings("all")
 public class MeshRenderAttributes {
     private boolean lightOpaque;

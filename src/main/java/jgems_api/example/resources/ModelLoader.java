@@ -24,15 +24,7 @@ public class ModelLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        this.ground2 = this.createMesh(gameResources, new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true);
-    }
-
-    private MeshDataGroup createMesh(GameResources gameResources, JGemsPath path, boolean constructCollisionMesh) {
-        MeshDataGroup meshDataGroup = gameResources.createMesh(path);
-        if (constructCollisionMesh) {
-            JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
-        }
-        return meshDataGroup;
+        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true);
     }
 
     @Override
