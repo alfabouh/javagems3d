@@ -11,6 +11,7 @@
 
 package ru.jgems3d.engine.system.controller.objects;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -31,7 +32,7 @@ public class MouseKeyboardController implements IController {
     private final MouseKeyboard mouseAndKeyboard;
     private final IWindow window;
 
-    public MouseKeyboardController(IWindow window, BindingManager bindingManager) {
+    public MouseKeyboardController(IWindow window, @NotNull BindingManager bindingManager) {
         this.window = window;
         this.mouseAndKeyboard = new MouseKeyboard(window);
         this.xyzInput = new Vector3f(0.0f);

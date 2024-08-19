@@ -27,19 +27,19 @@ public final class AppResourceLoader implements IAppResourceLoader {
         this.shadersLoaders = new HashSet<>();
     }
 
-    public Set<ShadersLoader<JGemsShaderManager>> getShadersLoaders() {
-        return this.shadersLoaders;
-    }
-
-    public Set<IAssetsLoader> getAssetsLoaderSet() {
-        return this.assetsLoaderSet;
-    }
-
     public void addAssetsLoader(IAssetsLoader assetsLoader) {
         this.assetsLoaderSet.add(assetsLoader);
     }
 
     public void addShadersLoader(ShadersLoader<JGemsShaderManager> shadersLoader) {
         this.shadersLoaders.add(shadersLoader);
+    }
+
+    public Set<ShadersLoader<JGemsShaderManager>> getShadersLoaders() {
+        return this.shadersLoaders;
+    }
+
+    public Set<IAssetsLoader> getAssetsLoaderSet() {
+        return this.assetsLoaderSet;
     }
 }

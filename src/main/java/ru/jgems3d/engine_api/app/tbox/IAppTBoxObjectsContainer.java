@@ -17,5 +17,14 @@ import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
 
 public interface IAppTBoxObjectsContainer {
+    /**
+     * @param id object's id
+     * @param tEntityContainer This is necessary to configure the object information inside the
+     *                         ToolBox system (contains information about the render and attributes
+     *                         of the object)
+     *                         <br><br>
+     * @param tRenderContainer Contains information about the rendering of an object inside
+     *                         the main JavaGems3D engine
+     */
     void addObject(@NotNull String id, @NotNull TEntityContainer tEntityContainer, @Nullable TRenderContainer tRenderContainer);
 }

@@ -11,6 +11,7 @@
 
 package ru.jgems3d.engine_api.manager;
 
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
@@ -45,7 +46,7 @@ public abstract class AppManager {
      *
      * @return the binding manager
      */
-    public abstract BindingManager createBindingManager();
+    public abstract @NotNull BindingManager createBindingManager();
 
     /**
      * This method returns an instance of the game character constructor that will be created each time the map is launched.

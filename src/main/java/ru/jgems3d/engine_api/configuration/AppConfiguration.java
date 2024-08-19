@@ -11,12 +11,34 @@
 
 package ru.jgems3d.engine_api.configuration;
 
-public final class AppConfiguration {
+import org.jetbrains.annotations.Nullable;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
-    private AppConfiguration() {
+/**
+ * Game Configuration. You can configure this yourself, or create a default:
+ * <pre>
+ *     {@code
+ *     AppConfiguration.createDefaultAppConfiguration()
+ *     }
+ * </pre>
+ */
+public class AppConfiguration {
+    private final JGemsPath windowIcon;
+
+    public AppConfiguration(JGemsPath windowIcon) {
+        this.windowIcon = windowIcon;
     }
 
     public static AppConfiguration createDefaultAppConfiguration() {
-        return new AppConfiguration();
+        return new AppConfiguration(new JGemsPath("/assets/jgems/icons/icon.png"));
+    }
+
+    /**
+     * Window icon.
+     *
+     * @return the window icon
+     */
+    public @Nullable JGemsPath getWindowIcon() {
+        return this.windowIcon;
     }
 }
