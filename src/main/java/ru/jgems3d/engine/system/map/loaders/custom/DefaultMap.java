@@ -39,7 +39,7 @@ public class DefaultMap implements IMapLoader {
     }
 
     @Override
-    public void createMap(GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
+    public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
         world.setMapNavGraph(Graph.readFromFile(new JGemsPath("/assets/jgems/nav.mesh")));
 
         BtStaticMeshBody worldModeledBrush = (BtStaticMeshBody) new BtStaticMeshBody(JGemsResourceManager.globalModelAssets.ground2, world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);

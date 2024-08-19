@@ -14,6 +14,7 @@ package ru.jgems3d.engine;
 import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.audio.SoundManager;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
@@ -88,7 +89,11 @@ public abstract class JGemsHelper {
     public static JGems3D getCoreObject() {
         return JGems3D.get();
     }
-    
+
+    public static SoundManager getSoundManager() {
+        return JGems3D.get().getSoundManager();
+    }
+
     public static LoggingManager getLogger() {
         return SystemLogging.get().getLogManager();
     }

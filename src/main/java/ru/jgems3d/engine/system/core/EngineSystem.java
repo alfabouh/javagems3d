@@ -123,7 +123,7 @@ public class EngineSystem implements IEngine {
         JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
         PhysicsWorld physicsWorld = JGemsHelper.getPhysicsWorld();
         SceneWorld sceneWorld = JGemsHelper.getSceneWorld();
-        this.getMapLoader().createMap(localRes, physicsWorld, sceneWorld);
+        this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
 
         Vector3f startPos = new Vector3f(pair.getFirst()).add(0.0f, 0.6f, 0.0f);
