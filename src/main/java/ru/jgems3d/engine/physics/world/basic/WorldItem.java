@@ -18,6 +18,9 @@ import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.JGemsHelper;
 
+/**
+ * World Item is the main class from which all objects of the physical world are inherited.
+ */
 public abstract class WorldItem implements IWorldObject {
     private static int globalId;
 

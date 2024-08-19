@@ -70,7 +70,7 @@ public final class TRenderContainer {
     }
 
     /**
-     * This class represents an object in the world of the scene. An object is connected to an object from the physical world. It can be null if you don't need this object.
+     * This class represents an object in the world of the scene. It is connected to an object from the physical world. It can be null if you don't need this object.
      */
     public @Nullable Class<? extends AbstractSceneEntity> getSceneEntityClass() {
         return this.sceneEntityClass;
