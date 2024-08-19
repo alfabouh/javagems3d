@@ -45,6 +45,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * In the world of the scene, logic is being updated for the functioning of the render based on information from the physical world.
+ */
 public final class SceneWorld implements IWorld {
     private final ParticlesEmitter particlesEmitter;
 

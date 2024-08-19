@@ -36,6 +36,7 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.engine_api.manager.AppManager;
@@ -70,11 +71,14 @@ public class TestManager extends AppManager {
             Vector3f scale = attributesContainer.tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
 
             MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel());
-            JGemsShaderManager shaderManager = localGameResources.getResource(renderContainer.getPathToRenderShader());
-
-            RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabricClass().newInstance(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
+            JGemsShaderManager shaderManager = localGameResources.getResource(renderContainer.getPathToJGemsShader());
 
             if (objectCategory.equals(TestTBoxApp.PHYSICS_OBJECT)) {
+                if (renderContainer.getSceneEntityClass() == null) {
+                    throw new JGemsRuntimeException("Null scene entity!");
+                }
+                RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabricClass().newInstance(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
+
                 boolean isStatic = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
                 JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
                 if (isStatic) {
@@ -92,7 +96,7 @@ public class TestManager extends AppManager {
                 }
             } else if (objectCategory.equals(TestTBoxApp.PROP_OBJECT)) {
                 MeshRenderData meshRenderData = new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
-                IRenderObjectFabric renderFabric = renderEntityData.getRenderFabric();
+                IRenderObjectFabric renderFabric = renderContainer.getRenderFabricClass().newInstance();
 
                 Model<Format3D> model = new Model<>(new Format3D(), meshDataGroup);
                 model.getFormat().setPosition(pos);

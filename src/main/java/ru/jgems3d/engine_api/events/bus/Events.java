@@ -30,8 +30,8 @@ import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 /**
  * This class contains many Events that will allow you to execute any code in certain places of the engine.
  * <br><br>
- * Some events can be <b>canceled</b> if they are inherited from <b>Events.Cancellable</b>.
- * <br><i>Canceling the event means that the standard logic of the engine will not be executed</i>
+ * Some events can be <b>cancelled</b> if they are inherited from <b>Events.Cancellable</b>.
+ * <br><i>Cancelling the event means that the standard logic of the engine will not be executed</i>
  * Example of code execution in an event:
  * <pre>
  *     {@code

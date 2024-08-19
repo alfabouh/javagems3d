@@ -18,6 +18,9 @@ import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEn
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
 
+/**
+ * This class represents the rendering information for an object inside the engine itself
+ */
 public final class TRenderContainer {
     private final MeshRenderAttributes meshRenderAttributes;
     private final JGemsPath pathToRenderModel;
@@ -29,7 +32,7 @@ public final class TRenderContainer {
         this(renderFabricClass, sceneEntityClass, null, pathToRenderModel, meshRenderAttributes);
     }
 
-    public TRenderContainer(@NotNull Class<? extends IRenderObjectFabric> renderFabricClass, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @Nullable JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
+    public TRenderContainer(@NotNull Class<? extends IRenderObjectFabric> renderFabricClass, @Nullable Class<? extends AbstractSceneEntity> sceneEntityClass, @Nullable JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
         this.renderFabricClass = renderFabricClass;
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
@@ -37,23 +40,39 @@ public final class TRenderContainer {
         this.meshRenderAttributes = meshRenderAttributes;
     }
 
-    public JGemsPath getPathToRenderShader() {
+    /**
+     * Path to object's JGems shader
+     */
+    public @Nullable JGemsPath getPathToJGemsShader() {
         return this.pathToRenderShader;
     }
 
-    public MeshRenderAttributes getMeshRenderAttributes() {
+    /**
+     * These are the attributes that affect the rendering of the mesh in the JGems pipeline
+     */
+    public @NotNull MeshRenderAttributes getMeshRenderAttributes() {
         return this.meshRenderAttributes;
     }
 
-    public JGemsPath getPathToRenderModel() {
+    /**
+     * Path to model
+     */
+    public @NotNull JGemsPath getPathToRenderModel() {
         return this.pathToRenderModel;
     }
 
-    public Class<? extends IRenderObjectFabric> getRenderFabricClass() {
+    /**
+     * A render factory is a special class that is responsible for rendering a specific IRenderObject object
+     * @see ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject
+     */
+    public @NotNull Class<? extends IRenderObjectFabric> getRenderFabricClass() {
         return this.renderFabricClass;
     }
 
-    public Class<? extends AbstractSceneEntity> getSceneEntityClass() {
+    /**
+     * This class represents an object in the world of the scene. An object is connected to an object from the physical world. It can be null if you don't need this object.
+     */
+    public @Nullable Class<? extends AbstractSceneEntity> getSceneEntityClass() {
         return this.sceneEntityClass;
     }
 }
