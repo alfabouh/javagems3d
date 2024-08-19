@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.audio.sound.SoundListener;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
@@ -150,7 +151,7 @@ public class JGemsScreen implements IScreen {
         }
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         boolean flag = vidMode != null && JGems3D.get().getGameSettings().windowMode.getValue() == 0;
-        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : JGemsSceneGlobalConstants.defaultW, flag ? vidMode.height() : JGemsSceneGlobalConstants.defaultH, JGems3D.get().toString()), new JGemsPath("/assets/jgems/icons/icon.png"));
+        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : JGemsSceneGlobalConstants.defaultW, flag ? vidMode.height() : JGemsSceneGlobalConstants.defaultH, JGems3D.get().toString()), APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getWindowIcon());
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new JGemsRuntimeException("Failed to create the GLFW window");

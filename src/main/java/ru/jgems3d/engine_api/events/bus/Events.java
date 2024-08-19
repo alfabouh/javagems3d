@@ -27,7 +27,25 @@ import ru.jgems3d.engine.physics.world.triggers.IHasCollisionTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 
+/**
+ * This class contains many Events that will allow you to execute any code in certain places of the engine.
+ * <br><br>
+ * Some events can be <b>canceled</b> if they are inherited from <b>Events.Cancellable</b>.
+ * <br><i>Canceling the event means that the standard logic of the engine will not be executed</i>
+ * Example of code execution in an event:
+ * <pre>
+ *     {@code
+ *          @SubscribeEvent
+ *          public static void onWorldTick(Events.PhysWorldTickPre event) {
+ *              if (event.canBeCancelled()) {
+ *                  event.setCancelled(true);
+ *              }
+ *          }
+ *     }
+ * </pre>
+ */
 public abstract class Events {
+    @SuppressWarnings("all")
     public interface IEvent {
         default boolean canBeCancelled() {
             return this instanceof Cancellable;

@@ -49,7 +49,7 @@ public class TestManager extends AppManager {
     }
 
     @Override
-    public BindingManager createBindingManager() {
+    public @NotNull BindingManager createBindingManager() {
         return new TestBindings();
     }
 
