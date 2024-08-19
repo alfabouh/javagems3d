@@ -48,7 +48,7 @@ public abstract class AppManager {
     public abstract BindingManager createBindingManager();
 
     /**
-     * This is a player constructor that will be introduced to the game world.
+     * This method returns an instance of the game character constructor that will be created each time the map is launched.
      *
      * @param mapLoader the map loader
      * @return the player constructor
@@ -56,24 +56,25 @@ public abstract class AppManager {
     public abstract @NotNull IPlayerConstructor createPlayer(IMapLoader mapLoader);
 
     /**
-     * Place object in t box map.
+     * This method is responsible for arranging your objects on the TBox game map.
      *
-     * @param sceneWorld          the scene world
-     * @param physicsWorld        the physics world
-     * @param localGameResources  the local game resources
-     * @param id                  the id
-     * @param objectCategory      the object category
-     * @param attributesContainer the attributes container
-     * @param renderContainer     the render container
+     * @param sceneWorld           the scene world
+     * @param physicsWorld         the physics world
+     * @param localGameResources   the local game resources
+     * @param globalGameResources  the global game resources
+     * @param id                   the object id
+     * @param objectCategory       the object category
+     * @param attributesContainer  an attribute container that stores the parameters of an object (for example, position, rotation, etc.)
+     * @param renderContainer      The necessary data to configure the object rendering
      */
-    public abstract void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer);
+    public abstract void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer);
 
     /**
-     * Open main menu panel ui.
+     * This method returns a Panel UI instance of the game's main menu.
      *
      * @return the panel ui
      */
-    public abstract @NotNull PanelUI openMainMenu();
+    public abstract @NotNull PanelUI gameMainMenuPanel();
 
     /**
      * Gets app configuration.

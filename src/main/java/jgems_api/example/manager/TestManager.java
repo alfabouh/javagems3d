@@ -58,12 +58,12 @@ public class TestManager extends AppManager {
         return (TestPlayer::new);
     }
 
-    public @NotNull PanelUI openMainMenu() {
+    public @NotNull PanelUI gameMainMenuPanel() {
         return new TestMainMenuPanel(null);
     }
 
     @Override
-    public void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer) {
+    public void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer) {
         try {
             Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
             Vector3f rot = attributesContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);

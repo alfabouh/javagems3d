@@ -11,7 +11,6 @@
 
 package ru.jgems3d.engine;
 
-import com.jme3.system.JmeSystem;
 import org.lwjgl.glfw.GLFW;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.api_bridge.APILauncher;
@@ -227,7 +226,7 @@ public final class JGems3D {
     }
 
     public void showMainMenu() {
-        this.openUIPanel(APIContainer.get().getApiGameInfo().getAppManager().openMainMenu());
+        this.openUIPanel(APIContainer.get().getApiGameInfo().getAppManager().gameMainMenuPanel());
     }
 
     public void openUIPanel(PanelUI panelUI) {

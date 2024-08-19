@@ -35,7 +35,7 @@ import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.SkyProp;
 
 public class TestMap implements IMapLoader {
     @Override
-    public void createMap(GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
+    public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
         MeshDataGroup meshDataGroup = localResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "sponza/sponza.obj"));
         sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshDataGroup),
                 new MeshRenderData(new MeshRenderAttributes().setAlphaDiscard(0.7f), JGemsResourceManager.globalShaderAssets.world_gbuffer)));

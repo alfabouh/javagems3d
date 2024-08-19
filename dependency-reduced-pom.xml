@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ /**
-  ~  * @author alfabouh
-  ~  * @since 2024
-  ~  * @link https://github.com/alfabouh/JavaGems3D
-  ~  *
-  ~  * This software is provided 'as-is', without any express or implied warranty.
-  ~  * In no event will the authors be held liable for any damages arising from the use of this software.
-  ~  */
-  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ru.alfabouh</groupId>
+  <groupId>ru.jgems3d</groupId>
   <artifactId>JavaGems3D</artifactId>
   <version>1.0</version>
   <build>
@@ -167,6 +156,11 @@
       <name>bintray-plugins</name>
       <url>https://jcenter.bintray.com</url>
     </repository>
+    <repository>
+      <snapshots />
+      <id>sonatype-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </repository>
   </repositories>
   <dependencyManagement>
     <dependencies>
@@ -180,9 +174,9 @@
     </dependencies>
   </dependencyManagement>
   <properties>
-    <lwjgl.version>3.3.3</lwjgl.version>
+    <lwjgl.version>3.3.4</lwjgl.version>
     <lwjgl.natives>natives-windows</lwjgl.natives>
-    <joml.version>1.10.5</joml.version>
+    <joml.version>1.10.8</joml.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>

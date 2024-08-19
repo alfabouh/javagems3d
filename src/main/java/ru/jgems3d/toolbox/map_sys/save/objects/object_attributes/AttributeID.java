@@ -19,6 +19,8 @@ public final class AttributeID {
     public static final AttributeID SCALING_XYZ = new AttributeID("scaling_xyz", "Scaling");
     public static final AttributeID SOUND = new AttributeID("sound", "Sound Name");
     public static final AttributeID SOUND_VOL = new AttributeID("sound_vol", "Sound Volume");
+    public static final AttributeID SOUND_PITCH = new AttributeID("sound_pitch", "Sound Pitch");
+    public static final AttributeID SOUND_ROLL_OFF = new AttributeID("sound_roll_off", "Sound Roll Off");
 
     private final String id;
     private final String description;
