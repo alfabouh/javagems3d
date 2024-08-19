@@ -17,6 +17,9 @@ import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a container for meshes
+ */
 public class MeshDataGroup implements ICached {
     private final List<ModelNode> modelNodeList;
     private IMeshDataContainer meshDataContainer;
@@ -24,10 +27,6 @@ public class MeshDataGroup implements ICached {
     public MeshDataGroup() {
         this.modelNodeList = new ArrayList<>();
         this.meshDataContainer = null;
-    }
-
-    public void setMeshDataContainer(IMeshDataContainer meshDataContainer) {
-        this.meshDataContainer = meshDataContainer;
     }
 
     public MeshDataGroup(ModelNode modelNode) {
@@ -56,6 +55,14 @@ public class MeshDataGroup implements ICached {
             return (T) this.getMeshDataContainer();
         }
         return null;
+    }
+
+    /**
+     * This is additional user information, if necessary
+     * @param meshDataContainer
+     */
+    public void setMeshDataContainer(IMeshDataContainer meshDataContainer) {
+        this.meshDataContainer = meshDataContainer;
     }
 
     public IMeshDataContainer getMeshDataContainer() {

@@ -28,6 +28,9 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 
+/**
+ * ShaderManager objects are shader packages that have functions for managing the state of the shader, its uniforms and uni-buffers
+ */
 public abstract class ShaderManager implements ICached {
     private ACT_SHADER activeShader;
     private final Set<UniformBufferObject> uniformBufferObjects;
