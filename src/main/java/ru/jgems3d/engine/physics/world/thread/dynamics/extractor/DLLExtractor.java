@@ -13,7 +13,6 @@ package ru.jgems3d.engine.physics.world.thread.dynamics.extractor;
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 import java.io.File;
@@ -27,9 +26,7 @@ import java.nio.file.StandardCopyOption;
 public abstract class DLLExtractor {
     public static void extractDll(Path pathToFile, String bits, String meta) throws IOException {
         String file = String.format("Windows%s%sSp_bulletjme.dll", bits, meta);
-        if (!pathToFile.toFile().mkdirs()) {
-            throw new JGemsRuntimeException("Couldn't create folder " + pathToFile);
-        }
+        pathToFile.toFile().mkdirs();
 
         if (new File(pathToFile.toString(), file).exists()) {
             return;

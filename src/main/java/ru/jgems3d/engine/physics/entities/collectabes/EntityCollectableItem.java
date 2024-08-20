@@ -14,6 +14,7 @@ package ru.jgems3d.engine.physics.entities.collectabes;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
@@ -22,6 +23,7 @@ import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class EntityCollectableItem extends WorldItem {
     private final SimpleTriggerZone pickUpItemTriggerZone;
@@ -37,6 +39,7 @@ public class EntityCollectableItem extends WorldItem {
             if (e instanceof IInventoryOwner) {
                 IInventoryOwner inventory = (IInventoryOwner) e;
                 if (inventory.inventory().addItemInInventory(this.getInventoryItem())) {
+                    JGemsHelper.getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 0.5f, 1.0f, 1.0f, this.getPosition());
                     JGemsHelper.getLogger().log("Put " + this.getInventoryItem().getName() + " in inventory!");
                     this.setDead();
                 }

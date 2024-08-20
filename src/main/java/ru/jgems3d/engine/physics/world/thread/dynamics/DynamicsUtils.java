@@ -28,6 +28,9 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * It is a utilitarian class that has functions for managing the state of physical Bullet entities.
+ */
 public abstract class DynamicsUtils {
 
     public static com.jme3.math.Vector3f lerp(com.jme3.math.Vector3f a, com.jme3.math.Vector3f b, float t) {

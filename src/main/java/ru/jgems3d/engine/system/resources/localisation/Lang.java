@@ -22,10 +22,10 @@ import java.util.Set;
 
 public final class Lang {
     private static final Map<String, Lang> values = new HashMap<>();
-    public static Lang English = new Lang("English", new JGemsPath(JGems3D.Paths.LANG));
+    public static Lang DefaultEnglish = new Lang("English", new JGemsPath(JGems3D.Paths.LANG));
 
     static {
-        Lang.values.put(English.getFullName(), Lang.English);
+        Lang.values.put(DefaultEnglish.getFullName(), Lang.DefaultEnglish);
     }
 
     private final String fullName;
@@ -41,7 +41,7 @@ public final class Lang {
     }
 
     public static Lang defaultLang() {
-        return Lang.English;
+        return Lang.DefaultEnglish;
     }
 
     public static Lang createLang(String fullName, JGemsPath filePath) {
@@ -53,7 +53,7 @@ public final class Lang {
 
     public static void clearLangSet() {
         Lang.values.clear();
-        Lang.values.put(Lang.English.getFullName(), Lang.English);
+        Lang.values.put(Lang.DefaultEnglish.getFullName(), Lang.DefaultEnglish);
     }
 
     public static Set<Lang> getAllLanguages() {

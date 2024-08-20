@@ -133,7 +133,7 @@ public class UIButton extends UIInteractiveElement {
     @Override
     protected void onClicked(Vector2f mouseCoordinates) {
         if (this.onClick != null) {
-            JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
+            JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.button, SoundType.SYSTEM, 2.0f, 1.0f);
             this.onClick.action();
         }
     }
