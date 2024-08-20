@@ -24,12 +24,10 @@ public class SoundAssetsLoader implements IAssetsLoader {
     public SoundBuffer pick;
     public SoundBuffer button;
     public SoundBuffer[] pl_step;
-    public SoundBuffer[] pl_slosh;
 
     @Override
     public void load(GameResources gameResources) {
         this.pl_step = new SoundBuffer[4];
-        this.pl_slosh = new SoundBuffer[4];
 
         this.zippo_o = gameResources.createSoundBuffer(new JGemsPath(JGems3D.Paths.SOUNDS, "ui/zippo_o.ogg"), AL10.AL_FORMAT_MONO16);
         this.zippo_c = gameResources.createSoundBuffer(new JGemsPath(JGems3D.Paths.SOUNDS, "ui/zippo_c.ogg"), AL10.AL_FORMAT_MONO16);
@@ -38,7 +36,6 @@ public class SoundAssetsLoader implements IAssetsLoader {
 
         for (int i = 0; i < 4; i++) {
             this.pl_step[i] = gameResources.createSoundBuffer(new JGemsPath(JGems3D.Paths.SOUNDS, "player/pl_step" + (i + 1) + ".ogg"), AL10.AL_FORMAT_STEREO16);
-            this.pl_slosh[i] = gameResources.createSoundBuffer(new JGemsPath(JGems3D.Paths.SOUNDS, "player/pl_slosh" + (i + 1) + ".ogg"), AL10.AL_FORMAT_STEREO16);
         }
     }
 

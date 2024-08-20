@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class Localisation {
-    public static Lang defaultSystemLang = Lang.English;
+    public static Lang defaultSystemLang = Lang.DefaultEnglish;
 
     static {
         Locale defaultLocale = Locale.getDefault();
@@ -59,7 +59,7 @@ public class Localisation {
     public void setLanguage(Lang lang) {
         if (lang == null) {
             JGemsHelper.getLogger().warn("Tried to set NULL language");
-            lang = Lang.English;
+            lang = Lang.DefaultEnglish;
         }
         JGemsHelper.getLogger().log("Loading language table: " + lang.getFullName());
         this.readLangFileInTable(lang);

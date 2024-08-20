@@ -14,9 +14,7 @@ package ru.jgems3d.engine.system.map.loaders.tbox;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
-import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
-import ru.jgems3d.engine.audio.SoundManager;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
@@ -35,9 +33,7 @@ import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
 import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeTarget;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 import java.io.IOException;
@@ -111,7 +107,7 @@ public class TBoxMapLoader implements IMapLoader {
                             }
                         }
                     } else {
-                        APIContainer.get().getApiGameInfo().getAppManager().placeObjectInTBoxMap(sceneWorld, physicsWorld, globalResources, localResources, id, type, tEntityContainer.getAttributeContainer(), tRenderContainer);
+                        APIContainer.get().getApiGameInfo().getAppManager().placeObjectOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, type, tEntityContainer.getAttributeContainer(), tRenderContainer);
                     }
                 }
             }

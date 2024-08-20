@@ -30,6 +30,7 @@ import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.core.player.LocalPlayer;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.events.bus.Events;
 import ru.jgems3d.logger.managers.JGemsLogging;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
@@ -226,19 +227,19 @@ public class EngineSystem implements IEngine {
             JGemsHelper.getLogger().warn("Engine thread is currently running!");
             return;
         }
-        APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent(this);
-        JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
-        this.getResourceManager().initGlobalResources();
-        this.getResourceManager().initLocalResources();
         this.thread = new Thread(() -> {
             boolean badExit = true;
             try {
+                APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent(this);
+                JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
+                this.getResourceManager().initGlobalResources();
+                this.getResourceManager().initLocalResources();
                 JGems3D.get().getSoundManager().createSystem();
                 JGems3D.get().getPhysicThreadManager().initService();
                 this.createGraphics();
+                APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent(this);
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
-                APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent(this);
                 JGems3D.get().getScreen().startScreenRenderProcess();
                 badExit = false;
             } catch (Exception e) {

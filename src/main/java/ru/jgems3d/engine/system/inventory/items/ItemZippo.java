@@ -71,13 +71,13 @@ public class ItemZippo extends InventoryItem {
     }
 
     private void close() {
-        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.zippo_c, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
+        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.zippo_c, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
         this.pointLight.setEnabled(false);
         this.isOpened = false;
     }
 
     private void open() {
-        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.zippo_o, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
+        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.zippo_o, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
         this.pointLight.setEnabled(true);
         this.isOpened = true;
     }

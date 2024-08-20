@@ -11,7 +11,6 @@
 
 package ru.jgems3d.engine_api.manager;
 
-import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
@@ -68,7 +67,7 @@ public abstract class AppManager {
      * @param attributesContainer  an attribute container that stores the parameters of an object (for example, position, rotation, etc.)
      * @param renderContainer      The necessary data to configure the object rendering
      */
-    public abstract void placeObjectInTBoxMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer);
+    public abstract void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer);
 
     /**
      * This method returns a Panel UI instance of the game's main menu.

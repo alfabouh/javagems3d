@@ -16,23 +16,18 @@ import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.table.InventoryRenderTable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
-import ru.jgems3d.engine.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import ru.jgems3d.engine.system.inventory.items.InventoryItem;
-import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.*;
 import ru.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
-import ru.jgems3d.engine.system.resources.assets.material.samples.packs.CubeMapTexturePack;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class JGemsResourceManager {
     public static final InventoryRenderTable inventoryItemRenderTable = new InventoryRenderTable();
@@ -41,7 +36,7 @@ public final class JGemsResourceManager {
     public static TextureAssetsLoader globalTextureAssets = null;
     public static ModelAssetsLoader globalModelAssets = null;
     public static RenderDataLoader globalRenderDataAssets = null;
-    public static SoundAssetsLoader globalSoundAssetsLoader = null;
+    public static SoundAssetsLoader globalSoundAssets = null;
 
     private final GameResources globalResources;
     private final GameResources localResources;
@@ -109,8 +104,8 @@ public final class JGemsResourceManager {
         JGemsResourceManager.globalTextureAssets = new TextureAssetsLoader();
         JGemsResourceManager.globalModelAssets = new ModelAssetsLoader();
         JGemsResourceManager.globalRenderDataAssets = new RenderDataLoader();
-        JGemsResourceManager.globalSoundAssetsLoader = new SoundAssetsLoader();
-        this.getGlobalResources().addAssetsLoaders(JGemsResourceManager.globalTextureAssets, JGemsResourceManager.globalModelAssets, JGemsResourceManager.globalRenderDataAssets, JGemsResourceManager.globalSoundAssetsLoader);
+        JGemsResourceManager.globalSoundAssets = new SoundAssetsLoader();
+        this.getGlobalResources().addAssetsLoaders(JGemsResourceManager.globalTextureAssets, JGemsResourceManager.globalModelAssets, JGemsResourceManager.globalRenderDataAssets, JGemsResourceManager.globalSoundAssets);
         this.getGlobalResources().addAssetsLoaders(APIContainer.get().getAppResourceLoader().getAssetsLoaderSet());
     }
 

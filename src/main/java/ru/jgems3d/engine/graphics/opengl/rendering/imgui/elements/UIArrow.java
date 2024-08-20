@@ -103,7 +103,7 @@ public class UIArrow extends UIInteractiveElement {
                 this.settingIntSlots.setValue(this.settingIntSlots.getMax());
             }
         }
-        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssetsLoader.button, SoundType.SYSTEM, 2.0f, 1.0f);
+        JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.button, SoundType.SYSTEM, 2.0f, 1.0f);
     }
 
     @Override

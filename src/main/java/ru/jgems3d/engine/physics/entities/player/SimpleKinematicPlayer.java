@@ -22,6 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
 import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.system.inventory.Inventory;
@@ -36,6 +39,7 @@ import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.system.controller.objects.IController;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -201,6 +205,9 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         }
         com.jme3.math.Vector3f vDir = new com.jme3.math.Vector3f(0.0f, 0.0f, 0.0f);
         if (dir.length() > 0.0f) {
+            if (this.getPhysicsCharacter().onGround() && this.getTicksExisted() % 15 == 0) {
+                JGemsHelper.getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.pl_step[JGems3D.random.nextInt(4)], SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+            }
             vDir = DynamicsUtils.convertV3F_JME(dir.normalize().mul(speed).mul(1, 0, 1));
         }
         this.getPhysicsCharacter().setWalkDirection(vDir);
