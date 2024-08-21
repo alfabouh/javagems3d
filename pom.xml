@@ -118,7 +118,7 @@
                             <target>
                                 <exec executable="jarsigner">
                                     <arg value="-keystore"/>
-                                    <arg value=".\skey\keystore.jks"/>
+                                    <arg value=".\key\keystore.jks"/>
                                     <arg value="-storepass"/>
                                     <arg value="storepass"/>
                                     <arg value="${project.build.directory}/${project.build.finalName}-shaded.jar"/>
@@ -141,13 +141,13 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>skey/signtool/signtool</executable>
+                            <executable>key/signtool/signtool</executable>
                             <arguments>
                                 <argument>sign</argument>
                                 <argument>/fd</argument>
                                 <argument>SHA256</argument>
                                 <argument>/f</argument>
-                                <argument>.\skey\certificate.pfx</argument>
+                                <argument>.\key\certificate.pfx</argument>
                                 <argument>/p</argument>
                                 <argument>storepass</argument>
                                 <argument>/tr</argument>
