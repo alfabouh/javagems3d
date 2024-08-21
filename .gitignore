@@ -24,7 +24,7 @@ target/
 .sts4-cache
 
 ### NetBeans ###
-key/
+skey/
 /nbproject/private/
 /nbbuild/
 /dist/
