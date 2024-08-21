@@ -17,6 +17,7 @@ import org.lwjgl.openal.AL10;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
+import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
@@ -52,7 +53,7 @@ public class TBoxMapLoader implements IMapLoader {
 
     public static MapObject readMapFromJar(JGemsPath pathToMap) {
         try {
-            return new MapObject(Graph.readFromFile(new JGemsPath(pathToMap, "nav.mesh")), TBoxMapReader.readMapFolderFromJAR(pathToMap));
+            return new MapObject(Graph.readFromFile(new JGemsPath(pathToMap, "nav.mesh")), TBoxMapReader.readMapFromJAR(pathToMap));
         } catch (IOException | ClassNotFoundException e) {
             LoggingManager.showExceptionDialog("Failed to lad map!");
             JGemsHelper.getLogger().error("Failed to load map: " + pathToMap);
@@ -103,6 +104,18 @@ public class TBoxMapLoader implements IMapLoader {
                                     break;
                                 }
                                 JGemsHelper.getSoundManager().playSoundAt(soundBuffer, SoundType.WORLD_AMBIENT_SOUND, soundPitch, soundVolume, soundRollOff, pos);
+                                break;
+                            }
+                            case "point_light": {
+                                float brightness = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.BRIGHTNESS, Float.class);
+                                Vector3f color = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
+
+                                PointLight pointLight = new PointLight();
+                                pointLight.setLightPos(pos);
+                                pointLight.setBrightness(brightness);
+                                pointLight.setLightColor(color);
+
+                                JGemsHelper.WORLD.addLight(pointLight);
                                 break;
                             }
                         }

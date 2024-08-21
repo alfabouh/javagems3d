@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class TBoxMapSaver {
-    public static void saveEditorToJSON(TBoxMapContainer TBoxMapContainer, File file) throws IOException {
+    public static void saveMap(TBoxMapContainer TBoxMapContainer, File file) throws IOException {
         File toSave = new File(file, TBoxMapContainer.getSaveMapProperties().getMapName());
         toSave.mkdirs();
 

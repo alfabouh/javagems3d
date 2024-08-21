@@ -26,19 +26,11 @@ import java.util.HashSet;
 
 public class TBoxMapReader {
     @SuppressWarnings("unchecked")
-    public static TBoxMapContainer readMapFolder(File file) {
-        MapProperties mapProperties = null;
-        HashSet<SaveObject> saveObjectSet = null;
-        try {
-            mapProperties = SerializeHelper.readFromJSON(file, "map_prop.json", MapProperties.class);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-        try {
-            saveObjectSet = SerializeHelper.readFromBytes(file, "objects.ser", HashSet.class);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
+    public static TBoxMapContainer readMap(File file) throws IOException, ClassNotFoundException {
+        MapProperties mapProperties;
+        HashSet<SaveObject> saveObjectSet;
+        mapProperties = SerializeHelper.readFromJSON(file, "map_prop.json", MapProperties.class);
+        saveObjectSet = SerializeHelper.readFromBytes(file, "objects.ser", HashSet.class);
         TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
         TBoxMapContainer.setSaveObjectSet(saveObjectSet);
 
@@ -47,18 +39,14 @@ public class TBoxMapReader {
     }
 
     @SuppressWarnings("unchecked")
-    public static TBoxMapContainer readMapFolderFromJAR(JGemsPath pathToMap) throws IOException, ClassNotFoundException {
-        MapProperties mapProperties = null;
-        HashSet<SaveObject> saveObjectSet = null;
+    public static TBoxMapContainer readMapFromJAR(JGemsPath pathToMap) throws IOException, ClassNotFoundException {
+        MapProperties mapProperties;
+        HashSet<SaveObject> saveObjectSet;
         try (InputStream stream = JGems3D.loadFileFromJar(new JGemsPath(pathToMap + "/map_prop.json"))){
             mapProperties = SerializeHelper.readFromJSON(stream, MapProperties.class); //TODO
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
         }
         try (InputStream stream = JGems3D.loadFileFromJar(new JGemsPath(pathToMap + "/objects.ser"))) {
             saveObjectSet = SerializeHelper.readFromBytes(stream, HashSet.class);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
         }
         TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
         TBoxMapContainer.setSaveObjectSet(saveObjectSet);

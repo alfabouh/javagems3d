@@ -20,7 +20,7 @@ import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.render.scene.items.collision.LocalCollision;
 import ru.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 
-public abstract class TBoxScene3DObject {
+public abstract class TBoxAbstractObject {
     private static int globalObjectID;
     private final String name;
     private final int id;
@@ -30,9 +30,9 @@ public abstract class TBoxScene3DObject {
     private boolean selected;
     private AttributesContainer attributesContainer;
 
-    public TBoxScene3DObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
+    public TBoxAbstractObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
         this.name = name;
-        this.id = TBoxScene3DObject.globalObjectID++;
+        this.id = TBoxAbstractObject.globalObjectID++;
         this.selected = false;
         this.model = model;
         this.renderData = renderData;
@@ -40,7 +40,7 @@ public abstract class TBoxScene3DObject {
         this.attributesContainer = new AttributesContainer();
     }
 
-    public abstract TBoxScene3DObject copy();
+    public abstract TBoxAbstractObject copy();
 
     public void setPositionWithAttribute(Vector3f vector3f) {
         this.getModel().getFormat().setPosition(vector3f);
@@ -77,7 +77,7 @@ public abstract class TBoxScene3DObject {
         return this.attributesContainer;
     }
 
-    public TBoxScene3DObject setAttributeContainer(AttributesContainer attributesContainer) {
+    public TBoxAbstractObject setAttributeContainer(AttributesContainer attributesContainer) {
         this.attributesContainer = attributesContainer;
         return this;
     }

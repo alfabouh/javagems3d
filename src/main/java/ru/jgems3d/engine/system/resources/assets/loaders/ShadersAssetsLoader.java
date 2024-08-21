@@ -21,7 +21,7 @@ import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
-public class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
+public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
 
     public UniformBufferObject SunLight;
     public UniformBufferObject PointLights;

@@ -12,6 +12,7 @@
 package ru.jgems3d.toolbox.render.scene.items.renderers;
 
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
@@ -19,15 +20,14 @@ import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import ru.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 
-public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
+public class AABBZoneObject3DRenderer implements ITBoxObjectRenderer {
     @Override
     public void onRender(MapProperties properties, TBoxAbstractObject tBoxAbstractObject, float deltaTime) {
         tBoxAbstractObject.getRenderData().getShaderManager().bind();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"), false);
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), tBoxAbstractObject.isSelected());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), tBoxAbstractObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.COLOR, Vector3f.class));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("colour"), new Vector4f(tBoxAbstractObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.COLOR, Vector3f.class), 1.0f));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().unBind();
     }

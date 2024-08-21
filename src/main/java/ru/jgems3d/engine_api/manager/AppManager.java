@@ -66,6 +66,14 @@ public abstract class AppManager {
      * @param objectCategory       the object category
      * @param attributesContainer  an attribute container that stores the parameters of an object (for example, position, rotation, etc.)
      * @param renderContainer      The necessary data to configure the object rendering
+     * <br><br>
+     * <b>You can use the default method of installing an object on the map using</b>
+     * <pre>
+     *      {@code
+     *          TBoxMapDefaultObjectsPlacer#placeObjectOnMap
+     *      }
+     * </pre>
+     * @see ru.jgems3d.engine.system.map.loaders.tbox.TBoxMapDefaultObjectsPlacer
      */
     public abstract void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer);
 

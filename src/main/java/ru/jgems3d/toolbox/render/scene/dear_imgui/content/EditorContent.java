@@ -37,7 +37,7 @@ import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.jgems3d.toolbox.controller.binding.TBoxBindingManager;
 import ru.jgems3d.toolbox.render.scene.TBoxScene;
-import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
+import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import ru.jgems3d.toolbox.render.screen.TBoxScreen;
 
 import java.io.File;
@@ -56,10 +56,10 @@ public class EditorContent implements ImGuiContent {
     private final Vector2f sceneFrameMax;
     public String currentSelectedToPlaceID;
 
-    public float[] previewBorders = new float[]{1.0f};
+    public float[] previewBorders = new float[]{2.0f};
 
-    public TBoxScene3DObject prevSelectedItem;
-    public TBoxScene3DObject currentSelectedObject;
+    public TBoxAbstractObject prevSelectedItem;
+    public TBoxAbstractObject currentSelectedObject;
 
     public EditorContent(TBoxScene tBoxScene) {
         this.sceneFrameCenter = new Vector2f(0.0f);
@@ -156,7 +156,7 @@ public class EditorContent implements ImGuiContent {
         this.prevSelectedItem = this.currentSelectedObject;
         this.currentSelectedObject = null;
         if (ImGui.collapsingHeader("Scene Objects", ImGuiTreeNodeFlags.DefaultOpen)) {
-            String[] strings = this.getTBoxScene().getSceneContainer().getSceneObjects().stream().map(TBoxScene3DObject::toString).toArray(String[]::new);
+            String[] strings = this.getTBoxScene().getSceneContainer().getSceneObjects().stream().map(TBoxAbstractObject::toString).toArray(String[]::new);
 
             ImGui.columns(2, "SObj", true);
 
@@ -170,7 +170,7 @@ public class EditorContent implements ImGuiContent {
             if (!this.getTBoxScene().getSceneContainer().getSceneObjects().isEmpty()) {
                 Object[] objects = this.getTBoxScene().getSceneContainer().getSceneObjects().toArray();
                 for (int i = 0; i < objects.length; i++) {
-                    TBoxScene3DObject object = (TBoxScene3DObject) objects[i];
+                    TBoxAbstractObject object = (TBoxAbstractObject) objects[i];
                     object.setSelected(false);
                     if (i == this.objectSelectionInt.get()) {
                         this.currentSelectedObject = object;
@@ -424,10 +424,10 @@ public class EditorContent implements ImGuiContent {
         }
     }
 
-    public boolean trySelectObject(TBoxScene3DObject boxScene3DObject) {
+    public boolean trySelectObject(TBoxAbstractObject boxScene3DObject) {
         Object[] objects = this.getTBoxScene().getSceneContainer().getSceneObjects().toArray();
         for (int i = 0; i < objects.length; i++) {
-            TBoxScene3DObject object = (TBoxScene3DObject) objects[i];
+            TBoxAbstractObject object = (TBoxAbstractObject) objects[i];
             if (object.equals(boxScene3DObject)) {
                 this.objectSelectionInt.set(i);
                 return true;

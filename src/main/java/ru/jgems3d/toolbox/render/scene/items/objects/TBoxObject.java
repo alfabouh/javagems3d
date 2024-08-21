@@ -16,10 +16,10 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
-import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
+import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import ru.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 
-public final class TBoxObject extends TBoxScene3DObject {
+public final class TBoxObject extends TBoxAbstractObject {
     public TBoxObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
         super(name, renderData, model);
     }
