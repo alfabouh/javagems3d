@@ -8,5 +8,6 @@ uniform sampler2D diffuse_map;
 
 void main()
 {
-    frag_color = use_texture ? texture(diffuse_map, out_texture) : vec4(vec3(0.0, min(out_texture.y * out_texture.x, 0.8) + 0.2, 0.0), 1.0);
+    float f1 = min(out_texture.y, out_texture.x) + 0.25;
+    frag_color = use_texture ? texture(diffuse_map, out_texture) : vec4(vec3(f1), 1.0);
 }

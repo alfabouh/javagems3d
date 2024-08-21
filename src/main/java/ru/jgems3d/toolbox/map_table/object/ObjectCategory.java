@@ -19,6 +19,7 @@ public final class ObjectCategory {
     public static final Set<ObjectCategory> values = new HashSet<>();
 
     public static ObjectCategory GENERIC = new ObjectCategory("Generic");
+    public static ObjectCategory ZONES = new ObjectCategory("Zones/Liquids");
 
     private final String groupName;
 

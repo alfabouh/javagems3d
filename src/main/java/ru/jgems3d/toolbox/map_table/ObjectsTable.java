@@ -19,6 +19,7 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine_api.app.tbox.AppTBoxObjectsContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
 import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
+import ru.jgems3d.toolbox.map_table.object.AABBZoneObjectData;
 import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_table.object.MarkerObjectData;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
@@ -50,11 +51,22 @@ public class ObjectsTable {
         Attribute<Float> soundPitch = new Attribute<>(AttributeTarget.FLOAT_0_50, AttributeID.SOUND_PITCH, 1.0f);
         Attribute<Float> soundRollOff = new Attribute<>(AttributeTarget.FLOAT_0_50, AttributeID.SOUND_ROLL_OFF, 1.0f);
         Attribute<String> soundAttribute = new Attribute<>(AttributeTarget.STRING, AttributeID.SOUND, JGems3D.Paths.SOUNDS);
+
         Attribute<Vector3f> transformPosXYZ = new Attribute<>(AttributeTarget.POSITION_XYZ, AttributeID.POSITION_XYZ, new Vector3f(0.0f));
+        Attribute<Vector3f> transformScalingXYZ = new Attribute<>(AttributeTarget.SCALING_XYZ, AttributeID.SCALING_XYZ, new Vector3f(1.0f));
+
         Attribute<Vector3f> rotationPlayerAttribute = new Attribute<>(AttributeTarget.ROTATION_Y, AttributeID.ROTATION_XYZ, new Vector3f(0.0f, (float) Math.toRadians(90.0f), 0.0f));
-        Attribute<Vector3f> colorPlayerStaticAttribute = new Attribute<>(AttributeTarget.STATIC_NO_EDIT, AttributeID.COLOR, new Vector3f(1.0f, 0.0f, 0.0f));
-        Attribute<Vector3f> colorAttributeSound = new Attribute<>(AttributeTarget.STATIC_NO_EDIT, AttributeID.COLOR, new Vector3f(0.0f, 1.0f, 0.0f));
+
+        Attribute<Vector3f> colorAttributeStatic1 = new Attribute<>(AttributeTarget.STATIC_NO_EDIT, AttributeID.COLOR, new Vector3f(1.0f, 0.0f, 0.0f));
+        Attribute<Vector3f> colorAttributeStatic2 = new Attribute<>(AttributeTarget.STATIC_NO_EDIT, AttributeID.COLOR, new Vector3f(0.0f, 1.0f, 0.0f));
+        Attribute<Vector3f> colorAttributeStatic3 = new Attribute<>(AttributeTarget.STATIC_NO_EDIT, AttributeID.COLOR, new Vector3f(0.0f, 0.0f, 10f));
+
         Attribute<Vector3f> colorAttribute = new Attribute<>(AttributeTarget.COLOR3, AttributeID.COLOR, new Vector3f(1.0f));
+
+        Attribute<Float> brightness = new Attribute<>(AttributeTarget.FLOAT_0_50, AttributeID.BRIGHTNESS, 1.0f);
+        Attribute<Vector3f> lightScaling = new Attribute<>(AttributeTarget.STATIC_NO_EDIT, AttributeID.SCALING_XYZ, new Vector3f(0.25f));
+
+        Attribute<String> zoneID = new Attribute<>(AttributeTarget.STRING, AttributeID.NAME, "zone1");
 
         Set<Map.Entry<String, Pair<TEntityContainer, TRenderContainer>>> pairEntry = appTBoxObjectsContainer.getMap().entrySet();
         for (Map.Entry<String, Pair<TEntityContainer, TRenderContainer>> entry : pairEntry) {
@@ -68,9 +80,13 @@ public class ObjectsTable {
             this.addObject(entry.getKey(), abstractObjectData);
         }
 
-        this.addObject("player_start", new MarkerObjectData(new AttributesContainer(transformPosXYZ, rotationPlayerAttribute, colorPlayerStaticAttribute), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().player, ObjectCategory.GENERIC));
+        this.addObject("water_liquid", new AABBZoneObjectData(new AttributesContainer(transformPosXYZ, transformScalingXYZ, colorAttributeStatic3), TBoxResourceManager.shaderAssets.world_transparent_color, ObjectCategory.ZONES));
+        this.addObject("trigger_zone", new AABBZoneObjectData(new AttributesContainer(transformPosXYZ, transformScalingXYZ, colorAttributeStatic2, zoneID), TBoxResourceManager.shaderAssets.world_transparent_color, ObjectCategory.ZONES));
+
+        this.addObject("point_light", new MarkerObjectData(new AttributesContainer(transformPosXYZ, brightness, colorAttribute, lightScaling), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().sphere, ObjectCategory.GENERIC));
+        this.addObject("player_start", new MarkerObjectData(new AttributesContainer(transformPosXYZ, rotationPlayerAttribute, colorAttributeStatic1), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().player, ObjectCategory.GENERIC));
         this.addObject("generic_marker", new MarkerObjectData(new AttributesContainer(transformPosXYZ, colorAttribute), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().pointer, ObjectCategory.GENERIC));
-        this.addObject("ambient_sound", new MarkerObjectData(new AttributesContainer(transformPosXYZ, soundVolume, soundPitch, soundRollOff, soundAttribute, colorAttributeSound), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().cubic, ObjectCategory.GENERIC));
+        this.addObject("ambient_sound", new MarkerObjectData(new AttributesContainer(transformPosXYZ, soundVolume, soundPitch, soundRollOff, soundAttribute, colorAttributeStatic2), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().cubic, ObjectCategory.GENERIC));
     }
 
     public void addObject(String key, AbstractObjectData mapObject) {

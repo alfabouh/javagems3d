@@ -69,7 +69,7 @@ public class TBoxResourceManager {
 
     public void loadResources() {
         SystemLogging.get().getLogManager().log("Loading resources...");
-        this.getModelResources().init();
+        this.getModelResources().init(this.getCache());
     }
 
     public void destroy() {

@@ -15,19 +15,25 @@ import javafx.util.Pair;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL45;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
+import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.logger.SystemLogging;
@@ -48,7 +54,7 @@ import ru.jgems3d.toolbox.render.scene.dear_imgui.DIMGuiRenderTBox;
 import ru.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
 import ru.jgems3d.toolbox.render.scene.dear_imgui.content.ImGuiContent;
 import ru.jgems3d.toolbox.render.scene.items.objects.TBoxObject;
-import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxScene3DObject;
+import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import ru.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 import ru.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 import ru.jgems3d.toolbox.resources.TBoxResourceManager;
@@ -65,6 +71,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TBoxScene {
+    public static FBOTexture2DProgram sceneForwardFbo;
+    public static FBOTexture2DProgram sceneTransparentFbo;
     public static FBOTexture2DProgram sceneFbo;
     public static FBOTexture2DProgram previewItemFbo;
     private final SceneContainer sceneObjects;
@@ -85,104 +93,34 @@ public class TBoxScene {
         this.setGUIEditor();
     }
 
-    public void tryLoadMap(File file) {
-        TBoxMapContainer mapContainer;
-        try {
-            if (file == null || !Files.exists(file.toPath())) {
-                JFileChooser jFileChooser = new JFileChooser();
-                jFileChooser.setDialogTitle("Read");
-                jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    private void createFBOs(Vector2i dim) {
+        TBoxScene.sceneFbo = new FBOTexture2DProgram(true);
+        TBoxScene.previewItemFbo = new FBOTexture2DProgram(true);
+        TBoxScene.sceneForwardFbo = new FBOTexture2DProgram(true);
+        TBoxScene.sceneTransparentFbo = new FBOTexture2DProgram(true);
 
-                int userSelection = jFileChooser.showOpenDialog(null);
+        T2DAttachmentContainer fbo = new T2DAttachmentContainer() {{
+            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
+        }};
+        TBoxScene.sceneFbo.createFrameBuffer2DTexture(dim, fbo, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
 
-                if (userSelection == JFileChooser.APPROVE_OPTION) {
-                    file = jFileChooser.getSelectedFile();
-                }
-            }
-            if (file != null) {
-                mapContainer = TBoxMapReader.readMapFolder(file);
-
-                ToolBox.get().getTBoxSettings().recentPathOpen.setValue(new File(file.toString()).getAbsolutePath());
-
-                MapProperties mapObjectProperties = mapContainer.getSaveMapProperties();
-                if (mapObjectProperties == null) {
-                    throw new JGemsNullException("Invalid deserialization!");
-                }
-
-                if (mapObjectProperties.getMapName() == null || mapObjectProperties.getMapName().isEmpty()) {
-                    throw new JGemsNullException("Invalid path provided");
-                }
-
-                Set<SaveObject> saveObjects = mapContainer.getSaveObjectsSet();
-                this.clear();
-
-                if (saveObjects != null) {
-                    for (SaveObject saveObject : saveObjects) {
-                        try {
-                            Vector3f savePos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
-                            Vector3f saveRot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
-                            Vector3f saveScale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
-                            if (savePos == null) {
-                                SystemLogging.get().getLogManager().error("Deserialized object has NULL position!!");
-                                continue;
-                            }
-                            if (saveRot != null) {
-                                saveRot = new Vector3f(saveRot);
-                            }
-                            Format3D format3D = new Format3D(savePos, saveRot, saveScale);
-                            AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
-                            MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
-                            TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
-                            tBoxModelObject.setAttributeContainer(saveObject.getAttributeContainer());
-                            this.addObject(tBoxModelObject);
-                        } catch (NullPointerException e) {
-                            e.printStackTrace(System.err);
-                        }
-                    }
-                } else {
-                    SystemLogging.get().getLogManager().error("Couldn't read objects path from map!");
-                    LoggingManager.showExceptionDialog("Couldn't read objects path from map!");
-                }
-
-                this.getSceneContainer().setMapProperties(mapObjectProperties);
-            }
-        } catch (Exception e) {
-            SystemLogging.get().getLogManager().exception(e);
-            LoggingManager.showExceptionDialog("Found errors, while reading map!");
-        }
+        T2DAttachmentContainer fbo2 = new T2DAttachmentContainer() {{
+            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
+        }};
+        TBoxScene.sceneForwardFbo.createFrameBuffer2DTexture(dim, fbo2, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        T2DAttachmentContainer fbo3 = new T2DAttachmentContainer() {{
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA);
+            add(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED);
+        }};
+        TBoxScene.sceneTransparentFbo.createFrameBuffer2DTexture(dim, fbo3, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
     }
 
-    public void prepareMapToSave(File file) {
-        if (this.getMapProperties().getMapName() == null || this.getMapProperties().getMapName().isEmpty()) {
-            LoggingManager.showWindowInfo("Enter map name!");
-            return;
-        }
-
-        TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(this.getSceneContainer().getMapProperties());
-
-        for (TBoxObject tBoxObject : this.getSceneContainer().getObjectsFromContainer(TBoxObject.class)) {
-            TBoxMapContainer.addSaveObject(new SaveObject(tBoxObject.getAttributeContainer(), tBoxObject.objectId()));
-        }
-
-        try {
-            if (file == null || !Files.exists(file.toPath())) {
-                JFileChooser jFileChooser = new JFileChooser();
-                jFileChooser.setDialogTitle("Save");
-                jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int userSelection = jFileChooser.showSaveDialog(null);
-                if (userSelection == JFileChooser.APPROVE_OPTION) {
-                    file = jFileChooser.getSelectedFile();
-                }
-            }
-            if (file != null) {
-                TBoxMapSaver.saveEditorToJSON(TBoxMapContainer, file);
-                String path = new File(file.toString()).getAbsolutePath();
-                ToolBox.get().getTBoxSettings().recentPathSave.setValue(path);
-            }
-        } catch (Exception e) {
-            SystemLogging.get().getLogManager().exception(e);
-            LoggingManager.showExceptionDialog("Found errors, while saving map!");
-        }
+    private void destroyFBOs() {
+        TBoxScene.sceneFbo.clearFBO();
+        TBoxScene.previewItemFbo.clearFBO();
+        TBoxScene.sceneForwardFbo.clearFBO();
+        TBoxScene.sceneTransparentFbo.clearFBO();
     }
 
     public void preRender() {
@@ -209,13 +147,13 @@ public class TBoxScene {
         if (!this.isActiveScene()) {
             return;
         }
+        EditorContent editorContent = (EditorContent) this.getDimGuiRenderTBox().getCurrentContentToRender();
         this.getCamera().updateCamera(deltaTime);
-        TBoxScene.sceneFbo.bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
         if (this.getDimGuiRenderTBox().getCurrentContentToRender() instanceof EditorContent) {
-            EditorContent editorContent = (EditorContent) this.getDimGuiRenderTBox().getCurrentContentToRender();
-            this.getSceneContainer().render(deltaTime);
+            GL30.glEnable(GL30.GL_DEPTH_TEST);
+            TBoxScene.sceneForwardFbo.bindFBO();
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            this.getSceneContainer().renderForward(deltaTime);
             Vector3f v3 = this.getMapProperties().getSkyProp().getSunPos();
             Model<Format3D> modelSun = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(v3.x, v3.y, v3.z).mul(300.0f));
             TBoxResourceManager.shaderAssets.world_lines.bind();
@@ -235,14 +173,48 @@ public class TBoxScene {
                 TBoxResourceManager.shaderAssets.world_lines.unBind();
                 model.clean();
             }
+            TBoxScene.sceneForwardFbo.unBindFBO();
+
+            TBoxScene.sceneForwardFbo.copyFBOtoFBODepth(TBoxScene.sceneTransparentFbo.getFrameBufferId(), this.getWindow().getWindowDimensions());
+            GL30.glDepthMask(false);
+            GL30.glEnable(GL30.GL_BLEND);
+            GL45.glBlendFunci(0, GL45.GL_ONE, GL45.GL_ONE);
+            GL45.glBlendFunci(1, GL45.GL_ZERO, GL45.GL_ONE_MINUS_SRC_COLOR);
+            GL45.glBlendEquation(GL30.GL_FUNC_ADD);
+            TBoxScene.sceneTransparentFbo.bindFBO();
+            GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[] {0.0f, 0.0f, 0.0f, 0.0f});
+            GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[] {1.0f, 1.0f, 1.0f, 1.0f});
+            this.getSceneContainer().renderTransparent(deltaTime);
+            TBoxScene.sceneTransparentFbo.unBindFBO();
+            GL30.glDisable(GL30.GL_BLEND);
+            GL30.glDepthMask(true);
+
+            TBoxScene.sceneFbo.bindFBO();
+            GL30.glEnable(GL30.GL_BLEND);
+            GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL30.glEnable(GL30.GL_DEPTH_TEST);
+
+            try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowDimensions()), 0.5f)) {
+                TBoxShaderManager gluing = TBoxResourceManager.shaderAssets.scene_gluing;
+                gluing.bind();
+                gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0).getTextureId(), GL30.GL_TEXTURE_2D);
+
+                gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0).getTextureId(), GL30.GL_TEXTURE_2D);
+                gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1).getTextureId(), GL30.GL_TEXTURE_2D);
+                gluing.getUtils().performOrthographicMatrix(model);
+                JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+                gluing.unBind();
+            }
+
+            GL30.glDisable(GL30.GL_DEPTH_TEST);
+            this.showXYZ();
+            GL30.glDisable(GL30.GL_BLEND);
+            TBoxScene.sceneFbo.unBindFBO();
         }
-        GL30.glDisable(GL30.GL_DEPTH_TEST);
-        this.showXYZ();
-        TBoxScene.sceneFbo.unBindFBO();
 
         ImGuiContent content = this.getDimGuiRenderTBox().getCurrentContentToRender();
         if (content instanceof EditorContent) {
-            EditorContent editorContent = (EditorContent) content;
             String s = editorContent.currentSelectedToPlaceID;
             if (s != null) {
                 AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(s);
@@ -290,13 +262,15 @@ public class TBoxScene {
     @SuppressWarnings("all")
     public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshDataGroup meshDataGroup, int code) {
         for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {
-                shaderManager.performUniform(new UniformString("use_texture"), false);
-            } else {
-                shaderManager.performUniform(new UniformString("use_texture"), true);
-                shaderManager.performUniformNoWarn(new UniformString("diffuse_map"), 0);
-                GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) modelNode.getMaterial().getDiffuse()).getTextureId());
+            if (modelNode.getMaterial() != null) {
+                if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {
+                    shaderManager.performUniform(new UniformString("use_texture"), false);
+                } else {
+                    shaderManager.performUniform(new UniformString("use_texture"), true);
+                    shaderManager.performUniformNoWarn(new UniformString("diffuse_map"), 0);
+                    GL30.glActiveTexture(GL30.GL_TEXTURE0);
+                    GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) modelNode.getMaterial().getDiffuse()).getTextureId());
+                }
             }
             GL30.glBindVertexArray(modelNode.getMesh().getVao());
             for (int a : modelNode.getMesh().getAttributePointers()) {
@@ -318,15 +292,15 @@ public class TBoxScene {
         Vector3f camTo = this.getMouseRay(mouseCVector, sceneFrameMin, sceneFrameMax).mul(100.0f);
         Vector3f camPos = this.getCamera().getCamPosition();
 
-        Set<TBoxScene3DObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(e -> e.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
-        List<Pair<Vector3f, TBoxScene3DObject>> intersections = intersectedAABBs.stream().map(obj -> new Pair<>(obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo), obj)).filter(pair -> pair.getKey() != null).sorted(Comparator.comparingDouble(pair -> pair.getKey().distance(camPos))).collect(Collectors.toList());
+        Set<TBoxAbstractObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(e -> e.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
+        List<Pair<Vector3f, TBoxAbstractObject>> intersections = intersectedAABBs.stream().map(obj -> new Pair<>(obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo), obj)).filter(pair -> pair.getKey() != null).sorted(Comparator.comparingDouble(pair -> pair.getKey().distance(camPos))).collect(Collectors.toList());
 
         if (intersections.isEmpty()) {
             editorContent.removeSelection();
             return false;
         }
 
-        TBoxScene3DObject closestObject = intersections.get(0).getValue();
+        TBoxAbstractObject closestObject = intersections.get(0).getValue();
         if (!editorContent.trySelectObject(closestObject)) {
             throw new JGemsRuntimeException("Occurred error while trying to select NULL object");
         }
@@ -344,7 +318,7 @@ public class TBoxScene {
         Format3D format3D = new Format3D();
         format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
 
-        Set<TBoxScene3DObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
+        Set<TBoxAbstractObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
         List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < 15.0f).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
 
         if (!intersections.isEmpty()) {
@@ -410,31 +384,16 @@ public class TBoxScene {
         this.getDimGuiRenderTBox().setCurrentContentToRender(new EditorContent(this));
     }
 
-    private void createFBOs(Vector2i dim) {
-        T2DAttachmentContainer fbo = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
-        }};
-        TBoxScene.sceneFbo = new FBOTexture2DProgram(true);
-        TBoxScene.previewItemFbo = new FBOTexture2DProgram(true);
-        TBoxScene.sceneFbo.createFrameBuffer2DTexture(dim, fbo, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
-        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
-    }
-
-    private void destroyFBOs() {
-        TBoxScene.sceneFbo.clearFBO();
-        TBoxScene.previewItemFbo.clearFBO();
-    }
-
     private void clear() {
         this.getSceneContainer().clear();
         this.getSceneContainer().createMapProperties();
     }
 
-    public void removeObject(TBoxScene3DObject scene3DObject) {
+    public void removeObject(TBoxAbstractObject scene3DObject) {
         this.getSceneContainer().removeObject(scene3DObject);
     }
 
-    public void addObject(TBoxScene3DObject scene3DObject) {
+    public void addObject(TBoxAbstractObject scene3DObject) {
         this.getSceneContainer().addObject(scene3DObject);
     }
 
@@ -443,6 +402,112 @@ public class TBoxScene {
 
         this.destroyFBOs();
         this.createFBOs(dim);
+    }
+
+    public void tryLoadMap(File file) {
+        TBoxMapContainer mapContainer;
+        try {
+            if (file == null || !Files.exists(file.toPath())) {
+                JFileChooser jFileChooser = new JFileChooser();
+                jFileChooser.setDialogTitle("Read");
+                jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                int userSelection = jFileChooser.showOpenDialog(null);
+
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    file = jFileChooser.getSelectedFile();
+                }
+            }
+            if (file != null) {
+                try {
+                    mapContainer = TBoxMapReader.readMap(file);
+                    ToolBox.get().getTBoxSettings().recentPathOpen.setValue(new File(file.toString()).getAbsolutePath());
+
+                    MapProperties mapObjectProperties = mapContainer.getSaveMapProperties();
+                    if (mapObjectProperties == null) {
+                        throw new JGemsNullException("Invalid deserialization!");
+                    }
+
+                    if (mapObjectProperties.getMapName() == null || mapObjectProperties.getMapName().isEmpty()) {
+                        throw new JGemsNullException("Invalid path provided");
+                    }
+
+                    Set<SaveObject> saveObjects = mapContainer.getSaveObjectsSet();
+                    this.clear();
+
+                    if (saveObjects != null) {
+                        for (SaveObject saveObject : saveObjects) {
+                            try {
+                                Vector3f savePos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+                                Vector3f saveRot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+                                Vector3f saveScale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+                                if (savePos == null) {
+                                    SystemLogging.get().getLogManager().error("Deserialized object has NULL position!!");
+                                    continue;
+                                }
+                                if (saveRot != null) {
+                                    saveRot = new Vector3f(saveRot);
+                                }
+                                Format3D format3D = new Format3D(savePos, saveRot, saveScale);
+                                AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
+                                MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
+                                TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
+                                tBoxModelObject.setAttributeContainer(saveObject.getAttributeContainer());
+                                this.addObject(tBoxModelObject);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace(System.err);
+                            }
+                        }
+                    } else {
+                        SystemLogging.get().getLogManager().error("Couldn't read objects path from map!");
+                        LoggingManager.showExceptionDialog("Couldn't read objects path from map!");
+                    }
+                    this.getSceneContainer().setMapProperties(mapObjectProperties);
+                } catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+        } catch (Exception e) {
+            SystemLogging.get().getLogManager().exception(e);
+            LoggingManager.showExceptionDialog("Found errors, while reading map!");
+        }
+    }
+
+    public void prepareMapToSave(File file) {
+        if (this.getMapProperties().getMapName() == null || this.getMapProperties().getMapName().isEmpty()) {
+            LoggingManager.showWindowInfo("Enter map name!");
+            return;
+        }
+
+        TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(this.getSceneContainer().getMapProperties());
+
+        for (TBoxObject tBoxObject : this.getSceneContainer().getObjectsFromContainer(TBoxObject.class)) {
+            TBoxMapContainer.addSaveObject(new SaveObject(tBoxObject.getAttributeContainer(), tBoxObject.objectId()));
+        }
+
+        try {
+            if (file == null || !Files.exists(file.toPath())) {
+                JFileChooser jFileChooser = new JFileChooser();
+                jFileChooser.setDialogTitle("Save");
+                jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int userSelection = jFileChooser.showSaveDialog(null);
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    file = jFileChooser.getSelectedFile();
+                }
+            }
+            if (file != null) {
+                TBoxMapSaver.saveMap(TBoxMapContainer, file);
+                String path = new File(file.toString()).getAbsolutePath();
+                ToolBox.get().getTBoxSettings().recentPathSave.setValue(path);
+            }
+        } catch (Exception e) {
+            SystemLogging.get().getLogManager().exception(e);
+            LoggingManager.showExceptionDialog("Found errors, while saving map!");
+        }
+    }
+
+    public void setCamera(ICamera camera) {
+        this.camera = camera;
     }
 
     public MapProperties getMapProperties() {
@@ -455,10 +520,6 @@ public class TBoxScene {
 
     public ICamera getCamera() {
         return this.camera;
-    }
-
-    public void setCamera(ICamera camera) {
-        this.camera = camera;
     }
 
     public TransformationUtils getTransformationUtils() {

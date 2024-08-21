@@ -128,7 +128,6 @@ public class TBoxScreen implements IScreen {
         int fps = 0;
 
         while (!ToolBox.get().isShouldBeClosed()) {
-            Thread.sleep(1000L / 72L);
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
                 ToolBox.get().closeTBox();
                 break;
