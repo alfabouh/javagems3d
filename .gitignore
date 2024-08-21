@@ -24,14 +24,14 @@ target/
 .sts4-cache
 
 ### NetBeans ###
-key/
+/key/
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-target/
+/build/
+/target/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
