@@ -52,10 +52,10 @@ public class TBoxResourceManager {
     }
 
     public MeshDataGroup createModel(JGemsPath modelPath) {
-        return SimpleModelLoader.createMesh(this.getCache(), modelPath);
+        return SimpleModelLoader.createMesh(this, modelPath);
     }
 
-    public static ICached getResource(String key) {
+    public ICached getResource(String key) {
         return ToolBox.get().getResourceManager().getCache().getCachedObject(key);
     }
 

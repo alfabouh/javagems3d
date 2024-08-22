@@ -9,10 +9,19 @@
  *
  */
 
-package ru.jgems3d.engine.system.map.loaders.tbox;
+/*
+ * *
+ *  * @author alfabouh
+ *  * @since 2024
+ *  * @link https://github.com/alfabouh/JavaGems3D
+ *  *
+ *  * This software is provided 'as-is', without any express or implied warranty.
+ *  * In no event will the authors be held liable for any damages arising from the use of this software.
+ *
+ */
 
-import jgems_api.test.TestTBoxApp;
-import jgems_api.test.tbox.TRenderContainer;
+package ru.jgems3d.engine.system.map.loaders.tbox.placers;
+
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
@@ -22,21 +31,21 @@ import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.BtDynamicMeshBody;
 import ru.jgems3d.engine.physics.entities.BtStaticMeshBody;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
+import ru.jgems3d.engine.physics.world.triggers.Zone;
+import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
-import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 public abstract class TBoxMapDefaultObjectsPlacer {
     public static void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
-        TRenderContainer renderContainer = userData.tryCastObject(TRenderContainer.class);
+        TDefaultRenderContainer renderContainer = userData.tryCastObject(TDefaultRenderContainer.class);
         if (renderContainer == null) {
             return;
         }
@@ -76,5 +85,17 @@ public abstract class TBoxMapDefaultObjectsPlacer {
                 worldModeledBrush.setScaling(scale);
             }
         }
+    }
+
+    public static void placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
+        TDefaultTriggerZoneInfo defaultTriggerZoneInfo = renderContainer.tryCastObject(TDefaultTriggerZoneInfo.class);
+        if (defaultTriggerZoneInfo != null) {
+            SimpleTriggerZone simpleTriggerZone = new SimpleTriggerZone(new Zone(position, size));
+            simpleTriggerZone.setTriggerAction(defaultTriggerZoneInfo.getTriggerAction());
+            physicsWorld.addItem(simpleTriggerZone);
+        }
+    }
+
+    public static void handleMarkerOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
     }
 }

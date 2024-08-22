@@ -8,10 +8,9 @@
  *  * In no event will the authors be held liable for any damages arising from the use of this software.
  */
 
-package jgems_api.test.tbox;
+package ru.jgems3d.engine.system.map.loaders.tbox.placers;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
@@ -20,14 +19,14 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRen
 /**
  * This class represents the rendering information for an object inside the engine itself
  */
-public final class TRenderContainer {
+public final class TDefaultRenderContainer {
     private final MeshRenderAttributes meshRenderAttributes;
     private final JGemsPath pathToRenderModel;
     private final JGemsPath pathToRenderShader;
     private final Class<? extends AbstractSceneEntity> sceneEntityClass;
     private final IRenderObjectFabric renderFabric;
 
-    public TRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
+    public TDefaultRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
         this.renderFabric = renderFabric;
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
