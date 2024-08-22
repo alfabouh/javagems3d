@@ -19,8 +19,11 @@ import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.physics.world.triggers.Zone;
+import ru.jgems3d.engine.physics.world.triggers.liquids.Water;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
@@ -84,7 +87,7 @@ public class TBoxMapLoader implements IMapLoader {
                 TUserData objectUserData = tBoxEntitiesUserData.getEntityUserDataHashMap().get(id);
 
                 switch (id) {
-                    case ObjectsTable.WATER_LIQUID: {
+                    case ObjectsTable.PLAYER_START: {
                         this.mapInfo.addSpawnPoint(pos, rot.y);
                         break;
                     }
@@ -113,8 +116,20 @@ public class TBoxMapLoader implements IMapLoader {
                         JGemsHelper.WORLD.addLight(pointLight);
                         break;
                     }
+                    case ObjectsTable.TRIGGER_ZONE: {
+                        APIContainer.get().getApiGameInfo().getAppManager().placeTBoxTriggerZoneOnMap(physicsWorld, pos, scale, id, saveObject.getAttributeContainer(), objectUserData);
+                        break;
+                    }
+                    case ObjectsTable.WATER_LIQUID: {
+                        JGemsHelper.WORLD.addLiquid(new Water(new Zone(pos, scale)), JGemsResourceManager.globalRenderDataAssets.water);
+                        break;
+                    }
+                    case ObjectsTable.GENERIC_MARKER: {
+                        APIContainer.get().getApiGameInfo().getAppManager().handleMarkerOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, saveObject.getAttributeContainer(), objectUserData);
+                        break;
+                    }
                     default: {
-                        APIContainer.get().getApiGameInfo().getAppManager().placeObjectOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, type, tObjectData.getAttributeContainer(), tUserData);
+                        APIContainer.get().getApiGameInfo().getAppManager().placeTBoxEntityOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, saveObject.getAttributeContainer(), objectUserData);
                     }
                 }
             }

@@ -12,6 +12,7 @@
 package ru.jgems3d.engine.system.map.loaders.tbox;
 
 import jgems_api.test.TestTBoxApp;
+import jgems_api.test.tbox.TRenderContainer;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
@@ -34,48 +35,46 @@ import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesConta
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 public abstract class TBoxMapDefaultObjectsPlacer {
-    public static void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TUserData renderContainer) {
-        try {
-            Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
-            Vector3f rot = attributesContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
-            Vector3f scale = attributesContainer.tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+    public static void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
+        TRenderContainer renderContainer = userData.tryCastObject(TRenderContainer.class);
+        if (renderContainer == null) {
+            return;
+        }
+        Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+        Vector3f rot = attributesContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+        Vector3f scale = attributesContainer.tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+        boolean isProp = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
 
-            MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel());
-            JGemsShaderManager shaderManager = localGameResources.getResource(renderContainer.getPathToJGemsShader());
+        MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel());
+        JGemsShaderManager shaderManager = localGameResources.getResource(renderContainer.getPathToJGemsShader());
 
-            if (objectCategory.equals(TestTBoxApp.PHYSICS_OBJECT)) {
-                if (renderContainer.getSceneEntityClass() == null) {
-                    throw new JGemsRuntimeException("Null scene entity!");
-                }
-                RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabricClass().newInstance(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
+        if (isProp) {
+            MeshRenderData meshRenderData = new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
+            IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 
-                boolean isStatic = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
-                JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
-                if (isStatic) {
-                    BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, physicsWorld, pos, id);
-                    JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
-                    worldModeledBrush.setCanBeDestroyed(false);
-                    worldModeledBrush.setRotation(new Vector3f(rot).negate());
-                    worldModeledBrush.setScaling(scale);
-                } else {
-                    BtDynamicMeshBody worldModeledBrush = new BtDynamicMeshBody(meshDataGroup, physicsWorld, pos, id);
-                    JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
-                    worldModeledBrush.setCanBeDestroyed(false);
-                    worldModeledBrush.setRotation(new Vector3f(rot).negate());
-                    worldModeledBrush.setScaling(scale);
-                }
-            } else if (objectCategory.equals(TestTBoxApp.PROP_OBJECT)) {
-                MeshRenderData meshRenderData = new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
-                IRenderObjectFabric renderFabric = renderContainer.getRenderFabricClass().newInstance();
+            Model<Format3D> model = new Model<>(new Format3D(), meshDataGroup);
+            model.getFormat().setPosition(pos);
+            model.getFormat().setRotation(rot);
+            model.getFormat().setScaling(scale);
+            JGemsHelper.WORLD.addPropInScene(new SceneProp(renderFabric, model, meshRenderData));
+        } else {
+            RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
 
-                Model<Format3D> model = new Model<>(new Format3D(), meshDataGroup);
-                model.getFormat().setPosition(pos);
-                model.getFormat().setRotation(rot);
-                model.getFormat().setScaling(scale);
-                JGemsHelper.WORLD.addPropInScene(new SceneProp(renderFabric, model, meshRenderData));
+            boolean isStatic = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
+            JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
+            if (isStatic) {
+                BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, physicsWorld, pos, id);
+                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
+                worldModeledBrush.setCanBeDestroyed(false);
+                worldModeledBrush.setRotation(new Vector3f(rot).negate());
+                worldModeledBrush.setScaling(scale);
+            } else {
+                BtDynamicMeshBody worldModeledBrush = new BtDynamicMeshBody(meshDataGroup, physicsWorld, pos, id);
+                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
+                worldModeledBrush.setCanBeDestroyed(false);
+                worldModeledBrush.setRotation(new Vector3f(rot).negate());
+                worldModeledBrush.setScaling(scale);
             }
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 }

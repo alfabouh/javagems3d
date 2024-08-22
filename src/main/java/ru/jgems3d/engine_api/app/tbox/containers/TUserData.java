@@ -31,6 +31,14 @@ public final class TUserData {
         this.userData = userData;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T tryCastObject(Class<T> tClass) {
+        if (!this.getUserData().getClass().isAssignableFrom(tClass)) {
+            return null;
+        }
+        return (T) this.getUserData();
+    }
+
     public Object getUserData() {
         return this.userData;
     }
