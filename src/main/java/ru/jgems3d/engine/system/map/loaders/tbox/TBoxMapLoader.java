@@ -27,9 +27,9 @@ import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.map.MapInfo;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine_api.app.tbox.AppTBoxObjectsContainer;
-import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
-import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
+import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesObjectData;
+import ru.jgems3d.engine_api.app.tbox.containers.TObjectData;
+import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
 import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
@@ -70,7 +70,7 @@ public class TBoxMapLoader implements IMapLoader {
 
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        AppTBoxObjectsContainer appTBoxObjectsContainer = APIContainer.get().getAppTBoxObjectsContainer();
+        TBoxEntitiesObjectData appTBoxObjectsContainer = APIContainer.get().getTBoxEntitiesObjectData();
 
         if (saveObjectSet != null) {
             for (SaveObject saveObject : this.saveObjectSet) {
@@ -79,13 +79,13 @@ public class TBoxMapLoader implements IMapLoader {
                 Vector3f rot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
                 Vector3f scale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
 
-                Pair<TEntityContainer, TRenderContainer> containerPair = appTBoxObjectsContainer.getMap().get(id);
+                Pair<TObjectData, TUserData> containerPair = appTBoxObjectsContainer.getMap().get(id);
 
                 if (containerPair != null) {
-                    TEntityContainer tEntityContainer = containerPair.getFirst();
-                    TRenderContainer tRenderContainer = containerPair.getSecond();
+                    TObjectData tObjectData = containerPair.getFirst();
+                    TUserData tUserData = containerPair.getSecond();
 
-                    ObjectCategory type = tEntityContainer.getObjectCategory();
+                    ObjectCategory type = tObjectData.getObjectCategory();
 
                     if (type.equals(ObjectCategory.GENERIC)) {
                         switch (id) {
@@ -120,7 +120,7 @@ public class TBoxMapLoader implements IMapLoader {
                             }
                         }
                     } else {
-                        APIContainer.get().getApiGameInfo().getAppManager().placeObjectOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, type, tEntityContainer.getAttributeContainer(), tRenderContainer);
+                        APIContainer.get().getApiGameInfo().getAppManager().placeObjectOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, type, tObjectData.getAttributeContainer(), tUserData);
                     }
                 }
             }

@@ -6,10 +6,9 @@
  *  *
  *  * This software is provided 'as-is', without any express or implied warranty.
  *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
  */
 
-package ru.jgems3d.engine_api.app.tbox.containers;
+package jgems_api.test.tbox;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,14 +25,14 @@ public final class TRenderContainer {
     private final JGemsPath pathToRenderModel;
     private final JGemsPath pathToRenderShader;
     private final Class<? extends AbstractSceneEntity> sceneEntityClass;
-    private final Class<? extends IRenderObjectFabric> renderFabricClass;
+    private final IRenderObjectFabric renderFabric;
 
-    public TRenderContainer(@NotNull Class<? extends IRenderObjectFabric> renderFabricClass, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
-        this(renderFabricClass, sceneEntityClass, null, pathToRenderModel, meshRenderAttributes);
+    public TRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
+        this(renderFabric, sceneEntityClass, null, pathToRenderModel, meshRenderAttributes);
     }
 
-    public TRenderContainer(@NotNull Class<? extends IRenderObjectFabric> renderFabricClass, @Nullable Class<? extends AbstractSceneEntity> sceneEntityClass, @Nullable JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
-        this.renderFabricClass = renderFabricClass;
+    public TRenderContainer(@NotNull IRenderObjectFabric renderFabric, @Nullable Class<? extends AbstractSceneEntity> sceneEntityClass, @Nullable JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
+        this.renderFabric = renderFabric;
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
         this.pathToRenderModel = pathToRenderModel;
@@ -65,8 +64,8 @@ public final class TRenderContainer {
      * A render factory is a special class that is responsible for rendering a specific IRenderObject object
      * @see ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject
      */
-    public @NotNull Class<? extends IRenderObjectFabric> getRenderFabricClass() {
-        return this.renderFabricClass;
+    public @NotNull IRenderObjectFabric getRenderFabric() {
+        return this.renderFabric;
     }
 
     /**

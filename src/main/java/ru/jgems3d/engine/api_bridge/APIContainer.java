@@ -11,13 +11,13 @@
 
 package ru.jgems3d.engine.api_bridge;
 
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.api_bridge.data.APIGameInfo;
 import ru.jgems3d.engine.api_bridge.data.APITBoxInfo;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine_api.app.tbox.AppTBoxObjectsContainer;
+import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesObjectData;
+import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesUserData;
 import ru.jgems3d.engine_api.events.AppEventSubscriber;
 import ru.jgems3d.engine_api.events.SubscribeEvent;
 import ru.jgems3d.engine_api.events.bus.Events;
@@ -45,14 +45,16 @@ public class APIContainer {
     private APIGameInfo apiGameInfo;
     private final AppResourceLoader appResourceLoader;
     private final AppEventSubscriber appEventSubscriber;
-    private final AppTBoxObjectsContainer appTBoxObjectsContainer;
+    private final TBoxEntitiesObjectData tBoxEntitiesObjectData;
+    private final TBoxEntitiesUserData tBoxEntitiesUserData;
 
     private APIContainer() {
         this.apiGameInfo = null;
         this.apiTBoxInfo = null;
         this.appResourceLoader = new AppResourceLoader();
         this.appEventSubscriber = new AppEventSubscriber();
-        this.appTBoxObjectsContainer = new AppTBoxObjectsContainer();
+        this.tBoxEntitiesObjectData = new TBoxEntitiesObjectData();
+        this.tBoxEntitiesUserData = new TBoxEntitiesUserData();
 
         this.eventMap = new HashMap<>();
     }
@@ -143,8 +145,12 @@ public class APIContainer {
         return this.appEventSubscriber;
     }
 
-    public @NotNull AppTBoxObjectsContainer getAppTBoxObjectsContainer() {
-        return this.appTBoxObjectsContainer;
+    public @NotNull TBoxEntitiesObjectData getTBoxEntitiesObjectData() {
+        return this.tBoxEntitiesObjectData;
+    }
+
+    public @NotNull TBoxEntitiesUserData getTBoxEntitiesUserData() {
+        return this.tBoxEntitiesUserData;
     }
 
     public @NotNull APITBoxInfo getApiTBoxInfo() {

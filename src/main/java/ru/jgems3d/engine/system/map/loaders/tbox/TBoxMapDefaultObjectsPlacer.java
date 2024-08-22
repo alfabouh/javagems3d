@@ -28,13 +28,13 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRen
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
+import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 public abstract class TBoxMapDefaultObjectsPlacer {
-    public static void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer) {
+    public static void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TUserData renderContainer) {
         try {
             Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
             Vector3f rot = attributesContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);

@@ -16,9 +16,8 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
-import ru.jgems3d.engine_api.app.tbox.AppTBoxObjectsContainer;
-import ru.jgems3d.engine_api.app.tbox.containers.TEntityContainer;
-import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
+import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesObjectData;
+import ru.jgems3d.engine_api.app.tbox.containers.TObjectData;
 import ru.jgems3d.toolbox.map_table.object.AABBZoneObjectData;
 import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_table.object.MarkerObjectData;
@@ -30,10 +29,8 @@ import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.resources.TBoxResourceManager;
 import ru.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
-import sun.reflect.generics.tree.Tree;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -46,9 +43,10 @@ public class ObjectsTable {
     }
 
     public void init(TBoxResourceManager tBoxResourceManager) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        APIContainer.get().getApiTBoxInfo().getAppInstance().fillTBoxObjectsContainer(APIContainer.get().getAppTBoxObjectsContainer());
+        APIContainer.get().getApiTBoxInfo().getAppInstance().initEntitiesObjectData(tBoxResourceManager, APIContainer.get().getTBoxEntitiesObjectData());
 
-        AppTBoxObjectsContainer appTBoxObjectsContainer = APIContainer.get().getAppTBoxObjectsContainer();
+        TBoxEntitiesObjectData objectData = APIContainer.get().getTBoxEntitiesObjectData();
+
         Attribute<Float> soundVolume = new Attribute<>(AttributeTarget.FLOAT_0_50, AttributeID.SOUND_VOL, 1.0f);
         Attribute<Float> soundPitch = new Attribute<>(AttributeTarget.FLOAT_0_50, AttributeID.SOUND_PITCH, 1.0f);
         Attribute<Float> soundRollOff = new Attribute<>(AttributeTarget.FLOAT_0_50, AttributeID.SOUND_ROLL_OFF, 1.0f);
@@ -70,16 +68,8 @@ public class ObjectsTable {
 
         Attribute<String> zoneID = new Attribute<>(AttributeTarget.STRING, AttributeID.NAME, "zone1");
 
-        Set<Map.Entry<String, Pair<TEntityContainer, TRenderContainer>>> pairEntry = appTBoxObjectsContainer.getMap().entrySet();
-        for (Map.Entry<String, Pair<TEntityContainer, TRenderContainer>> entry : pairEntry) {
-            TEntityContainer tEntityContainer = entry.getValue().getFirst();
-            ObjectCategory objectCategory = tEntityContainer.getObjectCategory();
-            TBoxShaderManager shaderManager = (tEntityContainer.getPathToTBoxShader() == null) ? (TBoxResourceManager.shaderAssets.world_object) : tBoxResourceManager.createShaderManager(tEntityContainer.getPathToTBoxShader());
-            AttributesContainer attributesContainer = tEntityContainer.getAttributeContainer();
-            MeshDataGroup meshDataGroup = tBoxResourceManager.createModel(tEntityContainer.getPathToTBoxModel());
-
-            AbstractObjectData abstractObjectData = tEntityContainer.getAbstractObjectDataClass().getConstructor(AttributesContainer.class, TBoxShaderManager.class, MeshDataGroup.class, ObjectCategory.class).newInstance(attributesContainer, shaderManager, meshDataGroup, objectCategory);
-            this.addObject(entry.getKey(), abstractObjectData);
+        for (Map.Entry<String, TObjectData> objectData1 : objectData.getEntityObjectDataHashMap().entrySet()) {
+            this.addObject(objectData1.getKey(), objectData1.getValue().getAbstractObjectData());
         }
 
         this.addObject("water_liquid", new AABBZoneObjectData(new AttributesContainer(transformPosXYZ, transformScalingXYZ, colorAttributeStatic3), TBoxResourceManager.shaderAssets.world_transparent_color, ObjectCategory.ZONES));
