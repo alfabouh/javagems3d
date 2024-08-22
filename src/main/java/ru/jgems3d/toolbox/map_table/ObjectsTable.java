@@ -30,17 +30,19 @@ import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.resources.TBoxResourceManager;
 import ru.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
+import sun.reflect.generics.tree.Tree;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class ObjectsTable {
     private final Map<String, AbstractObjectData> objects;
 
     public ObjectsTable() {
-        this.objects = new HashMap<>();
+        this.objects = new TreeMap<>();
     }
 
     public void init(TBoxResourceManager tBoxResourceManager) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -74,7 +76,7 @@ public class ObjectsTable {
             ObjectCategory objectCategory = tEntityContainer.getObjectCategory();
             TBoxShaderManager shaderManager = (tEntityContainer.getPathToTBoxShader() == null) ? (TBoxResourceManager.shaderAssets.world_object) : tBoxResourceManager.createShaderManager(tEntityContainer.getPathToTBoxShader());
             AttributesContainer attributesContainer = tEntityContainer.getAttributeContainer();
-            MeshDataGroup meshDataGroup = TBoxResourceManager.createModel(tEntityContainer.getPathToTBoxModel());
+            MeshDataGroup meshDataGroup = tBoxResourceManager.createModel(tEntityContainer.getPathToTBoxModel());
 
             AbstractObjectData abstractObjectData = tEntityContainer.getAbstractObjectDataClass().getConstructor(AttributesContainer.class, TBoxShaderManager.class, MeshDataGroup.class, ObjectCategory.class).newInstance(attributesContainer, shaderManager, meshDataGroup, objectCategory);
             this.addObject(entry.getKey(), abstractObjectData);

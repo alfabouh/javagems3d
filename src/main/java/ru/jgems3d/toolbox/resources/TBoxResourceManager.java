@@ -47,16 +47,12 @@ public class TBoxResourceManager {
         return shaderManager;
     }
 
-    public static TextureSample createTextureInJar(String fullPath) {
-        return TextureSample.createTexture(true, ToolBox.get().getScreen().getResourceManager().getCache(), fullPath);
+    public TextureSample createTexture(String fullPath) {
+        return TextureSample.createTexture(this.getCache(), fullPath);
     }
 
-    public static TextureSample createTextureOutSideJar(String fullPath) {
-        return TextureSample.createTexture(false, ToolBox.get().getScreen().getResourceManager().getCache(), fullPath);
-    }
-
-    public static MeshDataGroup createModel(JGemsPath modelPath) {
-        return SimpleModelLoader.createMesh(ToolBox.get().getScreen().getResourceManager().getCache(), modelPath);
+    public MeshDataGroup createModel(JGemsPath modelPath) {
+        return SimpleModelLoader.createMesh(this.getCache(), modelPath);
     }
 
     public static ICached getResource(String key) {
@@ -69,7 +65,7 @@ public class TBoxResourceManager {
 
     public void loadResources() {
         SystemLogging.get().getLogManager().log("Loading resources...");
-        this.getModelResources().init(this.getCache());
+        this.getModelResources().init(this);
     }
 
     public void destroy() {
