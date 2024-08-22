@@ -17,6 +17,14 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Object's attributes. If you want to get the attribute value, you can do it like this
+ * <pre>
+ *     {@code
+ *           Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+ *     }
+ * </pre>
+ */
 public final class AttributesContainer implements Serializable {
     private static final long serialVersionUID = -228L;
     private final Map<String, Attribute<?>> attributeSet;

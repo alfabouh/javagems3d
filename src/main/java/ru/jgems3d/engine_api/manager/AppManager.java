@@ -20,7 +20,7 @@ import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.core.player.IPlayerConstructor;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine_api.app.tbox.containers.TRenderContainer;
+import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
@@ -75,7 +75,7 @@ public abstract class AppManager {
      * </pre>
      * @see ru.jgems3d.engine.system.map.loaders.tbox.TBoxMapDefaultObjectsPlacer
      */
-    public abstract void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TRenderContainer renderContainer);
+    public abstract void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, ObjectCategory objectCategory, AttributesContainer attributesContainer, TUserData renderContainer);
 
     /**
      * This method returns a Panel UI instance of the game's main menu.
