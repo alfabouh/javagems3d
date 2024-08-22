@@ -27,19 +27,19 @@ import jgems_api.test.gui.TestMainMenuPanel;
 import jgems_api.test.manager.bindings.TestBindings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.core.player.IPlayerConstructor;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.map.loaders.tbox.TBoxMapDefaultObjectsPlacer;
+import ru.jgems3d.engine.system.map.loaders.tbox.placers.TBoxMapDefaultObjectsPlacer;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.engine_api.manager.AppManager;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
-import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 public class TestManager extends AppManager {
     public TestManager(@Nullable AppConfiguration appConfiguration) {
@@ -63,5 +63,15 @@ public class TestManager extends AppManager {
     @Override
     public void placeTBoxEntityOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
         TBoxMapDefaultObjectsPlacer.placeObjectOnMap(sceneWorld, physicsWorld, globalGameResources, localGameResources, id, attributesContainer, renderContainer);
+    }
+
+    @Override
+    public void placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
+        TBoxMapDefaultObjectsPlacer.placeTBoxTriggerZoneOnMap(physicsWorld, position, size, id, attributesContainer, renderContainer);
+    }
+
+    @Override
+    public void handleMarkerOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
+        TBoxMapDefaultObjectsPlacer.handleMarkerOnMap(sceneWorld, physicsWorld, globalGameResources, localGameResources, id, attributesContainer, renderContainer);
     }
 }

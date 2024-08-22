@@ -20,11 +20,11 @@ import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.core.player.IPlayerConstructor;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
+import ru.jgems3d.engine.system.map.loaders.tbox.placers.TBoxMapDefaultObjectsPlacer;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
-import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 /**
  * This class contains controls/initializations for various important game systems.
@@ -74,7 +74,7 @@ public abstract class AppManager {
      *          TBoxMapDefaultObjectsPlacer#placeObjectOnMap
      *      }
      * </pre>
-     * @see ru.jgems3d.engine.system.map.loaders.tbox.TBoxMapDefaultObjectsPlacer
+     * @see TBoxMapDefaultObjectsPlacer
      */
     public abstract void placeTBoxEntityOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer);
     public abstract void placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData renderContainer);

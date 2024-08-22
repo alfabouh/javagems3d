@@ -33,8 +33,9 @@
 
 package jgems_api.test;
 
-import jgems_api.test.tbox.TRenderContainer;
+import ru.jgems3d.engine.system.map.loaders.tbox.placers.TDefaultRenderContainer;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.EntityObject;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
@@ -71,6 +72,6 @@ public class TestTBoxApp implements JGemsTBoxApplication {
 
     @Override
     public void initEntitiesUserData(JGemsResourceManager jGemsResourceManager, TBoxEntitiesUserData tBoxEntitiesUserData) {
-        tBoxEntitiesUserData.add("test", new TUserData(new TRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new MeshRenderAttributes())));
+        tBoxEntitiesUserData.add("test", new TUserData(new TDefaultRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer"), new MeshRenderAttributes())));
     }
 }

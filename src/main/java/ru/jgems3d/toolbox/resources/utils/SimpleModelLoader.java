@@ -36,7 +36,7 @@ import java.util.Objects;
 
 public class SimpleModelLoader {
     @SuppressWarnings("all")
-    private static MeshDataGroup loadMesh(JGemsPath modelPath) {
+    private static MeshDataGroup loadMesh(TBoxResourceManager tBoxResourceManager, JGemsPath modelPath) {
         SystemLogging.get().getLogManager().log("Loading model " + modelPath);
 
         final int FLAGS = Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
@@ -50,7 +50,7 @@ public class SimpleModelLoader {
                         List<Material> materialList = new ArrayList<>();
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
-                                materialList.add(SimpleModelLoader.readMaterial(aiMaterial, modelPath.getParentPath()));
+                                materialList.add(SimpleModelLoader.readMaterial(tBoxResourceManager, aiMaterial, modelPath.getParentPath()));
                             }
                         }
                         int totalMeshes = scene.mNumMeshes();
@@ -83,12 +83,12 @@ public class SimpleModelLoader {
     }
 
     @SuppressWarnings("all")
-    public static MeshDataGroup createMesh(ResourceCache resourceCache, JGemsPath modelPath) {
-        if (resourceCache.checkObjectInCache(modelPath)) {
-            return (MeshDataGroup) resourceCache.getCachedObject(modelPath);
+    public static MeshDataGroup createMesh(TBoxResourceManager tBoxResourceManager, JGemsPath modelPath) {
+        if (tBoxResourceManager.getCache().checkObjectInCache(modelPath)) {
+            return (MeshDataGroup) tBoxResourceManager.getCache().getCachedObject(modelPath);
         }
-        MeshDataGroup meshDataGroup = SimpleModelLoader.loadMesh(modelPath);
-        resourceCache.addObjectInBuffer(modelPath, meshDataGroup);
+        MeshDataGroup meshDataGroup = SimpleModelLoader.loadMesh(tBoxResourceManager, modelPath);
+        tBoxResourceManager.getCache().addObjectInBuffer(modelPath, meshDataGroup);
         return meshDataGroup;
     }
 
@@ -168,7 +168,7 @@ public class SimpleModelLoader {
         return data;
     }
 
-    private static Material readMaterial(AIMaterial aiMaterial, String fullPath) {
+    private static Material readMaterial(TBoxResourceManager tBoxResourceManager, AIMaterial aiMaterial, String fullPath) {
         Material material = new Material();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4D = AIColor4D.create();
@@ -178,9 +178,9 @@ public class SimpleModelLoader {
             color4D.clear();
             String diffuse = SimpleModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
             if (diffuse != null) {
-                TextureSample textureSample = (TextureSample) TBoxResourceManager.getResource(fullPath + diffuse);
+                TextureSample textureSample = (TextureSample) tBoxResourceManager.getResource(fullPath + diffuse);
                 if (textureSample == null) {
-                    textureSample = TBoxResourceManager.createTexture(fullPath + diffuse);
+                    textureSample = tBoxResourceManager.createTexture(fullPath + diffuse);
                 }
                 if (textureSample.isValid()) {
                     material.setDiffuse(textureSample);
