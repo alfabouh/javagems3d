@@ -26,13 +26,13 @@ import ru.jgems3d.toolbox.resources.shaders.manager.TBoxShaderManager;
 import ru.jgems3d.toolbox.resources.utils.SimpleModelLoader;
 
 public class TBoxResourceManager {
-    public static ShaderResources shaderAssets;
+    private final ShaderResources shaderAssets;
     private final ModelResources modelResources;
     private final ResourceCache resourceCache;
 
     public TBoxResourceManager() {
         this.resourceCache = new ResourceCache("Global");
-        TBoxResourceManager.shaderAssets = new ShaderResources();
+        this.shaderAssets = new ShaderResources();
         this.modelResources = new ModelResources();
     }
 
@@ -60,7 +60,7 @@ public class TBoxResourceManager {
     }
 
     public static void createShaders() {
-        TBoxResourceManager.shaderAssets.createShaders(ToolBox.get().getResourceManager().getCache());
+        TBoxResourceManager.shaderResources().createShaders(ToolBox.get().getResourceManager().getCache());
     }
 
     public void loadResources() {
@@ -70,6 +70,14 @@ public class TBoxResourceManager {
 
     public void destroy() {
         this.getCache().cleanCache();
+    }
+
+    public static ShaderResources shaderResources() {
+        return ToolBox.get().getResourceManager().getShaderAssets();
+    }
+
+    public ShaderResources getShaderAssets() {
+        return this.shaderAssets;
     }
 
     public ModelResources getModelResources() {

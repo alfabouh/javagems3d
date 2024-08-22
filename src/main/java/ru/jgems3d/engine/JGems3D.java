@@ -70,7 +70,6 @@ public final class JGems3D {
 
         APILauncher.get().launchGameAPI();
         APILauncher.get().launchToolBoxAPI();
-        APIContainer.get().getApiTBoxInfo().getAppInstance().initEntitiesUserData(APIContainer.get().getTBoxEntitiesUserData());
         APILauncher.get().disposeReflection();
 
         JGems3D.rngSeed = JGems3D.systemTime();

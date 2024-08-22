@@ -33,10 +33,12 @@
 
 package jgems_api.test;
 
+import jgems_api.test.tbox.TRenderContainer;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.EntityObject;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine_api.app.JGemsTBoxApplication;
 import ru.jgems3d.engine_api.app.JGemsTBoxEntry;
@@ -60,23 +62,15 @@ public class TestTBoxApp implements JGemsTBoxApplication {
     public static ObjectCategory LIQUID_OBJECT = new ObjectCategory("Liquids");
 
     @Override
-    public void initTBoxEntitiesObjects(ITBoxEntitiesObjectData tBoxObjectsContainer) {
+    public void initEntitiesObjectData(TBoxResourceManager tBoxResourceManager, ITBoxEntitiesObjectData tBoxEntitiesObjectData) {
         Attribute<Vector3f> transformPosXYZ = new Attribute<>(AttributeTarget.POSITION_XYZ, AttributeID.POSITION_XYZ, new Vector3f(0.0f));
         Attribute<Vector3f> transformRotXYZ = new Attribute<>(AttributeTarget.ROTATION_XYZ, AttributeID.ROTATION_XYZ, new Vector3f(0.0f));
         Attribute<Vector3f> transformScaleXYZ = new Attribute<>(AttributeTarget.SCALING_XYZ, AttributeID.SCALING_XYZ, new Vector3f(1.0f));
-
-        tBoxObjectsContainer.addObject("test",
-                new TObjectData(ModeledObjectData.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new AttributesContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), PHYSICS_OBJECT),
-                new TUserData(RenderEntity.class, EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new MeshRenderAttributes()));
+        tBoxEntitiesObjectData.add("test", new TObjectData(new ModeledObjectData(new AttributesContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), tBoxResourceManager.getShaderAssets().world_object, tBoxResourceManager.createModel(new JGemsPath("/assets/jgems/models/cube/cube.obj")), TestTBoxApp.PHYSICS_OBJECT)));
     }
 
     @Override
-    public void initEntitiesObjectData(TBoxResourceManager tBoxResourceManager, ITBoxEntitiesObjectData tBoxEntitiesObjectData) {
-
-    }
-
-    @Override
-    public void initEntitiesUserData(TBoxEntitiesUserData tBoxEntitiesUserData) {
-
+    public void initEntitiesUserData(JGemsResourceManager jGemsResourceManager, TBoxEntitiesUserData tBoxEntitiesUserData) {
+        tBoxEntitiesUserData.add("test", new TUserData(new TRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new MeshRenderAttributes())));
     }
 }

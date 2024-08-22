@@ -12,6 +12,7 @@
 package ru.jgems3d.toolbox.map_sys.save.objects.object_attributes;
 
 public final class AttributeID {
+    public static final AttributeID IS_PROP = new AttributeID("is_prop", "Is Prop");
     public static final AttributeID IS_STATIC = new AttributeID("is_static", "Is Static");
     public static final AttributeID BRIGHTNESS = new AttributeID("brightness", "Brightness");
     public static final AttributeID COLOR = new AttributeID("color", "Color");

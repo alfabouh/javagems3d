@@ -234,6 +234,7 @@ public class EngineSystem implements IEngine {
                 JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
                 this.getResourceManager().initGlobalResources();
                 this.getResourceManager().initLocalResources();
+                APIContainer.get().getApiTBoxInfo().getAppInstance().initEntitiesUserData(this.getResourceManager(), APIContainer.get().getTBoxEntitiesUserData());
                 JGems3D.get().getSoundManager().createSystem();
                 JGems3D.get().getPhysicThreadManager().initService();
                 this.createGraphics();

@@ -28,6 +28,7 @@ import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.map.MapInfo;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesObjectData;
+import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesUserData;
 import ru.jgems3d.engine_api.app.tbox.containers.TObjectData;
 import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.logger.managers.LoggingManager;
@@ -35,6 +36,7 @@ import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
 import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
+import ru.jgems3d.toolbox.map_table.ObjectsTable;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 import java.io.IOException;
@@ -70,7 +72,7 @@ public class TBoxMapLoader implements IMapLoader {
 
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        TBoxEntitiesObjectData appTBoxObjectsContainer = APIContainer.get().getTBoxEntitiesObjectData();
+        TBoxEntitiesUserData tBoxEntitiesUserData = APIContainer.get().getTBoxEntitiesUserData();
 
         if (saveObjectSet != null) {
             for (SaveObject saveObject : this.saveObjectSet) {
@@ -79,47 +81,39 @@ public class TBoxMapLoader implements IMapLoader {
                 Vector3f rot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
                 Vector3f scale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
 
-                Pair<TObjectData, TUserData> containerPair = appTBoxObjectsContainer.getMap().get(id);
+                TUserData objectUserData = tBoxEntitiesUserData.getEntityUserDataHashMap().get(id);
 
-                if (containerPair != null) {
-                    TObjectData tObjectData = containerPair.getFirst();
-                    TUserData tUserData = containerPair.getSecond();
+                switch (id) {
+                    case ObjectsTable.WATER_LIQUID: {
+                        this.mapInfo.addSpawnPoint(pos, rot.y);
+                        break;
+                    }
+                    case ObjectsTable.AMBIENT_SOUND: {
+                        float soundVolume = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_VOL, Float.class);
+                        float soundPitch = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_PITCH, Float.class);
+                        float soundRollOff = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_ROLL_OFF, Float.class);
+                        String soundAttribute = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND, String.class);
 
-                    ObjectCategory type = tObjectData.getObjectCategory();
-
-                    if (type.equals(ObjectCategory.GENERIC)) {
-                        switch (id) {
-                            case "player_start": {
-                                this.mapInfo.addSpawnPoint(pos, rot.y);
-                                break;
-                            }
-                            case "ambient_sound": {
-                                float soundVolume = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_VOL, Float.class);
-                                float soundPitch = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_PITCH, Float.class);
-                                float soundRollOff = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_ROLL_OFF, Float.class);
-                                String soundAttribute = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND, String.class);
-
-                                SoundBuffer soundBuffer = localResources.createSoundBuffer(new JGemsPath(soundAttribute), AL10.AL_FORMAT_STEREO16);
-                                if (soundBuffer == null) {
-                                    break;
-                                }
-                                JGemsHelper.getSoundManager().playSoundAt(soundBuffer, SoundType.WORLD_AMBIENT_SOUND, soundPitch, soundVolume, soundRollOff, pos);
-                                break;
-                            }
-                            case "point_light": {
-                                float brightness = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.BRIGHTNESS, Float.class);
-                                Vector3f color = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
-
-                                PointLight pointLight = new PointLight();
-                                pointLight.setLightPos(pos);
-                                pointLight.setBrightness(brightness);
-                                pointLight.setLightColor(color);
-
-                                JGemsHelper.WORLD.addLight(pointLight);
-                                break;
-                            }
+                        SoundBuffer soundBuffer = localResources.createSoundBuffer(new JGemsPath(soundAttribute), AL10.AL_FORMAT_STEREO16);
+                        if (soundBuffer == null) {
+                            break;
                         }
-                    } else {
+                        JGemsHelper.getSoundManager().playSoundAt(soundBuffer, SoundType.WORLD_AMBIENT_SOUND, soundPitch, soundVolume, soundRollOff, pos);
+                        break;
+                    }
+                    case ObjectsTable.POINT_LIGHT: {
+                        float brightness = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.BRIGHTNESS, Float.class);
+                        Vector3f color = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
+
+                        PointLight pointLight = new PointLight();
+                        pointLight.setLightPos(pos);
+                        pointLight.setBrightness(brightness);
+                        pointLight.setLightColor(color);
+
+                        JGemsHelper.WORLD.addLight(pointLight);
+                        break;
+                    }
+                    default: {
                         APIContainer.get().getApiGameInfo().getAppManager().placeObjectOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, type, tObjectData.getAttributeContainer(), tUserData);
                     }
                 }
