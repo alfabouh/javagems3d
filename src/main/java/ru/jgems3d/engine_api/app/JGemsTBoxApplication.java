@@ -30,7 +30,7 @@ public interface JGemsTBoxApplication {
     /**
      * With this method, you can set your information for a ToolBox entity with a specific ID.
      * For example, you can specify information for the render
-     * @param tBoxEntitiesUserData Use this object to add an entity to the array
+     * @param tBoxEntitiesUserData Use this object to add any data to the array
      */
-    void initEntitiesUserData(TBoxEntitiesUserData tBoxEntitiesUserData);
+    void initEntitiesUserData(JGemsResourceManager jGemsResourceManager, TBoxEntitiesUserData tBoxEntitiesUserData);
 }

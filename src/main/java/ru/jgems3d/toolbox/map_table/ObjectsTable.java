@@ -36,6 +36,13 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class ObjectsTable {
+    public static final String WATER_LIQUID = "water_liquid";
+    public static final String TRIGGER_ZONE = "trigger_zone";
+    public static final String POINT_LIGHT = "point_light";
+    public static final String PLAYER_START = "player_start";
+    public static final String GENERIC_MARKER = "generic_marker";
+    public static final String AMBIENT_SOUND = "ambient_sound";
+
     private final Map<String, AbstractObjectData> objects;
 
     public ObjectsTable() {
@@ -66,19 +73,19 @@ public class ObjectsTable {
         Attribute<Float> brightness = new Attribute<>(AttributeTarget.FLOAT_0_50, AttributeID.BRIGHTNESS, 1.0f);
         Attribute<Vector3f> lightScaling = new Attribute<>(AttributeTarget.STATIC_NO_EDIT, AttributeID.SCALING_XYZ, new Vector3f(0.25f));
 
-        Attribute<String> zoneID = new Attribute<>(AttributeTarget.STRING, AttributeID.NAME, "zone1");
+        Attribute<String> name = new Attribute<>(AttributeTarget.STRING, AttributeID.NAME, "id");
 
         for (Map.Entry<String, TObjectData> objectData1 : objectData.getEntityObjectDataHashMap().entrySet()) {
             this.addObject(objectData1.getKey(), objectData1.getValue().getAbstractObjectData());
         }
 
-        this.addObject("water_liquid", new AABBZoneObjectData(new AttributesContainer(transformPosXYZ, transformScalingXYZ, colorAttributeStatic3), TBoxResourceManager.shaderAssets.world_transparent_color, ObjectCategory.ZONES));
-        this.addObject("trigger_zone", new AABBZoneObjectData(new AttributesContainer(transformPosXYZ, transformScalingXYZ, colorAttributeStatic2, zoneID), TBoxResourceManager.shaderAssets.world_transparent_color, ObjectCategory.ZONES));
+        this.addObject(ObjectsTable.WATER_LIQUID, new AABBZoneObjectData(new AttributesContainer(transformPosXYZ, transformScalingXYZ, colorAttributeStatic3), TBoxResourceManager.shaderResources().world_transparent_color, ObjectCategory.ZONES));
+        this.addObject(ObjectsTable.TRIGGER_ZONE, new AABBZoneObjectData(new AttributesContainer(transformPosXYZ, transformScalingXYZ, colorAttributeStatic2, name), TBoxResourceManager.shaderResources().world_transparent_color, ObjectCategory.ZONES));
 
-        this.addObject("point_light", new MarkerObjectData(new AttributesContainer(transformPosXYZ, brightness, colorAttribute, lightScaling), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().sphere, ObjectCategory.GENERIC));
-        this.addObject("player_start", new MarkerObjectData(new AttributesContainer(transformPosXYZ, rotationPlayerAttribute, colorAttributeStatic1), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().player, ObjectCategory.GENERIC));
-        this.addObject("generic_marker", new MarkerObjectData(new AttributesContainer(transformPosXYZ, colorAttribute), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().pointer, ObjectCategory.GENERIC));
-        this.addObject("ambient_sound", new MarkerObjectData(new AttributesContainer(transformPosXYZ, soundVolume, soundPitch, soundRollOff, soundAttribute, colorAttributeStatic2), TBoxResourceManager.shaderAssets.world_object, ToolBox.get().getResourceManager().getModelResources().cubic, ObjectCategory.GENERIC));
+        this.addObject(ObjectsTable.POINT_LIGHT, new MarkerObjectData(new AttributesContainer(transformPosXYZ, brightness, colorAttribute, lightScaling), TBoxResourceManager.shaderResources().world_object, ToolBox.get().getResourceManager().getModelResources().sphere, ObjectCategory.GENERIC));
+        this.addObject(ObjectsTable.PLAYER_START, new MarkerObjectData(new AttributesContainer(transformPosXYZ, rotationPlayerAttribute, colorAttributeStatic1), TBoxResourceManager.shaderResources().world_object, ToolBox.get().getResourceManager().getModelResources().player, ObjectCategory.GENERIC));
+        this.addObject(ObjectsTable.GENERIC_MARKER, new MarkerObjectData(new AttributesContainer(transformPosXYZ, colorAttribute, name), TBoxResourceManager.shaderResources().world_object, ToolBox.get().getResourceManager().getModelResources().pointer, ObjectCategory.GENERIC));
+        this.addObject(ObjectsTable.AMBIENT_SOUND, new MarkerObjectData(new AttributesContainer(transformPosXYZ, soundVolume, soundPitch, soundRollOff, soundAttribute, colorAttributeStatic2), TBoxResourceManager.shaderResources().world_object, ToolBox.get().getResourceManager().getModelResources().cubic, ObjectCategory.GENERIC));
     }
 
     public void addObject(String key, AbstractObjectData mapObject) {

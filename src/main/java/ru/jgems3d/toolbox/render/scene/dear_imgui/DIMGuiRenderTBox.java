@@ -41,7 +41,7 @@ public class DIMGuiRenderTBox {
     private ImGuiContent currentContentToRender;
 
     public DIMGuiRenderTBox(IWindow window, ResourceCache resourceCache) {
-        this.shaderManager = TBoxResourceManager.shaderAssets.imgui;
+        this.shaderManager = TBoxResourceManager.shaderResources().imgui;
 
         this.createUIResources(resourceCache, window.getWindowDimensions());
         this.createUICallbacks(window);
