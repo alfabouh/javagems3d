@@ -27,11 +27,7 @@ public final class TRenderContainer {
     private final Class<? extends AbstractSceneEntity> sceneEntityClass;
     private final IRenderObjectFabric renderFabric;
 
-    public TRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
-        this(renderFabric, sceneEntityClass, null, pathToRenderModel, meshRenderAttributes);
-    }
-
-    public TRenderContainer(@NotNull IRenderObjectFabric renderFabric, @Nullable Class<? extends AbstractSceneEntity> sceneEntityClass, @Nullable JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
+    public TRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull MeshRenderAttributes meshRenderAttributes) {
         this.renderFabric = renderFabric;
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
@@ -42,7 +38,7 @@ public final class TRenderContainer {
     /**
      * Path to object's JGems shader
      */
-    public @Nullable JGemsPath getPathToJGemsShader() {
+    public @NotNull JGemsPath getPathToJGemsShader() {
         return this.pathToRenderShader;
     }
 
@@ -71,7 +67,7 @@ public final class TRenderContainer {
     /**
      * This class represents an object in the world of the scene. It is connected to an object from the physical world. It can be null if you don't need this object.
      */
-    public @Nullable Class<? extends AbstractSceneEntity> getSceneEntityClass() {
+    public @NotNull Class<? extends AbstractSceneEntity> getSceneEntityClass() {
         return this.sceneEntityClass;
     }
 }
