@@ -64,14 +64,7 @@ public abstract class LoggingManager {
 
         JTextField textField = new JTextField();
         textField.setEditable(false);
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
-        stringBuilder.append(JGems3D.get());
-        stringBuilder.append("]: ");
-        stringBuilder.append(msg);
-
-        textField.setText(stringBuilder.toString());
+        textField.setText(msg);
 
         JPanel panel = new JPanel();
         panel.add(textField);

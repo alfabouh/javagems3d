@@ -464,7 +464,10 @@ public class TBoxScene {
                     }
                     this.getSceneContainer().setMapProperties(mapObjectProperties);
                 } catch (Exception e) {
+                    LoggingManager.showExceptionDialog("Couldn't load map! See the logs");
                     e.printStackTrace(System.err);
+                    ToolBox.get().getTBoxSettings().recentPathOpen.setValue("");
+                    ToolBox.get().getTBoxSettings().saveOptions();
                 }
             }
         } catch (Exception e) {

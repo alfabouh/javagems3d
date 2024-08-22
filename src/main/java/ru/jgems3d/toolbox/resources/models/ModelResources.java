@@ -26,13 +26,13 @@ public class ModelResources {
     public MeshDataGroup pointer;
     public MeshDataGroup player;
 
-    public void init(ResourceCache resourceCache) {
-        this.zone_cube = TBoxResourceManager.createModel(new JGemsPath("/assets/toolbox/models/zone_cube/zone_cube.obj"));
+    public void init(TBoxResourceManager resourceManager) {
+        this.zone_cube = resourceManager.createModel(new JGemsPath("/assets/toolbox/models/zone_cube/zone_cube.obj"));
 
-        this.cubic = TBoxResourceManager.createModel(new JGemsPath("/assets/toolbox/models/cubic/cubic.obj"));
-        this.xyz = TBoxResourceManager.createModel(new JGemsPath("/assets/toolbox/models/xyz/xyz.obj"));
-        this.pointer = TBoxResourceManager.createModel(new JGemsPath("/assets/toolbox/models/pointer/pointer.obj"));
-        this.sphere = TBoxResourceManager.createModel(new JGemsPath("/assets/toolbox/models/sphere/sphere.obj"));
-        this.player = TBoxResourceManager.createModel(new JGemsPath("/assets/toolbox/models/player/player.obj"));
+        this.cubic = resourceManager.createModel(new JGemsPath("/assets/toolbox/models/cubic/cubic.obj"));
+        this.xyz = resourceManager.createModel(new JGemsPath("/assets/toolbox/models/xyz/xyz.obj"));
+        this.pointer = resourceManager.createModel(new JGemsPath("/assets/toolbox/models/pointer/pointer.obj"));
+        this.sphere = resourceManager.createModel(new JGemsPath("/assets/toolbox/models/sphere/sphere.obj"));
+        this.player = resourceManager.createModel(new JGemsPath("/assets/toolbox/models/player/player.obj"));
     }
 }

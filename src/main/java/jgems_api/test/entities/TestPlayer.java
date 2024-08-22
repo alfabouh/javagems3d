@@ -42,7 +42,7 @@ public class TestPlayer extends SimpleKinematicPlayer {
     @Override
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
         if (JGems3D.DEBUG_MODE) {
-            if (((TestBindings) JGemsControllerDispatcher.bindingManager()).keyBlock1.isPressed()) {
+            if (((TestBindings) JGemsControllerDispatcher.bindingManager()).keyBlock1.isClicked()) {
                 BtDynamicMeshBody entityPropInfo = new BtDynamicMeshBody(JGemsResourceManager.globalModelAssets.cube, this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "test");
                 JGemsHelper.WORLD.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
                 Vector3f v3 = this.getLookVector().mul(50.0f);

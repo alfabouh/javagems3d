@@ -180,7 +180,7 @@ public class SimpleModelLoader {
             if (diffuse != null) {
                 TextureSample textureSample = (TextureSample) TBoxResourceManager.getResource(fullPath + diffuse);
                 if (textureSample == null) {
-                    textureSample = TBoxResourceManager.createTextureInJar(fullPath + diffuse);
+                    textureSample = TBoxResourceManager.createTexture(fullPath + diffuse);
                 }
                 if (textureSample.isValid()) {
                     material.setDiffuse(textureSample);

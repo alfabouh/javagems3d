@@ -59,7 +59,7 @@ public class TextureSample implements ITextureSample {
         this.createTexture(this.readTextureFromMemory(id, inputStream));
     }
 
-    public static TextureSample createTexture(boolean inJar, ResourceCache resourceCache, String fullPath) {
+    public static TextureSample createTexture(ResourceCache resourceCache, String fullPath) {
         if (resourceCache.checkObjectInCache(fullPath)) {
             return (TextureSample) resourceCache.getCachedObject(fullPath);
         }
