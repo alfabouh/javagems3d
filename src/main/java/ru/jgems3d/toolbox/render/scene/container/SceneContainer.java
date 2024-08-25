@@ -11,6 +11,7 @@
 
 package ru.jgems3d.toolbox.render.scene.container;
 
+import org.checkerframework.checker.units.qual.A;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
@@ -18,17 +19,15 @@ import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.SkyProp;
 import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SceneContainer {
-    private final Set<TBoxAbstractObject> tBoxAbstractObjects;
+    private final List<TBoxAbstractObject> tBoxAbstractObjects;
     private MapProperties mapProperties;
 
     public SceneContainer() {
-        this.tBoxAbstractObjects = new TreeSet<>(Comparator.comparingInt(TBoxAbstractObject::getId));
+        this.tBoxAbstractObjects = new ArrayList<>();
         this.createMapProperties();
     }
 
@@ -44,6 +43,8 @@ public class SceneContainer {
     public void addObject(TBoxAbstractObject scene3DObject) {
         this.getSceneObjects().add(scene3DObject);
         this.objectPreRender(scene3DObject);
+
+        this.getSceneObjects().sort(Comparator.comparingInt(TBoxAbstractObject::getId));
     }
 
     public void renderForward(float deltaTime) {
@@ -81,7 +82,7 @@ public class SceneContainer {
         this.mapProperties = mapProperties;
     }
 
-    public Set<TBoxAbstractObject> getSceneObjects() {
-        return tBoxAbstractObjects;
+    public List<TBoxAbstractObject> getSceneObjects() {
+        return this.tBoxAbstractObjects;
     }
 }

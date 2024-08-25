@@ -37,8 +37,7 @@ public class AbstractInventoryCommon extends AbstractInventoryItem {
 
     @Override
     public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, ru.jgems3d.engine.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
-        float d1 = (float) (Math.cos(RenderPlayer.stepBobbing * 0.1f) * 0.051f);
-        super.performTransformations(new Vector3f(0.1f, -1.0f + d1, -1.4f), new Vector3f(0.0f, (float) Math.toRadians(20.0f), 0.0f), new Vector3f(1.0f), inventoryItemRenderData);
+        super.performTransformations(new Vector3f(0.1f, -1.0f, -1.4f), new Vector3f(0.0f, (float) Math.toRadians(20.0f), 0.0f), new Vector3f(1.0f), inventoryItemRenderData);
         super.renderInventoryModel(this.model1, inventoryItemRenderData.getShaderManager());
     }
 

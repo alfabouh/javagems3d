@@ -310,9 +310,7 @@ public class TBoxScene {
         }
 
         TBoxAbstractObject closestObject = intersections.get(0).getValue();
-        if (!editorContent.trySelectObject(closestObject)) {
-            throw new JGemsRuntimeException("Occurred error while trying to select NULL object");
-        }
+        editorContent.trySelectObject(closestObject);
 
         return true;
     }

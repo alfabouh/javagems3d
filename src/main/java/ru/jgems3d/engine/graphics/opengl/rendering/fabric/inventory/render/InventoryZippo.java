@@ -13,8 +13,11 @@ package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render;
 
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
+import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
+import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.system.inventory.items.ItemZippo;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
@@ -26,16 +29,19 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 
-public class AbstractInventoryZippo extends AbstractInventoryItem {
-    private final MeshDataGroup model1;
-    private final MeshDataGroup model2;
+public class InventoryZippo extends AbstractInventoryItem {
+    protected final MeshDataGroup model1;
+    protected final MeshDataGroup model2;
 
-    public AbstractInventoryZippo() {
+    protected final JGemsTimer jGemsTimer;
+    protected int animState;
+
+    public InventoryZippo() {
+        this.jGemsTimer = JGemsHelper.createTimer();
+
         Mesh mesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
         Material material1 = Material.createDefault();
         Material material2 = Material.createDefault();
-        material1.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo1);
-        material1.setEmissionMap(JGemsResourceManager.globalTextureAssets.zippo1_emission);
         material2.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo2);
         ModelNode modelNode1 = new ModelNode(mesh, material1);
         ModelNode modelNode2 = new ModelNode(mesh, material2);
@@ -45,11 +51,17 @@ public class AbstractInventoryZippo extends AbstractInventoryItem {
 
     @Override
     public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, ru.jgems3d.engine.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
+        this.animate();
         ItemZippo itemZippo = (ItemZippo) inventoryItem;
-        float d1 = (float) (Math.cos(RenderPlayer.stepBobbing * 0.1f) * 0.051f);
-        super.performTransformations(new Vector3f(0.1f, -1.0f + d1, -1.4f), new Vector3f(0.0f, (float) Math.toRadians(20.0f), 0.0f), new Vector3f(1.0f), inventoryItemRenderData);
-        inventoryItemRenderData.getShaderManager().performUniform(new UniformString("use_emission"), itemZippo.isOpened());
+        super.performTransformations(new Vector3f(0.1f, -1.0f, -1.4f), new Vector3f(0.0f, (float) Math.toRadians(20.0f), 0.0f), new Vector3f(1.0f), inventoryItemRenderData);
         super.renderInventoryModel(itemZippo.isOpened() ? this.model1 : this.model2, inventoryItemRenderData.getShaderManager());
+    }
+
+    protected void animate() {
+        if (this.jGemsTimer.resetTimerAfterReachedSeconds(0.3f)) {
+            this.animState = this.animState == 0 ? 1 : 0;
+        }
+        this.model1.getModelNodeList().get(0).getMaterial().setDiffuse(this.animState == 0 ? JGemsResourceManager.globalTextureAssets.zippo1 : JGemsResourceManager.globalTextureAssets.zippo1_1);
     }
 
     @Override

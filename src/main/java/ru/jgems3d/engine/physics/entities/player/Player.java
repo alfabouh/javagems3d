@@ -33,4 +33,6 @@ public abstract class Player extends WorldItem implements IControllable {
     public Player(PhysicsWorld world, String itemName) {
         super(world, itemName);
     }
+
+    public abstract float height();
 }

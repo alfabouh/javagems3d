@@ -39,7 +39,7 @@ public class EntityCollectableItem extends WorldItem {
             if (e instanceof IInventoryOwner) {
                 IInventoryOwner inventory = (IInventoryOwner) e;
                 if (inventory.inventory().addItemInInventory(this.getInventoryItem())) {
-                    JGemsHelper.getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 0.5f, 1.0f, 1.0f, this.getPosition());
+                    JGemsHelper.getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 1.5f, 1.0f, 1.0f, this.getPosition());
                     JGemsHelper.getLogger().log("Put " + this.getInventoryItem().getName() + " in inventory!");
                     this.setDead();
                 }
