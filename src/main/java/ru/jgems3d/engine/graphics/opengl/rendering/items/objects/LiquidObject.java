@@ -42,12 +42,7 @@ public final class LiquidObject implements ICulled {
         Vector3f v2 = new Vector3f(location.x - size.x, (float) y, location.z + size.z);
         Vector3f v3 = new Vector3f(location.x + size.x, (float) y, location.z - size.z);
         Vector3f v4 = new Vector3f(location.x + size.x, (float) y, location.z + size.z);
-        if (size.x > size.z) {
-            this.textureScaling.set(new Vector2f(size.x / size.z, 1.0f));
-        } else if (size.x < size.z) {
-            this.textureScaling.set(new Vector2f(1.0f, size.z / size.x));
-        }
-        float sizeBound = 5.0f;
+        float sizeBound = 3.0f;
         if (size.x > sizeBound) {
             this.textureScaling.mul(size.x / sizeBound, 1.0f);
         }

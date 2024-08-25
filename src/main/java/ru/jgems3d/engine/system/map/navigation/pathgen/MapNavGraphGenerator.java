@@ -13,6 +13,7 @@ package ru.jgems3d.engine.system.map.navigation.pathgen;
 
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.math.Vector3f;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
@@ -45,7 +46,7 @@ public class MapNavGraphGenerator {
         while (!stack.isEmpty()) {
             GraphVertex current = stack.pop();
             this.getGraph().addVertex(current);
-            float off = 1.0f;
+            float off = JGemsDebugGlobalConstants.PATH_GEN_GRAPH_GAP;
 
             GraphVertex[] vertices = new GraphVertex[4];
             vertices[0] = this.tryPlaceVertex(current, current.getPosition().x - off, current.getPosition().y, current.getPosition().z);
@@ -83,33 +84,43 @@ public class MapNavGraphGenerator {
     }
 
     private GraphVertex tryPlaceVertex(GraphVertex current, float x, float y, float z) {
-        com.jme3.math.Vector3f vectorCheck1 = new com.jme3.math.Vector3f(x, y + 1.5f, z);
-        com.jme3.math.Vector3f vectorCheck2 = new com.jme3.math.Vector3f(x, y - 3.0f, z);
+        com.jme3.math.Vector3f vectorCheck1 = new com.jme3.math.Vector3f(x, y + 1.0f, z);
+        com.jme3.math.Vector3f vectorCheck2 = new com.jme3.math.Vector3f(x, y - 1.0f, z);
 
         com.jme3.math.Vector3f vectorCheck3 = DynamicsUtils.convertV3F_JME(current.getPosition()).add(0.0f, 0.1f, 0.0f);
-        com.jme3.math.Vector3f vectorCheck4 = new com.jme3.math.Vector3f(x, y + 1.5f, z);
+        com.jme3.math.Vector3f vectorCheck4 = new com.jme3.math.Vector3f(x, y + 1.0f, z);
 
         List<PhysicsRayTestResult> rayPathToPoint = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3, vectorCheck4);
         Optional<PhysicsRayTestResult> optional = rayPathToPoint.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
         PhysicsRayTestResult rayTestResult1 = optional.orElse(null);
 
-        if (rayTestResult1 == null) {
+        //if (rayTestResult1 == null) {
+        {
             List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck1, vectorCheck2);
             Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
             PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
             if (rayTestResult2 != null) {
                 com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck1, vectorCheck2, rayTestResult2.getHitFraction());
-                return new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
+                boolean f = true;
+                if (rayTestResult1 != null) {
+                    if (hitPointSurface.y < y || hitPointSurface.y > y + 0.5f) {
+                        f = false;
+                    }
+                }
+                if (f) {
+                    return new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
+                }
             }
         }
+       // }
 
             com.jme3.math.Vector3f hitPoint1 = rayTestResult1 == null ? (vectorCheck4) : DynamicsUtils.lerp(vectorCheck3, vectorCheck4, rayTestResult1.getHitFraction());
             com.jme3.math.Vector3f hitPointPath = new com.jme3.math.Vector3f(hitPoint1).subtract(vectorCheck3);
 
             com.jme3.math.Vector3f hitPointHalfWay = new com.jme3.math.Vector3f(vectorCheck3).add(hitPointPath.mult(0.5f));
 
-            com.jme3.math.Vector3f vectorCheck3_1 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y + 1.0f, hitPointHalfWay.z);
-            com.jme3.math.Vector3f vectorCheck3_2 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y - 2.0f, hitPointHalfWay.z);
+            com.jme3.math.Vector3f vectorCheck3_1 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y + 0.5f, hitPointHalfWay.z);
+            com.jme3.math.Vector3f vectorCheck3_2 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y - 0.5f, hitPointHalfWay.z);
 
             List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3_1, vectorCheck3_2);
             Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.logger.managers.JGemsLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
 
-public class SystemLogging {
+public final class SystemLogging {
     public static final LoggingManager jGemsLogging = new JGemsLogging("JGemsLogger");
     public static final LoggingManager toolBoxLogging = new JGemsLogging("ToolBoxLogger");
     private static final SystemLogging INSTANCE = new SystemLogging();

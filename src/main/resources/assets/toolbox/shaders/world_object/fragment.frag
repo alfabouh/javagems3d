@@ -18,8 +18,9 @@ uniform vec3 fogColor;
 uniform float fogDensity;
 
 uniform sampler2D diffuse_map;
-uniform vec3 diffuse_color;
+uniform vec4 diffuse_color;
 uniform bool selected;
+uniform float alpha_discard;
 
 vec4 calc_sun_light(vec3 vPos, vec3 vNormal) {
     float diffuseF = max(dot(vNormal, normalize(outSunPos)), 0.);
@@ -28,7 +29,7 @@ vec4 calc_sun_light(vec3 vPos, vec3 vNormal) {
 }
 
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    vec3 fog_color = fogColor * sunColor * sunBright;
+    vec3 fog_color = fogColor * sunBright;
     float distance = length(frag_pos);
     float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
     fogFactor = clamp(fogFactor, 0., 1.);
@@ -39,7 +40,10 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
 
 void main()
 {
-    frag_color = (use_texturing && (texturing_code & (1 << 2)) != 0) ? vec4(texture(diffuse_map, out_texture).rgb, 1.0) : vec4(diffuse_color, 1.0);
+    frag_color = (use_texturing && (texturing_code & (1 << 2)) != 0) ? texture(diffuse_map, out_texture) : diffuse_color;
+    if (frag_color.a < alpha_discard) {
+        discard;
+    }
     if (selected) {
         frag_color *= vec4(1.25, 0.25, 0.25, 1.0);
     }
@@ -49,4 +53,5 @@ void main()
     if (showFog) {
         frag_color = calc_fog(mv_vertex_pos, frag_color);
     }
+    frag_color.a = 1.0;
 }

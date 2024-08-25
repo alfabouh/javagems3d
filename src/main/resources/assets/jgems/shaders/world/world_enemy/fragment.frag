@@ -24,7 +24,7 @@ layout (std140, binding = 0) uniform SunLight {
 };
 
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    vec3 fog_color = vec3(fogColorR, fogColorG, fogColorB) * vec3(sunColorR, sunColorG, sunColorB) * sunBright;
+    vec3 fog_color = vec3(fogColorR, fogColorG, fogColorB) * sunBright;
     float distance = length(frag_pos);
     float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
     fogFactor = clamp(fogFactor, 0., 1.);

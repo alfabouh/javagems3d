@@ -21,6 +21,8 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
+import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
+import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class DefaultGamePanel extends AbstractPanelUI {
@@ -56,7 +58,13 @@ public class DefaultGamePanel extends AbstractPanelUI {
                     continue;
                 }
                 InventoryItemRenderData inventoryItemRenderData = JGemsResourceManager.inventoryItemRenderTable.getMap().get(slot.getInventoryItem().getClass());
-                immediateUI.imageUI(inventoryItemRenderData.getInventoryIcon(), new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
+
+                TextureSample sample = inventoryItemRenderData == null ? null : inventoryItemRenderData.getInventoryIcon();
+                if (sample == null) {
+                    sample = TextureAssetsLoader.DEFAULT;
+                }
+                immediateUI.imageUI(sample, new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
+
                 immediateUI.textUI("[" + j + "]", JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(94 * j, windowH - 132), inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0xffffff, 0.5f);
             }
         }

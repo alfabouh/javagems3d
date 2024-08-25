@@ -147,10 +147,15 @@ public class TBoxScene {
         if (!this.isActiveScene()) {
             return;
         }
+        GL30.glHint(GL30.GL_LINE_SMOOTH_HINT, GL30.GL_NICEST);
+        GL30.glEnable(GL30.GL_LINE_SMOOTH);
         EditorContent editorContent = (EditorContent) this.getDimGuiRenderTBox().getCurrentContentToRender();
         this.getCamera().updateCamera(deltaTime);
         if (this.getDimGuiRenderTBox().getCurrentContentToRender() instanceof EditorContent) {
             GL30.glEnable(GL30.GL_DEPTH_TEST);
+
+            GL30.glEnable(GL30.GL_BLEND);
+            GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
             TBoxScene.sceneForwardFbo.bindFBO();
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
             this.getSceneContainer().renderForward(deltaTime);
@@ -163,17 +168,8 @@ public class TBoxScene {
             TBoxSceneUtils.renderModel(modelSun, GL30.GL_LINES);
             TBoxResourceManager.shaderResources().world_lines.unBind();
             modelSun.clean();
-            if (editorContent.currentSelectedObject != null) {
-                Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
-                TBoxResourceManager.shaderResources().world_lines.bind();
-                TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
-                TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-                TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
-                TBoxSceneUtils.renderModel(model, GL30.GL_LINES);
-                TBoxResourceManager.shaderResources().world_lines.unBind();
-                model.clean();
-            }
             TBoxScene.sceneForwardFbo.unBindFBO();
+            GL30.glDisable(GL30.GL_BLEND);
 
             TBoxScene.sceneForwardFbo.copyFBOtoFBODepth(TBoxScene.sceneTransparentFbo.getFrameBufferId(), this.getWindow().getWindowDimensions());
             GL30.glDepthMask(false);
@@ -205,6 +201,19 @@ public class TBoxScene {
                 gluing.getUtils().performOrthographicMatrix(model);
                 JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
                 gluing.unBind();
+            }
+
+            if (editorContent.currentSelectedObject != null) {
+                GL30.glDisable(GL30.GL_DEPTH_TEST);
+                Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
+                TBoxResourceManager.shaderResources().world_lines.bind();
+                TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
+                TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
+                TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
+                TBoxSceneUtils.renderModel(model, GL30.GL_LINES);
+                TBoxResourceManager.shaderResources().world_lines.unBind();
+                model.clean();
+                GL30.glEnable(GL30.GL_DEPTH_TEST);
             }
 
             GL30.glDisable(GL30.GL_DEPTH_TEST);
@@ -311,19 +320,16 @@ public class TBoxScene {
     public void placeObjectFromGUI(EditorContent editorContent, String nameId) {
         AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(nameId);
         MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
+        Vector3f whereLook = this.findPointWhereCamLooks(15.0f);
+
         Vector3f camRot = this.getCamera().getCamRotation();
         Vector3f camPos = this.getCamera().getCamPosition();
-        Vector3f camTo = JGemsHelper.UTILS.calcLookVector(camRot).normalize();
 
         Format3D format3D = new Format3D();
         format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
 
-        Set<TBoxAbstractObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
-        List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < 15.0f).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
-
-        if (!intersections.isEmpty()) {
-            Vector3f closestObject = intersections.get(0);
-            format3D.setPosition(closestObject);
+        if (whereLook != null) {
+            format3D.setPosition(whereLook);
         }
 
         TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
@@ -347,6 +353,24 @@ public class TBoxScene {
 
         tBoxObject.reCalcCollision();
         this.addObject(tBoxObject);
+    }
+
+    public Vector3f findPointWhereCamLooks(final float maxDist) {
+        Vector3f camRot = this.getCamera().getCamRotation();
+        Vector3f camPos = this.getCamera().getCamPosition();
+        Vector3f camTo = JGemsHelper.UTILS.calcLookVector(camRot).normalize();
+
+        Format3D format3D = new Format3D();
+        format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
+
+        Set<TBoxAbstractObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
+        List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < maxDist).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
+
+        if (!intersections.isEmpty()) {
+            return intersections.get(0);
+        }
+
+        return null;
     }
 
     public Vector3f getMouseRay(Vector2f mouseCoordinates, Vector2f sceneFrameMin, Vector2f sceneFrameMax) {

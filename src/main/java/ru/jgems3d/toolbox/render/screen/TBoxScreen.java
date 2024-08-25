@@ -124,14 +124,19 @@ public class TBoxScreen implements IScreen {
     private void renderLoop() throws InterruptedException {
         JGemsTimer deltaTimer = this.getTimerPool().createTimer();
         JGemsTimer fpsTimer = this.getTimerPool().createTimer();
-        GL30.glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+        GL30.glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
         int fps = 0;
+
+        final long frameDuration = 1000000000L / 60L;
 
         while (!ToolBox.get().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
                 ToolBox.get().closeTBox();
                 break;
             }
+
+            long frameStartTime = System.nanoTime();
+
             this.getTimerPool().update();
             this.getTransformationUtils().updateMatrices();
             this.getControllerDispatcher().updateController(this.getWindow());
@@ -146,6 +151,16 @@ public class TBoxScreen implements IScreen {
 
             GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();
+
+            long frameEndTime = System.nanoTime();
+            long frameTime = frameEndTime - frameStartTime;
+
+            if (frameTime < frameDuration) {
+                long sleepTime = (frameDuration - frameTime) / 1000000;
+                if (sleepTime > 0) {
+                    Thread.sleep(sleepTime);
+                }
+            }
         }
     }
 

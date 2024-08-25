@@ -22,11 +22,11 @@ import java.util.List;
  */
 public class MeshDataGroup implements ICached {
     private final List<ModelNode> modelNodeList;
-    private IMeshDataContainer meshDataContainer;
+    private IMeshUserData meshUserData;
 
     public MeshDataGroup() {
         this.modelNodeList = new ArrayList<>();
-        this.meshDataContainer = null;
+        this.meshUserData = null;
     }
 
     public MeshDataGroup(ModelNode modelNode) {
@@ -47,26 +47,26 @@ public class MeshDataGroup implements ICached {
     }
 
     @SuppressWarnings("all")
-    public <T extends IMeshDataContainer> T getMeshDataContainer(Class<T> tClass) {
-        if (this.getMeshDataContainer() == null) {
+    public <T extends IMeshUserData> T getMeshUserData(Class<T> tClass) {
+        if (this.getMeshUserData() == null) {
             return null;
         }
-        if (this.getMeshDataContainer().getClass().isAssignableFrom(tClass)) {
-            return (T) this.getMeshDataContainer();
+        if (this.getMeshUserData().getClass().isAssignableFrom(tClass)) {
+            return (T) this.getMeshUserData();
         }
         return null;
     }
 
     /**
      * This is additional user information, if necessary
-     * @param meshDataContainer
+     * @param meshUserData
      */
-    public void setMeshDataContainer(IMeshDataContainer meshDataContainer) {
-        this.meshDataContainer = meshDataContainer;
+    public void setMeshUserData(IMeshUserData meshUserData) {
+        this.meshUserData = meshUserData;
     }
 
-    public IMeshDataContainer getMeshDataContainer() {
-        return this.meshDataContainer;
+    public IMeshUserData getMeshUserData() {
+        return this.meshUserData;
     }
 
     public void clean() {

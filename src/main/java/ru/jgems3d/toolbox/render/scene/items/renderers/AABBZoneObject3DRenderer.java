@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
+import ru.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
 import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import ru.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 
@@ -31,6 +32,12 @@ public class AABBZoneObject3DRenderer implements ITBoxObjectRenderer {
         if (color == null) {
             color = new Vector3f(1.0f);
         }
+
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("showFog"), EditorContent.sceneShowFog && properties.getFogProp().isFogEnabled());
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("sunBright"), properties.getSkyProp().getSunBrightness());
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogDensity"), properties.getFogProp().getFogDensity());
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogColor"), properties.getFogProp().getFogColor());
+
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("colour"), new Vector4f(color, 1.0f));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().unBind();

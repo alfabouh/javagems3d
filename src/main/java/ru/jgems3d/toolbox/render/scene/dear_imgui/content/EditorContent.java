@@ -13,15 +13,13 @@ package ru.jgems3d.toolbox.render.scene.dear_imgui.content;
 
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.flag.ImGuiComboFlags;
-import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiTreeNodeFlags;
-import imgui.flag.ImGuiWindowFlags;
+import imgui.flag.*;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
@@ -49,6 +47,8 @@ public class EditorContent implements ImGuiContent {
     public static boolean sceneShowLight = true;
     public static boolean sceneShowFog = true;
     public static boolean isFocusedOnSceneFrame;
+    public static float alphaDiscard = 0.5f;
+
     public final ImInt objectSelectionInt = new ImInt();
     private final TBoxScene tBoxScene;
     private final Vector2f sceneFrameCenter;
@@ -71,12 +71,23 @@ public class EditorContent implements ImGuiContent {
 
     private void renderScene(Vector2i dim) {
         ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
-        isFocusedOnSceneFrame = ImGui.isWindowFocused();
+        EditorContent.isFocusedOnSceneFrame = ImGui.isWindowFocused();
         ImGui.setWindowSize(dim.x * 0.5f, dim.y * 0.5f);
         ImGui.setWindowPos(0, 20);
+
         ImGui.image(TBoxScene.sceneFbo.getTexturePrograms().get(0).getTextureId(), dim.x * 0.5f - 16, dim.y * 0.5f - 40, 0.0f, 1.0f, 1.0f, 0.0f);
 
+        if (ImGui.beginPopup("context_obj")) {
+            if (this.currentSelectedObject == null) {
+                ImGui.closeCurrentPopup();
+            }
+            this.showObjectContext(this.getTBoxScene().getSceneContainer().getSceneObjects().size());
+            ImGui.endPopup();
+        }
         if (ImGui.isItemClicked(1)) {
+            if (this.currentSelectedObject != null) {
+                ImGui.openPopup("context_obj");
+            }
             this.getTBoxScene().tryGrabObject(this);
         }
 
@@ -128,6 +139,7 @@ public class EditorContent implements ImGuiContent {
                     for (String s : pairs.getSecond()) {
                         if (ImGui.selectable(s)) {
                             this.currentSelectedToPlaceID = s;
+                            this.previewBorders[0] = 1.0f;
                         }
                     }
                     ImGui.endCombo();
@@ -153,20 +165,29 @@ public class EditorContent implements ImGuiContent {
 
         ImGui.newLine();
 
-        this.prevSelectedItem = this.currentSelectedObject;
-        this.currentSelectedObject = null;
         if (ImGui.collapsingHeader("Scene Objects", ImGuiTreeNodeFlags.DefaultOpen)) {
             String[] strings = this.getTBoxScene().getSceneContainer().getSceneObjects().stream().map(TBoxAbstractObject::toString).toArray(String[]::new);
 
             ImGui.columns(2, "SObj", true);
 
             ImGui.beginChild("list");
+
+            ImGui.beginChild("ss");
             ImGui.listBox("Object List" + "(" + strings.length + ")", this.objectSelectionInt, strings, 20);
-            if (ImGui.button("Remove Selection")) {
-                this.removeSelection();
+            if (this.currentSelectedObject != null) {
+                if (ImGui.beginPopupContextItem("context_obj")) {
+                    this.showObjectContext(this.getTBoxScene().getSceneContainer().getSceneObjects().size());
+                    ImGui.endPopup();
+                }
             }
             ImGui.endChild();
 
+            this.prevSelectedItem = this.currentSelectedObject;
+            this.currentSelectedObject = null;
+
+            if (ImGui.button("Remove Selection") || TBoxControllerDispatcher.bindingManager().keyEsc.isPressed()) {
+                this.removeSelection();
+            }
             if (!this.getTBoxScene().getSceneContainer().getSceneObjects().isEmpty()) {
                 Object[] objects = this.getTBoxScene().getSceneContainer().getSceneObjects().toArray();
                 for (int i = 0; i < objects.length; i++) {
@@ -178,28 +199,18 @@ public class EditorContent implements ImGuiContent {
                     }
                 }
             }
+            ImGui.endChild();
 
             ImGui.nextColumn();
             ImGui.beginChild("list_editor");
             if (this.currentSelectedObject != null) {
-                ImGui.text("Selected:" + this.currentSelectedObject);
-                if (ImGui.button("Destroy Object")) {
-                    this.getTBoxScene().removeObject(this.currentSelectedObject);
-                    if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneContainer().getSceneObjects().size()) {
-                        this.objectSelectionInt.set(this.getTBoxScene().getSceneContainer().getSceneObjects().size() - 1);
-                    }
-                }
-                if (ImGui.button("Make Copy")) {
-                    this.getTBoxScene().addObject(this.currentSelectedObject.copy());
-                }
 
-                ImGui.newLine();
-                ImGui.text("Attributes:");
+                ImGui.beginChild("obj_prop");
                 TBoxBindingManager tBoxBindingManager = TBoxControllerDispatcher.bindingManager();
                 float speed = tBoxBindingManager.keyCtrl.isPressed() ? 0.001f : 0.01f;
-                ImGui.newLine();
+                ImGui.text("Selected:" + this.currentSelectedObject);
                 ImGui.separator();
-                ImGui.beginChild("obj_prop");
+
                 if (this.currentSelectedObject.hasAttributes()) {
                     AttributesContainer attributesContainer = this.currentSelectedObject.getAttributeContainer();
                     for (Attribute<?> attribute : attributesContainer.getAttributeSet().values()) {
@@ -314,6 +325,40 @@ public class EditorContent implements ImGuiContent {
         }
 
         ImGui.end();
+    }
+
+    private void showObjectContext(int totalObjects) {
+        ImGui.text("Selected:" + this.currentSelectedObject);
+        if (ImGui.button("Move Camera -> Object")) {
+            ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(this.currentSelectedObject.getModel().getFormat().getPosition()).add(0.0f, 1.0f, 0.0f));
+        }
+        if (ImGui.button("Move Object -> CameraDir")) {
+            Vector3f whereLook = this.getTBoxScene().findPointWhereCamLooks(15.0f);
+
+            Vector3f camRot = this.getTBoxScene().getCamera().getCamRotation();
+            Vector3f camPos = this.getTBoxScene().getCamera().getCamPosition();
+
+            Vector3f where = new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f));
+
+            if (whereLook != null) {
+                where = whereLook;
+            }
+
+            this.currentSelectedObject.setPositionWithAttribute(where);
+        }
+
+        ImGui.separator();
+        if (ImGui.button("Clone")) {
+            TBoxAbstractObject object = this.currentSelectedObject.copy();
+            this.getTBoxScene().addObject(object);
+            this.objectSelectionInt.set(totalObjects);
+        }
+        if (ImGui.button("Delete")) {
+            this.getTBoxScene().removeObject(this.currentSelectedObject);
+            if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneContainer().getSceneObjects().size()) {
+                this.objectSelectionInt.set(this.getTBoxScene().getSceneContainer().getSceneObjects().size() - 1);
+            }
+        }
     }
 
     private void transformPosition(Format3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
@@ -460,7 +505,7 @@ public class EditorContent implements ImGuiContent {
 
                 ImString imString2 = new ImString();
                 imString2.set(mapProperties.getSkyProp().getSkyBoxPath());
-                if (ImGui.inputText("Skybox Texture Name", imString2)) {
+                if (ImGui.inputText("Skybox Texture Path", imString2)) {
                     mapProperties.getSkyProp().setSkyBoxPath(imString2.get());
                 }
 
@@ -552,7 +597,7 @@ public class EditorContent implements ImGuiContent {
         }
 
         if (ImGui.beginMenu("Scene")) {
-            if (ImGui.button("Teleport to Center")) {
+            if (ImGui.button("Teleport In Center")) {
                 ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(0.0f));
             }
             if (ImGui.checkbox("Light", EditorContent.sceneShowLight)) {
@@ -561,6 +606,10 @@ public class EditorContent implements ImGuiContent {
             if (ImGui.checkbox("Fog", EditorContent.sceneShowFog)) {
                 EditorContent.sceneShowFog = !EditorContent.sceneShowFog;
             }
+            float[] f1 = new float[] {EditorContent.alphaDiscard};
+            if (ImGui.dragFloat("Alpha Discard", f1, 0.01f, 0.0f, 0.9f)) {
+                EditorContent.alphaDiscard = f1[0];
+            }
             ImGui.endMenu();
         }
 
@@ -568,9 +617,9 @@ public class EditorContent implements ImGuiContent {
     }
 
     public void drawContent(Vector2i dim, float partialTicks) {
+        this.renderScene(dim);
         this.renderProperties(dim);
         this.renderEdit(dim);
-        this.renderScene(dim);
         this.renderMenuBar();
 
         ImGui.setNextWindowPos(0.0f, (float) dim.y - 200, ImGuiCond.Always);

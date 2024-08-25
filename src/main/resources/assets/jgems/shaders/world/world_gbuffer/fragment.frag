@@ -63,7 +63,7 @@ void main()
 
     vec4 diffuse = checkCode(texturing_code, diffuse_code) ? diffuse_texture : diffuse_color;
 
-    if (alpha_discard > 0 && diffuse.a < alpha_discard) {
+    if (diffuse.a < alpha_discard) {
         discard;
     }
 

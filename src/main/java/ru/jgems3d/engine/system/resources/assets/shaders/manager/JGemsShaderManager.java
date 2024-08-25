@@ -126,7 +126,7 @@ public final class JGemsShaderManager extends ShaderManager {
                 }
             }
             if (emission != null) {
-                this.performUniformSampleNoWarn(new UniformString("emission_map"), emission);
+                this.performUniformSampleNoWarn(new UniformString("emissive_map"), emission);
                 texturing_code |= 1 << 3;
             }
             if (metallic != null) {

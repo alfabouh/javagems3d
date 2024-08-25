@@ -18,9 +18,12 @@ import com.jme3.math.Vector3f;
 import com.jme3.system.NativeLibraryLoader;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.dynamics.extractor.DLLExtractor;
 import ru.jgems3d.engine.physics.world.triggers.IHasCollisionTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
+import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
@@ -58,6 +61,7 @@ public class DynamicsSystem {
     }
 
     public void collideTest() {
+        Set<Pair<IHasCollisionTrigger, Object>> triggerPairs = new HashSet<>();
         for (PhysicsCollisionObject physicsCollisionObject : this.getObjectsWithCollideTriggers()) {
             IHasCollisionTrigger trigger = (IHasCollisionTrigger) physicsCollisionObject.getUserObject();
             if (!trigger.isValid()) {
@@ -68,23 +72,17 @@ public class DynamicsSystem {
                 Object obB = event.getObjectB().getUserObject();
                 if (obA instanceof IHasCollisionTrigger) {
                     IHasCollisionTrigger collideTrigger = (IHasCollisionTrigger) obA;
-                    ITriggerAction triggerAction = collideTrigger.onColliding();
-                    if (triggerAction != null) {
-                        if (!APIEventsLauncher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
-                            triggerAction.action(obB);
-                        }
-                    }
-                }
-                if (obB instanceof IHasCollisionTrigger) {
-                    IHasCollisionTrigger collideTrigger = (IHasCollisionTrigger) obB;
-                    ITriggerAction triggerAction = collideTrigger.onColliding();
-                    if (triggerAction != null) {
-                        if (!APIEventsLauncher.pushEvent(new Events.CollisionTriggered(collideTrigger, triggerAction)).isCancelled()) {
-                            triggerAction.action(obA);
-                        }
-                    }
+                    triggerPairs.add(new Pair<>(collideTrigger, obB));
                 }
             });
+        }
+        for (Pair<IHasCollisionTrigger, Object> objectPair : triggerPairs) {
+            ITriggerAction triggerAction = objectPair.getFirst().onColliding();
+            if (triggerAction != null) {
+                if (!APIEventsLauncher.pushEvent(new Events.CollisionTriggered(objectPair.getFirst(), triggerAction)).isCancelled()) {
+                    triggerAction.action(objectPair.getSecond());
+                }
+            }
         }
     }
 

@@ -111,8 +111,13 @@ public class EngineSystem implements IEngine {
 
     private void initMap() {
         if (!this.engineState().isEngineIsReady()) {
-            JGemsHelper.getLogger().warn("Engine thread is not ready to load map!");
+            JGemsHelper.getLogger().error("Engine thread is not ready to load map!");
             this.mapLoader = null;
+            return;
+        }
+
+        if (this.getMapLoader() == null) {
+            JGemsHelper.getLogger().error("Invalid map!");
             return;
         }
 
@@ -124,17 +129,6 @@ public class EngineSystem implements IEngine {
         JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
         PhysicsWorld physicsWorld = JGemsHelper.getPhysicsWorld();
         SceneWorld sceneWorld = JGemsHelper.getSceneWorld();
-        this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
-        Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
-
-        Vector3f startPos = new Vector3f(pair.getFirst()).add(0.0f, 0.6f, 0.0f);
-        Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
-
-        this.localPlayer = new LocalPlayer(APIContainer.get().getApiGameInfo().getAppManager().createPlayer(this.getMapLoader()));
-
-        this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
-
-        JGemsHelper.getLogger().log(this.currentMapName() + ": Map Loaded!");
 
         Environment environment = sceneWorld.getEnvironment();
         FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
@@ -162,6 +156,16 @@ public class EngineSystem implements IEngine {
             environment.getSky().setSunColors(skyProp.getSunColor());
             environment.getSky().setSunBrightness(skyProp.getSunBrightness());
         }
+
+        this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
+
+        Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
+        Vector3f startPos = new Vector3f(pair.getFirst()).add(0.0f, 0.6f, 0.0f);
+        Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
+        this.localPlayer = new LocalPlayer(APIContainer.get().getApiGameInfo().getAppManager().createPlayer(this.getMapLoader()));
+        this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
+
+        JGemsHelper.getLogger().log(this.currentMapName() + ": Map Loaded!");
 
         JGemsHelper.CONTROLLER.setCursorInCenter();
         JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());

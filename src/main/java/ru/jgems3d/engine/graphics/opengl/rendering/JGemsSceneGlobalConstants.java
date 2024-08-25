@@ -38,6 +38,7 @@ public abstract class JGemsSceneGlobalConstants {
     public static final int CASCADE_SPLITS = 3;
     public static float MAX_ALPHA_TO_CULL_SHADOW = 0.5f;
     public static float MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT = 0.75f;
+    public static boolean DRAW_BACK_FACES_FOR_SHADOWS = true;
 
     //section IMGUI
     public static int TICKS_TO_CLEAN_UNUSED_UI = 3;

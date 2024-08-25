@@ -14,6 +14,7 @@ package ru.jgems3d.engine.graphics.opengl.rendering;
 import ru.jgems3d.engine.graphics.opengl.rendering.debug.LinesDebugDraw;
 
 public abstract class JGemsDebugGlobalConstants {
+    public static float PATH_GEN_GRAPH_GAP = 1.0f;
     public static boolean FULL_BRIGHT;
     public static boolean SHOW_DEBUG_LINES;
     public static LinesDebugDraw linesDebugDraw = new LinesDebugDraw();

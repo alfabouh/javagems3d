@@ -28,7 +28,6 @@ public final class TBoxObject extends TBoxAbstractObject {
     public TBoxObject copy() {
         TBoxObject tBoxObject = new TBoxObject(this.objectId(), this.getRenderData(), new Model<>(this.getModel()));
         tBoxObject.setAttributeContainer(new AttributesContainer(this.getAttributeContainer()));
-        tBoxObject.setPositionWithAttribute(new Vector3f(tBoxObject.getModel().getFormat().getPosition()).add(0.0f, 2.5f, 0.0f));
         return tBoxObject;
     }
 }

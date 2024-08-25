@@ -65,18 +65,18 @@ public class ItemZippo extends InventoryItem {
     public void onAddInInventory(IInventoryOwner hasInventory) {
         super.onAddInInventory(hasInventory);
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3f(1.0f, 0.475f, 0.375f));
-        pointLight.setBrightness(4.0f);
+        pointLight.setBrightness(5.25f);
         JGemsHelper.WORLD.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
     }
 
-    private void close() {
+    protected void close() {
         JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.zippo_c, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
         this.pointLight.setEnabled(false);
         this.isOpened = false;
     }
 
-    private void open() {
+    protected void open() {
         JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.zippo_o, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
         this.pointLight.setEnabled(true);
         this.isOpened = true;

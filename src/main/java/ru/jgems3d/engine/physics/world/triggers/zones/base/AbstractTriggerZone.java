@@ -11,9 +11,11 @@
 
 package ru.jgems3d.engine.physics.world.triggers.zones.base;
 
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.objects.PhysicsGhostObject;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.IWorld;
@@ -35,7 +37,7 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
         this.getGhostObject().setPhysicsLocation(DynamicsUtils.convertV3F_JME(zone.getLocation()));
         this.getGhostObject().setUserObject(this);
 
-        this.setCollisionFilter(CollisionFilter.DN_BODY);
+        this.setCollisionFilter(CollisionFilter.DN_BODY, CollisionFilter.PLAYER);
         this.setCollisionGroup(CollisionFilter.GHOST);
     }
 

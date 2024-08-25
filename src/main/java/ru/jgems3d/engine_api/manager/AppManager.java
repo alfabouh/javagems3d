@@ -57,16 +57,15 @@ public abstract class AppManager {
     public abstract @NotNull IPlayerConstructor createPlayer(IMapLoader mapLoader);
 
     /**
-     * This method is responsible for arranging your objects on the TBox game map.
+     * This method is responsible for arranging TBox entities on the TBox game map.
      *
      * @param sceneWorld           the scene world
      * @param physicsWorld         the physics world
      * @param localGameResources   the local game resources
      * @param globalGameResources  the global game resources
      * @param id                   the object id
-     * @param objectCategory       the object category
      * @param attributesContainer  an attribute container that stores the parameters of an object (for example, position, rotation, etc.)
-     * @param renderContainer      The necessary data to configure the object rendering
+     * @param userData             data to configure the object properties
      * <br><br>
      * <b>You can use the default method of installing an object on the map using</b>
      * <pre>
@@ -76,9 +75,46 @@ public abstract class AppManager {
      * </pre>
      * @see TBoxMapDefaultObjectsPlacer
      */
-    public abstract void placeTBoxEntityOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer);
-    public abstract void placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData renderContainer);
-    public abstract void handleMarkerOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer);
+    public abstract void placeTBoxEntityOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData);
+    /**
+     * This method is responsible for arranging TBox triggers on the TBox game map.
+     *
+     * @param physicsWorld         the physics world
+     * @param position             vec3 pos
+     * @param size                 vec3 size
+     * @param id                   the object id
+     * @param attributesContainer  an attribute container that stores the parameters of an object (for example, position, rotation, etc.)
+     * @param userData             data to configure the object properties
+     * <br><br>
+     * <b>You can use the default method of installing an object on the map using</b>
+     * <pre>
+     *      {@code
+     *          TBoxMapDefaultObjectsPlacer#placeTBoxTriggerZoneOnMap
+     *      }
+     * </pre>
+     * @see TBoxMapDefaultObjectsPlacer
+     */
+    public abstract void placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData userData);
+    /**
+     * This method is responsible for arranging TBox markers on the TBox game map.
+     *
+     * @param sceneWorld           the scene world
+     * @param physicsWorld         the physics world
+     * @param localGameResources   the local game resources
+     * @param globalGameResources  the global game resources
+     * @param id                   the object id
+     * @param attributesContainer  an attribute container that stores the parameters of an object (for example, position, rotation, etc.)
+     * @param userData             data to configure the object properties
+     * <br><br>
+     * <b>You can use the default method of installing an object on the map using</b>
+     * <pre>
+     *      {@code
+     *          TBoxMapDefaultObjectsPlacer#handleMarkerOnMap
+     *      }
+     * </pre>
+     * @see TBoxMapDefaultObjectsPlacer
+     */
+    public abstract void handleMarkerOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData);
 
     /**
      * This method returns a Panel UI instance of the game's main menu.

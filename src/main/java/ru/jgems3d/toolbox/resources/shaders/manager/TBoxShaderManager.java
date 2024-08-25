@@ -29,6 +29,7 @@ import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.jgems3d.toolbox.ToolBox;
+import ru.jgems3d.toolbox.render.scene.dear_imgui.content.EditorContent;
 import ru.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
 
 public final class TBoxShaderManager extends ShaderManager {
@@ -72,6 +73,7 @@ public final class TBoxShaderManager extends ShaderManager {
                 JGemsScene.activeGlTexture(i);
                 GL30.glBindTexture(GL11.GL_TEXTURE_2D, 0);
             }
+            TBoxShaderManager.this.performUniformNoWarn(new UniformString("alpha_discard"), EditorContent.alphaDiscard);
 
             this.performCameraData();
 

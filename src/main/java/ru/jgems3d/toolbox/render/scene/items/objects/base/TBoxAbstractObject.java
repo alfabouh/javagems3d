@@ -46,7 +46,7 @@ public abstract class TBoxAbstractObject {
         this.getModel().getFormat().setPosition(vector3f);
         Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (vector3f != null) {
-            vector3f.set(vector3f);
+            vector3f1.set(vector3f);
         }
         this.reCalcCollision();
     }
@@ -55,7 +55,7 @@ public abstract class TBoxAbstractObject {
         this.getModel().getFormat().setRotation(vector3f);
         Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
         if (vector3f != null) {
-            vector3f.set(vector3f);
+            vector3f1.set(vector3f);
         }
         this.reCalcCollision();
     }
@@ -64,7 +64,7 @@ public abstract class TBoxAbstractObject {
         this.getModel().getFormat().setScaling(vector3f);
         Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         if (vector3f != null) {
-            vector3f.set(vector3f);
+            vector3f1.set(vector3f);
         }
         this.reCalcCollision();
     }

@@ -24,6 +24,7 @@ import ru.jgems3d.engine.physics.world.triggers.liquids.Water;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNotFoundException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
@@ -50,21 +51,32 @@ public class TBoxMapLoader implements IMapLoader {
     private Set<SaveObject> saveObjectSet;
     private Graph navMesh;
 
-    public TBoxMapLoader(MapObject mapObject) {
+    private TBoxMapLoader(MapObject mapObject) {
         if (mapObject != null) {
             this.readMap(mapObject);
         }
     }
 
-    public static MapObject readMapFromJar(JGemsPath pathToMap) {
+    public static TBoxMapLoader create(JGemsPath pathToMap) {
         try {
-            return new MapObject(Graph.readFromFile(new JGemsPath(pathToMap, "nav.mesh")), TBoxMapReader.readMapFromJAR(pathToMap));
-        } catch (IOException | ClassNotFoundException e) {
+            return new TBoxMapLoader(TBoxMapLoader.readMapFromJar(pathToMap));
+        } catch (IOException | ClassNotFoundException | JGemsNotFoundException e) {
             LoggingManager.showExceptionDialog("Failed to lad map!");
             JGemsHelper.getLogger().error("Failed to load map: " + pathToMap);
             e.printStackTrace(System.err);
+            return null;
         }
-        return null;
+    }
+
+    public static MapObject readMapFromJar(JGemsPath pathToMap) throws IOException, ClassNotFoundException, JGemsNotFoundException {
+        Graph graph = null;
+        JGemsPath pathTo = new JGemsPath(pathToMap, "nav.mesh");
+        try {
+            graph = Graph.readFromFile(pathTo);
+        } catch (JGemsNotFoundException e) {
+            JGemsHelper.getLogger().warn("Couldn't read NavFile " + pathTo);
+        }
+        return new MapObject(graph, TBoxMapReader.readMapFromJAR(pathToMap));
     }
 
     public void readMap(MapObject mapObject) {

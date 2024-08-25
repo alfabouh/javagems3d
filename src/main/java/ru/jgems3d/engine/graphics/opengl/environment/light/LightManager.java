@@ -144,5 +144,6 @@ public class LightManager implements ILightManager {
         }
         MemoryUtil.memFree(value1Buffer);
         JGemsOpenGLRenderer.getGameUboShader().unBind();
+        this.getPointLightList().clear();
     }
 }

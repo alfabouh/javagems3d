@@ -55,8 +55,8 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     private PhysicsCharacter physicsCharacter;
     private CharacterController characterController;
 
-    private final float stepHeight = 0.3f;
-    private final float maxSlope = 45.0f;
+    protected float stepHeight = 0.3f;
+    protected float maxSlope = 45.0f;
 
     public SimpleKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot) {
         super(world, pos, rot, "player_sp");
@@ -148,6 +148,8 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
                 float factor1 = this.getLiquidSwimUpFactor();
                 if (factor1 > 0.0f) {
                     this.getPhysicsCharacter().jump(DynamicsUtils.createV3F_JME(0.0f, 3.0f * factor1, 0.0f));
+                } else if (this.getPhysicsCharacter().onGround()) {
+                    this.getPhysicsCharacter().jump();
                 }
             }
         }
@@ -295,6 +297,14 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         if (this.getRotation().x < -Math.toRadians(90.0f)) {
             this.getCameraRotation().set(new Vector3d(-Math.toRadians(90.0f), this.getRotation().y, this.getRotation().z));
         }
+    }
+
+    protected boolean canJump() {
+        return true;
+    }
+
+    protected float walkSpeed() {
+        return 0.25f;
     }
 
     @Override
