@@ -41,7 +41,7 @@ public class TextureAssetsLoader implements IAssetsLoader {
     public TextureSample gui1;
 
     public TextureSample zippo1;
-    public TextureSample zippo1_emission;
+    public TextureSample zippo1_1;
     public TextureSample zippo2;
     public TextureSample zippo_world;
     public TextureSample zippo_inventory;
@@ -63,9 +63,9 @@ public class TextureAssetsLoader implements IAssetsLoader {
         this.crosshair = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/crosshair.png"), new TextureSample.Params(false, false, false, false));
         this.gui1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/gui1.png"), new TextureSample.Params(false, false, false, false));
         this.zippo1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1.png"), new TextureSample.Params(false, false, false, false));
+        this.zippo1_1 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1_1.png"), new TextureSample.Params(false, false, false, false));
         this.zippo_world = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo_world.png"), new TextureSample.Params(false, false, false, false));
 
-        this.zippo1_emission = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1_emission.png"), new TextureSample.Params(false, false, false, false));
         this.zippo2 = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo2.png"), new TextureSample.Params(false, false, false, false));
         this.particleTexturePack = new ParticleTexturePack(new JGemsPath(JGems3D.Paths.PARTICLES, "flame"), ".png", 4, 0.25f);
 

@@ -67,6 +67,8 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     }
 
     public void createPlayer() {
+        this.changeYStartPos();
+
         ConvexShape convexShape = new CapsuleCollisionShape(this.capsuleSize().x, this.capsuleSize().y);
 
         this.physicsCharacter = new PhysicsCharacter(convexShape, 0.0f);
@@ -79,6 +81,10 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
         this.setCollisionGroup(CollisionFilter.PLAYER);
         this.setCollisionFilter(CollisionFilter.ALL);
+    }
+
+    protected void changeYStartPos() {
+        this.startPos.y += this.height();
     }
 
     protected Vector2f capsuleSize() {
@@ -126,7 +132,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     }
 
     protected void onTick(IWorld iWorld) {
-        final float speed = 0.25f;
+        final float speed = this.walkSpeed();
 
         if (this.getPosition().y < -50.0f) {
             this.resetWarp();
@@ -149,7 +155,9 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
                 if (factor1 > 0.0f) {
                     this.getPhysicsCharacter().jump(DynamicsUtils.createV3F_JME(0.0f, 3.0f * factor1, 0.0f));
                 } else if (this.getPhysicsCharacter().onGround()) {
-                    this.getPhysicsCharacter().jump();
+                    if (this.canJump()) {
+                        this.getPhysicsCharacter().jump();
+                    }
                 }
             }
         }
@@ -202,8 +210,10 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     }
 
     protected void walk(Vector3f dir, float speed) {
-        if (dir.y > 0 && this.getPhysicsCharacter().onGround()) {
-            this.getPhysicsCharacter().jump();
+        if (this.canJump()) {
+            if (dir.y > 0 && this.getPhysicsCharacter().onGround()) {
+                this.getPhysicsCharacter().jump();
+            }
         }
         com.jme3.math.Vector3f vDir = new com.jme3.math.Vector3f(0.0f, 0.0f, 0.0f);
         if (dir.length() > 0.0f) {
@@ -299,7 +309,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         }
     }
 
-    protected boolean canJump() {
+    public boolean canJump() {
         return true;
     }
 
@@ -309,7 +319,13 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
     @Override
     public float getEyeHeight() {
-        return (float) (0.45f + Math.sin(RenderPlayer.stepBobbing * 0.2f) * 0.1f);
+        return 0.45f;
+    }
+
+    public float getScalarSpeed() {
+        com.jme3.math.Vector3f vector3f = new com.jme3.math.Vector3f();
+        this.getPhysicsCharacter().getLinearVelocity(vector3f);
+        return vector3f.length();
     }
 
     public int getCollisionGroup() {
@@ -363,5 +379,10 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     @Override
     public Inventory inventory() {
         return this.inventory;
+    }
+
+    @Override
+    public float height() {
+        return this.capsuleSize().y;
     }
 }

@@ -10,7 +10,7 @@
       "y": 0.6555567,
       "z": 0.7647059
     },
-    "sunBrightness": 0.525,
+    "sunBrightness": 0.5,
     "skyBoxPath": "/assets/jgems/textures/cubemaps/skyNight/sky_"
   },
   "fogProp": {

@@ -23,6 +23,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
@@ -42,6 +43,7 @@ import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
+import ru.jgems3d.engine_api.events.bus.Events;
 import ru.jgems3d.logger.managers.LoggingManager;
 
 import java.nio.ByteBuffer;
@@ -254,7 +256,7 @@ public class DIMGuiRenderJGems {
             }
             ImGui.text("entities: " + JGems3D.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
-           // ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
+            ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
         }
 
         if (ImGui.collapsingHeader("Scene")) {
@@ -396,6 +398,8 @@ public class DIMGuiRenderJGems {
         }
 
         ImGui.end();
+
+        APIEventsLauncher.pushEvent(new Events.DearIMGUIRender(windowSize, this));
 
         ImGui.endFrame();
         ImGui.render();

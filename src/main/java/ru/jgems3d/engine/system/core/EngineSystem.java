@@ -160,9 +160,9 @@ public class EngineSystem implements IEngine {
         this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
 
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
-        Vector3f startPos = new Vector3f(pair.getFirst()).add(0.0f, 0.6f, 0.0f);
-        Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
         this.localPlayer = new LocalPlayer(APIContainer.get().getApiGameInfo().getAppManager().createPlayer(this.getMapLoader()));
+        Vector3f startPos = new Vector3f(pair.getFirst());
+        Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
         this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
 
         JGemsHelper.getLogger().log(this.currentMapName() + ": Map Loaded!");

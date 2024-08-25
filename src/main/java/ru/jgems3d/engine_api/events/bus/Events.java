@@ -12,6 +12,7 @@
 package ru.jgems3d.engine_api.events.bus;
 
 import org.joml.Vector2i;
+import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
@@ -201,6 +202,16 @@ public abstract class Events {
 
         public ReloadResourcesEvent() {
 
+        }
+    }
+
+    public static final class DearIMGUIRender implements IEvent {
+        public final DIMGuiRenderJGems render;
+        public final Vector2i windowSize;
+
+        public DearIMGUIRender(Vector2i windowSize, DIMGuiRenderJGems render) {
+            this.render = render;
+            this.windowSize = windowSize;
         }
     }
 

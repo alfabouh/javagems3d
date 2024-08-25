@@ -45,18 +45,13 @@
 package jgems_api.horror;
 
 import jgems_api.horror.events.HorrorEvents;
-import jgems_api.horror.items.ItemZippoModded;
 import jgems_api.horror.resources.HorrorModelLoader;
 import jgems_api.horror.resources.HorrorRenderDataLoader;
 import jgems_api.horror.resources.HorrorShaderLoader;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render.AbstractInventoryZippo;
 import ru.jgems3d.engine.system.core.EngineSystem;
-import ru.jgems3d.engine.system.inventory.items.ItemZippo;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine_api.app.JGemsGameApplication;
 import ru.jgems3d.engine_api.app.JGemsGameEntry;
@@ -70,6 +65,8 @@ import jgems_api.horror.manager.HorrorAppManager;
 public class HorrorGame implements JGemsGameApplication {
     @JGemsGameInstance
     private static HorrorGame horrorGame;
+
+    public static boolean POST_PROCESSING = true;
 
     public HorrorModelLoader horrorModelLoader;
     public HorrorRenderDataLoader horrorRenderDataLoader;

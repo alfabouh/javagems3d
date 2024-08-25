@@ -33,6 +33,7 @@
 
 package jgems_api.horror.manager;
 
+import jgems_api.horror.HorrorGame;
 import jgems_api.horror.entities.HorrorSimplePlayer;
 import jgems_api.horror.items.ItemZippoModded;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +51,7 @@ import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.map.loaders.tbox.placers.TBoxMapDefaultObjectsPlacer;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.engine_api.manager.AppManager;
@@ -70,7 +72,7 @@ public class HorrorAppManager extends AppManager {
 
     @Override
     public @NotNull IPlayerConstructor createPlayer(IMapLoader mapLoader) {
-        return (HorrorSimplePlayer::new);
+        return (w, p, r) -> new Pair<>(new HorrorSimplePlayer(w, p, r), HorrorGame.get().horrorRenderDataLoader.player);
     }
 
     public @NotNull PanelUI gameMainMenuPanel() {

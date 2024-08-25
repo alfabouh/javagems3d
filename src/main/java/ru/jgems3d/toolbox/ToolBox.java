@@ -25,6 +25,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class ToolBox {
+    public static final String VERSION = "0.20a";
+
     private static ToolBox toolBox;
     private final TBoxScreen tBoxScreen;
     private final TBoxSettings tBoxSettings;
@@ -92,6 +94,6 @@ public final class ToolBox {
     }
 
     public String toString() {
-        return EngineSystem.ENG_NAME + " - [ToolBox v" + EngineSystem.ENG_VER + "]";
+        return EngineSystem.ENG_NAME + " - [ToolBox v" + ToolBox.VERSION + "]";
     }
 }

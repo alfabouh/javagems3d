@@ -22,6 +22,7 @@
 
 package jgems_api.test.manager;
 
+import jgems_api.horror.entities.HorrorSimplePlayer;
 import jgems_api.test.entities.TestPlayer;
 import jgems_api.test.gui.TestMainMenuPanel;
 import jgems_api.test.manager.bindings.TestBindings;
@@ -36,6 +37,8 @@ import ru.jgems3d.engine.system.core.player.IPlayerConstructor;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.map.loaders.tbox.placers.TBoxMapDefaultObjectsPlacer;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.engine_api.manager.AppManager;
@@ -53,7 +56,7 @@ public class TestManager extends AppManager {
 
     @Override
     public @NotNull IPlayerConstructor createPlayer(IMapLoader mapLoader) {
-        return (TestPlayer::new);
+        return (w, p, r) -> new Pair<>(new TestPlayer(w, p, r), JGemsResourceManager.globalRenderDataAssets.player);
     }
 
     public @NotNull PanelUI gameMainMenuPanel() {

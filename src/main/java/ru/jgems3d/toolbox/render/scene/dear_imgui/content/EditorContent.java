@@ -27,6 +27,7 @@ import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_table.TBoxMapTable;
 import ru.jgems3d.toolbox.map_table.ObjectsTable;
+import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
@@ -49,16 +50,14 @@ public class EditorContent implements ImGuiContent {
     public static boolean isFocusedOnSceneFrame;
     public static float alphaDiscard = 0.5f;
 
-    public final ImInt objectSelectionInt = new ImInt();
     private final TBoxScene tBoxScene;
     private final Vector2f sceneFrameCenter;
     private final Vector2f sceneFrameMin;
     private final Vector2f sceneFrameMax;
     public String currentSelectedToPlaceID;
 
-    public float[] previewBorders = new float[]{2.0f};
+    public float[] previewBorders = new float[]{1.0f};
 
-    public TBoxAbstractObject prevSelectedItem;
     public TBoxAbstractObject currentSelectedObject;
 
     public EditorContent(TBoxScene tBoxScene) {
@@ -85,10 +84,11 @@ public class EditorContent implements ImGuiContent {
             ImGui.endPopup();
         }
         if (ImGui.isItemClicked(1)) {
-            if (this.currentSelectedObject != null) {
+            TBoxAbstractObject old = this.currentSelectedObject;
+            this.getTBoxScene().tryGrabObject(this);
+            if (old != null && this.currentSelectedObject == old) {
                 ImGui.openPopup("context_obj");
             }
-            this.getTBoxScene().tryGrabObject(this);
         }
 
         ImVec2 min = new ImVec2();
@@ -172,33 +172,31 @@ public class EditorContent implements ImGuiContent {
 
             ImGui.beginChild("list");
 
-            ImGui.beginChild("ss");
-            ImGui.listBox("Object List" + "(" + strings.length + ")", this.objectSelectionInt, strings, 20);
-            if (this.currentSelectedObject != null) {
-                if (ImGui.beginPopupContextItem("context_obj")) {
+            ImGui.beginChild("list_cont_c");
+            if (ImGui.beginListBox("Object List" + "(" + strings.length + ")", 200, 300)) {
+                if (ImGui.beginPopup("context_obj2")) {
                     this.showObjectContext(this.getTBoxScene().getSceneContainer().getSceneObjects().size());
                     ImGui.endPopup();
                 }
+                for (int i = 0; i < strings.length; i++) {
+                    TBoxAbstractObject boxAbstractObject = this.getTBoxScene().getSceneContainer().getSceneObjects().get(i);
+
+                    if (ImGui.selectable(strings[i], boxAbstractObject.isSelected())) {
+                        this.setSingleObjectSelection(boxAbstractObject);
+                    }
+
+                    if (ImGui.isItemClicked(ImGuiMouseButton.Right)) {
+                        this.setSingleObjectSelection(boxAbstractObject);
+                        ImGui.openPopup("context_obj2");
+                    }
+                }
+                ImGui.endListBox();
             }
-            ImGui.endChild();
-
-            this.prevSelectedItem = this.currentSelectedObject;
-            this.currentSelectedObject = null;
-
             if (ImGui.button("Remove Selection") || TBoxControllerDispatcher.bindingManager().keyEsc.isPressed()) {
                 this.removeSelection();
             }
-            if (!this.getTBoxScene().getSceneContainer().getSceneObjects().isEmpty()) {
-                Object[] objects = this.getTBoxScene().getSceneContainer().getSceneObjects().toArray();
-                for (int i = 0; i < objects.length; i++) {
-                    TBoxAbstractObject object = (TBoxAbstractObject) objects[i];
-                    object.setSelected(false);
-                    if (i == this.objectSelectionInt.get()) {
-                        this.currentSelectedObject = object;
-                        this.currentSelectedObject.setSelected(true);
-                    }
-                }
-            }
+            ImGui.endChild();
+
             ImGui.endChild();
 
             ImGui.nextColumn();
@@ -351,13 +349,11 @@ public class EditorContent implements ImGuiContent {
         if (ImGui.button("Clone")) {
             TBoxAbstractObject object = this.currentSelectedObject.copy();
             this.getTBoxScene().addObject(object);
-            this.objectSelectionInt.set(totalObjects);
+            this.setSingleObjectSelection(object);
         }
         if (ImGui.button("Delete")) {
             this.getTBoxScene().removeObject(this.currentSelectedObject);
-            if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneContainer().getSceneObjects().size()) {
-                this.objectSelectionInt.set(this.getTBoxScene().getSceneContainer().getSceneObjects().size() - 1);
-            }
+            this.setSingleObjectSelection(null);
         }
     }
 
@@ -469,21 +465,22 @@ public class EditorContent implements ImGuiContent {
         }
     }
 
-    public boolean trySelectObject(TBoxAbstractObject boxScene3DObject) {
-        Object[] objects = this.getTBoxScene().getSceneContainer().getSceneObjects().toArray();
-        for (int i = 0; i < objects.length; i++) {
-            TBoxAbstractObject object = (TBoxAbstractObject) objects[i];
-            if (object.equals(boxScene3DObject)) {
-                this.objectSelectionInt.set(i);
-                return true;
-            }
+    public void setSingleObjectSelection(TBoxAbstractObject boxScene3DObject) {
+        for (TBoxAbstractObject boxAbstractObject : this.getTBoxScene().getSceneContainer().getSceneObjects()) {
+            boxAbstractObject.setSelected(false);
         }
-        return false;
+        this.currentSelectedObject = boxScene3DObject;
+        if (boxScene3DObject != null) {
+            this.currentSelectedObject.setSelected(true);
+        }
+    }
+
+    public void trySelectObject(TBoxAbstractObject boxScene3DObject) {
+        this.setSingleObjectSelection(boxScene3DObject);
     }
 
     public void removeSelection() {
-        this.currentSelectedObject = null;
-        this.objectSelectionInt.set(-1);
+        this.setSingleObjectSelection(null);
     }
 
     private void renderProperties(Vector2i dim) {
@@ -643,9 +640,7 @@ public class EditorContent implements ImGuiContent {
             TBoxBindingManager tBoxBindingManager = TBoxControllerDispatcher.bindingManager();
             if (tBoxBindingManager.keyDelete.isClicked()) {
                 this.getTBoxScene().removeObject(this.currentSelectedObject);
-                if (this.objectSelectionInt.get() >= this.getTBoxScene().getSceneContainer().getSceneObjects().size()) {
-                    this.objectSelectionInt.set(this.getTBoxScene().getSceneContainer().getSceneObjects().size() - 1);
-                }
+                this.setSingleObjectSelection(null);
             }
         }
     }

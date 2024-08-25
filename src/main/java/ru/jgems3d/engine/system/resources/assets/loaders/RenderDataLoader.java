@@ -14,7 +14,7 @@ package ru.jgems3d.engine.system.resources.assets.loaders;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render.AbstractInventoryZippo;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render.InventoryZippo;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderEntity2D3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
@@ -75,7 +75,7 @@ public class RenderDataLoader implements IAssetsLoader {
         this.ground = new RenderEntityData(new RenderEntity(), EntityObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);
         this.ground.getMeshRenderData().getRenderAttributes().setAlphaDiscard(0.25f);
 
-        JGemsResourceManager.addInventoryItemRenderer(ItemZippo.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_zippo, new AbstractInventoryZippo(), JGemsResourceManager.globalTextureAssets.zippo_inventory));
+        JGemsResourceManager.addInventoryItemRenderer(ItemZippo.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_zippo, new InventoryZippo(), JGemsResourceManager.globalTextureAssets.zippo_inventory));
     }
 
     @Override
