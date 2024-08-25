@@ -14,14 +14,14 @@ package ru.jgems3d.engine.system.resources.assets.models.mesh.data.collision;
 import com.jme3.bullet.collision.shapes.infos.CompoundMesh;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.IMeshDataContainer;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.IMeshUserData;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeshCollisionData implements IMeshDataContainer {
+public class MeshCollisionData implements IMeshUserData {
     private final float[] allPositions;
     private final CompoundMesh compoundMesh;
 

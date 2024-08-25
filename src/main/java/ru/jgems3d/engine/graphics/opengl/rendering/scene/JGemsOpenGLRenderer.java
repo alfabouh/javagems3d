@@ -431,6 +431,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     // section Post
     private void postProcessing(FrameTicking frameTicking, Vector2i size) {
         this.getFinalizingBuffer().bindFBO();
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         if (!APIEventsLauncher.pushEvent(new Events.RenderPostProcessing(frameTicking, size, this.getFxaaBuffer().getTextureIDByIndex(0), this)).isCancelled()) {
             this.getFxaaBuffer().copyFBOtoFBOColor(this.getFinalizingBuffer().getFrameBufferId(), new int[] {GL30.GL_COLOR_ATTACHMENT0}, size);
         }

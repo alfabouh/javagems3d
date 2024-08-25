@@ -29,7 +29,6 @@ import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
 import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
@@ -432,8 +431,8 @@ public abstract class JGemsHelper {
 
         @SuppressWarnings("all")
         public static boolean createMeshCollisionData(MeshDataGroup meshDataGroup) {
-            if (meshDataGroup != null && meshDataGroup.getMeshDataContainer() == null) {
-                meshDataGroup.setMeshDataContainer(new MeshCollisionData(meshDataGroup));
+            if (meshDataGroup != null && meshDataGroup.getMeshUserData() == null) {
+                meshDataGroup.setMeshUserData(new MeshCollisionData(meshDataGroup));
                 return true;
             }
             return false;

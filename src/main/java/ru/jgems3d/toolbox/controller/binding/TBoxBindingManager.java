@@ -24,6 +24,7 @@ public class TBoxBindingManager extends BindingManager {
     public final Key keyShift;
     public final Key keyCtrl;
     public final Key keyDelete;
+    public final Key keyEsc;
 
     public TBoxBindingManager() {
         this.keyA = new Key(GLFW.GLFW_KEY_A);
@@ -34,6 +35,7 @@ public class TBoxBindingManager extends BindingManager {
         this.keyShift = new Key(GLFW.GLFW_KEY_LEFT_SHIFT);
         this.keyCtrl = new Key(GLFW.GLFW_KEY_LEFT_CONTROL);
         this.keyDelete = new Key(GLFW.GLFW_KEY_DELETE);
+        this.keyEsc = new Key(GLFW.GLFW_KEY_ESCAPE);
 
         this.addBinding(this.keyA);
         this.addBinding(this.keyD);
@@ -43,6 +45,7 @@ public class TBoxBindingManager extends BindingManager {
         this.addBinding(this.keyShift);
         this.addBinding(this.keyCtrl);
         this.addBinding(this.keyDelete);
+        this.addBinding(this.keyEsc);
     }
 
     @Override

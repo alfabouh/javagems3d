@@ -46,7 +46,7 @@ import ru.jgems3d.engine_api.events.IAppEventSubscriber;
 import ru.jgems3d.engine_api.manager.AppManager;
 import ru.jgems3d.engine_api.resources.IAppResourceLoader;
 
-@JGemsGameEntry(gameTitle = "Test", gameVersion = "0.1a", devStage = JGemsGameEntry.DevStage.PRE_ALPHA)
+//@JGemsGameEntry(gameTitle = "Test", gameVersion = "0.1a", devStage = JGemsGameEntry.DevStage.PRE_ALPHA)
 public class TestGame implements JGemsGameApplication {
     public TestGame() {
     }

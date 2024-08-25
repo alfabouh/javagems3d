@@ -58,7 +58,7 @@ public class ResourceCache {
 
     public void addObjectInBuffer(String key, ICached object) {
         if (object == null) {
-            JGemsHelper.getLogger().warn("Couldn't add NULL object in system cache: " + key + this);
+            JGemsHelper.getLogger().error("Couldn't add NULL object in system cache: " + key + this);
             return;
         }
         if (this.cache.containsKey(key)) {
@@ -80,7 +80,7 @@ public class ResourceCache {
     public ICached getCachedObject(String key) {
         ICached cached = this.cache.get(key);
         if (!this.checkObjectInCache(key)) {
-            JGemsHelper.getLogger().warn("Object " + key + " doesn't exist in system cache " + this);
+            JGemsHelper.getLogger().error("Object " + key + " doesn't exist in system cache " + this);
             return null;
         }
         return cached;

@@ -18,13 +18,11 @@ import org.reflections.util.ConfigurationBuilder;
 import ru.jgems3d.engine.api_bridge.data.APIGameInfo;
 import ru.jgems3d.engine.api_bridge.data.APITBoxInfo;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine_api.app.JGemsTBoxApplication;
-import ru.jgems3d.engine_api.app.JGemsTBoxEntry;
+import ru.jgems3d.engine_api.app.*;
 import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine_api.app.JGemsGameApplication;
-import ru.jgems3d.engine_api.app.JGemsGameEntry;
 import ru.jgems3d.engine_api.events.bus.Events;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Set;
 
@@ -89,6 +87,16 @@ public class APILauncher {
         Optional<Class<?>> aClass = annotatedClass.stream().findAny();
         JGemsGameEntry jGemsGameEntry = aClass.get().getAnnotation(JGemsGameEntry.class);
         JGemsGameApplication application = (JGemsGameApplication) aClass.get().newInstance();
+
+        Field[] f1 = aClass.get().getDeclaredFields();
+
+        for (Field f : f1) {
+            if (f.isAnnotationPresent(JGemsGameInstance.class)) {
+                f.setAccessible(true);
+                f.set(application, application);
+            }
+        }
+
         return new APIGameInfo(application.createAppManager(), application, jGemsGameEntry);
     }
 

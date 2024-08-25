@@ -59,6 +59,14 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
         this.getPhysicsRigidBody().makeStatic(material);
     }
 
+    public void setCollisionFilterNegative(CollisionFilter... noCheckCollisionFilters) {
+        int i = 0;
+        for (CollisionFilter collisionFilter : noCheckCollisionFilters) {
+            i |= collisionFilter.getMask();
+        }
+        this.getPhysicsRigidBody().setCollideWithGroups(CollisionFilter.ALL.getMask() & ~i);
+    }
+
     public void setCollisionFilter(CollisionFilter... collisionFilters) {
         int i = 0;
         for (CollisionFilter collisionFilter : collisionFilters) {

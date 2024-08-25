@@ -12,6 +12,7 @@
 package ru.jgems3d.toolbox.render.scene.items.renderers;
 
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
@@ -31,7 +32,7 @@ public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
         if (color == null) {
             color = new Vector3f(1.0f);
         }
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), color);
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), new Vector4f(color, 1.0f));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().unBind();
     }

@@ -33,6 +33,7 @@ import ru.jgems3d.engine.physics.entities.BtStaticMeshBody;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
+import ru.jgems3d.engine.physics.world.triggers.zones.base.AbstractTriggerZone;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
@@ -52,12 +53,12 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         Vector3f rot = attributesContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
         Vector3f scale = attributesContainer.tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
-        boolean isProp = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
+        Boolean isProp = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
 
         MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel());
-        JGemsShaderManager shaderManager = localGameResources.getResource(renderContainer.getPathToJGemsShader());
+        JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
 
-        if (isProp) {
+        if (isProp != null && (isProp)) {
             MeshRenderData meshRenderData = new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
             IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 
@@ -69,9 +70,9 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         } else {
             RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
 
-            boolean isStatic = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
+            Boolean isStatic = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
             JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
-            if (isStatic) {
+            if (isStatic == null || isStatic) {
                 BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, physicsWorld, pos, id);
                 JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
                 worldModeledBrush.setCanBeDestroyed(false);
@@ -87,13 +88,15 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         }
     }
 
-    public static void placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
+    public static AbstractTriggerZone placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
         TDefaultTriggerZoneInfo defaultTriggerZoneInfo = renderContainer.tryCastObject(TDefaultTriggerZoneInfo.class);
         if (defaultTriggerZoneInfo != null) {
             SimpleTriggerZone simpleTriggerZone = new SimpleTriggerZone(new Zone(position, size));
             simpleTriggerZone.setTriggerAction(defaultTriggerZoneInfo.getTriggerAction());
             physicsWorld.addItem(simpleTriggerZone);
+            return simpleTriggerZone;
         }
+        return null;
     }
 
     public static void handleMarkerOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer) {

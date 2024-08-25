@@ -11,7 +11,6 @@
 
 package ru.jgems3d.engine.physics.world.ai.navigation;
 
-import org.checkerframework.checker.units.qual.A;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.graph.GraphVertex;

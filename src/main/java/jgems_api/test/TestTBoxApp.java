@@ -55,7 +55,7 @@ import ru.jgems3d.toolbox.map_table.object.ModeledObjectData;
 import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 import ru.jgems3d.toolbox.resources.TBoxResourceManager;
 
-@JGemsTBoxEntry
+//@JGemsTBoxEntry
 public class TestTBoxApp implements JGemsTBoxApplication {
     public static ObjectCategory PHYSICS_OBJECT = new ObjectCategory("Entities");
     public static ObjectCategory PROP_OBJECT = new ObjectCategory("Props");

@@ -11,6 +11,7 @@
 
 package ru.jgems3d.engine.physics.entities;
 
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.physics.colliders.IColliderConstructor;
@@ -40,6 +41,7 @@ public class BtStaticMeshBody extends BtBody {
     protected void postInit(DynamicsSystem dynamicsSystem, JGemsPhysicsRigidBody jGemsPhysicsRigidBody) {
         this.makeStatic();
         this.setCollisionGroup(CollisionFilter.ST_BODY);
+        this.setCollisionFilterNegative(CollisionFilter.LIQUID, CollisionFilter.GHOST);
     }
 
     @Override

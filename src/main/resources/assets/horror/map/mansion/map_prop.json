@@ -1,0 +1,27 @@
+{
+  "skyProp": {
+    "sunPos": {
+      "x": -0.08,
+      "y": 0.58,
+      "z": 1.0
+    },
+    "sunColor": {
+      "x": 0.39359865,
+      "y": 0.6555567,
+      "z": 0.7647059
+    },
+    "sunBrightness": 0.525,
+    "skyBoxPath": "/assets/jgems/textures/cubemaps/skyNight/sky_"
+  },
+  "fogProp": {
+    "fogColor": {
+      "x": 0.017301021,
+      "y": 0.0,
+      "z": 0.07352942
+    },
+    "fogDensity": 0.125,
+    "fogEnabled": true,
+    "skyCoveredByFog": false
+  },
+  "mapName": "mansion"
+}

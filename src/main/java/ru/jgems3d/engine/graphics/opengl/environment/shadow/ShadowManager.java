@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsScene;
@@ -223,7 +224,7 @@ public class ShadowManager implements IShadowScene {
     }
 
     public void renderSceneInShadowMap(Set<IModeledSceneObject> modeledSceneObjectSet) {
-        if (!JGemsSceneGlobalConstants.USE_SHADOWS) {
+        if (!JGemsSceneGlobalConstants.USE_SHADOWS || JGemsDebugGlobalConstants.FULL_BRIGHT) {
             GL30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.getShadowPostFBO().bindFBO();
             for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
@@ -248,8 +249,15 @@ public class ShadowManager implements IShadowScene {
 
         this.updateCascadeShadows(this.getCascadeShadows());
         Set<IModeledSceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.getMeshRenderData().getRenderAttributes().isShadowCaster()).collect(Collectors.toSet());
+        boolean oldV = GL30.glIsEnabled(GL30.GL_CULL_FACE);
+        if (JGemsSceneGlobalConstants.DRAW_BACK_FACES_FOR_SHADOWS) {
+            GL30.glDisable(GL30.GL_CULL_FACE);
+        }
         this.sunScene(filtered);
         this.pointLightsScene(filtered);
+        if (oldV) {
+            GL30.glEnable(GL30.GL_CULL_FACE);
+        }
     }
 
     private void sunScene(Set<IModeledSceneObject> modeledSceneObjectSet) {
@@ -263,7 +271,6 @@ public class ShadowManager implements IShadowScene {
             GL30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
             this.getSunShadowShader().performUniform(new UniformString("projection_view_matrix"), new Matrix4f(cascadeShadow.getLightProjectionViewMatrix()));
-            GL30.glCullFace(GL30.GL_BACK);
             for (IModeledSceneObject modeledSceneObject : modeledSceneObjectSet) {
                 Model<Format3D> model = modeledSceneObject.getModel();
                 if (model == null || model.getMeshDataGroup() == null) {
@@ -310,7 +317,6 @@ public class ShadowManager implements IShadowScene {
                     this.getPointLightShadowShader().performUniform(new UniformString("view_matrix"), pointLightShadow.getShadowDirections().get(j));
                     this.getPointLightShadowShader().performUniform(new UniformString("far_plane"), pointLightShadow.farPlane());
                     this.getPointLightShadowShader().performUniform(new UniformString("lightPos"), pointLightShadow.getPointLight().getLightPos());
-                    GL30.glCullFace(GL30.GL_BACK);
                     for (IModeledSceneObject modeledSceneObject : modeledSceneObjectSet) {
                         Model<Format3D> model = modeledSceneObject.getModel();
                         if (model == null || model.getMeshDataGroup() == null) {

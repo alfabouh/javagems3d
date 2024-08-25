@@ -205,7 +205,7 @@ public abstract class Events {
     }
 
     // section RenderPostProcessing
-    public static final class RenderPostProcessing implements IEvent {
+    public static final class RenderPostProcessing extends Cancellable implements IEvent {
         public final JGemsOpenGLRenderer jGemsOpenGLRenderer;
         public final FrameTicking ticking;
         public final int sceneBufferTextureID;
