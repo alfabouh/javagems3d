@@ -19,6 +19,7 @@ import imgui.type.ImString;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
@@ -41,8 +42,10 @@ import ru.jgems3d.toolbox.render.screen.TBoxScreen;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EditorContent implements ImGuiContent {
     public static boolean sceneShowLight = true;
@@ -59,6 +62,10 @@ public class EditorContent implements ImGuiContent {
     public float[] previewBorders = new float[]{1.0f};
 
     public TBoxAbstractObject currentSelectedObject;
+
+    private boolean sortObjectsByName;
+    private boolean sortObjectsById = true;
+    private String objectsFilter = "";
 
     public EditorContent(TBoxScene tBoxScene) {
         this.sceneFrameCenter = new Vector2f(0.0f);
@@ -77,9 +84,6 @@ public class EditorContent implements ImGuiContent {
         ImGui.image(TBoxScene.sceneFbo.getTexturePrograms().get(0).getTextureId(), dim.x * 0.5f - 16, dim.y * 0.5f - 40, 0.0f, 1.0f, 1.0f, 0.0f);
 
         if (ImGui.beginPopup("context_obj")) {
-            if (this.currentSelectedObject == null) {
-                ImGui.closeCurrentPopup();
-            }
             this.showObjectContext(this.getTBoxScene().getSceneContainer().getSceneObjects().size());
             ImGui.endPopup();
         }
@@ -166,46 +170,70 @@ public class EditorContent implements ImGuiContent {
         ImGui.newLine();
 
         if (ImGui.collapsingHeader("Scene Objects", ImGuiTreeNodeFlags.DefaultOpen)) {
-            String[] strings = this.getTBoxScene().getSceneContainer().getSceneObjects().stream().map(TBoxAbstractObject::toString).toArray(String[]::new);
-
             ImGui.columns(2, "SObj", true);
 
             ImGui.beginChild("list");
+            List<TBoxAbstractObject> sortedList = this.getTBoxScene().getSceneContainer().getSceneObjects()
+                    .stream()
+                    .filter(e -> e.toString().startsWith(this.objectsFilter))
+                    .sorted(this.sortObjectsByName ? Comparator.comparing(Object::toString) : Comparator.comparingInt(TBoxAbstractObject::getId))
+                    .collect(Collectors.toList());
 
             ImGui.beginChild("list_cont_c");
-            if (ImGui.beginListBox("Object List" + "(" + strings.length + ")", 200, 300)) {
-                if (ImGui.beginPopup("context_obj2")) {
+            if (ImGui.beginListBox("Objects(" + sortedList.size() + ")", 200, 300)) {
+                if (ImGui.beginPopup("context_obj_2")) {
                     this.showObjectContext(this.getTBoxScene().getSceneContainer().getSceneObjects().size());
                     ImGui.endPopup();
                 }
-                for (int i = 0; i < strings.length; i++) {
-                    TBoxAbstractObject boxAbstractObject = this.getTBoxScene().getSceneContainer().getSceneObjects().get(i);
-
-                    if (ImGui.selectable(strings[i], boxAbstractObject.isSelected())) {
+                for (TBoxAbstractObject boxAbstractObject : sortedList) {
+                    if (ImGui.selectable(boxAbstractObject.toString(), boxAbstractObject.isSelected())) {
                         this.setSingleObjectSelection(boxAbstractObject);
                     }
 
                     if (ImGui.isItemClicked(ImGuiMouseButton.Right)) {
                         this.setSingleObjectSelection(boxAbstractObject);
-                        ImGui.openPopup("context_obj2");
+                        ImGui.openPopup("context_obj_2");
                     }
                 }
                 ImGui.endListBox();
             }
-            if (ImGui.button("Remove Selection") || TBoxControllerDispatcher.bindingManager().keyEsc.isPressed()) {
-                this.removeSelection();
-            }
-            ImGui.endChild();
+            if (ImGui.treeNode("List Settings")) {
+                ImString stringF = new ImString();
+                stringF.set(this.objectsFilter);
+                if (ImGui.inputText("Filter", stringF)) {
+                    this.objectsFilter = stringF.get();
+                }
 
+                if (ImGui.radioButton("Sort By Name", this.sortObjectsByName)) {
+                    this.sortObjectsByName = true;
+                    this.sortObjectsById = false;
+                }
+                if (ImGui.radioButton("Sort By ID", this.sortObjectsById)) {
+                    this.sortObjectsByName = false;
+                    this.sortObjectsById = true;
+                }
+                ImGui.treePop();
+            }
+
+            if (ImGui.treeNode("Object Actions")) {
+                this.showObjectContext(sortedList.size());
+                ImGui.treePop();
+            }
+
+            ImGui.endChild();
             ImGui.endChild();
 
             ImGui.nextColumn();
             ImGui.beginChild("list_editor");
-            if (this.currentSelectedObject != null) {
 
+            if (ImGui.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
+                this.removeSelection();
+            }
+
+            if (this.currentSelectedObject != null) {
                 ImGui.beginChild("obj_prop");
-                TBoxBindingManager tBoxBindingManager = TBoxControllerDispatcher.bindingManager();
-                float speed = tBoxBindingManager.keyCtrl.isPressed() ? 0.001f : 0.01f;
+
+                float speed = ImGui.getIO().getKeysDown(GLFW.GLFW_KEY_LEFT_CONTROL) ? 0.001f : 0.01f;
                 ImGui.text("Selected:" + this.currentSelectedObject);
                 ImGui.separator();
 
@@ -327,6 +355,7 @@ public class EditorContent implements ImGuiContent {
 
     private void showObjectContext(int totalObjects) {
         ImGui.text("Selected:" + this.currentSelectedObject);
+        if (this.currentSelectedObject != null) {
         if (ImGui.button("Move Camera -> Object")) {
             ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(this.currentSelectedObject.getModel().getFormat().getPosition()).add(0.0f, 1.0f, 0.0f));
         }
@@ -354,6 +383,7 @@ public class EditorContent implements ImGuiContent {
         if (ImGui.button("Delete")) {
             this.getTBoxScene().removeObject(this.currentSelectedObject);
             this.setSingleObjectSelection(null);
+        }
         }
     }
 

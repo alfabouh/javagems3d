@@ -24,8 +24,9 @@ import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
 import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleColoredParticle;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
-import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleTexturedParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
@@ -158,8 +159,12 @@ public abstract class JGemsHelper {
 
     // section Particles
     public static abstract class PARTICLES {
-        public static SimpleParticle createSimpleParticle(ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
-            return ParticlesEmitter.createSimpleParticle(JGemsHelper.getSceneWorld(), particleAttributes, particleTexturePack, pos, scaling);
+        public static SimpleTexturedParticle createSimpleTexturedParticle(ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
+            return ParticlesEmitter.createSimpleTexturedParticle(JGemsHelper.getSceneWorld(), particleAttributes, particleTexturePack, pos, scaling);
+        }
+
+        public static SimpleColoredParticle createSimpleColoredParticle(ParticleAttributes particleAttributes, Vector3f color, Vector3f pos, Vector2f scaling) {
+            return ParticlesEmitter.createSimpleColoredParticle(JGemsHelper.getSceneWorld(), particleAttributes, color, pos, scaling);
         }
 
         public static ParticleFX emitParticle(ParticleFX particleFX) {

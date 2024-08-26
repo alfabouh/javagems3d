@@ -45,9 +45,7 @@
 package jgems_api.horror;
 
 import jgems_api.horror.events.HorrorEvents;
-import jgems_api.horror.resources.HorrorModelLoader;
-import jgems_api.horror.resources.HorrorRenderDataLoader;
-import jgems_api.horror.resources.HorrorShaderLoader;
+import jgems_api.horror.resources.*;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
@@ -71,17 +69,23 @@ public class HorrorGame implements JGemsGameApplication {
     public HorrorModelLoader horrorModelLoader;
     public HorrorRenderDataLoader horrorRenderDataLoader;
     public HorrorShaderLoader horrorShaderLoader;
+    public HorrorSoundsLoader horrorSoundsLoader;
+    public HorrorTexturesLoader horrorTexturesLoader;
 
     public HorrorGame() {
         this.horrorModelLoader = new HorrorModelLoader();
         this.horrorShaderLoader = new HorrorShaderLoader();
         this.horrorRenderDataLoader = new HorrorRenderDataLoader();
+        this.horrorSoundsLoader = new HorrorSoundsLoader();
+        this.horrorTexturesLoader = new HorrorTexturesLoader();
     }
 
     @Override
     public void loadResources(IAppResourceLoader appResourceLoader) {
         appResourceLoader.addAssetsLoader(this.horrorModelLoader);
         appResourceLoader.addAssetsLoader(this.horrorRenderDataLoader);
+        appResourceLoader.addAssetsLoader(this.horrorSoundsLoader);
+        appResourceLoader.addAssetsLoader(this.horrorTexturesLoader);
         appResourceLoader.addShadersLoader(this.horrorShaderLoader);
     }
 

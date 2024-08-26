@@ -109,7 +109,7 @@ public class TBoxMapLoader implements IMapLoader {
                         float soundRollOff = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_ROLL_OFF, Float.class);
                         String soundAttribute = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND, String.class);
 
-                        SoundBuffer soundBuffer = localResources.createSoundBuffer(new JGemsPath(soundAttribute), AL10.AL_FORMAT_STEREO16);
+                        SoundBuffer soundBuffer = localResources.createSoundBuffer(new JGemsPath(soundAttribute), AL10.AL_FORMAT_MONO16);
                         if (soundBuffer == null) {
                             break;
                         }

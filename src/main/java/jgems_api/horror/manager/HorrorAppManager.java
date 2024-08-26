@@ -35,6 +35,7 @@ package jgems_api.horror.manager;
 
 import jgems_api.horror.HorrorGame;
 import jgems_api.horror.entities.HorrorSimplePlayer;
+import jgems_api.horror.items.ItemCross;
 import jgems_api.horror.items.ItemZippoModded;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,6 +96,9 @@ public class HorrorAppManager extends AppManager {
         Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (name.equals("zippo_item")) {
             JGemsHelper.WORLD.addItemInWorld(new EntityCollectableItem(physicsWorld, new ItemZippoModded(), new Vector3f(pos).add(0.0f, 0.5f, 0.0f), name), JGemsResourceManager.globalRenderDataAssets.zippo_world);
+        }
+        if (name.equals("cross_item")) {
+            JGemsHelper.WORLD.addItemInWorld(new EntityCollectableItem(physicsWorld, new ItemCross(), new Vector3f(pos).add(0.0f, 0.5f, 0.0f), name), HorrorGame.get().horrorRenderDataLoader.cross_world);
         }
     }
 }
