@@ -78,16 +78,32 @@ public class DIMGuiRenderJGems {
     }
 
     private void createUICallbacks(Window window) {
-        ImGuiIO io = this.getImGuiIO();
+        ImGuiIO io = ImGui.getIO();
+        io.setKeyMap(ImGuiKey.C, GLFW.GLFW_KEY_C);
+        io.setKeyMap(ImGuiKey.X, GLFW.GLFW_KEY_X);
+        io.setKeyMap(ImGuiKey.A, GLFW.GLFW_KEY_A);
+        io.setKeyMap(ImGuiKey.V, GLFW.GLFW_KEY_V);
+        io.setKeyMap(ImGuiKey.Z, GLFW.GLFW_KEY_Z);
+        io.setKeyMap(ImGuiKey.Y, GLFW.GLFW_KEY_Y);
+
+        io.setKeyMap(ImGuiKey.Tab, GLFW.GLFW_KEY_TAB);
+        io.setKeyMap(ImGuiKey.LeftArrow, GLFW.GLFW_KEY_LEFT);
+        io.setKeyMap(ImGuiKey.RightArrow, GLFW.GLFW_KEY_RIGHT);
+        io.setKeyMap(ImGuiKey.UpArrow, GLFW.GLFW_KEY_UP);
+        io.setKeyMap(ImGuiKey.DownArrow, GLFW.GLFW_KEY_DOWN);
+        io.setKeyMap(ImGuiKey.PageUp, GLFW.GLFW_KEY_PAGE_UP);
+        io.setKeyMap(ImGuiKey.PageDown, GLFW.GLFW_KEY_PAGE_DOWN);
+        io.setKeyMap(ImGuiKey.Home, GLFW.GLFW_KEY_HOME);
+        io.setKeyMap(ImGuiKey.End, GLFW.GLFW_KEY_END);
+        io.setKeyMap(ImGuiKey.Insert, GLFW.GLFW_KEY_INSERT);
+        io.setKeyMap(ImGuiKey.Delete, GLFW.GLFW_KEY_DELETE);
+        io.setKeyMap(ImGuiKey.Backspace, GLFW.GLFW_KEY_BACKSPACE);
+        io.setKeyMap(ImGuiKey.Space, GLFW.GLFW_KEY_SPACE);
+        io.setKeyMap(ImGuiKey.Enter, GLFW.GLFW_KEY_ENTER);
+        io.setKeyMap(ImGuiKey.Escape, GLFW.GLFW_KEY_ESCAPE);
+        io.setKeyMap(ImGuiKey.KeyPadEnter, GLFW.GLFW_KEY_KP_ENTER);
 
         this.prevKeyCallback = GLFW.glfwSetKeyCallback(window.getDescriptor(), (descriptor, key, scanCode, action, mods) -> {
-            if (!io.getWantCaptureKeyboard()) {
-                if (prevKeyCallback != null) {
-                    prevKeyCallback.invoke(descriptor, key, scanCode, action, mods);
-                }
-                return;
-            }
-
             if (action == GLFW.GLFW_PRESS) {
                 io.setKeysDown(key, true);
             } else if (action == GLFW.GLFW_RELEASE) {
@@ -108,27 +124,6 @@ public class DIMGuiRenderJGems {
         });
     }
 
-    private ImGuiIO getImGuiIO() {
-        ImGuiIO io = ImGui.getIO();
-        io.setKeyMap(ImGuiKey.Tab, GLFW.GLFW_KEY_TAB);
-        io.setKeyMap(ImGuiKey.LeftArrow, GLFW.GLFW_KEY_LEFT);
-        io.setKeyMap(ImGuiKey.RightArrow, GLFW.GLFW_KEY_RIGHT);
-        io.setKeyMap(ImGuiKey.UpArrow, GLFW.GLFW_KEY_UP);
-        io.setKeyMap(ImGuiKey.DownArrow, GLFW.GLFW_KEY_DOWN);
-        io.setKeyMap(ImGuiKey.PageUp, GLFW.GLFW_KEY_PAGE_UP);
-        io.setKeyMap(ImGuiKey.PageDown, GLFW.GLFW_KEY_PAGE_DOWN);
-        io.setKeyMap(ImGuiKey.Home, GLFW.GLFW_KEY_HOME);
-        io.setKeyMap(ImGuiKey.End, GLFW.GLFW_KEY_END);
-        io.setKeyMap(ImGuiKey.Insert, GLFW.GLFW_KEY_INSERT);
-        io.setKeyMap(ImGuiKey.Delete, GLFW.GLFW_KEY_DELETE);
-        io.setKeyMap(ImGuiKey.Backspace, GLFW.GLFW_KEY_BACKSPACE);
-        io.setKeyMap(ImGuiKey.Space, GLFW.GLFW_KEY_SPACE);
-        io.setKeyMap(ImGuiKey.Enter, GLFW.GLFW_KEY_ENTER);
-        io.setKeyMap(ImGuiKey.Escape, GLFW.GLFW_KEY_ESCAPE);
-        io.setKeyMap(ImGuiKey.KeyPadEnter, GLFW.GLFW_KEY_KP_ENTER);
-        return io;
-    }
-
     public void onRender(Vector2i windowSize, FrameTicking frameTicking) {
         JGemsControllerDispatcher controllerDispatcher = JGems3D.get().getScreen().getControllerDispatcher();
         if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
@@ -137,6 +132,12 @@ public class DIMGuiRenderJGems {
             ImDrawData drawData = ImGui.getDrawData();
 
             ImGuiIO io = ImGui.getIO();
+            float delta = frameTicking.getFrameDeltaTime();
+            if (delta == 0.0f) {
+                delta = 1.0f;
+            }
+            io.setDeltaTime(delta);
+
             ImVec2 dSize = new ImVec2();
             io.getDisplaySize(dSize);
 

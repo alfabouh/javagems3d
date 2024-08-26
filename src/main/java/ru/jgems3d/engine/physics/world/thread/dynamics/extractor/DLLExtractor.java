@@ -32,7 +32,7 @@ public abstract class DLLExtractor {
             return;
         }
 
-        try (InputStream is = JGems3D.loadFileFromJar(new JGemsPath("assets", "dlls", file))) {
+        try (InputStream is = JGems3D.loadFileFromJar(new JGemsPath("dlls", file))) {
             Files.copy(is, Paths.get(pathToFile.toString(), file), StandardCopyOption.REPLACE_EXISTING);
             JGemsHelper.getLogger().log("Extracted DLL " + file);
         }

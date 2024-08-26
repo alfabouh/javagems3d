@@ -57,7 +57,6 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     public JGemsShaderManager depth_plight;
     public JGemsShaderManager debug;
     public JGemsShaderManager world_selected_gbuffer;
-    public JGemsShaderManager inventory_zippo;
     public JGemsShaderManager inventory_common_item;
     public JGemsShaderManager imgui;
 
@@ -102,7 +101,6 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
 
         this.menu = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/menu"));
 
-        this.inventory_zippo = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "inventory/inventory_zippo"));
         this.inventory_common_item = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "inventory/inventory_common_item"));
 
         this.simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/simple"));

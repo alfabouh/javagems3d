@@ -15,16 +15,17 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ColoredParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.base.TexturedParticleFX;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 
-public class SimpleParticle extends TexturedParticleFX {
+public class SimpleColoredParticle extends ColoredParticleFX {
     private double maxLivingSeconds;
 
-    public SimpleParticle(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @NotNull ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
-        super(world, particleAttributes, particleTexturePack, pos, scaling);
+    public SimpleColoredParticle(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @NotNull Vector3f color, Vector3f pos, Vector2f scaling) {
+        super(world, particleAttributes, color, pos, scaling);
         this.maxLivingSeconds = 1.5;
     }
 
@@ -33,7 +34,7 @@ public class SimpleParticle extends TexturedParticleFX {
         this.setPosition(this.getPosition().add(0.0f, (float) (frameDeltaTime), 0.0f));
     }
 
-    public SimpleParticle setMaxLivingSeconds(double maxLivingSeconds) {
+    public SimpleColoredParticle setMaxLivingSeconds(double maxLivingSeconds) {
         this.maxLivingSeconds = maxLivingSeconds;
         return this;
     }

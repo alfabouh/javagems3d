@@ -11,6 +11,7 @@
 
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render;
 
+import jgems_api.horror.HorrorGame;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
@@ -19,6 +20,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.IRenderInven
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
+import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
@@ -51,16 +53,10 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
     protected void renderInventoryModel(MeshDataGroup meshDataGroup, JGemsShaderManager shaderManager) {
         for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
             ITextureSample sample1 = (ITextureSample) modelNode.getMaterial().getDiffuse();
-            ITextureSample sample2 = modelNode.getMaterial().getEmissionMap();
             if (sample1 != null) {
-                GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                sample1.bindTexture();
-                shaderManager.performUniform(new UniformString("diffuse_map"), 0);
-            }
-            if (sample2 != null) {
-                GL30.glActiveTexture(GL30.GL_TEXTURE1);
-                sample2.bindTexture();
-                shaderManager.performUniform(new UniformString("emission_map"), 1);
+                shaderManager.getUtils().performUniformSample(new UniformString("diffuse_map"), sample1);
+            } else {
+                shaderManager.getUtils().performUniformSample(new UniformString("diffuse_map"), TextureAssetsLoader.DEFAULT);
             }
             GL30.glBindVertexArray(modelNode.getMesh().getVao());
             for (int a : modelNode.getMesh().getAttributePointers()) {

@@ -73,7 +73,7 @@ public final class LocalCollision {
                 Vector3f vertex2 = new Vector3f(Vector4f2.x, Vector4f2.y, Vector4f2.z);
                 Vector3f vertex3 = new Vector3f(Vector4f3.x, Vector4f3.y, Vector4f3.z);
 
-                float d = Intersectionf.intersectRayTriangle(rayStart, rayEnd, vertex1, vertex2, vertex3, 1.0e-12f);
+                float d = Intersectionf.intersectRayTriangleFront(rayStart, rayEnd, vertex1, vertex2, vertex3, 1.0e-12f);
                 if (d > 0.0f) {
                     Vector3f vector3f = new Vector3f(rayStart).add(new Vector3f(rayEnd).mul(d));
                     if (closestVector == null || rayStart.distance(vector3f) < rayStart.distance(closestVector)) {

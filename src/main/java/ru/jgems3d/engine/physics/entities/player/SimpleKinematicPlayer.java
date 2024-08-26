@@ -63,6 +63,10 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         this.cameraRotation = new Vector3f(rot);
         this.inputMotion = new ArrayDeque<>();
         this.entityState = new EntityState();
+        this.createInventory();
+    }
+
+    protected void createInventory() {
         this.inventory = new Inventory(this, 4);
     }
 
@@ -139,7 +143,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         }
         if (this.getEntityState().checkState(EntityState.Type.IN_LIQUID)) {
             this.swim(this.calcControllerMotion(), speed);
-            this.slowDownLinearVelocity(0.8f);
         } else {
             this.walk(this.calcControllerMotion(), speed);
         }
@@ -149,9 +152,13 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         com.jme3.math.Vector3f vDir = new com.jme3.math.Vector3f(0.0f, 0.0f, 0.0f);
         float vY = dir.y;
         if (dir.length() > 0.0f) {
+            float factor1 = this.getLiquidSwimUpFactor();
+            if (this.getPhysicsCharacter().onGround()) {
+                float slow = 1.0f - Math.max(factor1, 0.0f);
+                this.slowDownLinearVelocity(slow);
+            }
             vDir = DynamicsUtils.convertV3F_JME(dir.normalize().mul(speed).mul(1, 0, 1));
             if (vY != 0) {
-                float factor1 = this.getLiquidSwimUpFactor();
                 if (factor1 > 0.0f) {
                     this.getPhysicsCharacter().jump(DynamicsUtils.createV3F_JME(0.0f, 3.0f * factor1, 0.0f));
                 } else if (this.getPhysicsCharacter().onGround()) {

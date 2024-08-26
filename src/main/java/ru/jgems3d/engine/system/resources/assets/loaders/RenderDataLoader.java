@@ -45,28 +45,17 @@ public class RenderDataLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading render collections...");
-
-        //IEntityModelConstructor<WorldItem> entityModelConstructor = e -> {
-        //    Plane4dBrush plane4dBrush = (Plane4dBrush) e;
-        //    return new MeshDataGroup(MeshHelper.generatePlane3DMesh(MathHelper.convertV3DV3F(plane4dBrush.getVertices()[0]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[1]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[2]), MathHelper.convertV3DV3F(plane4dBrush.getVertices()[3])));
-        //};
-        IEntityModelConstructor<WorldItem> enemyModelConstructor = e -> {
-            return new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-1.0f, 0.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f), new Vector3f(-1.0f, 2.0f, 0.0f), new Vector3f(1.0f, 2.0f, 0.0f)));
-        };
-        IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
-            return new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
-        };
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building render data...");
+        IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
 
         Material zwMat = new Material();
-        zwMat.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo_world);
-
-        this.water = new RenderLiquidData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
-
+        zwMat.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo1);
         this.zippo_world = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
         this.zippo_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.zippo_world.getMeshRenderData().allowMoveMeshesIntoTransparencyPass(false).getRenderAttributes().setAlphaDiscard(0.6f).setShadowCaster(false).setRenderDistance(64.0f);
         this.zippo_world.getMeshRenderData().setOverlappingMaterial(zwMat);
+
+        this.water = new RenderLiquidData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
 
         this.entityCube = new RenderEntityData(new RenderEntity(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_gbuffer).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
 
@@ -75,7 +64,7 @@ public class RenderDataLoader implements IAssetsLoader {
         this.ground = new RenderEntityData(new RenderEntity(), EntityObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);
         this.ground.getMeshRenderData().getRenderAttributes().setAlphaDiscard(0.25f);
 
-        JGemsResourceManager.addInventoryItemRenderer(ItemZippo.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_zippo, new InventoryZippo(), JGemsResourceManager.globalTextureAssets.zippo_inventory));
+        JGemsResourceManager.addInventoryItemRenderer(ItemZippo.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_common_item, new InventoryZippo(), JGemsResourceManager.globalTextureAssets.zippo1));
     }
 
     @Override

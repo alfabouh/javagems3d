@@ -55,6 +55,20 @@ public class Inventory {
         }
     }
 
+    public void consumeItem(int slot) {
+        this.setSlotItem(slot, null);
+    }
+
+    public boolean consumeItem(InventoryItem inventoryItem) {
+        for (int i = 0; i < this.getMaxSlots(); i++) {
+            if (this.getItemInSlot(i).equals(inventoryItem)) {
+                this.consumeItem(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean addItemInInventory(InventoryItem inventoryItem) {
         for (int i = 0; i < this.getMaxSlots(); i++) {
             if (this.getItemInSlot(i) == null) {

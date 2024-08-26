@@ -11,12 +11,14 @@
 
 package ru.jgems3d.engine.graphics.opengl.particles;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleColoredParticle;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
-import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleParticle;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleTexturedParticle;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
@@ -39,8 +41,12 @@ public final class ParticlesEmitter implements IParticlesEmitter {
         this.particlesSet = SyncManager.createSyncronisedSet();
     }
 
-    public static SimpleParticle createSimpleParticle(SceneWorld sceneWorld, ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack,  Vector3f pos, Vector2f scaling) {
-        return new SimpleParticle(sceneWorld, particleAttributes, particleTexturePack, pos, scaling);
+    public static SimpleTexturedParticle createSimpleTexturedParticle(SceneWorld sceneWorld, ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
+        return new SimpleTexturedParticle(sceneWorld, particleAttributes, particleTexturePack, pos, scaling);
+    }
+
+    public static SimpleColoredParticle createSimpleColoredParticle(SceneWorld world, ParticleAttributes particleAttributes, Vector3f color, Vector3f pos, Vector2f scaling) {
+        return new SimpleColoredParticle(world, particleAttributes, color, pos, scaling);
     }
 
     public void onUpdateParticles(double frameDeltaTime, IWorld iWorld) {

@@ -14,7 +14,6 @@ package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
@@ -24,10 +23,10 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 
-public class AbstractInventoryCommon extends AbstractInventoryItem {
-    private final MeshDataGroup model1;
+public class InventoryCommon extends AbstractInventoryItem {
+    protected final MeshDataGroup model1;
 
-    public AbstractInventoryCommon(TextureSample diffuse) {
+    public InventoryCommon(TextureSample diffuse) {
         Mesh mesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
         Material material1 = Material.createDefault();
         material1.setDiffuse(diffuse);
