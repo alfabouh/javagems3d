@@ -20,6 +20,6 @@ import ru.jgems3d.engine.system.resources.manager.GameResources;
 public interface IMapLoader {
     void createMap(GameResources globalResources,GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld);
     void postLoad(PhysicsWorld world, SceneWorld sceneWorld);
-
+    void preLoad(PhysicsWorld world, SceneWorld sceneWorld);
     @NotNull MapInfo getLevelInfo();
 }

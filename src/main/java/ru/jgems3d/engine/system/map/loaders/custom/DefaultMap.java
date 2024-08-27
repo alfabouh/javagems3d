@@ -61,6 +61,10 @@ public class DefaultMap implements IMapLoader {
     }
 
     @Override
+    public void preLoad(PhysicsWorld world, SceneWorld sceneWorld) {
+    }
+
+    @Override
     public @NotNull MapInfo getLevelInfo() {
         return new MapInfo(new MapProperties("default", new SkyProp(), new FogProp()));
     }

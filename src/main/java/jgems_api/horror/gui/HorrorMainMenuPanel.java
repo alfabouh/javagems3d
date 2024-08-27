@@ -44,6 +44,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
+import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultLeaveConfirmationPanel;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultSettingsPanel;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
@@ -98,6 +99,7 @@ public class HorrorMainMenuPanel extends AbstractPanelUI {
         immediateUI.buttonUI("Play", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGemsHelper.GAME.loadMap(TBoxMapLoader.create(new JGemsPath("/assets/horror/map/mansion")));
+                    JGemsHelper.UI.openUIPanel(new HorrorGamePanel(null));
                 });
 
         immediateUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)

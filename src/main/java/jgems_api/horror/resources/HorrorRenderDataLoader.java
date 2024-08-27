@@ -36,6 +36,7 @@ package jgems_api.horror.resources;
 import jgems_api.horror.HorrorGame;
 import jgems_api.horror.inventory.CommonItemHorror;
 import jgems_api.horror.inventory.ZippoHorror;
+import jgems_api.horror.items.ItemBeer;
 import jgems_api.horror.items.ItemCross;
 import jgems_api.horror.items.ItemZippoModded;
 import jgems_api.horror.render.RenderHorrorPlayer;
@@ -60,6 +61,8 @@ public class HorrorRenderDataLoader implements IAssetsLoader {
     public RenderEntityData player;
     public RenderEntityData gas_world;
     public RenderEntityData cross_world;
+    public RenderEntityData brains_world;
+    public RenderEntityData beer_world;
 
     @Override
     public void load(GameResources gameResources) {
@@ -81,8 +84,23 @@ public class HorrorRenderDataLoader implements IAssetsLoader {
         this.cross_world.getMeshRenderData().allowMoveMeshesIntoTransparencyPass(false).getRenderAttributes().setAlphaDiscard(0.6f).setShadowCaster(false).setRenderDistance(64.0f);
         this.cross_world.getMeshRenderData().setOverlappingMaterial(mat2);
 
+        Material mat3 = new Material();
+        mat3.setDiffuse(HorrorGame.get().horrorTexturesLoader.brains);
+        this.brains_world = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
+        this.brains_world.setEntityModelConstructor(itemPickUpModelConstructor);
+        this.brains_world.getMeshRenderData().allowMoveMeshesIntoTransparencyPass(false).getRenderAttributes().setAlphaDiscard(0.6f).setShadowCaster(false).setRenderDistance(64.0f);
+        this.brains_world.getMeshRenderData().setOverlappingMaterial(mat3);
+
+        Material mat4 = new Material();
+        mat4.setDiffuse(HorrorGame.get().horrorTexturesLoader.beer);
+        this.beer_world = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
+        this.beer_world.setEntityModelConstructor(itemPickUpModelConstructor);
+        this.beer_world.getMeshRenderData().allowMoveMeshesIntoTransparencyPass(false).getRenderAttributes().setAlphaDiscard(0.6f).setShadowCaster(false).setRenderDistance(64.0f);
+        this.beer_world.getMeshRenderData().setOverlappingMaterial(mat4);
+
         JGemsResourceManager.addInventoryItemRenderer(ItemZippoModded.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_common_item, new ZippoHorror(), JGemsResourceManager.globalTextureAssets.zippo1));
         JGemsResourceManager.addInventoryItemRenderer(ItemCross.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_common_item, new CommonItemHorror(HorrorGame.get().horrorTexturesLoader.cross), HorrorGame.get().horrorTexturesLoader.cross));
+        JGemsResourceManager.addInventoryItemRenderer(ItemBeer.class, new InventoryItemRenderData(JGemsResourceManager.globalShaderAssets.inventory_common_item, new CommonItemHorror(HorrorGame.get().horrorTexturesLoader.beer), HorrorGame.get().horrorTexturesLoader.beer));
     }
 
     @Override

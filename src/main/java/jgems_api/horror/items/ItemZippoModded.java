@@ -11,7 +11,9 @@
 
 package jgems_api.horror.items;
 
+import jgems_api.horror.HorrorGamePlayerState;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.inventory.items.ItemZippo;
 
 public class ItemZippoModded extends ItemZippo {
@@ -22,13 +24,32 @@ public class ItemZippoModded extends ItemZippo {
         this.startFogDensity = JGemsHelper.getSceneWorld().getEnvironment().getFog().getDensity();
     }
 
+    @Override
+    public void onUpdate(IWorld world, boolean isCurrent) {
+        super.onUpdate(world, isCurrent);
+        if (!this.isOpened() || !isCurrent) {
+            JGemsHelper.getSceneWorld().getEnvironment().getFog().setDensity(this.startFogDensity);
+        } else {
+            if (HorrorGamePlayerState.zippoFluid > 0) {
+                if (world.getTicks() % 32 == 0) {
+                    HorrorGamePlayerState.zippoFluid -= 0.01f;
+                }
+                JGemsHelper.getSceneWorld().getEnvironment().getFog().setDensity(this.startFogDensity / 2.0f);
+            } else {
+                if (this.isOpened()) {
+                    this.close();
+                }
+            }
+        }
+    }
+
     protected void close() {
         super.close();
-        JGemsHelper.getSceneWorld().getEnvironment().getFog().setDensity(this.startFogDensity);
     }
 
     protected void open() {
-        super.open();
-        JGemsHelper.getSceneWorld().getEnvironment().getFog().setDensity(this.startFogDensity / 2.0f);
+        if (HorrorGamePlayerState.zippoFluid > 0) {
+            super.open();
+        }
     }
 }

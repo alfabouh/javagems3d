@@ -45,7 +45,7 @@ import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 
 public abstract class TBoxMapDefaultObjectsPlacer {
-    public static void placeObjectOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
+    public static void placeTBoxEntityOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
         TDefaultRenderContainer renderContainer = userData.tryCastObject(TDefaultRenderContainer.class);
         if (renderContainer == null) {
             return;
@@ -99,6 +99,15 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         return null;
     }
 
-    public static void handleMarkerOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
+    public static void handleTBoxMarker(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
+        ;
+    }
+
+    public static void mapPostLoad(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        ;
+    }
+
+    public static void mapPreLoad(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        ;
     }
 }

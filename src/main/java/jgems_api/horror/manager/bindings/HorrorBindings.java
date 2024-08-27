@@ -33,6 +33,7 @@
 
 package jgems_api.horror.manager.bindings;
 
+import jgems_api.horror.gui.HorrorPausePanel;
 import org.lwjgl.glfw.GLFW;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
@@ -100,7 +101,7 @@ public class HorrorBindings extends BindingManager {
                     } else {
                         JGems3D.get().pauseGame(true);
                         JGems3D.get().getScreen().getWindow().setInFocus(false);
-                        JGems3D.get().getUI().setPanel(new DefaultPausePanel(null));
+                        JGems3D.get().getUI().setPanel(new HorrorPausePanel(null));
                     }
                 }
             }

@@ -46,6 +46,7 @@ package jgems_api.horror;
 
 import jgems_api.horror.events.HorrorEvents;
 import jgems_api.horror.resources.*;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
@@ -54,6 +55,7 @@ import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine_api.app.JGemsGameApplication;
 import ru.jgems3d.engine_api.app.JGemsGameEntry;
 import ru.jgems3d.engine_api.app.JGemsGameInstance;
+import ru.jgems3d.engine_api.configuration.AppConfiguration;
 import ru.jgems3d.engine_api.events.IAppEventSubscriber;
 import ru.jgems3d.engine_api.manager.AppManager;
 import ru.jgems3d.engine_api.resources.IAppResourceLoader;
@@ -106,7 +108,7 @@ public class HorrorGame implements JGemsGameApplication {
 
     @Override
     public @NotNull AppManager createAppManager() {
-        return new HorrorAppManager(null);
+        return new HorrorAppManager(AppConfiguration.createDefaultAppConfiguration(new HorrorGameMapLoader()));
     }
 
     public static HorrorGame get() {

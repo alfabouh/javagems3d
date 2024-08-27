@@ -23,6 +23,7 @@ public class SoundAssetsLoader implements IAssetsLoader {
     public SoundBuffer zippo_c;
     public SoundBuffer pick;
     public SoundBuffer button;
+
     public SoundBuffer[] pl_step;
 
     @Override

@@ -22,7 +22,6 @@
 
 package jgems_api.test.manager;
 
-import jgems_api.horror.entities.HorrorSimplePlayer;
 import jgems_api.test.entities.TestPlayer;
 import jgems_api.test.gui.TestMainMenuPanel;
 import jgems_api.test.manager.bindings.TestBindings;
@@ -61,20 +60,5 @@ public class TestManager extends AppManager {
 
     public @NotNull PanelUI gameMainMenuPanel() {
         return new TestMainMenuPanel(null);
-    }
-
-    @Override
-    public void placeTBoxEntityOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
-        TBoxMapDefaultObjectsPlacer.placeObjectOnMap(sceneWorld, physicsWorld, globalGameResources, localGameResources, id, attributesContainer, userData);
-    }
-
-    @Override
-    public void placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData userData) {
-        TBoxMapDefaultObjectsPlacer.placeTBoxTriggerZoneOnMap(physicsWorld, position, size, id, attributesContainer, userData);
-    }
-
-    @Override
-    public void handleMarkerOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
-        TBoxMapDefaultObjectsPlacer.handleMarkerOnMap(sceneWorld, physicsWorld, globalGameResources, localGameResources, id, attributesContainer, userData);
     }
 }

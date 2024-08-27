@@ -14,6 +14,7 @@ package ru.jgems3d.engine.system.inventory;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.system.inventory.items.InventoryItem;
 import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.util.ArrayList;
@@ -60,6 +61,9 @@ public class Inventory {
     }
 
     public boolean consumeItem(InventoryItem inventoryItem) {
+        if (inventoryItem == null) {
+            throw new JGemsNullException("NULL item removed from inventory");
+        }
         for (int i = 0; i < this.getMaxSlots(); i++) {
             if (this.getItemInSlot(i).equals(inventoryItem)) {
                 this.consumeItem(i);
@@ -70,6 +74,9 @@ public class Inventory {
     }
 
     public boolean addItemInInventory(InventoryItem inventoryItem) {
+        if (inventoryItem == null) {
+            throw new JGemsNullException("NULL item added in inventory");
+        }
         for (int i = 0; i < this.getMaxSlots(); i++) {
             if (this.getItemInSlot(i) == null) {
                 this.setSlotItem(i, inventoryItem);
