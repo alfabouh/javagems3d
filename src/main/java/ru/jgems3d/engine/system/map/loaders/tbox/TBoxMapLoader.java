@@ -26,14 +26,11 @@ import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNotFoundException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
-import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.map.MapInfo;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesObjectData;
 import ru.jgems3d.engine_api.app.tbox.TBoxEntitiesUserData;
-import ru.jgems3d.engine_api.app.tbox.containers.TObjectData;
 import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
@@ -41,7 +38,6 @@ import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
 import ru.jgems3d.toolbox.map_table.ObjectsTable;
-import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 
 import java.io.IOException;
 import java.util.Set;
@@ -129,7 +125,7 @@ public class TBoxMapLoader implements IMapLoader {
                         break;
                     }
                     case ObjectsTable.TRIGGER_ZONE: {
-                        APIContainer.get().getApiGameInfo().getAppManager().placeTBoxTriggerZoneOnMap(physicsWorld, pos, scale, id, saveObject.getAttributeContainer(), objectUserData);
+                        APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getMapLoaderManager().placeTBoxTriggerZoneOnMap(physicsWorld, pos, scale, id, saveObject.getAttributeContainer(), objectUserData);
                         break;
                     }
                     case ObjectsTable.WATER_LIQUID: {
@@ -137,11 +133,11 @@ public class TBoxMapLoader implements IMapLoader {
                         break;
                     }
                     case ObjectsTable.GENERIC_MARKER: {
-                        APIContainer.get().getApiGameInfo().getAppManager().handleMarkerOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, saveObject.getAttributeContainer(), objectUserData);
+                        APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getMapLoaderManager().handleTBoxMarker(sceneWorld, physicsWorld, globalResources, localResources, id, saveObject.getAttributeContainer(), objectUserData);
                         break;
                     }
                     default: {
-                        APIContainer.get().getApiGameInfo().getAppManager().placeTBoxEntityOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, saveObject.getAttributeContainer(), objectUserData);
+                        APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getMapLoaderManager().placeTBoxEntityOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, saveObject.getAttributeContainer(), objectUserData);
                     }
                 }
             }
@@ -155,7 +151,12 @@ public class TBoxMapLoader implements IMapLoader {
 
     @Override
     public void postLoad(PhysicsWorld world, SceneWorld sceneWorld) {
+        APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getMapLoaderManager().mapPostLoad(world, sceneWorld);
+    }
 
+    @Override
+    public void preLoad(PhysicsWorld world, SceneWorld sceneWorld) {
+        APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getMapLoaderManager().mapPreLoad(world, sceneWorld);
     }
 
     @Override

@@ -43,11 +43,15 @@ import ru.jgems3d.engine.system.service.path.JGemsPath;
 public class HorrorTexturesLoader implements IAssetsLoader {
     public TextureSample cross;
     public TextureSample gas;
+    public TextureSample brains;
+    public TextureSample beer;
 
     @Override
     public void load(GameResources gameResources) {
         this.cross = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath("/assets/horror/textures/cross/cross.png"), new TextureSample.Params(false, false, false, false));
         this.gas = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath("/assets/horror/textures/gas/gas.png"), new TextureSample.Params(false, false, false, false));
+        this.brains = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath("/assets/horror/textures/brains/brains.png"), new TextureSample.Params(false, false, false, false));
+        this.beer = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath("/assets/horror/textures/beer/beer.png"), new TextureSample.Params(false, false, false, false));
     }
 
     @Override

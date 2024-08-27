@@ -82,14 +82,12 @@ public class EngineSystem implements IEngine {
             this.requestsFromThreads.loadMap = mapLoader;
             return;
         }
-        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
         if (this.getMapLoader() != null) {
             JGemsHelper.getLogger().warn("Firstly, the current map should be destroyed!");
             return;
         }
         this.mapLoader = mapLoader;
         this.initMap();
-        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
     }
 
     public void destroyMap() {
@@ -129,6 +127,8 @@ public class EngineSystem implements IEngine {
         JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
         PhysicsWorld physicsWorld = JGemsHelper.getPhysicsWorld();
         SceneWorld sceneWorld = JGemsHelper.getSceneWorld();
+        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
+        this.getMapLoader().preLoad(physicsWorld, sceneWorld);
 
         Environment environment = sceneWorld.getEnvironment();
         FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
@@ -172,9 +172,9 @@ public class EngineSystem implements IEngine {
         JGemsHelper.CAMERA.enableAttachedCamera(this.getLocalPlayer().getEntityPlayer());
 
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
+        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
 
         JGemsHelper.WINDOW.setWindowFocus(true);
-        JGemsHelper.UI.openUIPanel(new DefaultGamePanel(null));
         JGemsHelper.getScreen().removeLoadingScreen();
 
         this.unPauseGame();

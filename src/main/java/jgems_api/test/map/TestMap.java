@@ -58,6 +58,11 @@ public class TestMap implements IMapLoader {
     }
 
     @Override
+    public void preLoad(PhysicsWorld world, SceneWorld sceneWorld) {
+
+    }
+
+    @Override
     public @NotNull MapInfo getLevelInfo() {
         SkyProp skyProp = new SkyProp();
         skyProp.setSunPos(new Vector3f(0.35f, 1.0f, 0.125f));

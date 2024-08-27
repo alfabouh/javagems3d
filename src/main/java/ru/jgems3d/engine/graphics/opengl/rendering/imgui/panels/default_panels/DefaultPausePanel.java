@@ -36,7 +36,7 @@ public class DefaultPausePanel extends AbstractPanelUI {
                 .setOnClick(() -> {
                     JGems3D.get().unPauseGame();
                     JGems3D.get().getScreen().getWindow().setInFocus(true);
-                    immediateUI.setPanel(new DefaultGamePanel(null));
+                    this.openGamePanel(immediateUI);
                 });
 
         immediateUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
@@ -48,5 +48,9 @@ public class DefaultPausePanel extends AbstractPanelUI {
                 .setOnClick(() -> {
                     JGems3D.get().destroyMap();
                 });
+    }
+
+    protected void openGamePanel(ImmediateUI immediateUI) {
+        immediateUI.setPanel(new DefaultGamePanel(null));
     }
 }

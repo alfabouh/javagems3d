@@ -16,6 +16,7 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
+import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
 import ru.jgems3d.engine.system.inventory.IInventoryOwner;
@@ -29,13 +30,17 @@ public class EntityCollectableItem extends WorldItem {
     private final SimpleTriggerZone pickUpItemTriggerZone;
     private InventoryItem inventoryItem;
 
-    public EntityCollectableItem(PhysicsWorld world, @NotNull InventoryItem inventoryItem, Vector3f pos, String itemName) {
+    public EntityCollectableItem(PhysicsWorld world, InventoryItem inventoryItem, Vector3f pos, String itemName) {
         super(world, pos, itemName);
         this.inventoryItem = inventoryItem;
 
         this.pickUpItemTriggerZone = new SimpleTriggerZone(new Zone(this.getPosition(), new Vector3f(1.0f)));
         this.pickUpItemTriggerZone.setCollisionFilter(CollisionFilter.PLAYER);
-        this.pickUpItemTriggerZone.setTriggerAction((e) -> {
+        this.pickUpItemTriggerZone.setTriggerAction(this.action());
+    }
+
+    protected ITriggerAction action() {
+        return (e) -> {
             if (e instanceof IInventoryOwner) {
                 IInventoryOwner inventory = (IInventoryOwner) e;
                 if (inventory.inventory().addItemInInventory(this.getInventoryItem())) {
@@ -44,7 +49,7 @@ public class EntityCollectableItem extends WorldItem {
                     this.setDead();
                 }
             }
-        });
+        };
     }
 
     @Override
