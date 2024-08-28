@@ -31,7 +31,7 @@ public class ItemZippoModded extends ItemZippo {
             JGemsHelper.getSceneWorld().getEnvironment().getFog().setDensity(this.startFogDensity);
         } else {
             if (HorrorGamePlayerState.zippoFluid > 0) {
-                if (world.getTicks() % 32 == 0) {
+                if (world.getTicks() % 30 == 0) {
                     HorrorGamePlayerState.zippoFluid -= 0.01f;
                 }
                 JGemsHelper.getSceneWorld().getEnvironment().getFog().setDensity(this.startFogDensity / 2.0f);
@@ -41,6 +41,10 @@ public class ItemZippoModded extends ItemZippo {
                 }
             }
         }
+    }
+
+    protected int openCdTicks() {
+        return 20;
     }
 
     protected void close() {

@@ -35,7 +35,7 @@ void main()
     float cos = dot(normalize(out_texture), sunDirection);
     float sunFactor = pow(smoothstep(0.98, 1.0, cos), 32.);
 
-    vec4 color = vec4(vec3(fogColorR, fogColorG, fogColorB) * sunColor, 1.0);
+    vec4 color = vec4(vec3(fogColorR, fogColorG, fogColorB), 1.0);
 
     float fogFactor = fogDensity * 100.0;
     float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;

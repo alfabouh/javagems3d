@@ -3,10 +3,47 @@ layout (location = 0) out vec4 frag_color;
 
 uniform sampler2D texture_sampler;
 uniform vec2 screenSize;
+uniform float panic;
+
+layout (std140, binding = 2) uniform Misc {
+    float w_tick;
+};
+
+float rand(vec2 co)
+{
+    return fract(sin(dot(co.xy + tan(w_tick), vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+vec4 random_noise(vec4 txtr, float factor) {
+    float pixelSize = 0.0035;
+    vec2 tex = out_texture;
+    vec2 pixelCoords = floor(tex / pixelSize) * pixelSize;
+    vec4 colors = txtr;
+    float grain = clamp(rand(pixelCoords) * (0.05 + factor * 0.1), 0.0, 1.0);
+    return txtr + grain;
+}
+
+vec4 vinnette(vec4 txt, vec2 textCoords, float factor) {
+    vec2 center = vec2(0.5, 0.5);
+    float dist = length(textCoords - center);
+    float vinnette = smoothstep(1.0, 0.0, dist * (factor * 1.0));
+    return txt * (vec4(vec3(vinnette), 1.0));
+}
+
+vec2 curveUV(vec2 inVec, float factor) {
+    const float C1 = w_tick * 5.0 + factor;
+    const float C2 = factor * 0.05;
+
+    return vec2(inVec.x + sin(inVec.y * 8.0) * sin(C1) * C2, inVec.y + sin(inVec.x * 16.0) * cos(C1) * C2);
+}
 
 void main()
 {
-    vec4 color = texture(texture_sampler, out_texture);
+    float panC = panic;
+
+    vec4 color = texture(texture_sampler, curveUV(out_texture, panC));
+    color = vinnette(color, out_texture, panC);
+    color = random_noise(color, panC);
 
     float bayerMatrix[16] = float[16](
     0.0,  8.0,  2.0, 10.0,

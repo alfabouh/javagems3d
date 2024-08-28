@@ -84,13 +84,16 @@ public class TBoxMapLoader implements IMapLoader {
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         TBoxEntitiesUserData tBoxEntitiesUserData = APIContainer.get().getTBoxEntitiesUserData();
-
+        if (this.navMesh != null) {
+            physicsWorld.setMapNavGraph(this.navMesh);
+            this.navMesh = null;
+        }
         if (saveObjectSet != null) {
             for (SaveObject saveObject : this.saveObjectSet) {
                 String id = saveObject.getObjectId();
-                Vector3f pos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
-                Vector3f rot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
-                Vector3f scale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+                Vector3f pos = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+                Vector3f rot = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+                Vector3f scale = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
 
                 TUserData objectUserData = tBoxEntitiesUserData.getEntityUserDataHashMap().get(id);
 
@@ -100,10 +103,10 @@ public class TBoxMapLoader implements IMapLoader {
                         break;
                     }
                     case ObjectsTable.AMBIENT_SOUND: {
-                        float soundVolume = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_VOL, Float.class);
-                        float soundPitch = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_PITCH, Float.class);
-                        float soundRollOff = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND_ROLL_OFF, Float.class);
-                        String soundAttribute = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SOUND, String.class);
+                        float soundVolume = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SOUND_VOL, Float.class);
+                        float soundPitch = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SOUND_PITCH, Float.class);
+                        float soundRollOff = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SOUND_ROLL_OFF, Float.class);
+                        String soundAttribute = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SOUND, String.class);
 
                         SoundBuffer soundBuffer = localResources.createSoundBuffer(new JGemsPath(soundAttribute), AL10.AL_FORMAT_MONO16);
                         if (soundBuffer == null) {
@@ -113,8 +116,8 @@ public class TBoxMapLoader implements IMapLoader {
                         break;
                     }
                     case ObjectsTable.POINT_LIGHT: {
-                        float brightness = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.BRIGHTNESS, Float.class);
-                        Vector3f color = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
+                        float brightness = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.BRIGHTNESS, Float.class);
+                        Vector3f color = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
 
                         PointLight pointLight = new PointLight();
                         pointLight.setLightPos(pos);
@@ -140,11 +143,6 @@ public class TBoxMapLoader implements IMapLoader {
                         APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getMapLoaderManager().placeTBoxEntityOnMap(sceneWorld, physicsWorld, globalResources, localResources, id, saveObject.getAttributeContainer(), objectUserData);
                     }
                 }
-            }
-
-            if (this.navMesh != null) {
-                physicsWorld.setMapNavGraph(this.navMesh);
-                this.navMesh = null;
             }
         }
     }

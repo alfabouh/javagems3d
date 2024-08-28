@@ -40,7 +40,7 @@ public class ItemZippo extends InventoryItem {
             } else {
                 this.open();
             }
-            this.openCd = 40;
+            this.openCd = this.openCdTicks();
         }
     }
 
@@ -68,6 +68,10 @@ public class ItemZippo extends InventoryItem {
         pointLight.setBrightness(5.25f);
         JGemsHelper.WORLD.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
+    }
+
+    protected int openCdTicks() {
+        return 40;
     }
 
     protected void close() {

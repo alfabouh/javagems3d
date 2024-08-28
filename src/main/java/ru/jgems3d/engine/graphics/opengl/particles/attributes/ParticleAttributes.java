@@ -39,7 +39,7 @@ public class ParticleAttributes {
     }
 
     public ParticleAttributes setBrightness(float brightness) {
-        this.brightness = JGemsHelper.UTILS.clamp(brightness, 0.0f, 1.0f);
+        this.brightness = JGemsHelper.MATH.clamp(brightness, 0.0f, 1.0f);
         return this;
     }
 

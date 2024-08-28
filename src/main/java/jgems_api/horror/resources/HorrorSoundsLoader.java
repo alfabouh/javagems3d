@@ -46,8 +46,19 @@ public class HorrorSoundsLoader implements IAssetsLoader {
     public SoundBuffer gas;
     public SoundBuffer magic;
 
+    public SoundBuffer noise;
+    public SoundBuffer ghost;
+    public SoundBuffer breath;
+
+    public SoundBuffer en_steps;
+
     @Override
     public void load(GameResources gameResources) {
+        this.breath = gameResources.createSoundBuffer(new JGemsPath("/assets/horror/sounds/breath.ogg"), AL10.AL_FORMAT_STEREO16);
+        this.ghost = gameResources.createSoundBuffer(new JGemsPath("/assets/horror/sounds/ghost.ogg"), AL10.AL_FORMAT_MONO16);
+        this.en_steps = gameResources.createSoundBuffer(new JGemsPath("/assets/horror/sounds/en_steps.ogg"), AL10.AL_FORMAT_MONO16);
+        this.noise = gameResources.createSoundBuffer(new JGemsPath("/assets/horror/sounds/noise.ogg"), AL10.AL_FORMAT_STEREO16);
+
         this.magic = gameResources.createSoundBuffer(new JGemsPath("/assets/horror/sounds/magic.ogg"), AL10.AL_FORMAT_STEREO16);
         this.beer = gameResources.createSoundBuffer(new JGemsPath("/assets/horror/sounds/beer.ogg"), AL10.AL_FORMAT_STEREO16);
         this.gas = gameResources.createSoundBuffer(new JGemsPath("/assets/horror/sounds/gas.ogg"), AL10.AL_FORMAT_STEREO16);

@@ -28,7 +28,6 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     public UniformBufferObject Misc;
     public UniformBufferObject Fog;
 
-    public JGemsShaderManager world_enemy;
     public JGemsShaderManager world_pickable;
     public JGemsShaderManager menu;
     public JGemsShaderManager gameUbo;
@@ -66,7 +65,6 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
         this.Misc = this.createUBO("Misc", 2, 4);
         this.Fog = this.createUBO("Fog", 3, 16);
 
-        this.world_enemy = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_enemy"));
         this.world_pickable = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_pickable"));
         this.debug = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "debug"));
         this.gui_text = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_text"));

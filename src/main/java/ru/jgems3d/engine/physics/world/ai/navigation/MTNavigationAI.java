@@ -25,6 +25,7 @@ public class MTNavigationAI<T extends WorldItem> extends NavigationAI<T> {
     private final ExecutorService executorService;
     private final AtomicBoolean block;
 
+
     public MTNavigationAI(T owner, int priority) {
         super(owner, priority);
         this.executorService = Executors.newSingleThreadExecutor();
@@ -71,14 +72,25 @@ public class MTNavigationAI<T extends WorldItem> extends NavigationAI<T> {
         super.onUpdateAI(worldItem);
     }
 
-    @Override
+    public void setDestination(WorldItem worldItem) {
+        GraphVertex graphVertex = worldItem.getWorld().getMapNavGraph().getClosestVertex(worldItem.getPosition());
+        this.setDestination(graphVertex);
+    }
+
+    public void setDestination(GraphVertex destination) {
+        if (destination == this.getDestination()) {
+            return;
+        }
+        this.clearPath();
+        this.destination = destination;
+    }
+
     public void setPath(List<GraphVertex> path) {
         synchronized (this) {
-            super.setPath(path);
+           super.setPath(path);
         }
     }
 
-    @Override
     protected List<GraphVertex> getPath() {
         synchronized (this) {
             return super.getPath();
