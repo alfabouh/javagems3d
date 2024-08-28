@@ -139,7 +139,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
 
     @Override
     protected void onClicked(Vector2f mouseCoordinates) {
-        float value = JGemsHelper.UTILS.clamp((mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
+        float value = JGemsHelper.MATH.clamp((mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
         this.setOptionValue(value);
     }
 

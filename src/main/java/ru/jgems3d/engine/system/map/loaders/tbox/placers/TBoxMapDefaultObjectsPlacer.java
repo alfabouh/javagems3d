@@ -50,10 +50,10 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         if (renderContainer == null) {
             return;
         }
-        Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
-        Vector3f rot = attributesContainer.tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
-        Vector3f scale = attributesContainer.tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
-        Boolean isProp = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
+        Vector3f pos = attributesContainer.getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+        Vector3f rot = attributesContainer.getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+        Vector3f scale = attributesContainer.getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+        Boolean isProp = attributesContainer.getValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
 
         MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel());
         JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
@@ -70,7 +70,7 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         } else {
             RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
 
-            Boolean isStatic = attributesContainer.tryGetValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
+            Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
             JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
             if (isStatic == null || isStatic) {
                 BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, physicsWorld, pos, id);

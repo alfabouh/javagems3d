@@ -12,6 +12,7 @@
 package jgems_api.horror.items;
 
 import jgems_api.horror.HorrorGame;
+import jgems_api.horror.HorrorGamePlayerState;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
@@ -26,6 +27,7 @@ import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 public class ItemCross extends InventoryItem {
     public ItemCross() {
         super("cross");
+        this.setDescription(JGems3D.get().I18n("item.description.cross"));
     }
 
     @Override
@@ -34,8 +36,9 @@ public class ItemCross extends InventoryItem {
             Vector3f color = new Vector3f(JGems3D.random.nextFloat(), JGems3D.random.nextFloat(), JGems3D.random.nextFloat());
             Vector3f pos = ((WorldItem) this.itemOwner()).getPosition().add(this.ranFloat(), this.ranFloat(), this.ranFloat());
             JGemsHelper.PARTICLES.emitParticle(JGemsHelper.PARTICLES.createSimpleColoredParticle(ParticleAttributes.defaultParticleAttributes(), color, pos, new Vector2f(0.3f)).setMaxLivingSeconds(JGems3D.random.nextFloat() + 1.0f));
-            JGemsHelper.getSoundManager().playLocalSound(HorrorGame.get().horrorSoundsLoader.magic, SoundType.BACKGROUND_SOUND, 0.5f, 1.0f);
         }
+        HorrorGamePlayerState.wantsToBeSafe = true;
+        JGemsHelper.getSoundManager().playLocalSound(HorrorGame.get().horrorSoundsLoader.magic, SoundType.BACKGROUND_SOUND, 0.5f, 1.0f);
         this.itemOwner().inventory().consumeItem(this);
     }
 

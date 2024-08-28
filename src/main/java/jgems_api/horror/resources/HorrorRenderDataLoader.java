@@ -64,11 +64,21 @@ public class HorrorRenderDataLoader implements IAssetsLoader {
     public RenderEntityData brains_world;
     public RenderEntityData beer_world;
 
+    public RenderEntityData ghost;
+
     @Override
     public void load(GameResources gameResources) {
         this.player = new RenderEntityData(new RenderHorrorPlayer(), PlayerSPObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);
 
         IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
+        IEntityModelConstructor<WorldItem> enemyModelConstructor = e -> new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-1.0f, -1.0f, 0.0f), new Vector3f(1.0f, -1.0f, 0.0f), new Vector3f(-1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f)));
+
+        Material mat0 = new Material();
+        mat0.setDiffuse(HorrorGame.get().horrorTexturesLoader.ghost);
+        this.ghost = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
+        this.ghost.setEntityModelConstructor(enemyModelConstructor);
+        this.ghost.getMeshRenderData().allowMoveMeshesIntoTransparencyPass(false).getRenderAttributes().setAlphaDiscard(0.6f).setShadowCaster(false).setRenderDistance(64.0f);
+        this.ghost.getMeshRenderData().setOverlappingMaterial(mat0);
 
         Material mat1 = new Material();
         mat1.setDiffuse(HorrorGame.get().horrorTexturesLoader.gas);

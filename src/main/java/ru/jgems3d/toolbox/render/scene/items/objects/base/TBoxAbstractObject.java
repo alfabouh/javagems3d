@@ -44,7 +44,7 @@ public abstract class TBoxAbstractObject {
 
     public void setPositionWithAttribute(Vector3f vector3f) {
         this.getModel().getFormat().setPosition(vector3f);
-        Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+        Vector3f vector3f1 = this.getAttributeContainer().getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (vector3f != null) {
             vector3f1.set(vector3f);
         }
@@ -53,7 +53,7 @@ public abstract class TBoxAbstractObject {
 
     public void setRotationWithAttribute(Vector3f vector3f) {
         this.getModel().getFormat().setRotation(vector3f);
-        Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+        Vector3f vector3f1 = this.getAttributeContainer().getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
         if (vector3f != null) {
             vector3f1.set(vector3f);
         }
@@ -62,7 +62,7 @@ public abstract class TBoxAbstractObject {
 
     public void setScalingWithAttribute(Vector3f vector3f) {
         this.getModel().getFormat().setScaling(vector3f);
-        Vector3f vector3f1 = this.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+        Vector3f vector3f1 = this.getAttributeContainer().getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         if (vector3f != null) {
             vector3f1.set(vector3f);
         }

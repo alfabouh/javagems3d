@@ -82,6 +82,6 @@ public class HorrorSimplePlayer extends SimpleKinematicPlayer {
     }
 
     protected float walkSpeed() {
-        return HorrorGamePlayerState.runStamina > 0 ? 0.175f : 0.125f;
+        return HorrorGamePlayerState.runStamina > 0 ? 0.2f : 0.125f;
     }
 }

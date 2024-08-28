@@ -172,9 +172,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer value1Buffer = memoryStack.mallocFloat(4);
             value1Buffer.put(!JGemsDebugGlobalConstants.FULL_BRIGHT ? environment.getFog().getDensity() : 0.0f);
-            value1Buffer.put(environment.getFog().getColor().x);
-            value1Buffer.put(environment.getFog().getColor().y);
-            value1Buffer.put(environment.getFog().getColor().z);
+            value1Buffer.put(environment.getFog().getColor().x * environment.getSky().getSunBrightness());
+            value1Buffer.put(environment.getFog().getColor().y * environment.getSky().getSunBrightness());
+            value1Buffer.put(environment.getFog().getColor().z * environment.getSky().getSunBrightness());
             value1Buffer.flip();
             JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Fog, value1Buffer);
         }
@@ -662,7 +662,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
             sample.mul(JGems3D.random.nextFloat());
 
             float scale = (float) i / ((float) size);
-            scale = JGemsHelper.UTILS.lerp(0.1f, 1.0f, scale * scale);
+            scale = JGemsHelper.MATH.lerp(0.1f, 1.0f, scale * scale);
             sample.mul(scale);
 
             floatBuffer.put(sample.x);

@@ -28,7 +28,7 @@ public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"), false);
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), tBoxAbstractObject.isSelected());
-        Vector3f color = tBoxAbstractObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
+        Vector3f color = tBoxAbstractObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
         if (color == null) {
             color = new Vector3f(1.0f);
         }

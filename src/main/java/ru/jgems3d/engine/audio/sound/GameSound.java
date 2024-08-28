@@ -25,17 +25,17 @@ public class GameSound {
     private final SoundBuffer soundBuffer;
     private int source;
     private WorldItem attachedTo;
-    private float gain;
+    private float volume;
     private float pitch;
     private float rollOff;
 
-    private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float gain, float rollOff, WorldItem attachedTo) {
+    private GameSound(@NotNull SoundBuffer soundBuffer, SoundType soundType, float pitch, float volume, float rollOff, WorldItem attachedTo) {
         this.soundBuffer = soundBuffer;
         this.soundType = soundType;
         this.attachedTo = attachedTo;
         this.source = AL10.AL_NONE;
 
-        this.setGain(gain);
+        this.setVolume(volume);
         this.setPitch(pitch);
         this.setRollOff(rollOff);
         this.setupSound();
@@ -62,7 +62,7 @@ public class GameSound {
         AL10.alSourcei(this.source, AL10.AL_SOURCE_RELATIVE, this.getSoundType().getSoundData().isLocatedInWorld() ? AL10.AL_FALSE : AL10.AL_TRUE);
         AL10.alSourcei(this.source, AL10.AL_LOOPING, this.getSoundType().getSoundData().isLooped() ? AL10.AL_TRUE : AL10.AL_FALSE);
         AL10.alSourcei(this.source, AL10.AL_BUFFER, this.getSoundBuffer().getBuffer());
-        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(Math.max(this.getGain(), 0.0f) * 2.0f, 1.0f));
+        AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(Math.max(this.getVolume(), 0.0f) * 2.0f, 1.0f));
         SoundManager.checkALonErrors();
 
         if (this.getAttachedTo() != null) {
@@ -81,7 +81,7 @@ public class GameSound {
 
     private void updateParams() {
         AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, this.getRollOff());
-        AL10.alSourcef(this.source, AL10.AL_GAIN, this.getGain());
+        AL10.alSourcef(this.source, AL10.AL_GAIN, this.getVolume());
         AL10.alSourcef(this.source, AL10.AL_PITCH, this.getPitch());
         SoundManager.checkALonErrors();
     }
@@ -123,12 +123,12 @@ public class GameSound {
         this.rollOff = rollOff;
     }
 
-    public float getGain() {
-        return Math.max(this.gain, 0.0f);
+    public float getVolume() {
+        return Math.max(this.volume, 0.0f);
     }
 
-    public void setGain(float gain) {
-        this.gain = gain;
+    public void setVolume(float gain) {
+        this.volume = gain;
     }
 
     public float getPitch() {

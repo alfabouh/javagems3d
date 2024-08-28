@@ -46,9 +46,9 @@ package jgems_api.horror;
 
 import jgems_api.horror.events.HorrorEvents;
 import jgems_api.horror.resources.*;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.system.core.EngineSystem;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
@@ -104,6 +104,9 @@ public class HorrorGame implements JGemsGameApplication {
     @Override
     public void postInitEvent(EngineSystem engineSystem) {
         JGemsHelper.LOCALISATION.createLocalisation("English", new JGemsPath("/assets/testgame/lang/"));
+
+        HorrorGamePlayerState.noiseSound = JGemsHelper.getSoundManager().createSound(HorrorGame.get().horrorSoundsLoader.noise, SoundType.BACKGROUND_SOUND, 2.0f, 0.5f, 1.0f);
+        HorrorGamePlayerState.breathSound = JGemsHelper.getSoundManager().createSound(HorrorGame.get().horrorSoundsLoader.breath, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f, 1.0f);
     }
 
     @Override

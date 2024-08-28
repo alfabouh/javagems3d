@@ -13,6 +13,7 @@ package jgems_api.horror;
 
 import jgems_api.horror.entities.CollectableBrain;
 import jgems_api.horror.entities.CollectableGas;
+import jgems_api.horror.entities.GhostEnemy;
 import jgems_api.horror.items.ItemBeer;
 import jgems_api.horror.items.ItemCross;
 import jgems_api.horror.items.ItemZippoModded;
@@ -33,6 +34,7 @@ import java.util.*;
 
 public class HorrorGameMapLoader implements ITBoxMapLoaderManager {
     private final List<Vector3f> spawnPoints;
+    private GhostEnemy ghostEnemy;
 
     public HorrorGameMapLoader() {
         this.spawnPoints = new ArrayList<>();
@@ -50,18 +52,23 @@ public class HorrorGameMapLoader implements ITBoxMapLoaderManager {
 
     @Override
     public void handleTBoxMarker(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
-        String name = attributesContainer.tryGetValueFromAttributeByID(AttributeID.NAME, String.class);
-        Vector3f pos = attributesContainer.tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+        String name = attributesContainer.getValueFromAttributeByID(AttributeID.NAME, String.class);
+        Vector3f pos = attributesContainer.getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (name.equals("zippo_item")) {
             JGemsHelper.WORLD.addItemInWorld(new EntityCollectableItem(physicsWorld, new ItemZippoModded(), new Vector3f(pos).add(0.0f, 0.5f, 0.0f), name), JGemsResourceManager.globalRenderDataAssets.zippo_world);
         }
         if (name.equals("spawnp")) {
             this.spawnPoints.add(pos);
         }
+        if (name.equals("en_spawn")) {
+            this.ghostEnemy = new GhostEnemy(physicsWorld, new Vector3f(pos), name);
+            JGemsHelper.WORLD.addItemInWorld(this.ghostEnemy, HorrorGame.get().horrorRenderDataLoader.ghost);
+        }
     }
 
     @Override
     public void mapPreLoad(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        HorrorGamePlayerState.reset();
         this.spawnPoints.clear();
     }
 
@@ -78,7 +85,7 @@ public class HorrorGameMapLoader implements ITBoxMapLoaderManager {
             }
         }
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             Optional<Vector3f> posOptional = this.spawnPoints.stream().findAny();
             if (posOptional.isPresent()) {
                 Vector3f vector3f1 = posOptional.get();
@@ -102,5 +109,7 @@ public class HorrorGameMapLoader implements ITBoxMapLoaderManager {
             JGemsHelper.WORLD.addItemInWorld(new EntityCollectableItem(physicsWorld, new ItemCross(), new Vector3f(vector3f1).add(0.0f, 0.5f, 0.0f), "cross"), HorrorGame.get().horrorRenderDataLoader.cross_world);
             this.spawnPoints.remove(vector3f1);
         }
+
+        this.ghostEnemy.getAi().setFollow(JGemsHelper.getCurrentPlayer());
     }
 }

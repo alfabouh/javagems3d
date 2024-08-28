@@ -51,12 +51,12 @@ public final class AttributesContainer implements Serializable {
         return !this.getAttributeSet().isEmpty();
     }
 
-    public <E extends Serializable> Attribute<E> tryGetAttributeByID(AttributeID attributeID, Class<E> eClass) {
-        return this.tryGetAttributeByID(attributeID.getId(), eClass);
+    public <E extends Serializable> Attribute<E> getAttributeByID(AttributeID attributeID, Class<E> eClass) {
+        return this.getAttributeByID(attributeID.getId(), eClass);
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends Serializable> Attribute<E> tryGetAttributeByID(String id, Class<E> eClass) {
+    public <E extends Serializable> Attribute<E> getAttributeByID(String id, Class<E> eClass) {
         Attribute<?> attribute = this.getAttributeSet().get(id);
         if (attribute == null) {
             return null;
@@ -69,12 +69,12 @@ public final class AttributesContainer implements Serializable {
         return null;
     }
 
-    public <E extends Serializable> E tryGetValueFromAttributeByID(AttributeID attributeID, Class<E> eClass) {
-        return this.tryGetValueFromAttributeByID(attributeID.getId(), eClass);
+    public <E extends Serializable> E getValueFromAttributeByID(AttributeID attributeID, Class<E> eClass) {
+        return this.getValueFromAttributeByID(attributeID.getId(), eClass);
     }
 
-    public <E extends Serializable> E tryGetValueFromAttributeByID(String id, Class<E> eClass) {
-        Attribute<E> attribute = this.tryGetAttributeByID(id, eClass);
+    public <E extends Serializable> E getValueFromAttributeByID(String id, Class<E> eClass) {
+        Attribute<E> attribute = this.getAttributeByID(id, eClass);
         if (attribute == null) {
             return null;
         }

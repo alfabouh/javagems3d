@@ -73,7 +73,7 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
             Graph graph = worldItem.getWorld().getMapNavGraph();
             if (graph != null) {
                 this.setPathPos(0);
-                this.setCurrentVertex(graph.getRandomVertex());
+                this.setCurrentVertex(graph.getClosestVertex(this.getAIOwner().getPosition()));
                 this.setOwnerPos(this.getVertexPosWithOffset(this.getCurrentVertex()));
             }
         }
@@ -120,7 +120,7 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         this.path = null;
     }
 
-    protected void setCurrentVertex(GraphVertex currentVertex) {
+    public void setCurrentVertex(GraphVertex currentVertex) {
         this.currentVertex = currentVertex;
     }
 
@@ -142,7 +142,6 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
 
     public void setDestination(WorldItem worldItem) {
         GraphVertex graphVertex = worldItem.getWorld().getMapNavGraph().getClosestVertex(worldItem.getPosition());
-        this.clearPath();
         this.setDestination(graphVertex);
     }
 
@@ -150,6 +149,7 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         if (destination == this.getDestination()) {
             return;
         }
+        this.clearPath();
         this.destination = destination;
     }
 

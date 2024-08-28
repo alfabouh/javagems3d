@@ -217,7 +217,7 @@ vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, 
 }
 
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    vec3 fog_color = vec3(fogColorR, fogColorG, fogColorB) * sunBright;
+    vec3 fog_color = vec3(fogColorR, fogColorG, fogColorB);
     float distance = length(frag_pos);
     float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
     fogFactor = clamp(fogFactor, 0., 1.);

@@ -32,10 +32,7 @@ import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
-import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
@@ -333,18 +330,18 @@ public class TBoxScene {
         TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
         tBoxObject.setAttributeContainer(mapObject.copyAttributeContainer());
 
-        Attribute<Vector3f> attribute = tBoxObject.getAttributeContainer().tryGetAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+        Attribute<Vector3f> attribute = tBoxObject.getAttributeContainer().getAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (attribute == null) {
             throw new JGemsNullException("Caught attribute with NULL position!");
         }
         attribute.setValue(format3D.getPosition());
 
-        Vector3f rot = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+        Vector3f rot = tBoxObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
         if (rot != null) {
             format3D.setRotation(rot);
         }
 
-        Vector3f scaling = tBoxObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+        Vector3f scaling = tBoxObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         if (scaling != null) {
             format3D.setScaling(scaling);
         }
@@ -460,9 +457,9 @@ public class TBoxScene {
                     if (saveObjects != null) {
                         for (SaveObject saveObject : saveObjects) {
                             try {
-                                Vector3f savePos = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
-                                Vector3f saveRot = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
-                                Vector3f saveScale = saveObject.getAttributeContainer().tryGetValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+                                Vector3f savePos = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+                                Vector3f saveRot = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+                                Vector3f saveScale = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
                                 if (savePos == null) {
                                     SystemLogging.get().getLogManager().error("Deserialized object has NULL position!!");
                                     continue;

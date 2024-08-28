@@ -339,6 +339,26 @@ public abstract class JGemsHelper {
         }
     }
 
+    public static abstract class MATH {
+
+        public static float lerp(float a, float b, float f)
+        {
+            return a + f * (b - a);
+        }
+
+        public static int clamp(int d1, int d2, int d3) {
+            return d1 < d2 ? d2 : (int) Math.min(d1, d3);
+        }
+
+        public static float clamp(float d1, float d2, float d3) {
+            return d1 < d2 ? d2 : Math.min(d1, d3);
+        }
+
+        public static double clamp(double d1, double d2, double d3) {
+            return d1 < d2 ? d2 : Math.min(d1, d3);
+        }
+    }
+
     //section Utils
     public static abstract class UTILS {
         public static float calcDistanceToMostFarPoint(MeshDataGroup meshDataGroup, Vector3f scaling) {
@@ -398,23 +418,6 @@ public abstract class JGemsHelper {
                 a[i + 2] = list.get(i).z;
             }
             return a;
-        }
-
-        public static float lerp(float a, float b, float f)
-        {
-            return a + f * (b - a);
-        }
-
-        public static int clamp(int d1, int d2, int d3) {
-            return d1 < d2 ? d2 : (int) Math.min(d1, d3);
-        }
-
-        public static float clamp(float d1, float d2, float d3) {
-            return d1 < d2 ? d2 : Math.min(d1, d3);
-        }
-
-        public static double clamp(double d1, double d2, double d3) {
-            return d1 < d2 ? d2 : Math.min(d1, d3);
         }
 
         public static Vector3f convertV3DV3F(Vector3f vector3f) {
