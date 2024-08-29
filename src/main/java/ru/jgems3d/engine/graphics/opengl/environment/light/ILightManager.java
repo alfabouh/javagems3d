@@ -12,8 +12,9 @@
 package ru.jgems3d.engine.graphics.opengl.environment.light;
 
 import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 
 public interface ILightManager {
-    void updateBuffers(SceneWorld sceneWorld, Matrix4f viewMatrix);
+    void updateBuffers(MemoryStack stack, SceneWorld sceneWorld, Matrix4f viewMatrix);
 }

@@ -395,7 +395,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     //section onRender
     @Override
     public void onRender(FrameTicking frameTicking, Vector2i windowSize) {
-        this.updateUBOs(frameTicking);
+        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGemsHelper.getScreen().getRenderTicks()});
         if (!APIEventsLauncher.pushEvent(new Events.RenderScenePre(frameTicking, windowSize, this)).isCancelled()) {
             if (this.getSceneData().getCamera() == null) {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);

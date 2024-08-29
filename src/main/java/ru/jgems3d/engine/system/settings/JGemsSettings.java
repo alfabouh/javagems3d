@@ -11,7 +11,9 @@
 
 package ru.jgems3d.engine.system.settings;
 
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
+import ru.jgems3d.engine.system.service.stat.PerformanceStat;
 import ru.jgems3d.engine.system.settings.base.Settings;
 import ru.jgems3d.engine.system.settings.objects.SettingChooseLanguage;
 import ru.jgems3d.engine.system.settings.objects.SettingFloatBar;
@@ -34,7 +36,7 @@ public class JGemsSettings extends Settings {
 
     public JGemsSettings(File file) {
         super(file);
-        this.soundGain = new SettingFloatBar("sound_gain", 1.0f);
+        this.soundGain = new SettingFloatBar("sound_gain", 0.5f);
 
         this.windowMode = new SettingIntSlots("windowMode", 0, 0, 1);
         this.shadowQuality = new SettingIntSlots("shadowQuality", 0, 0, 2);
@@ -95,5 +97,57 @@ public class JGemsSettings extends Settings {
         this.addSetting(this.bloom);
         this.addSetting(this.texturesFiltering);
         this.addSetting(this.language);
+    }
+
+    public void setDefaultByPerfStat(PerformanceStat.Result stat) {
+        JGemsHelper.getLogger().debug("PerfStat: " + stat.name());
+        switch (stat) {
+            case POTATO: {
+                this.ssao.setValue(0);
+                this.shadowQuality.setValue(0);
+                this.anisotropic.setValue(0);
+                this.fxaa.setValue(0);
+                this.texturesQuality.setValue(0);
+                this.bloom.setValue(0);
+                this.texturesFiltering.setValue(0);
+                break;
+            }
+            case LOW: {
+                this.ssao.setValue(0);
+                this.shadowQuality.setValue(1);
+                this.anisotropic.setValue(1);
+                this.fxaa.setValue(1);
+                this.texturesQuality.setValue(1);
+                this.bloom.setValue(0);
+                this.texturesFiltering.setValue(0);
+            }
+            case MEDIUM: {
+                this.ssao.setValue(1);
+                this.shadowQuality.setValue(1);
+                this.anisotropic.setValue(1);
+                this.fxaa.setValue(2);
+                this.texturesQuality.setValue(2);
+                this.bloom.setValue(0);
+                this.texturesFiltering.setValue(1);
+            }
+            case HIGH: {
+                this.ssao.setValue(2);
+                this.shadowQuality.setValue(1);
+                this.anisotropic.setValue(1);
+                this.fxaa.setValue(3);
+                this.texturesQuality.setValue(2);
+                this.bloom.setValue(1);
+                this.texturesFiltering.setValue(1);
+            }
+            case GREAT: {
+                this.ssao.setValue(3);
+                this.shadowQuality.setValue(2);
+                this.anisotropic.setValue(1);
+                this.fxaa.setValue(4);
+                this.texturesQuality.setValue(2);
+                this.bloom.setValue(1);
+                this.texturesFiltering.setValue(1);
+            }
+        }
     }
 }

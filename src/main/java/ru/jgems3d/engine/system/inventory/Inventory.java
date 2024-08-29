@@ -60,12 +60,16 @@ public class Inventory {
         this.setSlotItem(slot, null);
     }
 
+    public boolean hasItemInSlot(int i) {
+        return this.getInventorySlots().get(i) != null;
+    }
+
     public boolean consumeItem(InventoryItem inventoryItem) {
         if (inventoryItem == null) {
             throw new JGemsNullException("NULL item removed from inventory");
         }
         for (int i = 0; i < this.getMaxSlots(); i++) {
-            if (this.getItemInSlot(i).equals(inventoryItem)) {
+            if (this.hasItemInSlot(i) && this.getItemInSlot(i).equals(inventoryItem)) {
                 this.consumeItem(i);
                 return true;
             }

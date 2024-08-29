@@ -1,21 +1,14 @@
 layout (location=0) in vec3 position;
 
 layout (std140, binding = 0) uniform SunLight {
-    float ambient;
-    float sunBright;
-    float sunX;
-    float sunY;
-    float sunZ;
-    float sunColorR;
-    float sunColorG;
-    float sunColorB;
+    vec4 sunPos;
+    vec4 sunColor;
+    vec2 sunMeta;
 };
 
 layout (std140, binding = 3) uniform Fog {
+    vec4 fogColor;
     float fogDensity;
-    float fogColorR;
-    float fogColorG;
-    float fogColorB;
 };
 
 out vec3 out_texture;

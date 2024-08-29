@@ -44,6 +44,7 @@ import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.collections.Pair;
+import ru.jgems3d.engine.system.service.stat.PerformanceStat;
 
 import java.awt.*;
 import java.util.ArrayList;

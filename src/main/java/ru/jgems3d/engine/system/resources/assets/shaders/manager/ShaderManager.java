@@ -92,10 +92,14 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public void startComputing() {
+    public boolean startComputing() {
+        if (this.activeShader != ACT_SHADER.NONE) {
+            return false;
+        }
         this.updateTextureUnitSlots();
         this.getComputingShaderGroup().getShaderProgram().bind();
         this.activeShader = ACT_SHADER.COMPUTE;
+        return true;
     }
 
     public void endComputing() {
@@ -103,10 +107,14 @@ public abstract class ShaderManager implements ICached {
         this.activeShader = ACT_SHADER.NONE;
     }
 
-    public void bind() {
+    public boolean bind() {
+        if (this.activeShader != ACT_SHADER.NONE) {
+            return false;
+        }
         this.updateTextureUnitSlots();
         this.getGraphicShaderGroup().getShaderProgram().bind();
         this.activeShader = ACT_SHADER.GRAPHICAL;
+        return true;
     }
 
     public void unBind() {

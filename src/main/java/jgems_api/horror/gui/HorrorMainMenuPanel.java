@@ -50,6 +50,7 @@ import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.D
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
+import ru.jgems3d.engine.system.map.loaders.custom.DefaultMap;
 import ru.jgems3d.engine.system.map.loaders.tbox.TBoxMapLoader;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
@@ -95,6 +96,12 @@ public class HorrorMainMenuPanel extends AbstractPanelUI {
         int windowH = window.getWindowDimensions().y;
 
         this.renderContent(immediateUI, window, frameDeltaTicks);
+
+        immediateUI.buttonUI("Play2", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 100), new Vector2i(300, 60), 0xffffff, 0.5f)
+                .setOnClick(() -> {
+                    JGemsHelper.GAME.loadMap(new DefaultMap());
+                    JGemsHelper.UI.openUIPanel(new HorrorGamePanel(null));
+                });
 
         immediateUI.buttonUI("Play", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {

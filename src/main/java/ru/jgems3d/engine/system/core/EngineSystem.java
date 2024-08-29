@@ -31,6 +31,7 @@ import ru.jgems3d.engine.system.core.player.LocalPlayer;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.stat.PerformanceStat;
 import ru.jgems3d.engine_api.events.bus.Events;
 import ru.jgems3d.logger.managers.JGemsLogging;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
@@ -363,6 +364,10 @@ public class EngineSystem implements IEngine {
 
     private void createGraphics() {
         JGems3D.get().getScreen().buildScreen();
+        if (JGems3D.FIRST_LAUNCH) {
+            JGems3D.get().getGameSettings().setDefaultByPerfStat(PerformanceStat.getSystemStat());
+            JGems3D.get().getGameSettings().saveOptions();
+        }
         this.printGraphicsInfo();
         JGems3D.get().getResourceManager().loadGlobalResources();
     }

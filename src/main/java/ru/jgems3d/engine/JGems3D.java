@@ -31,6 +31,7 @@ import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.localisation.Localisation;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.stat.PerformanceStat;
 import ru.jgems3d.engine.system.settings.JGemsSettings;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
@@ -51,6 +52,7 @@ import java.util.Random;
 
 public final class JGems3D {
     public static boolean DEBUG_MODE = false;
+    public static boolean FIRST_LAUNCH = false;
     public static long rngSeed;
     public static Random random;
     private static JGems3D mainObject;
@@ -120,7 +122,11 @@ public final class JGems3D {
             JGemsHelper.getLogger().log("===============================================================");
             JGemsHelper.getLogger().log("Run args: " + Arrays.toString(JGems3D.get().getStartArgs()));
             JGemsHelper.getLogger().log("Loading settings from path...");
-            JGems3D.get().getGameSettings().loadOptions();
+            if (JGems3D.get().getGameSettings().makeSettingDirs()) {
+                JGems3D.FIRST_LAUNCH = true;
+            } else {
+                JGems3D.get().getGameSettings().loadOptions();
+            }
             JGems3D.get().checkArgs(JGems3D.get().getStartArgs());
             JGems3D.get().engineSystem = new EngineSystem();
             JGems3D.get().getEngineSystem().startSystem();

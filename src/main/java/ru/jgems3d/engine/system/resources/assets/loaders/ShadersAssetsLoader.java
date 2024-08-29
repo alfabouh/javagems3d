@@ -12,6 +12,8 @@
 package ru.jgems3d.engine.system.resources.assets.loaders;
 
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.environment.Environment;
+import ru.jgems3d.engine.graphics.opengl.environment.light.LightManager;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
@@ -60,10 +62,10 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     public JGemsShaderManager imgui;
 
     protected void initObjects(ResourceCache resourceCache) {
-        this.SunLight = this.createUBO("SunLight", 0, 32);
-        this.PointLights = this.createUBO("PointLights", 1, 32 * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS + 4);
-        this.Misc = this.createUBO("Misc", 2, 4);
-        this.Fog = this.createUBO("Fog", 3, 16);
+        this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
+        this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);
+        this.Misc = this.createUBO("Misc", 2, Float.BYTES);
+        this.Fog = this.createUBO("Fog", 3, Environment.FG_STRUCT_SIZE * Float.BYTES);
 
         this.world_pickable = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_pickable"));
         this.debug = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "debug"));

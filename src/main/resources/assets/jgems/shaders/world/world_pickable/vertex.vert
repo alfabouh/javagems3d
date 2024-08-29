@@ -2,10 +2,8 @@ layout (location=0) in vec3 aPosition;
 layout (location=1) in vec2 aTexture;
 
 layout (std140, binding = 3) uniform Fog {
+    vec4 fogColor;
     float fogDensity;
-    float fogColorR;
-    float fogColorG;
-    float fogColorB;
 };
 
 layout (std140, binding = 2) uniform Misc {

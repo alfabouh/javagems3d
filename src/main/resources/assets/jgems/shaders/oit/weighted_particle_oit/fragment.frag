@@ -44,25 +44,16 @@ uniform float far_plane;
 
 struct PointLight
 {
-    float plPosX;
-    float plPosY;
-    float plPosZ;
-    float plR;
-    float plG;
-    float plB;
-    float brightness;
-    float shadowMapId;
+    vec4 plPos;
+    vec4 plViewPos;
+    vec4 plColor;
+    vec2 plMeta;
 };
 
 layout (std140, binding = 0) uniform SunLight {
-    float ambient;
-    float sunBright;
-    float sunX;
-    float sunY;
-    float sunZ;
-    float sunColorR;
-    float sunColorG;
-    float sunColorB;
+    vec4 sunPos;
+    vec4 sunColor;
+    vec2 sunMeta;
 };
 
 layout (std140, binding = 1) uniform PointLights {
@@ -71,10 +62,8 @@ layout (std140, binding = 1) uniform PointLights {
 };
 
 layout (std140, binding = 3) uniform Fog {
+    vec4 fogColor;
     float fogDensity;
-    float fogColorR;
-    float fogColorG;
-    float fogColorB;
 };
 
 uniform vec3 camera_pos;
@@ -106,7 +95,7 @@ void main()
     vec4 lights = calc_light(frag_pos);
 
     vec4 frag_color = (g_texture * vec4(color_mask, 1.)) * (lights + vec4(vec3(brightness), 0.));
-    frag_color = fogDensity > 0 ? calc_fog(frag_pos.xyz, frag_color) : frag_color;
+    frag_color = calc_fog(frag_pos.xyz, frag_color);
     frag_color = vec4(frag_color.xyz, g_texture.a);
 
     float a_factor = alpha_factor * frag_color.a;
@@ -139,9 +128,9 @@ float calculate_point_light_shadow(samplerCube vsmCubemap, vec3 fragPosition, ve
 }
 
 vec4 calc_light(vec3 frag_pos) {
-    vec4 lightFactors = vec4(vec3(sunColorR, sunColorG, sunColorB) * ambient, 1.0);
+    vec4 lightFactors = vec4(sunColor.xyz * sunMeta.x, 1.0);
 
-    vec3 sunPos = normalize(vec3(sunX, sunY, sunZ));
+    vec3 sunPos = normalize(sunPos.xyz);
 
     int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
     float sun_shadow = calcSunShineVSM(m_vertex_pos, cascadeIndex, frag_pos);
@@ -151,12 +140,12 @@ vec4 calc_light(vec3 frag_pos) {
     vec4 point_light_factor = vec4(0.0);
     for (int i = 0; i < total_plights; i++) {
         PointLight p = p_l[i];
-        float p_brightness = p.brightness;
+        float p_brightness = p.plMeta.x;
         float at_base = 1.0;
         float linear = 0.09 * p_brightness;
         float expo = 0.032 * p_brightness;
-        float p_id = p.shadowMapId;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[int(p_id)], m_vertex_pos.xyz, vec3(p.plPosX, p.plPosY, p.plPosZ))) : vec4(1.0);
+        float p_id = p.plMeta.y;
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[int(p_id)], m_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
         point_light_factor += calc_point_light(p, frag_pos, at_base, linear, expo, p_brightness) * shadow;
     }
 
@@ -169,14 +158,14 @@ vec4 calc_light(vec3 frag_pos) {
 }
 
 vec4 calc_sun_light(vec3 sunPos, vec3 vPos) {
-    return vec4(vec3(sunColorR, sunColorG, sunColorB), 1.);
+    return vec4(sunColor.xyz, 1.);
 }
 
 vec4 calc_point_light(PointLight light, vec3 vPos, float at_base, float linear, float expo, float bright) {
-    vec3 pos = (out_view_matrix * vec4(vec3(light.plPosX, light.plPosY, light.plPosZ), 1.0)).xyz;
+    vec3 pos = light.plViewPos.xyz;
 
     vec3 light_dir = pos - vPos;
-    vec4 light_c = vec4(vec3(light.plR, light.plG, light.plB), 1.);
+    vec4 light_c = vec4(light.plColor.xyz, 1.);
 
     float dist = length(light_dir);
     float attenuation_factor = at_base + linear * dist + expo * pow(dist, 2);
@@ -184,7 +173,10 @@ vec4 calc_point_light(PointLight light, vec3 vPos, float at_base, float linear, 
 }
 
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    vec3 fog_color = vec3(fogColorR, fogColorG, fogColorB);
+    if (fogDensity <= 0) {
+        return color;
+    }
+    vec3 fog_color = fogColor.xyz;
     float distance = length(frag_pos);
     float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
     fogFactor = clamp(fogFactor, 0., 1.);

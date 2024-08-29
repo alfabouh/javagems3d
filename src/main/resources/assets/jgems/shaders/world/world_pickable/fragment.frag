@@ -2,10 +2,8 @@ layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 frag_color2;
 
 layout (std140, binding = 3) uniform Fog {
+    vec4 fogColor;
     float fogDensity;
-    float fogColorR;
-    float fogColorG;
-    float fogColorB;
 };
 
 in vec3 mv_vertex_pos;
@@ -14,7 +12,10 @@ uniform sampler2D diffuse_map;
 uniform float alpha_discard;
 
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    vec3 fog_color = vec3(fogColorR, fogColorG, fogColorB);
+    if (fogDensity <= 0) {
+        return color;
+    }
+    vec3 fog_color = fogColor.xyz;
     float distance = length(frag_pos);
     float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
     fogFactor = clamp(fogFactor, 0., 1.);
