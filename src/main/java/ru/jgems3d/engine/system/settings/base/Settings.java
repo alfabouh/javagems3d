@@ -49,6 +49,7 @@ public abstract class Settings {
     public boolean makeSettingDirs() {
         if (!this.getOptionsFile().exists()) {
             try {
+                this.getOptionsFile().getParentFile().mkdirs();
                 if (!this.getOptionsFile().createNewFile()) {
                     throw new JGemsRuntimeException("Failed to create settings path!");
                 }
