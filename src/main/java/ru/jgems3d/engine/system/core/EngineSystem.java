@@ -52,7 +52,6 @@ public class EngineSystem implements IEngine {
     private Thread thread;
     private IMapLoader mapLoader;
     private LocalPlayer localPlayer;
-    private boolean lockedUnPausing;
     private final RequestsFromThreads requestsFromThreads;
 
     public EngineSystem() {
@@ -60,13 +59,12 @@ public class EngineSystem implements IEngine {
         this.engineState = new EngineState();
         this.resourceManager = new JGemsResourceManager();
         this.mapLoader = null;
-        this.lockedUnPausing = false;
 
         this.requestsFromThreads = new RequestsFromThreads();
     }
 
     public void setLockedUnPausing(boolean lockedUnPausing) {
-        this.lockedUnPausing = lockedUnPausing;
+        this.engineState().lockedUnPausing = lockedUnPausing;
     }
 
     public void update() {
@@ -89,6 +87,7 @@ public class EngineSystem implements IEngine {
         }
         this.mapLoader = mapLoader;
         this.initMap();
+        this.requestsFromThreads.loadMap = null;
     }
 
     public void destroyMap() {
@@ -96,16 +95,20 @@ public class EngineSystem implements IEngine {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
+        JGemsHelper.getLogger().log("Destroying map!");
         APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
         this.pauseGame();
         JGems3D.get().getScreen().showGameLoadingScreen("Exit world...");
         this.clean();
+        JGemsHelper.GAME.unPauseGameAndUnLockUnPausing();
+        JGemsHelper.GAME.unLockController();
         JGems3D.get().getScreen().getScene().setRenderCamera(null);
         JGems3D.get().getScreen().getWindow().setInFocus(false);
         JGems3D.get().getScreen().removeLoadingScreen();
         this.mapLoader = null;
         JGems3D.get().showMainMenu();
         APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.POST, mapLoader));
+        this.requestsFromThreads.destroyMap = false;
     }
 
     private void initMap() {
@@ -294,7 +297,7 @@ public class EngineSystem implements IEngine {
 
     @SuppressWarnings("all")
     public boolean isLockedUnPausing() {
-        return this.lockedUnPausing;
+        return this.engineState().lockedUnPausing;
     }
 
     private void printSystemInfo() {
@@ -387,15 +390,21 @@ public class EngineSystem implements IEngine {
         }
     }
 
-    public static class EngineState {
+    public class EngineState {
         private boolean gameResourcesLoaded;
         private boolean engineIsReady;
         private boolean paused;
+        private boolean lockedUnPausing;
 
         public EngineState() {
             this.gameResourcesLoaded = false;
             this.paused = true;
             this.engineIsReady = false;
+            this.lockedUnPausing = false;
+        }
+
+        public boolean isLockedUnPausing() {
+            return this.lockedUnPausing;
         }
 
         public boolean isEngineIsReady() {
@@ -407,7 +416,7 @@ public class EngineSystem implements IEngine {
         }
 
         public boolean isPaused() {
-            return this.paused;
+            return EngineSystem.this.getMapLoader() == null || this.paused;
         }
     }
 }

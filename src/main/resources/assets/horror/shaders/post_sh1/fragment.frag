@@ -5,6 +5,9 @@ uniform sampler2D texture_sampler;
 uniform vec2 screenSize;
 uniform float panic;
 
+uniform bool lose;
+uniform bool won;
+
 layout (std140, binding = 2) uniform Misc {
     float w_tick;
 };
@@ -12,6 +15,15 @@ layout (std140, binding = 2) uniform Misc {
 float rand(vec2 co)
 {
     return fract(sin(dot(co.xy + tan(w_tick), vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+vec4 random_noise_red() {
+    float pixelSize = 0.005;
+    vec2 tex = out_texture;
+    vec2 pixelCoords = floor(tex / pixelSize) * pixelSize;
+    vec4 colors = vec4(1., 0., 0., 1.);
+    float grain = rand(pixelCoords);
+    return colors * grain;
 }
 
 vec4 random_noise(vec4 txtr, float factor) {
@@ -62,5 +74,11 @@ void main()
 
     color.rgb = floor(color.rgb * 8.0 + ditherValue) / 8.0;
 
-    frag_color = color;
+    if (lose) {
+        frag_color = random_noise_red();
+    } else if (won) {
+        frag_color = color + vec4(vec3(min(w_tick * 0.3f, 1.)), 0.);
+    } else {
+        frag_color = color * min(w_tick, 1.);
+    }
 }

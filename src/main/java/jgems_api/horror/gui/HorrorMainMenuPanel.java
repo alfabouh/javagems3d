@@ -33,6 +33,7 @@
 
 package jgems_api.horror.gui;
 
+import jgems_api.horror.HorrorGame;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -40,6 +41,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
@@ -130,6 +132,7 @@ public class HorrorMainMenuPanel extends AbstractPanelUI {
 
     @Override
     public void onConstruct(ImmediateUI immediateUI) {
+        JGemsHelper.getSoundManager().playLocalSound(HorrorGame.get().horrorSoundsLoader.menu, SoundType.BACKGROUND_SOUND, 1.0f, 0.8f);
         this.createFBOs(JGems3D.get().getScreen().getWindowDimensions());
     }
 

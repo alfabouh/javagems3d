@@ -68,7 +68,6 @@ public class TestGame implements JGemsGameApplication {
 
     @Override
     public void postInitEvent(EngineSystem engineSystem) {
-        JGemsHelper.LOCALISATION.createLocalisation("English", new JGemsPath("/assets/testgame/lang/"));
     }
 
     @Override

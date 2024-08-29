@@ -30,6 +30,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     public static MouseKeyboardController mouseKeyboardController = null;
     private IController currentController;
     private IControllable currentControlledItem;
+    private boolean lockController;
 
     public JGemsControllerDispatcher(Window window) {
         JGemsControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window, APIContainer.get().getApiGameInfo().getAppManager().createBindingManager());
@@ -75,11 +76,25 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
         }
     }
 
+    public void setLockController(boolean lockController) {
+        this.lockController = lockController;
+    }
+
+    public boolean isLockController() {
+        return this.lockController;
+    }
+
     public IControllable getCurrentControlledItem() {
         return this.currentControlledItem;
     }
 
     public void updateController(IWindow window) {
+        if (this.isLockController()) {
+            if (this.getCurrentControlledItem() != null) {
+                this.getCurrentControlledItem().performController(new Vector2f(0.0f), new Vector3f(0.0f), false);
+            }
+            return;
+        }
         if (this.getCurrentController() != null) {
             this.getCurrentController().updateControllerState(window);
             if (!JGems3D.get().isPaused()) {

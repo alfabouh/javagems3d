@@ -1,0 +1,40 @@
+settings.on=Вкл
+settings.off=Выкл
+settings.fullScreen=Полный экран
+settings.windowed=Оконный режим
+settings.low=Низкий
+settings.medium=Средний
+settings.high=Высокий
+
+menu.settings.sound=Звук
+menu.settings.fxaa=FXAA
+menu.settings.anisotropic=Анизотропная фильтрация
+menu.settings.bloom=Эффект Bloom
+menu.settings.window=Режим окна
+menu.settings.textureQ=Качество текстур
+menu.settings.shadowQ=Качество теней
+menu.settings.ssao=SSAO
+menu.settings.vsync=Вертикальная синхронизация
+menu.settings.language=Язык
+menu.settings.filtering=Линейная фильтрация
+
+menu.save=Сохранить
+menu.back=Назад
+
+menu.pause.continue=Продолжить
+
+menu.main.settings=Настройки
+menu.main.exit=Выход
+menu.main.play=Играть
+menu.main.retry=Повторить
+
+menu.confirm.no=Нет
+menu.confirm.yes=Да
+menu.confirm.text=Вы действительно хотите выйти?
+
+gui.brains=Разум
+gui.gas=Керосин
+
+item.description.zippo=[Свет]
+item.description.beer=[Поднять настроение]
+item.description.cross=[Отпугивать злых духов]
