@@ -7,40 +7,31 @@ uniform samplerCube skybox;
 uniform bool covered_by_fog;
 
 layout (std140, binding = 0) uniform SunLight {
-    float ambient;
-    float sunBright;
-    float sunX;
-    float sunY;
-    float sunZ;
-    float sunColorR;
-    float sunColorG;
-    float sunColorB;
+    vec4 sunPos;
+    vec4 sunColor;
+    vec2 sunMeta;
 };
 
 layout (std140, binding = 3) uniform Fog {
+    vec4 fogColor;
     float fogDensity;
-    float fogColorR;
-    float fogColorG;
-    float fogColorB;
 };
 
 void main()
 {
     vec4 diffuse = texture(skybox, out_texture);
 
-    vec3 sunDirection = (view_mat_inverted * vec4(normalize(vec3(sunX, sunY, sunZ)), 0.0)).rgb;
-    vec3 sunColor = vec3(sunColorR, sunColorG, sunColorB);
-    float sunBrightness = sunBright;
+    vec3 sunDirection = (view_mat_inverted * vec4(normalize(sunPos.xyz), 0.0)).rgb;
 
-    float cos = dot(normalize(out_texture), sunDirection);
-    float sunFactor = pow(smoothstep(0.98, 1.0, cos), 32.);
+    float scos = dot(normalize(out_texture), sunDirection);
+    float sunFactor = pow(smoothstep(0.98, 1.0, scos), 32.);
 
-    vec4 color = vec4(vec3(fogColorR, fogColorG, fogColorB), 1.0);
+    vec4 color = vec4(fogColor.xyz, 1.0);
 
     float fogFactor = fogDensity * 100.0;
     float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
 
-    vec3 sunEffect = sunColor * sunBrightness * sunFactor;
+    vec3 sunEffect = sunColor.xyz * sunMeta.y * sunFactor;
     frag_color = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * 2.) + sunEffect, 1.0);
 
     bright_color = vec4(sunEffect, 1.);

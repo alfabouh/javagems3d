@@ -66,6 +66,7 @@ public final class ToolBox {
     public void startSystem() {
         SystemLogging.get().getLogManager().log("Starting system!");
         try {
+            ToolBox.get().getTBoxSettings().makeSettingDirs();
             ToolBox.get().getTBoxSettings().loadOptions();
             ToolBox.get().getScreen().buildScreen();
             ToolBox.get().getScreen().startScreenRenderProcess();

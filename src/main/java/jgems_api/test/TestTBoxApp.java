@@ -67,11 +67,11 @@ public class TestTBoxApp implements JGemsTBoxApplication {
         Attribute<Vector3f> transformPosXYZ = new Attribute<>(AttributeTarget.POSITION_XYZ, AttributeID.POSITION_XYZ, new Vector3f(0.0f));
         Attribute<Vector3f> transformRotXYZ = new Attribute<>(AttributeTarget.ROTATION_XYZ, AttributeID.ROTATION_XYZ, new Vector3f(0.0f));
         Attribute<Vector3f> transformScaleXYZ = new Attribute<>(AttributeTarget.SCALING_XYZ, AttributeID.SCALING_XYZ, new Vector3f(1.0f));
-        tBoxEntitiesObjectData.add("test", new TObjectData(new ModeledObjectData(new AttributesContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), tBoxResourceManager.getShaderAssets().world_object, tBoxResourceManager.createModel(new JGemsPath("/assets/jgems/models/cube/cube.obj")), TestTBoxApp.PHYSICS_OBJECT)));
+        tBoxEntitiesObjectData.add("stat", new TObjectData(new ModeledObjectData(new AttributesContainer(transformPosXYZ, transformRotXYZ, transformScaleXYZ), tBoxResourceManager.getShaderAssets().world_object, tBoxResourceManager.createModel(new JGemsPath("/assets/jgems/models/cube/cube.obj")), TestTBoxApp.PHYSICS_OBJECT)));
     }
 
     @Override
     public void initEntitiesUserData(JGemsResourceManager jGemsResourceManager, TBoxEntitiesUserData tBoxEntitiesUserData) {
-        tBoxEntitiesUserData.add("test", new TUserData(new TDefaultRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer"), new MeshRenderAttributes())));
+        tBoxEntitiesUserData.add("stat", new TUserData(new TDefaultRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer"), new MeshRenderAttributes())));
     }
 }

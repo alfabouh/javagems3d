@@ -3,25 +3,16 @@ layout (location=1) in vec2 aTexture;
 
 struct PointLight
 {
-    float plPosX;
-    float plPosY;
-    float plPosZ;
-    float plR;
-    float plG;
-    float plB;
-    float brightness;
-    float shadowMapId;
+    vec4 plPos;
+    vec4 plViewPos;
+    vec4 plColor;
+    vec2 plMeta;
 };
 
 layout (std140, binding = 0) uniform SunLight {
-    float ambient;
-    float sunBright;
-    float sunX;
-    float sunY;
-    float sunZ;
-    float sunColorR;
-    float sunColorG;
-    float sunColorB;
+    vec4 sunPos;
+    vec4 sunColor;
+    vec2 sunMeta;
 };
 
 layout (std140, binding = 1) uniform PointLights {
@@ -34,10 +25,8 @@ layout (std140, binding = 2) uniform Misc {
 };
 
 layout (std140, binding = 3) uniform Fog {
+    vec4 fogColor;
     float fogDensity;
-    float fogColorR;
-    float fogColorG;
-    float fogColorB;
 };
 
 out vec2 texture_coordinates;

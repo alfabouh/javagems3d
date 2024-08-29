@@ -20,6 +20,7 @@ import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -28,14 +29,14 @@ import java.util.Iterator;
 import java.util.Set;
 
 public final class SoundManager {
-    public static final Set<GameSound> sounds = new HashSet<>();
+    public static final Set<GameSound> sounds = SyncManager.createSyncronisedSet();
     private final Set<GameSound> tempSet;
     private boolean isSystemCreated;
     private long device;
     private long context;
 
     public SoundManager() {
-        this.tempSet = new HashSet<>();
+        this.tempSet = SyncManager.createSyncronisedSet();
         this.isSystemCreated = false;
     }
 

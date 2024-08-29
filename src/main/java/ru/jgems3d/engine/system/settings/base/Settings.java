@@ -46,15 +46,23 @@ public abstract class Settings {
         JGemsHelper.getLogger().log("Settings successfully saved!");
     }
 
-    public void loadOptions() {
-        try {
-            if (!this.getOptionsFile().exists()) {
-                if (!this.getOptionsFile().mkdirs()) {
+    public boolean makeSettingDirs() {
+        if (!this.getOptionsFile().exists()) {
+            try {
+                if (!this.getOptionsFile().createNewFile()) {
                     throw new JGemsRuntimeException("Failed to create settings path!");
                 }
-                this.saveOptions();
-                return;
+            } catch (JGemsRuntimeException | IOException e) {
+                throw new JGemsRuntimeException(e);
             }
+            this.saveOptions();
+            return true;
+        }
+        return false;
+    }
+
+    public void loadOptions() {
+        try {
             BufferedReader bufferedreader = new BufferedReader(new FileReader(this.getOptionsFile()));
             String s;
             while ((s = bufferedreader.readLine()) != null) {
@@ -73,6 +81,7 @@ public abstract class Settings {
             }
             bufferedreader.close();
         } catch (Exception e) {
+            e.printStackTrace(System.err);
             if (this.getOptionsFile().exists()) {
                 this.getOptionsFile().delete();
             }

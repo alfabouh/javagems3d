@@ -29,6 +29,9 @@ vec4 calc_sun_light(vec3 vPos, vec3 vNormal) {
 }
 
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
+    if (fogDensity <= 0) {
+        return color;
+    }
     vec3 fog_color = fogColor * sunBright;
     float distance = length(frag_pos);
     float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
