@@ -100,6 +100,7 @@
                                 <internalName>game</internalName>
                                 <originalFilename>${project.build.finalName}.exe</originalFilename>
                             </versionInfo>
+                            <icon>${project.basedir}/src/main/resources/assets/jgems/icons/icon.ico</icon>
                         </configuration>
                     </execution>
                 </executions>
