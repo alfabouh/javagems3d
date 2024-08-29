@@ -36,5 +36,5 @@ gui.brains=Разум
 gui.gas=Керосин
 
 item.description.zippo=[Свет]
-item.description.beer=[Поднять настроение]
-item.description.cross=[Отпугивать злых духов]
+item.description.beer=[Ускорение]
+item.description.cross=[Оберег]
