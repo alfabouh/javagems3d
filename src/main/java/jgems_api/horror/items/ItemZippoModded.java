@@ -24,6 +24,10 @@ public class ItemZippoModded extends ItemZippo {
         this.startFogDensity = JGemsHelper.getSceneWorld().getEnvironment().getFog().getDensity();
     }
 
+    protected float zippoBrightness() {
+        return 7.5f;
+    }
+
     @Override
     public void onUpdate(IWorld world, boolean isCurrent) {
         super.onUpdate(world, isCurrent);

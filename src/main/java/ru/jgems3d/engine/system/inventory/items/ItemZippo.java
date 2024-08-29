@@ -65,9 +65,13 @@ public class ItemZippo extends InventoryItem {
     public void onAddInInventory(IInventoryOwner hasInventory) {
         super.onAddInInventory(hasInventory);
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3f(1.0f, 0.475f, 0.375f));
-        pointLight.setBrightness(5.25f);
+        pointLight.setBrightness(this.zippoBrightness());
         JGemsHelper.WORLD.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
+    }
+
+    protected float zippoBrightness() {
+        return 5.25f;
     }
 
     protected int openCdTicks() {
