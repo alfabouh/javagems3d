@@ -17,31 +17,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SettingChooseLanguage extends SettingSlot {
-    private final Map<Integer, Lang> integerLangMap;
 
     public SettingChooseLanguage(String name, Lang defaultLang) {
-        super(name, 0, 0, Lang.getAllLanguages().size() - 1);
-        this.integerLangMap = new HashMap<>();
-
-        int i = 0;
-        for (Lang l : Lang.getAllLanguages()) {
-            this.integerLangMap.put(i++, l);
-        }
-
-        this.setValue(this.getLocalLangId(defaultLang));
+        super(name, 0, 0, 1);
+        this.setValue(0);
     }
 
-    private int getLocalLangId(Lang lang) {
-        for (Map.Entry<Integer, Lang> langEntry : this.integerLangMap.entrySet()) {
-            if (lang.equals(langEntry.getValue())) {
-                return langEntry.getKey();
-            }
-        }
-        return 0;
+    public int getMax() {
+        return Lang.getAllLanguages().size() - 1;
     }
 
     public String getName(int i) {
-        return this.integerLangMap.containsKey(i) ? this.integerLangMap.get(i).getFullName() : Integer.toString(i);
+        return Lang.getAllLanguages().get(i).getFullName();
     }
 
     public String getCurrentName() {
@@ -49,6 +36,6 @@ public class SettingChooseLanguage extends SettingSlot {
     }
 
     public Lang getCurrentLanguage() {
-        return this.integerLangMap.get(this.getValue());
+        return Lang.getAllLanguages().get(this.getValue());
     }
 }

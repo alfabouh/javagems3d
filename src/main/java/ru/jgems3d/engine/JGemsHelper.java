@@ -228,6 +228,22 @@ public abstract class JGemsHelper {
 
     // section Game
     public static abstract class GAME {
+        public static void killItems() {
+            JGemsHelper.getPhysicsWorld().killItems();
+        }
+
+        public static void zeroRenderTick() {
+            JGems3D.get().getScreen().zeroRenderTick();
+        }
+
+        public static void lockController() {
+            JGems3D.get().lockController();
+        }
+
+        public static void unLockController() {
+            JGems3D.get().unLockController();
+        }
+
         public static void pauseGameAndLockUnPausing(boolean pauseSounds) {
             JGems3D.get().pauseGameAndLockUnPausing(pauseSounds);
         }

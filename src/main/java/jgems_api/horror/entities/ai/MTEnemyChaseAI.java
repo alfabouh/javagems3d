@@ -38,13 +38,13 @@ public class MTEnemyChaseAI<T extends WorldItem> extends MTNavigationAI<T> {
         float chanceToFollowPlayer = this.chanceToFollowPlayer(distance);
 
         if (this.superAngryCd > 0 || chanceToFollowPlayer == 1.0f) {
-            int cd = (int) (250 + (250 * this.getRageValue()));
+            int cd = (int) (300 + (300 * this.getRageValue()));
             if (!this.hasPath() || worldItem.getWorld().getTicks() % 50 == 0) {
                 this.setDestination(this.getFollow());
             }
             if (--this.superAngryCd == 0) {
                 if (chanceToFollowPlayer == 1.0f) {
-                    if (this.flag++ >= 2) {
+                    if (this.flag++ >= 2 + (3 * this.getRageValue())) {
                         this.teleport(HorrorGamePlayerState.findRandomVertexFormDist(worldItem.getWorld().getMapNavGraph(), this.getFollow().getPosition(), 32.0f));
                         this.flag = 0;
                     } else {
@@ -61,7 +61,7 @@ public class MTEnemyChaseAI<T extends WorldItem> extends MTNavigationAI<T> {
             if (JGems3D.random.nextFloat() <= this.chanceToFollowPlayer(distance)) {
                 this.setDestination(this.getFollow());
             } else {
-                if (JGems3D.random.nextFloat() <= 0.1f + (0.1f * this.getRageValue())) {
+                if (JGems3D.random.nextFloat() <= 0.1f + (0.3f * this.getRageValue())) {
                     this.teleport(HorrorGamePlayerState.findRandomVertexFormDist(worldItem.getWorld().getMapNavGraph(), this.getFollow().getPosition(), 16.0f));
                 } else {
                     this.setDestination(worldItem.getWorld().getMapNavGraph().getClosestVertex(this.getAIOwner().getPosition().add(this.ranFloat(), this.ranFloat(), this.ranFloat())));
@@ -90,7 +90,7 @@ public class MTEnemyChaseAI<T extends WorldItem> extends MTNavigationAI<T> {
 
     @Override
     public float getSpeed() {
-        return (this.runCd-- > 0 ? 0.15f : 0.1f) + (0.1f * this.getRageValue());
+        return (this.runCd-- > 0 ? 0.2f : 0.1f) + (0.1f * this.getRageValue());
     }
 
     private float closerAngryDistance() {

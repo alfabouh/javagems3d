@@ -98,14 +98,15 @@ public class HorrorGame implements JGemsGameApplication {
 
     @Override
     public void preInitEvent(EngineSystem engineSystem) {
+        JGemsHelper.LOCALISATION.createLocalisation("English", new JGemsPath("/assets/horror/lang/"));
+        JGemsHelper.LOCALISATION.createLocalisation("Russian", new JGemsPath("/assets/horror/lang/"));
+
         JGemsDebugGlobalConstants.PATH_GEN_GRAPH_GAP = 0.6f;
     }
 
     @Override
     public void postInitEvent(EngineSystem engineSystem) {
-        JGemsHelper.LOCALISATION.createLocalisation("English", new JGemsPath("/assets/testgame/lang/"));
-
-        HorrorGamePlayerState.noiseSound = JGemsHelper.getSoundManager().createSound(HorrorGame.get().horrorSoundsLoader.noise, SoundType.BACKGROUND_SOUND, 2.0f, 0.5f, 1.0f);
+        HorrorGamePlayerState.noiseSound = JGemsHelper.getSoundManager().createSound(HorrorGame.get().horrorSoundsLoader.noise, SoundType.BACKGROUND_LOOP_SOUND, 2.0f, 0.5f, 1.0f);
         HorrorGamePlayerState.breathSound = JGemsHelper.getSoundManager().createSound(HorrorGame.get().horrorSoundsLoader.breath, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f, 1.0f);
     }
 

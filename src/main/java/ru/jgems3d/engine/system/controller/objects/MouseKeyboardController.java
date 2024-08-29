@@ -71,6 +71,11 @@ public class MouseKeyboardController implements IController {
         return new Vector3f(this.normalizedPositionInput);
     }
 
+    public void clear() {
+        this.normalizedPositionInput.set(0.0f);
+        this.normalizedRotationInput.set(0.0f);
+    }
+
     @Override
     public void updateControllerState(IWindow window) {
         this.getMouseAndKeyboard().update(this.getBindingManager());

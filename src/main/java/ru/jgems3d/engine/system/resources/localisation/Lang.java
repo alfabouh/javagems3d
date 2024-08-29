@@ -15,10 +15,7 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class Lang {
     private static final Map<String, Lang> values = new HashMap<>();
@@ -56,8 +53,8 @@ public final class Lang {
         Lang.values.put(Lang.DefaultEnglish.getFullName(), Lang.DefaultEnglish);
     }
 
-    public static Set<Lang> getAllLanguages() {
-        return new HashSet<>(Lang.values.values());
+    public static List<Lang> getAllLanguages() {
+        return new ArrayList<>(Lang.values.values());
     }
 
     public static Lang getLangByName(String name) {

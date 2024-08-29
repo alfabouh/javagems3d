@@ -13,8 +13,10 @@ package jgems_api.horror;
 
 import jgems_api.horror.entities.GhostEnemy;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.audio.sound.GameSound;
+import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.graph.GraphVertex;
 
@@ -31,12 +33,26 @@ public abstract class HorrorGamePlayerState {
 
     public static boolean wantsToBeSafe;
 
+    public static boolean lose;
+    public static boolean won;
+
+    public static int closeTick;
+
     static {
         HorrorGamePlayerState.reset();
     }
 
     public static void updateState(GhostEnemy ghostEnemy) {
         float distToPlayer = ghostEnemy.getPosition().distance(JGemsHelper.getCurrentPlayer().getPosition());
+
+        if (HorrorGamePlayerState.brainsCollected == HorrorGamePlayerState.MAX_BRAINS) {
+            HorrorGamePlayerState.won();
+            return;
+        }
+        if (distToPlayer < 1.0f) {
+            HorrorGamePlayerState.lose();
+            return;
+        }
 
         float dst = 16.0f;
         float madnessFactor = 1.0f - (Math.min(distToPlayer, dst) / dst);
@@ -65,12 +81,37 @@ public abstract class HorrorGamePlayerState {
         }
     }
 
+    public static void lose() {
+        JGemsHelper.GAME.lockController();
+        JGemsHelper.GAME.zeroRenderTick();
+        JGemsHelper.GAME.killItems();
+        HorrorGamePlayerState.lose = true;
+        JGemsHelper.getSoundManager().playLocalSound(HorrorGame.get().horrorSoundsLoader.meat, SoundType.BACKGROUND_SOUND, 1.0f, 0.75f);
+        HorrorGamePlayerState.noiseSound.setVolume(1.0f);
+        if (!HorrorGamePlayerState.noiseSound.isPlaying()) {
+            HorrorGamePlayerState.noiseSound.playSound();
+        }
+    }
+
+    public static void won() {
+        JGemsHelper.GAME.lockController();
+        JGemsHelper.GAME.zeroRenderTick();
+        JGemsHelper.GAME.killItems();
+        HorrorGamePlayerState.won = true;
+        JGemsHelper.getSoundManager().playLocalSound(HorrorGame.get().horrorSoundsLoader.victory, SoundType.BACKGROUND_SOUND, 1.0f, 1.0f);
+    }
+
     public static void reset() {
         HorrorGamePlayerState.madness = 0.0f;
         HorrorGamePlayerState.brainsCollected = 0;
         HorrorGamePlayerState.zippoFluid = 1.0f;
         HorrorGamePlayerState.runStamina = 0.0f;
         HorrorGamePlayerState.wantsToBeSafe = false;
+
+        HorrorGamePlayerState.lose = false;
+        HorrorGamePlayerState.won = false;
+
+        HorrorGamePlayerState.closeTick = 0;
     }
 
     public static GraphVertex findRandomVertexFormDist(Graph graph, Vector3f point, float maxDist) {

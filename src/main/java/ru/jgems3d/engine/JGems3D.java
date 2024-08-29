@@ -251,6 +251,14 @@ public final class JGems3D {
         }
     }
 
+    public void lockController() {
+        this.getScreen().getControllerDispatcher().setLockController(true);
+    }
+
+    public void unLockController() {
+        this.getScreen().getControllerDispatcher().setLockController(false);
+    }
+
     public void pauseGameAndLockUnPausing(boolean pauseSounds) {
         this.pauseGame(pauseSounds);
         this.getEngineSystem().setLockedUnPausing(true);

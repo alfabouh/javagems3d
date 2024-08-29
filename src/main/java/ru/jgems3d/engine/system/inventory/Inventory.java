@@ -61,7 +61,7 @@ public class Inventory {
     }
 
     public boolean hasItemInSlot(int i) {
-        return this.getInventorySlots().get(i) != null;
+        return this.getItemInSlot(i) != null;
     }
 
     public boolean consumeItem(InventoryItem inventoryItem) {

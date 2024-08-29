@@ -15,6 +15,7 @@ import jgems_api.horror.HorrorGame;
 import jgems_api.horror.HorrorGamePlayerState;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
@@ -46,7 +47,7 @@ public class HorrorGamePanel extends DefaultGamePanel {
         }
         immediateUI.imageUI(sample, new Vector2i(windowW - 104, 120), new Vector2i(96), 0.5f);
 
-        String text = HorrorGamePlayerState.brainsCollected + " / " + HorrorGamePlayerState.MAX_BRAINS + " Brains";
+        String text = HorrorGamePlayerState.brainsCollected + " / " + HorrorGamePlayerState.MAX_BRAINS + " " + JGems3D.get().I18n("gui.brains");
         immediateUI.textUI(text, JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW - 120 - ImmediateUI.getTextWidth(JGemsResourceManager.globalTextureAssets.standardFont, text), 150), 0xffff00, 0.51f);
     }
 
@@ -61,7 +62,7 @@ public class HorrorGamePanel extends DefaultGamePanel {
         }
         immediateUI.imageUI(sample, new Vector2i(windowW - 104, 200), new Vector2i(96), 0.5f);
 
-        String text = ((int) (HorrorGamePlayerState.zippoFluid * 100)) + "% Gas Left";
+        String text = ((int) (HorrorGamePlayerState.zippoFluid * 100)) + "% " + JGems3D.get().I18n("gui.gas");
         immediateUI.textUI(text, JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW - 120 - ImmediateUI.getTextWidth(JGemsResourceManager.globalTextureAssets.standardFont, text), 230), 0xffff00, 0.51f);
     }
 }

@@ -40,6 +40,7 @@ import jgems_api.horror.HorrorGame;
 import jgems_api.horror.HorrorGamePlayerState;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL30;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
@@ -58,8 +59,19 @@ public class HorrorEvents {
                 HorrorGame.get().horrorShaderLoader.post_sh1.getUtils().performOrthographicMatrix(screenModel);
                 HorrorGame.get().horrorShaderLoader.post_sh1.performUniform(new UniformString("panic"), HorrorGamePlayerState.madness);
                 HorrorGame.get().horrorShaderLoader.post_sh1.performUniformTexture(new UniformString("texture_sampler"), event.sceneBufferTextureID, GL30.GL_TEXTURE_2D);
+                HorrorGame.get().horrorShaderLoader.post_sh1.performUniform(new UniformString("won"), HorrorGamePlayerState.won);
+                HorrorGame.get().horrorShaderLoader.post_sh1.performUniform(new UniformString("lose"), HorrorGamePlayerState.lose);
                 JGemsSceneUtils.renderModel(screenModel, GL30.GL_TRIANGLES);
                 HorrorGame.get().horrorShaderLoader.post_sh1.unBind();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void worldEvent(Events.PhysWorldTickPre event) {
+        if (HorrorGamePlayerState.won || HorrorGamePlayerState.lose) {
+            if (HorrorGamePlayerState.closeTick++ > 240) {
+                JGemsHelper.GAME.destroyMap();
             }
         }
     }
