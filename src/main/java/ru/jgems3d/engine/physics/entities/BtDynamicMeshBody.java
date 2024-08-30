@@ -13,20 +13,14 @@ package ru.jgems3d.engine.physics.entities;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
-import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
-import ru.jgems3d.engine.physics.colliders.IColliderConstructor;
 import ru.jgems3d.engine.physics.colliders.DynamicMeshCollider;
+import ru.jgems3d.engine.physics.colliders.IColliderConstructor;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class BtDynamicMeshBody extends BtBody {
     private final MeshDataGroup meshDataGroup;

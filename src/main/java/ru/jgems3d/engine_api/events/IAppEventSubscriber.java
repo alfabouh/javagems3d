@@ -15,19 +15,19 @@ public interface IAppEventSubscriber {
     /**
      * Using this method, you can mark all Event-containing classes of your project.
      * With Event, you can execute any of your code in certain engine execution locations
-     * @see ru.jgems3d.engine_api.events.bus.Events
-     * @see ru.jgems3d.engine_api.events.bus.Events.Cancellable
-     * @see ru.jgems3d.engine_api.events.bus.Events.IEvent
-     * @example
-     * <pre>
-     *{@code
+     *
+     * @example <pre>
+     * {@code
      *     @SubscribeEvent
      *     public static void onWorldTick(Events.PhysWorldTickPre event) {
      *         event.setCancelled(true);
      *         System.out.println("F");
      *     }
-     *}
+     * }
      * </pre>
+     * @see ru.jgems3d.engine_api.events.bus.Events
+     * @see ru.jgems3d.engine_api.events.bus.Events.Cancellable
+     * @see ru.jgems3d.engine_api.events.bus.Events.IEvent
      */
     void addClassWithEvents(Class<?> clazz);
 }

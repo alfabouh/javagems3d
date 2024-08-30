@@ -13,15 +13,15 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.for
 
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
+import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.system.inventory.items.InventoryItem;
-import ru.jgems3d.engine.physics.entities.player.Player;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class InventoryRender extends SceneRenderBase {

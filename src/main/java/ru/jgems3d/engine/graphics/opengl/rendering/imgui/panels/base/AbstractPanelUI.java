@@ -12,8 +12,8 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base;
 
 import org.joml.Vector2i;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
 
 public abstract class AbstractPanelUI implements PanelUI {
     private final PanelUI prevPanel;

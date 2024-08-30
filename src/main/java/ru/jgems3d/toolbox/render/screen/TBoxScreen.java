@@ -33,9 +33,9 @@ import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
-import ru.jgems3d.toolbox.map_table.TBoxMapTable;
 import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.controller.TBoxControllerDispatcher;
+import ru.jgems3d.toolbox.map_table.TBoxMapTable;
 import ru.jgems3d.toolbox.render.scene.TBoxScene;
 import ru.jgems3d.toolbox.render.scene.dear_imgui.content.LoadingContent;
 import ru.jgems3d.toolbox.render.scene.utils.TBoxSceneUtils;
@@ -97,7 +97,8 @@ public class TBoxScreen implements IScreen {
         this.getResourceManager().loadResources();
         try {
             TBoxMapTable.INSTANCE.init(this.getResourceManager());
-        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                 IllegalAccessException e) {
             throw new JGemsRuntimeException(e);
         }
     }

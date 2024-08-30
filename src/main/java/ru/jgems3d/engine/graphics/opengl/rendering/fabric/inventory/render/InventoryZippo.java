@@ -14,20 +14,17 @@ package ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.render;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-import ru.jgems3d.engine.graphics.opengl.screen.JGemsScreen;
 import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.system.inventory.items.ItemZippo;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class InventoryZippo extends AbstractInventoryItem {
     protected final MeshDataGroup model1;

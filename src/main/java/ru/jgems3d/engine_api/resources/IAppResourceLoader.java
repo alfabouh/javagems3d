@@ -19,12 +19,15 @@ public interface IAppResourceLoader {
     /**
      * Using this method, you can add a resource loader to the initialization process of
      * the game (sounds, textures, etc., <b>except shaders</b>)
+     *
      * @param assetsLoader
      */
     void addAssetsLoader(IAssetsLoader assetsLoader);
+
     /**
      * Using this method, you can add a shaders loader to the initialization process of
      * the game
+     *
      * @param assetsLoader
      */
     void addShadersLoader(ShadersLoader<JGemsShaderManager> shadersLoader);

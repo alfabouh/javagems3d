@@ -21,7 +21,6 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiMesh;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
-import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;

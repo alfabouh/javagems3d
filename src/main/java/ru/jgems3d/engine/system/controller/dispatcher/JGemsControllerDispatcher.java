@@ -14,16 +14,16 @@ package ru.jgems3d.engine.system.controller.dispatcher;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.api_bridge.APIContainer;
-import ru.jgems3d.engine.system.inventory.IInventoryOwner;
-import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
-import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 
 public class JGemsControllerDispatcher implements IControllerDispatcher {
     public static float CAM_SENS = 0.0015f;
@@ -76,12 +76,12 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
         }
     }
 
-    public void setLockController(boolean lockController) {
-        this.lockController = lockController;
-    }
-
     public boolean isLockController() {
         return this.lockController;
+    }
+
+    public void setLockController(boolean lockController) {
+        this.lockController = lockController;
     }
 
     public IControllable getCurrentControlledItem() {

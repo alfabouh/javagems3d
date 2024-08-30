@@ -12,9 +12,7 @@
 package ru.jgems3d.toolbox.map_sys.save.objects.map_prop;
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 public class SkyProp {
     private final Vector3f sunPos;

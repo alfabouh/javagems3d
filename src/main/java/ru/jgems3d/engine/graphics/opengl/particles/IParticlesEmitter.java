@@ -17,7 +17,10 @@ import ru.jgems3d.engine.physics.world.IWorld;
 
 public interface IParticlesEmitter {
     void onUpdateParticles(double frameDeltaTime, IWorld iWorld);
+
     void emitParticle(ParticleFX particleFX);
+
     void create(SceneWorld sceneWorld);
+
     void destroy(SceneWorld sceneWorld);
 }

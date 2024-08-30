@@ -13,9 +13,9 @@ package ru.jgems3d.engine.graphics.opengl.camera;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.physics.entities.player.Player;
-import ru.jgems3d.engine.JGemsHelper;
 
 public class AttachedCamera extends Camera {
     private AbstractSceneEntity abstractSceneEntity;

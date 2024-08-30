@@ -20,13 +20,14 @@ public enum CollisionFilter {
     NOTHING(0x0),
     ALL(0xffff);
 
-    public boolean matchMask(int mask) {
-        return (mask & this.getMask()) != 0;
-    }
-    
     private final int mask;
+
     CollisionFilter(int mask) {
         this.mask = mask;
+    }
+
+    public boolean matchMask(int mask) {
+        return (mask & this.getMask()) != 0;
     }
 
     public int getMask() {

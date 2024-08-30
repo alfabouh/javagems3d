@@ -17,13 +17,12 @@ import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.data.Invento
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.inventory.table.InventoryRenderTable;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import ru.jgems3d.engine.system.inventory.items.InventoryItem;
+import ru.jgems3d.engine.system.resources.assets.loaders.*;
+import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
+import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
-import ru.jgems3d.engine.system.resources.assets.loaders.*;
-import ru.jgems3d.engine.system.resources.assets.loaders.ShadersAssetsLoader;
-import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
-import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
 import java.awt.*;
 import java.io.IOException;
@@ -47,7 +46,7 @@ public final class JGemsResourceManager {
         this.localResources = new GameResources(new ResourceCache("Local"));
     }
 
-    public static void addInventoryItemRenderer(Class<? extends InventoryItem> itemClass, InventoryItemRenderData inventoryItemRenderData){
+    public static void addInventoryItemRenderer(Class<? extends InventoryItem> itemClass, InventoryItemRenderData inventoryItemRenderData) {
         JGemsResourceManager.inventoryItemRenderTable.addItem(itemClass, inventoryItemRenderData);
     }
 
@@ -63,11 +62,6 @@ public final class JGemsResourceManager {
         for (ShadersLoader<JGemsShaderManager> shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
             shadersLoader.reloadShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
         }
-    }
-
-    public void destroy() {
-        GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
-        this.cleanAllCaches();
     }
 
     public static Font createFontFromJAR(JGemsPath path) {
@@ -90,6 +84,11 @@ public final class JGemsResourceManager {
 
     public static GameResources getGlobalGameResources() {
         return JGems3D.get().getResourceManager().getGlobalResources();
+    }
+
+    public void destroy() {
+        GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
+        this.cleanAllCaches();
     }
 
     public void loadGlobalResources() {

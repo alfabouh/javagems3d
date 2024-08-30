@@ -12,7 +12,6 @@
 package ru.jgems3d.engine.system.controller.components;
 
 import java.awt.event.KeyEvent;
-import java.util.Objects;
 
 public class Key {
     private final int keyCode;
@@ -57,6 +56,7 @@ public class Key {
     public int getKeyCode() {
         return this.keyCode;
     }
+
     @Override
     public int hashCode() {
         return this.getKeyCode();

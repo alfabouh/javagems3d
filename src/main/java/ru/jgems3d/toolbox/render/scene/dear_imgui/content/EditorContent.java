@@ -14,28 +14,26 @@ package ru.jgems3d.toolbox.render.scene.dear_imgui.content;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.*;
-import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.logger.managers.LoggingManager;
-import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
-import ru.jgems3d.toolbox.map_table.TBoxMapTable;
-import ru.jgems3d.toolbox.map_table.ObjectsTable;
-import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
-import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeTarget;
 import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.controller.TBoxControllerDispatcher;
 import ru.jgems3d.toolbox.controller.binding.TBoxBindingManager;
+import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeTarget;
+import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
+import ru.jgems3d.toolbox.map_table.ObjectsTable;
+import ru.jgems3d.toolbox.map_table.TBoxMapTable;
+import ru.jgems3d.toolbox.map_table.object.ObjectCategory;
 import ru.jgems3d.toolbox.render.scene.TBoxScene;
 import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import ru.jgems3d.toolbox.render.screen.TBoxScreen;
@@ -356,34 +354,34 @@ public class EditorContent implements ImGuiContent {
     private void showObjectContext(int totalObjects) {
         ImGui.text("Selected:" + this.currentSelectedObject);
         if (this.currentSelectedObject != null) {
-        if (ImGui.button("Move Camera -> Object")) {
-            ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(this.currentSelectedObject.getModel().getFormat().getPosition()).add(0.0f, 1.0f, 0.0f));
-        }
-        if (ImGui.button("Move Object -> CameraDir")) {
-            Vector3f whereLook = this.getTBoxScene().findPointWhereCamLooks(15.0f);
+            if (ImGui.button("Move Camera -> Object")) {
+                ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(this.currentSelectedObject.getModel().getFormat().getPosition()).add(0.0f, 1.0f, 0.0f));
+            }
+            if (ImGui.button("Move Object -> CameraDir")) {
+                Vector3f whereLook = this.getTBoxScene().findPointWhereCamLooks(15.0f);
 
-            Vector3f camRot = this.getTBoxScene().getCamera().getCamRotation();
-            Vector3f camPos = this.getTBoxScene().getCamera().getCamPosition();
+                Vector3f camRot = this.getTBoxScene().getCamera().getCamRotation();
+                Vector3f camPos = this.getTBoxScene().getCamera().getCamPosition();
 
-            Vector3f where = new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f));
+                Vector3f where = new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f));
 
-            if (whereLook != null) {
-                where = whereLook;
+                if (whereLook != null) {
+                    where = whereLook;
+                }
+
+                this.currentSelectedObject.setPositionWithAttribute(where);
             }
 
-            this.currentSelectedObject.setPositionWithAttribute(where);
-        }
-
-        ImGui.separator();
-        if (ImGui.button("Clone")) {
-            TBoxAbstractObject object = this.currentSelectedObject.copy();
-            this.getTBoxScene().addObject(object);
-            this.setSingleObjectSelection(object);
-        }
-        if (ImGui.button("Delete")) {
-            this.getTBoxScene().removeObject(this.currentSelectedObject);
-            this.setSingleObjectSelection(null);
-        }
+            ImGui.separator();
+            if (ImGui.button("Clone")) {
+                TBoxAbstractObject object = this.currentSelectedObject.copy();
+                this.getTBoxScene().addObject(object);
+                this.setSingleObjectSelection(object);
+            }
+            if (ImGui.button("Delete")) {
+                this.getTBoxScene().removeObject(this.currentSelectedObject);
+                this.setSingleObjectSelection(null);
+            }
         }
     }
 
@@ -633,7 +631,7 @@ public class EditorContent implements ImGuiContent {
             if (ImGui.checkbox("Fog", EditorContent.sceneShowFog)) {
                 EditorContent.sceneShowFog = !EditorContent.sceneShowFog;
             }
-            float[] f1 = new float[] {EditorContent.alphaDiscard};
+            float[] f1 = new float[]{EditorContent.alphaDiscard};
             if (ImGui.dragFloat("Alpha Discard", f1, 0.01f, 0.0f, 0.9f)) {
                 EditorContent.alphaDiscard = f1[0];
             }

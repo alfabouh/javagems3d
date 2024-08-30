@@ -52,7 +52,8 @@ public class JSONGraphDeserializer implements JsonDeserializer<Graph> {
         JsonObject graphJson = jsonObject.getAsJsonObject("graph");
         for (Map.Entry<String, JsonElement> entry : graphJson.entrySet()) {
             GraphVertex vertex = this.fromStringGV(context.deserialize(new JsonPrimitive(entry.getKey()), String.class));
-            List<GraphEdge> edges = context.deserialize(entry.getValue(), new TypeToken<List<GraphEdge>>(){}.getType());
+            List<GraphEdge> edges = context.deserialize(entry.getValue(), new TypeToken<List<GraphEdge>>() {
+            }.getType());
             graph.put(vertex, edges);
         }
 
@@ -60,7 +61,8 @@ public class JSONGraphDeserializer implements JsonDeserializer<Graph> {
         JsonObject chunkGroupsJson = jsonObject.getAsJsonObject("graphChunkGroups");
         for (Map.Entry<String, JsonElement> entry : chunkGroupsJson.entrySet()) {
             GraphChunk chunk = this.fromStringGC(context.deserialize(new JsonPrimitive(entry.getKey()), String.class));
-            List<GraphVertex> vertices = context.deserialize(entry.getValue(), new TypeToken<List<GraphVertex>>(){}.getType());
+            List<GraphVertex> vertices = context.deserialize(entry.getValue(), new TypeToken<List<GraphVertex>>() {
+            }.getType());
             graphChunkGroups.put(chunk, vertices);
         }
 

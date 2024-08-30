@@ -22,6 +22,7 @@ import ru.jgems3d.toolbox.resources.TBoxResourceManager;
 public interface JGemsTBoxApplication {
     /**
      * Using this method, you can add objects to the ToolBox World Editor program
+     *
      * @param tBoxResourceManager    resource manager. You can use it to create model and texture objects
      * @param tBoxEntitiesObjectData Use this object to add an entity to the array
      */
@@ -30,6 +31,7 @@ public interface JGemsTBoxApplication {
     /**
      * With this method, you can set your information for a ToolBox entity with a specific ID.
      * For example, you can specify information for the render
+     *
      * @param tBoxEntitiesUserData Use this object to add any data to the array
      */
     void initEntitiesUserData(JGemsResourceManager jGemsResourceManager, TBoxEntitiesUserData tBoxEntitiesUserData);

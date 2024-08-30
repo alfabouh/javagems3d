@@ -13,12 +13,12 @@ package ru.jgems3d.engine.system.inventory.items;
 
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
-import ru.jgems3d.engine.system.inventory.IInventoryOwner;
+import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.graphics.opengl.environment.light.PointLight;
-import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class ItemZippo extends InventoryItem {

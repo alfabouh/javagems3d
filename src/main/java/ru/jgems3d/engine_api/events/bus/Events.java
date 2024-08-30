@@ -15,7 +15,6 @@ import org.joml.Vector2i;
 import ru.jgems3d.engine.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
@@ -46,6 +45,11 @@ import ru.jgems3d.engine.system.map.loaders.IMapLoader;
  * </pre>
  */
 public abstract class Events {
+    public enum Stage {
+        PRE,
+        POST
+    }
+
     @SuppressWarnings("all")
     public interface IEvent {
         default boolean canBeCancelled() {
@@ -64,21 +68,14 @@ public abstract class Events {
             this.isCancelled = false;
         }
 
-        public void setCancelled(boolean cancelled) {
-            this.isCancelled = cancelled;
-        }
-
         public boolean isCancelled() {
             return this.isCancelled;
         }
+
+        public void setCancelled(boolean cancelled) {
+            this.isCancelled = cancelled;
+        }
     }
-
-    public enum Stage {
-        PRE,
-        POST;
-    }
-
-
 
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

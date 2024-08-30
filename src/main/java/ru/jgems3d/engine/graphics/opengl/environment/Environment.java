@@ -13,17 +13,17 @@ package ru.jgems3d.engine.graphics.opengl.environment;
 
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowManager;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
-import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.graphics.opengl.environment.fog.Fog;
 import ru.jgems3d.engine.graphics.opengl.environment.light.LightManager;
+import ru.jgems3d.engine.graphics.opengl.environment.shadow.ShadowManager;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.nio.FloatBuffer;
@@ -51,17 +51,9 @@ public class Environment implements IEnvironment, IWorldTicked {
     @Override
     public void destroy(SceneWorld sceneWorld) {
         this.getShadowManager().destroyResources();
-        try (MemoryStack stack = MemoryStack.stackPush()){
+        try (MemoryStack stack = MemoryStack.stackPush()) {
             this.getLightManager().removeAllLights(stack);
         }
-    }
-
-    public void setSky(Sky sky) {
-        this.sky = sky;
-    }
-
-    public void setFog(Fog fog) {
-        this.fog = fog;
     }
 
     @Override
@@ -103,7 +95,15 @@ public class Environment implements IEnvironment, IWorldTicked {
         return this.fog;
     }
 
+    public void setFog(Fog fog) {
+        this.fog = fog;
+    }
+
     public Sky getSky() {
         return this.sky;
+    }
+
+    public void setSky(Sky sky) {
+        this.sky = sky;
     }
 }

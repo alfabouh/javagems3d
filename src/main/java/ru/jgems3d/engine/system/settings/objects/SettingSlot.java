@@ -11,7 +11,7 @@
 
 package ru.jgems3d.engine.system.settings.objects;
 
-public abstract class SettingSlot extends SettingObject <Integer> {
+public abstract class SettingSlot extends SettingObject<Integer> {
     private final int min;
     private final int max;
 

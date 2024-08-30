@@ -16,31 +16,30 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.base.IScene;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
-import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
-import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.camera.AttachedCamera;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
+import ru.jgems3d.engine.graphics.opengl.frustum.FrustumCulling;
+import ru.jgems3d.engine.graphics.opengl.rendering.imgui.ImmediateUI;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.base.IScene;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
+import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
-import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;
     private final FrustumCulling frustumCulling;
-    private JGemsOpenGLRenderer sceneRenderer;
     private final ImmediateUI immediateUI;
     private final SceneData sceneData;
-
+    private JGemsOpenGLRenderer sceneRenderer;
     private float elapsedTime;
     private boolean refresh;
 
@@ -114,10 +113,6 @@ public class JGemsScene implements IScene {
         this.UI().onWindowResize(dim);
     }
 
-    public void setSceneRenderer(JGemsOpenGLRenderer sceneRenderer) {
-        this.sceneRenderer = sceneRenderer;
-    }
-
     public void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
         this.setRenderCamera(new FreeCamera(controller, pos, rot));
     }
@@ -164,6 +159,10 @@ public class JGemsScene implements IScene {
 
     public JGemsOpenGLRenderer getSceneRenderer() {
         return this.sceneRenderer;
+    }
+
+    public void setSceneRenderer(JGemsOpenGLRenderer sceneRenderer) {
+        this.sceneRenderer = sceneRenderer;
     }
 
     public FrustumCulling getFrustumCulling() {

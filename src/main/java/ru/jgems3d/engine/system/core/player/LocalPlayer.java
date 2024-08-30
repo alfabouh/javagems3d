@@ -12,12 +12,10 @@
 package ru.jgems3d.engine.system.core.player;
 
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.physics.entities.player.Player;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.service.collections.Pair;
 
 public final class LocalPlayer {

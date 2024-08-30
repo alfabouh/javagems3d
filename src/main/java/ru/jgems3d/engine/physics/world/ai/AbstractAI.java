@@ -16,8 +16,8 @@ import ru.jgems3d.engine.physics.world.basic.WorldItem;
 
 public abstract class AbstractAI<T extends WorldItem> implements IEntityAI<T> {
     private final int priority;
-    private State state;
     private final T owner;
+    private State state;
 
     public AbstractAI(T owner, int priority) {
         this.priority = priority;
@@ -43,13 +43,13 @@ public abstract class AbstractAI<T extends WorldItem> implements IEntityAI<T> {
         return this.owner;
     }
 
-    public void setState(State state) {
-        this.state = state;
-    }
-
     @Override
     public @NotNull State getState() {
         return this.state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     @Override

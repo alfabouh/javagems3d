@@ -10,6 +10,7 @@
  */
 
 package ru.jgems3d.engine.physics.world.thread.dynamics;
+
 import com.jme3.bullet.CollisionConfiguration;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.SolverType;
@@ -18,25 +19,23 @@ import com.jme3.math.Vector3f;
 import com.jme3.system.NativeLibraryLoader;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.dynamics.extractor.DLLExtractor;
 import ru.jgems3d.engine.physics.world.triggers.IHasCollisionTrigger;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
-import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
 import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DynamicsSystem {
-    private PhysicsSpace physicsSpace;
     private final Set<PhysicsCollisionObject> objectsWithCollideTriggers;
+    private PhysicsSpace physicsSpace;
 
     public DynamicsSystem() {
         this.objectsWithCollideTriggers = SyncManager.createSyncronisedSet();

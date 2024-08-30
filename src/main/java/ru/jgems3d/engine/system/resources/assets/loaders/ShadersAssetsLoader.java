@@ -15,13 +15,13 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.light.LightManager;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.ShadersLoader;
-import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.resources.assets.shaders.ShaderContainer;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
 

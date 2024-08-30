@@ -15,14 +15,13 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 
@@ -34,11 +33,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LightManager implements ILightManager {
-    private final Environment environment;
-    private List<PointLight> pointLightList;
-
     public static final int PL_STRUCT_SIZE = 16;
     public static final int SN_STRUCT_SIZE = 12;
+    private final Environment environment;
+    private List<PointLight> pointLightList;
 
     public LightManager(Environment environment) {
         this.environment = environment;

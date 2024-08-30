@@ -11,10 +11,10 @@
 
 package ru.jgems3d.engine.graphics.opengl.rendering.items.objects;
 
-import ru.jgems3d.engine.physics.entities.BtBody;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.physics.entities.BtBody;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
 
 public class EntityObject extends AbstractSceneEntity {
     private final BtBody physEntity;

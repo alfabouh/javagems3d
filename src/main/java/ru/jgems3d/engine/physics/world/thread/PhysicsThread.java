@@ -13,10 +13,13 @@ package ru.jgems3d.engine.physics.world.thread;
 
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.physics.world.thread.timer.PhysicsTimer;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 public class PhysicsThread {
     public static final Object locker = new Object();

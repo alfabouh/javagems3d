@@ -14,18 +14,18 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.for
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.transformation.Transformation;
-import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class SkyRender extends SceneRenderBase {
     private static final float[] skyboxPos = {
@@ -75,7 +75,7 @@ public class SkyRender extends SceneRenderBase {
         shaderManager.performUniform(new UniformString("view_mat_inverted"), new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert());
         shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
         shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), sky.getSkyBox().cubeMapTexture().getTextureId());
-       //shaderManager.getUtils().performCubeMapProgram("skybox", this.getSceneRenderer().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
+        //shaderManager.getUtils().performCubeMapProgram("skybox", this.getSceneRenderer().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram());
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         shaderManager.unBind();
         GL30.glDepthFunc(GL30.GL_LESS);

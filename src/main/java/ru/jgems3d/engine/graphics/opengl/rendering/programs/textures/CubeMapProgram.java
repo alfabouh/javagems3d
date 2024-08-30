@@ -13,8 +13,6 @@ package ru.jgems3d.engine.graphics.opengl.rendering.programs.textures;
 
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.system.resources.assets.material.samples.packs.CubeMapTexturePack;
-import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
 
 import java.nio.ByteBuffer;
 

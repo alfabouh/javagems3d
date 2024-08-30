@@ -21,11 +21,11 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
+import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
-import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,9 +34,37 @@ import java.nio.IntBuffer;
 
 public class TextureSample implements ITextureSample {
     private final String name;
+    private final Params params;
     private Vector2i size;
     private int textureId;
-    private final Params params;
+
+    private TextureSample(String name, Vector2i size, ByteBuffer buffer, Params params) {
+        this.name = name;
+        this.size = size;
+        this.params = params;
+        this.registerTexture(buffer, params);
+    }
+
+    private TextureSample(JGemsPath fullPath, Params params) {
+        this.name = fullPath.getFullPath();
+        this.params = params;
+        JGemsHelper.getLogger().log("Loading " + this.getName());
+        try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
+            this.registerTexture(this.readTextureFromMemory(this.getName(), inputStream), params);
+        } catch (JGemsIOException | IOException e) {
+            throw new JGemsIOException(e);
+        }
+    }
+
+    private TextureSample(String name, InputStream inputStream, Params params) {
+        this.name = name;
+        this.params = params;
+        try {
+            this.registerTexture(this.readTextureFromMemory(name, inputStream), params);
+        } catch (JGemsIOException e) {
+            throw new JGemsIOException(e);
+        }
+    }
 
     public static TextureSample registerTexture(ResourceCache resourceCache, JGemsPath fullPath, Params params) {
         TextureSample textureSample = new TextureSample(fullPath, params);
@@ -81,35 +109,6 @@ public class TextureSample implements ITextureSample {
             }
         }
         return textureSample;
-    }
-
-
-    private TextureSample(String name, Vector2i size, ByteBuffer buffer, Params params) {
-        this.name = name;
-        this.size = size;
-        this.params = params;
-        this.registerTexture(buffer, params);
-    }
-
-    private TextureSample(JGemsPath fullPath, Params params) {
-        this.name = fullPath.getFullPath();
-        this.params = params;
-        JGemsHelper.getLogger().log("Loading " + this.getName());
-        try (InputStream inputStream = JGems3D.loadFileFromJar(fullPath)) {
-            this.registerTexture(this.readTextureFromMemory(this.getName(), inputStream), params);
-        } catch (JGemsIOException | IOException e) {
-            throw new JGemsIOException(e);
-        }
-    }
-
-    private TextureSample(String name, InputStream inputStream, Params params) {
-        this.name = name;
-        this.params = params;
-        try {
-            this.registerTexture(this.readTextureFromMemory(name, inputStream), params);
-        } catch (JGemsIOException e) {
-            throw new JGemsIOException(e);
-        }
     }
 
     private ByteBuffer readTextureFromMemory(String name, InputStream inputStream) throws JGemsIOException {
@@ -168,6 +167,7 @@ public class TextureSample implements ITextureSample {
         this.setTextureParams(params);
         JGemsHelper.getLogger().log("Texture " + this.getName() + " successfully created!");
     }
+
     public void clear() {
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
         GL30.glDeleteTextures(this.getTextureId());

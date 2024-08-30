@@ -13,18 +13,11 @@ package ru.jgems3d.engine_api.manager;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
-import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.core.player.IPlayerConstructor;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.map.loaders.tbox.placers.TBoxMapDefaultObjectsPlacer;
-import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine_api.app.tbox.containers.TUserData;
 import ru.jgems3d.engine_api.configuration.AppConfiguration;
-import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 
 /**
  * This class contains controls/initializations for various important game systems.
@@ -50,6 +43,7 @@ public abstract class AppManager {
      * @return instance of the game character constructor that will be created each time the map is launched.
      */
     public abstract @NotNull IPlayerConstructor createPlayer(IMapLoader mapLoader);
+
     /**
      * @return Panel UI instance of the game's main menu.
      */

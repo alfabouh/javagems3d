@@ -11,10 +11,10 @@
 
 package ru.jgems3d.engine.physics.world.triggers.zones;
 
+import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.zones.base.AbstractTriggerZone;
-import ru.jgems3d.engine.physics.world.IWorld;
 
 public class SimpleTriggerZone extends AbstractTriggerZone {
     private ITriggerAction triggerAction;
@@ -22,10 +22,6 @@ public class SimpleTriggerZone extends AbstractTriggerZone {
     public SimpleTriggerZone(Zone zone) {
         super(zone);
         this.triggerAction = null;
-    }
-
-    public void setTriggerAction(ITriggerAction triggerAction) {
-        this.triggerAction = triggerAction;
     }
 
     @Override
@@ -40,6 +36,10 @@ public class SimpleTriggerZone extends AbstractTriggerZone {
 
     public ITriggerAction getTriggerAction() {
         return this.triggerAction;
+    }
+
+    public void setTriggerAction(ITriggerAction triggerAction) {
+        this.triggerAction = triggerAction;
     }
 
     @Override

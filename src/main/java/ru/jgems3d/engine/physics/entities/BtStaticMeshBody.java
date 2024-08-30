@@ -11,7 +11,6 @@
 
 package ru.jgems3d.engine.physics.entities;
 
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.physics.colliders.IColliderConstructor;

@@ -11,7 +11,6 @@
 
 package ru.jgems3d.toolbox.render.scene.container;
 
-import org.checkerframework.checker.units.qual.A;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
@@ -19,7 +18,10 @@ import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.FogProp;
 import ru.jgems3d.toolbox.map_sys.save.objects.map_prop.SkyProp;
 import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SceneContainer {

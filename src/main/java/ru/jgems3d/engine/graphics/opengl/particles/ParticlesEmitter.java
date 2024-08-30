@@ -11,22 +11,21 @@
 
 package ru.jgems3d.engine.graphics.opengl.particles;
 
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleColoredParticle;
-import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleTexturedParticle;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.util.Iterator;

@@ -66,13 +66,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class JGemsOpenGLRenderer implements ISceneRenderer {
-    private boolean wantToTakeScreenshot;
-
     private final SceneData sceneData;
     private final SceneRenderBaseContainer sceneRenderBaseContainer;
     private final DIMGuiRenderJGems dearImGuiRender;
     private final Set<FBOTexture2DProgram> fboSet;
-
+    private boolean wantToTakeScreenshot;
     private GuiRender guiRender;
     private InventoryRender inventoryRender;
     private WorldTransparentRender worldTransparentRender;
@@ -103,6 +101,10 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.createResources(window.getWindowDimensions());
 
         this.dearImGuiRender = new DIMGuiRenderJGems(window, JGemsResourceManager.getGlobalGameResources().getResourceCache());
+    }
+
+    public static JGemsShaderManager getGameUboShader() {
+        return JGemsResourceManager.globalShaderAssets.gameUbo;
     }
 
     public FBOTexture2DProgram getSceneGluingBuffer() {
@@ -165,7 +167,6 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         return this.guiRender;
     }
 
-
     private void updateUBOs(FrameTicking frameTicking) {
         JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGemsHelper.getScreen().getRenderTicks()});
         Environment environment = this.getSceneData().getSceneWorld().getEnvironment();
@@ -182,10 +183,6 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     public JGemsShaderManager getBasicOITShader() {
         return JGemsResourceManager.globalShaderAssets.weighted_oit;
-    }
-
-    public static JGemsShaderManager getGameUboShader() {
-        return JGemsResourceManager.globalShaderAssets.gameUbo;
     }
 
     protected void createFBOObjects() {
@@ -433,7 +430,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getFinalizingBuffer().bindFBO();
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         if (!APIEventsLauncher.pushEvent(new Events.RenderPostProcessing(frameTicking, size, this.getFxaaBuffer().getTextureIDByIndex(0), this)).isCancelled()) {
-            this.getFxaaBuffer().copyFBOtoFBOColor(this.getFinalizingBuffer().getFrameBufferId(), new int[] {GL30.GL_COLOR_ATTACHMENT0}, size);
+            this.getFxaaBuffer().copyFBOtoFBOColor(this.getFinalizingBuffer().getFrameBufferId(), new int[]{GL30.GL_COLOR_ATTACHMENT0}, size);
         }
         this.getFinalizingBuffer().unBindFBO();
     }
@@ -515,9 +512,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         GL45.glBlendFunci(2, GL45.GL_ONE, GL45.GL_ONE);
         GL45.glBlendEquation(GL30.GL_FUNC_ADD);
         this.getTransparencySceneBuffer().bindFBO();
-        GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[] {0.0f, 0.0f, 0.0f, 0.0f});
-        GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[] {1.0f, 1.0f, 1.0f, 1.0f});
-        GL45.glClearBufferfv(GL30.GL_COLOR, 2, new float[] {0.0f, 0.0f, 0.0f, 0.0f});
+        GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
+        GL45.glClearBufferfv(GL30.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
         SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getTransparencyRenderSet());
         this.getTransparencySceneBuffer().unBindFBO();
         GL30.glDisable(GL30.GL_BLEND);

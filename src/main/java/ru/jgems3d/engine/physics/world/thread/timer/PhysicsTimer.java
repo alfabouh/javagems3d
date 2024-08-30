@@ -24,11 +24,9 @@ import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 
 public class PhysicsTimer implements IPhysTimer {
-    private final DynamicsSystem dynamicsSystem;
-
     public static final Object lockObject = new Object();
     public static int TPS;
-
+    private final DynamicsSystem dynamicsSystem;
     private final PhysicsWorld world;
 
     @SuppressWarnings("all")

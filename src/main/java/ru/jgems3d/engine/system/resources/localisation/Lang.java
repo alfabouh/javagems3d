@@ -15,7 +15,10 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.path.JGemsPath;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class Lang {
     private static final Map<String, Lang> values = new HashMap<>();
@@ -75,12 +78,12 @@ public final class Lang {
         return this.fullName;
     }
 
-    public void setFileDirectoryPath(JGemsPath fileDirectoryPath) {
-        this.fileDirectoryPath = fileDirectoryPath;
-    }
-
     public JGemsPath getFileDirectoryPath() {
         return this.fileDirectoryPath;
+    }
+
+    public void setFileDirectoryPath(JGemsPath fileDirectoryPath) {
+        this.fileDirectoryPath = fileDirectoryPath;
     }
 
     @Override

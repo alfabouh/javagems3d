@@ -29,27 +29,17 @@ public class ParticleAttributes {
         this.opacity = 1.0f;
     }
 
-    public ParticleAttributes setOpacity(float opacity) {
-        this.opacity = opacity;
-        return this;
-    }
-
     public static ParticleAttributes defaultParticleAttributes() {
         return new ParticleAttributes(JGemsResourceManager.globalShaderAssets.weighted_particle_oit, 128.0f);
     }
 
-    public ParticleAttributes setBrightness(float brightness) {
-        this.brightness = JGemsHelper.MATH.clamp(brightness, 0.0f, 1.0f);
-        return this;
-    }
-
-    public ParticleAttributes setDistanceToRender(float distanceToRender) {
-        this.distanceToRender = distanceToRender;
-        return this;
-    }
-
     public float getOpacity() {
         return this.opacity;
+    }
+
+    public ParticleAttributes setOpacity(float opacity) {
+        this.opacity = opacity;
+        return this;
     }
 
     public JGemsShaderManager getShaderManager() {
@@ -60,7 +50,17 @@ public class ParticleAttributes {
         return this.brightness;
     }
 
+    public ParticleAttributes setBrightness(float brightness) {
+        this.brightness = JGemsHelper.MATH.clamp(brightness, 0.0f, 1.0f);
+        return this;
+    }
+
     public float getDistanceToRender() {
         return this.distanceToRender;
+    }
+
+    public ParticleAttributes setDistanceToRender(float distanceToRender) {
+        this.distanceToRender = distanceToRender;
+        return this;
     }
 }

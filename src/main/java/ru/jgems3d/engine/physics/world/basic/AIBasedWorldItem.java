@@ -13,9 +13,9 @@ package ru.jgems3d.engine.physics.world.basic;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import ru.jgems3d.engine.physics.world.ai.IEntityAI;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
+import ru.jgems3d.engine.physics.world.ai.IEntityAI;
 
 import java.util.ArrayList;
 import java.util.Comparator;

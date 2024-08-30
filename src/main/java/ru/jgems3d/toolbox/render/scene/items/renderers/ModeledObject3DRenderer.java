@@ -11,7 +11,6 @@
 
 package ru.jgems3d.toolbox.render.scene.items.renderers;
 
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;

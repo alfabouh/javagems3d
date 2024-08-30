@@ -49,7 +49,6 @@ public class AppConfiguration {
     }
 
     /**
-     *
      * @return object, that handles TBox incoming entities on map.
      */
     public @NotNull ITBoxMapLoaderManager getMapLoaderManager() {

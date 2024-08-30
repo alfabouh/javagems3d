@@ -13,10 +13,10 @@ package ru.jgems3d.engine.graphics.opengl.environment.sky;
 
 
 import org.joml.Vector3f;
-import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.ISkyBox;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
+import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 
 public class Sky implements IWorldTicked {
     private final ISkyBox skyBox;

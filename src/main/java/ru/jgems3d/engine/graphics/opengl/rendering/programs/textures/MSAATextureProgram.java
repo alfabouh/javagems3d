@@ -16,8 +16,8 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
 public class MSAATextureProgram implements ITextureProgram {
-    private int textureId;
     private final int msaa;
+    private int textureId;
 
     public MSAATextureProgram(int msaa) {
         this.msaa = msaa;

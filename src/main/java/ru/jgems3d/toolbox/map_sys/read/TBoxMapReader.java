@@ -42,7 +42,7 @@ public class TBoxMapReader {
     public static TBoxMapContainer readMapFromJAR(JGemsPath pathToMap) throws IOException, ClassNotFoundException {
         MapProperties mapProperties;
         HashSet<SaveObject> saveObjectSet;
-        try (InputStream stream = JGems3D.loadFileFromJar(new JGemsPath(pathToMap + "/map_prop.json"))){
+        try (InputStream stream = JGems3D.loadFileFromJar(new JGemsPath(pathToMap + "/map_prop.json"))) {
             mapProperties = SerializeHelper.readFromJSON(stream, MapProperties.class); //TODO
         }
         try (InputStream stream = JGems3D.loadFileFromJar(new JGemsPath(pathToMap + "/objects.ser"))) {

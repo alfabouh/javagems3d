@@ -11,9 +11,9 @@
 
 package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base;
 
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;

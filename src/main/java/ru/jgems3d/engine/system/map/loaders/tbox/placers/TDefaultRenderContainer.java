@@ -13,8 +13,8 @@ package ru.jgems3d.engine.system.map.loaders.tbox.placers;
 import org.jetbrains.annotations.NotNull;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 /**
  * This class represents the rendering information for an object inside the engine itself
@@ -57,6 +57,7 @@ public final class TDefaultRenderContainer {
 
     /**
      * A render factory is a special class that is responsible for rendering a specific IRenderObject object
+     *
      * @see ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject
      */
     public @NotNull IRenderObjectFabric getRenderFabric() {

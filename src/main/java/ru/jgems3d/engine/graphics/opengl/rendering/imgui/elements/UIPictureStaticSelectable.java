@@ -17,10 +17,10 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
-import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class UIPictureStaticSelectable extends UIPictureStatic {
     private boolean selected;

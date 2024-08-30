@@ -13,9 +13,6 @@ package ru.jgems3d.engine.system.settings.objects;
 
 import ru.jgems3d.engine.system.resources.localisation.Lang;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SettingChooseLanguage extends SettingSlot {
 
     public SettingChooseLanguage(String name, Lang defaultLang) {

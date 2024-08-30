@@ -13,10 +13,10 @@ package ru.jgems3d.engine.system.resources.assets.shaders;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.IShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformProgram;
-import ru.jgems3d.engine.JGemsHelper;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class ShaderGroup {
-    private Set<UniformString> rawUniforms;
     private final Map<UniformBufferObject, UniformBufferProgram> uniformBufferProgramMap;
+    private final String id;
+    private final Set<UniformString> rawUniforms;
     private UniformProgram uniformProgram;
     private IShaderProgram shaderProgram;
-    private final String id;
 
     public ShaderGroup(String id) {
         this.id = id;
@@ -63,7 +63,7 @@ public class ShaderGroup {
                 for (int i = 0; i < uniform.getArraySize(); i++) {
                     if (!uniform.getFields().isEmpty()) {
                         for (String field : uniform.getFields()) {
-                            this.tryCreateUniform(this.getUniformProgram(),  new UniformString(uniform.getId(), "." + field, i));
+                            this.tryCreateUniform(this.getUniformProgram(), new UniformString(uniform.getId(), "." + field, i));
                         }
                     } else {
                         this.tryCreateUniform(this.getUniformProgram(), new UniformString(uniform.getId(), i));

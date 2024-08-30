@@ -15,12 +15,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 
@@ -91,20 +91,6 @@ public class RenderEntityData {
     protected void onPhysicsObjectCreated(AbstractSceneEntity abstractSceneEntity) {
     }
 
-    public RenderEntityData setMeshDataGroup(MeshDataGroup meshDataGroup) {
-        this.meshDataGroup = meshDataGroup;
-        this.entityModelConstructor = null;
-        return this;
-    }
-
-    public RenderEntityData setEntityModelConstructor(IEntityModelConstructor<WorldItem> entityModelConstructor) {
-        if (entityModelConstructor != null) {
-            this.meshDataGroup = null;
-        }
-        this.entityModelConstructor = entityModelConstructor;
-        return this;
-    }
-
     public RenderEntityData setModelRenderData(MeshRenderData meshRenderData) {
         this.meshRenderData = meshRenderData;
         return this;
@@ -124,11 +110,25 @@ public class RenderEntityData {
         return this.meshDataGroup;
     }
 
+    public RenderEntityData setMeshDataGroup(MeshDataGroup meshDataGroup) {
+        this.meshDataGroup = meshDataGroup;
+        this.entityModelConstructor = null;
+        return this;
+    }
+
     /**
      * If you need to generate an object mesh manually, use this.
      */
     public IEntityModelConstructor<WorldItem> getEntityModelConstructor() {
         return this.entityModelConstructor;
+    }
+
+    public RenderEntityData setEntityModelConstructor(IEntityModelConstructor<WorldItem> entityModelConstructor) {
+        if (entityModelConstructor != null) {
+            this.meshDataGroup = null;
+        }
+        this.entityModelConstructor = entityModelConstructor;
+        return this;
     }
 
     /**

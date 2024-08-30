@@ -16,10 +16,8 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ColoredParticleFX;
-import ru.jgems3d.engine.graphics.opengl.particles.objects.base.TexturedParticleFX;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 
 public class SimpleColoredParticle extends ColoredParticleFX {
     private double maxLivingSeconds;
@@ -34,13 +32,13 @@ public class SimpleColoredParticle extends ColoredParticleFX {
         this.setPosition(this.getPosition().add(0.0f, (float) (frameDeltaTime), 0.0f));
     }
 
-    public SimpleColoredParticle setMaxLivingSeconds(double maxLivingSeconds) {
-        this.maxLivingSeconds = maxLivingSeconds;
-        return this;
-    }
-
     @Override
     public double getMaxLivingSeconds() {
         return this.maxLivingSeconds;
+    }
+
+    public SimpleColoredParticle setMaxLivingSeconds(double maxLivingSeconds) {
+        this.maxLivingSeconds = maxLivingSeconds;
+        return this;
     }
 }

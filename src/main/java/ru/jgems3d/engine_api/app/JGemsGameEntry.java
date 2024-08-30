@@ -22,7 +22,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface JGemsGameEntry {
     @NotNull String gameTitle();
+
     @NotNull String gameVersion();
+
     @NotNull DevStage devStage();
 
     enum DevStage {
