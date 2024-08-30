@@ -12,26 +12,25 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.github.alfabouh</groupId>
+    <groupId>com.github.alfabouh</groupId>
     <artifactId>javagems3d</artifactId>
     <version>0.2</version>
-    <packaging>pom</packaging>
 
     <name>JavaGems3D</name>
     <description>3-D Java Game Engine</description>
-    <url>https://github.com/alfabouh/JavaGems3D</url>
+    <url>https://github.com/alfabouh/javagems3d</url>
 
     <scm>
-        <url>https://github.com/yourusername/JavaGems3D</url>
-        <connection>scm:git:git://github.com/alfabouh/JavaGems3D.git</connection>
-        <developerConnection>scm:git:ssh://github.com/alfabouh/JavaGems3D.git</developerConnection>
+        <url>https://github.com/yourusername/javagems3d</url>
+        <connection>scm:git:git://github.com/alfabouh/javagems3d.git</connection>
+        <developerConnection>scm:git:ssh://github.com/alfabouh/javagems3d.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <licenses>
         <license>
             <name>BSD-3-Clause license</name>
-            <url>https://github.com/alfabouh/JavaGems3D?tab=BSD-3-Clause-1-ov-file</url>
+            <url>https://github.com/alfabouh/javagems3d?tab=BSD-3-Clause-1-ov-file</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -45,55 +44,20 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
-                        <id>default-jar</id>
-                        <phase>package</phase>
+                        <id>src</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <classifier>src</classifier>
-                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.5</version>
-                <executions>
-                    <execution>
-                        <id>sign</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                        <configuration>
-                            <gpgArguments>
-                                <arg>--batch</arg>
-                                <arg>--yes</arg>
-                            </gpgArguments>
-                            <files>
-                                <file>${project.basedir}/target/javagems3d-0.2-src.jar</file>
-                                <file>${project.basedir}/target/javagems3d-0.2.pom</file>
-                            </files>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.5.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <publishingServerId>central</publishingServerId>
-                    <autoPublish>true</autoPublish>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -111,6 +75,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.alfabouh</groupId>
+            <artifactId>javagems3d</artifactId>
+            <version>v0.2a</version>
+        </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
@@ -272,6 +241,7 @@
         </dependency>
     </dependencies>
     <properties>
+        <github.global.server>github</github.global.server>
         <lwjgl.version>3.3.4</lwjgl.version>
         <joml.version>1.10.8</joml.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
@@ -280,6 +250,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
         <repository>
             <id>central</id>
             <name>bintray-plugins</name>
