@@ -1,3 +1,5 @@
+[![GitHub release](https://img.shields.io/badge/GitHub%20Packages-Download-brightgreen)](https://github.com/OWNER/REPOSITORY/packages)
+
 ![ICOGIT](https://github.com/user-attachments/assets/f4d93bc9-279f-41bf-bcd1-d31f8eb056f9)
 ## JavaGems 3D
 
