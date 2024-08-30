@@ -10,56 +10,258 @@
   ~  */
   -->
 
-<Configuration status="WARN">
-    <Properties>
-        <Property name="log-path">${sys:user.home}/.jgems3d/log</Property>
-        <Property name="log-file">${date:yyyy-MM-dd_HH-mm-ss}_log.log</Property>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>javagems3d</groupId>
+    <artifactId>JavaGems3D</artifactId>
+    <version>0.2</version>
+    <packaging>pom</packaging>
 
-        <Property name="fatal-path">${sys:user.home}/.jgems3d/log/fatal</Property>
-        <Property name="fatal-file">${date:yyyy-MM-dd_HH-mm-ss}_fatal.log</Property>
-    </Properties>
-    <Appenders>
-        <JGemsConsoleAppender name="JGemsAppender" pattern="[%d{HH:mm:ss}] [%t] [%-5level] - %msg%n%ex" />
-        <Console name="ConsoleERR" target="SYSTEM_ERR">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n%ex"/>
-        </Console>
-        <Console name="ConsoleOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n%ex"/>
-        </Console>
-        <File name="FileOUT" fileName="${log-path}/${log-file}">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>
-        </File>
-        <File name="FileERR" fileName="${fatal-path}/${fatal-file}">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>
-        </File>
-    </Appenders>
-    <Loggers>
-        <Logger name="JGemsLogger" level="all" additivity="true">
-            <AppenderRef ref="ConsoleERR">
-                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
-            </AppenderRef>
-            <AppenderRef ref="FileERR">
-                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
-            </AppenderRef>
-            <AppenderRef ref="ConsoleOUT">
-                <ThresholdFilter level="error" onMatch="DENY" onMismatch="ACCEPT"/>
-            </AppenderRef>
-            <AppenderRef ref="FileOUT" />
-        </Logger>
-        <Logger name="ToolBoxLogger" level="all" additivity="true">
-            <AppenderRef ref="ConsoleERR">
-                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
-            </AppenderRef>
-            <AppenderRef ref="FileERR">
-                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
-            </AppenderRef>
-            <AppenderRef ref="ConsoleOUT">
-                <ThresholdFilter level="error" onMatch="DENY" onMismatch="ACCEPT"/>
-            </AppenderRef>
-            <AppenderRef ref="FileOUT" />
-        </Logger>
-        <Root level="all">
-            <AppenderRef ref="JGemsAppender"/>
-        </Root>
-    </Loggers>
-</Configuration>
+    <name>JavaGems3D</name>
+    <description>3-D Java Game Engine</description>
+
+    <licenses>
+        <license>
+            <name>BSD-3-Clause license</name>
+            <url>https://github.com/alfabouh/JavaGems3D?tab=BSD-3-Clause-1-ov-file</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>alfabouh</id>
+        </developer>
+    </developers>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>no-deps</classifier>
+                            <excludes>
+                                <exclude>**/*.class</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.lwjgl</groupId>
+                <artifactId>lwjgl-bom</artifactId>
+                <version>${lwjgl.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.launch4j</groupId>
+            <artifactId>launch4j</artifactId>
+            <version>3.50</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>Libbulletjme</artifactId>
+            <version>21.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.spair</groupId>
+            <artifactId>imgui-java-binding</artifactId>
+            <version>1.86.11</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.spair</groupId>
+            <artifactId>imgui-java-natives-windows</artifactId>
+            <version>1.86.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.2.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.110.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.23.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.23.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-assimp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-bgfx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nanovg</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nuklear</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-par</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-vulkan</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-assimp</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-bgfx</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nanovg</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nuklear</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-par</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.joml</groupId>
+            <artifactId>joml</artifactId>
+            <version>${joml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.1.0</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <lwjgl.version>3.3.4</lwjgl.version>
+        <joml.version>1.10.8</joml.version>
+        <lwjgl.natives>natives-windows</lwjgl.natives>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>bintray-plugins</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>

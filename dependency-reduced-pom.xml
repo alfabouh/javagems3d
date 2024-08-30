@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ru.jgems3d</groupId>
+  <groupId>javagems3d</groupId>
   <artifactId>JavaGems3D</artifactId>
   <version>1.0</version>
   <build>
@@ -18,7 +18,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>ru.jgems3d.engine.JGems3D</mainClass>
+                  <mainClass>javagems3d.engine.JGems3D</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -67,7 +67,7 @@
               <jar>${project.build.directory}/${project.build.finalName}-shaded.jar</jar>
               <errTitle>encc</errTitle>
               <classPath>
-                <mainClass>ru.jgems3d.engine.JGems3D</mainClass>
+                <mainClass>javagems3d.engine.JGems3D</mainClass>
                 <addDependencies>true</addDependencies>
                 <preCp>anything</preCp>
               </classPath>
