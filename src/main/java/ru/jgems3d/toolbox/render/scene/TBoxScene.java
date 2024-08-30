@@ -18,33 +18,33 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GL45;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
-import ru.jgems3d.engine.graphics.opengl.camera.ICamera;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
 import ru.jgems3d.engine.graphics.transformation.TransformationUtils;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
-import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.service.exceptions.JGemsNullException;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
+import ru.jgems3d.toolbox.ToolBox;
 import ru.jgems3d.toolbox.map_sys.read.TBoxMapReader;
 import ru.jgems3d.toolbox.map_sys.save.TBoxMapSaver;
 import ru.jgems3d.toolbox.map_sys.save.container.TBoxMapContainer;
 import ru.jgems3d.toolbox.map_sys.save.objects.MapProperties;
 import ru.jgems3d.toolbox.map_sys.save.objects.SaveObject;
-import ru.jgems3d.toolbox.map_table.TBoxMapTable;
-import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.Attribute;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributeID;
-import ru.jgems3d.toolbox.ToolBox;
+import ru.jgems3d.toolbox.map_table.TBoxMapTable;
+import ru.jgems3d.toolbox.map_table.object.AbstractObjectData;
 import ru.jgems3d.toolbox.render.scene.camera.TBoxFreeCamera;
 import ru.jgems3d.toolbox.render.scene.container.SceneContainer;
 import ru.jgems3d.toolbox.render.scene.dear_imgui.DIMGuiRenderTBox;
@@ -82,6 +82,31 @@ public class TBoxScene {
         this.sceneObjects = new SceneContainer();
         this.transformationUtils = transformationUtils;
         this.window = window;
+    }
+
+    @SuppressWarnings("all")
+    public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshDataGroup meshDataGroup, int code) {
+        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
+            if (modelNode.getMaterial() != null) {
+                if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {
+                    shaderManager.performUniform(new UniformString("use_texture"), false);
+                } else {
+                    shaderManager.performUniform(new UniformString("use_texture"), true);
+                    shaderManager.performUniformNoWarn(new UniformString("diffuse_map"), 0);
+                    GL30.glActiveTexture(GL30.GL_TEXTURE0);
+                    GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) modelNode.getMaterial().getDiffuse()).getTextureId());
+                }
+            }
+            GL30.glBindVertexArray(modelNode.getMesh().getVao());
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glEnableVertexAttribArray(a);
+            }
+            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            for (int a : modelNode.getMesh().getAttributePointers()) {
+                GL30.glDisableVertexAttribArray(a);
+            }
+            GL30.glBindVertexArray(0);
+        }
     }
 
     public void resetEditor() {
@@ -175,8 +200,8 @@ public class TBoxScene {
             GL45.glBlendFunci(1, GL45.GL_ZERO, GL45.GL_ONE_MINUS_SRC_COLOR);
             GL45.glBlendEquation(GL30.GL_FUNC_ADD);
             TBoxScene.sceneTransparentFbo.bindFBO();
-            GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[] {0.0f, 0.0f, 0.0f, 0.0f});
-            GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[] {1.0f, 1.0f, 1.0f, 1.0f});
+            GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+            GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
             this.getSceneContainer().renderTransparent(deltaTime);
             TBoxScene.sceneTransparentFbo.unBindFBO();
             GL30.glDisable(GL30.GL_BLEND);
@@ -263,31 +288,6 @@ public class TBoxScene {
         TBoxScene.renderIsometricModel(shaderManager, mapObject.meshDataGroup(), GL30.GL_TRIANGLES);
         shaderManager.unBind();
         ToolBox.get().getScreen().normalizeViewPort();
-    }
-
-    @SuppressWarnings("all")
-    public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshDataGroup meshDataGroup, int code) {
-        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            if (modelNode.getMaterial() != null) {
-                if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {
-                    shaderManager.performUniform(new UniformString("use_texture"), false);
-                } else {
-                    shaderManager.performUniform(new UniformString("use_texture"), true);
-                    shaderManager.performUniformNoWarn(new UniformString("diffuse_map"), 0);
-                    GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                    GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) modelNode.getMaterial().getDiffuse()).getTextureId());
-                }
-            }
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
-            GL30.glBindVertexArray(0);
-        }
     }
 
     public boolean tryGrabObject(EditorContent editorContent) {
@@ -528,10 +528,6 @@ public class TBoxScene {
         }
     }
 
-    public void setCamera(ICamera camera) {
-        this.camera = camera;
-    }
-
     public MapProperties getMapProperties() {
         return this.getSceneContainer().getMapProperties();
     }
@@ -542,6 +538,10 @@ public class TBoxScene {
 
     public ICamera getCamera() {
         return this.camera;
+    }
+
+    public void setCamera(ICamera camera) {
+        this.camera = camera;
     }
 
     public TransformationUtils getTransformationUtils() {

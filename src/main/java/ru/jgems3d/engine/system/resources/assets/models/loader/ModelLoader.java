@@ -20,10 +20,6 @@ import org.lwjgl.system.MemoryUtil;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.loaders.TextureAssetsLoader;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.material.Material;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
 import ru.jgems3d.engine.system.resources.assets.material.samples.TextureSample;
@@ -32,6 +28,10 @@ import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsIOException;
+import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,16 +84,16 @@ public class ModelLoader {
     });
     public static final AIFileOpenProc AI_FILE_OPEN = AIFileOpenProc.create((pFileIO, fileName, openMode) -> {
         ByteBuffer data;
-       try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(MemoryUtil.memUTF8(fileName)))){
-          byte[] stream = ByteStreams.toByteArray(inputStream);
-          data = MemoryUtil.memCalloc(stream.length);
-          data.put(stream);
-          data.flip();
-       } catch (IOException e) {
-           throw new JGemsIOException(e);
-       }
-       MemoryStack stack = MemoryStack.stackGet();
-       return AIFile.calloc(stack).ReadProc(AI_FILE_READ).WriteProc(AI_FILE_WRITE).TellProc(AI_FILE_TELL).FileSizeProc(AI_FILE_SIZE).SeekProc(AI_FILE_SEEK).FlushProc(AI_FILE_FLUSH).UserData(stack.mallocPointer(3).put(0, MemoryUtil.memAddress(data)).put(1, 0L).put(2, data.remaining()).address()).address();
+        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(MemoryUtil.memUTF8(fileName)))) {
+            byte[] stream = ByteStreams.toByteArray(inputStream);
+            data = MemoryUtil.memCalloc(stream.length);
+            data.put(stream);
+            data.flip();
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
+        MemoryStack stack = MemoryStack.stackGet();
+        return AIFile.calloc(stack).ReadProc(AI_FILE_READ).WriteProc(AI_FILE_WRITE).TellProc(AI_FILE_TELL).FileSizeProc(AI_FILE_SIZE).SeekProc(AI_FILE_SEEK).FlushProc(AI_FILE_FLUSH).UserData(stack.mallocPointer(3).put(0, MemoryUtil.memAddress(data)).put(1, 0L).put(2, data.remaining()).address()).address();
     });
     public static final AIFileCloseProc AI_FILE_CLOSE = AIFileCloseProc.create((pFileIO, pFile) -> {
         PointerBuffer meta = getAIFileMeta(pFile);

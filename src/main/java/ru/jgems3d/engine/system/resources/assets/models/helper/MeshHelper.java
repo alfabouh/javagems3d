@@ -14,14 +14,14 @@ package ru.jgems3d.engine.system.resources.assets.models.helper;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
+import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.helper.forms.D2.PlaneModel2D;
 import ru.jgems3d.engine.system.resources.assets.models.helper.forms.D2.VectorModel2D;
 import ru.jgems3d.engine.system.resources.assets.models.helper.forms.D3.PlaneModel3D;
 import ru.jgems3d.engine.system.resources.assets.models.helper.forms.D3.SimplePlaneModel3D;
 import ru.jgems3d.engine.system.resources.assets.models.helper.forms.D3.VectorModel3D;
 import ru.jgems3d.engine.system.resources.assets.models.helper.forms.D3.WireBoxModel3D;
-import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
-import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 
 public abstract class MeshHelper {

@@ -13,29 +13,26 @@ package ru.jgems3d.engine.physics.world.basic;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.JGemsHelper;
 
 /**
  * World Item is the main class from which all objects of the physical world are inherited.
  */
 public abstract class WorldItem implements IWorldObject {
     private static int globalId;
-
-    protected Vector3f startPos;
-    protected Vector3f startRot;
-    protected Vector3f startScaling;
-
     private final Vector3f position;
     private final Vector3f rotation;
-    private Vector3f scaling;
-
     private final PhysicsWorld world;
     private final Vector3f prevPosition;
     private final String itemName;
     private final int itemId;
+    protected Vector3f startPos;
+    protected Vector3f startRot;
+    protected Vector3f startScaling;
+    private Vector3f scaling;
     private int spawnTick;
     private boolean isDead;
     private boolean spawned;

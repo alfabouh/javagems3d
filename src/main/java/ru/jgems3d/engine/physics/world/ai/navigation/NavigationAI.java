@@ -87,7 +87,7 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
 
     @Override
     public void onUpdateAI(WorldItem worldItem) {
-       this.tryBuildPath();
+        this.tryBuildPath();
         if (this.hasPath()) {
             if (this.getPathPos() >= this.getPath().size()) {
                 this.clearPath();
@@ -120,24 +120,44 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         this.path = null;
     }
 
-    public void setCurrentVertex(GraphVertex currentVertex) {
-        this.currentVertex = currentVertex;
+    public boolean hasPath() {
+        return this.getPath() != null && !this.getPath().isEmpty();
+    }
+
+    public int getPathPos() {
+        return this.pathPos;
     }
 
     protected void setPathPos(int pathPos) {
         this.pathPos = pathPos;
     }
 
+    protected List<GraphVertex> getPath() {
+        return this.path;
+    }
+
     public void setPath(List<GraphVertex> path) {
         this.path = path;
     }
 
-    public boolean hasPath() {
-        return this.getPath() != null && !this.getPath().isEmpty();
+    public Vector3f getOffsetFromVertexPos() {
+        return this.offsetFromVertexPos;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
+    public void setOffsetFromVertexPos(Vector3f offsetFromVertexPos) {
+        this.offsetFromVertexPos = offsetFromVertexPos;
+    }
+
+    public GraphVertex getCurrentVertex() {
+        return this.currentVertex;
+    }
+
+    public void setCurrentVertex(GraphVertex currentVertex) {
+        this.currentVertex = currentVertex;
+    }
+
+    public GraphVertex getDestination() {
+        return this.destination;
     }
 
     public void setDestination(WorldItem worldItem) {
@@ -153,31 +173,11 @@ public class NavigationAI<T extends WorldItem> extends AbstractAI<T> {
         this.destination = destination;
     }
 
-    public void setOffsetFromVertexPos(Vector3f offsetFromVertexPos) {
-        this.offsetFromVertexPos = offsetFromVertexPos;
-    }
-
-    public int getPathPos() {
-        return this.pathPos;
-    }
-
-    protected List<GraphVertex> getPath() {
-        return this.path;
-    }
-
-    public Vector3f getOffsetFromVertexPos() {
-        return this.offsetFromVertexPos;
-    }
-
-    public GraphVertex getCurrentVertex() {
-        return this.currentVertex;
-    }
-
-    public GraphVertex getDestination() {
-        return this.destination;
-    }
-
     public float getSpeed() {
         return this.speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 }

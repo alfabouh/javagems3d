@@ -28,15 +28,15 @@ public class MapNavGraphGenerator {
     private final Graph graph;
     private final DynamicsSystem dynamicsSystem;
 
+    private MapNavGraphGenerator(DynamicsSystem dynamicsSystem) {
+        this.graph = new Graph();
+        this.dynamicsSystem = dynamicsSystem;
+    }
+
     public static Graph createGraphWithStartPoint(DynamicsSystem dynamicsSystem, Vector3f pos) {
         MapNavGraphGenerator mapNavGraphGenerator = new MapNavGraphGenerator(dynamicsSystem);
         mapNavGraphGenerator.generate(mapNavGraphGenerator.startPos(pos));
         return mapNavGraphGenerator.getGraph();
-    }
-
-    private MapNavGraphGenerator(DynamicsSystem dynamicsSystem) {
-        this.graph = new Graph();
-        this.dynamicsSystem = dynamicsSystem;
     }
 
     private void generate(GraphVertex start) {
@@ -112,30 +112,30 @@ public class MapNavGraphGenerator {
                 }
             }
         }
-       // }
+        // }
 
-            com.jme3.math.Vector3f hitPoint1 = rayTestResult1 == null ? (vectorCheck4) : DynamicsUtils.lerp(vectorCheck3, vectorCheck4, rayTestResult1.getHitFraction());
-            com.jme3.math.Vector3f hitPointPath = new com.jme3.math.Vector3f(hitPoint1).subtract(vectorCheck3);
+        com.jme3.math.Vector3f hitPoint1 = rayTestResult1 == null ? (vectorCheck4) : DynamicsUtils.lerp(vectorCheck3, vectorCheck4, rayTestResult1.getHitFraction());
+        com.jme3.math.Vector3f hitPointPath = new com.jme3.math.Vector3f(hitPoint1).subtract(vectorCheck3);
 
-            com.jme3.math.Vector3f hitPointHalfWay = new com.jme3.math.Vector3f(vectorCheck3).add(hitPointPath.mult(0.5f));
+        com.jme3.math.Vector3f hitPointHalfWay = new com.jme3.math.Vector3f(vectorCheck3).add(hitPointPath.mult(0.5f));
 
-            com.jme3.math.Vector3f vectorCheck3_1 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y + 0.5f, hitPointHalfWay.z);
-            com.jme3.math.Vector3f vectorCheck3_2 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y - 0.5f, hitPointHalfWay.z);
+        com.jme3.math.Vector3f vectorCheck3_1 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y + 0.5f, hitPointHalfWay.z);
+        com.jme3.math.Vector3f vectorCheck3_2 = new Vector3f(hitPointHalfWay.x, hitPointHalfWay.y - 0.5f, hitPointHalfWay.z);
 
-            List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3_1, vectorCheck3_2);
-            Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
-            PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
-            if (rayTestResult2 == null) {
-                return null;
-            }
+        List<PhysicsRayTestResult> rayToSurface = this.dynamicsSystem.getPhysicsSpace().rayTest(vectorCheck3_1, vectorCheck3_2);
+        Optional<PhysicsRayTestResult> optional1 = rayToSurface.stream().filter(e -> (e.getCollisionObject().getCollisionGroup() & CollisionFilter.ST_BODY.getMask()) != 0).findFirst();
+        PhysicsRayTestResult rayTestResult2 = optional1.orElse(null);
+        if (rayTestResult2 == null) {
+            return null;
+        }
 
-            com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck3_1, vectorCheck3_2, rayTestResult2.getHitFraction());
-            if (hitPointSurface.y <= hitPoint1.y + 0.5d && hitPointSurface.distance(vectorCheck3) > 0.25d) {
-                GraphVertex v = new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
-                this.getGraph().addVertex(v);
-                this.getGraph().addEdge(v, current);
-                this.getGraph().addEdge(current, v);
-            }
+        com.jme3.math.Vector3f hitPointSurface = DynamicsUtils.lerp(vectorCheck3_1, vectorCheck3_2, rayTestResult2.getHitFraction());
+        if (hitPointSurface.y <= hitPoint1.y + 0.5d && hitPointSurface.distance(vectorCheck3) > 0.25d) {
+            GraphVertex v = new GraphVertex(new org.joml.Vector3f(hitPointSurface.x, hitPointSurface.y, hitPointSurface.z));
+            this.getGraph().addVertex(v);
+            this.getGraph().addEdge(v, current);
+            this.getGraph().addEdge(current, v);
+        }
         return null;
     }
 

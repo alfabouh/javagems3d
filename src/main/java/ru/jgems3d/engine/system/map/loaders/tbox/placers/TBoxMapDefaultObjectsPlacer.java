@@ -100,14 +100,11 @@ public abstract class TBoxMapDefaultObjectsPlacer {
     }
 
     public static void handleTBoxMarker(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData renderContainer) {
-        ;
     }
 
     public static void mapPostLoad(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        ;
     }
 
     public static void mapPreLoad(PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        ;
     }
 }

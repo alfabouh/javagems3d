@@ -17,8 +17,8 @@ import org.joml.Vector3f;
 import java.io.Serializable;
 
 public class GraphChunk implements Serializable {
-    private static final long serialVersionUID = -228L;
     public static final int CHUNK_SIZE_XZ = 8;
+    private static final long serialVersionUID = -228L;
     private final Vector2i chunkIJ;
 
     public GraphChunk(Vector2i chunkIJ) {

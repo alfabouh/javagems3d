@@ -18,11 +18,11 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.camera.FreeCamera;
 import ru.jgems3d.engine.graphics.opengl.screen.window.IWindow;
-import ru.jgems3d.engine.system.inventory.IInventoryOwner;
-import ru.jgems3d.engine.system.inventory.Inventory;
 import ru.jgems3d.engine.system.controller.binding.BindingManager;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.devices.MouseKeyboard;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
+import ru.jgems3d.engine.system.inventory.Inventory;
 
 public class MouseKeyboardController implements IController {
     protected final Vector2f normalizedRotationInput;

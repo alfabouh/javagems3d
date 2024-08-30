@@ -80,6 +80,7 @@ public abstract class DynamicsUtils {
     public static void scaleRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f scale) {
         physicsRigidBody.setPhysicsScale(DynamicsUtils.convertV3F_JME(scale));
     }
+
     public static void translateGhost(PhysicsGhostObject physicsGhostObject, Vector3f pos) {
         physicsGhostObject.setPhysicsLocation(DynamicsUtils.convertV3F_JME(pos));
     }

@@ -48,7 +48,7 @@ public class DefaultGamePanel extends AbstractPanelUI {
 
             Inventory inventory = dynamicPlayer.inventory();
             int j = 0;
-            
+
             if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
                 immediateUI.textUI(inventory.getCurrentItem().getDescription(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(80, 80), 0xffffff, 0.5f);
             }

@@ -33,13 +33,13 @@ public class SimpleTexturedParticle extends TexturedParticleFX {
         this.setPosition(this.getPosition().add(0.0f, (float) (frameDeltaTime), 0.0f));
     }
 
-    public SimpleTexturedParticle setMaxLivingSeconds(double maxLivingSeconds) {
-        this.maxLivingSeconds = maxLivingSeconds;
-        return this;
-    }
-
     @Override
     public double getMaxLivingSeconds() {
         return this.maxLivingSeconds;
+    }
+
+    public SimpleTexturedParticle setMaxLivingSeconds(double maxLivingSeconds) {
+        this.maxLivingSeconds = maxLivingSeconds;
+        return this;
     }
 }

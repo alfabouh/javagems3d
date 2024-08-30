@@ -13,8 +13,8 @@ package ru.jgems3d.engine.system.resources.assets.material;
 
 import org.joml.Vector4f;
 import ru.jgems3d.engine.system.resources.assets.material.samples.ColorSample;
-import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ISample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 
 @SuppressWarnings("all")
 public class Material {
@@ -49,11 +49,6 @@ public class Material {
         return this;
     }
 
-    public Material setSpecularMap(ITextureSample specularMap) {
-        this.specularMap = specularMap;
-        return this;
-    }
-
     public Material setDefaultMetallic() {
         this.metallicMap = null;
         return this;
@@ -84,29 +79,8 @@ public class Material {
         return this;
     }
 
-    public Material setFullOpacity(float fullOpacity) {
-        this.fullOpacity = fullOpacity;
-        return this;
-    }
-
-    public Material setOpacityMap(ITextureSample opacityMap) {
-        this.opacityMap = opacityMap;
-        return this;
-    }
-
-    public Material setNormalsMap(ITextureSample normalsMap) {
-        this.normalsMap = normalsMap;
-        return this;
-    }
-
-    public Material setDiffuse(ISample diffuse) {
-        this.diffuse = diffuse;
-        return this;
-    }
-
-    public Material setMetallicMap(ITextureSample metallicMap) {
-        this.metallicMap = metallicMap;
-        return this;
+    public ITextureSample getEmissionMap() {
+        return this.emissionMap;
     }
 
     public Material setEmissionMap(ITextureSample emissionMap) {
@@ -114,28 +88,49 @@ public class Material {
         return this;
     }
 
-    public ITextureSample getEmissionMap() {
-        return this.emissionMap;
-    }
-
     public ITextureSample getMetallicMap() {
         return this.metallicMap;
+    }
+
+    public Material setMetallicMap(ITextureSample metallicMap) {
+        this.metallicMap = metallicMap;
+        return this;
     }
 
     public ITextureSample getNormalsMap() {
         return this.normalsMap;
     }
 
+    public Material setNormalsMap(ITextureSample normalsMap) {
+        this.normalsMap = normalsMap;
+        return this;
+    }
+
     public ITextureSample getSpecularMap() {
         return this.specularMap;
+    }
+
+    public Material setSpecularMap(ITextureSample specularMap) {
+        this.specularMap = specularMap;
+        return this;
     }
 
     public ISample getDiffuse() {
         return this.diffuse;
     }
 
+    public Material setDiffuse(ISample diffuse) {
+        this.diffuse = diffuse;
+        return this;
+    }
+
     public ISample getOpacityMap() {
         return this.opacityMap;
+    }
+
+    public Material setOpacityMap(ITextureSample opacityMap) {
+        this.opacityMap = opacityMap;
+        return this;
     }
 
     public float getFullOpacity() {
@@ -144,6 +139,11 @@ public class Material {
             w1 = ((ColorSample) (this.getDiffuse())).getColor().w;
         }
         return this.fullOpacity * w1;
+    }
+
+    public Material setFullOpacity(float fullOpacity) {
+        this.fullOpacity = fullOpacity;
+        return this;
     }
 
     public boolean hasTransparency() {

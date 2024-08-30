@@ -12,11 +12,11 @@
 package ru.jgems3d.engine.physics.world.triggers.liquids.base;
 
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
-import ru.jgems3d.engine.physics.world.triggers.Zone;
-import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
+import ru.jgems3d.engine.physics.world.triggers.Zone;
+import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
 
 public abstract class Liquid implements IWorldObject, IWorldTicked {
     private final SimpleTriggerZone simpleTriggerZone;

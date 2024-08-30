@@ -30,8 +30,8 @@ import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class LoggingManager {
-    public static boolean markConsoleDirty;
     public static final StringJoiner consoleText = new StringJoiner("\n");
+    public static boolean markConsoleDirty;
     private final Logger log;
 
     public LoggingManager(String loggerName) {

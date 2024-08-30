@@ -14,17 +14,16 @@ package ru.jgems3d.engine.audio;
 import org.joml.Vector3f;
 import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryUtil;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.audio.sound.GameSound;
 import ru.jgems3d.engine.audio.sound.SoundBuffer;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 

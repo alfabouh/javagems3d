@@ -11,10 +11,8 @@
 
 package ru.jgems3d.toolbox.resources.models;
 
-import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
-import ru.jgems3d.engine.system.resources.cache.ResourceCache;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.toolbox.resources.TBoxResourceManager;
 
 public class ModelResources {

@@ -16,14 +16,14 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
+import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.physics.world.PhysicsWorld;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.zones.SimpleTriggerZone;
 import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.system.inventory.items.InventoryItem;
-import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class EntityCollectableItem extends WorldItem {

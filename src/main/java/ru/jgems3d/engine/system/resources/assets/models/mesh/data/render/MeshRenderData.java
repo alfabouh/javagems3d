@@ -45,16 +45,6 @@ public final class MeshRenderData {
         return meshRenderData;
     }
 
-    public MeshRenderData setOverlappingMaterial(Material overlappingMaterial) {
-        this.overlappingMaterial = overlappingMaterial;
-        return this;
-    }
-
-    public MeshRenderData setOverridenTransparencyShader(JGemsShaderManager overridenTransparencyShader) {
-        this.overridenTransparencyShader = overridenTransparencyShader;
-        return this;
-    }
-
     public MeshRenderData allowMoveMeshesIntoTransparencyPass(boolean allowMoveMeshesIntoTransparencyPass) {
         this.allowMoveMeshesIntoTransparencyPass = allowMoveMeshesIntoTransparencyPass;
         return this;
@@ -65,13 +55,13 @@ public final class MeshRenderData {
         return this;
     }
 
-    public MeshRenderData setShaderManager(@NotNull JGemsShaderManager shaderManager) {
-        this.shaderManager = shaderManager;
-        return this;
-    }
-
     public Material getOverlappingMaterial() {
         return this.overlappingMaterial;
+    }
+
+    public MeshRenderData setOverlappingMaterial(Material overlappingMaterial) {
+        this.overlappingMaterial = overlappingMaterial;
+        return this;
     }
 
     public boolean isAllowMoveMeshesIntoTransparencyPass() {
@@ -82,11 +72,21 @@ public final class MeshRenderData {
         return this.overridenTransparencyShader;
     }
 
+    public MeshRenderData setOverridenTransparencyShader(JGemsShaderManager overridenTransparencyShader) {
+        this.overridenTransparencyShader = overridenTransparencyShader;
+        return this;
+    }
+
     public @NotNull MeshRenderAttributes getRenderAttributes() {
         return this.meshRenderAttributes;
     }
 
     public @NotNull JGemsShaderManager getShaderManager() {
         return this.shaderManager;
+    }
+
+    public MeshRenderData setShaderManager(@NotNull JGemsShaderManager shaderManager) {
+        this.shaderManager = shaderManager;
+        return this;
     }
 }

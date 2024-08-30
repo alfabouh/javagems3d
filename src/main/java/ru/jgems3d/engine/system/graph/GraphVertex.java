@@ -37,36 +37,36 @@ public class GraphVertex implements Serializable {
         return this.getPosition().distance(vector3f);
     }
 
-    public synchronized void setG(float g) {
-        this.g = g;
+    public synchronized float getH() {
+        return this.h;
     }
 
     public synchronized void setH(float h) {
         this.h = h;
     }
 
-    public synchronized void setF(float f) {
-        this.f = f;
-    }
-
-    public synchronized void setParent(GraphVertex parent) {
-        this.parent = parent;
-    }
-
-    public synchronized float getH() {
-        return this.h;
-    }
-
     public synchronized float getG() {
         return this.g;
+    }
+
+    public synchronized void setG(float g) {
+        this.g = g;
     }
 
     public synchronized double getF() {
         return this.f;
     }
 
+    public synchronized void setF(float f) {
+        this.f = f;
+    }
+
     public synchronized GraphVertex getParent() {
         return this.parent;
+    }
+
+    public synchronized void setParent(GraphVertex parent) {
+        this.parent = parent;
     }
 
     public Vector3f getPosition() {

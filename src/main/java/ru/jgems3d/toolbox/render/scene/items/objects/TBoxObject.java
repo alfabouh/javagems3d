@@ -12,11 +12,9 @@
 package ru.jgems3d.toolbox.render.scene.items.objects;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
 import ru.jgems3d.logger.SystemLogging;
-import ru.jgems3d.logger.managers.LoggingManager;
 import ru.jgems3d.toolbox.map_sys.save.objects.object_attributes.AttributesContainer;
 import ru.jgems3d.toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import ru.jgems3d.toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;

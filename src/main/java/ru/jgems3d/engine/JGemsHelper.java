@@ -25,10 +25,10 @@ import ru.jgems3d.engine.graphics.opengl.environment.sky.Sky;
 import ru.jgems3d.engine.graphics.opengl.particles.ParticlesEmitter;
 import ru.jgems3d.engine.graphics.opengl.particles.attributes.ParticleAttributes;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleColoredParticle;
-import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.particles.objects.SimpleTexturedParticle;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
+import ru.jgems3d.engine.graphics.opengl.particles.objects.base.ParticleFX;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.props.SceneProp;
@@ -47,17 +47,17 @@ import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.controller.objects.IController;
 import ru.jgems3d.engine.system.controller.objects.MouseKeyboardController;
 import ru.jgems3d.engine.system.graph.Graph;
+import ru.jgems3d.engine.system.map.loaders.IMapLoader;
 import ru.jgems3d.engine.system.map.navigation.pathgen.MapNavGraphGenerator;
 import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
-import ru.jgems3d.engine.system.resources.localisation.Lang;
-import ru.jgems3d.engine.system.resources.localisation.Localisation;
-import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine.system.map.loaders.IMapLoader;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
+import ru.jgems3d.engine.system.resources.localisation.Lang;
+import ru.jgems3d.engine.system.resources.localisation.Localisation;
+import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.settings.JGemsSettings;
 import ru.jgems3d.logger.SystemLogging;
 import ru.jgems3d.logger.managers.LoggingManager;
@@ -66,6 +66,7 @@ import java.util.List;
 
 /**
  * Using the JGemsHelper class, you can conveniently access most of the most important functions for managing the state of the engine. This utility class is divided into sections for easier navigation.
+ *
  * @see ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils
  * @see ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper
  */
@@ -357,8 +358,7 @@ public abstract class JGemsHelper {
 
     public static abstract class MATH {
 
-        public static float lerp(float a, float b, float f)
-        {
+        public static float lerp(float a, float b, float f) {
             return a + f * (b - a);
         }
 

@@ -11,11 +11,10 @@
 
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render;
 
-import org.lwjgl.opengl.GL30;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 
 public class RenderEntity2D3D extends RenderWorldItem {

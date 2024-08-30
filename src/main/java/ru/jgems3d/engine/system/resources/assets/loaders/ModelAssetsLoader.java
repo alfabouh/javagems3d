@@ -12,10 +12,10 @@
 package ru.jgems3d.engine.system.resources.assets.loaders;
 
 import ru.jgems3d.engine.JGems3D;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.loaders.base.IAssetsLoader;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.MeshDataGroup;
 import ru.jgems3d.engine.system.resources.manager.GameResources;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 public class ModelAssetsLoader implements IAssetsLoader {
     public MeshDataGroup cube;

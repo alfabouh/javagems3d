@@ -36,7 +36,7 @@ public class Graph implements Serializable {
         this.start = null;
     }
 
-    public static void saveInFile(Graph graph){
+    public static void saveInFile(Graph graph) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(graph);
         try (FileWriter fileWriter = new FileWriter("nav.mesh")) {
@@ -62,25 +62,15 @@ public class Graph implements Serializable {
         }
     }
 
-    public void setGraphChunkGroups(Map<GraphChunk, List<GraphVertex>> graphChunkGroups) {
-        this.graphChunkGroups = graphChunkGroups;
-    }
-
-    public void setGraph(Map<GraphVertex, List<GraphEdge>> graph) {
-        this.graph = graph;
-    }
-
-    public void setStart(GraphVertex start) {
-        this.start = start;
-    }
-
     public void addVertex(GraphVertex gVertex) {
         this.getGraph().putIfAbsent(gVertex, new ArrayList<>());
         GraphChunk graphChunk = GraphChunk.getChunkIJByCoordinates(gVertex.getPosition());
         if (this.getGraphChunkGroups().containsKey(graphChunk)) {
             this.getGraphChunkGroups().get(graphChunk).add(gVertex);
         } else {
-            this.getGraphChunkGroups().put(graphChunk, new ArrayList<GraphVertex>() {{ add(gVertex); }});
+            this.getGraphChunkGroups().put(graphChunk, new ArrayList<GraphVertex>() {{
+                add(gVertex);
+            }});
         }
         if (this.getStart() == null) {
             this.start = gVertex;
@@ -116,12 +106,24 @@ public class Graph implements Serializable {
         return this.graphChunkGroups;
     }
 
+    public void setGraphChunkGroups(Map<GraphChunk, List<GraphVertex>> graphChunkGroups) {
+        this.graphChunkGroups = graphChunkGroups;
+    }
+
     public synchronized Map<GraphVertex, List<GraphEdge>> getGraph() {
         return this.graph;
     }
 
+    public void setGraph(Map<GraphVertex, List<GraphEdge>> graph) {
+        this.graph = graph;
+    }
+
     public GraphVertex getStart() {
         return this.start;
+    }
+
+    public void setStart(GraphVertex start) {
+        this.start = start;
     }
 
     @SuppressWarnings("all")

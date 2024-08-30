@@ -12,10 +12,10 @@
 package ru.jgems3d.engine.physics.world;
 
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
-import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 

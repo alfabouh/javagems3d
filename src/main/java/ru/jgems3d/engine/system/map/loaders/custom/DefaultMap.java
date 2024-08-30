@@ -13,16 +13,15 @@ package ru.jgems3d.engine.system.map.loaders.custom;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.BtStaticMeshBody;
 import ru.jgems3d.engine.physics.entities.ai.CubeAI;
 import ru.jgems3d.engine.physics.entities.collectabes.EntityCollectableItem;
-import ru.jgems3d.engine.physics.entities.misc.EntityDoor;
 import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.physics.world.triggers.Zone;
 import ru.jgems3d.engine.physics.world.triggers.liquids.Water;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.graph.Graph;
 import ru.jgems3d.engine.system.inventory.items.ItemZippo;
 import ru.jgems3d.engine.system.map.MapInfo;

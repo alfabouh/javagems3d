@@ -15,22 +15,20 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.api_bridge.APIContainer;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
-import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
-import ru.jgems3d.engine.system.resources.manager.GameResources;
-import ru.jgems3d.engine.system.service.collections.Pair;
-import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.graphics.opengl.environment.Environment;
 import ru.jgems3d.engine.graphics.opengl.environment.sky.skybox.SkyBox2D;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
-import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
+import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.system.controller.dispatcher.JGemsControllerDispatcher;
 import ru.jgems3d.engine.system.core.player.LocalPlayer;
 import ru.jgems3d.engine.system.map.loaders.IMapLoader;
+import ru.jgems3d.engine.system.resources.assets.material.samples.CubeMapSample;
+import ru.jgems3d.engine.system.resources.manager.GameResources;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
-import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
+import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.system.service.stat.PerformanceStat;
 import ru.jgems3d.engine_api.events.bus.Events;
 import ru.jgems3d.logger.managers.JGemsLogging;
@@ -49,10 +47,10 @@ public class EngineSystem implements IEngine {
 
     private final JGemsResourceManager resourceManager;
     private final EngineState engineState;
+    private final RequestsFromThreads requestsFromThreads;
     private Thread thread;
     private IMapLoader mapLoader;
     private LocalPlayer localPlayer;
-    private final RequestsFromThreads requestsFromThreads;
 
     public EngineSystem() {
         this.thread = null;
@@ -61,10 +59,6 @@ public class EngineSystem implements IEngine {
         this.mapLoader = null;
 
         this.requestsFromThreads = new RequestsFromThreads();
-    }
-
-    public void setLockedUnPausing(boolean lockedUnPausing) {
-        this.engineState().lockedUnPausing = lockedUnPausing;
     }
 
     public void update() {
@@ -298,6 +292,10 @@ public class EngineSystem implements IEngine {
     @SuppressWarnings("all")
     public boolean isLockedUnPausing() {
         return this.engineState().lockedUnPausing;
+    }
+
+    public void setLockedUnPausing(boolean lockedUnPausing) {
+        this.engineState().lockedUnPausing = lockedUnPausing;
     }
 
     private void printSystemInfo() {

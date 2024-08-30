@@ -10,12 +10,7 @@
 
 package ru.jgems3d.engine.system.map.loaders.tbox.placers;
 
-import org.jetbrains.annotations.NotNull;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 
 /**
  * This class represents trigger information for an object inside the engine itself

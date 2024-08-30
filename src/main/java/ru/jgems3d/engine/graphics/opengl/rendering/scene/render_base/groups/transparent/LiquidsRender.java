@@ -13,11 +13,11 @@ package ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.groups.tra
 
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
+import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
-import ru.jgems3d.engine.graphics.opengl.rendering.items.objects.LiquidObject;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.ModelNode;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;

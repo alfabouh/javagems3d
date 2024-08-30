@@ -33,9 +33,9 @@ import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
-import ru.jgems3d.engine.system.service.collections.Pair;
 import ru.jgems3d.engine.system.resources.assets.shaders.RenderPass;
+import ru.jgems3d.engine.system.service.collections.Pair;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.synchronizing.SyncManager;
 import ru.jgems3d.engine_api.events.bus.Events;
 
@@ -283,7 +283,7 @@ public final class SceneWorld implements IWorld {
             JGemsHelper.getLogger().warn("Couldn't remove a render object from scene rendering!");
         }
     }
-    
+
     public void addEntityInWorld(AbstractSceneEntity abstractSceneEntity) {
         this.getObjectMap().put(abstractSceneEntity.getWorldItem().getItemId(), abstractSceneEntity);
         abstractSceneEntity.onSpawn(this);
@@ -315,10 +315,6 @@ public final class SceneWorld implements IWorld {
         return this.particlesEmitter;
     }
 
-    public void setFrustumCulling(FrustumCulling frustumCulling) {
-        this.frustumCulling = frustumCulling;
-    }
-
     private Map<Integer, AbstractSceneEntity> getObjectMap() {
         return this.objectMap;
     }
@@ -337,5 +333,9 @@ public final class SceneWorld implements IWorld {
 
     public FrustumCulling getFrustumCulling() {
         return this.frustumCulling;
+    }
+
+    public void setFrustumCulling(FrustumCulling frustumCulling) {
+        this.frustumCulling = frustumCulling;
     }
 }

@@ -40,13 +40,12 @@ public class APIContainer {
     }
 
     private final HashMap<Class<Events.IEvent>, TreeSet<PriorityMethod>> eventMap;
-
-    private APITBoxInfo apiTBoxInfo;
-    private APIGameInfo apiGameInfo;
     private final AppResourceLoader appResourceLoader;
     private final AppEventSubscriber appEventSubscriber;
     private final TBoxEntitiesObjectData tBoxEntitiesObjectData;
     private final TBoxEntitiesUserData tBoxEntitiesUserData;
+    private APITBoxInfo apiTBoxInfo;
+    private APIGameInfo apiGameInfo;
 
     private APIContainer() {
         this.apiGameInfo = null;
@@ -129,12 +128,8 @@ public class APIContainer {
         }
     }
 
-    void setApiTBoxInfo(APITBoxInfo apiTBoxInfo) {
-        this.apiTBoxInfo = apiTBoxInfo;
-    }
-
-    void setApiGameInfo(APIGameInfo apiGameInfo) {
-        this.apiGameInfo = apiGameInfo;
+    public static APIContainer get() {
+        return APIContainer.INSTANCE;
     }
 
     public @NotNull AppResourceLoader getAppResourceLoader() {
@@ -157,12 +152,16 @@ public class APIContainer {
         return this.apiTBoxInfo;
     }
 
+    void setApiTBoxInfo(APITBoxInfo apiTBoxInfo) {
+        this.apiTBoxInfo = apiTBoxInfo;
+    }
+
     public @NotNull APIGameInfo getApiGameInfo() {
         return this.apiGameInfo;
     }
 
-    public static APIContainer get() {
-        return APIContainer.INSTANCE;
+    void setApiGameInfo(APIGameInfo apiGameInfo) {
+        this.apiGameInfo = apiGameInfo;
     }
 
     private static class PriorityMethod {

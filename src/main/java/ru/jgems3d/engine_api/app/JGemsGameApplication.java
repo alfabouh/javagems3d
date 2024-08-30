@@ -50,5 +50,6 @@ public interface JGemsGameApplication {
      *
      * @return the app manager
      */
-    @NotNull AppManager createAppManager();
+    @NotNull
+    AppManager createAppManager();
 }

@@ -15,12 +15,12 @@ import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
+import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.system.graph.Graph;
-import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine_api.events.bus.Events;
 
-import java.util.*;
+import java.util.Optional;
 
 /**
  * In the physical world, the logic of the behavior of entities is being updated.
@@ -75,17 +75,6 @@ public final class PhysicsWorld implements IWorld {
         this.getWorldObjectsContainer().removeObjectFromWorld(worldObject);
     }
 
-    public void setMapNavGraph(Graph mapNavGraph) {
-        synchronized (this) {
-            this.mapNavGraph = mapNavGraph;
-        }
-        if (JGems3D.DEBUG_MODE) {
-            if (mapNavGraph != null) {
-                JGemsDebugGlobalConstants.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
-            }
-        }
-    }
-
     public void removeNavGraph() {
         if (JGems3D.DEBUG_MODE) {
             if (this.mapNavGraph != null) {
@@ -100,6 +89,17 @@ public final class PhysicsWorld implements IWorld {
     public Graph getMapNavGraph() {
         synchronized (this) {
             return this.mapNavGraph;
+        }
+    }
+
+    public void setMapNavGraph(Graph mapNavGraph) {
+        synchronized (this) {
+            this.mapNavGraph = mapNavGraph;
+        }
+        if (JGems3D.DEBUG_MODE) {
+            if (mapNavGraph != null) {
+                JGemsDebugGlobalConstants.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
+            }
         }
     }
 

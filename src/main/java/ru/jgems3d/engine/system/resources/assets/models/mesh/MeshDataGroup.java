@@ -57,16 +57,17 @@ public class MeshDataGroup implements ICached {
         return null;
     }
 
+    public IMeshUserData getMeshUserData() {
+        return this.meshUserData;
+    }
+
     /**
      * This is additional user information, if necessary
+     *
      * @param meshUserData
      */
     public void setMeshUserData(IMeshUserData meshUserData) {
         this.meshUserData = meshUserData;
-    }
-
-    public IMeshUserData getMeshUserData() {
-        return this.meshUserData;
     }
 
     public void clean() {

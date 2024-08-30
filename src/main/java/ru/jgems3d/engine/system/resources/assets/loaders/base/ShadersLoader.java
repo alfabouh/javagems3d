@@ -12,13 +12,14 @@
 package ru.jgems3d.engine.system.resources.assets.loaders.base;
 
 import ru.jgems3d.engine.JGemsHelper;
-import ru.jgems3d.engine.system.service.path.JGemsPath;
 import ru.jgems3d.engine.system.resources.assets.shaders.UniformBufferObject;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.ShaderManager;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
+import ru.jgems3d.engine.system.service.path.JGemsPath;
 
-public abstract class ShadersLoader <T extends ShaderManager> {
+public abstract class ShadersLoader<T extends ShaderManager> {
     protected abstract void initObjects(ResourceCache resourceCache);
+
     protected abstract T createShaderObject(JGemsPath shaderPath);
 
     @SuppressWarnings("unchecked")
@@ -28,7 +29,7 @@ public abstract class ShadersLoader <T extends ShaderManager> {
             return (T) resourceCache.getCachedObject(shaderPath);
         }
         JGemsHelper.getLogger().log("Creating shader " + shaderPath + "...");
-        T shaderManager = (T) this.createShaderObject(shaderPath);
+        T shaderManager = this.createShaderObject(shaderPath);
         resourceCache.addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }

@@ -13,11 +13,11 @@ package ru.jgems3d.engine.system.resources.assets.shaders.manager;
 
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.CShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.GShaderProgram;
 import ru.jgems3d.engine.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.shaders.*;
 import ru.jgems3d.engine.system.resources.cache.ICached;
 import ru.jgems3d.engine.system.resources.cache.ResourceCache;
@@ -26,17 +26,19 @@ import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ShaderManager objects are shader packages that have functions for managing the state of the shader, its uniforms and uni-buffers
  */
 public abstract class ShaderManager implements ICached {
-    private ACT_SHADER activeShader;
     private final Set<UniformBufferObject> uniformBufferObjects;
+    private final ShaderContainer shaderContainer;
+    private ACT_SHADER activeShader;
     private ShaderGroup graphicShaderGroup;
     private ShaderGroup computingShaderGroup;
-    private final ShaderContainer shaderContainer;
     private RenderPass renderPass;
 
     private int usedTextureUnits;
@@ -55,11 +57,6 @@ public abstract class ShaderManager implements ICached {
     }
 
     public abstract ShaderManager copy();
-
-    public ShaderManager setShaderRenderPass(RenderPass renderPass) {
-        this.renderPass = renderPass;
-        return this;
-    }
 
     public ShaderManager attachUBOs(UniformBufferObject... uniformBufferObjects) {
         this.uniformBufferObjects.addAll(Arrays.asList(uniformBufferObjects));
@@ -300,6 +297,11 @@ public abstract class ShaderManager implements ICached {
         return this.renderPass;
     }
 
+    public ShaderManager setShaderRenderPass(RenderPass renderPass) {
+        this.renderPass = renderPass;
+        return this;
+    }
+
     public ShaderGroup getComputingShaderGroup() {
         return this.computingShaderGroup;
     }
@@ -325,5 +327,6 @@ public abstract class ShaderManager implements ICached {
         COMPUTE,
         GRAPHICAL,
         NONE
-    };
+    }
+
 }

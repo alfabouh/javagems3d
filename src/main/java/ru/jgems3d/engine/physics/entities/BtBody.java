@@ -18,15 +18,15 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import ru.jgems3d.engine.physics.colliders.IColliderConstructor;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
-import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
 import ru.jgems3d.engine.physics.entities.properties.material.PhysMaterial;
-import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
+import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
 import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsSystem;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
+import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 
 public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicked {
     private EntityState entityState;
@@ -65,26 +65,6 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
             i |= collisionFilter.getMask();
         }
         this.getPhysicsRigidBody().setCollideWithGroups(CollisionFilter.ALL.getMask() & ~i);
-    }
-
-    public void setCollisionFilter(CollisionFilter... collisionFilters) {
-        int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
-        }
-        this.getPhysicsRigidBody().setCollideWithGroups(i);
-    }
-
-    public void setCollisionGroup(CollisionFilter... collisionFilters) {
-        int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
-        }
-        this.getPhysicsRigidBody().setCollisionGroup(i);
-    }
-
-    public void setEntityState(@NotNull EntityState state) {
-        this.entityState = state;
     }
 
     public BtBody setCanBeDestroyed(boolean flag) {
@@ -145,12 +125,9 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
 
     protected abstract IColliderConstructor constructCollision();
 
-    public void setRotation(Vector3f vector3f) {
-        DynamicsUtils.rotateRigidBody(this.getPhysicsRigidBody(), vector3f);
-    }
-
-    public void setPosition(Vector3f vector3f) {
-        DynamicsUtils.translateRigidBody(this.getPhysicsRigidBody(), vector3f);
+    @Override
+    public Vector3f getScaling() {
+        return DynamicsUtils.getObjectBodyScaling(this.getPhysicsRigidBody());
     }
 
     public void setScaling(Vector3f scaling) {
@@ -158,13 +135,12 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
     }
 
     @Override
-    public Vector3f getScaling() {
-        return DynamicsUtils.getObjectBodyScaling(this.getPhysicsRigidBody());
-    }
-
-    @Override
     public Vector3f getPosition() {
         return DynamicsUtils.getObjectBodyPos(this.getPhysicsRigidBody());
+    }
+
+    public void setPosition(Vector3f vector3f) {
+        DynamicsUtils.translateRigidBody(this.getPhysicsRigidBody(), vector3f);
     }
 
     @Override
@@ -172,16 +148,40 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
         return DynamicsUtils.getObjectBodyRot(this.getPhysicsRigidBody());
     }
 
+    public void setRotation(Vector3f vector3f) {
+        DynamicsUtils.rotateRigidBody(this.getPhysicsRigidBody(), vector3f);
+    }
+
     public int getCollisionGroup() {
         return this.getPhysicsRigidBody().getCollisionGroup();
+    }
+
+    public void setCollisionGroup(CollisionFilter... collisionFilters) {
+        int i = 0;
+        for (CollisionFilter collisionFilter : collisionFilters) {
+            i |= collisionFilter.getMask();
+        }
+        this.getPhysicsRigidBody().setCollisionGroup(i);
     }
 
     public int getCollisionFilter() {
         return this.getPhysicsRigidBody().getCollideWithGroups();
     }
 
+    public void setCollisionFilter(CollisionFilter... collisionFilters) {
+        int i = 0;
+        for (CollisionFilter collisionFilter : collisionFilters) {
+            i |= collisionFilter.getMask();
+        }
+        this.getPhysicsRigidBody().setCollideWithGroups(i);
+    }
+
     public EntityState getEntityState() {
         return this.entityState;
+    }
+
+    public void setEntityState(@NotNull EntityState state) {
+        this.entityState = state;
     }
 
     @Override

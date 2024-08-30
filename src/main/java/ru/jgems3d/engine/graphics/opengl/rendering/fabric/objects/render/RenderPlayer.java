@@ -12,9 +12,9 @@
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render;
 
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 
 public class RenderPlayer implements IRenderObjectFabric {
 

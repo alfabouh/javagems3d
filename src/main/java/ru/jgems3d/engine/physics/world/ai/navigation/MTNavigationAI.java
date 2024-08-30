@@ -85,15 +85,15 @@ public class MTNavigationAI<T extends WorldItem> extends NavigationAI<T> {
         this.destination = destination;
     }
 
-    public void setPath(List<GraphVertex> path) {
-        synchronized (this) {
-           super.setPath(path);
-        }
-    }
-
     protected List<GraphVertex> getPath() {
         synchronized (this) {
             return super.getPath();
+        }
+    }
+
+    public void setPath(List<GraphVertex> path) {
+        synchronized (this) {
+            super.setPath(path);
         }
     }
 }

@@ -16,5 +16,6 @@ import ru.jgems3d.engine.system.controller.objects.IController;
 
 public interface IControllerDispatcher {
     void updateController(IWindow window);
+
     IController getCurrentController();
 }

@@ -42,23 +42,8 @@ public class MeshRenderAttributes {
         this.disableFaceCulling = false;
     }
 
-    public MeshRenderAttributes setRenderDistance(float renderDistance) {
-        this.renderDistance = renderDistance;
-        return this;
-    }
-
     public MeshRenderAttributes faceCullingDisabled(boolean disableFaceCulling) {
         this.disableFaceCulling = disableFaceCulling;
-        return this;
-    }
-
-    public MeshRenderAttributes setLightOpaque(boolean lightOpaque) {
-        this.lightOpaque = lightOpaque;
-        return this;
-    }
-
-    public MeshRenderAttributes setObjectOpacity(float objectOpacity) {
-        this.objectOpacity = objectOpacity;
         return this;
     }
 
@@ -67,14 +52,17 @@ public class MeshRenderAttributes {
         return this;
     }
 
-    public MeshRenderAttributes setShouldInterpolateMovement(boolean shouldInterpolateMovement) {
-        this.shouldInterpolateMovement = shouldInterpolateMovement;
+    public float getObjectOpacity() {
+        return this.objectOpacity;
+    }
+
+    public MeshRenderAttributes setObjectOpacity(float objectOpacity) {
+        this.objectOpacity = objectOpacity;
         return this;
     }
 
-    public MeshRenderAttributes setShadowCaster(boolean shadowCaster) {
-        this.shadowCaster = shadowCaster;
-        return this;
+    public boolean isBright() {
+        return this.isBright;
     }
 
     public MeshRenderAttributes setBright(boolean bright) {
@@ -82,24 +70,31 @@ public class MeshRenderAttributes {
         return this;
     }
 
-    public float getObjectOpacity() {
-        return this.objectOpacity;
-    }
-
-    public boolean isBright() {
-        return this.isBright;
-    }
-
     public boolean isShadowCaster() {
         return this.shadowCaster;
+    }
+
+    public MeshRenderAttributes setShadowCaster(boolean shadowCaster) {
+        this.shadowCaster = shadowCaster;
+        return this;
     }
 
     public boolean isLightOpaque() {
         return this.lightOpaque;
     }
 
+    public MeshRenderAttributes setLightOpaque(boolean lightOpaque) {
+        this.lightOpaque = lightOpaque;
+        return this;
+    }
+
     public boolean isShouldInterpolateMovement() {
         return this.shouldInterpolateMovement;
+    }
+
+    public MeshRenderAttributes setShouldInterpolateMovement(boolean shouldInterpolateMovement) {
+        this.shouldInterpolateMovement = shouldInterpolateMovement;
+        return this;
     }
 
     public float getAlphaDiscardValue() {
@@ -112,6 +107,11 @@ public class MeshRenderAttributes {
 
     public float getRenderDistance() {
         return this.renderDistance;
+    }
+
+    public MeshRenderAttributes setRenderDistance(float renderDistance) {
+        this.renderDistance = renderDistance;
+        return this;
     }
 
     public MeshRenderAttributes copy() {

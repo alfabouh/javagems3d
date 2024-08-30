@@ -11,8 +11,8 @@
 
 package ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects;
 
-import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IRenderObject;
+import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 
 public interface IRenderObjectFabric {

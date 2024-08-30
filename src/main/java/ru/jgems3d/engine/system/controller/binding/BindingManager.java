@@ -24,10 +24,15 @@ public abstract class BindingManager {
     }
 
     public abstract Key keyMoveLeft();
+
     public abstract Key keyMoveRight();
+
     public abstract Key keyMoveForward();
+
     public abstract Key keyMoveBackward();
+
     public abstract Key keyMoveUp();
+
     public abstract Key keyMoveDown();
 
     @SuppressWarnings("all")

@@ -25,20 +25,18 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.audio.sound.data.SoundType;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.render.RenderPlayer;
-import ru.jgems3d.engine.system.inventory.IInventoryOwner;
-import ru.jgems3d.engine.system.inventory.Inventory;
-import ru.jgems3d.engine.system.inventory.items.ItemZippo;
 import ru.jgems3d.engine.physics.entities.IBtEntity;
 import ru.jgems3d.engine.physics.entities.properties.collision.CollisionFilter;
 import ru.jgems3d.engine.physics.entities.properties.state.EntityState;
-import ru.jgems3d.engine.physics.world.PhysicsWorld;
-import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 import ru.jgems3d.engine.physics.world.IWorld;
+import ru.jgems3d.engine.physics.world.PhysicsWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.thread.PhysicsThread;
 import ru.jgems3d.engine.physics.world.thread.dynamics.DynamicsUtils;
+import ru.jgems3d.engine.physics.world.triggers.ITriggerAction;
 import ru.jgems3d.engine.system.controller.objects.IController;
+import ru.jgems3d.engine.system.inventory.IInventoryOwner;
+import ru.jgems3d.engine.system.inventory.Inventory;
 import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 import java.util.ArrayDeque;
@@ -46,17 +44,15 @@ import java.util.Deque;
 import java.util.List;
 
 public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IWorldTicked, IBtEntity {
-    private EntityState entityState;
     private final Vector3f cameraRotation;
     private final Deque<Vector3f> inputMotion;
-    private IController controller;
-    private Inventory inventory;
-
-    private PhysicsCharacter physicsCharacter;
-    private CharacterController characterController;
-
     protected float stepHeight = 0.3f;
     protected float maxSlope = 45.0f;
+    private EntityState entityState;
+    private IController controller;
+    private Inventory inventory;
+    private PhysicsCharacter physicsCharacter;
+    private CharacterController characterController;
 
     public SimpleKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot) {
         super(world, pos, rot, "player_sp");
@@ -93,26 +89,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
     protected Vector2f capsuleSize() {
         return new Vector2f(0.3f, 0.8f);
-    }
-
-    public void setEntityState(@NotNull EntityState state) {
-        this.entityState = state;
-    }
-
-    public void setCollisionFilter(CollisionFilter... collisionFilters) {
-        int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
-        }
-        this.getPhysicsCharacter().setCollideWithGroups(i);
-    }
-
-    public void setCollisionGroup(CollisionFilter... collisionFilters) {
-        int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
-        }
-        this.getPhysicsCharacter().setCollisionGroup(i);
     }
 
     @Override
@@ -256,16 +232,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         return null;
     }
 
-    @Override
-    public void setPosition(Vector3f vector3d) {
-        this.getCharacterController().warp(DynamicsUtils.convertV3F_JME(vector3d));
-    }
-
-    @Override
-    public void setRotation(Vector3f vector3d) {
-        this.cameraRotation.set(vector3d);
-    }
-
     public void setController(IController iController) {
         this.controller = iController;
     }
@@ -339,8 +305,24 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         return this.getPhysicsCharacter().getCollisionGroup();
     }
 
+    public void setCollisionGroup(CollisionFilter... collisionFilters) {
+        int i = 0;
+        for (CollisionFilter collisionFilter : collisionFilters) {
+            i |= collisionFilter.getMask();
+        }
+        this.getPhysicsCharacter().setCollisionGroup(i);
+    }
+
     public int getCollisionFilter() {
         return this.getPhysicsCharacter().getCollideWithGroups();
+    }
+
+    public void setCollisionFilter(CollisionFilter... collisionFilters) {
+        int i = 0;
+        for (CollisionFilter collisionFilter : collisionFilters) {
+            i |= collisionFilter.getMask();
+        }
+        this.getPhysicsCharacter().setCollideWithGroups(i);
     }
 
     @Override
@@ -349,8 +331,18 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     }
 
     @Override
+    public void setPosition(Vector3f vector3d) {
+        this.getCharacterController().warp(DynamicsUtils.convertV3F_JME(vector3d));
+    }
+
+    @Override
     public Vector3f getRotation() {
         return this.getCameraRotation();
+    }
+
+    @Override
+    public void setRotation(Vector3f vector3d) {
+        this.cameraRotation.set(vector3d);
     }
 
     @Override
@@ -360,6 +352,10 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
     public EntityState getEntityState() {
         return this.entityState;
+    }
+
+    public void setEntityState(@NotNull EntityState state) {
+        this.entityState = state;
     }
 
     @Override

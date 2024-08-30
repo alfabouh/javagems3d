@@ -15,18 +15,18 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
 import ru.jgems3d.engine.JGems3D;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
+import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsDebugGlobalConstants;
-import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneUtils;
-import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
-import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
+import ru.jgems3d.engine.system.resources.assets.shaders.UniformString;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
+import ru.jgems3d.engine.system.resources.manager.JGemsResourceManager;
 
 public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;

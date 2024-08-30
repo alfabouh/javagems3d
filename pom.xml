@@ -14,152 +14,68 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.jgems3d</groupId>
     <artifactId>JavaGems3D</artifactId>
-    <version>1.0</version>
+    <version>0.2</version>
+    <packaging>pom</packaging>
+
+    <name>JavaGems3D</name>
+    <description>3-D Java Game Engine</description>
+
+    <licenses>
+        <license>
+            <name>BSD-3-Clause license</name>
+            <url>https://github.com/alfabouh/JavaGems3D?tab=BSD-3-Clause-1-ov-file</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>alfabouh</id>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
-                        <version>0.1.0</version>
-                    </dependency>
-                </dependencies>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
+                        <id>default-jar</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>ru.jgems3d.engine.JGems3D</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>shade-jar-with-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Multi-Release>true</Multi-Release>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>2.5.1</version>
-                <executions>
-                    <execution>
-                        <id>l4j-clui</id>
-                        <phase>package</phase>
-                        <goals><goal>launch4j</goal></goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
-                            <jar>${project.build.directory}/${project.build.finalName}-shaded.jar</jar>
-                            <errTitle>encc</errTitle>
-                            <classPath>
-                                <mainClass>ru.jgems3d.engine.JGems3D</mainClass>
-                                <addDependencies>true</addDependencies>
-                                <preCp>anything</preCp>
-                            </classPath>
-                            <jre>
-                                <minVersion>1.8.0</minVersion>
-                                <opts>
-                                    <opt>-Djava.endorsed.dirs=./endorsed</opt>
-                                </opts>
-                            </jre>
-                            <versionInfo>
-                                <companyName>alfabouh</companyName>
-                                <productName>JGems3D</productName>
-                                <txtFileVersion>${project.version}</txtFileVersion>
-                                <fileDescription>${project.name}</fileDescription>
-                                <copyright>Copyright (c) 2024 alfabouh</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>${project.version}</txtProductVersion>
-                                <productName>${project.name}</productName>
-                                <internalName>game</internalName>
-                                <originalFilename>${project.build.finalName}.exe</originalFilename>
-                            </versionInfo>
-                            <icon>${project.basedir}/src/main/resources/assets/jgems/icons/icon.ico</icon>
+                            <classifier>no-deps</classifier>
+                            <excludes>
+                                <exclude>**/*.class</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <exec executable="jarsigner">
-                                    <arg value="-keystore"/>
-                                    <arg value=".\key\keystore.jks"/>
-                                    <arg value="-storepass"/>
-                                    <arg value="storepass"/>
-                                    <arg value="${project.build.directory}/${project.build.finalName}-shaded.jar"/>
-                                    <arg value="jgemskey"/>
-                                </exec>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>sign-exe</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>key/signtool/signtool</executable>
-                            <arguments>
-                                <argument>sign</argument>
-                                <argument>/fd</argument>
-                                <argument>SHA256</argument>
-                                <argument>/f</argument>
-                                <argument>.\key\certificate.pfx</argument>
-                                <argument>/p</argument>
-                                <argument>storepass</argument>
-                                <argument>/tr</argument>
-                                <argument>http://timestamp.digicert.com</argument>
-                                <argument>/td</argument>
-                                <argument>SHA256</argument>
-                                <argument>target/${project.build.finalName}.exe</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.3</version>
+                <configuration>
+                    <file>${project.build.directory}\${project.artifactId}-src.zip</file>
+                    <repositoryId>sonatype-nexus-staging</repositoryId>
+                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>${project.artifactId}</artifactId>
+                    <version>${project.version}</version>
+
+                </configuration>
             </plugin>
         </plugins>
     </build>

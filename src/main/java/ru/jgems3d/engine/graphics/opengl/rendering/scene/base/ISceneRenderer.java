@@ -17,11 +17,16 @@ import ru.jgems3d.engine.graphics.opengl.rendering.scene.tick.FrameTicking;
 
 public interface ISceneRenderer {
     void onStartRender();
+
     void onRender(FrameTicking frameTicking, Vector2i windowSize);
+
     void onStopRender();
 
     void createResources(Vector2i windowSize);
+
     void destroyResources();
+
     void onWindowResize(Vector2i windowSize);
+
     SceneData getSceneData();
 }

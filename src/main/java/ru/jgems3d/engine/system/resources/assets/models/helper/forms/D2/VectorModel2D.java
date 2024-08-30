@@ -13,8 +13,8 @@ package ru.jgems3d.engine.system.resources.assets.models.helper.forms.D2;
 
 import org.joml.Vector2f;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.helper.forms.BasicMesh;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format2D;
+import ru.jgems3d.engine.system.resources.assets.models.helper.forms.BasicMesh;
 import ru.jgems3d.engine.system.resources.assets.models.mesh.Mesh;
 
 public class VectorModel2D implements BasicMesh<Format2D> {

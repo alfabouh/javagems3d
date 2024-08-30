@@ -17,20 +17,15 @@ import org.joml.Vector3f;
 import ru.jgems3d.engine.JGems3D;
 import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.rendering.JGemsSceneGlobalConstants;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIButton;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIPictureSizable;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIPictureStatic;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UIText;
+import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.*;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.UIElement;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UICarousel;
-import ru.jgems3d.engine.graphics.opengl.rendering.imgui.elements.UISlider;
 import ru.jgems3d.engine.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import ru.jgems3d.engine.graphics.opengl.screen.window.Window;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
-import ru.jgems3d.engine.system.settings.objects.SettingSlot;
 import ru.jgems3d.engine.system.settings.objects.SettingFloatBar;
+import ru.jgems3d.engine.system.settings.objects.SettingSlot;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -231,7 +226,7 @@ public final class ImmediateUI {
         }
     }
 
-    protected void cleanFrame() {
+    private void cleanFrame() {
         this.getUiFrameCache().forEach((key, value) -> value.cleanData());
         this.getUiFrameCache().clear();
     }

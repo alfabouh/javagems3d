@@ -12,8 +12,8 @@
 package ru.jgems3d.engine.audio.sound.loaders.wave;
 
 import org.lwjgl.openal.AL10;
-import ru.jgems3d.engine.audio.sound.loaders.ISoundLoader;
 import ru.jgems3d.engine.JGemsHelper;
+import ru.jgems3d.engine.audio.sound.loaders.ISoundLoader;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;

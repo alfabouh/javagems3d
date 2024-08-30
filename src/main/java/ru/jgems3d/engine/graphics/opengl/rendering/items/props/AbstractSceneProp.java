@@ -13,16 +13,16 @@ package ru.jgems3d.engine.graphics.opengl.rendering.items.props;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
 import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.ArrayList;
@@ -109,17 +109,8 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
         return new RenderSphere(JGemsHelper.UTILS.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), this.getModel().getFormat().getScaling()), this.getModel().getFormat().getPosition());
     }
 
-    public void setVisible(boolean visible) {
-        isVisible = visible;
-    }
-
     public AbstractSceneProp setModelRenderConstraints(MeshRenderData meshRenderData) {
         this.meshRenderData = meshRenderData;
-        return this;
-    }
-
-    public AbstractSceneProp setModel(Model<Format3D> model) {
-        this.model = model;
         return this;
     }
 
@@ -136,12 +127,21 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
         return this.model;
     }
 
+    public AbstractSceneProp setModel(Model<Format3D> model) {
+        this.model = model;
+        return this;
+    }
+
     public MeshRenderData getMeshRenderData() {
         return this.meshRenderData;
     }
 
     public boolean isVisible() {
         return this.isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 
     @Override

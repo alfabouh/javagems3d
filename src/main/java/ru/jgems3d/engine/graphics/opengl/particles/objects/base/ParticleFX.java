@@ -23,11 +23,10 @@ import ru.jgems3d.engine.graphics.opengl.screen.timer.JGemsTimer;
 import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.world.IWorld;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
-import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 import ru.jgems3d.engine.system.resources.assets.material.samples.base.ITextureSample;
+import ru.jgems3d.engine.system.resources.assets.material.samples.packs.ParticleTexturePack;
 
 public abstract class ParticleFX implements IWorldObject, ICulled {
-    private boolean dead;
     private final Vector3f position;
     private final Vector2f scaling;
     private final Vector3f colorMask;
@@ -36,6 +35,7 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
     private final JGemsTimer liveTimer;
     private final JGemsTimer frameTimer;
     private final ParticleAttributes particleAttributes;
+    private boolean dead;
     private int currentFrame;
 
     public ParticleFX(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @Nullable ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
@@ -98,21 +98,6 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         this.dead = true;
     }
 
-    public ParticleFX setColorMask(Vector3f colorMask) {
-        this.colorMask.set(colorMask);
-        return this;
-    }
-
-    public ParticleFX setScaling(Vector2f scaling) {
-        this.scaling.set(scaling);
-        return this;
-    }
-
-    public ParticleFX setPosition(Vector3f pos) {
-        this.position.set(pos);
-        return this;
-    }
-
     public RenderSphere calcRenderSphere() {
         float radius = (float) Math.sqrt(this.getScaling().x * this.getScaling().x + this.getScaling().y * this.getScaling().y);
         return new RenderSphere(radius, this.getPosition());
@@ -134,12 +119,27 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         return new Vector3f(this.colorMask);
     }
 
+    public ParticleFX setColorMask(Vector3f colorMask) {
+        this.colorMask.set(colorMask);
+        return this;
+    }
+
     public Vector2f getScaling() {
         return new Vector2f(this.scaling);
     }
 
+    public ParticleFX setScaling(Vector2f scaling) {
+        this.scaling.set(scaling);
+        return this;
+    }
+
     public Vector3f getPosition() {
         return new Vector3f(this.position);
+    }
+
+    public ParticleFX setPosition(Vector3f pos) {
+        this.position.set(pos);
+        return this;
     }
 
     public ParticleTexturePack getParticleTexturePack() {

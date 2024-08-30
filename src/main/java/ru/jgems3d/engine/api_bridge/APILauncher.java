@@ -17,9 +17,9 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import ru.jgems3d.engine.api_bridge.data.APIGameInfo;
 import ru.jgems3d.engine.api_bridge.data.APITBoxInfo;
+import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.app.*;
-import ru.jgems3d.engine.system.service.exceptions.JGemsException;
 import ru.jgems3d.engine_api.events.bus.Events;
 
 import java.lang.reflect.Field;
@@ -28,14 +28,19 @@ import java.util.Set;
 
 public class APILauncher {
     private static APILauncher INSTANCE;
-    private Reflections reflections;
 
     static {
         APILauncher.INSTANCE = new APILauncher();
     }
 
+    private Reflections reflections;
+
     private APILauncher() {
         this.reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("jgems_api")).setScanners(Scanners.SubTypes.filterResultsBy(s -> s.startsWith("jgems_api")), Scanners.TypesAnnotated));
+    }
+
+    public static APILauncher get() {
+        return APILauncher.INSTANCE;
     }
 
     public void launchGameAPI() {
@@ -98,10 +103,6 @@ public class APILauncher {
         }
 
         return new APIGameInfo(application.createAppManager(), application, jGemsGameEntry);
-    }
-
-    public static APILauncher get() {
-        return APILauncher.INSTANCE;
     }
 
 }

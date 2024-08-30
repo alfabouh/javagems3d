@@ -20,7 +20,6 @@ import ru.jgems3d.toolbox.resources.TBoxResourceManager;
 import ru.jgems3d.toolbox.settings.TBoxSettings;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

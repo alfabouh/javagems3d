@@ -13,13 +13,13 @@ package ru.jgems3d.engine.graphics.opengl.rendering.items.objects;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.graphics.opengl.frustum.ICulled;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import ru.jgems3d.engine.physics.world.triggers.liquids.base.Liquid;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
-import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.helper.MeshHelper;
 
 public final class LiquidObject implements ICulled {
     private final RenderLiquidData renderLiquidData;

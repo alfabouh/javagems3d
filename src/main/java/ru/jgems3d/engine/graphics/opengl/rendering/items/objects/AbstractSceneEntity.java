@@ -14,21 +14,21 @@ package ru.jgems3d.engine.graphics.opengl.rendering.items.objects;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.api_bridge.events.APIEventsLauncher;
+import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
 import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
+import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import ru.jgems3d.engine.graphics.opengl.rendering.items.IModeledSceneObject;
+import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
 import ru.jgems3d.engine.physics.entities.properties.controller.IControllable;
 import ru.jgems3d.engine.physics.world.IWorld;
-import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.IWorldObject;
+import ru.jgems3d.engine.physics.world.basic.IWorldTicked;
 import ru.jgems3d.engine.physics.world.basic.WorldItem;
-import ru.jgems3d.engine.graphics.opengl.environment.light.Light;
-import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
-import ru.jgems3d.engine.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
-import ru.jgems3d.engine.graphics.opengl.world.SceneWorld;
-import ru.jgems3d.engine.JGemsHelper;
 import ru.jgems3d.engine.system.resources.assets.models.Model;
 import ru.jgems3d.engine.system.resources.assets.models.formats.Format3D;
+import ru.jgems3d.engine.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import ru.jgems3d.engine.system.resources.assets.shaders.manager.JGemsShaderManager;
 import ru.jgems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import ru.jgems3d.engine_api.events.bus.Events;
@@ -65,10 +65,6 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         this.isVisible = true;
         this.currentPositionInterpolation = new InterpolationPoints(this.getPrevRenderPosition(), this.getFixedPosition());
         this.currentRotationInterpolation = new InterpolationPoints(this.getPrevRenderRotation(), this.getFixedRotation());
-    }
-
-    public void setModel(Model<Format3D> model) {
-        this.model = model;
     }
 
     protected void initModel() {
@@ -209,10 +205,6 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         this.prevRenderRotation.set(new Vector3f(vector3f));
     }
 
-    public void setVisible(boolean visible) {
-        this.isVisible = visible;
-    }
-
     public boolean isEntityUnderUserControl() {
         return this.getWorldItem() instanceof IControllable && ((IControllable) this.getWorldItem()).isValidController();
     }
@@ -265,6 +257,10 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         return this.model;
     }
 
+    public void setModel(Model<Format3D> model) {
+        this.model = model;
+    }
+
     @Override
     public MeshRenderData getMeshRenderData() {
         return this.getRenderData().getMeshRenderData();
@@ -272,6 +268,10 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
 
     public boolean isVisible() {
         return this.isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
     }
 
     @Override

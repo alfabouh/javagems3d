@@ -11,7 +11,9 @@
 
 package ru.jgems3d.engine.graphics.opengl.frustum;
 
-import org.joml.*;
+import org.joml.FrustumIntersection;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
