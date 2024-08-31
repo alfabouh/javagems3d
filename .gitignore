@@ -30,6 +30,7 @@ target/
 /nbbuild/
 /dist/
 /nbdist/
+/.idea/
 /.nb-gradle/
 /build/
 /target/
