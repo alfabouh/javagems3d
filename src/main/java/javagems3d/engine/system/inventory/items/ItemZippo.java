@@ -29,7 +29,6 @@ public class ItemZippo extends InventoryItem {
     public ItemZippo() {
         super("zippo");
         this.openCd = 0;
-        this.setDescription(JGems3D.get().I18n("item.description.zippo"));
     }
 
     @Override
@@ -68,6 +67,10 @@ public class ItemZippo extends InventoryItem {
         pointLight.setBrightness(this.zippoBrightness());
         JGemsHelper.WORLD.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
+    }
+
+    public String getDescription() {
+        return JGems3D.get().I18n("item.description.zippo");
     }
 
     protected float zippoBrightness() {
