@@ -163,6 +163,17 @@ public class TestTBoxApp implements JGemsTBoxApplication {
     }
 }
 ```
+
+- Most of the useful functions are placed in the *JGemsHelper* utility class
+
+  Example:
+```Java
+        JGemsHelper.GAME.unPauseGameAndUnLockUnPausing();
+        JGemsHelper.GAME.unLockController();
+        JGemsHelper.CAMERA.setCurrentCamera(null);
+        JGemsHelper.WINDOW.setWindowFocus(false);
+```
+
 ### Examples
 - *Below are links to repositories where you can see examples of working programs, based on JavaGems3D*
 - [JavaGems3DExample](https://github.com/alfabouh/JavaGems3DExample)
