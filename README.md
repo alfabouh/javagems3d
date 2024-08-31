@@ -16,6 +16,8 @@ The engine uses **OpenGL 4.3** for graphics, and the **Bullet Physics([Libbullet
 
 ![screen_1725096928350](https://github.com/user-attachments/assets/48d10d31-2aa7-4e16-93a7-27d3720ec7f8)
 
+### Projects, based on JavaGems3D:
+[![ItchIO](https://img.shields.io/badge/JGems_Projects-ItchIO-brightgreen)](https://alfabouh.itch.io/)
 
 ## Engine Features(v0.2a)
 
