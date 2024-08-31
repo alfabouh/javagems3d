@@ -130,12 +130,16 @@ public abstract class JGemsHelper {
             return JGemsHelper.getScreen().getCamera();
         }
 
+        public static void setCurrentCamera(ICamera camera) {
+            JGemsHelper.getScreen().getScene().setCamera(camera);
+        }
+
         public static void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
-            JGemsHelper.getScreen().getScene().setRenderCamera(new FreeCamera(controller, pos, rot));
+            JGemsHelper.getScreen().getScene().setCamera(new FreeCamera(controller, pos, rot));
         }
 
         public static void enableAttachedCamera(WorldItem worldItem) {
-            JGemsHelper.getScreen().getScene().setRenderCamera(JGemsHelper.getSceneWorld().createAttachedCamera(worldItem));
+            JGemsHelper.getScreen().getScene().setCamera(JGemsHelper.getSceneWorld().createAttachedCamera(worldItem));
         }
 
         public static void enableAttachedCamera(AbstractSceneEntity abstractSceneEntity) {

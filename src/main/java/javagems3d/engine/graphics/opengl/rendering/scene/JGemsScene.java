@@ -104,7 +104,7 @@ public class JGemsScene implements IScene {
         JGemsHelper.getLogger().log("Scene rendering stopped");
     }
 
-    public void setRenderCamera(ICamera camera) {
+    public void setCamera(ICamera camera) {
         this.getSceneData().setCamera(camera);
     }
 
@@ -114,15 +114,15 @@ public class JGemsScene implements IScene {
     }
 
     public void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
-        this.setRenderCamera(new FreeCamera(controller, pos, rot));
+        this.setCamera(new FreeCamera(controller, pos, rot));
     }
 
     public void enableAttachedCamera(WorldItem worldItem) {
-        this.setRenderCamera(this.getSceneData().getSceneWorld().createAttachedCamera(worldItem));
+        this.setCamera(this.getSceneData().getSceneWorld().createAttachedCamera(worldItem));
     }
 
     public void enableAttachedCamera(AbstractSceneEntity abstractSceneEntity) {
-        this.setRenderCamera(new AttachedCamera(abstractSceneEntity));
+        this.setCamera(new AttachedCamera(abstractSceneEntity));
     }
 
     public TransformationUtils getTransformationUtils() {
