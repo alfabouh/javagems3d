@@ -36,11 +36,10 @@ public abstract class LoggingManager {
 
     public LoggingManager(String loggerName) {
         this.log = loggerName == null ? LogManager.getRootLogger() : LogManager.getLogger(loggerName);
-        try {
-            this.initStreams(this.log);
-        } catch (IOException e) {
-            throw new JGemsIOException(e);
-        }
+    }
+
+    public Logger getLog() {
+        return this.log;
     }
 
     public static void addTextInConsoleBuffer(CharSequence sequence) {
@@ -86,15 +85,6 @@ public abstract class LoggingManager {
             throw new JGemsRuntimeException(e);
         }
         return integer.get() == 0;
-    }
-
-    private void initStreams(final Logger log) throws IOException {
-        try (StreamOutputTranslation streamOutputTranslation = new StreamOutputTranslation(false, log)) {
-            System.setOut(new PrintStream(streamOutputTranslation, true));
-        }
-        try (StreamOutputTranslation streamOutputTranslation = new StreamOutputTranslation(true, log)) {
-            System.setErr(new PrintStream(streamOutputTranslation, true));
-        }
     }
 
     public void error(String message, Object... objects) {
