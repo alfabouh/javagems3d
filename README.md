@@ -2,7 +2,6 @@
 ![OpenGL 4.3](https://img.shields.io/badge/OpenGL-4.3-blue)
 ![Bullet Physics](https://img.shields.io/badge/Physics-Bullet-blue)
 ![Windows Support](https://img.shields.io/badge/Platform-Windows-brightgreen)
-![No Linux/macOS Support](https://img.shields.io/badge/Support-No%20Linux%20%2F%20macOS-red)
 
 ![ICOGIT](https://github.com/user-attachments/assets/f4d93bc9-279f-41bf-bcd1-d31f8eb056f9)
 ## JavaGems 3D
