@@ -96,8 +96,8 @@ public class EngineSystem implements IEngine {
         this.clean();
         JGemsHelper.GAME.unPauseGameAndUnLockUnPausing();
         JGemsHelper.GAME.unLockController();
-        JGems3D.get().getScreen().getScene().setRenderCamera(null);
-        JGems3D.get().getScreen().getWindow().setInFocus(false);
+        JGemsHelper.CAMERA.setCurrentCamera(null);
+        JGemsHelper.WINDOW.setWindowFocus(false);
         JGems3D.get().getScreen().removeLoadingScreen();
         this.mapLoader = null;
         JGems3D.get().showMainMenu();
