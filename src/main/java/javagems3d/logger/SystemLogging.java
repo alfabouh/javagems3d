@@ -11,9 +11,15 @@
 
 package javagems3d.logger;
 
+import javagems3d.engine.system.service.exceptions.JGemsIOException;
+import javagems3d.logger.translators.StreamOutputTranslation;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.logger.managers.JGemsLogging;
 import javagems3d.logger.managers.LoggingManager;
+
+import java.io.IOException;
+import java.io.PrintStream;
 
 public final class SystemLogging {
     public static final LoggingManager jGemsLogging = new JGemsLogging("JGemsLogger");
@@ -31,6 +37,20 @@ public final class SystemLogging {
 
     public void setCurrentLogging(LoggingManager currentLogging) {
         this.currentLogging = currentLogging;
+        try {
+            this.initStreams(currentLogging.getLog());
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
+    }
+
+    private void initStreams(final Logger log) throws IOException {
+        try (StreamOutputTranslation streamOutputTranslation = new StreamOutputTranslation(false, log)) {
+            System.setOut(new PrintStream(streamOutputTranslation, true));
+        }
+        try (StreamOutputTranslation streamOutputTranslation = new StreamOutputTranslation(true, log)) {
+            System.setErr(new PrintStream(streamOutputTranslation, true));
+        }
     }
 
     public @NotNull LoggingManager getLogManager() {
