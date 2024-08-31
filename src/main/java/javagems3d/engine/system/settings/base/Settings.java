@@ -68,6 +68,9 @@ public abstract class Settings {
             String s;
             while ((s = bufferedreader.readLine()) != null) {
                 String[] string = s.split("=");
+                if (string.length != 2) {
+                    continue;
+                }
                 String txt = string[0];
                 String value = string[1];
                 SettingObject<? extends Serializable> settingObject = this.getSettingObjectMap().get(txt);
