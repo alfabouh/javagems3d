@@ -41,11 +41,16 @@
         </developer>
     </developers>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub alfabouh Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/alfabouh/javagems3d</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -75,11 +80,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>com.github.alfabouh</groupId>
-            <artifactId>javagems3d</artifactId>
-            <version>v0.2a</version>
-        </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
@@ -250,10 +250,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
         <repository>
             <id>central</id>
             <name>bintray-plugins</name>
