@@ -1,7 +1,7 @@
 ![Made in Java](https://img.shields.io/badge/Made_in-Java-yellow)
 [![](https://jitpack.io/v/alfabouh/javagems3d.svg)](https://jitpack.io/#alfabouh/javagems3d)
 [![GitHub release](https://img.shields.io/badge/GitHub%20Packages-Download-brightgreen)](https://github.com/alfabouh/javagems3d/packages/2241468)
-![OpenGL 4.3](https://img.shields.io/badge/OpenGL-4.3-blue)
+![OpenGL 4.3](https://img.shields.io/badge/Render-OpenGL_4.3-blue)
 ![Bullet Physics](https://img.shields.io/badge/Physics-Bullet-blue)
 ![Windows Support](https://img.shields.io/badge/Platform-Windows-brightgreen)
 
