@@ -69,7 +69,7 @@ public final class SerializeHelper {
 
     public static <T> T readFromBytes(File file, String fileName, Class<T> tClass) throws IOException, ClassNotFoundException {
         try (FileInputStream fileInputStream = new FileInputStream(file + "//" + fileName)) {
-            try (ObjectInputStream objectInputStream = new CustomObjectInputStream(fileInputStream)) {
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
                 Object obj = objectInputStream.readObject();
                 if (tClass.isInstance(obj)) {
                     @SuppressWarnings("unchecked")
@@ -95,21 +95,6 @@ public final class SerializeHelper {
             try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
                 objectOutputStream.writeObject(object);
             }
-        }
-    }
-
-    public static class CustomObjectInputStream extends ObjectInputStream {
-
-        public CustomObjectInputStream(InputStream in) throws IOException {
-            super(in);
-        }
-
-        @Override
-        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-            String className = desc.getName();
-            className = className.replaceAll("ru.jgems3d", "javagems3d");
-
-            return Class.forName(className);
         }
     }
 }
