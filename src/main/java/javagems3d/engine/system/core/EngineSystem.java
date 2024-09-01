@@ -43,7 +43,7 @@ import java.util.Properties;
 public class EngineSystem implements IEngine {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
-    public static final String ENG_VER = "0.20a";
+    public static final String ENG_VER = "0.30a-dev";
 
     private final JGemsResourceManager resourceManager;
     private final EngineState engineState;
