@@ -15,10 +15,18 @@
     <groupId>com.github.alfabouh</groupId>
     <artifactId>javagems3d</artifactId>
     <version>0.2</version>
+    <packaging>pom</packaging>
 
     <name>JavaGems3D</name>
     <description>3-D Java Game Engine</description>
     <url>https://github.com/alfabouh/javagems3d</url>
+
+    <modules>
+        <module>ToolBox</module>
+        <module>Engine</module>
+        <module>SysLogger</module>
+        <module>EngineAPI</module>
+    </modules>
 
     <scm>
         <url>https://github.com/yourusername/javagems3d</url>
