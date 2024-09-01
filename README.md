@@ -6,7 +6,7 @@
 ![Windows Support](https://img.shields.io/badge/Platform-Windows-brightgreen)
 
 ![ICOGIT](https://github.com/user-attachments/assets/f4d93bc9-279f-41bf-bcd1-d31f8eb056f9)
-## JavaGems 3D
+## JavaGems3D
 
 **JavaGames3D** is a three-dimensional game engine written in java. **v0.2a** is the latest released version
 
