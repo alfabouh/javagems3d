@@ -32,15 +32,15 @@ import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
 import javagems3d.system.resources.assets.shaders.RenderPass;
-import javagems3d.system.resources.assets.shaders.ShaderContainer;
+import javagems3d.system.resources.assets.shaders.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.UniformString;
 
 public final class JGemsShaderManager extends ShaderManager {
     private final JGemsShaderUtils shaderUtils;
 
-    public JGemsShaderManager(ShaderContainer shaderContainer) {
-        super(shaderContainer);
+    public JGemsShaderManager(ShadersContainer shadersContainer) {
+        super(shadersContainer);
         this.shaderUtils = new JGemsShaderUtils();
     }
 

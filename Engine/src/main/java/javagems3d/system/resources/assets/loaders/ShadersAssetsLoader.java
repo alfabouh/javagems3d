@@ -17,8 +17,9 @@ import javagems3d.graphics.opengl.environment.light.LightManager;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
 import javagems3d.system.resources.assets.shaders.RenderPass;
-import javagems3d.system.resources.assets.shaders.ShaderContainer;
+import javagems3d.system.resources.assets.shaders.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
@@ -61,7 +62,11 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     public JGemsShaderManager inventory_common_item;
     public JGemsShaderManager imgui;
 
+    public ShaderLibrariesContainer shaderLibrariesContainer;
+
     protected void initObjects(ResourceCache resourceCache) {
+        this.shaderLibrariesContainer = new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
+
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
         this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);
         this.Misc = this.createUBO("Misc", 2, Float.BYTES);
@@ -114,6 +119,6 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
 
     @Override
     protected JGemsShaderManager createShaderObject(JGemsPath shaderPath) {
-        return new JGemsShaderManager(new ShaderContainer(shaderPath));
+        return new JGemsShaderManager(new ShadersContainer(shaderPath));
     }
 }

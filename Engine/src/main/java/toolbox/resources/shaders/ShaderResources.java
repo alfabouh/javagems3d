@@ -13,7 +13,7 @@ package toolbox.resources.shaders;
 
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
 import javagems3d.system.resources.assets.shaders.RenderPass;
-import javagems3d.system.resources.assets.shaders.ShaderContainer;
+import javagems3d.system.resources.assets.shaders.ShadersContainer;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
@@ -41,6 +41,6 @@ public final class ShaderResources extends ShadersLoader<TBoxShaderManager> {
 
     @Override
     public TBoxShaderManager createShaderObject(JGemsPath shaderPath) {
-        return new TBoxShaderManager(new ShaderContainer(shaderPath));
+        return new TBoxShaderManager(new ShadersContainer(shaderPath));
     }
 }

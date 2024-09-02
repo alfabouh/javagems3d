@@ -1,3 +1,5 @@
+#include "assets/jgems/shaders/libs/shadows"
+
 in vec2 out_texture;
 in mat4 out_view_matrix;
 in mat4 out_inversed_view_matrix;
