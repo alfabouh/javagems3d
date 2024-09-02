@@ -11,7 +11,6 @@
 
 package logger;
 
-import javagems3d.engine.system.service.exceptions.JGemsIOException;
 import logger.translators.StreamOutputTranslation;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -35,13 +34,9 @@ public final class SystemLogging {
         return SystemLogging.INSTANCE;
     }
 
-    public void setCurrentLogging(LoggingManager currentLogging) {
+    public void setCurrentLogging(LoggingManager currentLogging) throws IOException {
         this.currentLogging = currentLogging;
-        try {
-            this.initStreams(currentLogging.getLog());
-        } catch (IOException e) {
-            throw new JGemsIOException(e);
-        }
+        this.initStreams(currentLogging.getLog());
     }
 
     private void initStreams(final Logger log) throws IOException {

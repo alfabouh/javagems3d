@@ -22,10 +22,9 @@
     <url>https://github.com/alfabouh/javagems3d</url>
 
     <modules>
-        <module>ToolBox</module>
         <module>Engine</module>
         <module>SysLogger</module>
-        <module>EngineAPI</module>
+        <module>Launcher</module>
     </modules>
 
     <scm>

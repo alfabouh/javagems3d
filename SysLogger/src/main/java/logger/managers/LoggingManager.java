@@ -13,11 +13,11 @@ package logger.managers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javagems3d.engine.JGems3D;
-import javagems3d.engine.system.core.EngineSystem;
-import javagems3d.engine.system.service.exceptions.JGemsIOException;
-import javagems3d.engine.system.service.exceptions.JGemsRuntimeException;
 import logger.SystemLogging;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,9 +51,13 @@ public abstract class LoggingManager {
 
     public static void showExceptionDialog(String msg) {
         JButton openLogFolderButton = new JButton("Open logs");
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(SystemLogging.get().getLogManager().getLog().getName());
+        FileAppender fileAppender = (FileAppender) loggerConfig.getAppenders().get("FileAppender");
         openLogFolderButton.addActionListener(e -> {
             try {
-                Desktop.getDesktop().open(new File(JGems3D.getFilesFolder().toFile(), "/log/"));
+                Desktop.getDesktop().open(new File(fileAppender.getFileName()));
             } catch (IOException ignored) {
                 SystemLogging.get().getLogManager().error("Failed to open logs path");
             }
@@ -66,11 +70,11 @@ public abstract class LoggingManager {
         JPanel panel = new JPanel();
         panel.add(textField);
 
-        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, panel, EngineSystem.ENG_NAME, JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
+        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, panel, "Error!", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
     }
 
     public static void showWindowInfo(String message) {
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message));
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, message, "Information", JOptionPane.INFORMATION_MESSAGE));
     }
 
     public static boolean showConfirmationWindowDialog(String message) {
@@ -80,7 +84,7 @@ public abstract class LoggingManager {
                 integer.set(JOptionPane.showConfirmDialog(null, message));
             });
         } catch (InterruptedException | InvocationTargetException e) {
-            throw new JGemsRuntimeException(e);
+            throw new RuntimeException(e);
         }
         return integer.get() == 0;
     }
