@@ -12,13 +12,14 @@
 package javagems3d.system.resources.assets.shaders;
 
 import javagems3d.JGemsHelper;
+import javagems3d.system.resources.assets.shaders.library.GlobalShaderLibrary;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class ShaderContainer {
+public final class ShadersContainer {
     private final Set<Uniform> gUniformsFullSet;
     private final Set<Uniform> cUniformsFullSet;
     private final Shader vertexShader;
@@ -27,7 +28,11 @@ public final class ShaderContainer {
     private final Shader computeShader;
     private final String id;
 
-    public ShaderContainer(JGemsPath shaderPath) {
+    public ShadersContainer(JGemsPath shaderPath) {
+        this(null, shaderPath);
+    }
+
+    public ShadersContainer(GlobalShaderLibrary shaderLibrary, JGemsPath shaderPath) {
         this.id = shaderPath.getFullPath();
         this.gUniformsFullSet = new HashSet<>();
         this.cUniformsFullSet = new HashSet<>();
@@ -36,17 +41,17 @@ public final class ShaderContainer {
         Shader fragmentShader1 = null;
         Shader computeShader1 = null;
 
-        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.FRAGMENT)) {
-            fragmentShader1 = new Shader(Shader.ShaderType.FRAGMENT, shaderPath);
+        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
+            fragmentShader1 = new Shader(shaderLibrary, ShaderType.FRAGMENT, shaderPath);
         }
-        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.VERTEX)) {
-            vertexShader1 = new Shader(Shader.ShaderType.VERTEX, shaderPath);
+        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.VERTEX)) {
+            vertexShader1 = new Shader(shaderLibrary, ShaderType.VERTEX, shaderPath);
         }
-        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.GEOMETRIC)) {
-            geometricShader1 = new Shader(Shader.ShaderType.GEOMETRIC, shaderPath);
+        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
+            geometricShader1 = new Shader(shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
         }
-        if (Shader.checkIfShaderExistsInJar(shaderPath, Shader.ShaderType.COMPUTE)) {
-            computeShader1 = new Shader(Shader.ShaderType.COMPUTE, shaderPath);
+        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.COMPUTE)) {
+            computeShader1 = new Shader(shaderLibrary, ShaderType.COMPUTE, shaderPath);
         }
 
         this.vertexShader = vertexShader1;

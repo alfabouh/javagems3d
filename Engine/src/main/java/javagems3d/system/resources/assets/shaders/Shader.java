@@ -12,6 +12,8 @@
 package javagems3d.system.resources.assets.shaders;
 
 import javagems3d.JGems3D;
+import javagems3d.system.resources.assets.shaders.library.GlobalShaderLibrary;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.io.BufferedReader;
@@ -29,13 +31,15 @@ public class Shader {
     private final List<Uniform> uniforms;
     private final JGemsPath pathToShader;
     private final ShaderType shaderType;
+    private final GlobalShaderLibrary globalShaderLibrary;
     private String shaderText;
 
-    public Shader(ShaderType shaderType, JGemsPath pathToShader) {
+    public Shader(GlobalShaderLibrary globalShaderLibrary, ShaderType shaderType, JGemsPath pathToShader) {
         this.shaderType = shaderType;
         this.pathToShader = pathToShader;
         this.uniforms = new ArrayList<>();
         this.structs = new HashMap<>();
+        this.globalShaderLibrary = globalShaderLibrary;
         this.shaderText = "";
     }
 
@@ -134,16 +138,59 @@ public class Shader {
             }
             reader.close();
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+            ex.printStackTrace(System.err);
         }
         return shaderSource.toString();
     }
 
-    private StringBuilder fillShader(String shaderStream) {
+    private Pair<String, Set<String>> extractIncludes(String in) {
+        Set<String> includes = new HashSet<>();
         StringBuilder shader = new StringBuilder();
         shader.append(Shader.VERSION);
-        shader.append(shaderStream);
+
+        String includePattern = "#include\\s+\"([^\"]+)\"";
+
+        Pattern pattern = Pattern.compile(includePattern);
+        Matcher matcher = pattern.matcher(in);
+
+        while (matcher.find()) {
+            String includePath = matcher.group(1);
+            includes.add(includePath);
+
+            in = matcher.replaceFirst("");
+            matcher = pattern.matcher(in);
+        }
+
+        shader.append(in);
+        return new Pair<>(shader.toString(), includes);
+    }
+
+    private String pasteIncludes(Pair<String, Set<String>> setPair) {
+        String shader = setPair.getFirst();
+
+        String mainFunctionPattern = "\\bvoid\\s+main\\s*\\(\\s*\\)\\s*\\{";
+        Pattern pattern = Pattern.compile(mainFunctionPattern);
+        Matcher matcher = pattern.matcher(shader);
+
+        if (matcher.find()) {
+            int insertPosition = matcher.start();
+            StringBuilder beforeMain = new StringBuilder(shader.substring(0, insertPosition));
+
+            for (String code : setPair.getSecond()) {
+                beforeMain.append(code).append("\n");
+            }
+
+            beforeMain.append(shader.substring(insertPosition));
+            shader = beforeMain.toString();
+        }
+
         return shader;
+    }
+
+    private String fillShader(String shaderStream) {
+        String shader = Shader.VERSION + shaderStream;
+        Pair<String, Set<String>> shader0 = this.extractIncludes(shader);
+        return this.pasteIncludes(shader0);
     }
 
     public List<Uniform> getUniforms() {
@@ -164,22 +211,5 @@ public class Shader {
 
     public ShaderType getShaderType() {
         return this.shaderType;
-    }
-
-    public enum ShaderType {
-        FRAGMENT("/fragment.frag"),
-        VERTEX("/vertex.vert"),
-        GEOMETRIC("/geometric.geom"),
-        COMPUTE("/compute.comp");
-
-        public final String file;
-
-        ShaderType(String file) {
-            this.file = file;
-        }
-
-        public String getFile() {
-            return this.file;
-        }
     }
 }

@@ -23,14 +23,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ShaderGroup {
+public class ShaderHandler {
     private final Map<UniformBufferObject, UniformBufferProgram> uniformBufferProgramMap;
     private final String id;
     private final Set<UniformString> rawUniforms;
     private UniformProgram uniformProgram;
     private IShaderProgram shaderProgram;
 
-    public ShaderGroup(String id) {
+    public ShaderHandler(String id) {
         this.id = id;
         this.uniformBufferProgramMap = new HashMap<>();
         this.rawUniforms = new HashSet<>();

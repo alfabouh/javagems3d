@@ -35,17 +35,17 @@ import java.util.Set;
  */
 public abstract class ShaderManager implements ICached {
     private final Set<UniformBufferObject> uniformBufferObjects;
-    private final ShaderContainer shaderContainer;
+    private final ShadersContainer shadersContainer;
     private ACT_SHADER activeShader;
-    private ShaderGroup graphicShaderGroup;
-    private ShaderGroup computingShaderGroup;
+    private ShaderHandler graphicShaderHandler;
+    private ShaderHandler computingShaderHandler;
     private RenderPass renderPass;
 
     private int usedTextureUnits;
 
-    public ShaderManager(ShaderContainer shaderContainer) {
+    public ShaderManager(ShadersContainer shadersContainer) {
         this.uniformBufferObjects = new HashSet<>();
-        this.shaderContainer = shaderContainer;
+        this.shadersContainer = shadersContainer;
         this.renderPass = RenderPass.FORWARD;
         this.activeShader = ACT_SHADER.NONE;
 
@@ -194,10 +194,10 @@ public abstract class ShaderManager implements ICached {
         this.performUniform(uniform, textureUnit);
     }
 
-    private void initShaders(ShaderContainer shaderContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {
+    private void initShaders(ShadersContainer shadersContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {
         boolean flag = false;
         if (gShaderProgram != null) {
-            this.graphicShaderGroup = new ShaderGroup(this.getShaderContainer().getId());
+            this.graphicShaderHandler = new ShaderHandler(this.getShaderContainer().getId());
             if (gShaderProgram.createShader(this.getShaderContainer().getFragmentShader(), this.getShaderContainer().getVertexShader(), this.getShaderContainer().getGeometricShader())) {
                 if (gShaderProgram.link()) {
                     JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked");
@@ -206,10 +206,10 @@ public abstract class ShaderManager implements ICached {
                 }
                 flag = true;
             }
-            this.getGraphicShaderGroup().initShaderGroup(gShaderProgram, shaderContainer.getGUniformsFullSet(), this.uniformBufferObjects);
+            this.getGraphicShaderGroup().initShaderGroup(gShaderProgram, shadersContainer.getGUniformsFullSet(), this.uniformBufferObjects);
         }
         if (cShaderProgram != null) {
-            this.computingShaderGroup = new ShaderGroup(this.getShaderContainer().getId());
+            this.computingShaderHandler = new ShaderHandler(this.getShaderContainer().getId());
             if (cShaderProgram.createShader(this.getShaderContainer().getComputeShader())) {
                 if (cShaderProgram.link()) {
                     JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked");
@@ -218,7 +218,7 @@ public abstract class ShaderManager implements ICached {
                 }
                 flag = true;
             }
-            this.getComputingShaderGroup().initShaderGroup(cShaderProgram, shaderContainer.getCUniformsFullSet(), this.uniformBufferObjects);
+            this.getComputingShaderGroup().initShaderGroup(cShaderProgram, shadersContainer.getCUniformsFullSet(), this.uniformBufferObjects);
         }
         if (!flag) {
             throw new JGemsRuntimeException("Wrong ShaderManager passed in system!");
@@ -302,16 +302,16 @@ public abstract class ShaderManager implements ICached {
         return this;
     }
 
-    public ShaderGroup getComputingShaderGroup() {
-        return this.computingShaderGroup;
+    public ShaderHandler getComputingShaderGroup() {
+        return this.computingShaderHandler;
     }
 
-    public ShaderGroup getGraphicShaderGroup() {
-        return this.graphicShaderGroup;
+    public ShaderHandler getGraphicShaderGroup() {
+        return this.graphicShaderHandler;
     }
 
-    public ShaderContainer getShaderContainer() {
-        return this.shaderContainer;
+    public ShadersContainer getShaderContainer() {
+        return this.shadersContainer;
     }
 
     @Override

@@ -24,7 +24,7 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.shaders.RenderPass;
-import javagems3d.system.resources.assets.shaders.ShaderContainer;
+import javagems3d.system.resources.assets.shaders.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
@@ -35,8 +35,8 @@ import toolbox.render.scene.utils.TBoxSceneUtils;
 public final class TBoxShaderManager extends ShaderManager {
     private final TBoxShaderUtils shaderUtils;
 
-    public TBoxShaderManager(ShaderContainer shaderContainer) {
-        super(shaderContainer);
+    public TBoxShaderManager(ShadersContainer shadersContainer) {
+        super(shadersContainer);
         this.shaderUtils = new TBoxShaderUtils();
     }
 
