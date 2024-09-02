@@ -1,13 +1,15 @@
 package launcher;
 
 import javagems3d.JGems3D;
+import launcher.run.EngineRun;
+import launcher.run.ToolBoxRun;
 
 public abstract class JGemsLauncher {
     public static void launchEngine(String[] args) {
-        JGems3D.launch();
+        new EngineRun().run(args);
     }
 
     public static void launchToolbox(String[] args) {
-        JGems3D.launch();
+        new ToolBoxRun().run(args);
     }
 }
