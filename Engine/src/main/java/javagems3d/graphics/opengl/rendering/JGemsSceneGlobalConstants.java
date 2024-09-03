@@ -11,6 +11,8 @@
 
 package javagems3d.graphics.opengl.rendering;
 
+import org.joml.Vector2f;
+
 public abstract class JGemsSceneGlobalConstants {
     //section Screen
     public static final double RENDER_TICKS_UPD_RATE = 60.0d;
@@ -30,9 +32,25 @@ public abstract class JGemsSceneGlobalConstants {
     public static float FOV = (float) Math.toRadians(60.0f);
     public static float Z_NEAR = 0.1f;
     public static float Z_FAR = 100.0f;
+
+
+    public static float POSITIVE_EXPONENT = 60.0f;
+    public static float NEGATIVE_EXPONENT = 5.0f;
     public static float MAX_ALPHA_TO_CULL_SHADOW = 0.5f;
     public static float MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT = 0.75f;
+    public static int MAX_SHADOW_RES = 1024;
     public static boolean DRAW_BACK_FACES_FOR_SHADOWS = true;
+
+    public static final Vector2f NEUTRAL_SHADOWS = new Vector2f();
+
+    static {
+        float positiveExponent = JGemsSceneGlobalConstants.POSITIVE_EXPONENT;
+        float negativeExponent = JGemsSceneGlobalConstants.NEGATIVE_EXPONENT;
+        Vector2f exponents = new Vector2f(positiveExponent, negativeExponent);
+        float pos = (float) Math.exp(exponents.x);
+        float neg = (float) -Math.exp(-exponents.y);
+        JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.set(pos, neg);
+    }
 
     //section IMGUI
     public static int TICKS_TO_CLEAN_UNUSED_UI = 3;

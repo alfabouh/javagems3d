@@ -13,11 +13,19 @@ package javagems3d.system.resources.assets.loaders.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.library.GlobalShaderLibrary;
+import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
 public abstract class ShadersLoader<T extends ShaderManager> {
+    private final GlobalShaderLibrary shaderLibrary;
+
+    public ShadersLoader() {
+        this.shaderLibrary = new GlobalShaderLibrary();
+    }
+
     protected abstract void initObjects(ResourceCache resourceCache);
 
     protected abstract T createShaderObject(JGemsPath shaderPath);
@@ -60,13 +68,24 @@ public abstract class ShadersLoader<T extends ShaderManager> {
         }
     }
 
+    public ShaderLibrariesContainer addShaderLibraryContainerInGlobalList(ShaderLibrariesContainer shaderLibrariesContainer) {
+        this.getGlobalShaderLibrary().addNewShaderLibrary(shaderLibrariesContainer);
+        return shaderLibrariesContainer;
+    }
+
+    public GlobalShaderLibrary getGlobalShaderLibrary() {
+        return this.shaderLibrary;
+    }
+
     public void createShaders(ResourceCache resourceCache) {
+        this.getGlobalShaderLibrary().clean();
         this.initObjects(resourceCache);
         this.initShaders(resourceCache);
         this.startShaders(resourceCache);
     }
 
     public void reloadShaders(ResourceCache resourceCache) {
+        this.getGlobalShaderLibrary().reload();
         this.destroyShaderPrograms(resourceCache);
         this.initShaders(resourceCache);
         this.startShaders(resourceCache);

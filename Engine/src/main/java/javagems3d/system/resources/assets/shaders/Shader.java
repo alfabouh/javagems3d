@@ -13,13 +13,13 @@ package javagems3d.system.resources.assets.shaders;
 
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.shaders.library.GlobalShaderLibrary;
-import javagems3d.system.service.collections.Pair;
+import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
+import javagems3d.system.resources.assets.shaders.library.ShaderLibrary;
+import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -52,8 +52,9 @@ public class Shader {
     }
 
     public void init() {
-        this.loadStructs(this.getShaderPath());
-        this.shaderText = this.fillShader(this.loadStream(this.getShaderPath())).toString();
+        this.shaderText = this.fillShader(this.readShaderText(this.getShaderPath()));
+        this.loadStructs(this.getShaderText());
+        this.loadUniforms(this.getShaderText());
     }
 
     public void clean() {
@@ -61,9 +62,9 @@ public class Shader {
         this.uniforms.clear();
     }
 
-    private void loadStructs(JGemsPath shaderPath) {
-        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(shaderPath, this.getShaderType().getFile()))) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+    private void loadStructs(String shaderText) {
+        try {
+            BufferedReader reader = new BufferedReader(new StringReader(shaderText));
             String line;
             String structName = null;
             Set<String> args = new HashSet<>();
@@ -82,7 +83,6 @@ public class Shader {
 
                 Matcher memberMatcher = memberPattern.matcher(line);
                 if (structName != null && memberMatcher.matches()) {
-                    String memberType = memberMatcher.group(1);
                     String memberName = memberMatcher.group(2);
                     args.add(memberName);
                 }
@@ -96,101 +96,92 @@ public class Shader {
 
             reader.close();
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        }
-    }
-
-    private String loadStream(JGemsPath shaderPath) {
-        StringBuilder shaderSource = new StringBuilder();
-        try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(shaderPath, this.getShaderType().getFile()))) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            String line;
-
-            Pattern uniformPattern = Pattern.compile("\\s*(?:layout\\s*\\([^)]*\\)\\s*)?uniform\\s+(\\w+)\\s+(\\w+)\\s*(\\[\\s*\\d*\\s*\\])?\\s*;?\\s*");
-
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                shaderSource.append(line).append("\n");
-
-                int uniformIndex = line.indexOf("uniform");
-                if (uniformIndex != -1) {
-                    line = line.substring(uniformIndex);
-                }
-
-                Matcher uniformMatcher = uniformPattern.matcher(line);
-                if (uniformMatcher.matches()) {
-                    String type = uniformMatcher.group(1);
-                    String name = uniformMatcher.group(2);
-                    String arraySize = uniformMatcher.group(3);
-
-                    int size = 1;
-                    if (arraySize != null && !arraySize.isEmpty()) {
-                        size = Integer.parseInt(arraySize.replaceAll("[\\[\\]\\s]", ""));
-                    }
-
-                    Uniform uniform = new Uniform(name, size);
-                    Set<String> fields = this.structs.get(type);
-                    if (fields != null) {
-                        uniform.getFields().addAll(fields);
-                    }
-                    this.getUniforms().add(uniform);
-                }
-            }
-            reader.close();
-        } catch (IOException ex) {
             ex.printStackTrace(System.err);
         }
-        return shaderSource.toString();
     }
 
-    private Pair<String, Set<String>> extractIncludes(String in) {
-        Set<String> includes = new HashSet<>();
-        StringBuilder shader = new StringBuilder();
-        shader.append(Shader.VERSION);
+    private void loadUniforms(String shaderText) {
+        String[] lines = shaderText.split("\n");
+        Pattern uniformPattern = Pattern.compile("\\s*(?:layout\\s*\\([^)]*\\)\\s*)?uniform\\s+(\\w+)\\s+(\\w+)\\s*(\\[\\s*\\d*\\s*\\])?\\s*;?\\s*");
 
+        for (String line : lines) {
+            line = line.trim();
+
+            int uniformIndex = line.indexOf("uniform");
+            if (uniformIndex != -1) {
+                line = line.substring(uniformIndex);
+            }
+
+            Matcher uniformMatcher = uniformPattern.matcher(line);
+            if (uniformMatcher.matches()) {
+                String type = uniformMatcher.group(1);
+                String name = uniformMatcher.group(2);
+                String arraySize = uniformMatcher.group(3);
+
+                int size = 1;
+                if (arraySize != null && !arraySize.isEmpty()) {
+                    size = Integer.parseInt(arraySize.replaceAll("[\\[\\]\\s]", ""));
+                }
+
+                Uniform uniform = new Uniform(name, size);
+                Set<String> fields = this.structs.get(type);
+                if (fields != null) {
+                    uniform.getFields().addAll(fields);
+                }
+                this.getUniforms().add(uniform);
+            }
+        }
+    }
+
+    private String readShaderText(JGemsPath shaderPath) {
+        StringBuilder textBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.loadFileFromJar(new JGemsPath(shaderPath, this.getShaderType().getFile())), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                textBuilder.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
+        return textBuilder.toString();
+    }
+
+    private String processIncludes(String shaderCode) {
         String includePattern = "#include\\s+\"([^\"]+)\"";
-
         Pattern pattern = Pattern.compile(includePattern);
-        Matcher matcher = pattern.matcher(in);
+        Matcher matcher = pattern.matcher(shaderCode);
+        StringBuilder processedShader = new StringBuilder();
+
+        int lastEnd = 0;
 
         while (matcher.find()) {
             String includePath = matcher.group(1);
-            includes.add(includePath);
 
-            in = matcher.replaceFirst("");
-            matcher = pattern.matcher(in);
-        }
+            processedShader.append(shaderCode, lastEnd, matcher.start());
 
-        shader.append(in);
-        return new Pair<>(shader.toString(), includes);
-    }
-
-    private String pasteIncludes(Pair<String, Set<String>> setPair) {
-        String shader = setPair.getFirst();
-
-        String mainFunctionPattern = "\\bvoid\\s+main\\s*\\(\\s*\\)\\s*\\{";
-        Pattern pattern = Pattern.compile(mainFunctionPattern);
-        Matcher matcher = pattern.matcher(shader);
-
-        if (matcher.find()) {
-            int insertPosition = matcher.start();
-            StringBuilder beforeMain = new StringBuilder(shader.substring(0, insertPosition));
-
-            for (String code : setPair.getSecond()) {
-                beforeMain.append(code).append("\n");
+            if (this.globalShaderLibrary == null) {
+                throw new JGemsNullException(this + " > Couldn't get global shader library data");
+            }
+            ShaderLibrariesContainer shaderLibrariesContainer = this.globalShaderLibrary.getShaderLibrariesContainer(new JGemsPath(includePath).getFullPath());
+            if (shaderLibrariesContainer == null) {
+                throw new JGemsNullException(this + " > Couldn't find shader libraries container with key: " + includePath);
+            }
+            ShaderLibrary shaderLibrary = shaderLibrariesContainer.getShaderLibraryByType(this.getShaderType());
+            if (shaderLibrary == null) {
+                throw new JGemsNullException(this + " > Couldn't find shader library(" + this.getShaderType() + ") with key: " + includePath);
             }
 
-            beforeMain.append(shader.substring(insertPosition));
-            shader = beforeMain.toString();
+            processedShader.append(shaderLibrary.getLibraryText()).append("\n");
+            lastEnd = matcher.end();
         }
 
-        return shader;
+        processedShader.append(shaderCode.substring(lastEnd));
+        return processedShader.toString();
     }
 
     private String fillShader(String shaderStream) {
         String shader = Shader.VERSION + shaderStream;
-        Pair<String, Set<String>> shader0 = this.extractIncludes(shader);
-        return this.pasteIncludes(shader0);
+        return this.processIncludes(shader);
     }
 
     public List<Uniform> getUniforms() {

@@ -109,7 +109,7 @@ void main()
     bright_color = brightness >= 0.75 ? accumulated : vec4(0.);
 }
 
-float calcSunShineVSM(vec4 world_position, int idx, vec3 frag_pos) {
+float calc_sun_shadows(vec4 world_position, int idx, vec3 frag_pos) {
     vec4 shadowMapPos = cascade_shadow[idx].projection_view * world_position;
     vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
     float closest = texture(sun_shadow_map[idx], world_position.xy).r;
@@ -117,7 +117,7 @@ float calcSunShineVSM(vec4 world_position, int idx, vec3 frag_pos) {
     return currD - 0.005 > closest ? 0. : 1.;
 }
 
-float calculate_point_light_shadow(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos) {
+float calculate_point_light_shadows(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos) {
     vec3 fragToLight = fragPosition - lightPos;
     float currentDepth = length(fragToLight);
     currentDepth /= far_plane;
@@ -133,7 +133,7 @@ vec4 calc_light(vec3 frag_pos) {
     vec3 sunPos = normalize(sunPos.xyz);
 
     int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
-    float sun_shadow = calcSunShineVSM(m_vertex_pos, cascadeIndex, frag_pos);
+    float sun_shadow = calc_sun_shadows(m_vertex_pos, cascadeIndex, frag_pos);
 
     vec4 sunFactor = calc_sun_light(sunPos, frag_pos);
 
@@ -145,7 +145,7 @@ vec4 calc_light(vec3 frag_pos) {
         float linear = 0.09 * p_brightness;
         float expo = 0.032 * p_brightness;
         float p_id = p.plMeta.y;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[int(p_id)], m_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], m_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
         point_light_factor += calc_point_light(p, frag_pos, at_base, linear, expo, p_brightness) * shadow;
     }
 

@@ -157,6 +157,8 @@ public final class JGemsShaderManager extends ShaderManager {
                     JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), cascadeShadow.getSplitDistance());
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), cascadeShadow.getLightProjectionViewMatrix());
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), JGemsSceneGlobalConstants.POSITIVE_EXPONENT);
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("NegExp"), JGemsSceneGlobalConstants.NEGATIVE_EXPONENT);
                 }
             }
             for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {

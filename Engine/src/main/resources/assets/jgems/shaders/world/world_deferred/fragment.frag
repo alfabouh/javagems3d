@@ -1,5 +1,3 @@
-#include "assets/jgems/shaders/libs/shadows"
-
 in vec2 out_texture;
 in mat4 out_view_matrix;
 in mat4 out_inversed_view_matrix;
@@ -7,15 +5,6 @@ in mat4 out_inversed_view_matrix;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
-struct CascadeShadow {
-    float split_distance;
-    mat4 projection_view;
-};
-
-uniform CascadeShadow cascade_shadow[3];
-uniform samplerCube point_light_cubemap[3];
-uniform sampler2D sun_shadow_map[3];
-uniform float far_plane;
 uniform bool isSsaoValid;
 
 struct PointLight
@@ -50,6 +39,8 @@ uniform sampler2D gSpecular;
 uniform sampler2D gMetallic;
 uniform sampler2D ssaoSampler;
 
+#include "assets/jgems/shaders/libs/shadows"
+
 vec4 calc_sun_light(vec3, vec3, vec3);
 vec4 calc_point_light(PointLight, vec3, vec3, float, float, float, float);
 vec4 calc_light_factor(vec3, float, vec3, vec3, vec3);
@@ -77,68 +68,6 @@ void main()
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 }
 
-float vsmFixLightBleed(float pMax, float amount) {
-    return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
-}
-
-float VSM(int idx, vec4 shadow_coord, float bias) {
-    vec4 vsm = texture(sun_shadow_map[idx], shadow_coord.xy);
-
-    float E_x2 = vsm.y;
-    float Ex_2 = vsm.x * vsm.x;
-    float var = max(E_x2 - Ex_2, bias);
-    float mD = vsm.x - shadow_coord.z;
-    float mD_2 = mD * mD;
-    float p = var / (var + mD_2);
-
-    return max(vsmFixLightBleed(p, 0.7), int(shadow_coord.z <= vsm.x));
-}
-
-float calcShadowDepth(int idx, vec4 shadow_coord, float bias) {
-    return VSM(idx, shadow_coord, bias);
-}
-
-float calculate_shadow_vsm(vec4 worldPosition, int idx, float bias) {
-    vec4 shadowMapPos = cascade_shadow[idx].projection_view * worldPosition;
-    vec4 shadow_coord = (shadowMapPos / shadowMapPos.w) * 0.5 + 0.5;
-    float c0 = calcShadowDepth(idx, shadow_coord, bias);
-    return c0;
-}
-
-float calcSunShineVSM(vec4 world_position, vec3 frag_pos) {
-    const float bias = 1.0e-5f;
-    const float bias_f = 3.0;
-    const float half_bias_f = bias_f / 2.0;
-    const int max_cascades = 3;
-    int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance - half_bias_f) + int(frag_pos.z < cascade_shadow[1].split_distance - half_bias_f);
-    float f0 = calculate_shadow_vsm(world_position, cascadeIndex, bias);
-    if (cascadeIndex >= 0 && cascadeIndex < max_cascades) {
-        int cascadeIndex2 = int(frag_pos.z < cascade_shadow[cascadeIndex].split_distance + half_bias_f) + cascadeIndex;
-        float f1 = calculate_shadow_vsm(world_position, cascadeIndex2, bias);
-        float p2 = (cascade_shadow[cascadeIndex].split_distance + half_bias_f) - frag_pos.z;
-        return mix(f0, f1, p2 / bias_f);
-    }
-    return f0;
-}
-
-float calculate_point_light_shadow(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos)
-{
-    vec3 fragToLight = fragPosition - lightPos;
-    float currentDepth = length(fragToLight);
-    currentDepth /= far_plane;
-
-    vec4 vsm = texture(vsmCubemap, normalize(fragToLight));
-
-    float E_x2 = vsm.y;
-    float Ex_2 = vsm.x * vsm.x;
-    float var = max(E_x2 - Ex_2, 1.0e-5f);
-    float mD = vsm.x - currentDepth;
-    float mD_2 = mD * mD;
-    float p = var / (var + mD_2);
-
-    return max(vsmFixLightBleed(p, 0.7), int(currentDepth <= vsm.x));
-}
-
 vec4 calc_light(vec3 frag_pos, vec3 normal) {
     vec4 lightFactors = vec4(sunColor.xyz * sunMeta.x, 1.0);
 
@@ -148,7 +77,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
     vec4 world_position = out_inversed_view_matrix * view_pos;
     world_position /= world_position.w;
 
-    float sun_shadow = calcSunShineVSM(world_position, frag_pos);
+    float sun_shadow = calc_sun_shadows(world_position, frag_pos);
 
     vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal);
 
@@ -160,7 +89,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
         float linear = 0.09 * p_brightness;
         float expo = 0.032 * p_brightness;
         float p_id = p.plMeta.y;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadow(point_light_cubemap[int(p_id)], world_position.xyz, p.plPos.xyz)) : vec4(1.0);
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.plPos.xyz)) : vec4(1.0);
         point_light_factor += calc_point_light(p, frag_pos, normal, at_base, linear, expo, p_brightness) * shadow;
     }
 

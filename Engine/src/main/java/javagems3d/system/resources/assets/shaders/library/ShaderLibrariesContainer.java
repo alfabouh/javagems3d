@@ -5,13 +5,13 @@ import javagems3d.system.resources.assets.shaders.ShaderType;
 import javagems3d.system.service.path.JGemsPath;
 
 public final class ShaderLibrariesContainer {
-    private final String id;
+    private final String path;
     private final ShaderLibrary vertexShaderLibrary;
     private final ShaderLibrary fragmentShaderLibrary;
     private final ShaderLibrary geometryShaderLibrary;
 
     public ShaderLibrariesContainer(JGemsPath shaderPath) {
-        this.id = shaderPath.getFullPath();
+        this.path = shaderPath.getFullPath();
 
         ShaderLibrary geometricShader1 = null;
         ShaderLibrary vertexShader1 = null;
@@ -46,12 +46,27 @@ public final class ShaderLibrariesContainer {
         return this.geometryShaderLibrary;
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
+    public ShaderLibrary getShaderLibraryByType(ShaderType shaderType) {
+        switch (shaderType) {
+            case VERTEX: {
+                return this.getVertexShaderLibrary();
+            }
+            case FRAGMENT: {
+                return this.getFragmentShaderLibrary();
+            }
+            case GEOMETRIC: {
+                return this.getGeometryShaderLibrary();
+            }
+        }
+        return null;
     }
 
-    public String getId() {
-        return this.id;
+    @Override
+    public String toString() {
+        return this.getPath();
+    }
+
+    public String getPath() {
+        return this.path;
     }
 }
