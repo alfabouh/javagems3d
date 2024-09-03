@@ -68,6 +68,6 @@ public class TestMap implements IMapLoader {
         skyProp.setSunColor(new Vector3f(1.0f, 0.95f, 0.91f));
 
         FogProp fogProp = new FogProp();
-        return new MapInfo(new MapProperties("sponza", skyProp, fogProp));
+        return new MapInfo(new MapProperties("assets/models/sponza", skyProp, fogProp));
     }
 }

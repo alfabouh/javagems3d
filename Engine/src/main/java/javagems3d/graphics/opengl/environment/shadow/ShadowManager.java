@@ -68,15 +68,15 @@ public class ShadowManager implements IShadowScene {
     }
 
     public void createResources() {
-        this.shadowDimensions = new Vector2i((int) (2048 * ShadowManager.qualityMultiplier()));
+        this.shadowDimensions = new Vector2i((int) (JGemsSceneGlobalConstants.MAX_SHADOW_RES * ShadowManager.qualityMultiplier()));
 
         this.sunPostModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getShadowDim()), 0);
         this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
 
         T2DAttachmentContainer shadow = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RG32F, GL30.GL_RG);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
+            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA32F, GL30.GL_RGBA);
         }};
         this.shadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
         this.shadowPostFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL43.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
@@ -262,13 +262,15 @@ public class ShadowManager implements IShadowScene {
 
     private void sunScene(Set<IModeledSceneObject> modeledSceneObjectSet) {
         this.getSunShadowShader().bind();
+        this.getSunShadowShader().performUniformNoWarn(new UniformString("PosExp"), JGemsSceneGlobalConstants.POSITIVE_EXPONENT);
+        this.getSunShadowShader().performUniformNoWarn(new UniformString("NegExp"), JGemsSceneGlobalConstants.NEGATIVE_EXPONENT);
         this.getShadowFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
         for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
             this.getShadowFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
-            GL30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            GL30.glClearColor(JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.x, JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.y, JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.x * JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.x, JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.y * JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.y);
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
             this.getSunShadowShader().performUniform(new UniformString("projection_view_matrix"), new Matrix4f(cascadeShadow.getLightProjectionViewMatrix()));
             for (IModeledSceneObject modeledSceneObject : modeledSceneObjectSet) {

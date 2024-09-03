@@ -25,7 +25,6 @@ import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
 public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
-
     public UniformBufferObject SunLight;
     public UniformBufferObject PointLights;
     public UniformBufferObject Misc;
@@ -62,10 +61,8 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     public JGemsShaderManager inventory_common_item;
     public JGemsShaderManager imgui;
 
-    public ShaderLibrariesContainer shaderLibrariesContainer;
-
     protected void initObjects(ResourceCache resourceCache) {
-        this.shaderLibrariesContainer = new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
+        this.addShaderLibraryContainerInGlobalList(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
 
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
         this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);
@@ -119,6 +116,6 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
 
     @Override
     protected JGemsShaderManager createShaderObject(JGemsPath shaderPath) {
-        return new JGemsShaderManager(new ShadersContainer(shaderPath));
+        return new JGemsShaderManager(new ShadersContainer(this.getGlobalShaderLibrary(), shaderPath));
     }
 }
