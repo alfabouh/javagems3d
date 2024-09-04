@@ -40,7 +40,7 @@ float EVSM(int idx, vec4 shadow_coord, float bias) {
     vec2 negMoments = vec2(moments.y, moments.w);
     vec2 wDepth = warpDepth(exponents, shadow_coord.z);
 
-    vec2 depthScale = 0.0001f * exponents * wDepth;
+    vec2 depthScale = 2.e-3f * exponents * wDepth;
     vec2 minVariance = depthScale * depthScale;
     float posResult = Chebyshev(posMoments, wDepth.x, minVariance.x);
     float negResult = Chebyshev(negMoments, wDepth.y, minVariance.y);
