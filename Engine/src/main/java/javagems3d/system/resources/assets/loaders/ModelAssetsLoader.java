@@ -23,8 +23,8 @@ public class ModelAssetsLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        this.cube = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "cube/cube.obj"), true);
-        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true);
+        this.cube = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "cube/cube.obj"), true, true);
+        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true, true);
     }
 
     @Override

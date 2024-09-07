@@ -15,18 +15,20 @@ import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * This is a container for meshes
- */
 public class MeshDataGroup implements ICached {
+    public static final String MESH_COLLISION_UD = "mesh_collision";
+    public static final String MESH_RENDER_AABB_UD = "mesh_render_aabb";
+    
     private final List<ModelNode> modelNodeList;
-    private IMeshUserData meshUserData;
+    private final Map<String, IMeshUserData> meshUserData;
 
     public MeshDataGroup() {
         this.modelNodeList = new ArrayList<>();
-        this.meshUserData = null;
+        this.meshUserData = new HashMap<>();
     }
 
     public MeshDataGroup(ModelNode modelNode) {
@@ -42,35 +44,36 @@ public class MeshDataGroup implements ICached {
         this.modelNodeList.add(modelNode);
     }
 
-    public List<ModelNode> getModelNodeList() {
-        return this.modelNodeList;
+    @SuppressWarnings("all")
+    public <T extends IMeshUserData> T getUnSafeMeshUserData(String key) {
+        return this.getMeshUserData(key, null);
     }
 
     @SuppressWarnings("all")
-    public <T extends IMeshUserData> T getMeshUserData(Class<T> tClass) {
-        if (this.getMeshUserData() == null) {
+    public <T extends IMeshUserData> T getMeshUserData(String key, Class<T> tClass) {
+        if (this.getMeshUserData(key) == null) {
             return null;
         }
-        if (this.getMeshUserData().getClass().isAssignableFrom(tClass)) {
-            return (T) this.getMeshUserData();
+        if (tClass == null || this.getMeshUserData(key).getClass().isAssignableFrom(tClass)) {
+            return (T) this.getMeshUserData(key);
         }
         return null;
     }
 
-    public IMeshUserData getMeshUserData() {
-        return this.meshUserData;
+    public List<ModelNode> getModelNodeList() {
+        return this.modelNodeList;
     }
 
-    /**
-     * This is additional user information, if necessary
-     *
-     * @param meshUserData
-     */
-    public void setMeshUserData(IMeshUserData meshUserData) {
-        this.meshUserData = meshUserData;
+    public IMeshUserData getMeshUserData(String key) {
+        return this.meshUserData.get(key);
+    }
+
+    public void setMeshUserData(String key, IMeshUserData meshUserData) {
+        this.meshUserData.put(key, meshUserData);
     }
 
     public void clean() {
+        this.meshUserData.clear();
         this.getModelNodeList().forEach(ModelNode::cleanMesh);
         this.getModelNodeList().clear();
     }

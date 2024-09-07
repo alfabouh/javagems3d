@@ -11,10 +11,15 @@
 
 package javagems3d.graphics.opengl.rendering.scene;
 
+import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.shaders.RenderPass;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GL45;
@@ -584,6 +589,62 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
             startBinding = 0;
         }
         blurShader.unBind();
+    }
+
+    public void renderModeledSceneObject(IModeledSceneObject sceneObject) {
+        if (sceneObject != null) {
+            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
+            JGemsOpenGLRenderer gemsOpenGLRenderer = JGemsHelper.getScreen().getScene().getSceneRenderer();
+            Model<Format3D> model = sceneObject.getModel();
+            if (model == null || !model.isValid()) {
+                return;
+            }
+            if (this.filterObjectTransparency(sceneObject)) {
+                gemsOpenGLRenderer.addSceneModelObjectInTransparencyPass(sceneObject);
+                return;
+            }
+            JGemsShaderManager shaderManager = sceneObject.getMeshRenderData().getShaderManager();
+            shaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), model);
+            shaderManager.getUtils().performRenderDataOnShader(sceneObject.getMeshRenderData());
+            if (shaderManager.isUniformExist(new UniformString("alpha_discard"))) {
+                shaderManager.performUniform(new UniformString("alpha_discard"), sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue());
+                if (sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue() > 0) {
+                    GL30.glDisable(GL30.GL_BLEND);
+                }
+            }
+            boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
+            if (sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
+                GL30.glDisable(GL11.GL_CULL_FACE);
+            }
+            for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
+                Material material = overMaterial != null ? overMaterial : modelNode.getMaterial();
+                if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
+                    if (material.hasTransparency()) {
+                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(new WorldTransparentRender.RenderNodeInfo(sceneObject.getMeshRenderData().getOverridenTransparencyShader(), sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling(), modelNode, model.getFormat()));
+                        continue;
+                    }
+                }
+                shaderManager.getUtils().performModelMaterialOnShader(material);
+                JGemsSceneUtils.renderModelNode(modelNode);
+                shaderManager.clearUsedTextureSlots();
+            }
+            if (f) {
+                GL30.glEnable(GL11.GL_CULL_FACE);
+            }
+        }
+    }
+
+    private boolean filterObjectTransparency(IModeledSceneObject sceneObject) {
+        if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
+            if (sceneObject.getMeshRenderData().getShaderManager().checkShaderRenderPass(RenderPass.TRANSPARENCY) || sceneObject.getMeshRenderData().getRenderAttributes().getObjectOpacity() < 1.0f) {
+                return true;
+            }
+            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
+            if (overMaterial != null) {
+                return overMaterial.hasTransparency();
+            }
+        }
+        return false;
     }
 
     public void addModelNodeInTransparencyPass(WorldTransparentRender.RenderNodeInfo node) {

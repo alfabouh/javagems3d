@@ -58,20 +58,6 @@ public abstract class JGemsSceneUtils {
         }
     }
 
-    // section TransparencyFilter
-    public static boolean filterObjectTransparency(IModeledSceneObject sceneObject) {
-        if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
-            if (sceneObject.getMeshRenderData().getShaderManager().checkShaderRenderPass(RenderPass.TRANSPARENCY) || sceneObject.getMeshRenderData().getRenderAttributes().getObjectOpacity() < 1.0f) {
-                return true;
-            }
-            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
-            if (overMaterial != null) {
-                return overMaterial.hasTransparency();
-            }
-        }
-        return false;
-    }
-
     //section ModelNode
     public static void renderModelNode(ModelNode modelNode) {
         GL30.glBindVertexArray(modelNode.getMesh().getVao());
@@ -83,50 +69,6 @@ public abstract class JGemsSceneUtils {
             GL30.glDisableVertexAttribArray(a);
         }
         GL30.glBindVertexArray(0);
-    }
-
-    // section RenderWithMaterial
-    public static void renderSceneObject(IModeledSceneObject sceneObject) {
-        if (sceneObject != null) {
-            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
-            JGemsOpenGLRenderer gemsOpenGLRenderer = JGemsHelper.getScreen().getScene().getSceneRenderer();
-            Model<Format3D> model = sceneObject.getModel();
-            if (model == null || !model.isValid()) {
-                return;
-            }
-            if (JGemsSceneUtils.filterObjectTransparency(sceneObject)) {
-                gemsOpenGLRenderer.addSceneModelObjectInTransparencyPass(sceneObject);
-                return;
-            }
-            JGemsShaderManager shaderManager = sceneObject.getMeshRenderData().getShaderManager();
-            shaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), model);
-            shaderManager.getUtils().performRenderDataOnShader(sceneObject.getMeshRenderData());
-            if (shaderManager.isUniformExist(new UniformString("alpha_discard"))) {
-                shaderManager.performUniform(new UniformString("alpha_discard"), sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue());
-                if (sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue() > 0) {
-                    GL30.glDisable(GL30.GL_BLEND);
-                }
-            }
-            boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
-            if (sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
-                GL30.glDisable(GL11.GL_CULL_FACE);
-            }
-            for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-                Material material = overMaterial != null ? overMaterial : modelNode.getMaterial();
-                if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
-                    if (material.hasTransparency()) {
-                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(new WorldTransparentRender.RenderNodeInfo(sceneObject.getMeshRenderData().getOverridenTransparencyShader(), sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling(), modelNode, model.getFormat()));
-                        continue;
-                    }
-                }
-                shaderManager.getUtils().performModelMaterialOnShader(material);
-                JGemsSceneUtils.renderModelNode(modelNode);
-                shaderManager.updateTextureUnitSlots();
-            }
-            if (f) {
-                GL30.glEnable(GL11.GL_CULL_FACE);
-            }
-        }
     }
 
     public static int getMaxTextureUnits() {
@@ -167,7 +109,7 @@ public abstract class JGemsSceneUtils {
                     error = "UNKNOWN";
                     break;
             }
-            JGemsHelper.getLogger().warn("GL ERROR: " + error);
+            JGemsHelper.getLogger().error("GL ERROR: " + error);
         }
     }
 }

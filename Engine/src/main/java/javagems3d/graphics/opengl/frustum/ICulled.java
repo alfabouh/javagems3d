@@ -11,28 +11,29 @@
 
 package javagems3d.graphics.opengl.frustum;
 
+import javagems3d.system.resources.assets.models.mesh.IMeshUserData;
 import org.joml.Vector3f;
 
 public interface ICulled {
     boolean canBeCulled();
 
-    RenderSphere calcRenderSphere();
+    RenderAABB getRenderAABB();
 
-    class RenderSphere {
-        private final float radius;
-        private final Vector3f center;
+    class RenderAABB implements IMeshUserData {
+        private final Vector3f min;
+        private final Vector3f max;
 
-        public RenderSphere(float radius, Vector3f center) {
-            this.radius = radius;
-            this.center = center;
+        public RenderAABB(Vector3f min, Vector3f max) {
+            this.min = min;
+            this.max = max;
         }
 
-        public float getRadius() {
-            return this.radius;
+        public Vector3f getMax() {
+            return this.max;
         }
 
-        public Vector3f getCenter() {
-            return this.center;
+        public Vector3f getMin() {
+            return this.min;
         }
     }
 }

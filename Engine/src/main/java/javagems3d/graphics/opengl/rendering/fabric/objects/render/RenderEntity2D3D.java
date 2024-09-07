@@ -27,7 +27,7 @@ public class RenderEntity2D3D extends RenderWorldItem {
         AbstractSceneEntity entityObject = (AbstractSceneEntity) renderItem;
         if (entityObject.hasRender() && entityObject.hasModel()) {
             entityObject.getModel().getFormat().setOrientedToView(true);
-            JGemsSceneUtils.renderSceneObject(entityObject);
+            sceneRenderBase.getSceneRenderer().renderModeledSceneObject(entityObject);
         }
         //GL30.glEnable(GL30.GL_DEPTH_TEST);
     }

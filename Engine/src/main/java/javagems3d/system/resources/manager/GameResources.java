@@ -47,19 +47,23 @@ public class GameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshDataGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh) {
-        MeshDataGroup meshDataGroup = this.createMesh(modelPath);
+    public MeshDataGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB) {
+        MeshDataGroup meshDataGroup = this.createMesh(modelPath, constructRenderAABB);
         if (constructCollisionMesh) {
             JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
         }
         return meshDataGroup;
     }
 
-    public MeshDataGroup createMesh(JGemsPath modelPath) {
+    public MeshDataGroup createMesh(JGemsPath modelPath, boolean constructRenderAABB) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
         MeshDataGroup meshDataGroup = ModelLoader.createMesh(this, modelPath);
         if (meshDataGroup == null) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
+        } else {
+            if (constructRenderAABB) {
+                JGemsHelper.UTILS.createMeshRenderAABBData(meshDataGroup);
+            }
         }
         return meshDataGroup;
     }

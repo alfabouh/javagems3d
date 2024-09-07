@@ -179,7 +179,7 @@ public final class SceneWorld implements IWorld {
         if (this.getFrustumCulling() == null) {
             return list;
         }
-        return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.calcRenderSphere()) || !e.canBeCulled()).collect(Collectors.toList());
+        return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.getRenderAABB()) || !e.canBeCulled()).collect(Collectors.toList());
     }
 
     public Set<IModeledSceneObject> getFilteredEntitySet(RenderPass renderPass) {

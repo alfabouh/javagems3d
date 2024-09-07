@@ -76,7 +76,7 @@ public class WorldTransparentRender extends SceneRenderBase {
             if (f) {
                 GL30.glEnable(GL11.GL_CULL_FACE);
             }
-            gemsShaderManager.updateTextureUnitSlots();
+            gemsShaderManager.clearUsedTextureSlots();
         }
         gemsShaderManager.unBind();
     }
@@ -101,7 +101,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         if (f) {
             GL30.glEnable(GL11.GL_CULL_FACE);
         }
-        gemsShaderManager.updateTextureUnitSlots();
+        gemsShaderManager.clearUsedTextureSlots();
         gemsShaderManager.unBind();
     }
 
