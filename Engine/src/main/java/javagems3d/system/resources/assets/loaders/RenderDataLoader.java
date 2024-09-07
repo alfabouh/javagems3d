@@ -11,6 +11,8 @@
 
 package javagems3d.system.resources.assets.loaders;
 
+import javagems3d.JGemsHelper;
+import javagems3d.graphics.opengl.frustum.ICulled;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
@@ -46,7 +48,11 @@ public class RenderDataLoader implements IAssetsLoader {
     @Override
     public void load(GameResources gameResources) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building render data...");
-        IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
+        IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
+            MeshDataGroup meshDataGroup = new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
+            meshDataGroup.setMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD, new ICulled.RenderAABB(new Vector3f(-0.5f), new Vector3f(0.5f)));
+            return meshDataGroup;
+        };
 
         Material zwMat = new Material();
         zwMat.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo1);

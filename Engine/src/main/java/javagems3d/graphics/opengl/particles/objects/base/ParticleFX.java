@@ -98,9 +98,9 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         this.dead = true;
     }
 
-    public RenderSphere calcRenderSphere() {
-        float radius = (float) Math.sqrt(this.getScaling().x * this.getScaling().x + this.getScaling().y * this.getScaling().y);
-        return new RenderSphere(radius, this.getPosition());
+    public RenderAABB getRenderAABB() {
+        float max = Math.max(this.getScaling().x, this.getScaling().y);
+        return new RenderAABB(new Vector3f(this.getPosition()).add(new Vector3f(max)), new Vector3f(this.getPosition()).add(new Vector3f(-max)));
     }
 
     public boolean hasTexturePack() {

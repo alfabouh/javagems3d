@@ -27,7 +27,7 @@ public class StaticMeshCollider implements IColliderConstructor {
 
     @Override
     public CollisionShape createGeom(DynamicsSystem dynamicsSystem) {
-        MeshCollisionData meshCollisionData = this.meshDataGroup.getMeshUserData(MeshCollisionData.class);
+        MeshCollisionData meshCollisionData = this.meshDataGroup.getMeshUserData(MeshDataGroup.MESH_COLLISION_UD, MeshCollisionData.class);
         if (meshCollisionData == null) {
             throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshDataGroup);
         }

@@ -11,9 +11,11 @@
 
 package javagems3d;
 
-import org.joml.Math;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import javagems3d.graphics.opengl.frustum.ICulled;
+import javagems3d.graphics.transformation.Transformation;
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format3D;
+import org.joml.*;
 import javagems3d.audio.SoundManager;
 import javagems3d.graphics.opengl.camera.FreeCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
@@ -61,6 +63,7 @@ import javagems3d.system.service.path.JGemsPath;
 import javagems3d.system.settings.JGemsSettings;
 import logger.SystemLogging;
 import logger.managers.LoggingManager;
+import org.joml.Math;
 
 import java.util.List;
 
@@ -459,11 +462,69 @@ public abstract class JGemsHelper {
 
         @SuppressWarnings("all")
         public static boolean createMeshCollisionData(MeshDataGroup meshDataGroup) {
-            if (meshDataGroup != null && meshDataGroup.getMeshUserData() == null) {
-                meshDataGroup.setMeshUserData(new MeshCollisionData(meshDataGroup));
+            if (meshDataGroup != null && meshDataGroup.getMeshUserData(MeshDataGroup.MESH_COLLISION_UD) == null) {
+                meshDataGroup.setMeshUserData(MeshDataGroup.MESH_COLLISION_UD, new MeshCollisionData(meshDataGroup));
                 return true;
             }
             return false;
+        }
+
+        @SuppressWarnings("all")
+        public static boolean createMeshRenderAABBData(MeshDataGroup meshDataGroup) {
+            if (meshDataGroup != null && meshDataGroup.getMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD) == null) {
+                Vector3f min = new Vector3f(Float.MAX_VALUE);
+                Vector3f max = new Vector3f(Float.MIN_VALUE);
+                for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
+                    List<Float> positions = modelNode.getMesh().getAttributePositions();
+                    List<Integer> indices = modelNode.getMesh().getIndexes();
+                    for (int index : indices) {
+                        int i1 = index * 3;
+                        Vector4f Vector4f = new Vector4f(positions.get(i1), positions.get(i1 + 1), positions.get(i1 + 2), 1.0f);
+                        Vector3f vector3f = new Vector3f(Vector4f.x, Vector4f.y, Vector4f.z);
+                        min.min(vector3f);
+                        max.max(vector3f);
+                    }
+                }
+                meshDataGroup.setMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD, new ICulled.RenderAABB(min.add(new Vector3f(-0.05f)), max.add(new Vector3f(0.05f))));
+                return true;
+            }
+            return false;
+        }
+
+        public static ICulled.RenderAABB calcRenderAABBWithTransforms(Model<Format3D> model) {
+            if (model.getMeshDataGroup().getMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD) == null) {
+                return null;
+            }
+
+            Vector3f min = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD).getMin());
+            Vector3f max = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD).getMax());
+
+            Matrix4f modelMatrix = Transformation.getModelMatrix(model.getFormat());
+
+            Vector3f[] vertices = new Vector3f[8];
+            vertices[0] = new Vector3f(min.x, min.y, min.z);
+            vertices[1] = new Vector3f(max.x, min.y, min.z);
+            vertices[2] = new Vector3f(min.x, max.y, min.z);
+            vertices[3] = new Vector3f(max.x, max.y, min.z);
+            vertices[4] = new Vector3f(min.x, min.y, max.z);
+            vertices[5] = new Vector3f(max.x, min.y, max.z);
+            vertices[6] = new Vector3f(min.x, max.y, max.z);
+            vertices[7] = new Vector3f(max.x, max.y, max.z);
+
+            Vector3f transformedMin = new Vector3f(Float.MAX_VALUE);
+            Vector3f transformedMax = new Vector3f(-Float.MAX_VALUE);
+
+            for (Vector3f vertex : vertices) {
+                Vector4f transformedVertex = new Vector4f(vertex, 1.0f).mul(modelMatrix);
+                transformedMin.x = Math.min(transformedMin.x, transformedVertex.x);
+                transformedMin.y = Math.min(transformedMin.y, transformedVertex.y);
+                transformedMin.z = Math.min(transformedMin.z, transformedVertex.z);
+                transformedMax.x = Math.max(transformedMax.x, transformedVertex.x);
+                transformedMax.y = Math.max(transformedMax.y, transformedVertex.y);
+                transformedMax.z = Math.max(transformedMax.z, transformedVertex.z);
+            }
+
+            return new ICulled.RenderAABB(transformedMin, transformedMax);
         }
     }
 }

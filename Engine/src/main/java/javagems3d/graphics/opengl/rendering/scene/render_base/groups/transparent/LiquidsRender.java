@@ -51,7 +51,7 @@ public class LiquidsRender extends SceneRenderBase {
             gemsShaderManager.performUniform(new UniformString("alpha_factor"), object.getRenderLiquidData().getLiquidMaterial().getFullOpacity());
             gemsShaderManager.performUniform(new UniformString("texture_scaling"), object.getTextureScaling());
             JGemsSceneUtils.renderModelNode(modelNode);
-            gemsShaderManager.updateTextureUnitSlots();
+            gemsShaderManager.clearUsedTextureSlots();
         }
         gemsShaderManager.unBind();
     }

@@ -46,7 +46,7 @@ import org.joml.Vector3f;
 public class TestMap implements IMapLoader {
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshDataGroup meshDataGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj"));
+        MeshDataGroup meshDataGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj"), true);
         sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshDataGroup),
                 new MeshRenderData(new MeshRenderAttributes().setAlphaDiscard(0.7f), JGemsResourceManager.globalShaderAssets.world_gbuffer)));
     }

@@ -42,10 +42,10 @@ public class FrustumCulling {
         this.frustumIntersection.set(new Matrix4f(this.projectionViewMatrix));
     }
 
-    public boolean isInFrustum(ICulled.RenderSphere renderSphere) {
-        if (renderSphere == null || renderSphere.getRadius() < 0) {
+    public boolean isInFrustum(ICulled.RenderAABB renderSphere) {
+        if (renderSphere == null) {
             return true;
         }
-        return this.frustumIntersection.testSphere(renderSphere.getCenter(), renderSphere.getRadius());
+        return this.frustumIntersection.testAab(renderSphere.getMin(), renderSphere.getMax());
     }
 }

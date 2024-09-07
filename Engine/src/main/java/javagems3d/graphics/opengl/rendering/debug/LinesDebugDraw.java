@@ -15,6 +15,8 @@ package javagems3d.graphics.opengl.rendering.debug;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
+import javagems3d.graphics.opengl.frustum.ICulled;
+import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -53,7 +55,18 @@ public class LinesDebugDraw {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
 
-    public void drawAABBLines(JGemsShaderManager debugShaders, DynamicsSystem dynamicsSystem) {
+    public void drawAABBLinesRN(JGemsShaderManager debugShaders, List<ICulled> culleds) {
+        for (ICulled c : culleds) {
+            debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 0.0f, 1.0f, 1.0f));
+            ICulled.RenderAABB renderAABB = c.getRenderAABB();
+            if (renderAABB == null) {
+                continue;
+            }
+            this.drawAABB(DynamicsUtils.convertV3F_JME(renderAABB.getMin()), DynamicsUtils.convertV3F_JME(renderAABB.getMax()));
+        }
+    }
+
+    public void drawAABBLinesBT(JGemsShaderManager debugShaders, DynamicsSystem dynamicsSystem) {
         for (PhysicsCollisionObject physicsCollisionObject : dynamicsSystem.getPhysicsSpace().getPcoList()) {
             debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
 

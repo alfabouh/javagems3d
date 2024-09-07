@@ -32,6 +32,8 @@ public final class LiquidObject implements ICulled {
         this.liquid = iLiquid;
         this.textureScaling = new Vector2f(1.0f);
         this.model = this.constructModel(iLiquid);
+
+        JGemsHelper.UTILS.createMeshRenderAABBData(this.model.getMeshDataGroup());
     }
 
     private Model<Format3D> constructModel(Liquid liquid) {
@@ -74,10 +76,10 @@ public final class LiquidObject implements ICulled {
     }
 
     @Override
-    public RenderSphere calcRenderSphere() {
+    public RenderAABB getRenderAABB() {
         if (!this.getModel().isValid()) {
             return null;
         }
-        return new RenderSphere(JGemsHelper.UTILS.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), new Vector3f(1.0f)), this.getModel().getFormat().getPosition());
+        return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
     }
 }

@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.forward;
 
+import javagems3d.graphics.opengl.frustum.ICulled;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
@@ -28,6 +29,9 @@ import javagems3d.system.resources.assets.shaders.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DebugRender extends SceneRenderBase {
     private final JGemsShaderManager debugShaders;
 
@@ -44,7 +48,13 @@ public class DebugRender extends SceneRenderBase {
             this.debugShaders.getUtils().performPerspectiveMatrix();
             this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
 
-            JGemsDebugGlobalConstants.linesDebugDraw.drawAABBLines(this.debugShaders, JGems3D.get().getPhysicsWorld().getDynamics());
+            List<ICulled> culleds = new ArrayList<>();
+            culleds.addAll(this.getSceneWorld().getLiquids());
+            culleds.addAll(this.getSceneWorld().getModeledSceneEntities());
+            culleds.addAll(this.getSceneWorld().getParticlesEmitter().getParticlesSet());
+
+            JGemsDebugGlobalConstants.linesDebugDraw.drawAABBLinesRN(this.debugShaders, culleds);
+            JGemsDebugGlobalConstants.linesDebugDraw.drawAABBLinesBT(this.debugShaders, JGems3D.get().getPhysicsWorld().getDynamics());
             JGemsDebugGlobalConstants.linesDebugDraw.drawNavMeshLines(this.debugShaders);
 
             this.renderDebugSunDirection();

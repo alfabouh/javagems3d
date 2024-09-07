@@ -44,7 +44,7 @@ public class RenderEntity extends RenderWorldItem {
                     GL30.glStencilOp(GL30.GL_KEEP, GL30.GL_REPLACE, GL30.GL_REPLACE);
                     GL30.glEnable(GL30.GL_STENCIL_TEST);
                     GL30.glStencilMask(0xFF);
-                    JGemsSceneUtils.renderSceneObject(entityObject);
+                    sceneRenderBase.getSceneRenderer().renderModeledSceneObject(entityObject);
                     GL30.glStencilOp(GL30.GL_KEEP, GL30.GL_KEEP, GL30.GL_KEEP);
 
                     GL30.glStencilFunc(GL30.GL_NOTEQUAL, 1, 0xFF);
@@ -65,7 +65,7 @@ public class RenderEntity extends RenderWorldItem {
                     return;
                 }
             }
-            JGemsSceneUtils.renderSceneObject(entityObject);
+            sceneRenderBase.getSceneRenderer().renderModeledSceneObject(entityObject);
         }
     }
 }

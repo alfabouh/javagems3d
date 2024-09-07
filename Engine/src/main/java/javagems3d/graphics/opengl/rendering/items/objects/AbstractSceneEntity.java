@@ -139,11 +139,11 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         }
     }
 
-    public RenderSphere calcRenderSphere() {
+    public RenderAABB getRenderAABB() {
         if (!this.hasRender() || !this.hasModel()) {
             return null;
         }
-        return new RenderSphere(JGemsHelper.UTILS.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), this.getScale()), this.getRenderPosition());
+        return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
     }
 
     @Override

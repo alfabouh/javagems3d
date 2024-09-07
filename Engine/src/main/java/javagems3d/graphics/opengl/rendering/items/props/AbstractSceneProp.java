@@ -102,11 +102,11 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
     }
 
     @Override
-    public RenderSphere calcRenderSphere() {
+    public RenderAABB getRenderAABB() {
         if (!this.getModel().isValid()) {
             return null;
         }
-        return new RenderSphere(JGemsHelper.UTILS.calcDistanceToMostFarPoint(this.getModel().getMeshDataGroup(), this.getModel().getFormat().getScaling()), this.getModel().getFormat().getPosition());
+        return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
     }
 
     public AbstractSceneProp setModelRenderConstraints(MeshRenderData meshRenderData) {

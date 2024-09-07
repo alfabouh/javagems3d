@@ -11,7 +11,7 @@ uniform float far_plane;
 uniform float PosExp;
 uniform float NegExp;
 
-vec2 warpDepth(vec2 exponents, float depth) {
+vec2 warp(vec2 exponents, float depth) {
     depth = 2.0f * depth - 1.0f;
     float pos = exp(exponents.x * depth);
     float neg = -exp(-exponents.y * depth);
@@ -19,7 +19,7 @@ vec2 warpDepth(vec2 exponents, float depth) {
     return wDepth;
 }
 
-float Chebyshev(vec2 moments, float mean, float minVariance) {
+float variance(vec2 moments, float mean, float minVariance) {
     if(mean <= moments.x) {
         return 1.0f;
     } else {
@@ -38,12 +38,12 @@ float EVSM(int idx, vec4 shadow_coord, float bias) {
     vec4 moments = texture(sun_shadow_map[idx], shadow_coord.xy).xyzw;
     vec2 posMoments = vec2(moments.x, moments.z);
     vec2 negMoments = vec2(moments.y, moments.w);
-    vec2 wDepth = warpDepth(exponents, shadow_coord.z);
+    vec2 wDepth = warp(exponents, shadow_coord.z);
 
-    vec2 depthScale = 2.e-3f * exponents * wDepth;
+    vec2 depthScale = 8.e-4f * exponents * wDepth;
     vec2 minVariance = depthScale * depthScale;
-    float posResult = Chebyshev(posMoments, wDepth.x, minVariance.x);
-    float negResult = Chebyshev(negMoments, wDepth.y, minVariance.y);
+    float posResult = variance(posMoments, wDepth.x, minVariance.x);
+    float negResult = variance(negMoments, wDepth.y, minVariance.y);
     return min(posResult, negResult);
 }
 
