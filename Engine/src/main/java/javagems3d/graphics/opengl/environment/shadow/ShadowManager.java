@@ -262,8 +262,8 @@ public class ShadowManager implements IShadowScene {
 
     private void sunScene(Set<IModeledSceneObject> modeledSceneObjectSet) {
         this.getSunShadowShader().bind();
-        this.getSunShadowShader().performUniformNoWarn(new UniformString("PosExp"), JGemsSceneGlobalConstants.POSITIVE_EXPONENT);
-        this.getSunShadowShader().performUniformNoWarn(new UniformString("NegExp"), JGemsSceneGlobalConstants.NEGATIVE_EXPONENT);
+        this.getSunShadowShader().performUniformNoWarn(new UniformString("PosExp"), JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT);
+        this.getSunShadowShader().performUniformNoWarn(new UniformString("NegExp"), JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT);
         this.getShadowFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 

@@ -15,6 +15,7 @@ import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.*;
 import javagems3d.audio.SoundManager;
 import javagems3d.graphics.opengl.camera.FreeCamera;
@@ -65,6 +66,7 @@ import logger.SystemLogging;
 import logger.managers.LoggingManager;
 import org.joml.Math;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -525,6 +527,21 @@ public abstract class JGemsHelper {
             }
 
             return new ICulled.RenderAABB(transformedMin, transformedMax);
+        }
+
+        public static List<Vector3f> getVertexPositionsFromMesh(Mesh mesh, Format3D format3D) {
+            List<Integer> integers = mesh.getIndexes();
+            List<Float> floats = mesh.getAttributePositions();
+            List<Vector3f> vertexes = new ArrayList<>();
+            Matrix4f modelMat = Transformation.getModelMatrix(format3D);
+
+            for (int i = 0; i < integers.size(); i++) {
+                int i1 = mesh.getIndexes().get(i) * 3;
+                Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMat);
+                vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
+            }
+
+            return vertexes;
         }
     }
 }

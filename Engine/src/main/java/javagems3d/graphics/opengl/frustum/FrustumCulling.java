@@ -11,8 +11,13 @@
 
 package javagems3d.graphics.opengl.frustum;
 
+import javagems3d.JGemsHelper;
+import javagems3d.graphics.transformation.Transformation;
+import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
@@ -33,13 +38,13 @@ public class FrustumCulling {
     }
 
     public void refreshFrustumCullingState(Matrix4f projection, Matrix4f view) {
-        this.projectionViewMatrix = new Matrix4f();
-        this.projectionViewMatrix.mul(projection);
-        this.projectionViewMatrix.mul(view);
-        for (int i = 0; i < 6; i++) {
-            this.projectionViewMatrix.frustumPlane(i, this.planes.get(i));
-        }
-        this.frustumIntersection.set(new Matrix4f(this.projectionViewMatrix));
+       this.projectionViewMatrix = new Matrix4f();
+       this.projectionViewMatrix.mul(projection);
+       this.projectionViewMatrix.mul(view);
+       for (int i = 0; i < 6; i++) {
+           this.projectionViewMatrix.frustumPlane(i, this.planes.get(i));
+       }
+       this.frustumIntersection.set(new Matrix4f(this.projectionViewMatrix));
     }
 
     public boolean isInFrustum(ICulled.RenderAABB renderSphere) {

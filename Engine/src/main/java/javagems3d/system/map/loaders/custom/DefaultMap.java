@@ -48,8 +48,8 @@ public class DefaultMap implements IMapLoader {
         Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
         JGemsHelper.WORLD.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
-        CubeAI cubeAI = new CubeAI(world, new Vector3f(0.0f), "grass");
-        JGemsHelper.WORLD.addItemInWorld(cubeAI, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.entityCube, JGemsResourceManager.globalModelAssets.cube));
+        //CubeAI cubeAI = new CubeAI(world, new Vector3f(0.0f), "grass");
+        //JGemsHelper.WORLD.addItemInWorld(cubeAI, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.entityCube, JGemsResourceManager.globalModelAssets.cube));
 
         EntityCollectableItem collectableItem = new EntityCollectableItem(world, new ItemZippo(), new Vector3f(3.0f, -4.5f, 0.0f), "zippo");
         JGemsHelper.WORLD.addItemInWorld(collectableItem, JGemsResourceManager.globalRenderDataAssets.zippo_world);
