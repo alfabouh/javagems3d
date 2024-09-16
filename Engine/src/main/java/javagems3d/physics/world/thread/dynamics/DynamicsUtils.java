@@ -32,6 +32,10 @@ import java.util.List;
  * It is a utilitarian class that has functions for managing the state of physical Bullet entities.
  */
 public abstract class DynamicsUtils {
+    public static Vector3f lerp(Vector3f a, Vector3f b, float t) {
+        return new Vector3f(a).mul(1.0f - t).add(new Vector3f(b).mul(t));
+    }
+
 
     public static com.jme3.math.Vector3f lerp(com.jme3.math.Vector3f a, com.jme3.math.Vector3f b, float t) {
         return new com.jme3.math.Vector3f(a).mult(1.0f - t).add(new com.jme3.math.Vector3f(b).mult(t));

@@ -34,8 +34,8 @@ public abstract class JGemsSceneGlobalConstants {
     public static float Z_FAR = 100.0f;
 
 
-    public static float POSITIVE_EXPONENT = 60.0f;
-    public static float NEGATIVE_EXPONENT = 5.0f;
+    public static float EVSM_POSITIVE_EXPONENT = 60.0f;
+    public static float EVSM_NEGATIVE_EXPONENT = 5.0f;
     public static float MAX_ALPHA_TO_CULL_SHADOW = 0.5f;
     public static float MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT = 0.75f;
     public static int MAX_SHADOW_RES = 1024;
@@ -44,8 +44,8 @@ public abstract class JGemsSceneGlobalConstants {
     public static final Vector2f NEUTRAL_SHADOWS = new Vector2f();
 
     static {
-        float positiveExponent = JGemsSceneGlobalConstants.POSITIVE_EXPONENT;
-        float negativeExponent = JGemsSceneGlobalConstants.NEGATIVE_EXPONENT;
+        float positiveExponent = JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT;
+        float negativeExponent = JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT;
         Vector2f exponents = new Vector2f(positiveExponent, negativeExponent);
         float pos = (float) Math.exp(exponents.x);
         float neg = (float) -Math.exp(-exponents.y);

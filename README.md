@@ -6,7 +6,7 @@
 ![Windows Support](https://img.shields.io/badge/Platform-Windows-brightgreen)
 
 ![ICOGIT](https://github.com/user-attachments/assets/f4d93bc9-279f-41bf-bcd1-d31f8eb056f9)
-## JavaGems 3D
+## JavaGems3D
 
 **JavaGames3D** is a three-dimensional game engine written in java. **v0.2a** is the latest released version
 
@@ -42,6 +42,7 @@ The engine uses **OpenGL 4.3** for graphics, and the **Bullet Physics([Libbullet
 | AI for Entities | ⚠️ Requires reworking |
 | NavMesh System | ⚠️ Requires reworking |
 | Multi-Threading | ⚠️ Render and physics work in parallel |
+| Global illumination | ❌ Not developed |
 | Ray-Tracing | ❌ Not developed |
 | PBR | ❌ Not developed |
 | Network Multiplayer | ❌ Not developed |
@@ -166,7 +167,7 @@ public class TestTBoxApp implements JGemsTBoxApplication {
 }
 ```
 
-- Most of the useful functions are placed in the *JGemsHelper* utility class
+- Most of the useful functions are placed in the ***JGemsHelper*** utility class
 
   Example:
 ```Java

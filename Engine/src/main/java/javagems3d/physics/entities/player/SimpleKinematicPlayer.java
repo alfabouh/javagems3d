@@ -44,20 +44,15 @@ import java.util.Deque;
 import java.util.List;
 
 public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IWorldTicked, IBtEntity {
-    private final Vector3f cameraRotation;
-    private final Deque<Vector3f> inputMotion;
     protected float stepHeight = 0.3f;
     protected float maxSlope = 45.0f;
     private EntityState entityState;
-    private IController controller;
     private Inventory inventory;
     private PhysicsCharacter physicsCharacter;
     private CharacterController characterController;
 
     public SimpleKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot) {
         super(world, pos, rot, "player_sp");
-        this.cameraRotation = new Vector3f(rot);
-        this.inputMotion = new ArrayDeque<>();
         this.entityState = new EntityState();
         this.createInventory();
     }
@@ -66,7 +61,7 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         this.inventory = new Inventory(this, 4);
     }
 
-    public void createPlayer() {
+    public void createPlayer(PhysicsWorld world) {
         this.changeYStartPos();
 
         ConvexShape convexShape = new CapsuleCollisionShape(this.capsuleSize().x, this.capsuleSize().y);
@@ -95,7 +90,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
         PhysicsWorld world = (PhysicsWorld) iWorld;
-        this.createPlayer();
         world.getDynamics().addCollisionObject(this.getPhysicsCharacter());
     }
 
@@ -232,56 +226,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
         return null;
     }
 
-    public void setController(IController iController) {
-        this.controller = iController;
-    }
-
-    @Override
-    public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
-        if (!isFocused) {
-            this.inputMotion.clear();
-            return;
-        }
-        this.getCameraRotation().add(new Vector3f(rotationInput, 0.0f));
-        if (this.inputMotion.size() < PhysicsThread.TICKS_PER_SECOND * 10) {
-            this.inputMotion.addFirst(new Vector3f(xyzInput));
-        }
-        this.clampCameraRotation();
-    }
-
-    private Vector3f calcControllerMotion() {
-        if (this.inputMotion.isEmpty()) {
-            return new Vector3f(0.0f);
-        }
-        float[] motion = new float[3];
-        float[] input = new float[3];
-        Vector3f inputMotion = this.inputMotion.pop();
-        input[0] = inputMotion.x;
-        input[1] = inputMotion.y;
-        input[2] = inputMotion.z;
-        if (input[2] != 0) {
-            motion[0] += (float) Math.sin(this.getRotation().y) * -1.0f * input[2];
-            motion[2] += (float) Math.cos(this.getRotation().y) * input[2];
-        }
-        if (input[0] != 0) {
-            motion[0] += (float) Math.sin(this.getRotation().y - (Math.PI / 2.0f)) * -1.0f * input[0];
-            motion[2] += (float) Math.cos(this.getRotation().y - (Math.PI / 2.0f)) * input[0];
-        }
-        if (input[1] != 0) {
-            motion[1] += input[1];
-        }
-        return new Vector3f(motion[0], motion[1], motion[2]);
-    }
-
-    private void clampCameraRotation() {
-        if (this.getRotation().x > Math.toRadians(90.0f)) {
-            this.getCameraRotation().set(new Vector3d(Math.toRadians(90.0f), this.getRotation().y, this.getRotation().z));
-        }
-        if (this.getRotation().x < -Math.toRadians(90.0f)) {
-            this.getCameraRotation().set(new Vector3d(-Math.toRadians(90.0f), this.getRotation().y, this.getRotation().z));
-        }
-    }
-
     public boolean canJump() {
         return true;
     }
@@ -336,16 +280,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
     }
 
     @Override
-    public Vector3f getRotation() {
-        return this.getCameraRotation();
-    }
-
-    @Override
-    public void setRotation(Vector3f vector3d) {
-        this.cameraRotation.set(vector3d);
-    }
-
-    @Override
     public boolean canBeDestroyed() {
         return false;
     }
@@ -356,15 +290,6 @@ public class SimpleKinematicPlayer extends Player implements IInventoryOwner, IW
 
     public void setEntityState(@NotNull EntityState state) {
         this.entityState = state;
-    }
-
-    @Override
-    public IController currentController() {
-        return this.controller;
-    }
-
-    public Vector3f getCameraRotation() {
-        return this.cameraRotation;
     }
 
     public PhysicsCharacter getPhysicsCharacter() {
