@@ -58,9 +58,11 @@ public abstract class Player extends WorldItem implements IControllable {
             return;
         }
         this.getCameraRotation().add(new Vector3f(rotationInput, 0.0f));
-        if (this.inputMotion.size() < PhysicsThread.TICKS_PER_SECOND * 10) {
-            this.inputMotion.addFirst(new Vector3f(xyzInput));
-        }
+       //if (this.inputMotion.size() < PhysicsThread.TICKS_PER_SECOND * 10) {
+       //    this.inputMotion.addFirst(new Vector3f(xyzInput));
+       //}
+        this.inputMotion.clear();
+        this.inputMotion.addFirst(new Vector3f(xyzInput));
         this.clampCameraRotation();
     }
 
@@ -75,7 +77,7 @@ public abstract class Player extends WorldItem implements IControllable {
         }
         float[] motion = new float[3];
         float[] input = new float[3];
-        Vector3f inputMotion = this.inputMotion.pop();
+        Vector3f inputMotion = this.inputMotion.getFirst();
         input[0] = inputMotion.x;
         input[1] = inputMotion.y;
         input[2] = inputMotion.z;
