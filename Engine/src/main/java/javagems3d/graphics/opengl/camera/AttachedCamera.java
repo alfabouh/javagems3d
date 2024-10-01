@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import javagems3d.physics.entities.player.Player;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
 
 public class AttachedCamera extends Camera {
     private AbstractSceneEntity abstractSceneEntity;
@@ -41,8 +41,8 @@ public class AttachedCamera extends Camera {
 
     private Vector3f cameraOffset() {
         Vector3f vector3f = new Vector3f(0.0f);
-        if (this.getPhysXObject() != null && this.getPhysXObject().getWorldItem() instanceof Player) {
-            Player entityPlayerSP = (Player) this.getPhysXObject().getWorldItem();
+        if (this.getPhysXObject() != null && this.getPhysXObject().getWorldItem() instanceof IPlayer) {
+            IPlayer entityPlayerSP = (IPlayer) this.getPhysXObject().getWorldItem();
             vector3f.add(0, entityPlayerSP.getEyeHeight(), 0);
         }
         return vector3f;

@@ -19,7 +19,7 @@ import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
-import javagems3d.physics.entities.player.Player;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.system.inventory.IInventoryOwner;
 import javagems3d.system.inventory.items.InventoryItem;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -30,11 +30,11 @@ public class InventoryRender extends SceneRenderBase {
     }
 
     public void onRender(FrameTicking frameTicking) {
-        Player player = JGems3D.get().getPlayer();
+        IPlayer player = JGems3D.get().getPlayer();
         if (player instanceof IInventoryOwner && !(JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera)) {
             IInventoryOwner hasInventory = (IInventoryOwner) player;
-            InventoryItem current = hasInventory.inventory().getCurrentItem();
-            if (hasInventory.inventory().getCurrentItem() != null && JGemsResourceManager.inventoryItemRenderTable.hasRender(current)) {
+            InventoryItem current = hasInventory.getInventory().getCurrentItem();
+            if (hasInventory.getInventory().getCurrentItem() != null && JGemsResourceManager.inventoryItemRenderTable.hasRender(current)) {
                 InventoryItemRenderData inventoryItemRenderData = JGemsResourceManager.inventoryItemRenderTable.getMap().get(current.getClass());
                 if (inventoryItemRenderData.getRenderFabric() != null) {
                     inventoryItemRenderData.getRenderFabric().preRender(this, current, inventoryItemRenderData);

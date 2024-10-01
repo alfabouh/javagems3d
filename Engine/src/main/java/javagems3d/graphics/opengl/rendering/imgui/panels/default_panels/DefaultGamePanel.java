@@ -11,10 +11,10 @@
 
 package javagems3d.graphics.opengl.rendering.imgui.panels.default_panels;
 
+import javagems3d.system.inventory.IInventoryOwner;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.system.inventory.Inventory;
-import javagems3d.physics.entities.player.SimpleKinematicPlayer;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
@@ -41,12 +41,12 @@ public class DefaultGamePanel extends AbstractPanelUI {
         int windowW = window.getWindowDimensions().x;
         int windowH = window.getWindowDimensions().y;
 
-        final WorldItem entityPlayerSP = JGems3D.get().getPlayer();
+        final WorldItem entityPlayerSP = (WorldItem) JGems3D.get().getPlayer();
 
-        if (entityPlayerSP instanceof SimpleKinematicPlayer) {
-            SimpleKinematicPlayer dynamicPlayer = (SimpleKinematicPlayer) entityPlayerSP;
+        if (entityPlayerSP instanceof IInventoryOwner) {
+            IInventoryOwner dynamicPlayer = (IInventoryOwner) entityPlayerSP;
 
-            Inventory inventory = dynamicPlayer.inventory();
+            Inventory inventory = dynamicPlayer.getInventory();
             int j = 0;
 
             if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {

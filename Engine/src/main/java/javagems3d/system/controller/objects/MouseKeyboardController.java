@@ -119,7 +119,7 @@ public class MouseKeyboardController implements IController {
         if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera) {
             return;
         }
-        Inventory inventory = hasInventory.inventory();
+        Inventory inventory = hasInventory.getInventory();
         if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
             inventory.onMouseLeftClick(hasInventory.getWorld());
         }

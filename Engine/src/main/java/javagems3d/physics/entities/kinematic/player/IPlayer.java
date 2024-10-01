@@ -9,12 +9,12 @@
  *
  */
 
-package javagems3d.system.inventory;
+package javagems3d.physics.entities.kinematic.player;
 
-import javagems3d.physics.world.IWorld;
+import javagems3d.physics.entities.properties.controller.IControllable;
+import javagems3d.physics.world.PhysicsWorld;
 
-public interface IInventoryOwner {
-    Inventory getInventory();
-
-    IWorld getWorld();
+public interface IPlayer extends IControllable {
+    float getScalarSpeed();
+    float getPlayerHeight();
 }

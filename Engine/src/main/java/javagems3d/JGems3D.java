@@ -20,7 +20,7 @@ import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
 import javagems3d.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import javagems3d.graphics.opengl.screen.JGemsScreen;
 import javagems3d.graphics.opengl.world.SceneWorld;
-import javagems3d.physics.entities.player.Player;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.thread.PhysicsThread;
 import javagems3d.system.core.EngineSystem;
@@ -45,7 +45,6 @@ import java.lang.management.RuntimeMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Random;
 
 public final class JGems3D {
@@ -349,7 +348,7 @@ public final class JGems3D {
         return this.getEngineSystem().getLocalPlayer() != null && this.getPlayer() != null;
     }
 
-    public Player getPlayer() {
+    public IPlayer getPlayer() {
         return this.getEngineSystem().getLocalPlayer().getEntityPlayer();
     }
 

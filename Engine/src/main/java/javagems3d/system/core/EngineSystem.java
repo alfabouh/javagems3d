@@ -11,6 +11,7 @@
 
 package javagems3d.system.core;
 
+import javagems3d.physics.world.basic.WorldItem;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
@@ -167,7 +168,7 @@ public class EngineSystem implements IEngine {
 
         JGemsHelper.CONTROLLER.setCursorInCenter();
         JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
-        JGemsHelper.CAMERA.enableAttachedCamera(this.getLocalPlayer().getEntityPlayer());
+        JGemsHelper.CAMERA.enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayer());
 
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
         APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
