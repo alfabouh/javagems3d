@@ -16,14 +16,14 @@ import org.joml.Vector3f;
 import javagems3d.system.controller.objects.IController;
 
 public interface IControllable {
-    IController currentController();
+    IController getCurrentController();
 
     void setController(IController iController);
 
     void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused);
 
     default boolean isValidController() {
-        return this.currentController() != null;
+        return this.getCurrentController() != null;
     }
 
     float getEyeHeight();

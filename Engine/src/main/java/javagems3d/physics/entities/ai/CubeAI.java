@@ -11,6 +11,7 @@
 
 package javagems3d.physics.entities.ai;
 
+import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
@@ -44,7 +45,7 @@ public class CubeAI extends AIBasedWorldItem {
     public void onUpdate(IWorld iWorld) {
         super.onUpdate(iWorld);
         if (!this.ai.hasPath()) {
-            this.ai.setDestination(JGems3D.get().getPlayer());
+            this.ai.setDestination((WorldItem) JGems3D.get().getPlayer());
         }
     }
 

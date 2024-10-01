@@ -16,6 +16,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
+import javagems3d.physics.world.basic.WorldItem;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -33,8 +34,7 @@ import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.graphics.opengl.screen.JGemsScreen;
 import javagems3d.graphics.opengl.screen.window.Window;
 import javagems3d.graphics.opengl.world.SceneWorld;
-import javagems3d.physics.entities.player.Player;
-import javagems3d.physics.entities.player.SimpleKinematicPlayer;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
@@ -218,7 +218,7 @@ public class DIMGuiRenderJGems {
         }
         MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controllerDispatcher.getCurrentController();
         ICamera camera = JGems3D.get().getScreen().getCamera();
-        Player entityPlayerSP = JGems3D.get().getPlayer();
+        IPlayer entityPlayerSP = JGems3D.get().getPlayer();
         SceneWorld sceneWorld = JGems3D.get().getSceneWorld();
         JGemsOpenGLRenderer sceneRender = JGems3D.get().getScreen().getScene().getSceneRenderer();
 
@@ -248,8 +248,8 @@ public class DIMGuiRenderJGems {
         ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
         ImGui.begin("Debug");
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
-        if (entityPlayerSP instanceof SimpleKinematicPlayer) {
-            SimpleKinematicPlayer dynamicPlayer = (SimpleKinematicPlayer) entityPlayerSP;
+        if (entityPlayerSP != null) {
+            WorldItem dynamicPlayer = (WorldItem) entityPlayerSP;
             if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera) {
                 ImGui.text(String.format("%s %s %s", JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().x, JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().y, JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().z));
             } else {
@@ -257,7 +257,7 @@ public class DIMGuiRenderJGems {
             }
             ImGui.text("entities: " + JGems3D.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
-            ImGui.text("current speed(scalar): " + String.format("%.4f", dynamicPlayer.getScalarSpeed()));
+            ImGui.text("current speed(scalar): " + String.format("%.4f", entityPlayerSP.getScalarSpeed()));
         }
 
         if (ImGui.collapsingHeader("Scene")) {
@@ -310,7 +310,7 @@ public class DIMGuiRenderJGems {
                     JGemsHelper.CAMERA.enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
                     JGemsHelper.CONTROLLER.detachController();
                 } else {
-                    JGemsHelper.CAMERA.enableAttachedCamera(JGems3D.get().getPlayer());
+                    JGemsHelper.CAMERA.enableAttachedCamera((WorldItem) JGems3D.get().getPlayer());
                     JGemsHelper.CONTROLLER.attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
                 }
             }

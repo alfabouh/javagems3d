@@ -39,7 +39,7 @@ public final class WorldObjectsContainer {
             if (worldTicked instanceof WorldItem) {
                 WorldItem worldItem1 = (WorldItem) worldTicked;
                 if (worldItem1 instanceof IInventoryOwner) {
-                    ((IInventoryOwner) worldItem1).inventory().updateInventory(world);
+                    ((IInventoryOwner) worldItem1).getInventory().updateInventory(world);
                 }
                 worldItem1.setPrevPosition(worldItem1.getPosition());
             }

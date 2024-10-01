@@ -25,7 +25,7 @@ package jgems_api.test.entities;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.entities.BtDynamicMeshBody;
-import javagems3d.physics.entities.player.SimpleKinematicPlayer;
+import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class TestPlayer extends SimpleKinematicPlayer {
+public class TestPlayer extends JGemsKinematicPlayer {
     public TestPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot) {
         super(world, pos, rot);
     }

@@ -38,7 +38,7 @@ import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
 import javagems3d.graphics.opengl.screen.JGemsScreen;
 import javagems3d.graphics.opengl.screen.timer.JGemsTimer;
 import javagems3d.graphics.opengl.world.SceneWorld;
-import javagems3d.physics.entities.player.Player;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
@@ -82,7 +82,7 @@ public abstract class JGemsHelper {
         return JGemsHelper.getScreen().getTimerPool().createTimer();
     }
 
-    public static Player getCurrentPlayer() {
+    public static IPlayer getCurrentPlayer() {
         return JGems3D.get().getPlayer();
     }
 
@@ -386,6 +386,18 @@ public abstract class JGemsHelper {
 
     //section Utils
     public static abstract class UTILS {
+        public static void clampVectorToZeroThreshold(Vector3f in, float threshold) {
+            if (in.x > -threshold && in.x < threshold) {
+                in.x = 0.0f;
+            }
+            if (in.y > -threshold && in.y < threshold) {
+                in.y = 0.0f;
+            }
+            if (in.z > -threshold && in.z < threshold) {
+                in.z = 0.0f;
+            }
+        }
+
         public static float calcDistanceToMostFarPoint(MeshDataGroup meshDataGroup, Vector3f scaling) {
             float max = Float.MIN_VALUE;
 
