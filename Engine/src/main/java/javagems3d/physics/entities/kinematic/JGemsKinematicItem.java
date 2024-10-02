@@ -155,7 +155,6 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
     }
 
     private Vector3f tryStepUp(Vector3f currPos, Vector3f motion, float height) {
-        height = 0.51f;
         SweepResult sweepResultUp = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getPhysicsGhostObject(), (ConvexShape) this.getPhysicsGhostObject().getCollisionShape(), currPos, new Vector3f(0.0f, height, 0.0f), new Vector3i(0, 1, 0));
         Vector3f getHitUp = sweepResultUp.getCorrectedPos();
 
@@ -191,7 +190,8 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         if (sweepResult0.getSlideMotion() != null) {
             float y = sweepResult0.getSlideMotion().y;
             if (y > 0.0f) {
-                if (this.checkAngleOnPos(physicsGhostObject, this.getSlopeAngle(), sweepResult0.getCorrectedPos().add(sweepResult0.getSlideMotion()), new Vector3f(0.0f, -1.0f, 0.0f), false)) {
+                boolean flag = this.checkAngleOnPos(physicsGhostObject, this.getSlopeAngle(), sweepResult0.getCorrectedPos().add(sweepResult0.getSlideMotion().mul(0.01f)), new Vector3f(0.0f, -1.0f, 0.0f), false);
+                if (flag) {
                     return y;
                 }
             }
@@ -359,8 +359,8 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
             if (this.isOnGround() && motion.y == 0.0f) {
                 Vector3f tryStepUp = this.tryStepUp(this.getPosition(), motion, this.getStepHeight());
                 if (tryStepUp != null) {
-                    this.setPosition(tryStepUp);
-                    return;
+                   this.setPosition(tryStepUp);
+                   return;
                 }
             }
         }
