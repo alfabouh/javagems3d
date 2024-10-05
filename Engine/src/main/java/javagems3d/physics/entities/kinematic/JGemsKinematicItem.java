@@ -73,7 +73,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.setGravity(-9.8f);
         this.setJumpHeight(1.0f);
         this.setWalkSpeed(0.25f);
-        this.setSlopeAngle(Math.toRadians(46.0f));
+        this.setSlopeAngle(Math.toRadians(50.0f));
         this.setStepHeight(0.25f);
         this.setLinearVelDamping(0.7f);
         this.setJumpCooldown(PhysicsThread.TICKS_PER_SECOND / 2);
@@ -190,7 +190,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         if (sweepResult0.getSlideMotion() != null) {
             float y = sweepResult0.getSlideMotion().y;
             if (y > 0.0f) {
-                boolean flag = this.checkAngleOnPos(physicsGhostObject, this.getSlopeAngle(), sweepResult0.getCorrectedPos().add(sweepResult0.getSlideMotion().mul(0.01f)), new Vector3f(0.0f, -1.0f, 0.0f), false);
+                boolean flag = this.checkAngleOnPos(this.getPhysicsGhostObject(), this.getSlopeAngle(), sweepResult0.getCorrectedPos().add(sweepResult0.getSlideMotion().mul(0.01f, 1.0f, 0.01f)), new Vector3f(0.0f, -1.0f, 0.0f), false);
                 if (flag) {
                     return y;
                 }
@@ -272,10 +272,10 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.tryToJump(this.getGravity(), motion, jumpSpeed);
         this.gravityVelocity(this.getGravity());
 
-        JGemsHelper.UTILS.clampVectorToZeroThreshold(this.bodyVelocity, 0.01f);
+        JGemsHelper.UTILS.clampVectorToZeroThreshold(this.bodyVelocity, 0.001f);
 
-        this.move(this.getBodyVelocity());
-        //this.move(new Vector3f(this.calcControllerMotion()).mul(0.25f));
+        //this.move(this.getBodyVelocity());
+        this.move(new Vector3f(this.getMoveVector()).mul(0.25f));
     }
 
     protected void tryToJump(float gravity, Vector3f motionVecController, float jumpHeight) {
@@ -450,7 +450,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
 
             this.setPosition(corrPosSlide);
         } else {
-            this.setPosition(corrected.add(slide));
+            this.setPosition(new Vector3f(corrected).add(slide));
         }
 
         return flag;
@@ -621,7 +621,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                 physicsSweepTestResult1.getHitNormalLocal(normal0);
                 Vector3f normal = DynamicsUtils.convertV3F_JOML(normal0);
                 Vector3f inNormal = new Vector3f(normal);
-                JGemsHelper.UTILS.clampVectorToZeroThreshold(inNormal, 0.01f);
+                JGemsHelper.UTILS.clampVectorToZeroThreshold(inNormal, 0.001f);
                 if (inNormal.length() > 0f) {
                     inNormal.normalize();
                 }
@@ -658,6 +658,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         }
 
         public static SweepResult getSweepHitResult(DynamicsSystem dynamicsSystem, PhysicsGhostObject ghostObject, ConvexShape convexShape, Vector3f posFrom, Vector3f motion, Vector3i axis, Vector3f slideNormalCorrection, float ccd) {
+           // motion.mul(0.15f, 1f, 0.15f);
             Vector3f nmAxisM = new Vector3f(motion).mul(new Vector3f(axis));
             Vector3f moveTo1 = new Vector3f(posFrom).add(nmAxisM);
             Transform start = new Transform().setTranslation(DynamicsUtils.convertV3F_JME(posFrom));
@@ -690,26 +691,28 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                 physicsSweepTestResult1.getHitNormalLocal(normal0);
                 Vector3f normal = DynamicsUtils.convertV3F_JOML(normal0);
 
-                Vector3f inNormal = new Vector3f(normal);
                 if (slideNormalCorrection != null) {
-                    inNormal.mul(slideNormalCorrection);
+                    normal.mul(slideNormalCorrection);
                 }
 
-                JGemsHelper.UTILS.clampVectorToZeroThreshold(inNormal, 0.01f);
-                if (inNormal.length() > 0f) {
-                    inNormal.normalize();
+                JGemsHelper.UTILS.clampVectorToZeroThreshold(normal, 0.001f);
+                if (normal.length() > 0f) {
+                    normal.normalize();
                 }
 
-                Vector3f motionAlongNormal = new Vector3f(inNormal).mul(new Vector3f(motion).dot(inNormal));
+                Vector3f motionAlongNormal = new Vector3f(normal).mul(new Vector3f(motion).dot(normal));
                 Vector3f slideMotion = new Vector3f(motion).sub(motionAlongNormal);
-
-                float dotAsMN = new Vector3f(nmAxisM).normalize().dot(inNormal);
 
                 if (!slideMotion.isFinite()) {
                     slideMotion.set(0.0f);
                 }
 
-                return new SweepResult(corrected.add(new Vector3f(inNormal).mul(0.01f)), inNormal, slideMotion, distanceToHit);
+                float offset = Math.min(nmAxisM.length() * 0.1f, 0.01f);
+
+                float m1 = Math.min(corrected.distance(posFrom), 0.05f);
+                corrected.add(new Vector3f(normal).mul(offset));
+
+                return new SweepResult(corrected, normal, slideMotion, distanceToHit);
             }
             return new SweepResult(moveTo1, null, null, 1.0f);
         }
@@ -719,11 +722,11 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         }
 
         public static SweepResult getSweepHitResult(DynamicsSystem dynamicsSystem, PhysicsGhostObject ghostObject, ConvexShape convexShape, Vector3f posFrom, Vector3f motion, Vector3i axis, Vector3f slideNormalCorrection) {
-            return SweepResult.getSweepHitResult(dynamicsSystem, ghostObject, convexShape, posFrom, motion, axis, slideNormalCorrection, 1.0e-10f);
+            return SweepResult.getSweepHitResult(dynamicsSystem, ghostObject, convexShape, posFrom, motion, axis, slideNormalCorrection, 0.001f);
         }
 
         public static SweepResult getSweepHitResult(DynamicsSystem dynamicsSystem, PhysicsGhostObject ghostObject, ConvexShape convexShape, Vector3f posFrom, Vector3f motion, Vector3i axis) {
-            return SweepResult.getSweepHitResult(dynamicsSystem, ghostObject, convexShape, posFrom, motion, axis, null, 1.0e-10f);
+            return SweepResult.getSweepHitResult(dynamicsSystem, ghostObject, convexShape, posFrom, motion, axis, null, 0.001f);
         }
 
         public float getHitFraction() {
