@@ -31,6 +31,7 @@ import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import api.app.configuration.AppConfiguration;
 import api.app.manager.AppManager;
+import jgems_api.test.entities.TestPlayer;
 import jgems_api.test.gui.TestMainMenuPanel;
 import jgems_api.test.manager.bindings.TestBindings;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public class TestManager extends AppManager {
 
     @Override
     public @NotNull IPlayerConstructor createPlayer(IMapLoader mapLoader) {
-        return (w, p, r) -> new Pair<>(new JGemsKinematicPlayer(w, p, r), JGemsResourceManager.globalRenderDataAssets.player);
+        return (w, p, r) -> new Pair<>(new TestPlayer(w, p, r), JGemsResourceManager.globalRenderDataAssets.player);
     }
 
     public @NotNull PanelUI gameMainMenuPanel() {
