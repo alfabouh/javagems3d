@@ -52,7 +52,7 @@ public class PhysicsTimer implements IPhysTimer {
                     synchronized (PhysicsTimer.lockObject) {
                         this.world.onWorldUpdate();
                         APIEventsLauncher.pushEvent(new Events.BulletUpdate(this.dynamicsSystem));
-                        this.dynamicsSystem.step(time, 0);
+                        this.dynamicsSystem.step(time, 5);
                         this.dynamicsSystem.collideTest();
                     }
                 }

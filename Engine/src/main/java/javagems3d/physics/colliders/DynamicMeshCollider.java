@@ -32,7 +32,7 @@ public class DynamicMeshCollider implements IColliderConstructor {
             throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshDataGroup);
         }
         HullCollisionShape hullCollisionShape = new HullCollisionShape(meshCollisionData.getAllPositions());
-        hullCollisionShape.setMargin(0.01f);
+        hullCollisionShape.setMargin(1.0e-4f);
         return hullCollisionShape;
     }
 }

@@ -110,7 +110,6 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
 
     protected void init(DynamicsSystem dynamicsSystem) {
         this.physicsRigidBody = new JGemsPhysicsRigidBody(this.constructCollision().createGeom(dynamicsSystem));
-
         this.getPhysicsRigidBody().setContactStiffness(Float.MAX_VALUE);
         this.getPhysicsRigidBody().setContactDamping(0.0f);
         this.getPhysicsRigidBody().setUserObject(this);
