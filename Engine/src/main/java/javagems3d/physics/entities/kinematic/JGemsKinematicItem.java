@@ -21,6 +21,7 @@ import javagems3d.physics.world.thread.PhysicsThread;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
@@ -457,8 +458,16 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
             }
 
             this.setPosition(corrPosSlide);
+           // this.setBodyVelocity(new Vector3f(0.0f, this.getBodyVelocity().y, 0.0f));
         } else {
             this.setPosition(new Vector3f(corrected).add(slide));
+            //if (slide.length() > 0.0f) {
+            //    Vector3f normalCheckTo = checkTo.normalize();
+            //    float dot = 1.0f - Math.abs(normalCheckTo.dot(slideResult.getHitNormal()));
+            //    Vector3f normalSlide = slide.normalize();
+            //    Vector2f reductionP = new Vector2f(0.0f + (dot * Math.abs(normalSlide.x)), 0.0f + (dot * Math.abs(normalSlide.z)));
+            //    this.setBodyVelocity(new Vector3f(this.getBodyVelocity().x * reductionP.x, this.getBodyVelocity().y, this.getBodyVelocity().z * reductionP.y));
+            //}
         }
 
         return flag;
@@ -715,7 +724,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     slideMotion.set(0.0f);
                 }
 
-                float offset = Math.min(nmAxisM.length() * 0.1f, 0.01f);
+                float offset = 0.002f; //Math.min(nmAxisM.length() * 0.01f, 0.002f);
                 corrected.add(new Vector3f(normal).mul(offset));
 
                 return new SweepResult(corrected, normal, slideMotion, distanceToHit);
