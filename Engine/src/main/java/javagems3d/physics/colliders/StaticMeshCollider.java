@@ -32,7 +32,7 @@ public class StaticMeshCollider implements IColliderConstructor {
             throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshDataGroup);
         }
         MeshCollisionShape meshCollisionShape = new MeshCollisionShape(true, meshCollisionData.getCompoundMesh());
-        meshCollisionShape.setMargin(1.0e-4f);
+        meshCollisionShape.setMargin(0.005f);
         return meshCollisionShape;
     }
 }

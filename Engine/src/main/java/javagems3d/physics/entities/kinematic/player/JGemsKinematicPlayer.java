@@ -2,7 +2,6 @@ package javagems3d.physics.entities.kinematic.player;
 
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
-import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.system.inventory.IInventoryOwner;
@@ -27,9 +26,9 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
-    protected void createGhostObject() {
+    protected void createObject() {
         this.startPos.y += this.getPlayerHeight();
-        super.createGhostObject();
+        super.createObject();
     }
 
     @Override
@@ -43,12 +42,12 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     protected Vector2f shapeSize() {
-        return new Vector2f(0.3f, 1.5f);
+        return new Vector2f(0.4f, 1.4f);
     }
 
     @Override
-    protected ConvexShape createShape() {
-        return new CylinderCollisionShape(this.shapeSize().x, this.shapeSize().y, 1);
+    protected ConvexShape createGhostShape() {
+        return new CapsuleCollisionShape(this.shapeSize().x, this.shapeSize().y, 1);
     }
 
     @Override
