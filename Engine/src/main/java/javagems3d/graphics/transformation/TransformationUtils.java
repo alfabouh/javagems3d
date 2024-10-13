@@ -30,7 +30,6 @@ public class TransformationUtils {
         this.cameraTransformation = new CameraTransformation();
         this.perspectiveMatrix = new Matrix4f().identity();
         this.orthographicMatrix = new Matrix4f().identity();
-
         this.updateMatrices();
     }
 
@@ -49,6 +48,10 @@ public class TransformationUtils {
     public void updateMatrices() {
         this.updateOrthographicMatrix();
         this.updatePerspectiveMatrix();
+    }
+
+    public static Matrix4f getAbstractCameraViewMatrix(ICamera camera) {
+        return Transformation.getViewMatrix(camera);
     }
 
     public Matrix4f getMainCameraViewMatrix() {

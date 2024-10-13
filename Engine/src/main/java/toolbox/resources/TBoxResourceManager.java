@@ -13,7 +13,7 @@ package toolbox.resources;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.shaders.ShadersContainer;
+import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;

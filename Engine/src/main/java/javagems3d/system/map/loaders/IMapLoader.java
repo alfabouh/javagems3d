@@ -11,6 +11,7 @@
 
 package javagems3d.system.map.loaders;
 
+import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -23,6 +24,8 @@ public interface IMapLoader {
     void postLoad(PhysicsWorld world, SceneWorld sceneWorld);
 
     void preLoad(PhysicsWorld world, SceneWorld sceneWorld);
+
+    void fillSkyBox(SkyBox.Background background);
 
     @NotNull
     MapInfo getLevelInfo();

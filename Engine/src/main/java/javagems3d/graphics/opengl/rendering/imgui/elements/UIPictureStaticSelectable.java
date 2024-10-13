@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 

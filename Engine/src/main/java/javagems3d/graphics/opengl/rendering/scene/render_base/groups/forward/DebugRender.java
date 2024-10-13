@@ -25,7 +25,7 @@ import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -74,7 +74,7 @@ public class DebugRender extends SceneRenderBase {
     }
 
     private void renderDebugSunDirection() {
-        try (Model<Format3D> model = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(this.getSceneWorld().getEnvironment().getSky().getSunPos()).mul(1000.0f))) {
+        try (Model<Format3D> model = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(this.getSceneWorld().getEnvironment().getSkyBox().getSun().getSunPosition()).mul(1000.0f))) {
             this.debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f));
             JGemsSceneUtils.renderModel(model, GL30.GL_LINES);
         }

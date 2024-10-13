@@ -14,7 +14,7 @@ package javagems3d.graphics.opengl.rendering.programs.shaders;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.Shader;
+import javagems3d.system.resources.assets.shaders.base.Shader;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 public class GShaderProgram implements IShaderProgram {

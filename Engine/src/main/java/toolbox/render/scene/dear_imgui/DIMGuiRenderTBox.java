@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL30;
 import javagems3d.graphics.opengl.dear_imgui.DIMGuiMesh;
 import javagems3d.graphics.opengl.screen.window.IWindow;
 import javagems3d.system.controller.objects.MouseKeyboardController;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.cache.ResourceCache;
 import toolbox.ToolBox;
 import toolbox.controller.TBoxControllerDispatcher;

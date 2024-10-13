@@ -31,10 +31,10 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
-import javagems3d.system.resources.assets.shaders.RenderPass;
-import javagems3d.system.resources.assets.shaders.ShadersContainer;
-import javagems3d.system.resources.assets.shaders.UniformBufferObject;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.RenderPass;
+import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
+import javagems3d.system.resources.assets.shaders.base.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 
 public final class JGemsShaderManager extends ShaderManager {
     private final JGemsShaderUtils shaderUtils;
@@ -106,7 +106,7 @@ public final class JGemsShaderManager extends ShaderManager {
             ITextureSample metallic = material.getMetallicMap();
             ITextureSample normals = material.getNormalsMap();
             ITextureSample specular = material.getSpecularMap();
-            CubeMapSample cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSky().getSkyBox().cubeMapTexture();
+            CubeMapSample cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
 
             int texturing_code = 0;
 

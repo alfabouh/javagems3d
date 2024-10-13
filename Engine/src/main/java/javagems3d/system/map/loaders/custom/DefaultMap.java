@@ -11,6 +11,12 @@
 
 package javagems3d.system.map.loaders.custom;
 
+import javagems3d.graphics.opengl.environment.skybox.SkyBox;
+import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderSimpleBackgroundProp;
+import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
@@ -39,7 +45,7 @@ public class DefaultMap implements IMapLoader {
 
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-        world.setMapNavGraph(Graph.readFromFile(new JGemsPath("/assets/jgems/nav.mesh")));
+        //world.setMapNavGraph(Graph.readFromFile(new JGemsPath("/assets/jgems/nav.mesh")));
 
         BtStaticMeshBody worldModeledBrush = (BtStaticMeshBody) new BtStaticMeshBody(JGemsResourceManager.globalModelAssets.ground2, world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
         JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
@@ -61,6 +67,14 @@ public class DefaultMap implements IMapLoader {
 
     @Override
     public void preLoad(PhysicsWorld world, SceneWorld sceneWorld) {
+    }
+
+    @Override
+    public void fillSkyBox(SkyBox.Background background) {
+        MeshDataGroup meshDataGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), true);
+        SceneProp sceneProp3 = new SceneProp(new RenderSimpleBackgroundProp(background), new Model<>(new Format3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshDataGroup), JGemsResourceManager.globalShaderAssets.skybox_background);
+        sceneProp3.getMeshRenderData().getRenderAttributes().setAlphaDiscard(0.5f);
+        background.addObjectInBackGround(sceneProp3);
     }
 
     @Override

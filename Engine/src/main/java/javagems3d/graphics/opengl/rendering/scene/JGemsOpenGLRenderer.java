@@ -11,15 +11,11 @@
 
 package javagems3d.graphics.opengl.rendering.scene;
 
-import javagems3d.system.resources.assets.material.Material;
-import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
-import javagems3d.system.resources.assets.shaders.RenderPass;
+import javagems3d.graphics.opengl.camera.ICamera;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GL45;
@@ -51,7 +47,7 @@ import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.graphics.opengl.screen.window.Window;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import api.app.events.bus.Events;
@@ -73,10 +69,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private final DIMGuiRenderJGems dearImGuiRender;
     private final Set<FBOTexture2DProgram> fboSet;
     private boolean wantToTakeScreenshot;
-    private GuiRender guiRender;
-    private InventoryRender inventoryRender;
     private WorldTransparentRender worldTransparentRender;
 
+    private FBOTexture2DProgram skyBoxBackGroundBuffer;
     private FBOTexture2DProgram bloomBlurredBuffer;
     private FBOTexture2DProgram forwardAndDeferredScenesBuffer;
     private FBOTexture2DProgram gBuffer;
@@ -157,16 +152,12 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         return this.finalizingBuffer;
     }
 
+    public FBOTexture2DProgram getSkyBoxBackGroundBuffer() {
+        return this.skyBoxBackGroundBuffer;
+    }
+
     protected WorldTransparentRender getWorldTransparentRender() {
         return this.worldTransparentRender;
-    }
-
-    protected InventoryRender getInventoryRender() {
-        return this.inventoryRender;
-    }
-
-    protected GuiRender getGuiRender() {
-        return this.guiRender;
     }
 
     private void updateUBOs(FrameTicking frameTicking) {
@@ -175,9 +166,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer value1Buffer = memoryStack.mallocFloat(4);
             value1Buffer.put(!JGemsDebugGlobalConstants.FULL_BRIGHT ? environment.getFog().getDensity() : 0.0f);
-            value1Buffer.put(environment.getFog().getColor().x * environment.getSky().getSunBrightness());
-            value1Buffer.put(environment.getFog().getColor().y * environment.getSky().getSunBrightness());
-            value1Buffer.put(environment.getFog().getColor().z * environment.getSky().getSunBrightness());
+            value1Buffer.put(environment.getFog().getColor().x * environment.getSkyBox().getSun().getSunBrightness());
+            value1Buffer.put(environment.getFog().getColor().y * environment.getSkyBox().getSun().getSunBrightness());
+            value1Buffer.put(environment.getFog().getColor().z * environment.getSkyBox().getSun().getSunBrightness());
             value1Buffer.flip();
             JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Fog, value1Buffer);
         }
@@ -197,6 +188,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.sceneGluingBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
         this.fxaaBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
         this.finalizingBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
+        this.skyBoxBackGroundBuffer = this.addFBOInSet(new FBOTexture2DProgram(true));
     }
 
     private FBOTexture2DProgram addFBOInSet(FBOTexture2DProgram fboTexture2DProgram) {
@@ -267,6 +259,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
         }};
         this.finalizingBuffer.createFrameBuffer2DTexture(windowSize, finalB, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+
+        T2DAttachmentContainer skybox = new T2DAttachmentContainer() {{
+            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
+        }};
+        this.skyBoxBackGroundBuffer.createFrameBuffer2DTexture(windowSize, skybox, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
     }
 
     private void createSSAOResources(Vector3i ssaoParams) {
@@ -301,12 +298,12 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     }
 
     private void fillScene() {
-        this.guiRender = new GuiRender(this);
-        this.inventoryRender = new InventoryRender(this);
         this.worldTransparentRender = new WorldTransparentRender(this);
 
+        this.getSceneRenderBaseContainer().addBaseInSkyBoxBackGroundContainer(new SkyBoxBackgroundRender(this.getSceneData().getSceneWorld().getEnvironment().getSkyBox(), this));
+
         this.getSceneRenderBaseContainer().addBaseInForwardContainer(new WorldForwardRender(this));
-        this.getSceneRenderBaseContainer().addBaseInForwardContainer(new SkyRender(this));
+        this.getSceneRenderBaseContainer().addBaseInForwardContainer(new SkyBoxCubeMapRender(this.getSceneData().getSceneWorld().getEnvironment().getSkyBox(), this));
         this.getSceneRenderBaseContainer().addBaseInForwardContainer(new DebugRender(this));
 
         this.getSceneRenderBaseContainer().addBaseInDeferredContainer(new WorldDeferredRender(this));
@@ -315,8 +312,8 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getSceneRenderBaseContainer().addBaseInTransparencyContainer(new LiquidsRender(this));
         this.getSceneRenderBaseContainer().addBaseInTransparencyContainer(this.getWorldTransparentRender());
 
-        this.getSceneRenderBaseContainer().addBaseInInventoryForwardContainer(this.getInventoryRender());
-        this.getSceneRenderBaseContainer().addBaseInGUIContainer(this.getGuiRender());
+        this.getSceneRenderBaseContainer().addBaseInInventoryForwardContainer(new InventoryRender(this));
+        this.getSceneRenderBaseContainer().addBaseInGUIContainer(new GuiRender(this));
     }
 
     @Override
@@ -398,16 +395,16 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         if (!APIEventsLauncher.pushEvent(new Events.RenderScenePre(frameTicking, windowSize, this)).isCancelled()) {
             if (this.getSceneData().getCamera() == null) {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                this.getGuiRender().onRender(frameTicking);
+                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
                 this.takeScreenShotIfNeeded(windowSize);
                 return;
             }
             if (JGems3D.get().isPaused()) {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                this.getGuiRender().onRender(frameTicking);
+                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
             } else {
                 GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
-                this.getSceneData().getSceneWorld().getEnvironment().onUpdate(this.getSceneData().getSceneWorld());
+                this.getSceneData().getSceneWorld().getEnvironment().updateEnvironment(this.getSceneData().getSceneWorld(), this.getSceneData().getCamera());
                 JGems3D.get().getScreen().normalizeViewPort();
                 this.renderForwardAndDeferredScenes(frameTicking, windowSize, this.screenModel);
                 this.renderTransparentObjects(frameTicking, windowSize);
@@ -418,8 +415,8 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
                 this.postProcessing(frameTicking, windowSize);
                 this.renderFinalSceneInMainBuffer(this.screenModel);
 
-                this.getInventoryRender().onRender(frameTicking);
-                this.getGuiRender().onRender(frameTicking);
+                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getInventoryRenderSet());
+                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
             }
         }
         APIEventsLauncher.pushEvent(new Events.RenderScenePost(frameTicking, windowSize, this));
@@ -463,6 +460,13 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getForwardAndDeferredScenesBuffer().unBindFBO();
 
         this.getGBuffer().copyFBOtoFBODepth(this.getForwardAndDeferredScenesBuffer().getFrameBufferId(), windowSize);
+
+        GL30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        this.getSkyBoxBackGroundBuffer().bindFBO();
+        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getSkyBoxBackgroundRenderSet());
+        this.getSkyBoxBackGroundBuffer().unBindFBO();
+        GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         this.getForwardAndDeferredScenesBuffer().bindFBO();
         this.renderForwardScene(frameTicking);
@@ -589,59 +593,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     }
 
     public void renderModeledSceneObject(IModeledSceneObject sceneObject) {
-        if (sceneObject != null) {
-            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
-            JGemsOpenGLRenderer gemsOpenGLRenderer = JGemsHelper.getScreen().getScene().getSceneRenderer();
-            Model<Format3D> model = sceneObject.getModel();
-            if (model == null || !model.isValid()) {
-                return;
-            }
-            if (this.filterObjectTransparency(sceneObject)) {
-                gemsOpenGLRenderer.addSceneModelObjectInTransparencyPass(sceneObject);
-                return;
-            }
-            JGemsShaderManager shaderManager = sceneObject.getMeshRenderData().getShaderManager();
-            shaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), model);
-            shaderManager.getUtils().performRenderDataOnShader(sceneObject.getMeshRenderData());
-            if (shaderManager.isUniformExist(new UniformString("alpha_discard"))) {
-                shaderManager.performUniform(new UniformString("alpha_discard"), sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue());
-                if (sceneObject.getMeshRenderData().getRenderAttributes().getAlphaDiscardValue() > 0) {
-                    GL30.glDisable(GL30.GL_BLEND);
-                }
-            }
-            boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
-            if (sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
-                GL30.glDisable(GL11.GL_CULL_FACE);
-            }
-            for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-                Material material = overMaterial != null ? overMaterial : modelNode.getMaterial();
-                if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
-                    if (material.hasTransparency()) {
-                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(new WorldTransparentRender.RenderNodeInfo(sceneObject.getMeshRenderData().getOverridenTransparencyShader(), sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling(), modelNode, model.getFormat()));
-                        continue;
-                    }
-                }
-                shaderManager.getUtils().performModelMaterialOnShader(material);
-                JGemsSceneUtils.renderModelNode(modelNode);
-                shaderManager.clearUsedTextureSlots();
-            }
-            if (f) {
-                GL30.glEnable(GL11.GL_CULL_FACE);
-            }
-        }
+        JGemsSceneUtils.renderModeledSceneObject(sceneObject);
     }
 
-    private boolean filterObjectTransparency(IModeledSceneObject sceneObject) {
-        if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
-            if (sceneObject.getMeshRenderData().getShaderManager().checkShaderRenderPass(RenderPass.TRANSPARENCY) || sceneObject.getMeshRenderData().getRenderAttributes().getObjectOpacity() < 1.0f) {
-                return true;
-            }
-            Material overMaterial = sceneObject.getMeshRenderData().getOverlappingMaterial();
-            if (overMaterial != null) {
-                return overMaterial.hasTransparency();
-            }
-        }
-        return false;
+    public void renderModeledSceneObject(IModeledSceneObject sceneObject, ICamera camera) {
+        JGemsSceneUtils.renderModeledSceneObject(sceneObject, camera);
     }
 
     public void addModelNodeInTransparencyPass(WorldTransparentRender.RenderNodeInfo node) {
@@ -805,6 +761,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     }
 
     public static final class SceneRenderBaseContainer {
+        private final Set<SceneRenderBase> skyBoxRenderSet;
         private final Set<SceneRenderBase> forwardRenderSet;
         private final Set<SceneRenderBase> deferredRenderSet;
         private final Set<SceneRenderBase> transparencyRenderSet;
@@ -812,6 +769,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         private final Set<SceneRenderBase> inventoryRenderSet;
 
         public SceneRenderBaseContainer() {
+            this.skyBoxRenderSet = new HashSet<>();
             this.forwardRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
             this.deferredRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
             this.transparencyRenderSet = new TreeSet<>(Comparator.comparingInt(SceneRenderBase::getRenderOrder).thenComparingInt(System::identityHashCode));
@@ -824,6 +782,8 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
 
         public void endAll() {
+            this.getSkyBoxBackgroundRenderSet().forEach(SceneRenderBase::onStopRender);
+
             this.getForwardRenderSet().forEach(SceneRenderBase::onStopRender);
             this.getDeferredRenderSet().forEach(SceneRenderBase::onStopRender);
             this.getTransparencyRenderSet().forEach(SceneRenderBase::onStopRender);
@@ -832,6 +792,8 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
 
         public void startAll() {
+            this.getSkyBoxBackgroundRenderSet().forEach(SceneRenderBase::onStartRender);
+
             this.getForwardRenderSet().forEach(SceneRenderBase::onStartRender);
             this.getDeferredRenderSet().forEach(SceneRenderBase::onStartRender);
             this.getTransparencyRenderSet().forEach(SceneRenderBase::onStartRender);
@@ -841,6 +803,10 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
         public void addBaseInGUIContainer(SceneRenderBase base) {
             this.getGuiRenderSet().add(base);
+        }
+
+        public void addBaseInSkyBoxBackGroundContainer(SceneRenderBase base) {
+            this.getSkyBoxBackgroundRenderSet().add(base);
         }
 
         public void addBaseInInventoryForwardContainer(SceneRenderBase base) {
@@ -857,6 +823,10 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
         public void addBaseInTransparencyContainer(SceneRenderBase base) {
             this.getTransparencyRenderSet().add(base);
+        }
+
+        public Set<SceneRenderBase> getSkyBoxBackgroundRenderSet() {
+            return this.skyBoxRenderSet;
         }
 
         public Set<SceneRenderBase> getInventoryRenderSet() {

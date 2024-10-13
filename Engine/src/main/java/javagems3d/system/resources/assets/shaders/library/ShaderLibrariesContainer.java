@@ -1,7 +1,7 @@
 package javagems3d.system.resources.assets.shaders.library;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.ShaderType;
+import javagems3d.system.resources.assets.shaders.base.ShaderType;
 import javagems3d.system.service.path.JGemsPath;
 
 public final class ShaderLibrariesContainer {

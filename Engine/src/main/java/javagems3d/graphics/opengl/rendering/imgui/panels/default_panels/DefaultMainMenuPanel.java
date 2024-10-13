@@ -29,7 +29,7 @@ import javagems3d.system.map.loaders.custom.DefaultMap;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
 public class DefaultMainMenuPanel extends AbstractPanelUI {

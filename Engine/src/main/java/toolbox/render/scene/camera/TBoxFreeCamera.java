@@ -13,11 +13,11 @@ package toolbox.render.scene.camera;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import javagems3d.graphics.opengl.camera.FreeCamera;
+import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.system.controller.objects.IController;
 import toolbox.controller.TBoxControllerDispatcher;
 
-public class TBoxFreeCamera extends FreeCamera {
+public class TBoxFreeCamera extends FreeControlledCamera {
     public TBoxFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
         super(controller, pos, rot);
     }

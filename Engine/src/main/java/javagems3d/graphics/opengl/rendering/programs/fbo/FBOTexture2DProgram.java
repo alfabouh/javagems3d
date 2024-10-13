@@ -124,6 +124,31 @@ public class FBOTexture2DProgram {
         GL43.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
     }
 
+    public void copyFBOtoFBODepth2(int fboTo, Vector2i dimension) {
+        GL43.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, this.getFrameBufferId());
+        GL43.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, fboTo);
+        GL43.glBlitFramebuffer(0, 0, dimension.x, dimension.y, 0, 0, dimension.x, dimension.y, GL30.GL_DEPTH_BUFFER_BIT, GL30.GL_NEAREST);
+
+// Отключаем FBO, чтобы выполнить дальнейшие изменения
+        GL43.glBindFramebuffer(GL30.GL_FRAMEBUFFER, fboTo);
+
+// Устанавливаем режим записи только в глубинный буфер
+        GL43.glEnable(GL43.GL_DEPTH_TEST);
+        GL43.glDepthMask(true); // Разрешаем запись в глубинный буфер
+        GL43.glColorMask(false, false, false, false); // Отключаем запись в цветовой буфер
+
+// Очистка глубины на целевом FBO до 0 (наименьшее значение глубины — ближайшее)
+        GL43.glClearDepth(0.0f); // Задаем глубину, равную 0 (ближайшая)
+        GL43.glClear(GL30.GL_DEPTH_BUFFER_BIT); // Очищаем глубинный буфер
+
+// Восстанавливаем настройки
+        GL43.glDepthMask(false); // Восстанавливаем состояние записи в глубинный буфер
+        GL43.glColorMask(true, true, true, true); // Включаем обратно цветовой буфер
+
+// Отключаем FBO
+        GL43.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+    }
+
     public void connectTextureToBuffer(int attachment, int i) {
         GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_2D, this.getTexturePrograms().get(i).getTextureId(), 0);
     }

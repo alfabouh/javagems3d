@@ -12,6 +12,7 @@
 package javagems3d.system.core;
 
 import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
@@ -20,13 +21,11 @@ import javagems3d.JGemsHelper;
 import api.bridge.APIContainer;
 import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.opengl.environment.Environment;
-import javagems3d.graphics.opengl.environment.sky.skybox.SkyBox2D;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.player.LocalPlayer;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
@@ -137,25 +136,23 @@ public class EngineSystem implements IEngine {
             if (fogProp.isFogEnabled()) {
                 environment.getFog().setColor(fogProp.getFogColor());
                 environment.getFog().setDensity(fogProp.getFogDensity());
-                environment.getSky().setCoveredByFog(fogProp.isSkyCoveredByFog());
+                environment.getSkyBox().setSkyCoveredByFog(fogProp.isSkyCoveredByFog());
             } else {
                 environment.getFog().disable();
             }
         }
 
         if (skyProp != null) {
-            if (environment.getSky().getSkyBox() instanceof SkyBox2D) {
-                SkyBox2D skyBox2D = (SkyBox2D) environment.getSky().getSkyBox();
-                CubeMapSample cubeMapProgram = globalRes.getResource(skyProp.getSkyBoxPath());
-                if (cubeMapProgram != null) {
-                    skyBox2D.setCubeMapTexture(cubeMapProgram);
-                }
+            CubeMapSample cubeMapProgram = globalRes.getResource(skyProp.getSkyBoxPath());
+            if (cubeMapProgram != null) {
+                environment.getSkyBox().setSky2DTexture(cubeMapProgram);
             }
-            environment.getSky().setSunPos(skyProp.getSunPos());
-            environment.getSky().setSunColors(skyProp.getSunColor());
-            environment.getSky().setSunBrightness(skyProp.getSunBrightness());
+            environment.getSkyBox().getSun().setSunPosition(skyProp.getSunPos());
+            environment.getSkyBox().getSun().setSunColor(skyProp.getSunColor());
+            environment.getSkyBox().getSun().setSunBrightness(skyProp.getSunBrightness());
         }
 
+        this.getMapLoader().fillSkyBox(environment.getSkyBox().getBackground());
         this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
 
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();

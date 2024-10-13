@@ -19,7 +19,7 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;

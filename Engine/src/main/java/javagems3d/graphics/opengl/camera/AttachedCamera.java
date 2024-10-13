@@ -34,8 +34,8 @@ public class AttachedCamera extends Camera {
         if (abstractSceneEntity != null) {
             Vector3f pos = new Vector3f(this.getPhysXObject().getRenderPosition()).add(this.cameraOffset());
             Vector3f rot = new Vector3f(this.getPhysXObject().getRenderRotation());
-            this.setCameraPos(pos);
-            this.setCameraRot(rot);
+            this.setCameraPosition(pos);
+            this.setCameraRotation(rot);
         }
     }
 
@@ -51,8 +51,8 @@ public class AttachedCamera extends Camera {
     public void attachCameraOnItem(AbstractSceneEntity abstractSceneEntity) {
         JGemsHelper.getLogger().log("Attached camera to: " + abstractSceneEntity.getWorldItem().getItemName());
         this.abstractSceneEntity = abstractSceneEntity;
-        this.setCameraPos(abstractSceneEntity.getRenderPosition());
-        this.setCameraRot(abstractSceneEntity.getRenderRotation());
+        this.setCameraPosition(abstractSceneEntity.getRenderPosition());
+        this.setCameraRotation(abstractSceneEntity.getRenderRotation());
     }
 
     public AbstractSceneEntity getPhysXObject() {

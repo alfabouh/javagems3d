@@ -25,13 +25,11 @@ import java.util.List;
 public class PointLightShadow {
     private final FBOCubeMapProgram pointLightCubeMap;
     private final int id;
-    private final SceneWorld sceneWorld;
     private PointLight pointLight;
     private List<Matrix4f> shadowDirections;
 
-    public PointLightShadow(int id, SceneWorld sceneWorld) {
+    public PointLightShadow(int id) {
         this.id = id;
-        this.sceneWorld = sceneWorld;
         this.shadowDirections = new ArrayList<>();
         this.pointLight = null;
         this.pointLightCubeMap = new FBOCubeMapProgram();
@@ -81,10 +79,6 @@ public class PointLightShadow {
 
     public List<Matrix4f> getShadowDirections() {
         return this.shadowDirections;
-    }
-
-    public SceneWorld getSceneWorld() {
-        return this.sceneWorld;
     }
 
     public FBOCubeMapProgram getPointLightCubeMap() {

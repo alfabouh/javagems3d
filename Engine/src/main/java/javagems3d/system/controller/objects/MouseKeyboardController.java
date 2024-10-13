@@ -16,7 +16,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.camera.FreeCamera;
+import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.graphics.opengl.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
@@ -116,7 +116,7 @@ public class MouseKeyboardController implements IController {
 
     @Override
     public void updateItemWithInventory(IInventoryOwner hasInventory) {
-        if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera) {
+        if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeControlledCamera) {
             return;
         }
         Inventory inventory = hasInventory.getInventory();
