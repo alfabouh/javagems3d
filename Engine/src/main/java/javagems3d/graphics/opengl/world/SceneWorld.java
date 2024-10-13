@@ -33,7 +33,7 @@ import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
-import javagems3d.system.resources.assets.shaders.RenderPass;
+import javagems3d.system.resources.assets.shaders.base.RenderPass;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.synchronizing.SyncManager;
@@ -66,7 +66,7 @@ public final class SceneWorld implements IWorld {
         this.liquids = SyncManager.createSyncronisedSet();
         this.toRenderSet = SyncManager.createSyncronisedSet();
 
-        this.environment = new Environment(this);
+        this.environment = new Environment();
         this.frustumCulling = null;
 
         this.particlesEmitter = new ParticlesEmitter();
@@ -79,7 +79,7 @@ public final class SceneWorld implements IWorld {
         JGemsDebugGlobalConstants.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
-        this.getEnvironment().init(this);
+        this.getEnvironment().createEnvironment(this);
         this.ticks = 0;
         APIEventsLauncher.pushEvent(new Events.RenderWorldStart(Events.Stage.POST, this));
     }
@@ -104,7 +104,7 @@ public final class SceneWorld implements IWorld {
     public void onWorldEnd() {
         APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.PRE, this));
         this.getParticlesEmitter().destroy(this);
-        this.getEnvironment().destroy(this);
+        this.getEnvironment().destroyEnvironment(this);
         this.cleanAll();
         APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.POST, this));
     }

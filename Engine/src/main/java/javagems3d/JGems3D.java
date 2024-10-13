@@ -48,6 +48,8 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 public final class JGems3D {
+    public static int MAP_MAX_SIZE = 128;
+
     public static boolean DEBUG_MODE = false;
     public static boolean FIRST_LAUNCH = false;
     public static long rngSeed;

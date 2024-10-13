@@ -11,6 +11,7 @@
 
 package javagems3d.system.map.loaders.tbox;
 
+import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
@@ -155,6 +156,11 @@ public class TBoxMapLoader implements IMapLoader {
     @Override
     public void preLoad(PhysicsWorld world, SceneWorld sceneWorld) {
         APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getMapLoaderManager().mapPreLoad(world, sceneWorld);
+    }
+
+    @Override
+    public void fillSkyBox(SkyBox.Background background) {
+        //TODO
     }
 
     @Override

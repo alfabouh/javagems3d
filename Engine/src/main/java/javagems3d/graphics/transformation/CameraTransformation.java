@@ -22,7 +22,7 @@ public class CameraTransformation {
     }
 
     public void update(ICamera camera) {
-        this.viewMatrix.set(Transformation.getViewMatrix(camera));
+        this.viewMatrix.set(TransformationUtils.getAbstractCameraViewMatrix(camera));
     }
 
     public Matrix4f getViewMatrix() {

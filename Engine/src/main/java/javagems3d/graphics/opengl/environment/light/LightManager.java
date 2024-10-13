@@ -68,7 +68,7 @@ public class LightManager implements ILightManager {
     }
 
     public float calcAmbientLight() {
-        return this.environment.getSky().getSunBrightness();
+        return this.environment.getSkyBox().getSun().getSunBrightness();
     }
 
     public List<PointLight> getPointLightList() {
@@ -83,7 +83,7 @@ public class LightManager implements ILightManager {
     }
 
     private void updateSunUbo(MemoryStack stack, Matrix4f viewMatrix) {
-        Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSky().getSunPos(), viewMatrix, 0.0f);
+        Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSkyBox().getSun().getSunPosition(), viewMatrix, 0.0f);
         FloatBuffer value1Buffer = stack.mallocFloat(LightManager.SN_STRUCT_SIZE * Float.BYTES);
 
         value1Buffer.put(angle.x);
@@ -91,13 +91,13 @@ public class LightManager implements ILightManager {
         value1Buffer.put(angle.z);
         value1Buffer.put(0.0f);
 
-        value1Buffer.put(this.environment.getSky().getSunColors().x);
-        value1Buffer.put(this.environment.getSky().getSunColors().y);
-        value1Buffer.put(this.environment.getSky().getSunColors().z);
+        value1Buffer.put(this.environment.getSkyBox().getSun().getSunColor().x);
+        value1Buffer.put(this.environment.getSkyBox().getSun().getSunColor().y);
+        value1Buffer.put(this.environment.getSkyBox().getSun().getSunColor().z);
         value1Buffer.put(0.0f);
 
         value1Buffer.put(this.calcAmbientLight());
-        value1Buffer.put(this.environment.getSky().getSunBrightness());
+        value1Buffer.put(this.environment.getSkyBox().getSun().getSunBrightness());
         value1Buffer.put(0.0f);
         value1Buffer.put(0.0f);
 

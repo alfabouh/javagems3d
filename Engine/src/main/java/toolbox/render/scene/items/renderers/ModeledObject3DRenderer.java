@@ -13,7 +13,7 @@ package toolbox.render.scene.items.renderers;
 
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import toolbox.render.scene.dear_imgui.content.EditorContent;
 import toolbox.render.scene.items.objects.base.TBoxAbstractObject;

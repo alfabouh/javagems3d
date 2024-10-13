@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.environment.shadow;
 
+import javagems3d.graphics.opengl.environment.Environment;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -25,7 +26,6 @@ import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
 import javagems3d.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.opengl.rendering.scene.JGemsScene;
-import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
@@ -35,7 +35,7 @@ import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.ModelNode;
 import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ShadowManager implements IShadowScene {
-    private final SceneWorld sceneWorld;
+    private final Environment environment;
     private final FBOTexture2DProgram shadowFBO;
     private final FBOTexture2DProgram shadowPostFBO;
     private Vector2i shadowDimensions;
@@ -54,8 +54,8 @@ public class ShadowManager implements IShadowScene {
     private List<PointLightShadow> pointLightShadows;
     private Model<Format2D> sunPostModel;
 
-    public ShadowManager(SceneWorld sceneWorld) {
-        this.sceneWorld = sceneWorld;
+    public ShadowManager(Environment environment) {
+        this.environment = environment;
         this.shadowFBO = new FBOTexture2DProgram(true);
         this.shadowPostFBO = new FBOTexture2DProgram(true);
         this.initCascades();
@@ -95,7 +95,7 @@ public class ShadowManager implements IShadowScene {
     private void initPointLightShadows() {
         this.pointLightShadows = new ArrayList<>(JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS);
         for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
-            this.pointLightShadows.add(new PointLightShadow(i, this.getSceneWorld()));
+            this.pointLightShadows.add(new PointLightShadow(i));
         }
     }
 
@@ -113,7 +113,7 @@ public class ShadowManager implements IShadowScene {
         Matrix4f view = scene.getTransformationUtils().getMainCameraViewMatrix();
         Matrix4f projection = scene.getTransformationUtils().getPerspectiveMatrix();
 
-        Vector4f sunPos = new Vector4f(this.getSceneWorld().getEnvironment().getSky().getSunPos(), 0.0f);
+        Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getSunPosition(), 0.0f);
 
         float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
         float[] cascadeSplits = new float[JGemsSceneGlobalConstants.CASCADE_SPLITS];
@@ -399,8 +399,8 @@ public class ShadowManager implements IShadowScene {
         return this.shadowPostFBO;
     }
 
-    public SceneWorld getSceneWorld() {
-        return this.sceneWorld;
+    public Environment getEnvironment() {
+        return this.environment;
     }
 
     public JGemsShaderManager getSunShadowShader() {

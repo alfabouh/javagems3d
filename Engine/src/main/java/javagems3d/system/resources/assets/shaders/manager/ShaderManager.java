@@ -11,6 +11,7 @@
 
 package javagems3d.system.resources.assets.shaders.manager;
 
+import javagems3d.system.resources.assets.shaders.base.*;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import javagems3d.JGemsHelper;
@@ -18,7 +19,6 @@ import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.programs.shaders.CShaderProgram;
 import javagems3d.graphics.opengl.rendering.programs.shaders.GShaderProgram;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
-import javagems3d.system.resources.assets.shaders.*;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;

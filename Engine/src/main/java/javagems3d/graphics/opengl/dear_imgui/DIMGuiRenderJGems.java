@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL30;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import api.bridge.events.APIEventsLauncher;
-import javagems3d.graphics.opengl.camera.FreeCamera;
+import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
@@ -39,7 +39,7 @@ import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -250,7 +250,7 @@ public class DIMGuiRenderJGems {
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
         if (entityPlayerSP != null) {
             WorldItem dynamicPlayer = (WorldItem) entityPlayerSP;
-            if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera) {
+            if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeControlledCamera) {
                 ImGui.text(String.format("%s %s %s", JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().x, JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().y, JGemsHelper.CAMERA.getCurrentCamera().getCamPosition().z));
             } else {
                 ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
@@ -303,7 +303,7 @@ public class DIMGuiRenderJGems {
             }
         }
 
-        boolean flag = JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeCamera;
+        boolean flag = JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeControlledCamera;
         if (ImGui.collapsingHeader("Tools")) {
             if (ImGui.checkbox("FreeCam", flag)) {
                 if (!flag) {
@@ -369,10 +369,11 @@ public class DIMGuiRenderJGems {
                 ImGui.sameLine();
                 ImGui.image(sceneRender.getTransparencySceneBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                ImGui.image(sceneRender.getForwardAndDeferredScenesBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getSkyBoxBackGroundBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
-
                 ImGui.image(sceneRender.getHdrBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+
+                ImGui.image(sceneRender.getForwardAndDeferredScenesBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.endChild();
             }
 

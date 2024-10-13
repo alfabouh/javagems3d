@@ -31,7 +31,7 @@ import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
 import javagems3d.system.resources.assets.models.mesh.ModelNode;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import logger.SystemLogging;
 import logger.managers.LoggingManager;

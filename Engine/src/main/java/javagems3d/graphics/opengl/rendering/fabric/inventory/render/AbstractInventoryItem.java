@@ -24,7 +24,7 @@ import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
 import javagems3d.system.resources.assets.models.mesh.ModelNode;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class AbstractInventoryItem implements IRenderInventoryFabric {

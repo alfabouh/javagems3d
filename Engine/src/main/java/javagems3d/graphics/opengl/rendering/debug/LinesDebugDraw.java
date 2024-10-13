@@ -28,7 +28,7 @@ import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.graph.GraphEdge;
 import javagems3d.system.graph.GraphVertex;
-import javagems3d.system.resources.assets.shaders.UniformString;
+import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.nio.FloatBuffer;

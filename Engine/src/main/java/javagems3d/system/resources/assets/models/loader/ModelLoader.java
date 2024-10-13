@@ -231,7 +231,9 @@ public class ModelLoader {
 
     private static float[] readTangents(AIMesh aiMesh) {
         AIVector3D.Buffer buffer = aiMesh.mTangents();
-        assert buffer != null;
+        if (buffer == null) {
+            return new float[] {};
+        }
         float[] data = new float[buffer.remaining() * 3];
         int pos = 0;
         while (buffer.remaining() > 0) {
@@ -245,7 +247,9 @@ public class ModelLoader {
 
     private static float[] readBiTangents(AIMesh aiMesh) {
         AIVector3D.Buffer buffer = aiMesh.mBitangents();
-        assert buffer != null;
+        if (buffer == null) {
+            return new float[] {};
+        }
         float[] data = new float[buffer.remaining() * 3];
         int pos = 0;
         while (buffer.remaining() > 0) {

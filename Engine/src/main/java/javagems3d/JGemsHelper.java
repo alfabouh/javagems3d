@@ -11,6 +11,7 @@
 
 package javagems3d;
 
+import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
@@ -18,13 +19,12 @@ import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.*;
 import javagems3d.audio.SoundManager;
-import javagems3d.graphics.opengl.camera.FreeCamera;
+import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.environment.Environment;
 import javagems3d.graphics.opengl.environment.fog.Fog;
 import javagems3d.graphics.opengl.environment.light.Light;
 import javagems3d.graphics.opengl.environment.light.PointLight;
-import javagems3d.graphics.opengl.environment.sky.Sky;
 import javagems3d.graphics.opengl.particles.ParticlesEmitter;
 import javagems3d.graphics.opengl.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.opengl.particles.objects.SimpleColoredParticle;
@@ -140,7 +140,7 @@ public abstract class JGemsHelper {
         }
 
         public static void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
-            JGemsHelper.getScreen().getScene().setCamera(new FreeCamera(controller, pos, rot));
+            JGemsHelper.getScreen().getScene().setCamera(new FreeControlledCamera(controller, pos, rot));
         }
 
         public static void enableAttachedCamera(WorldItem worldItem) {
@@ -189,8 +189,8 @@ public abstract class JGemsHelper {
 
     // section Controller
     public static abstract class ENVIRONMENT {
-        public static Sky getSky() {
-            return JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSky();
+        public static SkyBox getSky() {
+            return JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox();
         }
 
         public static Fog getFog() {

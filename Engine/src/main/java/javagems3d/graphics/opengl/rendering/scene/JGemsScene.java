@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL30;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.camera.AttachedCamera;
-import javagems3d.graphics.opengl.camera.FreeCamera;
+import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.frustum.FrustumCulling;
 import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
@@ -114,7 +114,7 @@ public class JGemsScene implements IScene {
     }
 
     public void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
-        this.setCamera(new FreeCamera(controller, pos, rot));
+        this.setCamera(new FreeControlledCamera(controller, pos, rot));
     }
 
     public void enableAttachedCamera(WorldItem worldItem) {

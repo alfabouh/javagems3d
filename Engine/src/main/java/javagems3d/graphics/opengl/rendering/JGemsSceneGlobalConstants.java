@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering;
 
+import javagems3d.JGems3D;
 import org.joml.Vector2f;
 
 public abstract class JGemsSceneGlobalConstants {
@@ -31,7 +32,7 @@ public abstract class JGemsSceneGlobalConstants {
     //section Projection
     public static float FOV = (float) Math.toRadians(60.0f);
     public static float Z_NEAR = 0.1f;
-    public static float Z_FAR = 100.0f;
+    public static float Z_FAR = (float) JGems3D.MAP_MAX_SIZE * 2.0f;
 
 
     public static float EVSM_POSITIVE_EXPONENT = 60.0f;

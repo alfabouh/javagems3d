@@ -55,7 +55,7 @@ public class DynamicsSystem {
         }
 
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
-        this.physicsSpace = new PhysicsSpace(new Vector3f(-256.0f, -256.0f, -256.0f), new Vector3f(256.0f, 256.0f, 256.0f), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);
+        this.physicsSpace = new PhysicsSpace(new Vector3f(-JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE), new Vector3f(JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);
         this.physicsSpace.setGravity(new Vector3f(0.0f, -10.0f, 0.0f));
     }
 

@@ -20,7 +20,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.camera.FreeCamera;
+import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.service.collections.Pair;
 import logger.managers.LoggingManager;
@@ -355,7 +355,7 @@ public class EditorContent implements ImGuiContent {
         ImGui.text("Selected:" + this.currentSelectedObject);
         if (this.currentSelectedObject != null) {
             if (ImGui.button("Move Camera -> Object")) {
-                ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(this.currentSelectedObject.getModel().getFormat().getPosition()).add(0.0f, 1.0f, 0.0f));
+                ((FreeControlledCamera) this.getTBoxScene().getCamera()).setCameraPosition(new Vector3f(this.currentSelectedObject.getModel().getFormat().getPosition()).add(0.0f, 1.0f, 0.0f));
             }
             if (ImGui.button("Move Object -> CameraDir")) {
                 Vector3f whereLook = this.getTBoxScene().findPointWhereCamLooks(15.0f);
@@ -623,7 +623,7 @@ public class EditorContent implements ImGuiContent {
 
         if (ImGui.beginMenu("Scene")) {
             if (ImGui.button("Teleport In Center")) {
-                ((FreeCamera) this.getTBoxScene().getCamera()).setCameraPos(new Vector3f(0.0f));
+                ((FreeControlledCamera) this.getTBoxScene().getCamera()).setCameraPosition(new Vector3f(0.0f));
             }
             if (ImGui.checkbox("Light", EditorContent.sceneShowLight)) {
                 EditorContent.sceneShowLight = !EditorContent.sceneShowLight;

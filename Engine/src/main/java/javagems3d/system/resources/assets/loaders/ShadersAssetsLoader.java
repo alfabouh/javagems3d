@@ -16,9 +16,9 @@ import javagems3d.graphics.opengl.environment.Environment;
 import javagems3d.graphics.opengl.environment.light.LightManager;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
-import javagems3d.system.resources.assets.shaders.RenderPass;
-import javagems3d.system.resources.assets.shaders.ShadersContainer;
-import javagems3d.system.resources.assets.shaders.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.base.RenderPass;
+import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
+import javagems3d.system.resources.assets.shaders.base.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -47,6 +47,7 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     public JGemsShaderManager scene_gluing;
     public JGemsShaderManager fxaa;
     public JGemsShaderManager skybox;
+    public JGemsShaderManager skybox_background;
     public JGemsShaderManager world_gbuffer;
     public JGemsShaderManager world_ssao;
     public JGemsShaderManager world_deferred;
@@ -67,7 +68,7 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
         this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);
         this.Misc = this.createUBO("Misc", 2, Float.BYTES);
-        this.Fog = this.createUBO("Fog", 3, Environment.FG_STRUCT_SIZE * Float.BYTES);
+        this.Fog = this.createUBO("Fog", 3, Environment.FOG_STRUCT_SIZE * Float.BYTES);
 
         this.world_pickable = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_pickable"));
         this.debug = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "debug"));
@@ -91,6 +92,7 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
         this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/scene_gluing"));
 
         this.skybox = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/skybox")).attachUBOs(this.SunLight);
+        this.skybox_background = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/skybox_background")).attachUBOs(this.SunLight, this.Fog);
 
         this.world_ssao = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/screen_ssao"));
 

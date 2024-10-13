@@ -23,7 +23,9 @@
 package jgems_api.test.map;
 
 import javagems3d.JGemsHelper;
+import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderProp;
+import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderSimpleBackgroundProp;
 import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -59,6 +61,10 @@ public class TestMap implements IMapLoader {
     @Override
     public void preLoad(PhysicsWorld world, SceneWorld sceneWorld) {
 
+    }
+
+    @Override
+    public void fillSkyBox(SkyBox.Background background) {
     }
 
     @Override

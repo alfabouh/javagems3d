@@ -11,7 +11,7 @@
 
 package toolbox.render.scene.container;
 
-import javagems3d.system.resources.assets.shaders.RenderPass;
+import javagems3d.system.resources.assets.shaders.base.RenderPass;
 import logger.SystemLogging;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import javagems3d.temp.map_sys.save.objects.map_prop.FogProp;

@@ -65,7 +65,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     public void emitParticle(ParticleFX particleFX) {
         this.getParticlesSet().add(particleFX);
         if (this.getParticlesSet().size() > JGemsSceneGlobalConstants.MAX_PARTICLES) {
-            this.getParticlesSet().remove(this.getParticlesSet().stream().findAny().get());
+            this.getParticlesSet().remove(this.getParticlesSet().stream().findFirst().get());
         }
     }
 
