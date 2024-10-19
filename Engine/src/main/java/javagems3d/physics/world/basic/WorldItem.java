@@ -12,6 +12,7 @@
 package javagems3d.physics.world.basic;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.entities.properties.controller.IControllable;
@@ -29,15 +30,15 @@ public abstract class WorldItem implements IWorldObject {
     private final Vector3f prevPosition;
     private final String itemName;
     private final int itemId;
-    protected Vector3f startPos;
-    protected Vector3f startRot;
+    protected Vector3f startPosition;
+    protected Vector3f startRotation;
     protected Vector3f startScaling;
     private Vector3f scaling;
     private int spawnTick;
     private boolean isDead;
     private boolean spawned;
 
-    public WorldItem(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scaling, String itemName) {
+    public WorldItem(PhysicsWorld world, @NotNull Vector3f position, @NotNull Vector3f rotation, @NotNull Vector3f scaling, String itemName) {
         this.itemName = (itemName == null || itemName.isEmpty()) ? "default_item" : itemName;
 
         this.world = world;
@@ -45,32 +46,42 @@ public abstract class WorldItem implements IWorldObject {
         this.isDead = false;
         this.itemId = WorldItem.globalId++;
 
-        this.startPos = new Vector3f(pos);
-        this.startRot = new Vector3f(rot);
-        this.startScaling = new Vector3f(scaling);
+        this.setStartTransformations(position, rotation, scaling);
 
-        this.position = new Vector3f(pos);
-        this.rotation = new Vector3f(rot);
+        this.position = new Vector3f(position);
+        this.rotation = new Vector3f(rotation);
         this.scaling = new Vector3f(scaling);
 
-        this.prevPosition = new Vector3f(pos);
+        this.prevPosition = new Vector3f(position);
     }
 
-    public WorldItem(PhysicsWorld world, Vector3f pos, Vector3f rot, String itemName) {
-        this(world, pos, rot, new Vector3f(1.0f), itemName);
+    public WorldItem(PhysicsWorld world, Vector3f position, Vector3f rotation, String itemName) {
+        this(world, position, rotation, new Vector3f(1.0f), itemName);
     }
 
-    public WorldItem(PhysicsWorld world, Vector3f pos, String itemName) {
-        this(world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
+    public WorldItem(PhysicsWorld world, Vector3f position, String itemName) {
+        this(world, position, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
     public WorldItem(PhysicsWorld world, String itemName) {
         this(world, new Vector3f(1.0f), new Vector3f(0.0f), new Vector3f(0.0f), itemName);
     }
 
+    public void setStartTransformations(@Nullable Vector3f position, @Nullable Vector3f rotation, @Nullable Vector3f scaling) {
+        if (position != null) {
+            this.startPosition = new Vector3f(position);
+        }
+        if (rotation != null) {
+            this.startRotation = new Vector3f(rotation);
+        }
+        if (scaling != null) {
+            this.startScaling = new Vector3f(scaling);
+        }
+    }
+
     public void resetWarp() {
-        this.setPosition(this.startPos);
-        this.setRotation(this.startRot);
+        this.setPosition(this.startPosition);
+        this.setRotation(this.startRotation);
     }
 
     public void onSpawn(IWorld iWorld) {

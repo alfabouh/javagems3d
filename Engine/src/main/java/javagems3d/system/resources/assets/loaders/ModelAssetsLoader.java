@@ -20,11 +20,13 @@ import javagems3d.system.service.path.JGemsPath;
 public class ModelAssetsLoader implements IAssetsLoader {
     public MeshDataGroup cube;
     public MeshDataGroup ground2;
+    public MeshDataGroup ground3;
 
     @Override
     public void load(GameResources gameResources) {
         this.cube = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "cube/cube.obj"), true, true);
         this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true, true);
+        this.ground3 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map05/map05.obj"), true, true);
     }
 
     @Override

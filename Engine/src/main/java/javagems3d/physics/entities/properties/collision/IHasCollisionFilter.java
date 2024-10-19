@@ -14,9 +14,9 @@ package javagems3d.physics.entities.properties.collision;
 public interface IHasCollisionFilter {
     int getCollisionGroup();
 
-    void setCollisionGroup(CollisionFilter... collisionFilters);
+    void setCollisionGroup(CollisionType... collisionTypes);
 
     int getCollisionFilter();
 
-    void setCollisionFilter(CollisionFilter... collisionFilters);
+    void setCollisionFilter(CollisionType... collisionTypes);
 }
