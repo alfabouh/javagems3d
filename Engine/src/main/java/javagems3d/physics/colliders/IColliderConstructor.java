@@ -12,8 +12,12 @@
 package javagems3d.physics.colliders;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 
+@FunctionalInterface
 public interface IColliderConstructor {
-    CollisionShape createGeom(DynamicsSystem dynamicsSystem);
+    CollisionShape createCollisionShape();
+
+    static IColliderConstructor get(CollisionShape collisionShape) {
+        return () -> collisionShape;
+    }
 }

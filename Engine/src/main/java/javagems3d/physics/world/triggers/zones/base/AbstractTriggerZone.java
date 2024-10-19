@@ -15,7 +15,7 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.objects.PhysicsGhostObject;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.physics.entities.properties.collision.CollisionFilter;
+import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
@@ -35,8 +35,8 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
         this.getGhostObject().setPhysicsLocation(DynamicsUtils.convertV3F_JME(zone.getLocation()));
         this.getGhostObject().setUserObject(this);
 
-        this.setCollisionFilter(CollisionFilter.DN_BODY, CollisionFilter.PLAYER);
-        this.setCollisionGroup(CollisionFilter.GHOST);
+        this.setCollisionFilter(CollisionType.DN_BODY, CollisionType.PLAYER);
+        this.setCollisionGroup(CollisionType.GHOST);
     }
 
     @Override
@@ -64,10 +64,10 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
         return this.getGhostObject().getCollisionGroup();
     }
 
-    public void setCollisionGroup(CollisionFilter... collisionFilters) {
+    public void setCollisionGroup(CollisionType... collisionTypes) {
         int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
+        for (CollisionType collisionType : collisionTypes) {
+            i |= collisionType.getMask();
         }
         this.getGhostObject().setCollisionGroup(i);
     }
@@ -76,10 +76,10 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
         return this.getGhostObject().getCollideWithGroups();
     }
 
-    public void setCollisionFilter(CollisionFilter... collisionFilters) {
+    public void setCollisionFilter(CollisionType... collisionTypes) {
         int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
+        for (CollisionType collisionType : collisionTypes) {
+            i |= collisionType.getMask();
         }
         this.getGhostObject().setCollideWithGroups(i);
     }

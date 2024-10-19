@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.physics.entities;
+package javagems3d.physics.entities.bullet;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -17,7 +17,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.physics.colliders.IColliderConstructor;
-import javagems3d.physics.entities.properties.collision.CollisionFilter;
+import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.entities.properties.material.PhysMaterial;
 import javagems3d.physics.entities.properties.state.EntityState;
 import javagems3d.physics.world.IWorld;
@@ -28,12 +28,12 @@ import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import javagems3d.physics.world.triggers.ITriggerAction;
 
-public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicked {
+public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity, IWorldTicked {
     private EntityState entityState;
     private boolean canBeDestroyed;
     private JGemsPhysicsRigidBody physicsRigidBody;
 
-    public BtBody(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scaling, String itemName) {
+    public JGemsBody(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, @NotNull Vector3f scaling, String itemName) {
         super(world, pos, rot, scaling, itemName);
         this.entityState = new EntityState();
         this.canBeDestroyed = true;
@@ -59,15 +59,15 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
         this.getPhysicsRigidBody().makeStatic(material);
     }
 
-    public void setCollisionFilterNegative(CollisionFilter... noCheckCollisionFilters) {
+    public void setCollisionFilterNegative(CollisionType... noCheckCollisionTypes) {
         int i = 0;
-        for (CollisionFilter collisionFilter : noCheckCollisionFilters) {
-            i |= collisionFilter.getMask();
+        for (CollisionType collisionType : noCheckCollisionTypes) {
+            i |= collisionType.getMask();
         }
-        this.getPhysicsRigidBody().setCollideWithGroups(CollisionFilter.ALL.getMask() & ~i);
+        this.getPhysicsRigidBody().setCollideWithGroups(CollisionType.UNIVERSAL.getMask() & ~i);
     }
 
-    public BtBody setCanBeDestroyed(boolean flag) {
+    public JGemsBody setCanBeDestroyed(boolean flag) {
         this.canBeDestroyed = flag;
         return this;
     }
@@ -80,16 +80,18 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
     @Override
     public final void onUpdate(IWorld iWorld) {
         this.onTick(iWorld);
-        this.getEntityState().removeState(EntityState.Type.IN_LIQUID);
     }
 
     protected void onTick(IWorld iWorld) {
-        if (this.getPosition().y < -50.0f) {
-            this.resetWarp();
-        }
-        if (this.getEntityState().checkState(EntityState.Type.IN_LIQUID)) {
-            this.getPhysicsRigidBody().slowDownLinearVelocity(0.9f);
-            this.getPhysicsRigidBody().slowDownAngularVelocity(0.9f);
+        if (this.getPhysicsRigidBody().isDynamic()) {
+            if (this.getPosition().y < -50.0f) {
+                this.resetWarp();
+            }
+            if (this.getEntityState().checkState(EntityState.Type.IN_LIQUID)) {
+                this.getPhysicsRigidBody().slowDownLinearVelocity(0.9f);
+                this.getPhysicsRigidBody().slowDownAngularVelocity(0.9f);
+            }
+            this.getEntityState().removeState(EntityState.Type.IN_LIQUID);
         }
     }
 
@@ -109,15 +111,15 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
     }
 
     protected void init(DynamicsSystem dynamicsSystem) {
-        this.physicsRigidBody = new JGemsPhysicsRigidBody(this.constructCollision().createGeom(dynamicsSystem));
+        this.physicsRigidBody = new JGemsPhysicsRigidBody(this.constructCollision().createCollisionShape());
         this.getPhysicsRigidBody().setContactStiffness(Float.MAX_VALUE);
         this.getPhysicsRigidBody().setContactDamping(0.0f);
         this.getPhysicsRigidBody().setUserObject(this);
-        this.setCollisionFilter(CollisionFilter.ALL);
+        this.setCollisionFilter(CollisionType.UNIVERSAL);
 
         this.postInit(dynamicsSystem, this.getPhysicsRigidBody());
 
-        DynamicsUtils.transformRigidBody(this.getPhysicsRigidBody(), this.startPos, this.startRot, this.startScaling);
+        DynamicsUtils.transformRigidBody(this.getPhysicsRigidBody(), this.startPosition, this.startRotation, this.startScaling);
     }
 
     protected abstract void postInit(DynamicsSystem dynamicsSystem, JGemsPhysicsRigidBody jGemsPhysicsRigidBody);
@@ -155,10 +157,10 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
         return this.getPhysicsRigidBody().getCollisionGroup();
     }
 
-    public void setCollisionGroup(CollisionFilter... collisionFilters) {
+    public void setCollisionGroup(CollisionType... collisionTypes) {
         int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
+        for (CollisionType collisionType : collisionTypes) {
+            i |= collisionType.getMask();
         }
         this.getPhysicsRigidBody().setCollisionGroup(i);
     }
@@ -167,10 +169,10 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
         return this.getPhysicsRigidBody().getCollideWithGroups();
     }
 
-    public void setCollisionFilter(CollisionFilter... collisionFilters) {
+    public void setCollisionFilter(CollisionType... collisionTypes) {
         int i = 0;
-        for (CollisionFilter collisionFilter : collisionFilters) {
-            i |= collisionFilter.getMask();
+        for (CollisionType collisionType : collisionTypes) {
+            i |= collisionType.getMask();
         }
         this.getPhysicsRigidBody().setCollideWithGroups(i);
     }
@@ -245,10 +247,10 @@ public abstract class BtBody extends WorldItem implements IBtEntity, IWorldTicke
         @Override
         public void setPhysicsScale(com.jme3.math.Vector3f newScale) {
             super.setPhysicsScale(newScale);
-            this.reCalcDensity();
+            this.reCalcMass();
         }
 
-        public void reCalcDensity() {
+        public void reCalcMass() {
             this.setMass(this.calcMass(this.saveDensity));
         }
 

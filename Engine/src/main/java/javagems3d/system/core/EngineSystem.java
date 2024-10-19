@@ -11,7 +11,18 @@
 
 package javagems3d.system.core;
 
+import com.jme3.bullet.collision.shapes.Box2dShape;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
+import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.FastMath;
+import com.jme3.math.Plane;
+import com.jme3.math.Quaternion;
+import javagems3d.physics.entities.bullet.wrappers.BulletBody;
+import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -80,7 +91,7 @@ public class EngineSystem implements IEngine {
             return;
         }
         this.mapLoader = mapLoader;
-        this.initMap();
+        this.readAndProcessMapData();
         this.requestsFromThreads.loadMap = null;
     }
 
@@ -105,7 +116,7 @@ public class EngineSystem implements IEngine {
         this.requestsFromThreads.destroyMap = false;
     }
 
-    private void initMap() {
+    private void readAndProcessMapData() {
         if (!this.engineState().isEngineIsReady()) {
             JGemsHelper.getLogger().error("Engine thread is not ready to load map!");
             this.mapLoader = null;
@@ -167,6 +178,10 @@ public class EngineSystem implements IEngine {
         JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
         JGemsHelper.CAMERA.enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayer());
 
+        if (true) {//TODO
+           this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);
+        }
+
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
         APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
 
@@ -174,6 +189,24 @@ public class EngineSystem implements IEngine {
         JGemsHelper.getScreen().removeLoadingScreen();
 
         this.unPauseGame();
+    }
+
+    private void buildInvisibleBorders(PhysicsWorld physicsWorld, int mapSize) {
+        float worldSize = (float) mapSize;
+
+        PlaneCollisionShape planeShape1 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(1, 0, 0), -worldSize));
+        PlaneCollisionShape planeShape2 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(-1, 0, 0), -worldSize));
+        PlaneCollisionShape planeShape3 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 1, 0), -worldSize));
+        PlaneCollisionShape planeShape4 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, -1, 0), -worldSize));
+        PlaneCollisionShape planeShape5 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 0, 1), -worldSize));
+        PlaneCollisionShape planeShape6 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 0, -1), -worldSize));
+
+        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape1, 0), "wall1"));
+        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape2, 0), "wall2"));
+        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape3, 0), "wall3"));
+        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape4, 0), "wall4"));
+        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape5, 0), "wall5"));
+        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape6, 0), "wall6"));
     }
 
     public LocalPlayer getLocalPlayer() {

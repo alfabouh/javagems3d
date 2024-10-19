@@ -24,7 +24,8 @@ package jgems_api.test.entities;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.physics.entities.BtDynamicMeshBody;
+import javagems3d.physics.colliders.MeshCollider;
+import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
@@ -43,7 +44,7 @@ public class TestPlayer extends JGemsKinematicPlayer {
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
         if (JGems3D.DEBUG_MODE) {
             if (((TestBindings) JGemsControllerDispatcher.bindingManager()).keyBlock1.isClicked()) {
-                BtDynamicMeshBody entityPropInfo = new BtDynamicMeshBody(JGemsResourceManager.globalModelAssets.cube, this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "jgems_api/horror");
+                JGemsDynamicBody entityPropInfo = new JGemsDynamicBody(MeshCollider.getDynamic(JGemsResourceManager.globalModelAssets.cube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "jgems_api/horror");
                 JGemsHelper.WORLD.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
                 Vector3f v3 = this.getLookVector().mul(50.0f);
                 entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);

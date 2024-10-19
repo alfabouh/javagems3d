@@ -11,7 +11,7 @@
 
 package javagems3d.physics.world.triggers.liquids.base;
 
-import javagems3d.physics.entities.properties.collision.CollisionFilter;
+import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -38,8 +38,8 @@ public abstract class Liquid implements IWorldObject, IWorldTicked {
 
     protected void init() {
         this.getSimpleTriggerZone().setTriggerAction(this::onEntityEnteredLiquid);
-        this.getSimpleTriggerZone().setCollisionGroup(CollisionFilter.LIQUID);
-        this.getSimpleTriggerZone().setCollisionFilter(CollisionFilter.PLAYER, CollisionFilter.DN_BODY);
+        this.getSimpleTriggerZone().setCollisionGroup(CollisionType.LIQUID);
+        this.getSimpleTriggerZone().setCollisionFilter(CollisionType.PLAYER, CollisionType.DN_BODY);
     }
 
     protected abstract void onEntityEnteredLiquid(Object e);

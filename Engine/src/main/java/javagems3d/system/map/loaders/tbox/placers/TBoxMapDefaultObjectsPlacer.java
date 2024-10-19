@@ -22,14 +22,15 @@
 
 package javagems3d.system.map.loaders.tbox.placers;
 
+import javagems3d.physics.colliders.MeshCollider;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
 import javagems3d.graphics.opengl.world.SceneWorld;
-import javagems3d.physics.entities.BtDynamicMeshBody;
-import javagems3d.physics.entities.BtStaticMeshBody;
+import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
+import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
@@ -73,13 +74,13 @@ public abstract class TBoxMapDefaultObjectsPlacer {
             Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
             JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
             if (isStatic == null || isStatic) {
-                BtStaticMeshBody worldModeledBrush = new BtStaticMeshBody(meshDataGroup, physicsWorld, pos, id);
+                JGemsStaticBody worldModeledBrush = new JGemsStaticBody(MeshCollider.getStatic(meshDataGroup), physicsWorld, pos, id);
                 JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
                 worldModeledBrush.setCanBeDestroyed(false);
                 worldModeledBrush.setRotation(new Vector3f(rot).negate());
                 worldModeledBrush.setScaling(scale);
             } else {
-                BtDynamicMeshBody worldModeledBrush = new BtDynamicMeshBody(meshDataGroup, physicsWorld, pos, id);
+                JGemsDynamicBody worldModeledBrush = new JGemsDynamicBody(MeshCollider.getDynamic(meshDataGroup), physicsWorld, pos, id);
                 JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
                 worldModeledBrush.setCanBeDestroyed(false);
                 worldModeledBrush.setRotation(new Vector3f(rot).negate());

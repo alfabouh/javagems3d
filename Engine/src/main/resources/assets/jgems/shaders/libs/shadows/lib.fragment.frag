@@ -71,7 +71,7 @@ float calc_sun_shadows(vec4 world_position, vec3 frag_pos) {
         float p2 = (cascade_shadow[cascadeIndex].split_distance + half_bias_f) - frag_pos.z;
         return mix(f0, f1, p2 / bias_f);
     }
-    return f0;
+    return 1.;
 }
 
 float vsmFixLightBleed(float pMax, float amount) {

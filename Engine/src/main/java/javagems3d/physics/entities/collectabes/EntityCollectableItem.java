@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.data.SoundType;
-import javagems3d.physics.entities.properties.collision.CollisionFilter;
+import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
@@ -35,7 +35,7 @@ public class EntityCollectableItem extends WorldItem {
         this.inventoryItem = inventoryItem;
 
         this.pickUpItemTriggerZone = new SimpleTriggerZone(new Zone(this.getPosition(), new Vector3f(1.0f)));
-        this.pickUpItemTriggerZone.setCollisionFilter(CollisionFilter.PLAYER);
+        this.pickUpItemTriggerZone.setCollisionFilter(CollisionType.PLAYER);
         this.pickUpItemTriggerZone.setTriggerAction(this.action());
     }
 

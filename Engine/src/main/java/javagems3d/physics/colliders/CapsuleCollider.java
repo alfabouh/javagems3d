@@ -24,7 +24,7 @@ public class CapsuleCollider implements IColliderConstructor {
     }
 
     @Override
-    public CollisionShape createGeom(DynamicsSystem dynamicsSystem) {
+    public CollisionShape createCollisionShape() {
         return new CapsuleCollisionShape(this.size.x, size.y);
     }
 }

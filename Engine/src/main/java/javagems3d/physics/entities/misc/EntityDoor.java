@@ -13,7 +13,7 @@ package javagems3d.physics.entities.misc;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import javagems3d.physics.entities.properties.collision.CollisionFilter;
+import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -32,7 +32,7 @@ public class EntityDoor extends WorldItem implements IWorldTicked {
         this.reversedOpening = reversedOpening;
 
         this.doorTriggerZone = new SimpleTriggerZone(new Zone(new Vector3f(this.getPosition()).add(0.0f, 1.0f, 0.0f), new Vector3f(3.0f)));
-        this.doorTriggerZone.setCollisionFilter(CollisionFilter.PLAYER);
+        this.doorTriggerZone.setCollisionFilter(CollisionType.PLAYER);
         this.doorTriggerZone.setTriggerAction((e) -> {
             this.opened = true;
         });
@@ -64,15 +64,15 @@ public class EntityDoor extends WorldItem implements IWorldTicked {
     public void onUpdate(IWorld iWorld) {
         if (this.isOpened()) {
             if (this.isReversedOpening()) {
-                this.setRotation(new Vector3f(this.startRot).add(0.0f, (float) -Math.toRadians(90.0f), 0.0f));
-                this.setPosition(new Vector3f(this.startPos).sub(-0.7f, 0.0f, 0.7f));
+                this.setRotation(new Vector3f(this.startRotation).add(0.0f, (float) -Math.toRadians(90.0f), 0.0f));
+                this.setPosition(new Vector3f(this.startPosition).sub(-0.7f, 0.0f, 0.7f));
             } else {
-                this.setRotation(new Vector3f(this.startRot).add(0.0f, (float) Math.toRadians(90.0f), 0.0f));
-                this.setPosition(new Vector3f(this.startPos).sub(0.7f, 0.0f, 0.7f));
+                this.setRotation(new Vector3f(this.startRotation).add(0.0f, (float) Math.toRadians(90.0f), 0.0f));
+                this.setPosition(new Vector3f(this.startPosition).sub(0.7f, 0.0f, 0.7f));
             }
         } else {
-            this.setRotation(this.startRot);
-            this.setPosition(this.startPos);
+            this.setRotation(this.startRotation);
+            this.setPosition(this.startPosition);
         }
         this.opened = false;
     }
