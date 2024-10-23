@@ -15,33 +15,27 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.light.Light;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
-import javagems3d.physics.world.IWorld;
-import javagems3d.physics.world.basic.IWorldObject;
-import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class SimpleBackgroundProp implements IModeledSceneObject {
     private final IRenderObjectFabric renderFabric;
     private Model<Format3D> model;
-    private MeshRenderData meshRenderData;
+    private ModelRenderData modelRenderData;
 
-    public SimpleBackgroundProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull MeshRenderData meshRenderData) {
+    public SimpleBackgroundProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ModelRenderData modelRenderData) {
         this.renderFabric = renderFabric;
         this.model = model;
-        this.meshRenderData = meshRenderData;
+        this.modelRenderData = modelRenderData;
     }
 
     public SimpleBackgroundProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, model, MeshRenderData.defaultMeshRenderData(shaderManager));
+        this(renderFabric, model, ModelRenderData.defaultMeshRenderData(shaderManager));
     }
 
     public void clearLights() {
@@ -61,8 +55,8 @@ public class SimpleBackgroundProp implements IModeledSceneObject {
         return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
     }
 
-    public SimpleBackgroundProp setModelRenderConstraints(MeshRenderData meshRenderData) {
-        this.meshRenderData = meshRenderData;
+    public SimpleBackgroundProp setModelRenderConstraints(ModelRenderData modelRenderData) {
+        this.modelRenderData = modelRenderData;
         return this;
     }
 
@@ -84,8 +78,8 @@ public class SimpleBackgroundProp implements IModeledSceneObject {
         return this;
     }
 
-    public MeshRenderData getMeshRenderData() {
-        return this.meshRenderData;
+    public ModelRenderData getMeshRenderData() {
+        return this.modelRenderData;
     }
 
     @Override

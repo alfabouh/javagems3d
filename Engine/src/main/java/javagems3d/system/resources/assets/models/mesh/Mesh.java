@@ -1,383 +1,166 @@
-/*
- * *
- *  * @author alfabouh
- *  * @since 2024
- *  * @link https://github.com/alfabouh/JavaGems3D
- *  *
- *  * This software is provided 'as-is', without any express or implied warranty.
- *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
- */
-
 package javagems3d.system.resources.assets.models.mesh;
 
-import org.joml.Vector3f;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGemsHelper;
+import javagems3d.system.resources.assets.models.mesh.attributes.VertexAttribute;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class Mesh {
-    private final List<Integer> indexes;
-    private final List<Integer> attributePointers;
-    private final List<Float> attributePositions;
-    private final List<Float> attributeTextureCoordinates;
-    private final List<Float> attributeNormals;
-    private final List<Float> attributeTangents;
-    private final List<Float> attributeBitangents;
-    private boolean baked;
-    private int totalVertices;
+public class Mesh implements IMesh {
     private int vao;
-    private int indexVbo;
-    private int positionVbo;
-    private int textureCoordinatesVbo;
-    private int normalsVbo;
-    private int avaragedNormalsVbo;
-    private int tangentsVbo;
-    private int bitangentsVbo;
+    private int totalVertices;
+
+    private int vertexIndexesIBO;
+    private final List<Integer> vertexIndexes;
+
+    private final Map<Integer, Integer> vboMap;
+    private final Map<Integer, VertexAttribute<?>> vertexAttributesMap;
+
+    private boolean baked;
 
     public Mesh() {
-        this.indexes = new ArrayList<>();
-        this.attributePositions = new ArrayList<>();
-        this.attributeTextureCoordinates = new ArrayList<>();
-        this.attributeNormals = new ArrayList<>();
-        this.attributeTangents = new ArrayList<>();
-        this.attributeBitangents = new ArrayList<>();
-        this.attributePointers = new ArrayList<>();
-        this.totalVertices = 0;
-        this.vao = 0;
-        this.avaragedNormalsVbo = 0;
-        this.indexVbo = 0;
-        this.positionVbo = 0;
-        this.textureCoordinatesVbo = 0;
-        this.normalsVbo = 0;
-        this.tangentsVbo = 0;
-        this.bitangentsVbo = 0;
+        this.vertexIndexes = new ArrayList<>();
+
         this.baked = false;
+        this.vertexAttributesMap = new HashMap<>();
+        this.vboMap = new HashMap<>();
     }
 
-    public void pushPosition(float position) {
-        this.getAttributePositions().add(position);
-    }
-
-    public void pushTextureCoordinate(float texCoord) {
-        this.getAttributeTextureCoordinates().add(texCoord);
-    }
-
-    public void pushNormal(float normal) {
-        this.getAttributeNormals().add(normal);
-    }
-
-    public void pushTangent(float tangent) {
-        this.getAttributeTangents().add(tangent);
-    }
-
-    public void pushBiTangent(float biTangent) {
-        this.getAttributeBiTangents().add(biTangent);
-    }
-
-    public void pushIndex(int index) {
-        this.getIndexes().add(index);
-    }
-
-    public void pushPositions(float[] positions) {
-        for (float f : positions) {
-            this.getAttributePositions().add(f);
+    @SuppressWarnings("unchecked")
+    public <T> List<T> tryGetValuesFromAttributeByIndex(int index) {
+        try {
+            return (List<T>) this.getVertexAttributeByIndex(index).getValues();
+        } catch (ClassCastException e) {
+            return null;
         }
     }
 
-    public void pushTextureCoordinates(float[] texCoordinates) {
-        for (float f : texCoordinates) {
-            this.getAttributeTextureCoordinates().add(f);
+    public void putVertexIndexes(int[] indexes) {
+        for (int o : indexes) {
+            this.getVertexIndexes().add(o);
         }
     }
 
-    public void pushNormals(float[] normals) {
-        for (float f : normals) {
-            this.getAttributeNormals().add(f);
+    public void putVertexIndex(int index) {
+        this.getVertexIndexes().add(index);
+    }
+
+    public void addVertexAttributeInMesh(VertexAttribute<?> vertexAttribute) {
+        this.vertexAttributesMap.put(vertexAttribute.getIndex(), vertexAttribute);
+    }
+
+    public VertexAttribute<?> getVertexAttributeByIndex(int index) {
+        return this.vertexAttributesMap.get(index);
+    }
+
+    public int getVBOByAttributeIndex(int index) {
+        return this.vboMap.get(index);
+    }
+
+    public int getVBOByVertexAttribute(VertexAttribute<?> vertexAttribute) {
+        return this.getVBOByAttributeIndex(vertexAttribute.getIndex());
+    }
+
+
+    public void disableMeshAttributes(int... a) {
+        for (int vertexAttribute : a) {
+            GL30.glDisableVertexAttribArray(vertexAttribute);
         }
     }
 
-    public void pushTangent(float[] tangents) {
-        for (float f : tangents) {
-            this.getAttributeTangents().add(f);
+    public void enableMeshAttributes(int... a) {
+        for (int vertexAttribute : a) {
+            GL30.glEnableVertexAttribArray(vertexAttribute);
         }
     }
 
-    public void pushBiTangent(float[] bitangents) {
-        for (float f : bitangents) {
-            this.getAttributeBiTangents().add(f);
+    public void disableAllMeshAttributes() {
+        for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
+            GL30.glDisableVertexAttribArray(vertexAttribute.getIndex());
         }
     }
 
-    public void pushIndexes(int[] indexes) {
-        for (int f : indexes) {
-            this.getIndexes().add(f);
+    public void enableAllMeshAttributes() {
+        for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
+            GL30.glEnableVertexAttribArray(vertexAttribute.getIndex());
         }
     }
 
-    public List<Integer> getAttributePointers() {
-        return this.attributePointers;
-    }
-
-    public boolean isBaked() {
-        return this.baked;
-    }
-
+    @Override
     public void bakeMesh() {
         if (this.isBaked()) {
             throw new JGemsRuntimeException("Tried to bake model, that is already had been baked!");
         }
-        int[] index = JGemsHelper.UTILS.convertIntsArray(this.indexes);
 
-        float[] position = JGemsHelper.UTILS.convertFloatsArray(this.attributePositions);
-        float[] textureCoordinates = JGemsHelper.UTILS.convertFloatsArray(this.attributeTextureCoordinates);
-        float[] normals = JGemsHelper.UTILS.convertFloatsArray(this.attributeNormals);
-        float[] tangent = JGemsHelper.UTILS.convertFloatsArray(this.attributeTangents);
-        float[] biTangent = JGemsHelper.UTILS.convertFloatsArray(this.attributeBitangents);
-        float[] avarageNormals;
-
+        int[] index = JGemsHelper.UTILS.convertIntsArray(this.getVertexIndexes());
         this.totalVertices = index.length;
-
-        FloatBuffer posBuffer = null;
-        FloatBuffer texBuffer = null;
-        FloatBuffer normalsBuffer = null;
-        FloatBuffer tangentBuffer = null;
-        FloatBuffer bitangentBuffer = null;
-        FloatBuffer avaragedNormalsBuffer = null;
-
-        IntBuffer inxBuffer = MemoryUtil.memAllocInt(index.length);
+        IntBuffer inxBuffer =  MemoryUtil.memAllocInt(index.length);
         inxBuffer.put(index).flip();
 
-        if (position != null) {
-            posBuffer = MemoryUtil.memAllocFloat(position.length);
-            posBuffer.put(position).flip();
-        }
-
-        if (textureCoordinates != null) {
-            texBuffer = MemoryUtil.memAllocFloat(textureCoordinates.length);
-            texBuffer.put(textureCoordinates).flip();
-        }
-
-        if (normals != null) {
-            avarageNormals = this.avaragedNormals(normals);
-            avaragedNormalsBuffer = MemoryUtil.memAllocFloat(avarageNormals.length);
-            avaragedNormalsBuffer.put(avarageNormals).flip();
-
-            normalsBuffer = MemoryUtil.memAllocFloat(normals.length);
-            normalsBuffer.put(normals).flip();
-        }
-
-        if (tangent != null) {
-            tangentBuffer = MemoryUtil.memAllocFloat(tangent.length);
-            tangentBuffer.put(tangent).flip();
-        }
-
-        if (biTangent != null) {
-            bitangentBuffer = MemoryUtil.memAllocFloat(biTangent.length);
-            bitangentBuffer.put(biTangent).flip();
-        }
-
         this.vao = GL30.glGenVertexArrays();
-        this.indexVbo = GL30.glGenBuffers();
+        this.vertexIndexesIBO = GL30.glGenBuffers();
 
         GL30.glBindVertexArray(this.getVao());
-        GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, this.getIndexVbo());
+        GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, this.getVertexIndexesIBO());
         GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, inxBuffer, GL30.GL_STATIC_DRAW);
 
-        if (posBuffer != null) {
-            this.positionVbo = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getPositionVbo());
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, posBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(0, 3, GL30.GL_FLOAT, false, 0, 0);
-            this.attributePointers.add(0);
-        }
-
-        if (textureCoordinates != null) {
-            this.textureCoordinatesVbo = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getTextureCoordinatesVbo());
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, texBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(1, 2, GL30.GL_FLOAT, false, 0, 0);
-            this.attributePointers.add(1);
-        }
-
-        if (avaragedNormalsBuffer != null) {
-            this.avaragedNormalsVbo = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getAvaragedNormalsVbo());
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, avaragedNormalsBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(5, 3, GL30.GL_FLOAT, false, 0, 0);
-            this.attributePointers.add(5);
-        }
-
-        if (normals != null) {
-            this.normalsVbo = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getNormalsVbo());
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, normalsBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(2, 3, GL30.GL_FLOAT, false, 0, 0);
-            this.attributePointers.add(2);
-        }
-
-        if (tangent != null) {
-            this.tangentsVbo = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getTangentsVbo());
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, tangentBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(3, 3, GL30.GL_FLOAT, false, 0, 0);
-            this.attributePointers.add(3);
-        }
-
-        if (biTangent != null) {
-            this.bitangentsVbo = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getBitangentsVbo());
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, bitangentBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(4, 3, GL30.GL_FLOAT, false, 0, 0);
-            this.attributePointers.add(4);
+        for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
+            vertexAttribute.bake();
+            int vbo = GL30.glGenBuffers();
+            this.vboMap.put(vertexAttribute.getIndex(), vbo);
+            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, vbo);
+            vertexAttribute.pushGLBuffer();
+            GL30.glVertexAttribPointer(vertexAttribute.getIndex(), vertexAttribute.getAttributePointer().getSize(), vertexAttribute.attributeType(), vertexAttribute.getAttributePointer().isNormalized(), vertexAttribute.getAttributePointer().getStride(), vertexAttribute.getAttributePointer().getPointer());
         }
 
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
-
-        this.memFree(avaragedNormalsBuffer);
-        this.memFree(inxBuffer);
-        this.memFree(posBuffer);
-        this.memFree(texBuffer);
-        this.memFree(normalsBuffer);
-        this.memFree(tangentBuffer);
-        this.memFree(bitangentBuffer);
         this.baked = true;
     }
 
-    public void clean() {
-        this.indexes.clear();
-        this.attributePositions.clear();
-        this.attributeTextureCoordinates.clear();
-        this.attributeNormals.clear();
-        this.attributeTangents.clear();
-        this.attributeBitangents.clear();
-        this.attributePointers.clear();
+    @Override
+    public void cleanMesh() {
+        this.vboMap.clear();
+        this.vertexAttributesMap.clear();
+        this.getVertexIndexes().clear();
 
-        GL30.glDeleteBuffers(this.getIndexVbo());
-        GL30.glDeleteBuffers(this.getPositionVbo());
-        GL30.glDeleteBuffers(this.getAvaragedNormalsVbo());
-        GL30.glDeleteBuffers(this.getTextureCoordinatesVbo());
-        GL30.glDeleteBuffers(this.getNormalsVbo());
-        GL30.glDeleteBuffers(this.getTangentsVbo());
-        GL30.glDeleteBuffers(this.getBitangentsVbo());
+        for (VertexAttribute<?> v : this.vertexAttributesMap.values()) {
+            v.clearData();
+        }
+
+        GL30.glDeleteBuffers(this.getVertexIndexesIBO());
+        for (int a : this.vboMap.values()) {
+            GL30.glDeleteBuffers(a);
+        }
 
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
         GL30.glDeleteVertexArrays(this.getVao());
     }
 
-    @SuppressWarnings("all")
-    private float[] avaragedNormals(float[] normals) {
-        int vertexCount = this.getAttributePositions().size() / 3;
-        float[] newArray = new float[vertexCount * 3];
-        List<Vector3f> averagedNormals = new ArrayList<>(vertexCount);
-
-        for (int i = 0; i < vertexCount; i++) {
-            float posX1 = this.getAttributePositions().get(i * 3);
-            float posY1 = this.getAttributePositions().get(i * 3 + 1);
-            float posZ1 = this.getAttributePositions().get(i * 3 + 2);
-            Vector3f vector3f = new Vector3f(0.0f);
-            int normalCount = 0;
-
-            for (int j = 0; j < vertexCount; j++) {
-                float posX2 = this.getAttributePositions().get(j * 3);
-                float posY2 = this.getAttributePositions().get(j * 3 + 1);
-                float posZ2 = this.getAttributePositions().get(j * 3 + 2);
-                float epsilon = 0.0001f;
-                if (Math.abs(posX1 - posX2) < epsilon && Math.abs(posY1 - posY2) < epsilon && Math.abs(posZ1 - posZ2) < epsilon) {
-                    vector3f.add(normals[j * 3], normals[j * 3 + 1], normals[j * 3 + 2]);
-                    normalCount++;
-                }
-            }
-
-            if (normalCount > 0) {
-                vector3f.div(normalCount);
-                vector3f.normalize();
-                averagedNormals.add(vector3f);
-            }
-        }
-
-        for (int i = 0; i < vertexCount; i++) {
-            Vector3f vector3f = averagedNormals.get(i);
-            newArray[i * 3] = vector3f.x;
-            newArray[i * 3 + 1] = vector3f.y;
-            newArray[i * 3 + 2] = vector3f.z;
-        }
-
-        return newArray;
-    }
-
-    private void memFree(Buffer buffer) {
-        if (buffer != null) {
-            MemoryUtil.memFree(buffer);
-        }
-    }
-
-    public int getVao() {
-        return this.vao;
-    }
-
-    public int getIndexVbo() {
-        return this.indexVbo;
-    }
-
-    public int getPositionVbo() {
-        return this.positionVbo;
-    }
-
-    public int getTextureCoordinatesVbo() {
-        return this.textureCoordinatesVbo;
-    }
-
-    public int getAvaragedNormalsVbo() {
-        return this.avaragedNormalsVbo;
-    }
-
-    public int getNormalsVbo() {
-        return this.normalsVbo;
-    }
-
-    public int getTangentsVbo() {
-        return this.tangentsVbo;
-    }
-
-    public int getBitangentsVbo() {
-        return this.bitangentsVbo;
+    public int getVertexIndexesIBO() {
+        return this.vertexIndexesIBO;
     }
 
     public int getTotalVertices() {
         return this.totalVertices;
     }
 
-    public List<Float> getAttributePositions() {
-        return this.attributePositions;
+    public List<Integer> getVertexIndexes() {
+        return this.vertexIndexes;
     }
 
-    public List<Integer> getIndexes() {
-        return this.indexes;
+    public int getVao() {
+        return this.vao;
     }
 
-    public List<Float> getAttributeTextureCoordinates() {
-        return this.attributeTextureCoordinates;
+    public boolean isBaked() {
+        return this.baked;
     }
 
-    public List<Float> getAttributeBiTangents() {
-        return this.attributeBitangents;
-    }
-
-    public List<Float> getAttributeTangents() {
-        return this.attributeTangents;
-    }
-
-    public List<Float> getAttributeNormals() {
-        return this.attributeNormals;
-    }
 }

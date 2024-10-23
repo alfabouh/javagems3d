@@ -22,7 +22,7 @@ import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.ArrayList;
@@ -33,20 +33,20 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
     private final List<Light> lightList;
     private final IRenderObjectFabric renderFabric;
     private Model<Format3D> model;
-    private MeshRenderData meshRenderData;
+    private ModelRenderData modelRenderData;
     private boolean isVisible;
 
-    public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull MeshRenderData meshRenderData) {
+    public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ModelRenderData modelRenderData) {
         this.lightList = new ArrayList<>();
 
         this.renderFabric = renderFabric;
         this.model = model;
-        this.meshRenderData = meshRenderData;
+        this.modelRenderData = modelRenderData;
         this.isVisible = true;
     }
 
     public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, model, MeshRenderData.defaultMeshRenderData(shaderManager));
+        this(renderFabric, model, ModelRenderData.defaultMeshRenderData(shaderManager));
     }
 
     public void clearLights() {
@@ -109,8 +109,8 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
         return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
     }
 
-    public AbstractSceneProp setModelRenderConstraints(MeshRenderData meshRenderData) {
-        this.meshRenderData = meshRenderData;
+    public AbstractSceneProp setModelRenderConstraints(ModelRenderData modelRenderData) {
+        this.modelRenderData = modelRenderData;
         return this;
     }
 
@@ -132,8 +132,8 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
         return this;
     }
 
-    public MeshRenderData getMeshRenderData() {
-        return this.meshRenderData;
+    public ModelRenderData getMeshRenderData() {
+        return this.modelRenderData;
     }
 
     public boolean isVisible() {

@@ -29,8 +29,7 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import logger.SystemLogging;
@@ -85,26 +84,22 @@ public class TBoxScene {
     }
 
     @SuppressWarnings("all")
-    public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshDataGroup meshDataGroup, int code) {
-        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            if (modelNode.getMaterial() != null) {
-                if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {
+    public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshGroup meshGroup, int code) {
+        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+            if (meshNode.getMaterial() != null) {
+                if (meshNode.getMaterial().getDiffuse() instanceof ColorSample) {
                     shaderManager.performUniform(new UniformString("use_texture"), false);
                 } else {
                     shaderManager.performUniform(new UniformString("use_texture"), true);
                     shaderManager.performUniformNoWarn(new UniformString("diffuse_map"), 0);
                     GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                    GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) modelNode.getMaterial().getDiffuse()).getTextureId());
+                    GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) meshNode.getMaterial().getDiffuse()).getTextureId());
                 }
             }
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
+            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            meshNode.getMesh().enableAllMeshAttributes();
+            GL30.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            meshNode.getMesh().disableAllMeshAttributes();
             GL30.glBindVertexArray(0);
         }
     }
@@ -314,7 +309,7 @@ public class TBoxScene {
 
     public void placeObjectFromGUI(EditorContent editorContent, String nameId) {
         AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(nameId);
-        MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
+        MeshGroup meshGroup = mapObject.meshDataGroup();
         Vector3f whereLook = this.findPointWhereCamLooks(15.0f);
 
         Vector3f camRot = this.getCamera().getCamRotation();
@@ -327,7 +322,7 @@ public class TBoxScene {
             format3D.setPosition(whereLook);
         }
 
-        TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
+        TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshGroup));
         tBoxObject.setAttributeContainer(mapObject.copyAttributeContainer());
 
         Attribute<Vector3f> attribute = tBoxObject.getAttributeContainer().getAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
@@ -469,8 +464,8 @@ public class TBoxScene {
                                 }
                                 Format3D format3D = new Format3D(savePos, saveRot, saveScale);
                                 AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
-                                MeshDataGroup meshDataGroup = mapObject.meshDataGroup();
-                                TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshDataGroup));
+                                MeshGroup meshGroup = mapObject.meshDataGroup();
+                                TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshGroup));
                                 tBoxModelObject.setAttributeContainer(saveObject.getAttributeContainer());
                                 this.addObject(tBoxModelObject);
                             } catch (NullPointerException e) {

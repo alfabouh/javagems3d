@@ -28,7 +28,7 @@ import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import api.app.events.bus.Events;
@@ -262,7 +262,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
     }
 
     @Override
-    public MeshRenderData getMeshRenderData() {
+    public ModelRenderData getMeshRenderData() {
         return this.getRenderData().getMeshRenderData();
     }
 

@@ -11,13 +11,8 @@
 
 package javagems3d.graphics.opengl.frustum;
 
-import javagems3d.JGemsHelper;
-import javagems3d.graphics.transformation.Transformation;
-import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;

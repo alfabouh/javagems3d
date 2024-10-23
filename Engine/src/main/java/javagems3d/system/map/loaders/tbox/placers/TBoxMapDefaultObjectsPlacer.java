@@ -37,8 +37,8 @@ import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
 import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.GameResources;
 import api.app.main.tbox.containers.TUserData;
@@ -56,32 +56,32 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         Vector3f scale = attributesContainer.getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         Boolean isProp = attributesContainer.getValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
 
-        MeshDataGroup meshDataGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel(), true);
+        MeshGroup meshGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel(), true);
         JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
 
         if (isProp != null && (isProp)) {
-            MeshRenderData meshRenderData = new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
+            ModelRenderData modelRenderData = new ModelRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
             IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 
-            Model<Format3D> model = new Model<>(new Format3D(), meshDataGroup);
+            Model<Format3D> model = new Model<>(new Format3D(), meshGroup);
             model.getFormat().setPosition(pos);
             model.getFormat().setRotation(rot);
             model.getFormat().setScaling(scale);
-            JGemsHelper.WORLD.addPropInScene(new SceneProp(renderFabric, model, meshRenderData));
+            JGemsHelper.WORLD.addPropInScene(new SceneProp(renderFabric, model, modelRenderData));
         } else {
-            RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), new MeshRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
+            RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), new ModelRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
 
             Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
-            JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
+            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
             if (isStatic == null || isStatic) {
-                JGemsStaticBody worldModeledBrush = new JGemsStaticBody(MeshCollider.getStatic(meshDataGroup), physicsWorld, pos, id);
-                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
+                JGemsStaticBody worldModeledBrush = new JGemsStaticBody(MeshCollider.getStatic(meshGroup), physicsWorld, pos, id);
+                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshGroup));
                 worldModeledBrush.setCanBeDestroyed(false);
                 worldModeledBrush.setRotation(new Vector3f(rot).negate());
                 worldModeledBrush.setScaling(scale);
             } else {
-                JGemsDynamicBody worldModeledBrush = new JGemsDynamicBody(MeshCollider.getDynamic(meshDataGroup), physicsWorld, pos, id);
-                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshDataGroup));
+                JGemsDynamicBody worldModeledBrush = new JGemsDynamicBody(MeshCollider.getDynamic(meshGroup), physicsWorld, pos, id);
+                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshGroup));
                 worldModeledBrush.setCanBeDestroyed(false);
                 worldModeledBrush.setRotation(new Vector3f(rot).negate());
                 worldModeledBrush.setScaling(scale);

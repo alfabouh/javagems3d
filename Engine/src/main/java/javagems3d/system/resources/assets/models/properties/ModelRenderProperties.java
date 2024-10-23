@@ -9,13 +9,13 @@
  *
  */
 
-package javagems3d.system.resources.assets.models.mesh.data.render;
+package javagems3d.system.resources.assets.models.properties;
 
 /**
  * These are the attributes that affect the rendering of the mesh in the JGems pipeline
  */
 @SuppressWarnings("all")
-public class MeshRenderAttributes {
+public class ModelRenderProperties {
     private boolean lightOpaque;
     private boolean shadowCaster;
 
@@ -27,11 +27,11 @@ public class MeshRenderAttributes {
     private boolean shouldInterpolateMovement;
     private boolean disableFaceCulling;
 
-    public MeshRenderAttributes() {
+    public ModelRenderProperties() {
         this(true);
     }
 
-    public MeshRenderAttributes(boolean shadowCaster) {
+    public ModelRenderProperties(boolean shadowCaster) {
         this.shadowCaster = shadowCaster;
         this.lightOpaque = true;
         this.isBright = false;
@@ -42,12 +42,12 @@ public class MeshRenderAttributes {
         this.disableFaceCulling = false;
     }
 
-    public MeshRenderAttributes faceCullingDisabled(boolean disableFaceCulling) {
+    public ModelRenderProperties faceCullingDisabled(boolean disableFaceCulling) {
         this.disableFaceCulling = disableFaceCulling;
         return this;
     }
 
-    public MeshRenderAttributes setAlphaDiscard(float f) {
+    public ModelRenderProperties setAlphaDiscard(float f) {
         this.alphaDiscardValue = f;
         return this;
     }
@@ -56,7 +56,7 @@ public class MeshRenderAttributes {
         return this.objectOpacity;
     }
 
-    public MeshRenderAttributes setObjectOpacity(float objectOpacity) {
+    public ModelRenderProperties setObjectOpacity(float objectOpacity) {
         this.objectOpacity = objectOpacity;
         return this;
     }
@@ -65,7 +65,7 @@ public class MeshRenderAttributes {
         return this.isBright;
     }
 
-    public MeshRenderAttributes setBright(boolean bright) {
+    public ModelRenderProperties setBright(boolean bright) {
         isBright = bright;
         return this;
     }
@@ -74,7 +74,7 @@ public class MeshRenderAttributes {
         return this.shadowCaster;
     }
 
-    public MeshRenderAttributes setShadowCaster(boolean shadowCaster) {
+    public ModelRenderProperties setShadowCaster(boolean shadowCaster) {
         this.shadowCaster = shadowCaster;
         return this;
     }
@@ -83,7 +83,7 @@ public class MeshRenderAttributes {
         return this.lightOpaque;
     }
 
-    public MeshRenderAttributes setLightOpaque(boolean lightOpaque) {
+    public ModelRenderProperties setLightOpaque(boolean lightOpaque) {
         this.lightOpaque = lightOpaque;
         return this;
     }
@@ -92,7 +92,7 @@ public class MeshRenderAttributes {
         return this.shouldInterpolateMovement;
     }
 
-    public MeshRenderAttributes setShouldInterpolateMovement(boolean shouldInterpolateMovement) {
+    public ModelRenderProperties setShouldInterpolateMovement(boolean shouldInterpolateMovement) {
         this.shouldInterpolateMovement = shouldInterpolateMovement;
         return this;
     }
@@ -109,13 +109,13 @@ public class MeshRenderAttributes {
         return this.renderDistance;
     }
 
-    public MeshRenderAttributes setRenderDistance(float renderDistance) {
+    public ModelRenderProperties setRenderDistance(float renderDistance) {
         this.renderDistance = renderDistance;
         return this;
     }
 
-    public MeshRenderAttributes copy() {
-        MeshRenderAttributes meshRenderData = new MeshRenderAttributes(this.isShadowCaster());
+    public ModelRenderProperties copy() {
+        ModelRenderProperties meshRenderData = new ModelRenderProperties(this.isShadowCaster());
         meshRenderData.setBright(this.isBright());
         meshRenderData.setRenderDistance(this.getRenderDistance());
         meshRenderData.setAlphaDiscard(this.getAlphaDiscardValue());

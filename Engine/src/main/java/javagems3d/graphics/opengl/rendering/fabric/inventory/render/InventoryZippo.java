@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import javagems3d.JGemsHelper;
@@ -21,14 +22,12 @@ import javagems3d.graphics.opengl.screen.timer.JGemsTimer;
 import javagems3d.system.inventory.items.ItemZippo;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
 public class InventoryZippo extends AbstractInventoryItem {
-    protected final MeshDataGroup model1;
-    protected final MeshDataGroup model2;
+    protected final MeshGroup model1;
+    protected final MeshGroup model2;
 
     protected final JGemsTimer jGemsTimer;
     protected int animState;
@@ -40,10 +39,10 @@ public class InventoryZippo extends AbstractInventoryItem {
         Material material1 = Material.createDefault();
         Material material2 = Material.createDefault();
         material2.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo2);
-        ModelNode modelNode1 = new ModelNode(mesh, material1);
-        ModelNode modelNode2 = new ModelNode(mesh, material2);
-        this.model1 = new MeshDataGroup(modelNode1);
-        this.model2 = new MeshDataGroup(modelNode2);
+        MeshGroup.Node meshNode1 = new MeshGroup.Node(mesh, material1);
+        MeshGroup.Node meshNode2 = new MeshGroup.Node(mesh, material2);
+        this.model1 = new MeshGroup(meshNode1);
+        this.model2 = new MeshGroup(meshNode2);
     }
 
     @Override

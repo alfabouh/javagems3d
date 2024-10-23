@@ -20,7 +20,7 @@ import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
 import javagems3d.system.resources.assets.models.loader.ModelLoader;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -47,25 +47,25 @@ public class GameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshDataGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB) {
-        MeshDataGroup meshDataGroup = this.createMesh(modelPath, constructRenderAABB);
+    public MeshGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB) {
+        MeshGroup meshGroup = this.createMesh(modelPath, constructRenderAABB);
         if (constructCollisionMesh) {
-            JGemsHelper.UTILS.createMeshCollisionData(meshDataGroup);
+            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
         }
-        return meshDataGroup;
+        return meshGroup;
     }
 
-    public MeshDataGroup createMesh(JGemsPath modelPath, boolean constructRenderAABB) {
+    public MeshGroup createMesh(JGemsPath modelPath, boolean constructRenderAABB) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
-        MeshDataGroup meshDataGroup = ModelLoader.createMesh(this, modelPath);
-        if (meshDataGroup == null) {
+        MeshGroup meshGroup = ModelLoader.createMesh(this, modelPath);
+        if (meshGroup == null) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
         } else {
             if (constructRenderAABB) {
-                JGemsHelper.UTILS.createMeshRenderAABBData(meshDataGroup);
+                JGemsHelper.UTILS.createMeshRenderAABBData(meshGroup);
             }
         }
-        return meshDataGroup;
+        return meshGroup;
     }
 
     public TextureSample createTexture(JGemsPath path, TextureSample.Params params) {

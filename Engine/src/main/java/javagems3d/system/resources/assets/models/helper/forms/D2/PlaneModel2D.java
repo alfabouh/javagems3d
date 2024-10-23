@@ -11,13 +11,15 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D2;
 
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector2f;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.helper.forms.BasicMesh;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
 
-public class PlaneModel2D implements BasicMesh<Format2D> {
+public class PlaneModel2D implements BasicModelCreator<Format2D> {
     private final Vector2f v1;
     private final Vector2f v2;
     private final Vector2f textureMin;
@@ -56,56 +58,62 @@ public class PlaneModel2D implements BasicMesh<Format2D> {
     public Mesh generateMesh() {
         Mesh mesh = new Mesh();
 
-        mesh.pushPosition(this.v1.x);
-        mesh.pushPosition(this.v1.y);
-        mesh.pushPosition(this.zLevel);
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
+        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultPointers.TEXTURE_COORDINATES);
+
+        vaPositions.put(this.v1.x);
+        vaPositions.put(this.v1.y);
+        vaPositions.put(this.zLevel);
         if (this.inverted) {
-            mesh.pushTextureCoordinate(this.textureMin.x);
-            mesh.pushTextureCoordinate(this.textureMax.y);
+            vaTextureCoordinates.put(this.textureMin.x);
+            vaTextureCoordinates.put(this.textureMax.y);
         } else {
-            mesh.pushTextureCoordinate(this.textureMin.x);
-            mesh.pushTextureCoordinate(this.textureMin.y);
+            vaTextureCoordinates.put(this.textureMin.x);
+            vaTextureCoordinates.put(this.textureMin.y);
         }
 
-        mesh.pushPosition(this.v1.x);
-        mesh.pushPosition(this.v2.y);
-        mesh.pushPosition(this.zLevel);
+        vaPositions.put(this.v1.x);
+        vaPositions.put(this.v2.y);
+        vaPositions.put(this.zLevel);
         if (this.inverted) {
-            mesh.pushTextureCoordinate(this.textureMin.x);
-            mesh.pushTextureCoordinate(this.textureMin.y);
+            vaTextureCoordinates.put(this.textureMin.x);
+            vaTextureCoordinates.put(this.textureMin.y);
         } else {
-            mesh.pushTextureCoordinate(this.textureMin.x);
-            mesh.pushTextureCoordinate(this.textureMax.y);
+            vaTextureCoordinates.put(this.textureMin.x);
+            vaTextureCoordinates.put(this.textureMax.y);
         }
 
-        mesh.pushPosition(this.v2.x);
-        mesh.pushPosition(this.v2.y);
-        mesh.pushPosition(this.zLevel);
+        vaPositions.put(this.v2.x);
+        vaPositions.put(this.v2.y);
+        vaPositions.put(this.zLevel);
         if (this.inverted) {
-            mesh.pushTextureCoordinate(this.textureMax.x);
-            mesh.pushTextureCoordinate(this.textureMin.y);
+            vaTextureCoordinates.put(this.textureMax.x);
+            vaTextureCoordinates.put(this.textureMin.y);
         } else {
-            mesh.pushTextureCoordinate(this.textureMax.x);
-            mesh.pushTextureCoordinate(this.textureMax.y);
+            vaTextureCoordinates.put(this.textureMax.x);
+            vaTextureCoordinates.put(this.textureMax.y);
         }
 
-        mesh.pushPosition(this.v2.x);
-        mesh.pushPosition(this.v1.y);
-        mesh.pushPosition(this.zLevel);
+        vaPositions.put(this.v2.x);
+        vaPositions.put(this.v1.y);
+        vaPositions.put(this.zLevel);
         if (this.inverted) {
-            mesh.pushTextureCoordinate(this.textureMax.x);
-            mesh.pushTextureCoordinate(this.textureMax.y);
+            vaTextureCoordinates.put(this.textureMax.x);
+            vaTextureCoordinates.put(this.textureMax.y);
         } else {
-            mesh.pushTextureCoordinate(this.textureMax.x);
-            mesh.pushTextureCoordinate(this.textureMin.y);
+            vaTextureCoordinates.put(this.textureMax.x);
+            vaTextureCoordinates.put(this.textureMin.y);
         }
 
-        mesh.pushIndex(0);
-        mesh.pushIndex(1);
-        mesh.pushIndex(2);
-        mesh.pushIndex(3);
-        mesh.pushIndex(0);
-        mesh.pushIndex(2);
+        mesh.putVertexIndex(0);
+        mesh.putVertexIndex(1);
+        mesh.putVertexIndex(2);
+        mesh.putVertexIndex(3);
+        mesh.putVertexIndex(0);
+        mesh.putVertexIndex(2);
+
+        mesh.addVertexAttributeInMesh(vaPositions);
+        mesh.addVertexAttributeInMesh(vaTextureCoordinates);
 
         mesh.bakeMesh();
         return mesh;

@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.opengl.frustum;
 
-import javagems3d.system.resources.assets.models.mesh.IMeshUserData;
+import javagems3d.system.resources.assets.models.mesh.data.IMeshUserData;
 import org.joml.Vector3f;
 
 public interface ICulled {

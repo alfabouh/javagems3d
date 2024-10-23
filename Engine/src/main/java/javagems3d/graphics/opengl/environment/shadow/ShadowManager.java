@@ -12,6 +12,7 @@
 package javagems3d.graphics.opengl.environment.shadow;
 
 import javagems3d.graphics.opengl.environment.Environment;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -33,8 +34,7 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
+import javagems3d.system.resources.assets.models.properties.ModelRenderProperties;
 import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -335,33 +335,29 @@ public class ShadowManager implements IShadowScene {
         this.getPointLightShadowShader().unBind();
     }
 
-    private void renderModelForShadow(JGemsShaderManager shaderManager, MeshRenderAttributes meshRenderAttributes, Model<?> model) {
+    private void renderModelForShadow(JGemsShaderManager shaderManager, ModelRenderProperties modelRenderProperties, Model<?> model) {
         shaderManager.performUniform(new UniformString("alpha_discard"), JGemsSceneGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT);
-        float alphaValue = meshRenderAttributes.getObjectOpacity();
-        for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-            if (modelNode.getMaterial().getDiffuse() instanceof ITextureSample) {
+        float alphaValue = modelRenderProperties.getObjectOpacity();
+        for (MeshGroup.Node meshNode : model.getMeshDataGroup().getModelNodeList()) {
+            if (meshNode.getMaterial().getDiffuse() instanceof ITextureSample) {
                 shaderManager.performUniform(new UniformString("texture_sampler"), 0);
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                ((ITextureSample) modelNode.getMaterial().getDiffuse()).bindTexture();
+                ((ITextureSample) meshNode.getMaterial().getDiffuse()).bindTexture();
                 shaderManager.performUniform(new UniformString("use_texture"), true);
             } else {
-                if (modelNode.getMaterial().getDiffuse() instanceof ColorSample) {
-                    ColorSample colorSample = (ColorSample) modelNode.getMaterial().getDiffuse();
+                if (meshNode.getMaterial().getDiffuse() instanceof ColorSample) {
+                    ColorSample colorSample = (ColorSample) meshNode.getMaterial().getDiffuse();
                     alphaValue *= colorSample.getColor().w;
                 }
                 shaderManager.performUniform(new UniformString("use_texture"), false);
             }
-            if (alphaValue * modelNode.getMaterial().getFullOpacity() <= JGemsSceneGlobalConstants.MAX_ALPHA_TO_CULL_SHADOW) {
+            if (alphaValue * meshNode.getMaterial().getFullOpacity() <= JGemsSceneGlobalConstants.MAX_ALPHA_TO_CULL_SHADOW) {
                 continue;
             }
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(GL11.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
+            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            meshNode.getMesh().enableAllMeshAttributes();
+            GL30.glDrawElements(GL11.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            meshNode.getMesh().disableAllMeshAttributes();
             GL30.glBindVertexArray(0);
         }
     }

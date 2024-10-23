@@ -15,8 +15,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import toolbox.ToolBox;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
@@ -42,16 +41,12 @@ public class TBoxSceneUtils {
     }
 
     @SuppressWarnings("all")
-    public static void renderModel(MeshDataGroup meshDataGroup, int code) {
-        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
+    public static void renderModel(MeshGroup meshGroup, int code) {
+        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            meshNode.getMesh().enableAllMeshAttributes();
+            GL30.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            meshNode.getMesh().disableAllMeshAttributes();
             GL30.glBindVertexArray(0);
         }
     }
@@ -65,20 +60,16 @@ public class TBoxSceneUtils {
     }
 
     @SuppressWarnings("all")
-    public static void renderModelTextured(TBoxShaderManager shaderManager, MeshDataGroup meshDataGroup, int code) {
-        if (meshDataGroup == null) {
+    public static void renderModelTextured(TBoxShaderManager shaderManager, MeshGroup meshGroup, int code) {
+        if (meshGroup == null) {
             return;
         }
-        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            shaderManager.getUtils().performModelMaterialOnShader(modelNode.getMaterial());
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(GL30.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
+        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+            shaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
+            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            meshNode.getMesh().enableAllMeshAttributes();
+            GL30.glDrawElements(GL30.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            meshNode.getMesh().disableAllMeshAttributes();
             GL30.glBindVertexArray(0);
         }
     }

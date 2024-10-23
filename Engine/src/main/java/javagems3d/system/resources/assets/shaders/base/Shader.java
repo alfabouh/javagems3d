@@ -12,7 +12,7 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.shaders.library.GlobalShaderLibrary;
+import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.library.ShaderLibrary;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -31,15 +31,15 @@ public class Shader {
     private final List<Uniform> uniforms;
     private final JGemsPath pathToShader;
     private final ShaderType shaderType;
-    private final GlobalShaderLibrary globalShaderLibrary;
+    private final ShaderLibrariesManager shaderLibrariesManager;
     private String shaderText;
 
-    public Shader(GlobalShaderLibrary globalShaderLibrary, ShaderType shaderType, JGemsPath pathToShader) {
+    public Shader(ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
         this.shaderType = shaderType;
         this.pathToShader = pathToShader;
         this.uniforms = new ArrayList<>();
         this.structs = new HashMap<>();
-        this.globalShaderLibrary = globalShaderLibrary;
+        this.shaderLibrariesManager = shaderLibrariesManager;
         this.shaderText = "";
     }
 
@@ -159,10 +159,10 @@ public class Shader {
 
             processedShader.append(shaderCode, lastEnd, matcher.start());
 
-            if (this.globalShaderLibrary == null) {
+            if (this.shaderLibrariesManager == null) {
                 throw new JGemsNullException(this + " > Couldn't get global shader library data");
             }
-            ShaderLibrariesContainer shaderLibrariesContainer = this.globalShaderLibrary.getShaderLibrariesContainer(new JGemsPath(includePath).getFullPath());
+            ShaderLibrariesContainer shaderLibrariesContainer = this.shaderLibrariesManager.getShaderLibrariesContainer(new JGemsPath(includePath).getFullPath());
             if (shaderLibrariesContainer == null) {
                 throw new JGemsNullException(this + " > Couldn't find shader libraries container with key: " + includePath);
             }

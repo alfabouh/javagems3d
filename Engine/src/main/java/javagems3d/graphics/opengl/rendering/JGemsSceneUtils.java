@@ -13,6 +13,7 @@ package javagems3d.graphics.opengl.rendering;
 
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11;
@@ -26,7 +27,6 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
 import javagems3d.system.resources.assets.shaders.base.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -73,16 +73,16 @@ public abstract class JGemsSceneUtils {
             if (sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
                 GL30.glDisable(GL11.GL_CULL_FACE);
             }
-            for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-                Material material = overMaterial != null ? overMaterial : modelNode.getMaterial();
+            for (MeshGroup.Node meshNode : model.getMeshDataGroup().getModelNodeList()) {
+                Material material = overMaterial != null ? overMaterial : meshNode.getMaterial();
                 if (sceneObject.getMeshRenderData().isAllowMoveMeshesIntoTransparencyPass()) {
                     if (material.hasTransparency()) {
-                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(new WorldTransparentRender.RenderNodeInfo(sceneObject.getMeshRenderData().getOverridenTransparencyShader(), sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling(), modelNode, model.getFormat()));
+                        gemsOpenGLRenderer.addModelNodeInTransparencyPass(new WorldTransparentRender.RenderNodeInfo(sceneObject.getMeshRenderData().getOverridenTransparencyShader(), sceneObject.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling(), meshNode, model.getFormat()));
                         continue;
                     }
                 }
                 shaderManager.getUtils().performModelMaterialOnShader(material);
-                JGemsSceneUtils.renderModelNode(modelNode);
+                JGemsSceneUtils.renderModelNode(meshNode);
                 shaderManager.clearUsedTextureSlots();
             }
             if (f) {
@@ -107,29 +107,21 @@ public abstract class JGemsSceneUtils {
     // section SimpleRender
     @SuppressWarnings("all")
     public static void renderModel(Model<?> model, int code) {
-        for (ModelNode modelNode : model.getMeshDataGroup().getModelNodeList()) {
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(code, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
+        for (MeshGroup.Node meshNode : model.getMeshDataGroup().getModelNodeList()) {
+            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            meshNode.getMesh().enableAllMeshAttributes();
+            GL30.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            meshNode.getMesh().disableAllMeshAttributes();
             GL30.glBindVertexArray(0);
         }
     }
 
     //section ModelNode
-    public static void renderModelNode(ModelNode modelNode) {
-        GL30.glBindVertexArray(modelNode.getMesh().getVao());
-        for (int a : modelNode.getMesh().getAttributePointers()) {
-            GL30.glEnableVertexAttribArray(a);
-        }
-        GL30.glDrawElements(GL30.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-        for (int a : modelNode.getMesh().getAttributePointers()) {
-            GL30.glDisableVertexAttribArray(a);
-        }
+    public static void renderModelNode(MeshGroup.Node meshNode) {
+        GL30.glBindVertexArray(meshNode.getMesh().getVao());
+        meshNode.getMesh().enableAllMeshAttributes();
+        GL30.glDrawElements(GL30.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+        meshNode.getMesh().disableAllMeshAttributes();
         GL30.glBindVertexArray(0);
     }
 

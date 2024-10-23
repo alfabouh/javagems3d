@@ -15,7 +15,7 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.IFormat;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
 
-public interface BasicMesh<T extends IFormat> {
+public interface BasicModelCreator<T extends IFormat> {
     Model<T> generateModel();
 
     Mesh generateMesh();

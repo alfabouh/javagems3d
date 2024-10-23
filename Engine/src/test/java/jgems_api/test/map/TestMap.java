@@ -25,7 +25,6 @@ package jgems_api.test.map;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderProp;
-import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderSimpleBackgroundProp;
 import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -33,9 +32,9 @@ import javagems3d.system.map.MapInfo;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderAttributes;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.assets.models.properties.ModelRenderProperties;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
@@ -48,9 +47,9 @@ import org.joml.Vector3f;
 public class TestMap implements IMapLoader {
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshDataGroup meshDataGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj"), true);
-        sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshDataGroup),
-                new MeshRenderData(new MeshRenderAttributes().setAlphaDiscard(0.7f), JGemsResourceManager.globalShaderAssets.world_gbuffer)));
+        MeshGroup meshGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj"), true);
+        sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup),
+                new ModelRenderData(new ModelRenderProperties().setAlphaDiscard(0.7f), JGemsResourceManager.globalShaderAssets.world_gbuffer)));
     }
 
     @Override

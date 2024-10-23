@@ -13,17 +13,17 @@ package javagems3d.system.resources.assets.loaders.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.base.UniformBufferObject;
-import javagems3d.system.resources.assets.shaders.library.GlobalShaderLibrary;
+import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
 public abstract class ShadersLoader<T extends ShaderManager> {
-    private final GlobalShaderLibrary shaderLibrary;
+    private final ShaderLibrariesManager shaderLibrary;
 
     public ShadersLoader() {
-        this.shaderLibrary = new GlobalShaderLibrary();
+        this.shaderLibrary = new ShaderLibrariesManager();
     }
 
     protected abstract void initObjects(ResourceCache resourceCache);
@@ -73,7 +73,7 @@ public abstract class ShadersLoader<T extends ShaderManager> {
         return shaderLibrariesContainer;
     }
 
-    public GlobalShaderLibrary getGlobalShaderLibrary() {
+    public ShaderLibrariesManager getGlobalShaderLibrary() {
         return this.shaderLibrary;
     }
 

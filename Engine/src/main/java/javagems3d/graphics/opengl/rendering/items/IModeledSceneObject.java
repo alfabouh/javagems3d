@@ -14,12 +14,12 @@ package javagems3d.graphics.opengl.rendering.items;
 import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 
 public interface IModeledSceneObject extends IRenderObject, ICulled, ILightsKeeper {
     Model<Format3D> getModel();
 
-    MeshRenderData getMeshRenderData();
+    ModelRenderData getMeshRenderData();
 
     default boolean hasModel() {
         return this.getModel() != null && this.getModel().isValid();

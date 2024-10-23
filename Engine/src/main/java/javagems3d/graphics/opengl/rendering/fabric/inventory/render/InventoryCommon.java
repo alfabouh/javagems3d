@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
@@ -19,19 +20,17 @@ import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 
 public class InventoryCommon extends AbstractInventoryItem {
-    protected final MeshDataGroup model1;
+    protected final MeshGroup model1;
 
     public InventoryCommon(TextureSample diffuse) {
         Mesh mesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
         Material material1 = Material.createDefault();
         material1.setDiffuse(diffuse);
-        ModelNode modelNode1 = new ModelNode(mesh, material1);
-        this.model1 = new MeshDataGroup(modelNode1);
+        MeshGroup.Node meshNode1 = new MeshGroup.Node(mesh, material1);
+        this.model1 = new MeshGroup(meshNode1);
     }
 
     @Override
