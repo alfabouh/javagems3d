@@ -12,7 +12,7 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.library.GlobalShaderLibrary;
+import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesManager;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.util.HashSet;
@@ -32,7 +32,7 @@ public final class ShadersContainer {
         this(null, shaderPath);
     }
 
-    public ShadersContainer(GlobalShaderLibrary shaderLibrary, JGemsPath shaderPath) {
+    public ShadersContainer(ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
         this.id = shaderPath.getFullPath();
         this.gUniformsFullSet = new HashSet<>();
         this.cUniformsFullSet = new HashSet<>();

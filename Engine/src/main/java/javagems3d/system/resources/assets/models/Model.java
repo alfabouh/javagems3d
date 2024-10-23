@@ -11,64 +11,63 @@
 
 package javagems3d.system.resources.assets.models;
 
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.formats.IFormat;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 
 import java.io.Serializable;
 
 public final class Model<T extends IFormat> implements Serializable, AutoCloseable {
     private static final long serialVersionUID = -228L;
     private final T format;
-    private MeshDataGroup meshDataGroup;
+    private MeshGroup meshGroup;
 
     @SuppressWarnings("unchecked")
     public Model(Model<?> model) {
         this.format = (T) model.getFormat().copy();
-        this.meshDataGroup = model.getMeshDataGroup();
+        this.meshGroup = model.getMeshDataGroup();
     }
 
     public Model(Model<?> model, T format) {
         this.format = format;
-        this.meshDataGroup = model.getMeshDataGroup();
+        this.meshGroup = model.getMeshDataGroup();
     }
 
-    public Model(@NotNull T t, MeshDataGroup meshDataGroup) {
+    public Model(@NotNull T t, MeshGroup meshGroup) {
         this.format = t;
-        this.meshDataGroup = meshDataGroup;
+        this.meshGroup = meshGroup;
     }
 
-    public Model(@NotNull T t, ModelNode modelNode) {
+    public Model(@NotNull T t, MeshGroup.Node meshNode) {
         this.format = t;
-        this.meshDataGroup = new MeshDataGroup();
-        this.meshDataGroup.putNode(modelNode);
+        this.meshGroup = new MeshGroup();
+        this.meshGroup.putNode(meshNode);
     }
 
     public Model(@NotNull T t, Mesh mesh, Material material) {
         this.format = t;
-        this.meshDataGroup = new MeshDataGroup();
-        this.meshDataGroup.putNode(new ModelNode(mesh, material));
+        this.meshGroup = new MeshGroup();
+        this.meshGroup.putNode(new MeshGroup.Node(mesh, material));
     }
 
     public Model(@NotNull T t, Mesh mesh) {
         this.format = t;
-        this.meshDataGroup = new MeshDataGroup(mesh);
+        this.meshGroup = new MeshGroup(mesh);
     }
 
     public Model(@NotNull T t) {
         this.format = t;
-        this.meshDataGroup = null;
+        this.meshGroup = null;
     }
 
     public boolean isValid() {
         return this.getMeshDataGroup() != null;
     }
 
-    public MeshDataGroup getMeshDataGroup() {
-        return this.meshDataGroup;
+    public MeshGroup getMeshDataGroup() {
+        return this.meshGroup;
     }
 
     public int totalMeshGroups() {
@@ -84,7 +83,7 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
             return;
         }
         this.getMeshDataGroup().clean();
-        this.meshDataGroup = null;
+        this.meshGroup = null;
     }
 
     @Override

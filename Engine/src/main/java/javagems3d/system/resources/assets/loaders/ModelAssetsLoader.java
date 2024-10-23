@@ -13,14 +13,14 @@ package javagems3d.system.resources.assets.loaders;
 
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 
 public class ModelAssetsLoader implements IAssetsLoader {
-    public MeshDataGroup cube;
-    public MeshDataGroup ground2;
-    public MeshDataGroup ground3;
+    public MeshGroup cube;
+    public MeshGroup ground2;
+    public MeshGroup ground3;
 
     @Override
     public void load(GameResources gameResources) {

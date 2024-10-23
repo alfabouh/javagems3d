@@ -144,7 +144,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), ghostBody, (ConvexShape) this.getGhostBody().getCollisionShape(), pos, vector, new Vector3i(0, 1, 0));
         if (sweepResult.getHitNormal() != null) {
             float dot = sweepResult.getHitNormal().dot(this.up());
-            if (dot >= 0.999f) {
+            if (dot >= 1.0f) {
                 return ifNoHit;
             }
             return Math.acos(dot) <= toCheckAngle;
@@ -212,7 +212,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         if (sweepResult0.getSlideMotion() != null) {
             float y = sweepResult0.getSlideMotion().y;
             if (y > 0.0f) {
-                boolean flag = this.checkAngleOnPos(this.getGhostBody(), this.getSlopeAngle(), sweepResult0.getCorrectedPos().add(sweepResult0.getSlideMotion().mul(0.01f, 1.0f, 0.01f)), new Vector3f(0.0f, -1.0f, 0.0f), false);
+                boolean flag = this.checkAngleOnPos(this.getGhostBody(), this.getSlopeAngle(), sweepResult0.getCorrectedPos().add(sweepResult0.getSlideMotion().mul(0.05f, 1.0f, 0.05f)), new Vector3f(0.0f, -1.0f, 0.0f), false);
                 if (flag) {
                     return y;
                 }
@@ -381,7 +381,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), new Vector3f(0.0f, -0.1f, 0.0f), new Vector3i(0, 1, 0));
         if (sweepResult.getHitNormal() != null) {
             if (this.checkDotAngle(this.up(), sweepResult.getHitNormal(), this.getSlopeAngle(), true)) {
-                Vector3f newPos = sweepResult.getCorrectedPos().add(0.0f, 0.05f, 0.0f);
+                Vector3f newPos = sweepResult.getCorrectedPos().add(0.0f, 0.01f, 0.0f);
                 if (newPos.y > this.getPosition().y) {
                    // this.setPosition(newPos);
                 }
@@ -524,6 +524,11 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         }
         this.getGhostBody().setCollideWithGroups(i);
         this.getPhysicsBody().setCollideWithGroups(i);
+    }
+
+    @Override
+    public boolean canBeDestroyed() {
+        return false;
     }
 
     @Override

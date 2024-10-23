@@ -11,19 +11,21 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D3;
 
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.helper.forms.BasicMesh;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PlaneModel3D implements BasicMesh<Format3D> {
+public class PlaneModel3D implements BasicModelCreator<Format3D> {
     private final Vector3f v1;
     private final Vector3f v2;
     private final Vector3f v3;
@@ -68,88 +70,94 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
         Mesh mesh = new Mesh();
         List<Vector3f> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
 
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
+        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultPointers.TEXTURE_COORDINATES);
+        FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultPointers.NORMALS);
+        FloatVertexAttribute vaTangents = new FloatVertexAttribute(DefaultPointers.TANGENTS);
+        FloatVertexAttribute vaBiTangents = new FloatVertexAttribute(DefaultPointers.BI_TANGENTS);
+
         Vector3f v1 = list.get(0);
         Vector3f v2 = list.get(1);
         Vector3f v3 = list.get(2);
         Vector3f v4 = list.get(3);
 
-        mesh.pushPosition(v1.x);
-        mesh.pushPosition(v1.y);
-        mesh.pushPosition(v1.z);
-        mesh.pushTextureCoordinate(0.0f);
-        mesh.pushTextureCoordinate(1.0f);
+        vaPositions.put(v1.x);
+        vaPositions.put(v1.y);
+        vaPositions.put(v1.z);
+        vaTextureCoordinates.put(0.0f);
+        vaTextureCoordinates.put(1.0f);
 
-        mesh.pushPosition(v2.x);
-        mesh.pushPosition(v2.y);
-        mesh.pushPosition(v2.z);
-        mesh.pushTextureCoordinate(1.0f);
-        mesh.pushTextureCoordinate(1.0f);
+        vaPositions.put(v2.x);
+        vaPositions.put(v2.y);
+        vaPositions.put(v2.z);
+        vaTextureCoordinates.put(1.0f);
+        vaTextureCoordinates.put(1.0f);
 
-        mesh.pushPosition(v3.x);
-        mesh.pushPosition(v3.y);
-        mesh.pushPosition(v3.z);
-        mesh.pushTextureCoordinate(1.0f);
-        mesh.pushTextureCoordinate(0.0f);
+        vaPositions.put(v3.x);
+        vaPositions.put(v3.y);
+        vaPositions.put(v3.z);
+        vaTextureCoordinates.put(1.0f);
+        vaTextureCoordinates.put(0.0f);
 
-        mesh.pushPosition(v4.x);
-        mesh.pushPosition(v4.y);
-        mesh.pushPosition(v4.z);
-        mesh.pushTextureCoordinate(0.0f);
-        mesh.pushTextureCoordinate(0.0f);
+        vaPositions.put(v4.x);
+        vaPositions.put(v4.y);
+        vaPositions.put(v4.z);
+        vaTextureCoordinates.put(0.0f);
+        vaTextureCoordinates.put(0.0f);
 
 
-        mesh.pushPosition(v4.x);
-        mesh.pushPosition(v4.y);
-        mesh.pushPosition(v4.z);
-        mesh.pushTextureCoordinate(0.0f);
-        mesh.pushTextureCoordinate(0.0f);
+        vaPositions.put(v4.x);
+        vaPositions.put(v4.y);
+        vaPositions.put(v4.z);
+        vaTextureCoordinates.put(0.0f);
+        vaTextureCoordinates.put(0.0f);
 
-        mesh.pushPosition(v3.x);
-        mesh.pushPosition(v3.y);
-        mesh.pushPosition(v3.z);
-        mesh.pushTextureCoordinate(1.0f);
-        mesh.pushTextureCoordinate(0.0f);
+        vaPositions.put(v3.x);
+        vaPositions.put(v3.y);
+        vaPositions.put(v3.z);
+        vaTextureCoordinates.put(1.0f);
+        vaTextureCoordinates.put(0.0f);
 
-        mesh.pushPosition(v2.x);
-        mesh.pushPosition(v2.y);
-        mesh.pushPosition(v2.z);
-        mesh.pushTextureCoordinate(1.0f);
-        mesh.pushTextureCoordinate(1.0f);
+        vaPositions.put(v2.x);
+        vaPositions.put(v2.y);
+        vaPositions.put(v2.z);
+        vaTextureCoordinates.put(1.0f);
+        vaTextureCoordinates.put(1.0f);
 
-        mesh.pushPosition(v1.x);
-        mesh.pushPosition(v1.y);
-        mesh.pushPosition(v1.z);
-        mesh.pushTextureCoordinate(0.0f);
-        mesh.pushTextureCoordinate(1.0f);
+        vaPositions.put(v1.x);
+        vaPositions.put(v1.y);
+        vaPositions.put(v1.z);
+        vaTextureCoordinates.put(0.0f);
+        vaTextureCoordinates.put(1.0f);
 
-        mesh.pushIndex(1);
-        mesh.pushIndex(2);
-        mesh.pushIndex(0);
-        mesh.pushIndex(3);
-        mesh.pushIndex(0);
-        mesh.pushIndex(2);
+        mesh.putVertexIndex(1);
+        mesh.putVertexIndex(2);
+        mesh.putVertexIndex(0);
+        mesh.putVertexIndex(3);
+        mesh.putVertexIndex(0);
+        mesh.putVertexIndex(2);
 
-        mesh.pushIndex(5);
-        mesh.pushIndex(6);
-        mesh.pushIndex(4);
-        mesh.pushIndex(7);
-        mesh.pushIndex(4);
-        mesh.pushIndex(6);
+        mesh.putVertexIndex(5);
+        mesh.putVertexIndex(6);
+        mesh.putVertexIndex(4);
+        mesh.putVertexIndex(7);
+        mesh.putVertexIndex(4);
+        mesh.putVertexIndex(6);
 
-        Vector3f vAB = this.getPosition(mesh.getAttributePositions(), 1).sub(this.getPosition(mesh.getAttributePositions(), 0));
-        Vector3f vAD = this.getPosition(mesh.getAttributePositions(), 3).sub(this.getPosition(mesh.getAttributePositions(), 0));
+        Vector3f vAB = this.getPosition(vaPositions.getValues(), 1).sub(this.getPosition(vaPositions.getValues(), 0));
+        Vector3f vAD = this.getPosition(vaPositions.getValues(), 3).sub(this.getPosition(vaPositions.getValues(), 0));
         Vector3f vN = vAB.cross(vAD).normalize();
 
         for (int i = 0; i < 4; i++) {
-            mesh.pushNormal(vN.x);
-            mesh.pushNormal(vN.y);
-            mesh.pushNormal(vN.z);
+            vaNormals.put(vN.x);
+            vaNormals.put(vN.y);
+            vaNormals.put(vN.z);
         }
 
         for (int i = 0; i < 4; i++) {
-            mesh.pushNormal(-vN.x);
-            mesh.pushNormal(-vN.y);
-            mesh.pushNormal(-vN.z);
+            vaNormals.put(-vN.x);
+            vaNormals.put(-vN.y);
+            vaNormals.put(-vN.z);
         }
 
         Vector3f edge1 = new Vector3f(v2).sub(v1);
@@ -182,40 +190,46 @@ public class PlaneModel3D implements BasicMesh<Format3D> {
         float biTan2z = f0 * (-deltaUV4.x * edge3.z + deltaUV3.x * edge4.z);
 
         for (int i = 0; i < 4; i++) {
-            mesh.pushTangent(tan1x);
-            mesh.pushTangent(tan1y);
-            mesh.pushTangent(tan1z);
+            vaTangents.put(tan1x);
+            vaTangents.put(tan1y);
+            vaTangents.put(tan1z);
 
-            mesh.pushBiTangent(biTan1x);
-            mesh.pushBiTangent(biTan1y);
-            mesh.pushBiTangent(biTan1z);
+            vaBiTangents.put(biTan1x);
+            vaBiTangents.put(biTan1y);
+            vaBiTangents.put(biTan1z);
 
-            mesh.pushTangent(tan2x);
-            mesh.pushTangent(tan2y);
-            mesh.pushTangent(tan2z);
+            vaTangents.put(tan2x);
+            vaTangents.put(tan2y);
+            vaTangents.put(tan2z);
 
-            mesh.pushBiTangent(biTan2x);
-            mesh.pushBiTangent(biTan2y);
-            mesh.pushBiTangent(biTan2z);
+            vaBiTangents.put(biTan2x);
+            vaBiTangents.put(biTan2y);
+            vaBiTangents.put(biTan2z);
         }
 
         for (int i = 0; i < 4; i++) {
-            mesh.pushTangent(-tan1x);
-            mesh.pushTangent(-tan1y);
-            mesh.pushTangent(-tan1z);
+            vaTangents.put(-tan1x);
+            vaTangents.put(-tan1y);
+            vaTangents.put(-tan1z);
 
-            mesh.pushBiTangent(-biTan1x);
-            mesh.pushBiTangent(-biTan1y);
-            mesh.pushBiTangent(-biTan1z);
+            vaBiTangents.put(-biTan1x);
+            vaBiTangents.put(-biTan1y);
+            vaBiTangents.put(-biTan1z);
 
-            mesh.pushTangent(-tan2x);
-            mesh.pushTangent(-tan2y);
-            mesh.pushTangent(-tan2z);
+            vaTangents.put(-tan2x);
+            vaTangents.put(-tan2y);
+            vaTangents.put(-tan2z);
 
-            mesh.pushBiTangent(-biTan2x);
-            mesh.pushBiTangent(-biTan2y);
-            mesh.pushBiTangent(-biTan2z);
+            vaBiTangents.put(-biTan2x);
+            vaBiTangents.put(-biTan2y);
+            vaBiTangents.put(-biTan2z);
         }
+
+        mesh.addVertexAttributeInMesh(vaPositions);
+        mesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        mesh.addVertexAttributeInMesh(vaNormals);
+        mesh.addVertexAttributeInMesh(vaTangents);
+        mesh.addVertexAttributeInMesh(vaBiTangents);
 
         mesh.bakeMesh();
         return mesh;

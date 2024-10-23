@@ -19,8 +19,8 @@ import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
@@ -35,39 +35,39 @@ public class RenderEntityData {
     private final IRenderObjectFabric renderFabric;
     private final Class<? extends AbstractSceneEntity> abstractEntityClass;
     private IEntityModelConstructor<WorldItem> entityModelConstructor;
-    private MeshDataGroup meshDataGroup;
-    private MeshRenderData meshRenderData;
+    private MeshGroup meshGroup;
+    private ModelRenderData modelRenderData;
 
-    public RenderEntityData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager, @Nullable MeshDataGroup meshDataGroup) {
+    public RenderEntityData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager, @Nullable MeshGroup meshGroup) {
         this.abstractEntityClass = abstractEntityClass;
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
-        this.meshDataGroup = meshDataGroup;
-        this.meshRenderData = MeshRenderData.defaultMeshRenderData(shaderManager);
+        this.meshGroup = meshGroup;
+        this.modelRenderData = ModelRenderData.defaultMeshRenderData(shaderManager);
     }
 
-    public RenderEntityData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull MeshRenderData meshRenderData, @Nullable MeshDataGroup meshDataGroup) {
+    public RenderEntityData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ModelRenderData modelRenderData, @Nullable MeshGroup meshGroup) {
         this.abstractEntityClass = abstractEntityClass;
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
-        this.meshDataGroup = meshDataGroup;
-        this.meshRenderData = meshRenderData.copy();
+        this.meshGroup = meshGroup;
+        this.modelRenderData = modelRenderData.copy();
     }
 
     public RenderEntityData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager) {
         this(renderFabric, abstractEntityClass, shaderManager, null);
     }
 
-    public RenderEntityData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull MeshRenderData meshRenderData) {
+    public RenderEntityData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ModelRenderData modelRenderData) {
         this.abstractEntityClass = abstractEntityClass;
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
-        this.meshDataGroup = null;
-        this.meshRenderData = meshRenderData.copy();
+        this.meshGroup = null;
+        this.modelRenderData = modelRenderData.copy();
     }
 
-    public RenderEntityData(@NotNull RenderEntityData renderEntityData, @Nullable MeshDataGroup meshDataGroup) {
-        this(renderEntityData.getRenderFabric(), renderEntityData.getSceneObjectClass(), renderEntityData.getMeshRenderData(), meshDataGroup);
+    public RenderEntityData(@NotNull RenderEntityData renderEntityData, @Nullable MeshGroup meshGroup) {
+        this(renderEntityData.getRenderFabric(), renderEntityData.getSceneObjectClass(), renderEntityData.getMeshRenderData(), meshGroup);
         this.setEntityModelConstructor(renderEntityData.getEntityModelConstructor());
     }
 
@@ -91,8 +91,8 @@ public class RenderEntityData {
     protected void onPhysicsObjectCreated(AbstractSceneEntity abstractSceneEntity) {
     }
 
-    public RenderEntityData setModelRenderData(MeshRenderData meshRenderData) {
-        this.meshRenderData = meshRenderData;
+    public RenderEntityData setModelRenderData(ModelRenderData modelRenderData) {
+        this.modelRenderData = modelRenderData;
         return this;
     }
 
@@ -106,12 +106,12 @@ public class RenderEntityData {
     /**
      * Object's mesh.
      */
-    public MeshDataGroup getMeshDataGroup() {
-        return this.meshDataGroup;
+    public MeshGroup getMeshDataGroup() {
+        return this.meshGroup;
     }
 
-    public RenderEntityData setMeshDataGroup(MeshDataGroup meshDataGroup) {
-        this.meshDataGroup = meshDataGroup;
+    public RenderEntityData setMeshDataGroup(MeshGroup meshGroup) {
+        this.meshGroup = meshGroup;
         this.entityModelConstructor = null;
         return this;
     }
@@ -125,7 +125,7 @@ public class RenderEntityData {
 
     public RenderEntityData setEntityModelConstructor(IEntityModelConstructor<WorldItem> entityModelConstructor) {
         if (entityModelConstructor != null) {
-            this.meshDataGroup = null;
+            this.meshGroup = null;
         }
         this.entityModelConstructor = entityModelConstructor;
         return this;
@@ -134,8 +134,8 @@ public class RenderEntityData {
     /**
      * This is the information for the model renderer.
      */
-    public MeshRenderData getMeshRenderData() {
-        return this.meshRenderData;
+    public ModelRenderData getMeshRenderData() {
+        return this.modelRenderData;
     }
 
     /**

@@ -11,7 +11,6 @@
 
 package javagems3d.system.resources.assets.loaders;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.frustum.ICulled;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
@@ -31,7 +30,7 @@ import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -49,9 +48,9 @@ public class RenderDataLoader implements IAssetsLoader {
     public void load(GameResources gameResources) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building render data...");
         IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
-            MeshDataGroup meshDataGroup = new MeshDataGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
-            meshDataGroup.setMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD, new ICulled.RenderAABB(new Vector3f(-0.5f), new Vector3f(0.5f)));
-            return meshDataGroup;
+            MeshGroup meshGroup = new MeshGroup(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f)));
+            meshGroup.setMeshUserData(MeshGroup.MESH_RENDER_AABB_UD, new ICulled.RenderAABB(new Vector3f(-0.5f), new Vector3f(0.5f)));
+            return meshGroup;
         };
 
         Material zwMat = new Material();

@@ -16,7 +16,10 @@ import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.mesh.attributes.VertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
 import org.joml.*;
 import javagems3d.audio.SoundManager;
 import javagems3d.graphics.opengl.camera.FreeControlledCamera;
@@ -53,9 +56,8 @@ import javagems3d.system.graph.Graph;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
 import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
-import javagems3d.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.localisation.Lang;
 import javagems3d.system.resources.localisation.Localisation;
 import javagems3d.system.resources.manager.GameResources;
@@ -398,11 +400,15 @@ public abstract class JGemsHelper {
             }
         }
 
-        public static float calcDistanceToMostFarPoint(MeshDataGroup meshDataGroup, Vector3f scaling) {
+        public static float calcDistanceToMostFarPoint(MeshGroup meshGroup, Vector3f scaling) {
+            return JGemsHelper.UTILS.calcDistanceToMostFarPoint(meshGroup, scaling, DefaultPointers.POSITIONS.getIndex());
+        }
+
+        public static float calcDistanceToMostFarPoint(MeshGroup meshGroup, Vector3f scaling, int positionsAttributeIndex) {
             float max = Float.MIN_VALUE;
 
-            for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-                List<Float> floats = modelNode.getMesh().getAttributePositions();
+            for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+                List<Float> floats = meshNode.getMesh().tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
                 for (int i = 0; i < floats.size(); i += 3) {
                     float i1 = floats.get(i);
                     float i2 = floats.get(i + 1);
@@ -427,6 +433,17 @@ public abstract class JGemsHelper {
                 return null;
             }
             int[] a = new int[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                a[i] = list.get(i);
+            }
+            return a;
+        }
+
+        public static double[] convertDoublesArray(List<Double> list) {
+            if (list == null || list.isEmpty()) {
+                return null;
+            }
+            double[] a = new double[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 a[i] = list.get(i);
             }
@@ -474,23 +491,31 @@ public abstract class JGemsHelper {
             return new Vector3f(lX, lY, lZ);
         }
 
+        public static boolean createMeshCollisionData(MeshGroup meshGroup) {
+            return JGemsHelper.UTILS.createMeshCollisionData(meshGroup, DefaultPointers.POSITIONS.getIndex());
+        }
+
         @SuppressWarnings("all")
-        public static boolean createMeshCollisionData(MeshDataGroup meshDataGroup) {
-            if (meshDataGroup != null && meshDataGroup.getMeshUserData(MeshDataGroup.MESH_COLLISION_UD) == null) {
-                meshDataGroup.setMeshUserData(MeshDataGroup.MESH_COLLISION_UD, new MeshCollisionData(meshDataGroup));
+        public static boolean createMeshCollisionData(MeshGroup meshGroup, int positionsAttributeIndex) {
+            if (meshGroup != null && meshGroup.getMeshUserData(MeshGroup.MESH_COLLISION_UD) == null) {
+                meshGroup.setMeshUserData(MeshGroup.MESH_COLLISION_UD, new MeshCollisionData(meshGroup, positionsAttributeIndex));
                 return true;
             }
             return false;
         }
 
+        public static boolean createMeshRenderAABBData(MeshGroup meshGroup) {
+            return JGemsHelper.UTILS.createMeshRenderAABBData(meshGroup, DefaultPointers.POSITIONS.getIndex());
+        }
+
         @SuppressWarnings("all")
-        public static boolean createMeshRenderAABBData(MeshDataGroup meshDataGroup) {
-            if (meshDataGroup != null && meshDataGroup.getMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD) == null) {
+        public static boolean createMeshRenderAABBData(MeshGroup meshGroup, int positionsAttributeIndex) {
+            if (meshGroup != null && meshGroup.getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
                 Vector3f min = new Vector3f(Float.MAX_VALUE);
                 Vector3f max = new Vector3f(Float.MIN_VALUE);
-                for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-                    List<Float> positions = modelNode.getMesh().getAttributePositions();
-                    List<Integer> indices = modelNode.getMesh().getIndexes();
+                for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+                    List<Float> positions = meshNode.getMesh().tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
+                    List<Integer> indices = meshNode.getMesh().getVertexIndexes();
                     for (int index : indices) {
                         int i1 = index * 3;
                         Vector4f Vector4f = new Vector4f(positions.get(i1), positions.get(i1 + 1), positions.get(i1 + 2), 1.0f);
@@ -499,19 +524,19 @@ public abstract class JGemsHelper {
                         max.max(vector3f);
                     }
                 }
-                meshDataGroup.setMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD, new ICulled.RenderAABB(min.add(new Vector3f(-0.05f)), max.add(new Vector3f(0.05f))));
+                meshGroup.setMeshUserData(MeshGroup.MESH_RENDER_AABB_UD, new ICulled.RenderAABB(min.add(new Vector3f(-0.05f)), max.add(new Vector3f(0.05f))));
                 return true;
             }
             return false;
         }
 
         public static ICulled.RenderAABB calcRenderAABBWithTransforms(Model<Format3D> model) {
-            if (model.getMeshDataGroup().getMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD) == null) {
+            if (model.getMeshDataGroup().getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
                 return null;
             }
 
-            Vector3f min = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD).getMin());
-            Vector3f max = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshDataGroup.MESH_RENDER_AABB_UD).getMax());
+            Vector3f min = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMin());
+            Vector3f max = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMax());
 
             Matrix4f modelMatrix = Transformation.getModelMatrix(model.getFormat());
 
@@ -542,13 +567,17 @@ public abstract class JGemsHelper {
         }
 
         public static List<Vector3f> getVertexPositionsFromMesh(Mesh mesh, Format3D format3D) {
-            List<Integer> integers = mesh.getIndexes();
-            List<Float> floats = mesh.getAttributePositions();
+            return JGemsHelper.UTILS.getVertexPositionsFromMesh(mesh, format3D, DefaultPointers.POSITIONS.getIndex());
+        }
+
+        public static List<Vector3f> getVertexPositionsFromMesh(Mesh mesh, Format3D format3D, int positionsAttributeIndex) {
+            List<Integer> integers = mesh.getVertexIndexes();
+            List<Float> floats = mesh.tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
             List<Vector3f> vertexes = new ArrayList<>();
             Matrix4f modelMat = Transformation.getModelMatrix(format3D);
 
             for (int i = 0; i < integers.size(); i++) {
-                int i1 = mesh.getIndexes().get(i) * 3;
+                int i1 = mesh.getVertexIndexes().get(i) * 3;
                 Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMat);
                 vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
             }

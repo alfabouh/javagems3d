@@ -9,14 +9,13 @@
  *
  */
 
-package javagems3d.system.resources.assets.models.mesh.data.collision;
+package javagems3d.system.resources.assets.models.mesh.data;
 
 import com.jme3.bullet.collision.shapes.infos.CompoundMesh;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
-import javagems3d.system.resources.assets.models.mesh.IMeshUserData;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +24,19 @@ public class MeshCollisionData implements IMeshUserData {
     private final float[] allPositions;
     private final CompoundMesh compoundMesh;
 
-    public MeshCollisionData(MeshDataGroup meshDataGroup) {
-        this.compoundMesh = DynamicsUtils.getCompoundMesh(meshDataGroup);
-        this.allPositions = this.pickAllPositions(meshDataGroup);
+    public MeshCollisionData(MeshGroup meshGroup) {
+        this(meshGroup, DefaultPointers.POSITIONS.getIndex());
     }
 
-    private float[] pickAllPositions(MeshDataGroup meshDataGroup) {
+    public MeshCollisionData(MeshGroup meshGroup, int positionsAttributeIndex) {
+        this.compoundMesh = DynamicsUtils.getCompoundMesh(meshGroup);
+        this.allPositions = this.pickAllPositions(meshGroup, positionsAttributeIndex);
+    }
+
+    private float[] pickAllPositions(MeshGroup meshGroup, int positionsAttributeIndex) {
         List<Float> floats = new ArrayList<>();
-        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            floats.addAll(modelNode.getMesh().getAttributePositions());
+        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+            floats.addAll(meshNode.getMesh().tryGetValuesFromAttributeByIndex(positionsAttributeIndex));
         }
         return JGemsHelper.UTILS.convertFloatsArray(floats);
     }

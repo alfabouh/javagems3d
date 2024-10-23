@@ -30,7 +30,7 @@ import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.data.render.MeshRenderData;
+import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.base.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.base.UniformBufferObject;
@@ -85,12 +85,12 @@ public final class JGemsShaderManager extends ShaderManager {
             }
         }
 
-        public void performRenderDataOnShader(MeshRenderData meshRenderData) {
+        public void performRenderDataOnShader(ModelRenderData modelRenderData) {
             if (!JGemsShaderManager.this.isUniformExist(new UniformString("lighting_code"))) {
                 return;
             }
             int lighting_code = 0;
-            if (meshRenderData.getRenderAttributes().isBright()) {
+            if (modelRenderData.getRenderAttributes().isBright()) {
                 lighting_code |= 1 << 2;
             }
             JGemsShaderManager.this.performUniform(new UniformString("lighting_code"), lighting_code);

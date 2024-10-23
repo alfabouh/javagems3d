@@ -11,14 +11,16 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D3;
 
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector3f;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.helper.forms.BasicMesh;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
 
-public class WireBoxModel3D implements BasicMesh<Format3D> {
+public class WireBoxModel3D implements BasicModelCreator<Format3D> {
     private final Vector3f min;
     private final Vector3f max;
 
@@ -35,73 +37,78 @@ public class WireBoxModel3D implements BasicMesh<Format3D> {
     @Override
     public Mesh generateMesh() {
         Mesh mesh = new Mesh();
-        mesh.pushPosition(this.min.x);
-        mesh.pushPosition(this.min.y);
-        mesh.pushPosition(this.min.z);
 
-        mesh.pushPosition(this.max.x);
-        mesh.pushPosition(this.min.y);
-        mesh.pushPosition(this.min.z);
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
 
-        mesh.pushPosition(this.max.x);
-        mesh.pushPosition(this.max.y);
-        mesh.pushPosition(this.min.z);
+        vaPositions.put(this.min.x);
+        vaPositions.put(this.min.y);
+        vaPositions.put(this.min.z);
 
-        mesh.pushPosition(this.min.x);
-        mesh.pushPosition(this.max.y);
-        mesh.pushPosition(this.min.z);
+        vaPositions.put(this.max.x);
+        vaPositions.put(this.min.y);
+        vaPositions.put(this.min.z);
 
-        mesh.pushPosition(this.min.x);
-        mesh.pushPosition(this.min.y);
-        mesh.pushPosition(this.max.z);
+        vaPositions.put(this.max.x);
+        vaPositions.put(this.max.y);
+        vaPositions.put(this.min.z);
 
-        mesh.pushPosition(this.max.x);
-        mesh.pushPosition(this.min.y);
-        mesh.pushPosition(this.max.z);
+        vaPositions.put(this.min.x);
+        vaPositions.put(this.max.y);
+        vaPositions.put(this.min.z);
 
-        mesh.pushPosition(this.max.x);
-        mesh.pushPosition(this.max.y);
-        mesh.pushPosition(this.max.z);
+        vaPositions.put(this.min.x);
+        vaPositions.put(this.min.y);
+        vaPositions.put(this.max.z);
 
-        mesh.pushPosition(this.min.x);
-        mesh.pushPosition(this.max.y);
-        mesh.pushPosition(this.max.z);
+        vaPositions.put(this.max.x);
+        vaPositions.put(this.min.y);
+        vaPositions.put(this.max.z);
 
-        mesh.pushIndex(0);
-        mesh.pushIndex(1);
+        vaPositions.put(this.max.x);
+        vaPositions.put(this.max.y);
+        vaPositions.put(this.max.z);
 
-        mesh.pushIndex(1);
-        mesh.pushIndex(2);
+        vaPositions.put(this.min.x);
+        vaPositions.put(this.max.y);
+        vaPositions.put(this.max.z);
 
-        mesh.pushIndex(2);
-        mesh.pushIndex(3);
+        mesh.putVertexIndex(0);
+        mesh.putVertexIndex(1);
 
-        mesh.pushIndex(3);
-        mesh.pushIndex(0);
+        mesh.putVertexIndex(1);
+        mesh.putVertexIndex(2);
 
-        mesh.pushIndex(4);
-        mesh.pushIndex(5);
+        mesh.putVertexIndex(2);
+        mesh.putVertexIndex(3);
 
-        mesh.pushIndex(5);
-        mesh.pushIndex(6);
+        mesh.putVertexIndex(3);
+        mesh.putVertexIndex(0);
 
-        mesh.pushIndex(6);
-        mesh.pushIndex(7);
+        mesh.putVertexIndex(4);
+        mesh.putVertexIndex(5);
 
-        mesh.pushIndex(7);
-        mesh.pushIndex(4);
+        mesh.putVertexIndex(5);
+        mesh.putVertexIndex(6);
 
-        mesh.pushIndex(0);
-        mesh.pushIndex(4);
+        mesh.putVertexIndex(6);
+        mesh.putVertexIndex(7);
 
-        mesh.pushIndex(1);
-        mesh.pushIndex(5);
+        mesh.putVertexIndex(7);
+        mesh.putVertexIndex(4);
 
-        mesh.pushIndex(2);
-        mesh.pushIndex(6);
+        mesh.putVertexIndex(0);
+        mesh.putVertexIndex(4);
 
-        mesh.pushIndex(3);
-        mesh.pushIndex(7);
+        mesh.putVertexIndex(1);
+        mesh.putVertexIndex(5);
+
+        mesh.putVertexIndex(2);
+        mesh.putVertexIndex(6);
+
+        mesh.putVertexIndex(3);
+        mesh.putVertexIndex(7);
+
+        mesh.addVertexAttributeInMesh(vaPositions);
 
         mesh.bakeMesh();
         return mesh;

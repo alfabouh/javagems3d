@@ -11,18 +11,18 @@
 
 package toolbox.resources.models;
 
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.service.path.JGemsPath;
 import toolbox.resources.TBoxResourceManager;
 
 public class ModelResources {
-    public MeshDataGroup zone_cube;
+    public MeshGroup zone_cube;
 
-    public MeshDataGroup xyz;
-    public MeshDataGroup cubic;
-    public MeshDataGroup sphere;
-    public MeshDataGroup pointer;
-    public MeshDataGroup player;
+    public MeshGroup xyz;
+    public MeshGroup cubic;
+    public MeshGroup sphere;
+    public MeshGroup pointer;
+    public MeshGroup player;
 
     public void init(TBoxResourceManager resourceManager) {
         this.zone_cube = resourceManager.createModel(new JGemsPath("/assets/toolbox/models/zone_cube/zone_cube.obj"));

@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public final class GlobalShaderLibrary {
+public final class ShaderLibrariesManager {
     private final Map<String, ShaderLibrariesContainer> containerMap;
 
-    public GlobalShaderLibrary() {
+    public ShaderLibrariesManager() {
         this.containerMap = new HashMap<>();
     }
 

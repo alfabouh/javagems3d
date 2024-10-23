@@ -11,6 +11,7 @@
 
 package javagems3d.system.resources.assets.models.helper;
 
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.system.resources.assets.models.Model;
@@ -22,7 +23,6 @@ import javagems3d.system.resources.assets.models.helper.forms.D3.PlaneModel3D;
 import javagems3d.system.resources.assets.models.helper.forms.D3.SimplePlaneModel3D;
 import javagems3d.system.resources.assets.models.helper.forms.D3.VectorModel3D;
 import javagems3d.system.resources.assets.models.helper.forms.D3.WireBoxModel3D;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
 
 public abstract class MeshHelper {
     public static Model<Format2D> generatePlane2DModel(Vector2f v1, Vector2f v2, float zLevel) {

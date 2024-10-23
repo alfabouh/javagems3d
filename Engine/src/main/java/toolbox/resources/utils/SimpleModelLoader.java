@@ -11,6 +11,9 @@
 
 package toolbox.resources.utils;
 
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -19,9 +22,7 @@ import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.models.loader.ModelLoader;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
@@ -35,11 +36,11 @@ import java.util.Objects;
 
 public class SimpleModelLoader {
     @SuppressWarnings("all")
-    private static MeshDataGroup loadMesh(TBoxResourceManager tBoxResourceManager, JGemsPath modelPath) {
+    private static MeshGroup loadMesh(TBoxResourceManager tBoxResourceManager, JGemsPath modelPath) {
         SystemLogging.get().getLogManager().log("Loading model " + modelPath);
 
         final int FLAGS = Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
-        MeshDataGroup meshDataGroup = new MeshDataGroup();
+        MeshGroup meshGroup = new MeshGroup();
 
         if (JGems3D.checkFileExistsInJar(modelPath)) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -62,7 +63,7 @@ public class SimpleModelLoader {
                                 if (matIdx >= 0 && matIdx < materialList.size()) {
                                     material = materialList.get(matIdx);
                                 }
-                                meshDataGroup.putNode(new ModelNode(mesh, material));
+                                meshGroup.putNode(new MeshGroup.Node(mesh, material));
                             }
                         }
                     } else {
@@ -78,17 +79,17 @@ public class SimpleModelLoader {
             SystemLogging.get().getLogManager().error("Couldn't find " + modelPath);
             return null;
         }
-        return meshDataGroup;
+        return meshGroup;
     }
 
     @SuppressWarnings("all")
-    public static MeshDataGroup createMesh(TBoxResourceManager tBoxResourceManager, JGemsPath modelPath) {
+    public static MeshGroup createMesh(TBoxResourceManager tBoxResourceManager, JGemsPath modelPath) {
         if (tBoxResourceManager.getCache().checkObjectInCache(modelPath)) {
-            return (MeshDataGroup) tBoxResourceManager.getCache().getCachedObject(modelPath);
+            return (MeshGroup) tBoxResourceManager.getCache().getCachedObject(modelPath);
         }
-        MeshDataGroup meshDataGroup = SimpleModelLoader.loadMesh(tBoxResourceManager, modelPath);
-        tBoxResourceManager.getCache().addObjectInBuffer(modelPath, meshDataGroup);
-        return meshDataGroup;
+        MeshGroup meshGroup = SimpleModelLoader.loadMesh(tBoxResourceManager, modelPath);
+        tBoxResourceManager.getCache().addObjectInBuffer(modelPath, meshGroup);
+        return meshGroup;
     }
 
     private static Mesh readMesh(AIMesh aiMesh) {
@@ -103,10 +104,20 @@ public class SimpleModelLoader {
         }
 
         Mesh mesh = new Mesh();
-        mesh.pushIndexes(vertices);
-        mesh.pushPositions(positions);
-        mesh.pushNormals(normals);
-        mesh.pushTextureCoordinates(textureCoordinates);
+
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
+        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultPointers.TEXTURE_COORDINATES);
+        FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultPointers.NORMALS);
+
+        mesh.putVertexIndexes(vertices);
+        vaPositions.putArray(positions);
+        vaNormals.putArray(normals);
+        vaTextureCoordinates.putArray(textureCoordinates);
+
+        mesh.addVertexAttributeInMesh(vaPositions);
+        mesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        mesh.addVertexAttributeInMesh(vaNormals);
+
         mesh.bakeMesh();
         return mesh;
     }

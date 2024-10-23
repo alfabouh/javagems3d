@@ -3,36 +3,36 @@ package javagems3d.physics.colliders;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.data.collision.MeshCollisionData;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.service.exceptions.JGemsNullException;
 
 public class MeshCollider implements IColliderConstructor {
-    private final MeshDataGroup meshDataGroup;
+    private final MeshGroup meshGroup;
     private final boolean isBodyDynamic;
 
-    public MeshCollider(MeshDataGroup meshDataGroup, boolean isBodyDynamic) {
-        this.meshDataGroup = meshDataGroup;
+    public MeshCollider(MeshGroup meshGroup, boolean isBodyDynamic) {
+        this.meshGroup = meshGroup;
         this.isBodyDynamic = isBodyDynamic;
     }
 
-    public static IColliderConstructor getDynamic(MeshDataGroup meshDataGroup) {
-        return new MeshCollider(meshDataGroup, true);
+    public static IColliderConstructor getDynamic(MeshGroup meshGroup) {
+        return new MeshCollider(meshGroup, true);
     }
 
-    public static IColliderConstructor getStatic(MeshDataGroup meshDataGroup) {
-        return new MeshCollider(meshDataGroup, false);
+    public static IColliderConstructor getStatic(MeshGroup meshGroup) {
+        return new MeshCollider(meshGroup, false);
     }
 
-    public static IColliderConstructor get(MeshDataGroup meshDataGroup, boolean isBodyDynamic) {
-        return new MeshCollider(meshDataGroup, isBodyDynamic);
+    public static IColliderConstructor get(MeshGroup meshGroup, boolean isBodyDynamic) {
+        return new MeshCollider(meshGroup, isBodyDynamic);
     }
 
     @Override
     public CollisionShape createCollisionShape() {
-        MeshCollisionData meshCollisionData = this.meshDataGroup.getMeshUserData(MeshDataGroup.MESH_COLLISION_UD, MeshCollisionData.class);
+        MeshCollisionData meshCollisionData = this.meshGroup.getMeshUserData(MeshGroup.MESH_COLLISION_UD, MeshCollisionData.class);
         if (meshCollisionData == null) {
-            throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshDataGroup);
+            throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshGroup);
         }
         CollisionShape collisionShape;
         if (this.isBodyDynamic) {

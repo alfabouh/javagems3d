@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.resources.assets.models.mesh;
+package javagems3d.system.resources.assets.models.mesh.data;
 
 public interface IMeshUserData {
 }

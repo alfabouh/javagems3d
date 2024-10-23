@@ -22,8 +22,7 @@ import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.assets.shaders.base.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
@@ -49,22 +48,18 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
         inventoryItemRenderData.getShaderManager().unBind();
     }
 
-    protected void renderInventoryModel(MeshDataGroup meshDataGroup, JGemsShaderManager shaderManager) {
-        for (ModelNode modelNode : meshDataGroup.getModelNodeList()) {
-            ITextureSample sample1 = (ITextureSample) modelNode.getMaterial().getDiffuse();
+    protected void renderInventoryModel(MeshGroup meshGroup, JGemsShaderManager shaderManager) {
+        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+            ITextureSample sample1 = (ITextureSample) meshNode.getMaterial().getDiffuse();
             if (sample1 != null) {
                 shaderManager.getUtils().performUniformSample(new UniformString("diffuse_map"), sample1);
             } else {
                 shaderManager.getUtils().performUniformSample(new UniformString("diffuse_map"), TextureAssetsLoader.DEFAULT);
             }
-            GL30.glBindVertexArray(modelNode.getMesh().getVao());
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glEnableVertexAttribArray(a);
-            }
-            GL30.glDrawElements(GL30.GL_TRIANGLES, modelNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
-            for (int a : modelNode.getMesh().getAttributePointers()) {
-                GL30.glDisableVertexAttribArray(a);
-            }
+            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            meshNode.getMesh().enableAllMeshAttributes();
+            GL30.glDrawElements(GL30.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            meshNode.getMesh().disableAllMeshAttributes();
             GL30.glBindVertexArray(0);
         }
     }

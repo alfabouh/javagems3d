@@ -12,6 +12,9 @@
 package javagems3d.system.resources.assets.models.loader;
 
 import com.google.common.io.ByteStreams;
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.Mesh;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -23,9 +26,7 @@ import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
-import javagems3d.system.resources.assets.models.mesh.ModelNode;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.exceptions.JGemsException;
@@ -110,11 +111,11 @@ public class ModelLoader {
 
     // section MeshLoad
     @SuppressWarnings("all")
-    private static MeshDataGroup loadMesh(GameResources gameResources, JGemsPath modelPath) {
+    private static MeshGroup loadMesh(GameResources gameResources, JGemsPath modelPath) {
         JGemsHelper.getLogger().log("Loading model " + modelPath);
 
         final int FLAGS = Assimp.aiProcess_ImproveCacheLocality | Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
-        MeshDataGroup meshDataGroup = new MeshDataGroup();
+        MeshGroup meshGroup = new MeshGroup();
 
         if (JGems3D.checkFileExistsInJar(modelPath)) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -137,7 +138,7 @@ public class ModelLoader {
                         if (matIdx >= 0 && matIdx < materialList.size()) {
                             material = materialList.get(matIdx);
                         }
-                        meshDataGroup.putNode(new ModelNode(mesh, material));
+                        meshGroup.putNode(new MeshGroup.Node(mesh, material));
                     }
                     Assimp.aiReleaseImport(scene);
                 } else {
@@ -148,18 +149,18 @@ public class ModelLoader {
             JGemsHelper.getLogger().error("Couldn't find " + modelPath);
             return null;
         }
-        return meshDataGroup;
+        return meshGroup;
     }
 
     @SuppressWarnings("all")
-    public static MeshDataGroup createMesh(GameResources gameResources, JGemsPath path) {
+    public static MeshGroup createMesh(GameResources gameResources, JGemsPath path) {
         ResourceCache resourceCache = gameResources.getResourceCache();
         if (resourceCache.checkObjectInCache(path)) {
-            return (MeshDataGroup) resourceCache.getCachedObject(path);
+            return (MeshGroup) resourceCache.getCachedObject(path);
         }
-        MeshDataGroup meshDataGroup = ModelLoader.loadMesh(gameResources, path);
-        resourceCache.addObjectInBuffer(path, meshDataGroup);
-        return meshDataGroup;
+        MeshGroup meshGroup = ModelLoader.loadMesh(gameResources, path);
+        resourceCache.addObjectInBuffer(path, meshGroup);
+        return meshGroup;
     }
 
     private static Mesh readMesh(AIMesh aiMesh) {
@@ -176,12 +177,26 @@ public class ModelLoader {
         }
 
         Mesh mesh = new Mesh();
-        mesh.pushIndexes(vertices);
-        mesh.pushPositions(positions);
-        mesh.pushNormals(normals);
-        mesh.pushTextureCoordinates(textureCoordinates);
-        mesh.pushTangent(tangents);
-        mesh.pushBiTangent(biTangents);
+
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
+        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultPointers.TEXTURE_COORDINATES);
+        FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultPointers.NORMALS);
+        FloatVertexAttribute vaTangents = new FloatVertexAttribute(DefaultPointers.TANGENTS);
+        FloatVertexAttribute vaBiTangents = new FloatVertexAttribute(DefaultPointers.BI_TANGENTS);
+
+        mesh.putVertexIndexes(vertices);
+        vaPositions.putArray(positions);
+        vaNormals.putArray(normals);
+        vaTextureCoordinates.putArray(textureCoordinates);
+        vaTangents.putArray(tangents);
+        vaBiTangents.putArray(biTangents);
+
+        mesh.addVertexAttributeInMesh(vaPositions);
+        mesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        mesh.addVertexAttributeInMesh(vaNormals);
+        mesh.addVertexAttributeInMesh(vaTangents);
+        mesh.addVertexAttributeInMesh(vaBiTangents);
+
         mesh.bakeMesh();
         return mesh;
     }

@@ -24,13 +24,13 @@ package jgems_api.test.resources;
 
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 
 
 public class ModelLoader implements IAssetsLoader {
-    public MeshDataGroup ground2;
+    public MeshGroup ground2;
 
     @Override
     public void load(GameResources gameResources) {

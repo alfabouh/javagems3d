@@ -11,6 +11,8 @@
 
 package javagems3d.system.resources.assets.models.mesh;
 
+import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.models.mesh.data.IMeshUserData;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 
@@ -19,29 +21,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MeshDataGroup implements ICached {
+public class MeshGroup implements ICached {
     public static final String MESH_COLLISION_UD = "mesh_collision";
     public static final String MESH_RENDER_AABB_UD = "mesh_render_aabb";
     
-    private final List<ModelNode> modelNodeList;
+    private final List<Node> meshNodeList;
     private final Map<String, IMeshUserData> meshUserData;
 
-    public MeshDataGroup() {
-        this.modelNodeList = new ArrayList<>();
+    public MeshGroup() {
+        this.meshNodeList = new ArrayList<>();
         this.meshUserData = new HashMap<>();
     }
 
-    public MeshDataGroup(ModelNode modelNode) {
+    public MeshGroup(Node meshNode) {
         this();
-        this.putNode(modelNode);
+        this.putNode(meshNode);
     }
 
-    public MeshDataGroup(Mesh mesh) {
-        this(new ModelNode(mesh));
+    public MeshGroup(Mesh mesh) {
+        this(new Node(mesh));
     }
 
-    public void putNode(ModelNode modelNode) {
-        this.modelNodeList.add(modelNode);
+    public void putNode(Node meshNode) {
+        this.meshNodeList.add(meshNode);
     }
 
     @SuppressWarnings("all")
@@ -60,8 +62,8 @@ public class MeshDataGroup implements ICached {
         return null;
     }
 
-    public List<ModelNode> getModelNodeList() {
-        return this.modelNodeList;
+    public List<Node> getModelNodeList() {
+        return this.meshNodeList;
     }
 
     public IMeshUserData getMeshUserData(String key) {
@@ -74,12 +76,39 @@ public class MeshDataGroup implements ICached {
 
     public void clean() {
         this.meshUserData.clear();
-        this.getModelNodeList().forEach(ModelNode::cleanMesh);
+        this.getModelNodeList().forEach(Node::cleanMesh);
         this.getModelNodeList().clear();
     }
 
     @Override
     public void onCleaningCache(ResourceCache resourceCache) {
         this.clean();
+    }
+
+    public static class Node {
+        private final Mesh mesh;
+        private final Material material;
+
+        public Node(Mesh mesh, Material material) {
+            this.mesh = mesh;
+            this.material = material;
+        }
+
+        public Node(Mesh mesh) {
+            this.mesh = mesh;
+            this.material = null;
+        }
+
+        public void cleanMesh() {
+            this.getMesh().cleanMesh();
+        }
+
+        public Mesh getMesh() {
+            return this.mesh;
+        }
+
+        public Material getMaterial() {
+            return this.material;
+        }
     }
 }

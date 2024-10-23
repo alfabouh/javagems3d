@@ -12,7 +12,7 @@
 package toolbox.resources;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.models.mesh.MeshDataGroup;
+import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -59,7 +59,7 @@ public class TBoxResourceManager {
         return TextureSample.createTexture(this.getCache(), fullPath);
     }
 
-    public MeshDataGroup createModel(JGemsPath modelPath) {
+    public MeshGroup createModel(JGemsPath modelPath) {
         return SimpleModelLoader.createMesh(this, modelPath);
     }
 
