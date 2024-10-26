@@ -150,10 +150,11 @@ void main()
 
     accumulated = vec4(frag_color.rgb * a_factor, a_factor) * weight;
 
-    reveal = fogDensity > 0 ? calc_fog_float(frag_pos.xyz, a_factor) : a_factor;
+    reveal = a_factor;
+    reveal = calc_fog_float(frag_pos.xyz, a_factor);
 
-    float brightness = dot(frag_color.rgb + emission.rgb, vec3(0.2126, 0.7152, 0.0722));
-    bright_color = brightness >= 0.75 ? frag_color : vec4(0., 0., 0., g_texture.a);
+    float brightness = dot(frag_color.rgb + emission.rgb, vec3(0.2126, 0.7152, 0.0722)) * reveal;
+    bright_color = brightness >= 0.75 ? (frag_color) : vec4(0., 0., 0., g_texture.a);
 }
 
 vec4 calc_light(vec3 frag_pos, vec3 normal) {
@@ -237,6 +238,9 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
 }
 
 float calc_fog_float(vec3 frag_pos, float f) {
+    if (fogDensity <= 0) {
+        return f;
+    }
     float distance = length(frag_pos);
     float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
     fogFactor = clamp(fogFactor, 0., 1.);

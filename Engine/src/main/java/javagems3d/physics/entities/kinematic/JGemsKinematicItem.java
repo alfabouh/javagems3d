@@ -592,6 +592,9 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
     }
 
     public float getWalkSpeed() {
+        if (true) {
+            //return 0.5f;
+        }
         return this.walkSpeed;
     }
 
