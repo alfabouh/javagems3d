@@ -12,14 +12,14 @@
 package javagems3d.graphics.opengl.rendering.fabric.objects.render;
 
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import javagems3d.graphics.opengl.rendering.items.IRenderObject;
+import javagems3d.graphics.opengl.rendering.items.IRendered;
 
 public abstract class RenderWorldItem implements IRenderObjectFabric {
     @Override
-    public void onPreRender(IRenderObject renderItem) {
+    public void onPreRender(IRendered renderItem) {
     }
 
     @Override
-    public void onPostRender(IRenderObject renderItem) {
+    public void onPostRender(IRendered renderItem) {
     }
 }

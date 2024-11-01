@@ -62,9 +62,12 @@ public abstract class JGemsSceneGlobalConstants {
     public static float HDR_EXPOSURE = 2.5f;
     public static float HDR_GAMMA = 0.3f;
 
-    public static float SSAO_RADIUS = 1.5f;
-    public static float SSAO_BIAS = 0.025f;
-    public static float SSAO_RANGE = 5.0f;
+   //public static float SSAO_RADIUS = 1.5f;
+   //public static float SSAO_BIAS = 0.025f;
+   //public static float SSAO_RANGE = 5.0f;
+   public static float SSAO_RADIUS = 0.5f;
+    public static float SSAO_BIAS = 0.01f;
+    public static float SSAO_RANGE = 1.0f;
 
     public static boolean USE_HDR = true;
     public static boolean USE_SSAO = true;

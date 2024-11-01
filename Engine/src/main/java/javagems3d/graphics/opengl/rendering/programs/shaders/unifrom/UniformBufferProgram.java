@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.graphics.opengl.rendering.programs.shaders.unifroms;
+package javagems3d.graphics.opengl.rendering.programs.shaders.unifrom;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;

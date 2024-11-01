@@ -12,6 +12,7 @@
 package javagems3d.graphics.opengl.rendering.scene;
 
 import javagems3d.graphics.opengl.camera.ICamera;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -31,7 +32,7 @@ import javagems3d.graphics.opengl.environment.shadow.ShadowManager;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.opengl.rendering.programs.textures.TextureProgram;
@@ -47,7 +48,7 @@ import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.graphics.opengl.screen.window.Window;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import api.app.events.bus.Events;
@@ -242,7 +243,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_R16F, GL30.GL_RED);
         }};
-        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer fxaa = new T2DAttachmentContainer() {{
             add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
@@ -339,9 +340,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         JGemsShaderManager hdr = JGemsResourceManager.globalShaderAssets.hdr;
         hdr.bind();
-        hdr.performUniform(new UniformString("exposure"), JGemsSceneGlobalConstants.HDR_EXPOSURE);
-        hdr.performUniform(new UniformString("gamma"), JGemsSceneGlobalConstants.HDR_GAMMA);
-        hdr.performUniform(new UniformString("use_hdr"), JGemsSceneGlobalConstants.USE_HDR);
+        hdr.performUniform(new UniformString("exposure"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.HDR_EXPOSURE));
+        hdr.performUniform(new UniformString("gamma"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.HDR_GAMMA));
+        hdr.performUniform(new UniformString("use_hdr"), DefaultUniformActions.BOOLEAN(JGemsSceneGlobalConstants.USE_HDR));
         hdr.performUniformTexture(new UniformString("texture_sampler"), this.getSceneGluingBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         hdr.performUniformTexture(new UniformString("bloom_sampler"), this.getBloomBlurredBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         hdr.getUtils().performOrthographicMatrix(model);
@@ -378,10 +379,10 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getFxaaBuffer().bindFBO();
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
         fxaaFilter.bind();
-        fxaaFilter.performUniform(new UniformString("use_fxaa"), JGemsSceneGlobalConstants.USE_FXAA);
-        fxaaFilter.performUniform(new UniformString("resolution"), new Vector2f(windowSize));
+        fxaaFilter.performUniform(new UniformString("use_fxaa"), DefaultUniformActions.BOOLEAN(JGemsSceneGlobalConstants.USE_FXAA));
+        fxaaFilter.performUniform(new UniformString("resolution"), DefaultUniformActions.VEC2I(windowSize));
         fxaaFilter.performUniformTexture(new UniformString("texture_sampler"), this.getHdrBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        fxaaFilter.performUniform(new UniformString("FXAA_SPAN_MAX"), (float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2));
+        fxaaFilter.performUniform(new UniformString("FXAA_SPAN_MAX"), DefaultUniformActions.FLOAT((float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2)));
         fxaaFilter.getUtils().performOrthographicMatrix(model);
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         fxaaFilter.unBind();
@@ -485,7 +486,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private void deferredLighting(Model<Format2D> model) {
         JGemsShaderManager deferredShader = JGemsResourceManager.globalShaderAssets.world_deferred;
         deferredShader.bind();
-        deferredShader.performUniform(new UniformString("view_matrix"), JGemsSceneUtils.getMainCameraViewMatrix());
+        deferredShader.performUniform(new UniformString("view_matrix"), DefaultUniformActions.MAT4F(JGemsSceneUtils.getMainCameraViewMatrix()));
         deferredShader.performUniformTexture(new UniformString("gPositions"), this.getGBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("gNormals"), this.getGBuffer().getTextureIDByIndex(1), GL30.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("gTexture"), this.getGBuffer().getTextureIDByIndex(2), GL30.GL_TEXTURE_2D);
@@ -493,7 +494,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         deferredShader.performUniformTexture(new UniformString("gSpecular"), this.getGBuffer().getTextureIDByIndex(4), GL30.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("gMetallic"), this.getGBuffer().getTextureIDByIndex(5), GL30.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("ssaoSampler"), this.getSsaoBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        deferredShader.performUniform(new UniformString("isSsaoValid"), this.getSsaoBufferTexture() != null);
+        deferredShader.performUniform(new UniformString("isSsaoValid"), DefaultUniformActions.BOOLEAN(this.getSsaoBufferTexture() != null));
         deferredShader.getUtils().performShadowsInfo();
         deferredShader.getUtils().performOrthographicMatrix(model);
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
@@ -540,12 +541,12 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         JGemsShaderManager ssaoComputeShader = JGemsResourceManager.globalShaderAssets.world_ssao;
         ssaoComputeShader.startComputing();
 
-        ssaoComputeShader.performUniform(new UniformString("ssao_bias"), JGemsSceneGlobalConstants.SSAO_BIAS);
-        ssaoComputeShader.performUniform(new UniformString("ssao_radius"), JGemsSceneGlobalConstants.SSAO_RADIUS);
-        ssaoComputeShader.performUniform(new UniformString("ssao_range"), JGemsSceneGlobalConstants.SSAO_RANGE);
+        ssaoComputeShader.performUniform(new UniformString("ssao_bias"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.SSAO_BIAS));
+        ssaoComputeShader.performUniform(new UniformString("ssao_radius"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.SSAO_RADIUS));
+        ssaoComputeShader.performUniform(new UniformString("ssao_range"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.SSAO_RANGE));
 
-        ssaoComputeShader.performUniform(new UniformString("noiseScale"), new Vector2f(windowSize).div((float) JGemsSceneGlobalConstants.SSAO_NOISE_SIZE));
-        ssaoComputeShader.performUniform(new UniformString("projection_matrix"), JGemsSceneUtils.getMainPerspectiveMatrix());
+        ssaoComputeShader.performUniform(new UniformString("noiseScale"), DefaultUniformActions.VEC2I(new Vector2i(windowSize).div((float) JGemsSceneGlobalConstants.SSAO_NOISE_SIZE)));
+        ssaoComputeShader.performUniform(new UniformString("projection_matrix"), DefaultUniformActions.MAT4F(JGemsSceneUtils.getMainPerspectiveMatrix()));
         ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), this.getGBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), this.getGBuffer().getTextureIDByIndex(1), GL30.GL_TEXTURE_2D);
         ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture().getTextureId(), GL30.GL_TEXTURE_2D);
@@ -578,11 +579,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         int steps = 6;
 
         blurShader.bind();
-        blurShader.performUniform(new UniformString("resolution"), new Vector2f(windowSize).div(2.0f));
+        blurShader.performUniform(new UniformString("resolution"), DefaultUniformActions.VEC2I(new Vector2i(windowSize).div(2.0f)));
         for (int i = 0; i < steps; i++) {
             this.getBloomBlurredBuffer().bindFBO();
             blurShader.performUniformTexture(new UniformString("texture_sampler"), startFbo.getTextureIDByIndex(startBinding), GL30.GL_TEXTURE_2D, 0);
-            blurShader.performUniform(new UniformString("direction"), i % 2 == 0 ? new Vector2f(1.0f, 0.0f) : new Vector2f(0.0f, 1.0f));
+            blurShader.performUniform(new UniformString("direction"), DefaultUniformActions.VEC2F(i % 2 == 0 ? new Vector2f(1.0f, 0.0f) : new Vector2f(0.0f, 1.0f)));
             blurShader.getUtils().performOrthographicMatrix(model);
             JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
             this.getBloomBlurredBuffer().unBindFBO();
@@ -592,11 +593,11 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         blurShader.unBind();
     }
 
-    public void renderModeledSceneObject(IModeledSceneObject sceneObject) {
+    public void renderModeledSceneObject(AbstractSceneObject sceneObject) {
         JGemsSceneUtils.renderModeledSceneObject(sceneObject);
     }
 
-    public void renderModeledSceneObject(IModeledSceneObject sceneObject, ICamera camera) {
+    public void renderModeledSceneObject(AbstractSceneObject sceneObject, ICamera camera) {
         JGemsSceneUtils.renderModeledSceneObject(sceneObject, camera);
     }
 
@@ -604,7 +605,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getWorldTransparentRender().addModelNodeInTransparencyPass(node);
     }
 
-    public void addSceneModelObjectInTransparencyPass(IModeledSceneObject modeledSceneObject) {
+    public void addSceneModelObjectInTransparencyPass(AbstractSceneObject modeledSceneObject) {
         this.getWorldTransparentRender().addSceneModelObjectInTransparencyPass(modeledSceneObject);
     }
 
@@ -713,13 +714,13 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private Vector3i getSSAOParams(Vector2i windowSize) {
         switch (JGems3D.get().getGameSettings().ssao.getValue()) {
             case 1: {
-                return new Vector3i((int) (windowSize.x * 0.5f), (int) (windowSize.y * 0.5f), 4);
+                return new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 3);
             }
             case 2: {
-                return new Vector3i((int) (windowSize.x * 0.5f), (int) (windowSize.y * 0.5f), 6);
+                return new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 4);
             }
             case 3: {
-                return new Vector3i((int) (windowSize.x * 0.5f), (int) (windowSize.y * 0.5f), 8);
+                return new Vector3i((int) (windowSize.x * 1.0f), (int) (windowSize.y * 1.0f), 6);
             }
             case 0:
             default: {

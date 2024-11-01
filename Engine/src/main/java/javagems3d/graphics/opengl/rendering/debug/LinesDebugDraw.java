@@ -16,6 +16,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import javagems3d.graphics.opengl.frustum.ICulled;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
@@ -28,7 +29,7 @@ import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.graph.GraphEdge;
 import javagems3d.system.graph.GraphVertex;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.nio.FloatBuffer;
@@ -57,7 +58,7 @@ public class LinesDebugDraw {
 
     public void drawAABBLinesRN(JGemsShaderManager debugShaders, List<ICulled> culleds) {
         for (ICulled c : culleds) {
-            debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 0.0f, 1.0f, 1.0f));
+            debugShaders.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(0.0f, 0.0f, 1.0f, 1.0f)));
             ICulled.RenderAABB renderAABB = c.getRenderAABB();
             if (renderAABB == null) {
                 continue;
@@ -68,7 +69,7 @@ public class LinesDebugDraw {
 
     public void drawAABBLinesBT(JGemsShaderManager debugShaders, DynamicsSystem dynamicsSystem) {
         for (PhysicsCollisionObject physicsCollisionObject : dynamicsSystem.getPhysicsSpace().getPcoList()) {
-            debugShaders.performUniform(new UniformString("colour"), new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+            debugShaders.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f)));
 
             BoundingBox boundingBox = new BoundingBox();
             physicsCollisionObject.boundingBox(boundingBox);
@@ -110,7 +111,7 @@ public class LinesDebugDraw {
         if (this.navMeshFloatBuffer == null) {
             return;
         }
-        debugShaders.performUniform(new UniformString("colour"), new Vector4f(0.0f, 1.0f, 0.0f, 1.0f));
+        debugShaders.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(0.0f, 1.0f, 0.0f, 1.0f)));
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.navMeshFloatBuffer, GL15.GL_DYNAMIC_DRAW);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);

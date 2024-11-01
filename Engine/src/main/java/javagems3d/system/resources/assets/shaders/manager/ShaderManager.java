@@ -11,14 +11,19 @@
 
 package javagems3d.system.resources.assets.shaders.manager;
 
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformProgram;
+import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.*;
+import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.programs.shaders.CShaderProgram;
 import javagems3d.graphics.opengl.rendering.programs.shaders.GShaderProgram;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformBufferProgram;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -26,29 +31,26 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * ShaderManager objects are shader packages that have functions for managing the state of the shader, its uniforms and uni-buffers
  */
 public abstract class ShaderManager implements ICached {
+
     private final Set<UniformBufferObject> uniformBufferObjects;
     private final ShadersContainer shadersContainer;
-    private ACT_SHADER activeShader;
+    private ActiveShader activeShader;
     private ShaderHandler graphicShaderHandler;
     private ShaderHandler computingShaderHandler;
     private RenderPass renderPass;
-
     private int usedTextureUnits;
 
     public ShaderManager(ShadersContainer shadersContainer) {
         this.uniformBufferObjects = new HashSet<>();
         this.shadersContainer = shadersContainer;
         this.renderPass = RenderPass.FORWARD;
-        this.activeShader = ACT_SHADER.NONE;
-
+        this.activeShader = ActiveShader.NONE;
         this.usedTextureUnits = 0;
     }
 
@@ -90,33 +92,33 @@ public abstract class ShaderManager implements ICached {
     }
 
     public boolean startComputing() {
-        if (this.activeShader != ACT_SHADER.NONE) {
+        if (this.activeShader != ActiveShader.NONE) {
             return false;
         }
         this.clearUsedTextureSlots();
         this.getComputingShaderGroup().getShaderProgram().bind();
-        this.activeShader = ACT_SHADER.COMPUTE;
+        this.activeShader = ActiveShader.COMPUTE;
         return true;
     }
 
     public void endComputing() {
         this.getComputingShaderGroup().getShaderProgram().unbind();
-        this.activeShader = ACT_SHADER.NONE;
+        this.activeShader = ActiveShader.NONE;
     }
 
     public boolean bind() {
-        if (this.activeShader != ACT_SHADER.NONE) {
+        if (this.activeShader != ActiveShader.NONE) {
             return false;
         }
         this.clearUsedTextureSlots();
         this.getGraphicShaderGroup().getShaderProgram().bind();
-        this.activeShader = ACT_SHADER.GRAPHICAL;
+        this.activeShader = ActiveShader.GRAPHICAL;
         return true;
     }
 
     public void unBind() {
         this.getGraphicShaderGroup().getShaderProgram().unbind();
-        this.activeShader = ACT_SHADER.NONE;
+        this.activeShader = ActiveShader.NONE;
     }
 
     public UniformBufferProgram getUniformBufferProgram(UniformBufferObject uniform) {
@@ -151,13 +153,13 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
-    private boolean setUniform(UniformString uniform, Object o) {
+    private boolean setUniform(UniformString uniform, UniformProgram.UniformAction uniformAction) {
         switch (this.activeShader) {
             case COMPUTE: {
-                return this.getComputingShaderGroup().getUniformProgram().setUniform(uniform, o);
+                return this.getComputingShaderGroup().getUniformProgram().setUniform(uniform, uniformAction);
             }
             case GRAPHICAL: {
-                return this.getGraphicShaderGroup().getUniformProgram().setUniform(uniform, o);
+                return this.getGraphicShaderGroup().getUniformProgram().setUniform(uniform, uniformAction);
             }
             case NONE:
             default: {
@@ -191,7 +193,7 @@ public abstract class ShaderManager implements ICached {
         GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
 
         GL30.glBindTexture(textureAttachment, textureID);
-        this.performUniform(uniform, textureUnit);
+        this.performUniform(uniform, DefaultUniformActions.INTEGER(textureUnit));
     }
 
     private void initShaders(ShadersContainer shadersContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {
@@ -225,8 +227,8 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public void performUniform(UniformString uniform, Object o) {
-        if (o == null) {
+    public void performUniform(UniformString uniform, UniformProgram.UniformAction uniformAction) {
+        if (uniformAction == null) {
             JGemsHelper.getLogger().error("[" + this + "] NULL uniform " + uniform);
             return;
         }
@@ -234,12 +236,12 @@ public abstract class ShaderManager implements ICached {
             JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
-        if (!this.setUniform(uniform, o)) {
+        if (!this.setUniform(uniform, uniformAction)) {
             JGemsHelper.getLogger().warn("[" + this + "] Wrong arguments! U: " + uniform);
         }
     }
 
-    public void performUniformNoWarn(UniformString uniformString, Object o) {
+    public void performUniformNoWarn(UniformString uniformString, UniformProgram.UniformAction o) {
         if (this.isUniformExist(uniformString)) {
             this.performUniform(uniformString, o);
         }
@@ -323,7 +325,7 @@ public abstract class ShaderManager implements ICached {
         return this.getShaderContainer().getId();
     }
 
-    private enum ACT_SHADER {
+    private enum ActiveShader {
         COMPUTE,
         GRAPHICAL,
         NONE

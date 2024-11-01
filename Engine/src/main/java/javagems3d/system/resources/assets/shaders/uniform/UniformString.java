@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.resources.assets.shaders.base;
+package javagems3d.system.resources.assets.shaders.uniform;
 
 public final class UniformString {
     private final String uniformRoot;

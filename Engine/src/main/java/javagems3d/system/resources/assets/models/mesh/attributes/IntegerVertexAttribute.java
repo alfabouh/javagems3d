@@ -40,6 +40,6 @@ public final class IntegerVertexAttribute extends VertexAttribute<Integer> {
 
     @Override
     public int attributeType() {
-        return GL30.GL_INT;
+        return GL30.GL_FLOAT;
     }
 }

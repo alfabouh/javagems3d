@@ -21,7 +21,7 @@ import org.lwjgl.system.MemoryStack;
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
-import javagems3d.system.resources.assets.models.loader.ModelLoader;
+import javagems3d.system.resources.assets.models.ModelLoader;
 import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;

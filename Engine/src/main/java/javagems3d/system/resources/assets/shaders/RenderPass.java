@@ -9,14 +9,10 @@
  *
  */
 
-package javagems3d.graphics.opengl.rendering.items;
+package javagems3d.system.resources.assets.shaders;
 
-import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-
-public interface IRenderObject {
-    IRenderObjectFabric renderFabric();
-
-    default boolean hasRender() {
-        return this.renderFabric() != null;
-    }
+public enum RenderPass {
+    FORWARD,
+    DEFERRED,
+    TRANSPARENCY
 }

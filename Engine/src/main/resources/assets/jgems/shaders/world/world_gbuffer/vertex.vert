@@ -3,6 +3,10 @@ layout (location=1) in vec2 aTexture;
 layout (location=2) in vec3 aNormal;
 layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
+layout (location=5) in ivec4 aBoneIndexes;
+layout (location=6) in vec4 aBoneWeights;
+
+const int MAX_WEIGHTS = 4;
 
 out vec2 texture_coordinates;
 out vec3 m_vertex_normal;
@@ -15,21 +19,60 @@ uniform mat4 view_matrix;
 uniform mat4 model_matrix;
 uniform mat4 projection_matrix;
 
+layout(std430, binding = 0) buffer BoneMatrices {
+    mat4 bone_matrices[64];
+};
+
+uniform bool hasAnimations;
+
 void main()
 {
+    vec4 startPos = vec4(0.);
+    vec4 startNormal = vec4(0.);
+    vec4 startTangent = vec4(0.);
+    vec4 startBiTangent = vec4(0.);
+
+    int j = 0;
+    if (hasAnimations) {
+        for (int i = 0; i < MAX_WEIGHTS; i++) {
+            float weight = aBoneWeights[i];
+            if (weight > 0.) {
+                j += 1;
+                int boneId = aBoneIndexes[i];
+
+                vec4 tempPos = bone_matrices[boneId] * vec4(aPosition, 1.);
+                vec4 tempNormal = bone_matrices[boneId] * vec4(aNormal, 0.);
+                vec4 tempTangent = bone_matrices[boneId] * vec4(aTangent, 0.);
+                vec4 tempBiTangent = bone_matrices[boneId] * vec4(aBitangent, 0.);
+
+                startPos += weight * tempPos;
+                startNormal += weight * tempNormal;
+                startTangent += weight * tempTangent;
+                startBiTangent += weight * tempBiTangent;
+            }
+        }
+    }
+
+    if (j == 0) {
+        startPos = vec4(aPosition, 1.0);
+        startNormal = vec4(aNormal, 0.0);
+        startTangent = vec4(aTangent, 0.0);
+        startBiTangent = vec4(aBitangent, 0.0);
+    }
+
     mat4 model_view_matrix = view_matrix * model_matrix;
-    vec4 mv_pos = model_view_matrix * vec4(aPosition, 1.0f);
+    vec4 mv_pos = model_view_matrix * startPos;
     gl_Position = projection_matrix * mv_pos;
 
-    vec3 T = normalize(vec3(model_view_matrix * (vec4(aTangent, 0.0))));
-    vec3 B = normalize(vec3(model_view_matrix * (vec4(aBitangent, 0.0))));
-    vec3 N = normalize(vec3(model_view_matrix * (vec4(aNormal, 0.0))));
+    vec3 T = normalize(vec3(model_view_matrix * startTangent));
+    vec3 B = normalize(vec3(model_view_matrix * startBiTangent));
+    vec3 N = normalize(vec3(model_view_matrix * startNormal));
     TBN = mat3(T, B, N);
 
     texture_coordinates = aTexture;
-    mv_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;
-    m_vertex_normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;
+    mv_vertex_normal = normalize(model_view_matrix * startNormal).xyz;
+    m_vertex_normal = normalize(model_matrix * startNormal).xyz;
     mv_vertex_pos = mv_pos.xyz;
 
-    out_model_position = model_matrix * vec4(aPosition, 1.0f);
+    out_model_position = model_matrix * startPos;
 }

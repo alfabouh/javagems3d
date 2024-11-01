@@ -11,8 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.objects.render;
 
-import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.items.IRenderObject;
+import javagems3d.graphics.opengl.rendering.items.IRendered;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
@@ -22,7 +21,7 @@ public class RenderEntity2D3D extends RenderWorldItem {
     }
 
     @Override
-    public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRendered renderItem) {
         //GL30.glDisable(GL30.GL_DEPTH_TEST);
         AbstractSceneEntity entityObject = (AbstractSceneEntity) renderItem;
         if (entityObject.hasRender() && entityObject.hasModel()) {

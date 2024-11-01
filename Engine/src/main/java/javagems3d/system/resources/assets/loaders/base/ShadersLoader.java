@@ -12,7 +12,7 @@
 package javagems3d.system.resources.assets.loaders.base;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.base.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;

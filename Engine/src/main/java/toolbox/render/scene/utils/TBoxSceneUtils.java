@@ -37,7 +37,7 @@ public class TBoxSceneUtils {
     }
 
     public static void renderModel(Model<Format3D> model, int code) {
-        TBoxSceneUtils.renderModel(model.getMeshDataGroup(), code);
+        TBoxSceneUtils.renderModel(model.getMeshGroup(), code);
     }
 
     @SuppressWarnings("all")
@@ -56,7 +56,7 @@ public class TBoxSceneUtils {
         if (model == null) {
             return;
         }
-        TBoxSceneUtils.renderModelTextured(shaderManager, model.getMeshDataGroup(), code);
+        TBoxSceneUtils.renderModelTextured(shaderManager, model.getMeshGroup(), code);
     }
 
     @SuppressWarnings("all")

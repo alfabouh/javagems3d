@@ -14,6 +14,7 @@ package javagems3d.graphics.opengl.rendering.scene.render_base.groups.forward;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
 import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
@@ -28,7 +29,7 @@ import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -79,8 +80,8 @@ public class SkyBoxCubeMapRender extends SceneRenderBase {
         Matrix4f.m31(0);
         Matrix4f.m32(0);
         shaderManager.performUniformTexture(new UniformString("skybox_background_sampler"), this.getSceneRenderer().getSkyBoxBackGroundBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        shaderManager.performUniform(new UniformString("covered_by_fog"), this.getSkyBox().isSkyCoveredByFog());
-        shaderManager.performUniform(new UniformString("view_mat_inverted"), new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert());
+        shaderManager.performUniform(new UniformString("covered_by_fog"), DefaultUniformActions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
+        shaderManager.performUniform(new UniformString("view_mat_inverted"), DefaultUniformActions.MAT4F(new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert()));
         shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
         shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), this.getSkyBox().getSky2DTexture().getTextureId());
         //shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), this.getSceneRenderer().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram().getTextureId());

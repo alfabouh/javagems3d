@@ -14,8 +14,9 @@ package javagems3d.graphics.opengl.rendering.items.props;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.light.Light;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -23,15 +24,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SimpleBackgroundProp implements IModeledSceneObject {
+public class SimpleBackgroundProp extends AbstractSceneObject {
+    private AnimationData animationData;
     private final IRenderObjectFabric renderFabric;
-    private Model<Format3D> model;
     private ModelRenderData modelRenderData;
 
     public SimpleBackgroundProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ModelRenderData modelRenderData) {
+        super(model);
         this.renderFabric = renderFabric;
-        this.model = model;
         this.modelRenderData = modelRenderData;
+        this.animationData = null;
     }
 
     public SimpleBackgroundProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
@@ -69,12 +71,9 @@ public class SimpleBackgroundProp implements IModeledSceneObject {
         return null;
     }
 
-    public Model<Format3D> getModel() {
-        return this.model;
-    }
-
     public SimpleBackgroundProp setModel(Model<Format3D> model) {
         this.model = model;
+        this.initAnimation();
         return this;
     }
 
@@ -100,5 +99,15 @@ public class SimpleBackgroundProp implements IModeledSceneObject {
     @Override
     public String toString() {
         return this.getClass().getName() + " - " + this.getModel().getFormat().getPosition();
+    }
+
+    @Override
+    public AnimationData getAnimationData() {
+        return this.animationData;
+    }
+
+    @Override
+    public void setAnimationData(AnimationData animationData) {
+        this.animationData = animationData;
     }
 }

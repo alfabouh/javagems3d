@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.items.objects;
 
+import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -19,7 +20,7 @@ import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.opengl.environment.light.Light;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.IWorld;
@@ -37,12 +38,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorldObject, IWorldTicked {
+public abstract class AbstractSceneEntity extends AbstractSceneObject implements IWorldObject, IWorldTicked {
+    private AnimationData animationData;
     private final List<Light> lightList;
     private final SceneWorld sceneWorld;
     private final WorldItem worldItem;
     private final RenderEntityData renderData;
-    protected Model<Format3D> model;
     protected Vector3f prevRenderPosition;
     protected Vector3f prevRenderRotation;
     protected Vector3f renderPosition;
@@ -55,6 +56,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
     public AbstractSceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull RenderEntityData renderData) {
         this.lightList = new ArrayList<>();
 
+        this.animationData = null;
         this.worldItem = worldItem;
         this.renderPosition = new Vector3f(worldItem.getPosition());
         this.renderRotation = new Vector3f(worldItem.getRotation());
@@ -151,7 +153,7 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         return true;
     }
 
-    public void updateRenderTranslation() {
+    public void updateModelTranslation() {
         if (this.hasModel()) {
             Model<Format3D> model = this.getModel();
             model.getFormat().setScaling(new Vector3f(this.getScale()));
@@ -253,14 +255,6 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
         return new Vector3f(this.renderRotation);
     }
 
-    public Model<Format3D> getModel() {
-        return this.model;
-    }
-
-    public void setModel(Model<Format3D> model) {
-        this.model = model;
-    }
-
     @Override
     public ModelRenderData getMeshRenderData() {
         return this.getRenderData().getMeshRenderData();
@@ -293,6 +287,21 @@ public abstract class AbstractSceneEntity implements IModeledSceneObject, IWorld
 
     public boolean isDead() {
         return this.isDead;
+    }
+
+    @Override
+    public AnimationData getAnimationData() {
+        return this.animationData;
+    }
+
+    @Override
+    public void setAnimationData(AnimationData animationData) {
+        this.animationData = animationData;
+    }
+
+    @Override
+    public String toString() {
+        return "SceneObj " + this.getWorldItem().toString();
     }
 
     public static final class InterpolationPoints {

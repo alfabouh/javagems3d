@@ -62,7 +62,7 @@ public class RenderDataLoader implements IAssetsLoader {
 
         this.water = new RenderLiquidData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
 
-        this.entityCube = new RenderEntityData(new RenderEntity(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_gbuffer).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
+        this.entityCube = new RenderEntityData(new RenderEntity(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_gbuffer).setMeshDataGroup(JGemsResourceManager.globalModelAssets.test_anim); //TODO
 
         this.player = new RenderEntityData(new RenderPlayer(), PlayerSPObject.class, JGemsResourceManager.globalShaderAssets.world_gbuffer);
 

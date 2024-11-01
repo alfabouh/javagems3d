@@ -11,7 +11,6 @@
 
 package jgems_api.test;
 
-import javagems3d.JGems3D;
 import javagems3d.system.core.EngineSystem;
 import api.app.main.JGemsGameApplication;
 import api.app.main.JGemsGameEntry;

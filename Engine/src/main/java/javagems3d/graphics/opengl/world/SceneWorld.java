@@ -25,7 +25,7 @@ import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
 import javagems3d.graphics.opengl.rendering.items.ILightsKeeper;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import javagems3d.graphics.opengl.rendering.items.objects.LiquidObject;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
@@ -33,7 +33,7 @@ import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
-import javagems3d.system.resources.assets.shaders.base.RenderPass;
+import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.synchronizing.SyncManager;
@@ -54,7 +54,7 @@ public final class SceneWorld implements IWorld {
     private final Set<Pair<WorldItem, Light>> lightAttachmentQueue;
 
     private final Map<Integer, AbstractSceneEntity> objectMap;
-    private final Set<IModeledSceneObject> toRenderSet;
+    private final Set<AbstractSceneObject> toRenderSet;
     private final Set<LiquidObject> liquids;
     private final Environment environment;
     private FrustumCulling frustumCulling;
@@ -113,9 +113,10 @@ public final class SceneWorld implements IWorld {
     public void updateWorldObjects(boolean refresh, FrameTicking frameTicking) {
         this.getParticlesEmitter().onUpdateParticles(frameTicking.getFrameDeltaTime(), this);
 
-        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
+        Iterator<AbstractSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
-            IModeledSceneObject sceneObject = iterator.next();
+            AbstractSceneObject sceneObject = iterator.next();
+            sceneObject.updateAnimation();
             if (sceneObject instanceof IWorldTicked) {
                 IWorldTicked worldTicked = (IWorldTicked) sceneObject;
                 worldTicked.onUpdate(this);
@@ -132,7 +133,7 @@ public final class SceneWorld implements IWorld {
                     abstractSceneEntity.refreshInterpolatingState();
                 }
                 abstractSceneEntity.updateRenderPos(frameTicking.getPhysicsSyncTicks());
-                abstractSceneEntity.updateRenderTranslation();
+                abstractSceneEntity.updateModelTranslation();
             }
         }
 
@@ -148,9 +149,9 @@ public final class SceneWorld implements IWorld {
 
     //section WorldClean
     private void cleanAll() {
-        Iterator<IModeledSceneObject> iterator = this.getModeledSceneEntities().iterator();
+        Iterator<AbstractSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
-            IModeledSceneObject modeledSceneObject = iterator.next();
+            AbstractSceneObject modeledSceneObject = iterator.next();
             if (modeledSceneObject instanceof AbstractSceneEntity) {
                 AbstractSceneEntity abstractSceneEntity = (AbstractSceneEntity) modeledSceneObject;
                 abstractSceneEntity.onDestroy(this);
@@ -167,7 +168,7 @@ public final class SceneWorld implements IWorld {
         this.getObjectMap().clear();
     }
 
-    public boolean checkReachedRenderDistance(IModeledSceneObject renderObject) {
+    public boolean checkReachedRenderDistance(AbstractSceneObject renderObject) {
         if (!renderObject.hasRender()) {
             return true;
         }
@@ -182,11 +183,11 @@ public final class SceneWorld implements IWorld {
         return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.getRenderAABB()) || !e.canBeCulled()).collect(Collectors.toList());
     }
 
-    public Set<IModeledSceneObject> getFilteredEntitySet(RenderPass renderPass) {
+    public Set<AbstractSceneObject> getFilteredEntitySet(RenderPass renderPass) {
         if (this.getFrustumCulling() == null) {
             return this.getModeledSceneEntities();
         }
-        return this.getCollectionFrustumCulledList(this.getModeledSceneEntities()).stream().map(e -> (IModeledSceneObject) e).filter(e -> (renderPass == null || e.getMeshRenderData().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toSet());
+        return this.getCollectionFrustumCulledList(this.getModeledSceneEntities()).stream().map(e -> (AbstractSceneObject) e).filter(e -> (renderPass == null || e.getMeshRenderData().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toSet());
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {
@@ -274,11 +275,11 @@ public final class SceneWorld implements IWorld {
         abstractSceneEntity.removeLightById(i);
     }
 
-    public void addObjectInWorld(IModeledSceneObject renderObject) {
+    public void addObjectInWorld(AbstractSceneObject renderObject) {
         this.getModeledSceneEntities().add(renderObject);
     }
 
-    public void removeObjectFromWorld(IModeledSceneObject renderObject) {
+    public void removeObjectFromWorld(AbstractSceneObject renderObject) {
         if (!this.getModeledSceneEntities().remove(renderObject)) {
             JGemsHelper.getLogger().warn("Couldn't remove a render object from scene rendering!");
         }
@@ -323,7 +324,7 @@ public final class SceneWorld implements IWorld {
         return this.liquids;
     }
 
-    public Set<IModeledSceneObject> getModeledSceneEntities() {
+    public Set<AbstractSceneObject> getModeledSceneEntities() {
         return this.toRenderSet;
     }
 

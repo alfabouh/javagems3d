@@ -25,7 +25,7 @@ public interface ILightsKeeper {
 
     default void adjustLightsTranslation(Vector3f pos, Vector3f offset) {
         for (Light l : this.getLightsList()) {
-            l.setLightPos(pos);
+            l.setPosition(pos);
             l.setOffset(offset);
         }
     }

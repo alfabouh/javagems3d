@@ -33,12 +33,13 @@ import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultL
 import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultSettingsPanel;
 import javagems3d.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.graphics.opengl.screen.window.Window;
 import javagems3d.system.map.loaders.custom.DefaultMap;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import jgems_api.test.map.TestMap;
 import org.joml.Vector2f;
@@ -60,8 +61,8 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         Vector2f res = new Vector2f(window.getWindowDimensions().x, window.getWindowDimensions().y);
         Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0);
         JGemsResourceManager.globalShaderAssets.menu.bind();
-        JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), color);
-        JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), JGems3D.get().getScreen().getRenderTicks());
+        JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), DefaultUniformActions.VEC3F(color));
+        JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), DefaultUniformActions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
         JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
         JGemsResourceManager.globalShaderAssets.menu.unBind();

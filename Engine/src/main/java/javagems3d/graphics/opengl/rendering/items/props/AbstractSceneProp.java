@@ -11,12 +11,13 @@
 
 package javagems3d.graphics.opengl.rendering.items.props;
 
+import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.light.Light;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -29,18 +30,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldObject, IWorldTicked {
+public abstract class AbstractSceneProp extends AbstractSceneObject implements IWorldObject, IWorldTicked {
+    private AnimationData animationData;
     private final List<Light> lightList;
     private final IRenderObjectFabric renderFabric;
-    private Model<Format3D> model;
     private ModelRenderData modelRenderData;
     private boolean isVisible;
 
     public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ModelRenderData modelRenderData) {
+        super(model);
         this.lightList = new ArrayList<>();
 
+        this.animationData = null;
         this.renderFabric = renderFabric;
-        this.model = model;
         this.modelRenderData = modelRenderData;
         this.isVisible = true;
     }
@@ -123,15 +125,6 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
         return this.lightList;
     }
 
-    public Model<Format3D> getModel() {
-        return this.model;
-    }
-
-    public AbstractSceneProp setModel(Model<Format3D> model) {
-        this.model = model;
-        return this;
-    }
-
     public ModelRenderData getMeshRenderData() {
         return this.modelRenderData;
     }
@@ -152,6 +145,16 @@ public abstract class AbstractSceneProp implements IModeledSceneObject, IWorldOb
     @Override
     public boolean hasRender() {
         return true;
+    }
+
+    @Override
+    public AnimationData getAnimationData() {
+        return this.animationData;
+    }
+
+    @Override
+    public void setAnimationData(AnimationData animationData) {
+        this.animationData = animationData;
     }
 
     @Override

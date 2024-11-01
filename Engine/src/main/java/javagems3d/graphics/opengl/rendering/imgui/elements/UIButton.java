@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.imgui.elements;
 
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -26,7 +27,7 @@ import javagems3d.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -65,8 +66,8 @@ public class UIButton extends UIInteractiveElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.bind();
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
-        shaderManager.performUniform(new UniformString("background_color"), new Vector4f(0.25f, 0.0f, 0.15f, 0.8f));
-        shaderManager.performUniform(new UniformString("selected"), this.isSelected());
+        shaderManager.performUniform(new UniformString("background_color"), DefaultUniformActions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
+        shaderManager.performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(this.isSelected()));
         JGemsSceneUtils.renderModel(this.buttonModel, GL30.GL_TRIANGLES);
         shaderManager.unBind();
         this.uiText.render(frameDeltaTicks);

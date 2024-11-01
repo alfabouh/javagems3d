@@ -19,7 +19,7 @@ import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
-import javagems3d.system.resources.assets.models.loader.ModelLoader;
+import javagems3d.system.resources.assets.models.ModelLoader;
 import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -47,22 +47,22 @@ public class GameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB) {
-        MeshGroup meshGroup = this.createMesh(modelPath, constructRenderAABB);
+    public MeshGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB, boolean isAnimated) {
+        MeshGroup meshGroup = this.createMesh(modelPath, constructRenderAABB, isAnimated);
         if (constructCollisionMesh) {
             JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
         }
         return meshGroup;
     }
 
-    public MeshGroup createMesh(JGemsPath modelPath, boolean constructRenderAABB) {
+    public MeshGroup createMesh(JGemsPath modelPath, boolean constructRenderAABB, boolean isAnimated) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
-        MeshGroup meshGroup = ModelLoader.createMesh(this, modelPath);
+        MeshGroup meshGroup = ModelLoader.createMesh(this, modelPath, isAnimated);
         if (meshGroup == null) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
         } else {
             if (constructRenderAABB) {
-                JGemsHelper.UTILS.createMeshRenderAABBData(meshGroup);
+                meshGroup.createRenderAABB();
             }
         }
         return meshGroup;

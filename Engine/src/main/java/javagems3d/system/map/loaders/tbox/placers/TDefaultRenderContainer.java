@@ -10,6 +10,7 @@
 
 package javagems3d.system.map.loaders.tbox.placers;
 
+import javagems3d.graphics.opengl.rendering.items.IRendered;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
@@ -58,7 +59,7 @@ public final class TDefaultRenderContainer {
     /**
      * A render factory is a special class that is responsible for rendering a specific IRenderObject object
      *
-     * @see javagems3d.graphics.opengl.rendering.items.IRenderObject
+     * @see IRendered
      */
     public @NotNull IRenderObjectFabric getRenderFabric() {
         return this.renderFabric;

@@ -16,9 +16,7 @@ import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.attributes.VertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
 import org.joml.*;
 import javagems3d.audio.SoundManager;
@@ -432,22 +430,14 @@ public abstract class JGemsHelper {
             if (list == null || list.isEmpty()) {
                 return null;
             }
-            int[] a = new int[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                a[i] = list.get(i);
-            }
-            return a;
+            return list.stream().mapToInt( v -> (Integer) v).toArray();
         }
 
         public static double[] convertDoublesArray(List<Double> list) {
             if (list == null || list.isEmpty()) {
                 return null;
             }
-            double[] a = new double[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                a[i] = list.get(i);
-            }
-            return a;
+            return list.stream().mapToDouble( v -> (Double) v).toArray();
         }
 
         public static float[] convertFloatsArray(List<Float> list) {
@@ -504,10 +494,6 @@ public abstract class JGemsHelper {
             return false;
         }
 
-        public static boolean createMeshRenderAABBData(MeshGroup meshGroup) {
-            return JGemsHelper.UTILS.createMeshRenderAABBData(meshGroup, DefaultPointers.POSITIONS.getIndex());
-        }
-
         @SuppressWarnings("all")
         public static boolean createMeshRenderAABBData(MeshGroup meshGroup, int positionsAttributeIndex) {
             if (meshGroup != null && meshGroup.getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
@@ -531,12 +517,12 @@ public abstract class JGemsHelper {
         }
 
         public static ICulled.RenderAABB calcRenderAABBWithTransforms(Model<Format3D> model) {
-            if (model.getMeshDataGroup().getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
+            if (model.getMeshGroup().getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
                 return null;
             }
 
-            Vector3f min = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMin());
-            Vector3f max = new Vector3f(model.getMeshDataGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMax());
+            Vector3f min = new Vector3f(model.getMeshGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMin());
+            Vector3f max = new Vector3f(model.getMeshGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMax());
 
             Matrix4f modelMatrix = Transformation.getModelMatrix(model.getFormat());
 

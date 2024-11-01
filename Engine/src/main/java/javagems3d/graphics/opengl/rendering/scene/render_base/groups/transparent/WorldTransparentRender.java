@@ -11,21 +11,22 @@
 
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.transparent;
 
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.shaders.base.RenderPass;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.RenderPass;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.HashSet;
@@ -33,7 +34,7 @@ import java.util.Set;
 
 public class WorldTransparentRender extends SceneRenderBase {
     private final Set<RenderNodeInfo> transparentModelModes;
-    private final Set<IModeledSceneObject> transparentModelObjects;
+    private final Set<AbstractSceneObject> transparentModelObjects;
 
     public WorldTransparentRender(JGemsOpenGLRenderer sceneRender) {
         super(0, sceneRender, new RenderGroup("WORLD_TRANSPARENT"));
@@ -44,7 +45,7 @@ public class WorldTransparentRender extends SceneRenderBase {
 
     public void onRender(FrameTicking frameTicking) {
         this.transparentModelObjects.addAll(this.getSceneWorld().getFilteredEntitySet(RenderPass.TRANSPARENCY));
-        for (IModeledSceneObject modeledSceneObject : this.transparentModelObjects) {
+        for (AbstractSceneObject modeledSceneObject : this.transparentModelObjects) {
             this.renderIModeledSceneObject(modeledSceneObject);
         }
         for (RenderNodeInfo renderNodeInfo : this.transparentModelModes) {
@@ -54,7 +55,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         this.transparentModelModes.clear();
     }
 
-    private void renderIModeledSceneObject(IModeledSceneObject object) {
+    private void renderIModeledSceneObject(AbstractSceneObject object) {
         Material overMaterial = object.getMeshRenderData().getOverlappingMaterial();
         JGemsShaderManager gemsShaderManager = object.getMeshRenderData().getOverridenTransparencyShader();
         if (gemsShaderManager == null) {
@@ -63,10 +64,10 @@ public class WorldTransparentRender extends SceneRenderBase {
         gemsShaderManager.bind();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
-        for (MeshGroup.Node meshNode : object.getModel().getMeshDataGroup().getModelNodeList()) {
+        for (MeshGroup.Node meshNode : object.getModel().getMeshGroup().getModelNodeList()) {
             gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : meshNode.getMaterial());
-            gemsShaderManager.performUniform(new UniformString("alpha_factor"), meshNode.getMaterial().getFullOpacity() * object.getMeshRenderData().getRenderAttributes().getObjectOpacity());
+            gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity() * object.getMeshRenderData().getRenderAttributes().getObjectOpacity()));
 
             boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
             if (object.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
@@ -91,7 +92,7 @@ public class WorldTransparentRender extends SceneRenderBase {
 
         gemsShaderManager.getUtils().performShadowsInfo();
         gemsShaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
-        gemsShaderManager.performUniform(new UniformString("alpha_factor"), meshNode.getMaterial().getFullOpacity());
+        gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity()));
 
         boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
         if (disableCulling) {
@@ -109,7 +110,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         this.transparentModelModes.add(node);
     }
 
-    public void addSceneModelObjectInTransparencyPass(IModeledSceneObject sceneObject) {
+    public void addSceneModelObjectInTransparencyPass(AbstractSceneObject sceneObject) {
         this.transparentModelObjects.add(sceneObject);
     }
 

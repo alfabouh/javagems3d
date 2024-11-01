@@ -14,7 +14,7 @@ package javagems3d.graphics.opengl.rendering.scene.render_base.groups.forward;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
@@ -31,8 +31,8 @@ public class SkyBoxBackgroundRender extends SceneRenderBase {
     }
     public void renderSkyBoxBackground(FrameTicking frameTicking) {
         GL30.glDisable(GL30.GL_BLEND);
-        for (IModeledSceneObject iModeledSceneObject : this.getSkyBox().getBackground().getToRenderSet()) {
-            iModeledSceneObject.renderFabric().onRender(frameTicking, this, iModeledSceneObject);
+        for (AbstractSceneObject abstractSceneObject : this.getSkyBox().getBackground().getToRenderSet()) {
+            abstractSceneObject.renderFabric().onRender(frameTicking, this, abstractSceneObject);
         }
     }
 

@@ -11,12 +11,12 @@
 
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.forward;
 
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
-import javagems3d.system.resources.assets.shaders.base.RenderPass;
+import javagems3d.system.resources.assets.shaders.RenderPass;
 
 import java.util.Set;
 
@@ -37,8 +37,8 @@ public class WorldForwardRender extends SceneRenderBase {
         super.onStopRender();
     }
 
-    private void render(FrameTicking frameTicking, Set<IModeledSceneObject> renderObjects) {
-        for (IModeledSceneObject entityItem : renderObjects) {
+    private void render(FrameTicking frameTicking, Set<AbstractSceneObject> renderObjects) {
+        for (AbstractSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {
                     entityItem.getMeshRenderData().getShaderManager().bind();

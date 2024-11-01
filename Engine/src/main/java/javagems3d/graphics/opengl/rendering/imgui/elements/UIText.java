@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.imgui.elements;
 
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
 import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
@@ -26,7 +27,7 @@ import javagems3d.graphics.opengl.rendering.imgui.elements.base.UIElement;
 import javagems3d.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -54,8 +55,8 @@ public class UIText extends UIElement {
         shaderManager.getUtils().performOrthographicMatrix(this.textModel.getModel());
         GL30.glActiveTexture(GL13.GL_TEXTURE0);
         this.getFontTexture().getTexture().bindTexture();
-        shaderManager.performUniform(new UniformString("texture_sampler"), 0);
-        shaderManager.performUniform(new UniformString("colour"), new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f));
+        shaderManager.performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
+        shaderManager.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsSceneUtils.renderModel(this.textModel.getModel(), GL30.GL_TRIANGLES);
         shaderManager.unBind();
     }

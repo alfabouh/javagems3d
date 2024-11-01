@@ -12,6 +12,8 @@
 package javagems3d.graphics.opengl.environment.shadow;
 
 import javagems3d.graphics.opengl.environment.Environment;
+import javagems3d.graphics.opengl.rendering.items.IAnimated;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;
@@ -23,7 +25,7 @@ import javagems3d.graphics.opengl.environment.light.PointLight;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.items.IModeledSceneObject;
+import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.opengl.rendering.scene.JGemsScene;
@@ -35,7 +37,7 @@ import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.properties.ModelRenderProperties;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -219,11 +221,11 @@ public class ShadowManager implements IShadowScene {
         return JGemsSceneGlobalConstants.Z_FAR;
     }
 
-    public void renderAllModelsInShadowMap(Set<IModeledSceneObject> modeledSceneObjectSet) {
+    public void renderAllModelsInShadowMap(Set<AbstractSceneObject> modeledSceneObjectSet) {
         this.renderSceneInShadowMap(modeledSceneObjectSet);
     }
 
-    public void renderSceneInShadowMap(Set<IModeledSceneObject> modeledSceneObjectSet) {
+    public void renderSceneInShadowMap(Set<AbstractSceneObject> modeledSceneObjectSet) {
         if (!JGemsSceneGlobalConstants.USE_SHADOWS || JGemsDebugGlobalConstants.FULL_BRIGHT) {
             GL30.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.getShadowPostFBO().bindFBO();
@@ -248,7 +250,7 @@ public class ShadowManager implements IShadowScene {
         }
 
         this.updateCascadeShadows(this.getCascadeShadows());
-        Set<IModeledSceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.getMeshRenderData().getRenderAttributes().isShadowCaster()).collect(Collectors.toSet());
+        Set<AbstractSceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.getMeshRenderData().getRenderAttributes().isShadowCaster()).collect(Collectors.toSet());
         boolean oldV = GL30.glIsEnabled(GL30.GL_CULL_FACE);
         if (JGemsSceneGlobalConstants.DRAW_BACK_FACES_FOR_SHADOWS) {
             GL30.glDisable(GL30.GL_CULL_FACE);
@@ -260,10 +262,10 @@ public class ShadowManager implements IShadowScene {
         }
     }
 
-    private void sunScene(Set<IModeledSceneObject> modeledSceneObjectSet) {
+    private void sunScene(Set<AbstractSceneObject> modeledSceneObjectSet) {
         this.getSunShadowShader().bind();
-        this.getSunShadowShader().performUniformNoWarn(new UniformString("PosExp"), JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT);
-        this.getSunShadowShader().performUniformNoWarn(new UniformString("NegExp"), JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT);
+        this.getSunShadowShader().performUniformNoWarn(new UniformString("PosExp"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT));
+        this.getSunShadowShader().performUniformNoWarn(new UniformString("NegExp"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT));
         this.getShadowFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
@@ -272,14 +274,14 @@ public class ShadowManager implements IShadowScene {
             this.getShadowFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
             GL30.glClearColor(JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.x, JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.y, JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.x * JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.x, JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.y * JGemsSceneGlobalConstants.NEUTRAL_SHADOWS.y);
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
-            this.getSunShadowShader().performUniform(new UniformString("projection_view_matrix"), new Matrix4f(cascadeShadow.getLightProjectionViewMatrix()));
-            for (IModeledSceneObject modeledSceneObject : modeledSceneObjectSet) {
+            this.getSunShadowShader().performUniform(new UniformString("projection_view_matrix"), DefaultUniformActions.MAT4F(new Matrix4f(cascadeShadow.getLightProjectionViewMatrix())));
+            for (AbstractSceneObject modeledSceneObject : modeledSceneObjectSet) {
                 Model<Format3D> model = modeledSceneObject.getModel();
-                if (model == null || model.getMeshDataGroup() == null) {
+                if (model == null || model.getMeshGroup() == null) {
                     continue;
                 }
                 this.getSunShadowShader().getUtils().performModel3DMatrix(model);
-                this.renderModelForShadow(this.getSunShadowShader(), modeledSceneObject.getMeshRenderData().getRenderAttributes(), model);
+                this.renderModelForShadow(modeledSceneObject, this.getSunShadowShader(), modeledSceneObject.getMeshRenderData().getRenderAttributes(), model);
             }
             GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
@@ -290,12 +292,12 @@ public class ShadowManager implements IShadowScene {
         this.getShadowPostFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
         shaderManager.bind();
-        shaderManager.performUniform(new UniformString("projection_model_matrix"), Transformation.getModelOrthographicMatrix(this.sunPostModel.getFormat(), Transformation.getOrthographic2DMatrix(0, this.getShadowDim().x, this.getShadowDim().y, 0)));
+        shaderManager.performUniform(new UniformString("projection_model_matrix"), DefaultUniformActions.MAT4F(Transformation.getModelOrthographicMatrix(this.sunPostModel.getFormat(), Transformation.getOrthographic2DMatrix(0, this.getShadowDim().x, this.getShadowDim().y, 0))));
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
         for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
             GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT);
             this.getShadowPostFBO().connectTextureToBuffer(GL30.GL_COLOR_ATTACHMENT0, i);
-            shaderManager.performUniform(new UniformString("blur"), 1.0f);
+            shaderManager.performUniform(new UniformString("blur"), DefaultUniformActions.FLOAT(1.0f));
             shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.getShadowFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
             JGemsSceneUtils.renderModel(this.sunPostModel, GL30.GL_TRIANGLES);
         }
@@ -303,7 +305,7 @@ public class ShadowManager implements IShadowScene {
         this.getShadowPostFBO().unBindFBO();
     }
 
-    private void pointLightsScene(Set<IModeledSceneObject> modeledSceneObjectSet) {
+    private void pointLightsScene(Set<AbstractSceneObject> modeledSceneObjectSet) {
         this.getPointLightShadowShader().bind();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
@@ -316,16 +318,16 @@ public class ShadowManager implements IShadowScene {
                     pointLightShadow.getPointLightCubeMap().connectCubeMapToBuffer(GL30.GL_COLOR_ATTACHMENT0, j);
                     GL30.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
                     GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_COLOR_BUFFER_BIT);
-                    this.getPointLightShadowShader().performUniform(new UniformString("view_matrix"), pointLightShadow.getShadowDirections().get(j));
-                    this.getPointLightShadowShader().performUniform(new UniformString("far_plane"), pointLightShadow.farPlane());
-                    this.getPointLightShadowShader().performUniform(new UniformString("lightPos"), pointLightShadow.getPointLight().getLightPos());
-                    for (IModeledSceneObject modeledSceneObject : modeledSceneObjectSet) {
+                    this.getPointLightShadowShader().performUniform(new UniformString("view_matrix"), DefaultUniformActions.MAT4F(pointLightShadow.getShadowDirections().get(j)));
+                    this.getPointLightShadowShader().performUniform(new UniformString("far_plane"), DefaultUniformActions.FLOAT(pointLightShadow.farPlane()));
+                    this.getPointLightShadowShader().performUniform(new UniformString("lightPos"), DefaultUniformActions.VEC3F(pointLightShadow.getPointLight().getLightPos()));
+                    for (AbstractSceneObject modeledSceneObject : modeledSceneObjectSet) {
                         Model<Format3D> model = modeledSceneObject.getModel();
-                        if (model == null || model.getMeshDataGroup() == null) {
+                        if (model == null || model.getMeshGroup() == null) {
                             continue;
                         }
                         this.getPointLightShadowShader().getUtils().performModel3DMatrix(model);
-                        this.renderModelForShadow(this.getPointLightShadowShader(), modeledSceneObject.getMeshRenderData().getRenderAttributes(), model);
+                        this.renderModelForShadow(modeledSceneObject, this.getPointLightShadowShader(), modeledSceneObject.getMeshRenderData().getRenderAttributes(), model);
                     }
                     GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 }
@@ -335,21 +337,22 @@ public class ShadowManager implements IShadowScene {
         this.getPointLightShadowShader().unBind();
     }
 
-    private void renderModelForShadow(JGemsShaderManager shaderManager, ModelRenderProperties modelRenderProperties, Model<?> model) {
-        shaderManager.performUniform(new UniformString("alpha_discard"), JGemsSceneGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT);
+    private void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, ModelRenderProperties modelRenderProperties, Model<?> model) {
+        shaderManager.performUniform(new UniformString("alpha_discard"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
+        shaderManager.getUtils().performAnimationsInfo(animated);
         float alphaValue = modelRenderProperties.getObjectOpacity();
-        for (MeshGroup.Node meshNode : model.getMeshDataGroup().getModelNodeList()) {
+        for (MeshGroup.Node meshNode : model.getMeshGroup().getModelNodeList()) {
             if (meshNode.getMaterial().getDiffuse() instanceof ITextureSample) {
-                shaderManager.performUniform(new UniformString("texture_sampler"), 0);
+                shaderManager.performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
                 GL30.glActiveTexture(GL30.GL_TEXTURE0);
                 ((ITextureSample) meshNode.getMaterial().getDiffuse()).bindTexture();
-                shaderManager.performUniform(new UniformString("use_texture"), true);
+                shaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(true));
             } else {
                 if (meshNode.getMaterial().getDiffuse() instanceof ColorSample) {
                     ColorSample colorSample = (ColorSample) meshNode.getMaterial().getDiffuse();
                     alphaValue *= colorSample.getColor().w;
                 }
-                shaderManager.performUniform(new UniformString("use_texture"), false);
+                shaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(false));
             }
             if (alphaValue * meshNode.getMaterial().getFullOpacity() <= JGemsSceneGlobalConstants.MAX_ALPHA_TO_CULL_SHADOW) {
                 continue;

@@ -56,7 +56,7 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         Vector3f scale = attributesContainer.getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         Boolean isProp = attributesContainer.getValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
 
-        MeshGroup meshGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel(), true);
+        MeshGroup meshGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel(), true, false);
         JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
 
         if (isProp != null && (isProp)) {

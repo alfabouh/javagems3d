@@ -33,7 +33,7 @@ public final class LiquidObject implements ICulled {
         this.textureScaling = new Vector2f(1.0f);
         this.model = this.constructModel(iLiquid);
 
-        JGemsHelper.UTILS.createMeshRenderAABBData(this.model.getMeshDataGroup());
+        this.model.getMeshGroup().createRenderAABB();
     }
 
     private Model<Format3D> constructModel(Liquid liquid) {

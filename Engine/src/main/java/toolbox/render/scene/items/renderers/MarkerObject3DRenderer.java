@@ -11,10 +11,11 @@
 
 package toolbox.render.scene.items.renderers;
 
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
 import toolbox.render.scene.items.objects.base.TBoxAbstractObject;
@@ -26,13 +27,13 @@ public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
         tBoxAbstractObject.getRenderData().getShaderManager().bind();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"), false);
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), tBoxAbstractObject.isSelected());
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"), DefaultUniformActions.BOOLEAN(false));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(tBoxAbstractObject.isSelected()));
         Vector3f color = tBoxAbstractObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
         if (color == null) {
             color = new Vector3f(1.0f);
         }
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), new Vector4f(color, 1.0f));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), DefaultUniformActions.VEC4F(new Vector4f(color, 1.0f)));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().unBind();
     }

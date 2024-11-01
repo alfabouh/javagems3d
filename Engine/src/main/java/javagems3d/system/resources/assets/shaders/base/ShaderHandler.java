@@ -11,12 +11,15 @@
 
 package javagems3d.system.resources.assets.shaders.base;
 
+import javagems3d.system.resources.assets.shaders.uniform.Uniform;
+import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.programs.shaders.IShaderProgram;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifroms.UniformBufferProgram;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifroms.UniformProgram;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformBufferProgram;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformProgram;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,9 +72,8 @@ public class ShaderHandler {
                         this.tryCreateUniform(this.getUniformProgram(), new UniformString(uniform.getId(), i));
                     }
                 }
-            } else {
-                this.tryCreateUniform(this.getUniformProgram(), new UniformString(uniform.getId()));
             }
+            this.tryCreateUniform(this.getUniformProgram(), new UniformString(uniform.getId()));
         }
     }
 

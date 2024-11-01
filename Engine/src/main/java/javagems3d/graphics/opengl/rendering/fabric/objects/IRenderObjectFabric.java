@@ -11,14 +11,14 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.objects;
 
-import javagems3d.graphics.opengl.rendering.items.IRenderObject;
+import javagems3d.graphics.opengl.rendering.items.IRendered;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 
 public interface IRenderObjectFabric {
-    void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRenderObject renderItem);
+    void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRendered renderItem);
 
-    void onPreRender(IRenderObject renderItem);
+    void onPreRender(IRendered renderItem);
 
-    void onPostRender(IRenderObject renderItem);
+    void onPostRender(IRendered renderItem);
 }

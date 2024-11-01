@@ -28,7 +28,7 @@ public final class LocalCollision {
     private AABB aabb;
 
     public LocalCollision(Model<Format3D> model) {
-        this.meshGroup = model.getMeshDataGroup();
+        this.meshGroup = model.getMeshGroup();
         this.calcAABB(model.getFormat());
     }
 

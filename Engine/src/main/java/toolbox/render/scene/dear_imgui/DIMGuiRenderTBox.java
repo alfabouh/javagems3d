@@ -14,6 +14,7 @@ package toolbox.render.scene.dear_imgui;
 import imgui.*;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -22,7 +23,7 @@ import org.lwjgl.opengl.GL30;
 import javagems3d.graphics.opengl.dear_imgui.DIMGuiMesh;
 import javagems3d.graphics.opengl.screen.window.IWindow;
 import javagems3d.system.controller.objects.MouseKeyboardController;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.cache.ResourceCache;
 import toolbox.ToolBox;
 import toolbox.controller.TBoxControllerDispatcher;
@@ -130,8 +131,8 @@ public class DIMGuiRenderTBox {
         io.getDisplaySize(dSize);
 
         this.getShaderManager().bind();
-        this.getShaderManager().performUniform(new UniformString("scale"), new Vector2f(2.0f / dSize.x, -2.0f / dSize.y));
-        this.getShaderManager().performUniform(new UniformString("texture_sampler"), 0);
+        this.getShaderManager().performUniform(new UniformString("scale"), DefaultUniformActions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
+        this.getShaderManager().performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
 
         GL30.glEnable(GL30.GL_BLEND);
         GL30.glBlendEquation(GL30.GL_FUNC_ADD);

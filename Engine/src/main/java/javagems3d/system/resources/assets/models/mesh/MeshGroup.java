@@ -11,7 +11,11 @@
 
 package javagems3d.system.resources.assets.models.mesh;
 
+import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.models.animation.Animation;
+import javagems3d.system.resources.assets.models.animation.AnimationData;
+import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
 import javagems3d.system.resources.assets.models.mesh.data.IMeshUserData;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -28,7 +32,10 @@ public class MeshGroup implements ICached {
     private final List<Node> meshNodeList;
     private final Map<String, IMeshUserData> meshUserData;
 
+    private final List<Animation> animationList;
+
     public MeshGroup() {
+        this.animationList = new ArrayList<>();
         this.meshNodeList = new ArrayList<>();
         this.meshUserData = new HashMap<>();
     }
@@ -42,8 +49,26 @@ public class MeshGroup implements ICached {
         this(new Node(mesh));
     }
 
+    public void createRenderAABB() {
+        this.createRenderAABB(DefaultPointers.POSITIONS.getIndex());
+    }
+
+    public void createRenderAABB(int positionAttributeIndex) {
+        JGemsHelper.UTILS.createMeshRenderAABBData(this, positionAttributeIndex);
+    }
+
     public void putNode(Node meshNode) {
         this.meshNodeList.add(meshNode);
+    }
+
+    public MeshGroup loadAnimations(List<Animation> animations) {
+        this.getAnimationList().clear();
+        this.getAnimationList().addAll(animations);
+        return this;
+    }
+
+    public int getAnimationsNum() {
+        return this.getAnimationList().size();
     }
 
     @SuppressWarnings("all")
@@ -60,10 +85,6 @@ public class MeshGroup implements ICached {
             return (T) this.getMeshUserData(key);
         }
         return null;
-    }
-
-    public List<Node> getModelNodeList() {
-        return this.meshNodeList;
     }
 
     public IMeshUserData getMeshUserData(String key) {
@@ -83,6 +104,14 @@ public class MeshGroup implements ICached {
     @Override
     public void onCleaningCache(ResourceCache resourceCache) {
         this.clean();
+    }
+
+    public List<Animation> getAnimationList() {
+        return this.animationList;
+    }
+
+    public List<Node> getModelNodeList() {
+        return this.meshNodeList;
     }
 
     public static class Node {

@@ -15,16 +15,20 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.opengl.environment.Environment;
 import javagems3d.graphics.opengl.environment.light.LightManager;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
+import javagems3d.graphics.opengl.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
-import javagems3d.system.resources.assets.shaders.base.RenderPass;
+import javagems3d.system.resources.assets.models.ModelLoader;
+import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
-import javagems3d.system.resources.assets.shaders.base.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
+import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
 public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
+    public ShaderStorageBufferObject Bones;
     public UniformBufferObject SunLight;
     public UniformBufferObject PointLights;
     public UniformBufferObject Misc;
@@ -64,6 +68,9 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
 
     protected void initObjects(ResourceCache resourceCache) {
         this.addShaderLibraryContainerInGlobalList(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
+
+        this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * ModelLoader.ANIM_MAX_BONES);
+        ShaderStorageBufferProgram.createSSBO(this.Bones);
 
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
         this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);

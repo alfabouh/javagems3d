@@ -1,4 +1,4 @@
-package javagems3d.system.resources.assets.shaders.base;
+package javagems3d.system.resources.assets.shaders;
 
 public enum ShaderType {
     FRAGMENT("fragment.frag"),

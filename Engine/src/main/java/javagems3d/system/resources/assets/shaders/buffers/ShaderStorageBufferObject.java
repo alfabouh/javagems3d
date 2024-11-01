@@ -9,25 +9,24 @@
  *
  */
 
-package javagems3d.system.resources.assets.shaders.base;
+package javagems3d.system.resources.assets.shaders.buffers;
 
-public class UniformBufferObject {
-    private final String id;
+public final class ShaderStorageBufferObject {
     private final int binding;
     private final int bufferSize;
 
-    public UniformBufferObject(String id, int binding, int bufferSize) {
-        this.id = id;
+    public ShaderStorageBufferObject(int binding, int bufferSize) {
         this.binding = binding;
         this.bufferSize = bufferSize;
     }
 
-    public int getBufferSize() {
-        return this.bufferSize;
+    @Override
+    public int hashCode() {
+        return this.getBinding();
     }
 
-    public String getId() {
-        return this.id;
+    public int getBufferSize() {
+        return this.bufferSize;
     }
 
     public int getBinding() {

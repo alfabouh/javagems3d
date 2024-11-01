@@ -6,4 +6,7 @@ public abstract class DefaultPointers {
     public static final AttributePointer NORMALS = new AttributePointer(2, 3);
     public static final AttributePointer TANGENTS = new AttributePointer(3, 2);
     public static final AttributePointer BI_TANGENTS = new AttributePointer(4, 3);
+
+    public static final AttributePointer BONE_INDEXES = new AttributePointer(5, 4);
+    public static final AttributePointer BONE_WEIGHTS = new AttributePointer(6, 4);
 }

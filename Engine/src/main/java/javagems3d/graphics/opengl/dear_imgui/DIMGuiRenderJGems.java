@@ -16,6 +16,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.physics.world.basic.WorldItem;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -39,7 +40,7 @@ import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -142,8 +143,8 @@ public class DIMGuiRenderJGems {
             io.getDisplaySize(dSize);
 
             this.getShaderManager().bind();
-            this.getShaderManager().performUniform(new UniformString("scale"), new Vector2f(2.0f / dSize.x, -2.0f / dSize.y));
-            this.getShaderManager().performUniform(new UniformString("texture_sampler"), 0);
+            this.getShaderManager().performUniform(new UniformString("scale"), DefaultUniformActions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
+            this.getShaderManager().performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
 
             GL30.glEnable(GL30.GL_BLEND);
             GL30.glBlendEquation(GL30.GL_FUNC_ADD);

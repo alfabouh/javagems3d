@@ -121,7 +121,7 @@ public class TBoxMapLoader implements IMapLoader {
                         Vector3f color = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
 
                         PointLight pointLight = new PointLight();
-                        pointLight.setLightPos(pos);
+                        pointLight.setPosition(pos);
                         pointLight.setBrightness(brightness);
                         pointLight.setLightColor(color);
 

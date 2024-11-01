@@ -21,12 +21,14 @@ public class ModelAssetsLoader implements IAssetsLoader {
     public MeshGroup cube;
     public MeshGroup ground2;
     public MeshGroup ground3;
+    public MeshGroup test_anim;
 
     @Override
     public void load(GameResources gameResources) {
-        this.cube = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "cube/cube.obj"), true, true);
-        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true, true);
-        this.ground3 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map05/map05.obj"), true, true);
+        this.cube = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "cube/cube.obj"), true, true, false);
+        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true, true, false);
+        this.ground3 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map05/map05.obj"), true, true, false);
+        this.test_anim = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "test_anim/boblamp.md5mesh"), true, true, true);
     }
 
     @Override

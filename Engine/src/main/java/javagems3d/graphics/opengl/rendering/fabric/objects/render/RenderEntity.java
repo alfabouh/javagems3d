@@ -13,7 +13,7 @@ package javagems3d.graphics.opengl.rendering.fabric.objects.render;
 
 import org.lwjgl.opengl.GL30;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.items.IRenderObject;
+import javagems3d.graphics.opengl.rendering.items.IRendered;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
@@ -30,7 +30,7 @@ public class RenderEntity extends RenderWorldItem {
     }
 
     @Override
-    public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRenderObject renderItem) {
+    public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRendered renderItem) {
         AbstractSceneEntity entityObject = (AbstractSceneEntity) renderItem;
         GL30.glClearStencil(0);
         GL30.glClear(GL30.GL_STENCIL_BUFFER_BIT);

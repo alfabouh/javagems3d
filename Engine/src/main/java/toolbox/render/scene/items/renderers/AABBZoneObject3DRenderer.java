@@ -11,10 +11,11 @@
 
 package toolbox.render.scene.items.renderers;
 
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL30;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
 import toolbox.render.scene.dear_imgui.content.EditorContent;
@@ -27,18 +28,18 @@ public class AABBZoneObject3DRenderer implements ITBoxObjectRenderer {
         tBoxAbstractObject.getRenderData().getShaderManager().bind();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), tBoxAbstractObject.isSelected());
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(tBoxAbstractObject.isSelected()));
         Vector3f color = tBoxAbstractObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
         if (color == null) {
             color = new Vector3f(1.0f);
         }
 
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("showFog"), EditorContent.sceneShowFog && properties.getFogProp().isFogEnabled());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("sunBright"), properties.getSkyProp().getSunBrightness());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogDensity"), properties.getFogProp().getFogDensity());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogColor"), properties.getFogProp().getFogColor());
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("showFog"), DefaultUniformActions.BOOLEAN(EditorContent.sceneShowFog && properties.getFogProp().isFogEnabled()));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("sunBright"), DefaultUniformActions.FLOAT(properties.getSkyProp().getSunBrightness()));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogDensity"), DefaultUniformActions.FLOAT(properties.getFogProp().getFogDensity()));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogColor"), DefaultUniformActions.VEC3F(properties.getFogProp().getFogColor()));
 
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("colour"), new Vector4f(color, 1.0f));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(color, 1.0f)));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().unBind();
     }

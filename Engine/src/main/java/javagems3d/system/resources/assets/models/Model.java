@@ -27,12 +27,12 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
     @SuppressWarnings("unchecked")
     public Model(Model<?> model) {
         this.format = (T) model.getFormat().copy();
-        this.meshGroup = model.getMeshDataGroup();
+        this.meshGroup = model.getMeshGroup();
     }
 
     public Model(Model<?> model, T format) {
         this.format = format;
-        this.meshGroup = model.getMeshDataGroup();
+        this.meshGroup = model.getMeshGroup();
     }
 
     public Model(@NotNull T t, MeshGroup meshGroup) {
@@ -62,32 +62,32 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
         this.meshGroup = null;
     }
 
-    public boolean isValid() {
-        return this.getMeshDataGroup() != null;
-    }
-
-    public MeshGroup getMeshDataGroup() {
-        return this.meshGroup;
-    }
-
-    public int totalMeshGroups() {
-        return this.getMeshDataGroup().getModelNodeList().size();
-    }
-
-    public T getFormat() {
-        return this.format;
-    }
-
     public void clean() {
-        if (this.getMeshDataGroup() == null) {
+        if (this.getMeshGroup() == null) {
             return;
         }
-        this.getMeshDataGroup().clean();
+        this.getMeshGroup().clean();
         this.meshGroup = null;
     }
 
     @Override
     public void close() {
         this.clean();
+    }
+
+    public boolean isValid() {
+        return this.getMeshGroup() != null;
+    }
+
+    public MeshGroup getMeshGroup() {
+        return this.meshGroup;
+    }
+
+    public int totalMeshGroups() {
+        return this.getMeshGroup().getModelNodeList().size();
+    }
+
+    public T getFormat() {
+        return this.format;
     }
 }

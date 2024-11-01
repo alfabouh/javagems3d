@@ -92,7 +92,7 @@ public abstract class Light implements IWorldTicked {
         return new Vector3f(this.lightPos).add(this.getOffset());
     }
 
-    public Light setLightPos(Vector3f lightPos) {
+    public Light setPosition(Vector3f lightPos) {
         this.lightPos.set(lightPos);
         return this;
     }

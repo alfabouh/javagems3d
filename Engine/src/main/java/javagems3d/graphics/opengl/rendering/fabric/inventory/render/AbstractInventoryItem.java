@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import javagems3d.JGems3D;
@@ -23,7 +24,7 @@ import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.MeshGroup;
-import javagems3d.system.resources.assets.shaders.base.UniformString;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
@@ -39,7 +40,7 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
     public void preRender(SceneRenderBase sceneRenderBase, javagems3d.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
         GL30.glDepthFunc(GL30.GL_ALWAYS);
         inventoryItemRenderData.getShaderManager().bind();
-        inventoryItemRenderData.getShaderManager().performUniform(new UniformString("projection_matrix"), Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f));
+        inventoryItemRenderData.getShaderManager().performUniform(new UniformString("projection_matrix"), DefaultUniformActions.MAT4F(Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f)));
     }
 
     @Override
