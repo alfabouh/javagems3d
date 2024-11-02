@@ -63,8 +63,8 @@ public final class SpeedProfiler {
         }
 
         public Section profile(String name) {
-           // Section section = new Section();
-           // this.sectionMap.put(name, section);
+            Section section = new Section();
+            this.sectionMap.put(name, section);
             return null;
         }
 
