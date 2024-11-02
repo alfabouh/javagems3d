@@ -26,7 +26,7 @@ public final class SpeedProfiler {
             return SpeedProfiler.INSTANCE.groupMap.get(name);
         }
         Group group = new Group();
-        //SpeedProfiler.INSTANCE.groupMap.put(name, group);
+        SpeedProfiler.INSTANCE.groupMap.put(name, group);
         return group;
     }
 
