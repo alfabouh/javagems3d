@@ -26,7 +26,7 @@ public final class SpeedProfiler {
             return SpeedProfiler.INSTANCE.groupMap.get(name);
         }
         Group group = new Group();
-        SpeedProfiler.INSTANCE.groupMap.put(name, group);
+        //SpeedProfiler.INSTANCE.groupMap.put(name, group);
         return group;
     }
 
@@ -63,9 +63,9 @@ public final class SpeedProfiler {
         }
 
         public Section profile(String name) {
-            Section section = new Section();
-            this.sectionMap.put(name, section);
-            return section;
+           // Section section = new Section();
+           // this.sectionMap.put(name, section);
+            return null;
         }
 
         public void close(String name) {

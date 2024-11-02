@@ -125,19 +125,18 @@ public class Mesh implements IMesh {
 
     @Override
     public void cleanMesh() {
-        this.vboMap.clear();
-        this.vertexAttributesMap.clear();
-        this.getVertexIndexes().clear();
-
         for (VertexAttribute<?> v : this.vertexAttributesMap.values()) {
             v.clearData();
         }
-
-        GL30.glDeleteBuffers(this.getVertexIndexesIBO());
         for (int a : this.vboMap.values()) {
             GL30.glDeleteBuffers(a);
         }
 
+        this.vboMap.clear();
+        this.vertexAttributesMap.clear();
+
+        this.getVertexIndexes().clear();
+        GL30.glDeleteBuffers(this.getVertexIndexesIBO());
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
         GL30.glDeleteVertexArrays(this.getVao());
