@@ -12,7 +12,11 @@
 package javagems3d.graphics.opengl.rendering.scene;
 
 import javagems3d.graphics.opengl.camera.ICamera;
+import javagems3d.graphics.opengl.dear_imgui.interfaces.DIMInGameInterface;
+import javagems3d.graphics.opengl.dear_imgui.interfaces.DIMInMenuInterface;
+import javagems3d.graphics.opengl.dear_imgui.interfaces.DIMInterface;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.system.profiler.SpeedProfiler;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -65,6 +69,9 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class JGemsOpenGLRenderer implements ISceneRenderer {
+    public static DIMInterface inGameInterface;
+    public static DIMInterface inMenuInterface;
+
     private final SceneData sceneData;
     private final SceneRenderBaseContainer sceneRenderBaseContainer;
     private final DIMGuiRenderJGems dearImGuiRender;
@@ -90,6 +97,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private Model<Format2D> screenModel;
 
     public JGemsOpenGLRenderer(Window window, SceneData sceneData) {
+        JGemsOpenGLRenderer.inGameInterface = new DIMInGameInterface();
+        JGemsOpenGLRenderer.inMenuInterface = new DIMInMenuInterface();
+
         this.fboSet = new HashSet<>();
 
         this.sceneData = sceneData;
@@ -392,37 +402,55 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     //section onRender
     @Override
     public void onRender(FrameTicking frameTicking, Vector2i windowSize) {
-        JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGemsHelper.getScreen().getRenderTicks()});
-        if (!APIEventsLauncher.pushEvent(new Events.RenderScenePre(frameTicking, windowSize, this)).isCancelled()) {
-            if (this.getSceneData().getCamera() == null) {
-                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
-                this.takeScreenShotIfNeeded(windowSize);
-                return;
-            }
-            if (JGems3D.get().isPaused()) {
-                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
-            } else {
-                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
-                this.getSceneData().getSceneWorld().getEnvironment().updateEnvironment(this.getSceneData().getSceneWorld(), this.getSceneData().getCamera());
-                JGems3D.get().getScreen().normalizeViewPort();
-                this.renderForwardAndDeferredScenes(frameTicking, windowSize, this.screenModel);
-                this.renderTransparentObjects(frameTicking, windowSize);
-                this.sceneGluing(this.screenModel);
-                this.blurBloomBuffer(this.screenModel, windowSize);
-                this.screenBloomHDRCorrection(this.screenModel);
-                this.postFXAA(this.screenModel, windowSize);
-                this.postProcessing(frameTicking, windowSize);
-                this.renderFinalSceneInMainBuffer(this.screenModel);
+        try (SpeedProfiler.Section f = SpeedProfiler.getGroup("#onRender").profile("prof1")) {
+            JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGemsHelper.getScreen().getRenderTicks()});
+            if (!APIEventsLauncher.pushEvent(new Events.RenderScenePre(frameTicking, windowSize, this)).isCancelled()) {
+                if (this.getSceneData().getCamera() == null) {
+                    GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                    SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
+                    this.takeScreenShotIfNeeded(windowSize);
+                    this.getDearImGuiRender().onRender(JGemsOpenGLRenderer.inMenuInterface, windowSize, frameTicking);
+                    return;
+                }
+                if (JGems3D.get().isPaused()) {
+                    GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                    SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
+                } else {
+                    GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
+                    this.getSceneData().getSceneWorld().getEnvironment().updateEnvironment(this.getSceneData().getSceneWorld(), this.getSceneData().getCamera());
+                    JGems3D.get().getScreen().normalizeViewPort();
+                    this.renderForwardAndDeferredScenes(frameTicking, windowSize, this.screenModel);
 
-                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getInventoryRenderSet());
-                SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
+                    try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("transparency")) {
+                        this.renderTransparentObjects(frameTicking, windowSize);
+                    }
+                    try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("gluing")) {
+                        this.sceneGluing(this.screenModel);
+                    }
+                    try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("blur_bloom")) {
+                        this.blurBloomBuffer(this.screenModel, windowSize);
+                    }
+                    try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("hdr")) {
+                        this.screenBloomHDRCorrection(this.screenModel);
+                    }
+                    try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("fxaa")) {
+                        this.postFXAA(this.screenModel, windowSize);
+                    }
+                    try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("post")) {
+                        this.postProcessing(frameTicking, windowSize);
+                    }
+                    try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("final")) {
+                        this.renderFinalSceneInMainBuffer(this.screenModel);
+                    }
+
+                    SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getInventoryRenderSet());
+                    SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
+                }
             }
+            APIEventsLauncher.pushEvent(new Events.RenderScenePost(frameTicking, windowSize, this));
+            this.takeScreenShotIfNeeded(windowSize);
         }
-        APIEventsLauncher.pushEvent(new Events.RenderScenePost(frameTicking, windowSize, this));
-        this.getDearImGuiRender().onRender(windowSize, frameTicking);
-        this.takeScreenShotIfNeeded(windowSize);
+        this.getDearImGuiRender().onRender(JGemsOpenGLRenderer.inGameInterface, windowSize, frameTicking);
     }
 
     // section Post
@@ -447,31 +475,41 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     //section RenderForwardDeferred
     public void renderForwardAndDeferredScenes(FrameTicking frameTicking, Vector2i windowSize, Model<Format2D> model) {
-        this.deferredGeometry(frameTicking);
-
-        if (this.getSsaoNoiseTexture() != null) {
-            GL30.glDisable(GL30.GL_DEPTH_TEST);
-            this.calcSSAOValueOnGBuffer(model, windowSize);
-            GL30.glEnable(GL30.GL_DEPTH_TEST);
+        try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("g_buffer")) {
+            this.deferredGeometry(frameTicking);
         }
 
-        this.getForwardAndDeferredScenesBuffer().bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-        this.deferredLighting(model);
-        this.getForwardAndDeferredScenesBuffer().unBindFBO();
+        if (this.getSsaoNoiseTexture() != null) {
+            try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("ssao_buffer")) {
+                GL30.glDisable(GL30.GL_DEPTH_TEST);
+                this.calcSSAOValueOnGBuffer(model, windowSize);
+                GL30.glEnable(GL30.GL_DEPTH_TEST);
+            }
+        }
+
+        try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("lighting")) {
+            this.getForwardAndDeferredScenesBuffer().bindFBO();
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            this.deferredLighting(model);
+            this.getForwardAndDeferredScenesBuffer().unBindFBO();
+        }
 
         this.getGBuffer().copyFBOtoFBODepth(this.getForwardAndDeferredScenesBuffer().getFrameBufferId(), windowSize);
 
-        GL30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        this.getSkyBoxBackGroundBuffer().bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-        SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getSkyBoxBackgroundRenderSet());
-        this.getSkyBoxBackGroundBuffer().unBindFBO();
-        GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("skybox")) {
+            GL30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            this.getSkyBoxBackGroundBuffer().bindFBO();
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getSkyBoxBackgroundRenderSet());
+            this.getSkyBoxBackGroundBuffer().unBindFBO();
+            GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        }
 
-        this.getForwardAndDeferredScenesBuffer().bindFBO();
-        this.renderForwardScene(frameTicking);
-        this.getForwardAndDeferredScenesBuffer().unBindFBO();
+        try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("forward")) {
+            this.getForwardAndDeferredScenesBuffer().bindFBO();
+            this.renderForwardScene(frameTicking);
+            this.getForwardAndDeferredScenesBuffer().unBindFBO();
+        }
     }
 
     //section DeferredGeom

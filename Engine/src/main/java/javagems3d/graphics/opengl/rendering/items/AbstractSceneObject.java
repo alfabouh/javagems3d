@@ -11,9 +11,9 @@
 
 package javagems3d.graphics.opengl.rendering.items;
 
+import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.frustum.ICulled;
-import javagems3d.graphics.opengl.screen.timer.JGemsTimer;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -22,11 +22,11 @@ import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 
 public abstract class AbstractSceneObject implements IModeled, IRendered, ICulled, ILightsKeeper {
     protected Model<Format3D> model;
-    private final JGemsTimer animationTimer;
+    private double lastTick;
 
     public AbstractSceneObject(Model<Format3D> model) {
         this.setModel(model);
-        this.animationTimer = JGemsHelper.createTimer();
+        this.lastTick = JGems3D.glfwTime();
     }
 
     public AbstractSceneObject() {
@@ -44,8 +44,9 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
             return;
         }
         double fps = 1.0f - this.getAnimationData().getCurrentAnimation().getDuration() / this.getAnimationData().getCurrentAnimation().getFrameCount();
-        if (this.animationTimer.resetTimerAfterReachedSeconds(fps)) {
+        if (JGems3D.glfwTime() - this.lastTick >= fps) {
             this.nextAnimationFrame();
+            this.lastTick = JGems3D.glfwTime();
         }
     }
 

@@ -32,7 +32,7 @@ public interface ILightsKeeper {
 
     @SuppressWarnings("all")
     default boolean removeLightById(int id) {
-        if (this.getLightsList().size() <= id) {
+        if (id >= 0 && id < this.getLightsList().size()) {
             this.removeLight(this.getLightsList().get(id));
             return true;
         }

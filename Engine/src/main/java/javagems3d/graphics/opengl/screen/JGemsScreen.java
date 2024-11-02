@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.screen;
 
+import javagems3d.system.profiler.SpeedProfiler;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -268,6 +269,7 @@ public class JGemsScreen implements IScreen {
                 PhysicsTimer.TPS = 0;
                 fps = 0;
             }
+            SpeedProfiler.clear();
             GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();
         }
