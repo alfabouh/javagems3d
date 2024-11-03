@@ -47,9 +47,6 @@ public class TestPlayer extends JGemsKinematicPlayer {
             if (((TestBindings) JGemsControllerDispatcher.bindingManager()).keyBlock1.isClicked()) {
                 JGemsDynamicBody entityPropInfo = new JGemsDynamicBody(MeshCollider.getDynamic(JGemsResourceManager.globalModelAssets.cube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "jgems_api/horror");
                 JGemsHelper.WORLD.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
-                entityPropInfo.getPhysicsRigidBody().makeStatic(PhysMaterial.createDefaultMaterial());
-                // entityPropInfo.setRotation(new Vector3f((float) Math.toRadians(-90f), 0f, 0.0f));
-                entityPropInfo.setScaling(new Vector3f(0.1f));
                 Vector3f v3 = this.getLookVector().mul(50.0f);
                 entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
             }

@@ -36,7 +36,6 @@ uniform sampler2D gNormals;
 uniform sampler2D gTexture;
 uniform sampler2D gEmission;
 uniform sampler2D gSpecular;
-uniform sampler2D gMetallic;
 uniform sampler2D ssaoSampler;
 
 #include "assets/jgems/shaders/libs/shadows"
@@ -53,7 +52,6 @@ void main()
     vec3 normals = texture(gNormals, out_texture).xyz;
     vec4 g_texture = texture(gTexture, out_texture);
     vec4 emission = vec4(texture(gEmission, out_texture).rgb, 0.0) * vec4(5.);
-    vec4 metallic = texture(gMetallic, out_texture);
 
     float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
     float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
@@ -61,7 +59,7 @@ void main()
 
     vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
 
-    frag_color = (g_texture + vec4(metallic.xyz, 0.)) * (lights + emission);
+    frag_color = g_texture * (lights + emission);
     frag_color = calc_fog(frag_pos.xyz, frag_color);
 
     float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));

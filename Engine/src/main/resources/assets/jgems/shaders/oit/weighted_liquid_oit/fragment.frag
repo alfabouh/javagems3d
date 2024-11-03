@@ -74,7 +74,6 @@ const int light_bright_code = 1 << 3;
 
 const int diffuse_code = 1 << 2;
 const int emission_code = 1 << 3;
-const int metallic_code = 1 << 4;
 const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
 
@@ -84,8 +83,8 @@ uniform sampler2D diffuse_map;
 uniform sampler2D normals_map;
 uniform sampler2D emissive_map;
 uniform sampler2D specular_map;
-uniform sampler2D metallic_map;
 
+uniform float metallic_factor;
 uniform float alpha_factor;
 uniform vec2 texture_scaling;
 
@@ -136,11 +135,10 @@ void main()
     vec3 normals = normalize(checkCode(texturing_code, normals_code) ? calc_normal_map() : mv_vertex_normal);
     vec4 g_texture = checkCode(texturing_code, diffuse_code) ? texture(diffuse_map, getScaledTexture()) : diffuse_color;
     vec4 emission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(emissive_map, getScaledTexture()) : vec4(vec3(0.0), 1.0);
-    vec4 metallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, getScaledTexture()) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
 
     vec4 lights = calc_light(frag_pos, normals);
 
-    vec4 frag_color = (g_texture + vec4(metallic.xyz, 0.)) * (lights + emission);
+    vec4 frag_color = g_texture * (lights + emission);
     frag_color = calc_fog(frag_pos.xyz, frag_color);
     frag_color = vec4(frag_color.xyz, g_texture.a);
 

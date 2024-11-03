@@ -241,7 +241,6 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
             add(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA, GL30.GL_RGBA);
             add(GL30.GL_COLOR_ATTACHMENT3, GL43.GL_RGB, GL30.GL_RGB);
             add(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB);
-            add(GL30.GL_COLOR_ATTACHMENT5, GL43.GL_RGB, GL30.GL_RGB);
         }};
         this.gBuffer.createFrameBuffer2DTexture(new Vector2i(windowSize), gBuffer, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
 
@@ -530,7 +529,6 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         deferredShader.performUniformTexture(new UniformString("gTexture"), this.getGBuffer().getTextureIDByIndex(2), GL30.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("gEmission"), this.getGBuffer().getTextureIDByIndex(3), GL30.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("gSpecular"), this.getGBuffer().getTextureIDByIndex(4), GL30.GL_TEXTURE_2D);
-        deferredShader.performUniformTexture(new UniformString("gMetallic"), this.getGBuffer().getTextureIDByIndex(5), GL30.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("ssaoSampler"), this.getSsaoBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
         deferredShader.performUniform(new UniformString("isSsaoValid"), DefaultUniformActions.BOOLEAN(this.getSsaoBufferTexture() != null));
         deferredShader.getUtils().performShadowsInfo();

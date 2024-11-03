@@ -21,12 +21,14 @@ import javagems3d.system.resources.assets.models.mesh.attributes.pointer.Default
 import javagems3d.system.resources.assets.models.properties.ModelRenderData;
 
 public abstract class AbstractSceneObject implements IModeled, IRendered, ICulled, ILightsKeeper {
+    private float animationSpeed;
     protected Model<Format3D> model;
     private double lastTick;
 
     public AbstractSceneObject(Model<Format3D> model) {
         this.setModel(model);
         this.lastTick = JGems3D.glfwTime();
+        this.animationSpeed = 1.0f;
     }
 
     public AbstractSceneObject() {
@@ -39,12 +41,16 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
         return this;
     }
 
+    public void setAnimationSpeed(float animationSpeed) {
+        this.animationSpeed = animationSpeed;
+    }
+
     public void updateAnimation() {
         if (!this.hasAnimations()) {
             return;
         }
         double fps = 1.0f - this.getAnimationData().getCurrentAnimation().getDuration() / this.getAnimationData().getCurrentAnimation().getFrameCount();
-        if (JGems3D.glfwTime() - this.lastTick >= fps) {
+        if (JGems3D.glfwTime() - this.lastTick >= fps * (1.0f / this.animationSpeedMultiplier())) {
             this.nextAnimationFrame();
             this.lastTick = JGems3D.glfwTime();
         }
@@ -67,6 +73,11 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
 
     public void recreateModelRenderAABB(int positionAttributeIndex) {
         this.getModel().getMeshGroup().createRenderAABB(positionAttributeIndex);
+    }
+
+    @Override
+    public float animationSpeedMultiplier() {
+        return this.animationSpeed;
     }
 
     @Override

@@ -35,7 +35,6 @@ layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gColor;
 layout (location = 3) out vec4 gEmission;
 layout (location = 4) out vec4 gSpecular;
-layout (location = 5) out vec4 gMetallic;
 
 bool checkCode(int i1, int i2) {
     int i3 = i1 & i2;
@@ -76,5 +75,7 @@ void main()
     gColor = diffuse;
     gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? emissive_texture : vec4(vec3(0.0), 1.0);
     gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, texture_coordinates) : vec4(vec3(0.0), 1.0);
-    gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, texture_coordinates) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
+
+    vec4 gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, texture_coordinates) : vec4(0.)) * refract_cubemap(m_vertex_normal, 1.73);
+    gColor += vec4(gMetallic.xyz, 0.0);
 }

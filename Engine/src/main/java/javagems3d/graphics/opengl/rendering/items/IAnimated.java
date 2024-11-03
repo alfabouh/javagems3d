@@ -4,8 +4,11 @@ import javagems3d.system.resources.assets.models.animation.AnimationData;
 
 public interface IAnimated {
     AnimationData getAnimationData();
-    void setAnimationData(AnimationData animationData);
     AnimationData setAnimationByID(int id);
+    void setAnimationData(AnimationData animationData);
+    default float animationSpeedMultiplier() {
+        return 1.0f;
+    }
 
     default void setAnimationDataFrame(int i) {
         this.getAnimationData().setFrame(i);

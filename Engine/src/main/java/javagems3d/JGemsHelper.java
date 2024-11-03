@@ -13,8 +13,10 @@ package javagems3d;
 
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import javagems3d.graphics.opengl.frustum.ICulled;
+import javagems3d.graphics.opengl.rendering.items.IAnimated;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
 import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
@@ -108,6 +110,16 @@ public abstract class JGemsHelper {
 
     public static LoggingManager getLogger() {
         return SystemLogging.get().getLogManager();
+    }
+
+    public static abstract class ANIMATION {
+        public static boolean ifObjectHasAnimations(WorldItem worldItem) {
+            return JGemsHelper.getSceneWorld().ifObjectHasAnimations(worldItem);
+        }
+
+        public static IAnimated getAnimatedObject(WorldItem worldItem) {
+            return JGemsHelper.getSceneWorld().getAnimatedObject(worldItem);
+        }
     }
 
     // section Resources

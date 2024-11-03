@@ -185,7 +185,6 @@ public class DIMInGameInterface implements DIMInterface {
                 ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(4).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
 
-                ImGui.image(sceneRender.getGBuffer().getTexturePrograms().get(5).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.endChild();
             }
 

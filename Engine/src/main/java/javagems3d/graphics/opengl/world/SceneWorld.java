@@ -24,6 +24,7 @@ import javagems3d.graphics.opengl.particles.ParticlesEmitter;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
 import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
+import javagems3d.graphics.opengl.rendering.items.IAnimated;
 import javagems3d.graphics.opengl.rendering.items.ILightsKeeper;
 import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
@@ -314,6 +315,14 @@ public final class SceneWorld implements IWorld {
 
     public ParticlesEmitter getParticlesEmitter() {
         return this.particlesEmitter;
+    }
+
+    public boolean ifObjectHasAnimations(WorldItem worldItem) {
+        return this.getObjectMap().get(worldItem.getItemId()).hasAnimations();
+    }
+
+    public IAnimated getAnimatedObject(WorldItem worldItem) {
+        return this.getObjectMap().get(worldItem.getItemId());
     }
 
     private Map<Integer, AbstractSceneEntity> getObjectMap() {

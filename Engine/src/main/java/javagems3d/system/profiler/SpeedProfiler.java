@@ -18,6 +18,9 @@ public final class SpeedProfiler {
     }
 
     public static void removeGroup(String name) {
+        if (!SpeedProfiler.INSTANCE.groupMap.containsKey(name)) {
+            return;
+        }
         SpeedProfiler.INSTANCE.groupMap.remove(name);
     }
 
@@ -69,10 +72,16 @@ public final class SpeedProfiler {
         }
 
         public void close(String name) {
+            if (!this.sectionMap.containsKey(name)) {
+                return;
+            }
             this.sectionMap.get(name).close();
         }
 
-        public double getResult(String name) {
+        public double getTotalTime(String name) {
+            if (!this.sectionMap.containsKey(name)) {
+                return -1.0f;
+            }
             return this.sectionMap.get(name).getTotalTime();
         }
     }
