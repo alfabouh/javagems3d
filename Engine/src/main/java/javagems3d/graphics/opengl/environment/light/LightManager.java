@@ -143,7 +143,7 @@ public class LightManager implements ILightManager {
     }
 
     public void removeAllLights(MemoryStack stack) {
-        boolean flag = JGemsOpenGLRenderer.getGameUboShader().bind();
+        boolean flag = JGemsOpenGLRenderer.getGameUboShader().beginShading();
         FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
         for (int i = 0; i < this.getPointLightList().size(); i++) {
             value1Buffer.put(0.0f);
@@ -176,7 +176,7 @@ public class LightManager implements ILightManager {
         JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
         this.getPointLightList().clear();
         if (flag) {
-            JGemsOpenGLRenderer.getGameUboShader().unBind();
+            JGemsOpenGLRenderer.getGameUboShader().endShading();
         }
     }
 }

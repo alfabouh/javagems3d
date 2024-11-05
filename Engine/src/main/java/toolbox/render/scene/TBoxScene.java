@@ -179,12 +179,12 @@ public class TBoxScene {
             this.getSceneContainer().renderForward(deltaTime);
             Vector3f v3 = this.getMapProperties().getSkyProp().getSunPos();
             Model<Format3D> modelSun = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(v3.x, v3.y, v3.z).mul(300.0f));
-            TBoxResourceManager.shaderResources().world_lines.bind();
+            TBoxResourceManager.shaderResources().world_lines.beginShading();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
             TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
             TBoxSceneUtils.renderModel(modelSun, GL30.GL_LINES);
-            TBoxResourceManager.shaderResources().world_lines.unBind();
+            TBoxResourceManager.shaderResources().world_lines.endShading();
             modelSun.clean();
             TBoxScene.sceneForwardFbo.unBindFBO();
             GL30.glDisable(GL30.GL_BLEND);
@@ -211,25 +211,25 @@ public class TBoxScene {
 
             try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowDimensions()), 0.5f)) {
                 TBoxShaderManager gluing = TBoxResourceManager.shaderResources().scene_gluing;
-                gluing.bind();
+                gluing.beginShading();
                 gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0).getTextureId(), GL30.GL_TEXTURE_2D);
 
                 gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0).getTextureId(), GL30.GL_TEXTURE_2D);
                 gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1).getTextureId(), GL30.GL_TEXTURE_2D);
                 gluing.getUtils().performOrthographicMatrix(model);
                 JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
-                gluing.unBind();
+                gluing.endShading();
             }
 
             if (editorContent.currentSelectedObject != null) {
                 GL30.glDisable(GL30.GL_DEPTH_TEST);
                 Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
-                TBoxResourceManager.shaderResources().world_lines.bind();
+                TBoxResourceManager.shaderResources().world_lines.beginShading();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
                 TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
                 TBoxSceneUtils.renderModel(model, GL30.GL_LINES);
-                TBoxResourceManager.shaderResources().world_lines.unBind();
+                TBoxResourceManager.shaderResources().world_lines.endShading();
                 model.clean();
                 GL30.glEnable(GL30.GL_DEPTH_TEST);
             }
@@ -266,23 +266,23 @@ public class TBoxScene {
         Matrix4f Matrix4f = TBoxSceneUtils.getMainCameraViewMatrix();
         Matrix4f.getNormalizedRotation(quaterniond);
         Matrix4f inversedView = new Matrix4f().identity().rotate(quaterniond);
-        TBoxResourceManager.shaderResources().world_xyz.bind();
+        TBoxResourceManager.shaderResources().world_xyz.beginShading();
         TBoxResourceManager.shaderResources().world_xyz.getUtils().performOrthographicMatrix(this.getWindow().getWindowDimensions().x / (float) this.getWindow().getWindowDimensions().y, 36.0f);
         TBoxResourceManager.shaderResources().world_xyz.getUtils().performModel3DMatrix(model);
         TBoxResourceManager.shaderResources().world_xyz.performUniform(new UniformString("view_inversed"),  DefaultUniformActions.MAT4F(inversedView));
         TBoxSceneUtils.renderModelTextured(TBoxResourceManager.shaderResources().world_xyz, model, GL30.GL_TRIANGLES);
-        TBoxResourceManager.shaderResources().world_xyz.unBind();
+        TBoxResourceManager.shaderResources().world_xyz.endShading();
         GL30.glDisable(GL30.GL_DEPTH_TEST);
     }
 
     private void renderIsometricEditorItem(AbstractObjectData mapObject, float borders) {
         GL30.glViewport(0, 0, 400, 400);
         TBoxShaderManager shaderManager = TBoxResourceManager.shaderResources().world_isometric_object;
-        shaderManager.bind();
+        shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(1.0f, borders);
         shaderManager.getUtils().performModel3DMatrix(new Matrix4f().identity().lookAt(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
         TBoxScene.renderIsometricModel(shaderManager, mapObject.meshDataGroup(), GL30.GL_TRIANGLES);
-        shaderManager.unBind();
+        shaderManager.endShading();
         ToolBox.get().getScreen().normalizeViewPort();
     }
 

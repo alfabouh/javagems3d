@@ -12,41 +12,27 @@
 package javagems3d.graphics.opengl.dear_imgui;
 
 import imgui.*;
-import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiKey;
-import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import javagems3d.graphics.opengl.dear_imgui.interfaces.DIMInterface;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
-import javagems3d.physics.world.basic.WorldItem;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL30;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import api.bridge.events.APIEventsLauncher;
-import javagems3d.graphics.opengl.camera.FreeControlledCamera;
-import javagems3d.graphics.opengl.camera.ICamera;
-import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
-import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
-import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
-import javagems3d.graphics.opengl.screen.JGemsScreen;
 import javagems3d.graphics.opengl.screen.window.Window;
-import javagems3d.graphics.opengl.world.SceneWorld;
-import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.objects.MouseKeyboardController;
-import javagems3d.system.graph.Graph;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import api.app.events.bus.Events;
-import logger.managers.LoggingManager;
 
 import java.nio.ByteBuffer;
 
@@ -149,7 +135,7 @@ public class DIMGuiRenderJGems {
             ImVec2 dSize = new ImVec2();
             io.getDisplaySize(dSize);
 
-            this.getShaderManager().bind();
+            this.getShaderManager().beginShading();
             this.getShaderManager().performUniform(new UniformString("scale"), DefaultUniformActions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
             this.getShaderManager().performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
 
@@ -216,7 +202,7 @@ public class DIMGuiRenderJGems {
             GL30.glEnable(GL30.GL_CULL_FACE);
             GL30.glDisable(GL30.GL_BLEND);
 
-            this.getShaderManager().unBind();
+            this.getShaderManager().endShading();
 
             ImGuiIO imGuiIO = ImGui.getIO();
             imGuiIO.setMousePos((float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[0], (float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[1]);

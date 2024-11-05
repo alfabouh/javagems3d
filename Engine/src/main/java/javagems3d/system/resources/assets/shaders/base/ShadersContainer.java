@@ -24,9 +24,13 @@ import java.util.Set;
 public final class ShadersContainer {
     private final Set<Uniform> gUniformsFullSet;
     private final Set<Uniform> cUniformsFullSet;
+
     private final Shader vertexShader;
     private final Shader fragmentShader;
     private final Shader geometricShader;
+    private final Shader tesselationControlShader;
+    private final Shader tesselationEvaluationShader;
+
     private final Shader computeShader;
     private final String id;
 
@@ -42,6 +46,8 @@ public final class ShadersContainer {
         Shader vertexShader1 = null;
         Shader fragmentShader1 = null;
         Shader computeShader1 = null;
+        Shader tesselationControlShader1 = null;
+        Shader tesselationEvaluationShader1 = null;
 
         if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
             fragmentShader1 = new Shader(shaderLibrary, ShaderType.FRAGMENT, shaderPath);
@@ -52,13 +58,23 @@ public final class ShadersContainer {
         if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
             geometricShader1 = new Shader(shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
         }
+        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_CONTROL)) {
+            tesselationControlShader1 = new Shader(shaderLibrary, ShaderType.TESS_CONTROL, shaderPath);
+        }
+        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_EVALUATION)) {
+            tesselationEvaluationShader1 = new Shader(shaderLibrary, ShaderType.TESS_EVALUATION, shaderPath);
+        }
+
         if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.COMPUTE)) {
             computeShader1 = new Shader(shaderLibrary, ShaderType.COMPUTE, shaderPath);
         }
 
         this.vertexShader = vertexShader1;
+        this.tesselationControlShader = tesselationControlShader1;
+        this.tesselationEvaluationShader = tesselationEvaluationShader1;
         this.fragmentShader = fragmentShader1;
         this.geometricShader = geometricShader1;
+
         this.computeShader = computeShader1;
     }
 
@@ -77,6 +93,16 @@ public final class ShadersContainer {
             JGemsHelper.getLogger().log("Initializing " + this.getGeometricShader().getShaderPath() + "/" + this.getGeometricShader().getShaderType().getFile());
             this.getGeometricShader().init();
             this.putUniformsInGHeap(this.getGeometricShader().getUniforms());
+        }
+        if (this.getTesselationControlShader() != null) {
+            JGemsHelper.getLogger().log("Initializing " + this.getTesselationControlShader().getShaderPath() + "/" + this.getTesselationControlShader().getShaderType().getFile());
+            this.getTesselationControlShader().init();
+            this.putUniformsInGHeap(this.getTesselationControlShader().getUniforms());
+        }
+        if (this.getTesselationEvaluationShader() != null) {
+            JGemsHelper.getLogger().log("Initializing " + this.getTesselationEvaluationShader().getShaderPath() + "/" + this.getTesselationEvaluationShader().getShaderType().getFile());
+            this.getTesselationEvaluationShader().init();
+            this.putUniformsInGHeap(this.getTesselationEvaluationShader().getUniforms());
         }
         if (this.getComputeShader() != null) {
             JGemsHelper.getLogger().log("Initializing " + this.getComputeShader().getShaderPath() + "/" + this.getComputeShader().getShaderType().getFile());
@@ -105,6 +131,12 @@ public final class ShadersContainer {
         if (this.getGeometricShader() != null) {
             this.getGeometricShader().clean();
         }
+        if (this.getTesselationControlShader() != null) {
+            this.getTesselationControlShader().clean();
+        }
+        if (this.getTesselationEvaluationShader() != null) {
+            this.getTesselationEvaluationShader().clean();
+        }
         if (this.getComputeShader() != null) {
             this.getComputeShader().clean();
         }
@@ -120,6 +152,14 @@ public final class ShadersContainer {
 
     public String getId() {
         return this.id;
+    }
+
+    public Shader getTesselationEvaluationShader() {
+        return this.tesselationEvaluationShader;
+    }
+
+    public Shader getTesselationControlShader() {
+        return this.tesselationControlShader;
     }
 
     public Shader getComputeShader() {

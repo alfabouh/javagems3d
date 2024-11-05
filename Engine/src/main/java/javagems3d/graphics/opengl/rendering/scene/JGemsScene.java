@@ -69,7 +69,7 @@ public class JGemsScene implements IScene {
     public void renderScene(float frameDeltaTime) throws InterruptedException {
         if (JGemsHelper.WINDOW.isWindowActive()) {
             JGems3D.get().getScreen().normalizeViewPort();
-            JGemsOpenGLRenderer.getGameUboShader().bind();
+            JGemsOpenGLRenderer.getGameUboShader().beginShading();
             if (this.getCurrentCamera() != null) {
                 this.elapsedTime += frameDeltaTime / PhysicsThread.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
@@ -82,7 +82,7 @@ public class JGemsScene implements IScene {
                 this.elapsedTime = 0.0f;
             }
             this.getSceneRenderer().onRender(new FrameTicking(this.elapsedTime, frameDeltaTime), this.getWindowDimensions());
-            JGemsOpenGLRenderer.getGameUboShader().unBind();
+            JGemsOpenGLRenderer.getGameUboShader().endShading();
         }
     }
 

@@ -23,9 +23,14 @@ import logger.managers.LoggingManager;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL30;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class DIMInGameInterface implements DIMInterface {
+    private boolean snapStop = false;
+    private Set<Map.Entry<String, SpeedProfiler.Group>> snapShot = null;
+
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
         if (!JGems3D.get().isValidPlayer()) {
             return;
@@ -72,19 +77,26 @@ public class DIMInGameInterface implements DIMInterface {
         }
 
         if (ImGui.collapsingHeader("Speed Profiler")) {
-            // for (Map.Entry<String, SpeedProfiler.Section> sectionEntry : SpeedProfiler.getAllEntries().stream().sorted(Comparator.comparingDouble(e -> e.getValue().getTotalTime())).collect(Collectors.toList())) {
-            for (Map.Entry<String, SpeedProfiler.Group> groupEntry : SpeedProfiler.getAllProfilerGroups()) {
+            Set<Map.Entry<String, SpeedProfiler.Group>> currProfSet = this.snapShot != null ? this.snapShot : SpeedProfiler.getAllProfilerGroups();
+            for (Map.Entry<String, SpeedProfiler.Group> groupEntry : currProfSet) {
                 if (ImGui.treeNode(groupEntry.getKey())) {
                     for (Map.Entry<String, SpeedProfiler.Section> sectionEntry : groupEntry.getValue().getAllEntries()) {
-                        ImGui.text(sectionEntry.getKey() + ": " + sectionEntry.getValue().getTotalTime() + "ms");
+                        ImGui.textColored(0xffff00ff, sectionEntry.getKey() + ": " + sectionEntry.getValue().getTotalTime() + "ms");
                     }
                     if (groupEntry.getValue().getAllEntries().size() > 1) {
                         ImGui.newLine();
-                        ImGui.text("total: " + groupEntry.getValue().totalTimeInAllSections() + "ms");
+                        ImGui.textColored(0xff0000ff, "total: " + groupEntry.getValue().totalTimeInAllSections() + "ms");
                     }
                     ImGui.treePop();
                 }
-                ImGui.newLine();
+            }
+            if (ImGui.checkbox("Snapshot", this.snapStop)) {
+                this.snapStop = !this.snapStop;
+                if (this.snapStop) {
+                    this.snapShot = new HashSet<>(SpeedProfiler.getAllProfilerGroups());
+                } else {
+                    this.snapShot = null;
+                }
             }
         }
 

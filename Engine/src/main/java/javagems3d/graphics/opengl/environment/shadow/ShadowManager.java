@@ -263,7 +263,7 @@ public class ShadowManager implements IShadowScene {
     }
 
     private void sunScene(Set<AbstractSceneObject> modeledSceneObjectSet) {
-        this.getSunShadowShader().bind();
+        this.getSunShadowShader().beginShading();
         this.getSunShadowShader().performUniformNoWarn(new UniformString("PosExp"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT));
         this.getSunShadowShader().performUniformNoWarn(new UniformString("NegExp"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT));
         this.getShadowFBO().bindFBO();
@@ -286,12 +286,12 @@ public class ShadowManager implements IShadowScene {
             GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
         this.getShadowFBO().unBindFBO();
-        this.getSunShadowShader().unBind();
+        this.getSunShadowShader().endShading();
 
         JGemsShaderManager shaderManager = JGemsResourceManager.globalShaderAssets.blur_box;
         this.getShadowPostFBO().bindFBO();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
-        shaderManager.bind();
+        shaderManager.beginShading();
         shaderManager.performUniform(new UniformString("projection_model_matrix"), DefaultUniformActions.MAT4F(Transformation.getModelOrthographicMatrix(this.sunPostModel.getFormat(), Transformation.getOrthographic2DMatrix(0, this.getShadowDim().x, this.getShadowDim().y, 0))));
         GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
         for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
@@ -301,12 +301,12 @@ public class ShadowManager implements IShadowScene {
             shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.getShadowFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
             JGemsSceneUtils.renderModel(this.sunPostModel, GL30.GL_TRIANGLES);
         }
-        shaderManager.unBind();
+        shaderManager.endShading();
         this.getShadowPostFBO().unBindFBO();
     }
 
     private void pointLightsScene(Set<AbstractSceneObject> modeledSceneObjectSet) {
-        this.getPointLightShadowShader().bind();
+        this.getPointLightShadowShader().beginShading();
         GL30.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
         for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
@@ -334,7 +334,7 @@ public class ShadowManager implements IShadowScene {
                 pointLightShadow.getPointLightCubeMap().unBindFBO();
             }
         }
-        this.getPointLightShadowShader().unBind();
+        this.getPointLightShadowShader().endShading();
     }
 
     private void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, ModelRenderProperties modelRenderProperties, Model<?> model) {

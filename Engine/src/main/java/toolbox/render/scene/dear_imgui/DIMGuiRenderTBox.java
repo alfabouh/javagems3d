@@ -130,7 +130,7 @@ public class DIMGuiRenderTBox {
         ImVec2 dSize = new ImVec2();
         io.getDisplaySize(dSize);
 
-        this.getShaderManager().bind();
+        this.getShaderManager().beginShading();
         this.getShaderManager().performUniform(new UniformString("scale"), DefaultUniformActions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
         this.getShaderManager().performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
 
@@ -197,7 +197,7 @@ public class DIMGuiRenderTBox {
         GL30.glEnable(GL30.GL_CULL_FACE);
         GL30.glDisable(GL30.GL_BLEND);
 
-        this.getShaderManager().unBind();
+        this.getShaderManager().endShading();
     }
 
     private void drawGui(TBoxControllerDispatcher controllerDispatcher, float partialTicks) {

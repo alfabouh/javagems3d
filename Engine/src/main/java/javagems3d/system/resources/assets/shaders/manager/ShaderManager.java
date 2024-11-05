@@ -91,7 +91,7 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public boolean startComputing() {
+    public boolean beginComputing() {
         if (this.activeShader != ActiveShader.NONE) {
             return false;
         }
@@ -106,7 +106,7 @@ public abstract class ShaderManager implements ICached {
         this.activeShader = ActiveShader.NONE;
     }
 
-    public boolean bind() {
+    public boolean beginShading() {
         if (this.activeShader != ActiveShader.NONE) {
             return false;
         }
@@ -116,7 +116,7 @@ public abstract class ShaderManager implements ICached {
         return true;
     }
 
-    public void unBind() {
+    public void endShading() {
         this.getGraphicShaderGroup().getShaderProgram().unbind();
         this.activeShader = ActiveShader.NONE;
     }
@@ -200,7 +200,7 @@ public abstract class ShaderManager implements ICached {
         boolean flag = false;
         if (gShaderProgram != null) {
             this.graphicShaderHandler = new ShaderHandler(this.getShaderContainer().getId());
-            if (gShaderProgram.createShader(this.getShaderContainer().getFragmentShader(), this.getShaderContainer().getVertexShader(), this.getShaderContainer().getGeometricShader())) {
+            if (gShaderProgram.createShader(this.getShaderContainer().getFragmentShader(), this.getShaderContainer().getVertexShader(), this.getShaderContainer().getGeometricShader(), this.getShaderContainer().getTesselationControlShader(), this.getShaderContainer().getTesselationEvaluationShader())) {
                 if (gShaderProgram.link()) {
                     JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked");
                 } else {

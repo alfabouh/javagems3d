@@ -61,7 +61,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         if (gemsShaderManager == null) {
             gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
         }
-        gemsShaderManager.bind();
+        gemsShaderManager.beginShading();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
         for (MeshGroup.Node meshNode : object.getModel().getMeshGroup().getModelNodeList()) {
@@ -79,14 +79,14 @@ public class WorldTransparentRender extends SceneRenderBase {
             }
             gemsShaderManager.clearUsedTextureSlots();
         }
-        gemsShaderManager.unBind();
+        gemsShaderManager.endShading();
     }
 
     private void renderModelNode(JGemsShaderManager gemsShaderManager, boolean disableCulling, MeshGroup.Node meshNode, Format3D format3D) {
         if (gemsShaderManager == null) {
             gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
         }
-        gemsShaderManager.bind();
+        gemsShaderManager.beginShading();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), format3D);
 
@@ -103,7 +103,7 @@ public class WorldTransparentRender extends SceneRenderBase {
             GL30.glEnable(GL11.GL_CULL_FACE);
         }
         gemsShaderManager.clearUsedTextureSlots();
-        gemsShaderManager.unBind();
+        gemsShaderManager.endShading();
     }
 
     public void addModelNodeInTransparencyPass(RenderNodeInfo node) {

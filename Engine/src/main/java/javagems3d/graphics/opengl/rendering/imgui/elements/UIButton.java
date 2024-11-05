@@ -64,12 +64,12 @@ public class UIButton extends UIInteractiveElement {
         super.render(frameDeltaTicks);
 
         JGemsShaderManager shaderManager = this.getCurrentShader();
-        shaderManager.bind();
+        shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
         shaderManager.performUniform(new UniformString("background_color"), DefaultUniformActions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
         shaderManager.performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(this.isSelected()));
         JGemsSceneUtils.renderModel(this.buttonModel, GL30.GL_TRIANGLES);
-        shaderManager.unBind();
+        shaderManager.endShading();
         this.uiText.render(frameDeltaTicks);
     }
 

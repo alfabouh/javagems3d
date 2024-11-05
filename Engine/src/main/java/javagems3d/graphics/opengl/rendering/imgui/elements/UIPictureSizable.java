@@ -45,13 +45,13 @@ public class UIPictureSizable extends UIElement {
         this.imageModel.getFormat().setPosition(new Vector2f(this.getPosition()));
         this.imageModel.getFormat().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
-        shaderManager.bind();
+        shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
         GL30.glActiveTexture(GL13.GL_TEXTURE0);
         this.iImageSample.bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
         JGemsSceneUtils.renderModel(this.imageModel, GL30.GL_TRIANGLES);
-        shaderManager.unBind();
+        shaderManager.endShading();
     }
 
     @Override

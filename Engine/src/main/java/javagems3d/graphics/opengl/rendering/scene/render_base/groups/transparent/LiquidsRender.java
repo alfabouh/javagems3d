@@ -43,7 +43,7 @@ public class LiquidsRender extends SceneRenderBase {
             JGemsHelper.getLogger().warn("Particle should have transparency shader!");
             return;
         }
-        gemsShaderManager.bind();
+        gemsShaderManager.beginShading();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
         for (MeshGroup.Node meshNode : object.getModel().getMeshGroup().getModelNodeList()) {
@@ -54,7 +54,7 @@ public class LiquidsRender extends SceneRenderBase {
             JGemsSceneUtils.renderModelNode(meshNode);
             gemsShaderManager.clearUsedTextureSlots();
         }
-        gemsShaderManager.unBind();
+        gemsShaderManager.endShading();
     }
 
     public void onStartRender() {

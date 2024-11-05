@@ -45,7 +45,7 @@ public class DebugRender extends SceneRenderBase {
         GL30.glHint(GL30.GL_LINE_SMOOTH_HINT, GL30.GL_NICEST);
         GL30.glEnable(GL30.GL_LINE_SMOOTH);
         if (JGemsDebugGlobalConstants.SHOW_DEBUG_LINES) {
-            this.debugShaders.bind();
+            this.debugShaders.beginShading();
             this.debugShaders.getUtils().performPerspectiveMatrix();
             this.debugShaders.getUtils().performViewMatrix(JGemsSceneUtils.getMainCameraViewMatrix());
 
@@ -60,7 +60,7 @@ public class DebugRender extends SceneRenderBase {
 
             this.renderDebugSunDirection();
 
-            this.debugShaders.unBind();
+            this.debugShaders.endShading();
         }
     }
 

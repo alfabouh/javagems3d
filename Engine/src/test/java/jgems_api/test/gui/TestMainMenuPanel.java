@@ -60,12 +60,12 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         Window window = JGems3D.get().getScreen().getWindow();
         Vector2f res = new Vector2f(window.getWindowDimensions().x, window.getWindowDimensions().y);
         try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
-            JGemsResourceManager.globalShaderAssets.menu.bind();
+            JGemsResourceManager.globalShaderAssets.menu.beginShading();
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), DefaultUniformActions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), DefaultUniformActions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
             JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
             JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
-            JGemsResourceManager.globalShaderAssets.menu.unBind();
+            JGemsResourceManager.globalShaderAssets.menu.endShading();
         }
     }
 

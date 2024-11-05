@@ -51,14 +51,14 @@ public class UIText extends UIElement {
     @Override
     public void render(float frameDeltaTicks) {
         JGemsShaderManager shaderManager = this.getCurrentShader();
-        shaderManager.bind();
+        shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.textModel.getModel());
         GL30.glActiveTexture(GL13.GL_TEXTURE0);
         this.getFontTexture().getTexture().bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
         shaderManager.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsSceneUtils.renderModel(this.textModel.getModel(), GL30.GL_TRIANGLES);
-        shaderManager.unBind();
+        shaderManager.endShading();
     }
 
     @Override

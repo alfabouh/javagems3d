@@ -22,6 +22,8 @@ public class GShaderProgram implements IShaderProgram {
     private int vertexShaderId;
     private int fragmentShaderId;
     private int geometricShaderId;
+    private int tessellationControlShaderId;
+    private int tessellationEvaluationShaderId;
 
     public GShaderProgram() {
         this.programId = GL20.glCreateProgram();
@@ -30,7 +32,7 @@ public class GShaderProgram implements IShaderProgram {
         }
     }
 
-    public boolean createShader(Shader fragShader, Shader vertShader, Shader geomShader) {
+    public boolean createShader(Shader fragShader, Shader vertShader, Shader geomShader, Shader tessControlShader, Shader tessEvaluationShader) {
         boolean flag = false;
         if (fragShader != null) {
             this.createFragmentShader(fragShader.getShaderText());
@@ -42,6 +44,10 @@ public class GShaderProgram implements IShaderProgram {
         }
         if (geomShader != null) {
             this.createGeometricShader(geomShader.getShaderText());
+            flag = true;
+        }
+        if (tessControlShader != null && tessEvaluationShader != null) {
+            this.createTessellationShaders(tessControlShader.getShaderText(), tessEvaluationShader.getShaderText());
             flag = true;
         }
         return flag;
@@ -57,6 +63,11 @@ public class GShaderProgram implements IShaderProgram {
 
     public void createGeometricShader(String shader) {
         this.geometricShaderId = this.createShader(shader, GL43.GL_GEOMETRY_SHADER);
+    }
+
+    public void createTessellationShaders(String shaderC, String shaderE) {
+        this.tessellationControlShaderId = this.createShader(shaderC, GL43.GL_TESS_CONTROL_SHADER);
+        this.tessellationEvaluationShaderId = this.createShader(shaderE, GL43.GL_TESS_EVALUATION_SHADER);
     }
 
     private int createShader(String shader, int type) {
@@ -92,6 +103,12 @@ public class GShaderProgram implements IShaderProgram {
         }
         if (this.geometricShaderId != 0) {
             GL20.glDetachShader(this.programId, this.geometricShaderId);
+        }
+        if (this.tessellationControlShaderId != 0) {
+            GL20.glDetachShader(this.programId, this.tessellationControlShaderId);
+        }
+        if (this.tessellationEvaluationShaderId != 0) {
+            GL20.glDetachShader(this.programId, this.tessellationEvaluationShaderId);
         }
         GL20.glValidateProgram(this.programId);
         if (GL20.glGetProgrami(this.programId, GL20.GL_VALIDATE_STATUS) == 0) {

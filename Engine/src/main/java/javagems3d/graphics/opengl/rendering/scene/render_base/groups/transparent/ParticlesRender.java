@@ -38,7 +38,7 @@ public class ParticlesRender extends SceneRenderBase {
     private void renderParticleSceneObject(ParticleFX particleFX) {
         JGemsShaderManager gemsShaderManager = particleFX.getParticleAttributes().getShaderManager();
         Model<Format3D> model = this.getSceneWorld().getParticlesEmitter().getParticleModel(particleFX);
-        gemsShaderManager.bind();
+        gemsShaderManager.beginShading();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(model);
         gemsShaderManager.getUtils().performShadowsInfo();
@@ -52,7 +52,7 @@ public class ParticlesRender extends SceneRenderBase {
         gemsShaderManager.performUniform(new UniformString("brightness"), DefaultUniformActions.FLOAT(particleFX.getParticleAttributes().getBrightness()));
         gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(particleFX.getParticleAttributes().getOpacity()));
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
-        gemsShaderManager.unBind();
+        gemsShaderManager.endShading();
     }
 
     public void onStartRender() {

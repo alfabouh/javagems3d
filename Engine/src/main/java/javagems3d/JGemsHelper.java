@@ -16,7 +16,6 @@ import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.opengl.rendering.items.IAnimated;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.Mesh;
 import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
@@ -25,7 +24,7 @@ import javagems3d.audio.SoundManager;
 import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.environment.Environment;
-import javagems3d.graphics.opengl.environment.fog.Fog;
+import javagems3d.graphics.opengl.environment.fog.FogManager;
 import javagems3d.graphics.opengl.environment.light.Light;
 import javagems3d.graphics.opengl.environment.light.PointLight;
 import javagems3d.graphics.opengl.particles.ParticlesEmitter;
@@ -205,7 +204,7 @@ public abstract class JGemsHelper {
             return JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox();
         }
 
-        public static Fog getFog() {
+        public static FogManager getFog() {
             return JGemsHelper.ENVIRONMENT.getWorldEnvironment().getFog();
         }
 

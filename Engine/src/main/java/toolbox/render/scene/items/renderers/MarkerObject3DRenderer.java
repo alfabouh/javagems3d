@@ -24,7 +24,7 @@ import toolbox.render.scene.utils.TBoxSceneUtils;
 public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
     @Override
     public void onRender(MapProperties properties, TBoxAbstractObject tBoxAbstractObject, float deltaTime) {
-        tBoxAbstractObject.getRenderData().getShaderManager().bind();
+        tBoxAbstractObject.getRenderData().getShaderManager().beginShading();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"), DefaultUniformActions.BOOLEAN(false));
@@ -35,7 +35,7 @@ public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
         }
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), DefaultUniformActions.VEC4F(new Vector4f(color, 1.0f)));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
-        tBoxAbstractObject.getRenderData().getShaderManager().unBind();
+        tBoxAbstractObject.getRenderData().getShaderManager().endShading();
     }
 
     @Override

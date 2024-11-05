@@ -13,9 +13,8 @@ package javagems3d.graphics.opengl.environment;
 
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
-import javagems3d.graphics.opengl.rendering.scene.render_base.SceneData;
 import org.lwjgl.system.MemoryStack;
-import javagems3d.graphics.opengl.environment.fog.Fog;
+import javagems3d.graphics.opengl.environment.fog.FogManager;
 import javagems3d.graphics.opengl.environment.light.LightManager;
 import javagems3d.graphics.opengl.environment.shadow.ShadowManager;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
@@ -32,11 +31,11 @@ public class Environment implements IEnvironment {
     private final ShadowManager shadowManager;
     private final LightManager lightManager;
     private final SkyBox skyBox;
-    private final Fog fog;
+    private final FogManager fogManager;
 
     public Environment() {
         this.skyBox = new SkyBox(JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
-        this.fog = new Fog();
+        this.fogManager = new FogManager(this);
         this.lightManager = new LightManager(this);
         this.shadowManager = new ShadowManager(this);
     }
@@ -87,8 +86,8 @@ public class Environment implements IEnvironment {
         return this.lightManager;
     }
 
-    public Fog getFog() {
-        return this.fog;
+    public FogManager getFog() {
+        return this.fogManager;
     }
 
     public SkyBox getSkyBox() {

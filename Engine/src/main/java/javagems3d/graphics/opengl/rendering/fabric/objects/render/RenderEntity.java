@@ -53,11 +53,11 @@ public class RenderEntity extends RenderWorldItem {
                     Model<Format3D> model = entityObject.getModel();
                     GL30.glDisable(GL30.GL_CULL_FACE);
                     GL30.glEnable(GL30.GL_DEPTH_TEST);
-                    shaderManager.bind();
+                    shaderManager.beginShading();
                     shaderManager.getUtils().performPerspectiveMatrix();
                     shaderManager.getUtils().performViewAndModelMatricesSeparately(model);
                     JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
-                    shaderManager.unBind();
+                    shaderManager.endShading();
                     GL30.glEnable(GL30.GL_DEPTH_TEST);
                     GL30.glEnable(GL30.GL_CULL_FACE);
                     GL30.glStencilFunc(GL30.GL_ALWAYS, 1, 0xFF);

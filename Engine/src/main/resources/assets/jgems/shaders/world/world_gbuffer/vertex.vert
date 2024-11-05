@@ -15,6 +15,9 @@ out vec3 mv_vertex_pos;
 out vec4 out_model_position;
 out mat3 TBN;
 
+out mat4 view;
+out mat4 model;
+
 uniform mat4 view_matrix;
 uniform mat4 model_matrix;
 uniform mat4 projection_matrix;
@@ -59,6 +62,9 @@ void main()
         startTangent = vec4(aTangent, 0.0);
         startBiTangent = vec4(aBitangent, 0.0);
     }
+
+    view = view_matrix;
+    model = model_matrix;
 
     mat4 model_view_matrix = view_matrix * model_matrix;
     vec4 mv_pos = model_view_matrix * startPos;

@@ -71,7 +71,7 @@ public class SkyBoxCubeMapRender extends SceneRenderBase {
     private void renderSkyBoxTexture() {
         JGemsShaderManager shaderManager = JGemsResourceManager.globalShaderAssets.skybox;
         Model<Format3D> model = SkyBoxCubeMapRender.skyBoxModel;
-        shaderManager.bind();
+        shaderManager.beginShading();
         GL30.glDisable(GL30.GL_CULL_FACE);
         GL30.glDepthFunc(GL30.GL_LEQUAL);
         shaderManager.getUtils().performPerspectiveMatrix();
@@ -86,7 +86,7 @@ public class SkyBoxCubeMapRender extends SceneRenderBase {
         shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), this.getSkyBox().getSky2DTexture().getTextureId());
         //shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), this.getSceneRenderer().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram().getTextureId());
         JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
-        shaderManager.unBind();
+        shaderManager.endShading();
         GL30.glDepthFunc(GL30.GL_LESS);
         GL30.glEnable(GL30.GL_CULL_FACE);
     }
