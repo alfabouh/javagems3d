@@ -14,7 +14,7 @@ package toolbox.render.scene.items.renderers;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
@@ -34,7 +34,7 @@ public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
             color = new Vector3f(1.0f);
         }
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), DefaultUniformActions.VEC4F(new Vector4f(color, 1.0f)));
-        TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
+        TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL46.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().endShading();
     }
 

@@ -1,7 +1,6 @@
-package javagems3d.system.resources.assets.models.mesh.attributes;
+package javagems3d.system.resources.assets.models.mesh.vertex.attributes;
 
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.AttributePointer;
-import org.lwjgl.system.MemoryStack;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.Buffer;
@@ -9,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class VertexAttribute<T> {
-    private final AttributePointer attributePointer;
+    private final RenderAttributePointer attributePointer;
     private final List<T> values;
 
-    public VertexAttribute(AttributePointer attributePointer) {
+    public VertexAttribute(RenderAttributePointer attributePointer) {
         this.attributePointer = attributePointer;
         this.values = new ArrayList<>();
     }
@@ -48,7 +47,7 @@ public abstract class VertexAttribute<T> {
         return this.getAttributePointer().getIndex();
     }
 
-    public AttributePointer getAttributePointer() {
+    public RenderAttributePointer getAttributePointer() {
         return this.attributePointer;
     }
 }

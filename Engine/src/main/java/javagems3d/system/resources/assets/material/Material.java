@@ -1,23 +1,14 @@
-/*
- * *
- *  * @author alfabouh
- *  * @since 2024
- *  * @link https://github.com/alfabouh/JavaGems3D
- *  *
- *  * This software is provided 'as-is', without any express or implied warranty.
- *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
- */
-
 package javagems3d.system.resources.assets.material;
 
-import org.joml.Vector4f;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.base.ISample;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
+import org.joml.Vector4f;
 
 @SuppressWarnings("all")
 public class Material {
+    private int id;
     private float fullOpacity;
     private ISample diffuse;
     private ITextureSample opacityMap;
@@ -27,11 +18,13 @@ public class Material {
     private ITextureSample metallicMap;
 
     public Material(ISample diffuse) {
+        this();
         this.setDefaults().setDiffuse(diffuse);
     }
 
     public Material() {
         this.setDefaults();
+        this.id = 0;
     }
 
     public static Material createDefault() {
@@ -46,6 +39,15 @@ public class Material {
         this.setDefaultMetallic();
         this.setDefaultOpacity();
         this.setFullOpacity(1.0f);
+        return this;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public Material setId(int id) {
+        this.id = id;
         return this;
     }
 

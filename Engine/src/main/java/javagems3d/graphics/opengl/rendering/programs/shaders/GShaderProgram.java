@@ -11,8 +11,8 @@
 
 package javagems3d.graphics.opengl.rendering.programs.shaders;
 
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.base.Shader;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -26,7 +26,7 @@ public class GShaderProgram implements IShaderProgram {
     private int tessellationEvaluationShaderId;
 
     public GShaderProgram() {
-        this.programId = GL20.glCreateProgram();
+        this.programId = GL46.glCreateProgram();
         if (this.programId == 0) {
             throw new JGemsRuntimeException("Could not create shader program!");
         }
@@ -54,41 +54,41 @@ public class GShaderProgram implements IShaderProgram {
     }
 
     public void createVertexShader(String shader) {
-        this.vertexShaderId = this.createShader(shader, GL20.GL_VERTEX_SHADER);
+        this.vertexShaderId = this.createShader(shader, GL46.GL_VERTEX_SHADER);
     }
 
     public void createFragmentShader(String shader) {
-        this.fragmentShaderId = this.createShader(shader, GL20.GL_FRAGMENT_SHADER);
+        this.fragmentShaderId = this.createShader(shader, GL46.GL_FRAGMENT_SHADER);
     }
 
     public void createGeometricShader(String shader) {
-        this.geometricShaderId = this.createShader(shader, GL43.GL_GEOMETRY_SHADER);
+        this.geometricShaderId = this.createShader(shader, GL46.GL_GEOMETRY_SHADER);
     }
 
     public void createTessellationShaders(String shaderC, String shaderE) {
-        this.tessellationControlShaderId = this.createShader(shaderC, GL43.GL_TESS_CONTROL_SHADER);
-        this.tessellationEvaluationShaderId = this.createShader(shaderE, GL43.GL_TESS_EVALUATION_SHADER);
+        this.tessellationControlShaderId = this.createShader(shaderC, GL46.GL_TESS_CONTROL_SHADER);
+        this.tessellationEvaluationShaderId = this.createShader(shaderE, GL46.GL_TESS_EVALUATION_SHADER);
     }
 
     private int createShader(String shader, int type) {
-        int id = GL20.glCreateShader(type);
+        int id = GL46.glCreateShader(type);
         if (id == 0) {
             throw new JGemsRuntimeException("Could not create Shader: " + type);
         }
-        GL20.glShaderSource(id, shader);
-        GL20.glCompileShader(id);
-        if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == 0) {
+        GL46.glShaderSource(id, shader);
+        GL46.glCompileShader(id);
+        if (GL46.glGetShaderi(id, GL46.GL_COMPILE_STATUS) == 0) {
             JGemsHelper.getLogger().warn(shader);
-            throw new JGemsRuntimeException("Compile shader error: " + GL20.glGetShaderInfoLog(id, 4096));
+            throw new JGemsRuntimeException("Compile shader error: " + GL46.glGetShaderInfoLog(id, 4096));
         }
-        GL20.glAttachShader(this.programId, id);
+        GL46.glAttachShader(this.programId, id);
         return id;
     }
 
     public boolean link() {
-        GL20.glLinkProgram(this.programId);
-        if (GL20.glGetProgrami(this.programId, GL20.GL_LINK_STATUS) == 0) {
-            String err = GL20.glGetShaderInfoLog(this.programId, 4096);
+        GL46.glLinkProgram(this.programId);
+        if (GL46.glGetProgrami(this.programId, GL46.GL_LINK_STATUS) == 0) {
+            String err = GL46.glGetShaderInfoLog(this.programId, 4096);
             if (err.isEmpty()) {
                 err = "UNKNOWN ERR";
             }
@@ -96,23 +96,23 @@ public class GShaderProgram implements IShaderProgram {
             //return false;
         }
         if (this.vertexShaderId != 0) {
-            GL20.glDetachShader(this.programId, this.vertexShaderId);
+            GL46.glDetachShader(this.programId, this.vertexShaderId);
         }
         if (this.fragmentShaderId != 0) {
-            GL20.glDetachShader(this.programId, this.fragmentShaderId);
+            GL46.glDetachShader(this.programId, this.fragmentShaderId);
         }
         if (this.geometricShaderId != 0) {
-            GL20.glDetachShader(this.programId, this.geometricShaderId);
+            GL46.glDetachShader(this.programId, this.geometricShaderId);
         }
         if (this.tessellationControlShaderId != 0) {
-            GL20.glDetachShader(this.programId, this.tessellationControlShaderId);
+            GL46.glDetachShader(this.programId, this.tessellationControlShaderId);
         }
         if (this.tessellationEvaluationShaderId != 0) {
-            GL20.glDetachShader(this.programId, this.tessellationEvaluationShaderId);
+            GL46.glDetachShader(this.programId, this.tessellationEvaluationShaderId);
         }
-        GL20.glValidateProgram(this.programId);
-        if (GL20.glGetProgrami(this.programId, GL20.GL_VALIDATE_STATUS) == 0) {
-            String err = GL20.glGetShaderInfoLog(this.programId, 4096);
+        GL46.glValidateProgram(this.programId);
+        if (GL46.glGetProgrami(this.programId, GL46.GL_VALIDATE_STATUS) == 0) {
+            String err = GL46.glGetShaderInfoLog(this.programId, 4096);
             if (!err.isEmpty()) {
                 JGemsHelper.getLogger().warn("Could not validate shader " + err);
                 return false;

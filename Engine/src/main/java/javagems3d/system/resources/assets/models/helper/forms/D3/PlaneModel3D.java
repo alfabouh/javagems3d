@@ -11,12 +11,12 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D3;
 
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
-import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
@@ -62,19 +62,19 @@ public class PlaneModel3D implements BasicModelCreator<Format3D> {
 
     @Override
     public Model<Format3D> generateModel() {
-        return new Model<>(new Format3D(), this.generateMesh(), Material.createDefault());
+        return new Model<>(new Format3D(), this.generateMesh(), MaterialOld.createDefault());
     }
 
     @Override
-    public Mesh generateMesh() {
-        Mesh mesh = new Mesh();
+    public DirectRenderMesh generateMesh() {
+        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
         List<Vector3f> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
 
-        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
-        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultPointers.TEXTURE_COORDINATES);
-        FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultPointers.NORMALS);
-        FloatVertexAttribute vaTangents = new FloatVertexAttribute(DefaultPointers.TANGENTS);
-        FloatVertexAttribute vaBiTangents = new FloatVertexAttribute(DefaultPointers.BI_TANGENTS);
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
+        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);
+        FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultAttributePointers.ATTR_NORMALS);
+        FloatVertexAttribute vaTangents = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TANGENTS);
+        FloatVertexAttribute vaBiTangents = new FloatVertexAttribute(DefaultAttributePointers.ATTR_BI_TANGENTS);
 
         Vector3f v1 = list.get(0);
         Vector3f v2 = list.get(1);
@@ -130,19 +130,19 @@ public class PlaneModel3D implements BasicModelCreator<Format3D> {
         vaTextureCoordinates.put(0.0f);
         vaTextureCoordinates.put(1.0f);
 
-        mesh.putVertexIndex(1);
-        mesh.putVertexIndex(2);
-        mesh.putVertexIndex(0);
-        mesh.putVertexIndex(3);
-        mesh.putVertexIndex(0);
-        mesh.putVertexIndex(2);
+        directRenderMesh.putVertexIndex(1);
+        directRenderMesh.putVertexIndex(2);
+        directRenderMesh.putVertexIndex(0);
+        directRenderMesh.putVertexIndex(3);
+        directRenderMesh.putVertexIndex(0);
+        directRenderMesh.putVertexIndex(2);
 
-        mesh.putVertexIndex(5);
-        mesh.putVertexIndex(6);
-        mesh.putVertexIndex(4);
-        mesh.putVertexIndex(7);
-        mesh.putVertexIndex(4);
-        mesh.putVertexIndex(6);
+        directRenderMesh.putVertexIndex(5);
+        directRenderMesh.putVertexIndex(6);
+        directRenderMesh.putVertexIndex(4);
+        directRenderMesh.putVertexIndex(7);
+        directRenderMesh.putVertexIndex(4);
+        directRenderMesh.putVertexIndex(6);
 
         Vector3f vAB = this.getPosition(vaPositions.getValues(), 1).sub(this.getPosition(vaPositions.getValues(), 0));
         Vector3f vAD = this.getPosition(vaPositions.getValues(), 3).sub(this.getPosition(vaPositions.getValues(), 0));
@@ -225,13 +225,13 @@ public class PlaneModel3D implements BasicModelCreator<Format3D> {
             vaBiTangents.put(-biTan2z);
         }
 
-        mesh.addVertexAttributeInMesh(vaPositions);
-        mesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        mesh.addVertexAttributeInMesh(vaNormals);
-        mesh.addVertexAttributeInMesh(vaTangents);
-        mesh.addVertexAttributeInMesh(vaBiTangents);
+        directRenderMesh.addVertexAttributeInMesh(vaPositions);
+        directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        directRenderMesh.addVertexAttributeInMesh(vaNormals);
+        directRenderMesh.addVertexAttributeInMesh(vaTangents);
+        directRenderMesh.addVertexAttributeInMesh(vaBiTangents);
 
-        mesh.bakeMesh();
-        return mesh;
+        directRenderMesh.bakeMesh();
+        return directRenderMesh;
     }
 }

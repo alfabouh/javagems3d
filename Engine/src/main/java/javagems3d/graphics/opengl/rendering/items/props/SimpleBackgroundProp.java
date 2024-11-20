@@ -18,7 +18,7 @@ import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.properties.ModelRenderData;
+import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -77,7 +77,7 @@ public class SimpleBackgroundProp extends AbstractSceneObject {
         return this;
     }
 
-    public ModelRenderData getMeshRenderData() {
+    public ModelRenderData getObjectRenderSettings() {
         return this.modelRenderData;
     }
 

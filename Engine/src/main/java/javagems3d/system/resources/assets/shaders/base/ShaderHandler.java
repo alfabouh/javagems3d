@@ -15,7 +15,7 @@ import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.programs.shaders.IShaderProgram;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformBufferProgram;
@@ -106,7 +106,7 @@ public class ShaderHandler {
     }
 
     public boolean checkIsShaderActive() {
-        return GL30.glGetInteger(GL30.GL_CURRENT_PROGRAM) == this.getShaderProgram().getProgramId();
+        return GL46.glGetInteger(GL46.GL_CURRENT_PROGRAM) == this.getShaderProgram().getProgramId();
     }
 
     public Map<UniformBufferObject, UniformBufferProgram> getUniformBufferProgramMap() {

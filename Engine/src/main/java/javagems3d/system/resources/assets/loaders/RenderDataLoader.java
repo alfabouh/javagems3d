@@ -27,10 +27,10 @@ import javagems3d.graphics.opengl.rendering.items.objects.WorldEntity;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.inventory.items.ItemZippo;
 import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
@@ -53,14 +53,14 @@ public class RenderDataLoader implements IAssetsLoader {
             return meshGroup;
         };
 
-        Material zwMat = new Material();
+        MaterialOld zwMat = new MaterialOld();
         zwMat.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo1);
         this.zippo_world = new RenderEntityData(new RenderEntity2D3D(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_pickable);
         this.zippo_world.setEntityModelConstructor(itemPickUpModelConstructor);
         this.zippo_world.getMeshRenderData().allowMoveMeshesIntoTransparencyPass(false).getRenderAttributes().setAlphaDiscard(0.6f).setShadowCaster(false).setRenderDistance(64.0f);
         this.zippo_world.getMeshRenderData().setOverlappingMaterial(zwMat);
 
-        this.water = new RenderLiquidData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
+        this.water = new RenderLiquidData(new MaterialOld(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
 
         this.entityCube = new RenderEntityData(new RenderEntity(), WorldEntity.class, JGemsResourceManager.globalShaderAssets.world_gbuffer).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
 

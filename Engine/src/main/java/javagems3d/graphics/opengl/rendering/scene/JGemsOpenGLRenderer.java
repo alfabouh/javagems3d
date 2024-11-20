@@ -21,8 +21,8 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL45;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -204,62 +204,62 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.createSSAOResources(this.getSSAOParams(windowSize));
 
         T2DAttachmentContainer transparency = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA);
-            add(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED);
-            add(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA16F, GL30.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_R8, GL46.GL_RED);
+            add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA16F, GL46.GL_RGBA);
         }};
-        this.transparencySceneBuffer.createFrameBuffer2DTexture(windowSize, transparency, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.transparencySceneBuffer.createFrameBuffer2DTexture(windowSize, transparency, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer blur = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.bloomBlurredBuffer.createFrameBuffer2DTexture(windowSize, blur, false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.bloomBlurredBuffer.createFrameBuffer2DTexture(windowSize, blur, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer allScene = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB16F, GL30.GL_RGB);
-            add(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB16F, GL30.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
         }};
-        this.forwardAndDeferredScenesBuffer.createFrameBuffer2DTexture(windowSize, allScene, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.forwardAndDeferredScenesBuffer.createFrameBuffer2DTexture(windowSize, allScene, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB32F, GL30.GL_RGB);
-            add(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_RGB32F, GL30.GL_RGB);
-            add(GL30.GL_COLOR_ATTACHMENT2, GL43.GL_RGBA, GL30.GL_RGBA);
-            add(GL30.GL_COLOR_ATTACHMENT3, GL43.GL_RGB, GL30.GL_RGB);
-            add(GL30.GL_COLOR_ATTACHMENT4, GL43.GL_RGB, GL30.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.gBuffer.createFrameBuffer2DTexture(new Vector2i(windowSize), gBuffer, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.gBuffer.createFrameBuffer2DTexture(new Vector2i(windowSize), gBuffer, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer hdr = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.hdrBuffer.createFrameBuffer2DTexture(windowSize, hdr, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.hdrBuffer.createFrameBuffer2DTexture(windowSize, hdr, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_R16F, GL30.GL_RED);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
         }};
-        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer fxaa = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.fxaaBuffer.createFrameBuffer2DTexture(windowSize, fxaa, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.fxaaBuffer.createFrameBuffer2DTexture(windowSize, fxaa, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer gluing = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB16F, GL30.GL_RGB);
-            add(GL30.GL_COLOR_ATTACHMENT1, GL30.GL_RGB, GL30.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.sceneGluingBuffer.createFrameBuffer2DTexture(windowSize, gluing, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.sceneGluingBuffer.createFrameBuffer2DTexture(windowSize, gluing, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer finalB = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGB, GL30.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.finalizingBuffer.createFrameBuffer2DTexture(windowSize, finalB, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.finalizingBuffer.createFrameBuffer2DTexture(windowSize, finalB, false, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer skybox = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        this.skyBoxBackGroundBuffer.createFrameBuffer2DTexture(windowSize, skybox, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, null);
+        this.skyBoxBackGroundBuffer.createFrameBuffer2DTexture(windowSize, skybox, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     private void createSSAOResources(Vector3i ssaoParams) {
@@ -329,57 +329,57 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     //section HDR
     public void screenBloomHDRCorrection(Model<Format2D> model) {
-        GL30.glEnable(GL30.GL_BLEND);
-        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         this.getHdrBuffer().bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         JGemsShaderManager hdr = JGemsResourceManager.globalShaderAssets.hdr;
         hdr.beginShading();
         hdr.performUniform(new UniformString("exposure"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.HDR_EXPOSURE));
         hdr.performUniform(new UniformString("gamma"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.HDR_GAMMA));
         hdr.performUniform(new UniformString("use_hdr"), DefaultUniformActions.BOOLEAN(JGemsSceneGlobalConstants.USE_HDR));
-        hdr.performUniformTexture(new UniformString("texture_sampler"), this.getSceneGluingBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        hdr.performUniformTexture(new UniformString("bloom_sampler"), this.getBloomBlurredBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
+        hdr.performUniformTexture(new UniformString("texture_sampler"), this.getSceneGluingBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        hdr.performUniformTexture(new UniformString("bloom_sampler"), this.getBloomBlurredBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
         hdr.getUtils().performOrthographicMatrix(model);
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         hdr.endShading();
         this.getHdrBuffer().unBindFBO();
-        GL30.glDisable(GL30.GL_BLEND);
+        GL46.glDisable(GL46.GL_BLEND);
     }
 
     //section Gluing
     public void sceneGluing(Model<Format2D> model) {
-        GL30.glEnable(GL30.GL_BLEND);
-        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         this.getSceneGluingBuffer().bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         JGemsShaderManager gluing = JGemsResourceManager.globalShaderAssets.scene_gluing;
         gluing.beginShading();
-        gluing.performUniformTexture(new UniformString("texture_sampler"), this.getForwardAndDeferredScenesBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        gluing.performUniformTexture(new UniformString("bloom_sampler"), this.getForwardAndDeferredScenesBuffer().getTextureIDByIndex(1), GL30.GL_TEXTURE_2D);
+        gluing.performUniformTexture(new UniformString("texture_sampler"), this.getForwardAndDeferredScenesBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        gluing.performUniformTexture(new UniformString("bloom_sampler"), this.getForwardAndDeferredScenesBuffer().getTextureIDByIndex(1), GL46.GL_TEXTURE_2D);
 
-        gluing.performUniformTexture(new UniformString("bloom_sampler2"), this.getTransparencySceneBuffer().getTextureIDByIndex(2), GL30.GL_TEXTURE_2D);
-        gluing.performUniformTexture(new UniformString("accumulated_alpha"), this.getTransparencySceneBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        gluing.performUniformTexture(new UniformString("reveal_alpha"), this.getTransparencySceneBuffer().getTextureIDByIndex(1), GL30.GL_TEXTURE_2D);
+        gluing.performUniformTexture(new UniformString("bloom_sampler2"), this.getTransparencySceneBuffer().getTextureIDByIndex(2), GL46.GL_TEXTURE_2D);
+        gluing.performUniformTexture(new UniformString("accumulated_alpha"), this.getTransparencySceneBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        gluing.performUniformTexture(new UniformString("reveal_alpha"), this.getTransparencySceneBuffer().getTextureIDByIndex(1), GL46.GL_TEXTURE_2D);
         gluing.getUtils().performOrthographicMatrix(model);
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         gluing.endShading();
         this.getSceneGluingBuffer().unBindFBO();
-        GL30.glDisable(GL30.GL_BLEND);
+        GL46.glDisable(GL46.GL_BLEND);
     }
 
     //section FXAA
     public void postFXAA(Model<Format2D> model, Vector2i windowSize) {
         JGemsShaderManager fxaaFilter = JGemsResourceManager.globalShaderAssets.fxaa;
         this.getFxaaBuffer().bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         fxaaFilter.beginShading();
         fxaaFilter.performUniform(new UniformString("use_fxaa"), DefaultUniformActions.BOOLEAN(JGemsSceneGlobalConstants.USE_FXAA));
         fxaaFilter.performUniform(new UniformString("resolution"), DefaultUniformActions.VEC2I(windowSize));
-        fxaaFilter.performUniformTexture(new UniformString("texture_sampler"), this.getHdrBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
+        fxaaFilter.performUniformTexture(new UniformString("texture_sampler"), this.getHdrBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
         fxaaFilter.performUniform(new UniformString("FXAA_SPAN_MAX"), DefaultUniformActions.FLOAT((float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2)));
         fxaaFilter.getUtils().performOrthographicMatrix(model);
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         fxaaFilter.endShading();
         this.getFxaaBuffer().unBindFBO();
     }
@@ -391,17 +391,17 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
             JGemsOpenGLRenderer.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Misc, new float[]{JGemsHelper.getScreen().getRenderTicks()});
             if (!APIEventsLauncher.pushEvent(new Events.RenderScenePre(frameTicking, windowSize, this)).isCancelled()) {
                 if (this.getSceneData().getCamera() == null) {
-                    GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                    GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
                     SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
                     this.takeScreenShotIfNeeded(windowSize);
                     this.getDearImGuiRender().onRender(JGemsOpenGLRenderer.inMenuInterface, windowSize, frameTicking);
                     return;
                 }
                 if (JGems3D.get().isPaused()) {
-                    GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+                    GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
                     SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getGuiRenderSet());
                 } else {
-                    GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT | GL30.GL_STENCIL_BUFFER_BIT);
+                    GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
                     this.getSceneData().getSceneWorld().getEnvironment().updateEnvironment(this.getSceneData().getSceneWorld(), this.getSceneData().getCamera());
                     JGems3D.get().getScreen().normalizeViewPort();
                     this.renderForwardAndDeferredScenes(frameTicking, windowSize, this.screenModel);
@@ -441,9 +441,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     // section Post
     private void postProcessing(FrameTicking frameTicking, Vector2i size) {
         this.getFinalizingBuffer().bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         if (!APIEventsLauncher.pushEvent(new Events.RenderPostProcessing(frameTicking, size, this.getFxaaBuffer().getTextureIDByIndex(0), this)).isCancelled()) {
-            this.getFxaaBuffer().copyFBOtoFBOColor(this.getFinalizingBuffer().getFrameBufferId(), new int[]{GL30.GL_COLOR_ATTACHMENT0}, size);
+            this.getFxaaBuffer().copyFBOtoFBOColor(this.getFinalizingBuffer().getFrameBufferId(), new int[]{GL46.GL_COLOR_ATTACHMENT0}, size);
         }
         this.getFinalizingBuffer().unBindFBO();
     }
@@ -452,9 +452,9 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private void renderFinalSceneInMainBuffer(Model<Format2D> model) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
-        imgShader.performUniformTexture(new UniformString("texture_sampler"), this.getFinalizingBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
+        imgShader.performUniformTexture(new UniformString("texture_sampler"), this.getFinalizingBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
         imgShader.getUtils().performOrthographicMatrix(model);
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         imgShader.endShading();
     }
 
@@ -466,15 +466,15 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
         if (this.getSsaoNoiseTexture() != null) {
             try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("ssao_buffer")) {
-                GL30.glDisable(GL30.GL_DEPTH_TEST);
+                GL46.glDisable(GL46.GL_DEPTH_TEST);
                 this.calcSSAOValueOnGBuffer(model, windowSize);
-                GL30.glEnable(GL30.GL_DEPTH_TEST);
+                GL46.glEnable(GL46.GL_DEPTH_TEST);
             }
         }
 
         try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("lighting")) {
             this.getForwardAndDeferredScenesBuffer().bindFBO();
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.deferredLighting(model);
             this.getForwardAndDeferredScenesBuffer().unBindFBO();
         }
@@ -482,12 +482,12 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getGBuffer().copyFBOtoFBODepth(this.getForwardAndDeferredScenesBuffer().getFrameBufferId(), windowSize);
 
         try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("skybox")) {
-            GL30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            GL46.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             this.getSkyBoxBackGroundBuffer().bindFBO();
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getSkyBoxBackgroundRenderSet());
             this.getSkyBoxBackGroundBuffer().unBindFBO();
-            GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
 
         try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("forward")) {
@@ -500,7 +500,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     //section DeferredGeom
     private void deferredGeometry(FrameTicking frameTicking) {
         this.getGBuffer().bindFBO();
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getDeferredRenderSet());
         this.getGBuffer().unBindFBO();
     }
@@ -510,53 +510,53 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         JGemsShaderManager deferredShader = JGemsResourceManager.globalShaderAssets.world_deferred;
         deferredShader.beginShading();
         deferredShader.performUniform(new UniformString("view_matrix"), DefaultUniformActions.MAT4F(JGemsSceneUtils.getMainCameraViewMatrix()));
-        deferredShader.performUniformTexture(new UniformString("gPositions"), this.getGBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        deferredShader.performUniformTexture(new UniformString("gNormals"), this.getGBuffer().getTextureIDByIndex(1), GL30.GL_TEXTURE_2D);
-        deferredShader.performUniformTexture(new UniformString("gTexture"), this.getGBuffer().getTextureIDByIndex(2), GL30.GL_TEXTURE_2D);
-        deferredShader.performUniformTexture(new UniformString("gEmission"), this.getGBuffer().getTextureIDByIndex(3), GL30.GL_TEXTURE_2D);
-        deferredShader.performUniformTexture(new UniformString("gSpecular"), this.getGBuffer().getTextureIDByIndex(4), GL30.GL_TEXTURE_2D);
-        deferredShader.performUniformTexture(new UniformString("ssaoSampler"), this.getSsaoBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
+        deferredShader.performUniformTexture(new UniformString("gPositions"), this.getGBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        deferredShader.performUniformTexture(new UniformString("gNormals"), this.getGBuffer().getTextureIDByIndex(1), GL46.GL_TEXTURE_2D);
+        deferredShader.performUniformTexture(new UniformString("gTexture"), this.getGBuffer().getTextureIDByIndex(2), GL46.GL_TEXTURE_2D);
+        deferredShader.performUniformTexture(new UniformString("gEmission"), this.getGBuffer().getTextureIDByIndex(3), GL46.GL_TEXTURE_2D);
+        deferredShader.performUniformTexture(new UniformString("gSpecular"), this.getGBuffer().getTextureIDByIndex(4), GL46.GL_TEXTURE_2D);
+        deferredShader.performUniformTexture(new UniformString("ssaoSampler"), this.getSsaoBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
         deferredShader.performUniform(new UniformString("isSsaoValid"), DefaultUniformActions.BOOLEAN(this.getSsaoBufferTexture() != null));
         deferredShader.getUtils().performShadowsInfo();
         deferredShader.getUtils().performOrthographicMatrix(model);
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         deferredShader.endShading();
     }
 
     //section Forward
     private void renderForwardScene(FrameTicking frameTicking) {
-        GL30.glEnable(GL30.GL_BLEND);
-        GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getForwardRenderSet());
-        GL30.glDisable(GL30.GL_BLEND);
+        GL46.glDisable(GL46.GL_BLEND);
     }
 
     //section Transient
     private void renderTransparentObjects(FrameTicking frameTicking, Vector2i windowSize) {
         this.getForwardAndDeferredScenesBuffer().copyFBOtoFBODepth(this.getTransparencySceneBuffer().getFrameBufferId(), windowSize);
-        GL30.glDepthMask(false);
-        GL30.glEnable(GL30.GL_BLEND);
+        GL46.glDepthMask(false);
+        GL46.glEnable(GL46.GL_BLEND);
         GL45.glBlendFunci(0, GL45.GL_ONE, GL45.GL_ONE);
         GL45.glBlendFunci(1, GL45.GL_ZERO, GL45.GL_ONE_MINUS_SRC_COLOR);
         GL45.glBlendFunci(2, GL45.GL_ONE, GL45.GL_ONE);
-        GL45.glBlendEquation(GL30.GL_FUNC_ADD);
+        GL45.glBlendEquation(GL46.GL_FUNC_ADD);
         this.getTransparencySceneBuffer().bindFBO();
-        GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-        GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
-        GL45.glClearBufferfv(GL30.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        GL45.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        GL45.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
+        GL45.glClearBufferfv(GL46.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
         SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getTransparencyRenderSet());
         this.getTransparencySceneBuffer().unBindFBO();
-        GL30.glDisable(GL30.GL_BLEND);
-        GL30.glDepthMask(true);
+        GL46.glDisable(GL46.GL_BLEND);
+        GL46.glDepthMask(true);
     }
 
     //section SSAO
     private void calcSSAOValueOnGBuffer(Model<Format2D> model, Vector2i windowSize) {
         if (!JGemsSceneGlobalConstants.USE_SSAO) {
             this.getSsaoBuffer().bindFBO();
-            GL30.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-            GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            GL46.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
+            GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             this.getSsaoBuffer().unBindFBO();
             return;
         }
@@ -567,22 +567,22 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         ssaoComputeShader.performUniform(new UniformString("ssao_radius"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.SSAO_RADIUS));
         ssaoComputeShader.performUniform(new UniformString("ssao_range"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.SSAO_RANGE));
 
-        ssaoComputeShader.performUniform(new UniformString("noiseScale"), DefaultUniformActions.VEC2I(new Vector2i(windowSize).div((float) JGemsSceneGlobalConstants.SSAO_NOISE_SIZE)));
+        ssaoComputeShader.performUniform(new UniformString("noiseScale"), DefaultUniformActions.VEC2I(new Vector2i(windowSize).div(JGemsSceneGlobalConstants.SSAO_NOISE_SIZE)));
         ssaoComputeShader.performUniform(new UniformString("projection_matrix"), DefaultUniformActions.MAT4F(JGemsSceneUtils.getMainPerspectiveMatrix()));
-        ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), this.getGBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
-        ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), this.getGBuffer().getTextureIDByIndex(1), GL30.GL_TEXTURE_2D);
-        ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture().getTextureId(), GL30.GL_TEXTURE_2D);
-        ssaoComputeShader.performUniformTexture(new UniformString("ssaoKernel"), this.getSsaoKernelTexture().getTextureId(), GL30.GL_TEXTURE_2D);
-        GL43.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL30.GL_WRITE_ONLY, GL30.GL_RGBA16F);
-        ssaoComputeShader.dispatchComputeShader(windowSize.x / 8, windowSize.y / 8, 1, GL43.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), this.getGBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), this.getGBuffer().getTextureIDByIndex(1), GL46.GL_TEXTURE_2D);
+        ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture().getTextureId(), GL46.GL_TEXTURE_2D);
+        ssaoComputeShader.performUniformTexture(new UniformString("ssaoKernel"), this.getSsaoKernelTexture().getTextureId(), GL46.GL_TEXTURE_2D);
+        GL46.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16F);
+        ssaoComputeShader.dispatchComputeShader(windowSize.x / 8, windowSize.y / 8, 1, GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         ssaoComputeShader.endComputing();
 
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;
         this.getSsaoBuffer().bindFBO();
         ssaoBlur.beginShading();
-        ssaoBlur.performUniformTexture(new UniformString("texture_sampler"), this.getSsaoBufferTexture().getTextureId(), GL30.GL_TEXTURE_2D);
+        ssaoBlur.performUniformTexture(new UniformString("texture_sampler"), this.getSsaoBufferTexture().getTextureId(), GL46.GL_TEXTURE_2D);
         ssaoBlur.getUtils().performOrthographicMatrix(model);
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         ssaoBlur.endShading();
         this.getSsaoBuffer().unBindFBO();
     }
@@ -591,7 +591,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
     private void blurBloomBuffer(Model<Format2D> model, Vector2i windowSize) {
         if (!JGemsSceneGlobalConstants.USE_BLOOM || JGems3D.get().getGameSettings().bloom.getValue() == 0) {
             this.getBloomBlurredBuffer().bindFBO();
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             this.getBloomBlurredBuffer().unBindFBO();
             return;
         }
@@ -604,10 +604,10 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         blurShader.performUniform(new UniformString("resolution"), DefaultUniformActions.VEC2I(new Vector2i(windowSize).div(4.0f)));
         for (int i = 0; i < steps; i++) {
             this.getBloomBlurredBuffer().bindFBO();
-            blurShader.performUniformTexture(new UniformString("texture_sampler"), startFbo.getTextureIDByIndex(startBinding), GL30.GL_TEXTURE_2D, 0);
+            blurShader.performUniformTexture(new UniformString("texture_sampler"), startFbo.getTextureIDByIndex(startBinding), GL46.GL_TEXTURE_2D, 0);
             blurShader.performUniform(new UniformString("direction"), DefaultUniformActions.VEC2F(i % 2 == 0 ? new Vector2f(1.0f, 0.0f) : new Vector2f(0.0f, 1.0f)));
             blurShader.getUtils().performOrthographicMatrix(model);
-            JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+            JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
             this.getBloomBlurredBuffer().unBindFBO();
             startFbo = this.getBloomBlurredBuffer();
             startBinding = 0;
@@ -705,7 +705,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
         floatBuffer.flip();
         int s = (int) Math.sqrt(size);
-        textureProgram.createTexture(new Vector2i(s), GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_NEAREST, GL30.GL_NEAREST, GL30.GL_NONE, GL30.GL_LESS, GL30.GL_REPEAT, GL30.GL_REPEAT, null, floatBuffer);
+        textureProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
         MemoryUtil.memFree(floatBuffer);
         return textureProgram;
     }
@@ -722,14 +722,14 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         }
         floatBuffer.flip();
         int s = (int) Math.sqrt(size);
-        textureProgram.createTexture(new Vector2i(s), GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_NEAREST, GL30.GL_NEAREST, GL30.GL_NONE, GL30.GL_LESS, GL30.GL_REPEAT, GL30.GL_REPEAT, null, floatBuffer);
+        textureProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
         MemoryUtil.memFree(floatBuffer);
         return textureProgram;
     }
 
     private TextureProgram createSSAOBuffer(Vector2i windowSize) {
         TextureProgram textureProgram = new TextureProgram();
-        textureProgram.createTexture(windowSize, GL30.GL_RGBA16F, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_LINEAR, GL30.GL_NONE, GL30.GL_LESS, GL30.GL_CLAMP_TO_EDGE, GL30.GL_CLAMP_TO_EDGE, null);
+        textureProgram.createTexture(windowSize, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null);
         return textureProgram;
     }
 
@@ -756,7 +756,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         int h = windowSize.y;
         int i1 = w * h;
         ByteBuffer p = ByteBuffer.allocateDirect(i1 * 4);
-        GL30.glReadPixels(0, 0, w, h, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, p);
+        GL46.glReadPixels(0, 0, w, h, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, p);
         try {
             BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
             int[] pArray = new int[i1];

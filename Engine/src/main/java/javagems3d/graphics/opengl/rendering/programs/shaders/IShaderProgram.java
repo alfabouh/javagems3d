@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.programs.shaders;
 
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL46;
 
 public interface IShaderProgram {
     int getProgramId();
@@ -19,15 +19,15 @@ public interface IShaderProgram {
     default void clean() {
         this.unbind();
         if (this.getProgramId() != 0) {
-            GL20.glDeleteProgram(this.getProgramId());
+            GL46.glDeleteProgram(this.getProgramId());
         }
     }
 
     default void bind() {
-        GL20.glUseProgram(this.getProgramId());
+        GL46.glUseProgram(this.getProgramId());
     }
 
     default void unbind() {
-        GL20.glUseProgram(0);
+        GL46.glUseProgram(0);
     }
 }

@@ -174,7 +174,7 @@ public final class SceneWorld implements IWorld {
             return true;
         }
         ICamera camera = JGems3D.get().getScreen().getCamera();
-        return renderObject.getMeshRenderData().getRenderAttributes().getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderObject.getMeshRenderData().getRenderAttributes().getRenderDistance();
+        return renderObject.getObjectRenderSettings().getRenderAttributes().getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderObject.getObjectRenderSettings().getRenderAttributes().getRenderDistance();
     }
 
     public Collection<? extends ICulled> getCollectionFrustumCulledList(Collection<? extends ICulled> list) {
@@ -188,7 +188,7 @@ public final class SceneWorld implements IWorld {
         if (this.getFrustumCulling() == null) {
             return this.getModeledSceneEntities();
         }
-        return this.getCollectionFrustumCulledList(this.getModeledSceneEntities()).stream().map(e -> (AbstractSceneObject) e).filter(e -> (renderPass == null || e.getMeshRenderData().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toSet());
+        return this.getCollectionFrustumCulledList(this.getModeledSceneEntities()).stream().map(e -> (AbstractSceneObject) e).filter(e -> (renderPass == null || e.getObjectRenderSettings().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toSet());
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {

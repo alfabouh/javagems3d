@@ -11,8 +11,8 @@
 
 package javagems3d.graphics.opengl.rendering.programs.shaders.unifrom;
 
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
@@ -27,7 +27,7 @@ public class UniformBufferProgram {
     private int binding;
 
     public UniformBufferProgram(int shaderId, String name) {
-        this.uboBlock = GL20.glGenBuffers();
+        this.uboBlock = GL46.glGenBuffers();
         this.shaderId = shaderId;
         if (this.getUboBlock() == 0) {
             throw new JGemsRuntimeException("Could not create uniform-buffer program!");
@@ -47,39 +47,39 @@ public class UniformBufferProgram {
     }
 
     private void setupUniformBuffer(int bytes, int binding) {
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, this.getUboBlock());
-        GL43.glBindBufferBase(GL43.GL_UNIFORM_BUFFER, binding, this.getUboBlock());
-        GL43.glUniformBlockBinding(this.shaderId, this.getLocation(), this.getBinding());
-        GL43.glBufferData(GL43.GL_UNIFORM_BUFFER, bytes, GL43.GL_DYNAMIC_DRAW);
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, this.getUboBlock());
+        GL46.glBindBufferBase(GL46.GL_UNIFORM_BUFFER, binding, this.getUboBlock());
+        GL46.glUniformBlockBinding(this.shaderId, this.getLocation(), this.getBinding());
+        GL46.glBufferData(GL46.GL_UNIFORM_BUFFER, bytes, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
     }
 
     public int getLocation() {
-        return GL43.glGetUniformBlockIndex(this.shaderId, this.getName());
+        return GL46.glGetUniformBlockIndex(this.shaderId, this.getName());
     }
 
     public void setUniformBufferData(int offset, ByteBuffer buffer) {
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, this.getUboBlock());
-        GL43.glBufferSubData(GL43.GL_UNIFORM_BUFFER, offset, buffer);
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, this.getUboBlock());
+        GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, buffer);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
     }
 
     public void setUniformBufferData(int offset, FloatBuffer buffer) {
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, this.getUboBlock());
-        GL43.glBufferSubData(GL43.GL_UNIFORM_BUFFER, offset, buffer);
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, this.getUboBlock());
+        GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, buffer);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
     }
 
     public void setUniformBufferData(int offset, IntBuffer buffer) {
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, this.getUboBlock());
-        GL43.glBufferSubData(GL43.GL_UNIFORM_BUFFER, offset, buffer);
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, this.getUboBlock());
+        GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, buffer);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
     }
 
     public void setUniformBufferData(int offset, float[] values) {
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, this.getUboBlock());
-        GL43.glBufferSubData(GL43.GL_UNIFORM_BUFFER, offset, values);
-        GL43.glBindBuffer(GL43.GL_UNIFORM_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, this.getUboBlock());
+        GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, values);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
     }
 
     public int getBinding() {

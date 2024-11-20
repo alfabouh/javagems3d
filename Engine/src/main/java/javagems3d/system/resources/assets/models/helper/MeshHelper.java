@@ -11,7 +11,7 @@
 
 package javagems3d.system.resources.assets.models.helper;
 
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.system.resources.assets.models.Model;
@@ -65,37 +65,37 @@ public abstract class MeshHelper {
         return wireBoxModel3D.generateModel();
     }
 
-    public static Mesh generateVector2fMesh(Vector2f v1, Vector2f v2) {
+    public static DirectRenderMesh generateVector2fMesh(Vector2f v1, Vector2f v2) {
         VectorModel2D vectorModel2D = new VectorModel2D(v1, v2);
         return vectorModel2D.generateMesh();
     }
 
-    public static Mesh generatePlane2DMesh(Vector2f v1, Vector2f v2, float zLevel) {
+    public static DirectRenderMesh generatePlane2DMesh(Vector2f v1, Vector2f v2, float zLevel) {
         PlaneModel2D planeModel2D = new PlaneModel2D(v1, v2, zLevel);
         return planeModel2D.generateMesh();
     }
 
-    public static Mesh generatePlane2DMeshInverted(Vector2f v1, Vector2f v2, float zLevel) {
+    public static DirectRenderMesh generatePlane2DMeshInverted(Vector2f v1, Vector2f v2, float zLevel) {
         PlaneModel2D planeModel2D = new PlaneModel2D(true, v1, v2, zLevel);
         return planeModel2D.generateMesh();
     }
 
-    public static Mesh generatePlane3DMesh(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4) {
+    public static DirectRenderMesh generatePlane3DMesh(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4) {
         PlaneModel3D planeModel3D = new PlaneModel3D(v1, v2, v3, v4);
         return planeModel3D.generateMesh();
     }
 
-    public static Mesh generateSimplePlane3DMesh(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4) {
+    public static DirectRenderMesh generateSimplePlane3DMesh(Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4) {
         SimplePlaneModel3D planeModel3D = new SimplePlaneModel3D(v1, v2, v3, v4);
         return planeModel3D.generateMesh();
     }
 
-    public static Mesh generateVector3DMesh3f(Vector3f v1, Vector3f v2) {
+    public static DirectRenderMesh generateVector3DMesh3f(Vector3f v1, Vector3f v2) {
         VectorModel3D vectorModel3D = new VectorModel3D(v1, v2);
         return vectorModel3D.generateMesh();
     }
 
-    public static Mesh generateWirebox3DMesh(Vector3f min, Vector3f max) {
+    public static DirectRenderMesh generateWirebox3DMesh(Vector3f min, Vector3f max) {
         WireBoxModel3D wireBoxModel3D = new WireBoxModel3D(min, max);
         return wireBoxModel3D.generateMesh();
     }

@@ -1,9 +1,8 @@
-package javagems3d.system.resources.assets.models.mesh.attributes;
+package javagems3d.system.resources.assets.models.mesh.vertex.attributes;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.AttributePointer;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryStack;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.Buffer;
@@ -12,13 +11,13 @@ import java.nio.IntBuffer;
 public final class IntegerVertexAttribute extends VertexAttribute<Integer> {
     private IntBuffer intBuffer;
 
-    public IntegerVertexAttribute(AttributePointer attributePointer) {
+    public IntegerVertexAttribute(RenderAttributePointer attributePointer) {
         super(attributePointer);
     }
 
     @Override
     public void pushGLBuffer() {
-        GL30.glBufferData(GL30.GL_ARRAY_BUFFER, (IntBuffer) this.getBuffer(), GL30.GL_STATIC_DRAW);
+        GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (IntBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
     }
 
     public void putArray(int[] i) {
@@ -40,6 +39,6 @@ public final class IntegerVertexAttribute extends VertexAttribute<Integer> {
 
     @Override
     public int attributeType() {
-        return GL30.GL_FLOAT;
+        return GL46.GL_FLOAT;
     }
 }

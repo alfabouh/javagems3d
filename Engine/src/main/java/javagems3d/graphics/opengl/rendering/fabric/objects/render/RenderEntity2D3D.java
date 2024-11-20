@@ -22,12 +22,12 @@ public class RenderEntity2D3D extends RenderWorldItem {
 
     @Override
     public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRendered renderItem) {
-        //GL30.glDisable(GL30.GL_DEPTH_TEST);
+        //GL46.glDisable(GL46.GL_DEPTH_TEST);
         AbstractSceneEntity entityObject = (AbstractSceneEntity) renderItem;
         if (entityObject.hasRender() && entityObject.hasModel()) {
             entityObject.getModel().getFormat().setOrientedToView(true);
             sceneRenderBase.getSceneRenderer().renderModeledSceneObject(entityObject);
         }
-        //GL30.glEnable(GL30.GL_DEPTH_TEST);
+        //GL46.glEnable(GL46.GL_DEPTH_TEST);
     }
 }

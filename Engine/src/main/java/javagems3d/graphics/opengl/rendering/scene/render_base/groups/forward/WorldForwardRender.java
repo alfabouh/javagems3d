@@ -41,12 +41,12 @@ public class WorldForwardRender extends SceneRenderBase {
         for (AbstractSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {
-                    entityItem.getMeshRenderData().getShaderManager().beginShading();
-                    entityItem.getMeshRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
+                    entityItem.getObjectRenderSettings().getShaderManager().beginShading();
+                    entityItem.getObjectRenderSettings().getShaderManager().getUtils().performPerspectiveMatrix();
                     entityItem.renderFabric().onPreRender(entityItem);
                     entityItem.renderFabric().onRender(frameTicking, this, entityItem);
                     entityItem.renderFabric().onPostRender(entityItem);
-                    entityItem.getMeshRenderData().getShaderManager().endShading();
+                    entityItem.getObjectRenderSettings().getShaderManager().endShading();
                 }
             }
         }

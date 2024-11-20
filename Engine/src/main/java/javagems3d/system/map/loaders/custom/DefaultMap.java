@@ -17,7 +17,7 @@ import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
@@ -72,7 +72,7 @@ public class DefaultMap implements IMapLoader {
     public void fillSkyBox(SkyBox.Background background) {
         MeshGroup meshGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), false, false);
         SceneProp sceneProp3 = new SceneProp(new RenderSimpleBackgroundProp(background), new Model<>(new Format3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), JGemsResourceManager.globalShaderAssets.skybox_background);
-        sceneProp3.getMeshRenderData().getRenderAttributes().setAlphaDiscard(0.5f);
+        sceneProp3.getObjectRenderSettings().getRenderAttributes().setAlphaDiscard(0.5f);
         background.addObjectInBackGround(sceneProp3);
     }
 

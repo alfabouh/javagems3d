@@ -13,7 +13,7 @@ package javagems3d.graphics.opengl.environment.shadow;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.environment.light.PointLight;
 import javagems3d.graphics.opengl.rendering.programs.fbo.FBOCubeMapProgram;
 import javagems3d.graphics.opengl.world.SceneWorld;
@@ -37,8 +37,8 @@ public class PointLightShadow {
 
     public void createFBO(Vector2i dim) {
         this.pointLightCubeMap.clearFBO();
-        this.pointLightCubeMap.createFrameBufferCubeMapColor(new Vector2i(dim), true, GL30.GL_RG32F, GL30.GL_RG, GL30.GL_LINEAR, GL30.GL_CLAMP_TO_EDGE);
-        //this.pointLightCubeMap.createFrameBufferCubeMapDepth(news Vector2i(dim), GL30.GL_NEAREST, GL30.GL_CLAMP_TO_EDGE);
+        this.pointLightCubeMap.createFrameBufferCubeMapColor(new Vector2i(dim), true, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_LINEAR, GL46.GL_CLAMP_TO_EDGE);
+        //this.pointLightCubeMap.createFrameBufferCubeMapDepth(news Vector2i(dim), GL46.GL_NEAREST, GL46.GL_CLAMP_TO_EDGE);
     }
 
     public void configureMatrices() {

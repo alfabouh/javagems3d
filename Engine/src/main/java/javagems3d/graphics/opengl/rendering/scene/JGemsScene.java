@@ -13,8 +13,8 @@ package javagems3d.graphics.opengl.rendering.scene;
 
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.camera.AttachedCamera;
@@ -43,7 +43,6 @@ public class JGemsScene implements IScene {
     private float elapsedTime;
     private boolean refresh;
 
-
     public JGemsScene(Window window, TransformationUtils transformationUtils, SceneWorld sceneWorld) {
         this.transformationUtils = transformationUtils;
 
@@ -55,7 +54,7 @@ public class JGemsScene implements IScene {
     }
 
     public static void activeGlTexture(int code) {
-        GL30.glActiveTexture(GL13.GL_TEXTURE0 + code);
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + code);
     }
 
     public void preRender() {

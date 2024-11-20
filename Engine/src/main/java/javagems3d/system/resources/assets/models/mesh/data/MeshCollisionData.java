@@ -14,8 +14,8 @@ package javagems3d.system.resources.assets.models.mesh.data;
 import com.jme3.bullet.collision.shapes.infos.CompoundMesh;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.old.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class MeshCollisionData implements IMeshUserData {
     private final CompoundMesh compoundMesh;
 
     public MeshCollisionData(MeshGroup meshGroup) {
-        this(meshGroup, DefaultPointers.POSITIONS.getIndex());
+        this(meshGroup, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
     }
 
     public MeshCollisionData(MeshGroup meshGroup, int positionsAttributeIndex) {

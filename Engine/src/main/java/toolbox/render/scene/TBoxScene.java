@@ -14,9 +14,7 @@ package toolbox.render.scene;
 import javafx.util.Pair;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.*;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL45;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.camera.ICamera;
@@ -30,7 +28,7 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import logger.SystemLogging;
@@ -93,15 +91,15 @@ public class TBoxScene {
                 } else {
                     shaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(true));
                     shaderManager.performUniformNoWarn(new UniformString("diffuse_map"),  DefaultUniformActions.INTEGER(0));
-                    GL30.glActiveTexture(GL30.GL_TEXTURE0);
-                    GL30.glBindTexture(GL11.GL_TEXTURE_2D, ((TextureSample) meshNode.getMaterial().getDiffuse()).getTextureId());
+                    GL46.glActiveTexture(GL46.GL_TEXTURE0);
+                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((TextureSample) meshNode.getMaterial().getDiffuse()).getTextureId());
                 }
             }
-            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            GL46.glBindVertexArray(meshNode.getMesh().getVao());
             meshNode.getMesh().enableAllMeshAttributes();
-            GL30.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            GL46.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
             meshNode.getMesh().disableAllMeshAttributes();
-            GL30.glBindVertexArray(0);
+            GL46.glBindVertexArray(0);
         }
     }
 
@@ -118,20 +116,20 @@ public class TBoxScene {
         TBoxScene.sceneTransparentFbo = new FBOTexture2DProgram(true);
 
         T2DAttachmentContainer fbo = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        TBoxScene.sceneFbo.createFrameBuffer2DTexture(dim, fbo, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
-        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneFbo.createFrameBuffer2DTexture(dim, fbo, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
 
         T2DAttachmentContainer fbo2 = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RGBA, GL30.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        TBoxScene.sceneForwardFbo.createFrameBuffer2DTexture(dim, fbo2, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneForwardFbo.createFrameBuffer2DTexture(dim, fbo2, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
         T2DAttachmentContainer fbo3 = new T2DAttachmentContainer() {{
-            add(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGBA16F, GL30.GL_RGBA);
-            add(GL30.GL_COLOR_ATTACHMENT1, GL43.GL_R8, GL30.GL_RED);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_R8, GL46.GL_RED);
         }};
-        TBoxScene.sceneTransparentFbo.createFrameBuffer2DTexture(dim, fbo3, true, GL30.GL_NEAREST, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneTransparentFbo.createFrameBuffer2DTexture(dim, fbo3, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
     }
 
     private void destroyFBOs() {
@@ -165,17 +163,17 @@ public class TBoxScene {
         if (!this.isActiveScene()) {
             return;
         }
-        GL30.glHint(GL30.GL_LINE_SMOOTH_HINT, GL30.GL_NICEST);
-        GL30.glEnable(GL30.GL_LINE_SMOOTH);
+        GL46.glHint(GL46.GL_LINE_SMOOTH_HINT, GL46.GL_NICEST);
+        GL46.glEnable(GL46.GL_LINE_SMOOTH);
         EditorContent editorContent = (EditorContent) this.getDimGuiRenderTBox().getCurrentContentToRender();
         this.getCamera().updateCamera(deltaTime);
         if (this.getDimGuiRenderTBox().getCurrentContentToRender() instanceof EditorContent) {
-            GL30.glEnable(GL30.GL_DEPTH_TEST);
+            GL46.glEnable(GL46.GL_DEPTH_TEST);
 
-            GL30.glEnable(GL30.GL_BLEND);
-            GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+            GL46.glEnable(GL46.GL_BLEND);
+            GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
             TBoxScene.sceneForwardFbo.bindFBO();
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.getSceneContainer().renderForward(deltaTime);
             Vector3f v3 = this.getMapProperties().getSkyProp().getSunPos();
             Model<Format3D> modelSun = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(v3.x, v3.y, v3.z).mul(300.0f));
@@ -183,60 +181,60 @@ public class TBoxScene {
             TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
             TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
-            TBoxSceneUtils.renderModel(modelSun, GL30.GL_LINES);
+            TBoxSceneUtils.renderModel(modelSun, GL46.GL_LINES);
             TBoxResourceManager.shaderResources().world_lines.endShading();
             modelSun.clean();
             TBoxScene.sceneForwardFbo.unBindFBO();
-            GL30.glDisable(GL30.GL_BLEND);
+            GL46.glDisable(GL46.GL_BLEND);
 
             TBoxScene.sceneForwardFbo.copyFBOtoFBODepth(TBoxScene.sceneTransparentFbo.getFrameBufferId(), this.getWindow().getWindowDimensions());
-            GL30.glDepthMask(false);
-            GL30.glEnable(GL30.GL_BLEND);
+            GL46.glDepthMask(false);
+            GL46.glEnable(GL46.GL_BLEND);
             GL45.glBlendFunci(0, GL45.GL_ONE, GL45.GL_ONE);
             GL45.glBlendFunci(1, GL45.GL_ZERO, GL45.GL_ONE_MINUS_SRC_COLOR);
-            GL45.glBlendEquation(GL30.GL_FUNC_ADD);
+            GL45.glBlendEquation(GL46.GL_FUNC_ADD);
             TBoxScene.sceneTransparentFbo.bindFBO();
-            GL45.glClearBufferfv(GL30.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-            GL45.glClearBufferfv(GL30.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
+            GL45.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+            GL45.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
             this.getSceneContainer().renderTransparent(deltaTime);
             TBoxScene.sceneTransparentFbo.unBindFBO();
-            GL30.glDisable(GL30.GL_BLEND);
-            GL30.glDepthMask(true);
+            GL46.glDisable(GL46.GL_BLEND);
+            GL46.glDepthMask(true);
 
             TBoxScene.sceneFbo.bindFBO();
-            GL30.glEnable(GL30.GL_BLEND);
-            GL30.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-            GL30.glEnable(GL30.GL_DEPTH_TEST);
+            GL46.glEnable(GL46.GL_BLEND);
+            GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+            GL46.glEnable(GL46.GL_DEPTH_TEST);
 
             try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowDimensions()), 0.5f)) {
                 TBoxShaderManager gluing = TBoxResourceManager.shaderResources().scene_gluing;
                 gluing.beginShading();
-                gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0).getTextureId(), GL30.GL_TEXTURE_2D);
+                gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0).getTextureId(), GL46.GL_TEXTURE_2D);
 
-                gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0).getTextureId(), GL30.GL_TEXTURE_2D);
-                gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1).getTextureId(), GL30.GL_TEXTURE_2D);
+                gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0).getTextureId(), GL46.GL_TEXTURE_2D);
+                gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1).getTextureId(), GL46.GL_TEXTURE_2D);
                 gluing.getUtils().performOrthographicMatrix(model);
-                JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+                JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
                 gluing.endShading();
             }
 
             if (editorContent.currentSelectedObject != null) {
-                GL30.glDisable(GL30.GL_DEPTH_TEST);
+                GL46.glDisable(GL46.GL_DEPTH_TEST);
                 Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
                 TBoxResourceManager.shaderResources().world_lines.beginShading();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
                 TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
-                TBoxSceneUtils.renderModel(model, GL30.GL_LINES);
+                TBoxSceneUtils.renderModel(model, GL46.GL_LINES);
                 TBoxResourceManager.shaderResources().world_lines.endShading();
                 model.clean();
-                GL30.glEnable(GL30.GL_DEPTH_TEST);
+                GL46.glEnable(GL46.GL_DEPTH_TEST);
             }
 
-            GL30.glDisable(GL30.GL_DEPTH_TEST);
+            GL46.glDisable(GL46.GL_DEPTH_TEST);
             this.showXYZ();
-            GL30.glDisable(GL30.GL_BLEND);
+            GL46.glDisable(GL46.GL_BLEND);
             TBoxScene.sceneFbo.unBindFBO();
         }
 
@@ -246,10 +244,10 @@ public class TBoxScene {
             if (s != null) {
                 AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(s);
                 TBoxScene.previewItemFbo.bindFBO();
-                GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
-                GL30.glEnable(GL30.GL_DEPTH_TEST);
+                GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+                GL46.glEnable(GL46.GL_DEPTH_TEST);
                 this.renderIsometricEditorItem(mapObject, editorContent.previewBorders[0]);
-                GL30.glDisable(GL30.GL_DEPTH_TEST);
+                GL46.glDisable(GL46.GL_DEPTH_TEST);
                 TBoxScene.previewItemFbo.unBindFBO();
             }
         }
@@ -258,8 +256,8 @@ public class TBoxScene {
     }
 
     private void showXYZ() {
-        GL30.glClear(GL30.GL_DEPTH_BUFFER_BIT);
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
+        GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
         Format3D format3D = new Format3D();
         Model<Format3D> model = new Model<>(format3D, ToolBox.get().getResourceManager().getModelResources().xyz);
         Quaternionf quaterniond = new Quaternionf();
@@ -270,18 +268,18 @@ public class TBoxScene {
         TBoxResourceManager.shaderResources().world_xyz.getUtils().performOrthographicMatrix(this.getWindow().getWindowDimensions().x / (float) this.getWindow().getWindowDimensions().y, 36.0f);
         TBoxResourceManager.shaderResources().world_xyz.getUtils().performModel3DMatrix(model);
         TBoxResourceManager.shaderResources().world_xyz.performUniform(new UniformString("view_inversed"),  DefaultUniformActions.MAT4F(inversedView));
-        TBoxSceneUtils.renderModelTextured(TBoxResourceManager.shaderResources().world_xyz, model, GL30.GL_TRIANGLES);
+        TBoxSceneUtils.renderModelTextured(TBoxResourceManager.shaderResources().world_xyz, model, GL46.GL_TRIANGLES);
         TBoxResourceManager.shaderResources().world_xyz.endShading();
-        GL30.glDisable(GL30.GL_DEPTH_TEST);
+        GL46.glDisable(GL46.GL_DEPTH_TEST);
     }
 
     private void renderIsometricEditorItem(AbstractObjectData mapObject, float borders) {
-        GL30.glViewport(0, 0, 400, 400);
+        GL46.glViewport(0, 0, 400, 400);
         TBoxShaderManager shaderManager = TBoxResourceManager.shaderResources().world_isometric_object;
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(1.0f, borders);
         shaderManager.getUtils().performModel3DMatrix(new Matrix4f().identity().lookAt(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
-        TBoxScene.renderIsometricModel(shaderManager, mapObject.meshDataGroup(), GL30.GL_TRIANGLES);
+        TBoxScene.renderIsometricModel(shaderManager, mapObject.meshDataGroup(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
         ToolBox.get().getScreen().normalizeViewPort();
     }

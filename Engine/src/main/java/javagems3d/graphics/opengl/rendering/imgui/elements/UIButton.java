@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
@@ -68,7 +68,7 @@ public class UIButton extends UIInteractiveElement {
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
         shaderManager.performUniform(new UniformString("background_color"), DefaultUniformActions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
         shaderManager.performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(this.isSelected()));
-        JGemsSceneUtils.renderModel(this.buttonModel, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(this.buttonModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
         this.uiText.render(frameDeltaTicks);
     }

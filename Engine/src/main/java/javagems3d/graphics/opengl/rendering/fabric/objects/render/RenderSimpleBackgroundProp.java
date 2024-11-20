@@ -27,9 +27,9 @@ public class RenderSimpleBackgroundProp extends RenderWorldItem {
     @Override
     public void onRender(FrameTicking frameTicking, SceneRenderBase sceneRenderBase, IRendered renderItem) {
         SceneProp sceneObject = (SceneProp) renderItem;
-        sceneObject.getMeshRenderData().getShaderManager().beginShading();
-        sceneObject.getMeshRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
+        sceneObject.getObjectRenderSettings().getShaderManager().beginShading();
+        sceneObject.getObjectRenderSettings().getShaderManager().getUtils().performPerspectiveMatrix();
         sceneRenderBase.getSceneRenderer().renderModeledSceneObject(sceneObject, this.background.getScaledCameraBackground());
-        sceneObject.getMeshRenderData().getShaderManager().endShading();
+        sceneObject.getObjectRenderSettings().getShaderManager().endShading();
     }
 }

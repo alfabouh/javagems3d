@@ -12,7 +12,7 @@
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.transparent;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.particles.objects.base.ParticleFX;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
@@ -43,7 +43,7 @@ public class ParticlesRender extends SceneRenderBase {
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(model);
         gemsShaderManager.getUtils().performShadowsInfo();
         if (particleFX.hasTexturePack()) {
-            gemsShaderManager.performUniformTexture(new UniformString("diffuse_map"), particleFX.getCurrentFrame().getTextureId(), GL30.GL_TEXTURE_2D);
+            gemsShaderManager.performUniformTexture(new UniformString("diffuse_map"), particleFX.getCurrentFrame().getTextureId(), GL46.GL_TEXTURE_2D);
             gemsShaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(true));
         } else {
             gemsShaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(false));
@@ -51,7 +51,7 @@ public class ParticlesRender extends SceneRenderBase {
         gemsShaderManager.performUniform(new UniformString("color_mask"), DefaultUniformActions.VEC3F(particleFX.getColorMask()));
         gemsShaderManager.performUniform(new UniformString("brightness"), DefaultUniformActions.FLOAT(particleFX.getParticleAttributes().getBrightness()));
         gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(particleFX.getParticleAttributes().getOpacity()));
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         gemsShaderManager.endShading();
     }
 

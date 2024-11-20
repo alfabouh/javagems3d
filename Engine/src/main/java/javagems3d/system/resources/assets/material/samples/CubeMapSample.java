@@ -11,7 +11,7 @@
 
 package javagems3d.system.resources.assets.material.samples;
 
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.system.resources.assets.material.samples.base.ISample;
 import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
 import javagems3d.system.resources.cache.ICached;
@@ -41,22 +41,22 @@ public class CubeMapSample implements ISample, ICached {
     }
 
     public void registerCubeMap(CubeMapTexturePack cubeMapTexturePack) {
-        this.textureId = GL30.glGenTextures();
+        this.textureId = GL46.glGenTextures();
 
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, this.textureId);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_T, GL30.GL_CLAMP_TO_EDGE);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_S, GL30.GL_CLAMP_TO_EDGE);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_CUBE_MAP, GL30.GL_TEXTURE_WRAP_R, GL30.GL_CLAMP_TO_EDGE);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, this.textureId);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
 
         for (int i = 0; i < 6; i++) {
             CubeMapTexturePack.Data data = cubeMapTexturePack.getTextureArray()[i];
-            GL30.glTexImage2D(GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL30.GL_RGB16, data.size.x, data.size.y, 0, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, data.buffer);
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, data.size.x, data.size.y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.buffer);
         }
         cubeMapTexturePack.freeBuffers();
 
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
     }
 
     public boolean isValid() {
@@ -64,11 +64,11 @@ public class CubeMapSample implements ISample, ICached {
     }
 
     public void unBindCubeMap() {
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
     }
 
     public void bindCubeMap() {
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, this.getTextureId());
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, this.getTextureId());
     }
 
     public int getTextureId() {
@@ -76,8 +76,8 @@ public class CubeMapSample implements ISample, ICached {
     }
 
     public void cleanCubeMap() {
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
-        GL30.glDeleteTextures(this.getTextureId());
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
+        GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
     }
 

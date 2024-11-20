@@ -14,7 +14,7 @@ import javagems3d.graphics.opengl.rendering.items.IRendered;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import javagems3d.system.resources.assets.models.properties.ModelRenderProperties;
+import javagems3d.system.resources.old.properties.ModelRenderProperties;
 import javagems3d.system.service.path.JGemsPath;
 
 /**

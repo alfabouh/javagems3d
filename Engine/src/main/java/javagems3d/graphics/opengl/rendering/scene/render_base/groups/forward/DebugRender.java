@@ -15,7 +15,7 @@ import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
@@ -42,8 +42,8 @@ public class DebugRender extends SceneRenderBase {
     }
 
     public void onRender(FrameTicking frameTicking) {
-        GL30.glHint(GL30.GL_LINE_SMOOTH_HINT, GL30.GL_NICEST);
-        GL30.glEnable(GL30.GL_LINE_SMOOTH);
+        GL46.glHint(GL46.GL_LINE_SMOOTH_HINT, GL46.GL_NICEST);
+        GL46.glEnable(GL46.GL_LINE_SMOOTH);
         if (JGemsDebugGlobalConstants.SHOW_DEBUG_LINES) {
             this.debugShaders.beginShading();
             this.debugShaders.getUtils().performPerspectiveMatrix();
@@ -77,7 +77,7 @@ public class DebugRender extends SceneRenderBase {
     private void renderDebugSunDirection() {
         try (Model<Format3D> model = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(this.getSceneWorld().getEnvironment().getSkyBox().getSun().getSunPosition()).mul(1000.0f))) {
             this.debugShaders.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
-            JGemsSceneUtils.renderModel(model, GL30.GL_LINES);
+            JGemsSceneUtils.renderModel(model, GL46.GL_LINES);
         }
     }
 }

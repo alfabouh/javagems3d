@@ -23,7 +23,7 @@ import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.properties.ModelRenderData;
+import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.ArrayList;
@@ -125,7 +125,7 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
         return this.lightList;
     }
 
-    public ModelRenderData getMeshRenderData() {
+    public ModelRenderData getObjectRenderSettings() {
         return this.modelRenderData;
     }
 

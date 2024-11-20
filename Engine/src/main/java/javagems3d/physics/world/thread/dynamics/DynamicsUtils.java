@@ -20,10 +20,10 @@ import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.util.BufferUtils;
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +122,7 @@ public abstract class DynamicsUtils {
     }
 
     public static CompoundMesh getCompoundMesh(MeshGroup meshGroup) {
-        return DynamicsUtils.getCompoundMesh(meshGroup, DefaultPointers.POSITIONS.getIndex());
+        return DynamicsUtils.getCompoundMesh(meshGroup, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
     }
 
     public static CompoundMesh getCompoundMesh(MeshGroup meshGroup, int positionsAttributeIndex) {

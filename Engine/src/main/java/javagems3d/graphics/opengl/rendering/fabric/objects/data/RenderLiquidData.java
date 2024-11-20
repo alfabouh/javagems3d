@@ -12,19 +12,19 @@
 package javagems3d.graphics.opengl.rendering.fabric.objects.data;
 
 import org.jetbrains.annotations.NotNull;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public final class RenderLiquidData {
-    private final Material liquidMaterial;
+    private final MaterialOld liquidMaterial;
     private final JGemsShaderManager shaderManager;
 
-    public RenderLiquidData(@NotNull Material liquidMaterial, JGemsShaderManager shaderManager) {
+    public RenderLiquidData(@NotNull MaterialOld liquidMaterial, JGemsShaderManager shaderManager) {
         this.liquidMaterial = liquidMaterial;
         this.shaderManager = shaderManager;
     }
 
-    public Material getLiquidMaterial() {
+    public MaterialOld getLiquidMaterial() {
         return this.liquidMaterial;
     }
 

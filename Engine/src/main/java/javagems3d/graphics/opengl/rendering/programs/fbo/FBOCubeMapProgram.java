@@ -12,8 +12,8 @@
 package javagems3d.graphics.opengl.rendering.programs.fbo;
 
 import org.joml.Vector2i;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.rendering.programs.textures.CubeMapProgram;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
@@ -27,17 +27,17 @@ public class FBOCubeMapProgram {
     }
 
     public void createFrameBufferCubeMapDepth(Vector2i size, int filtering, int clamp) {
-        this.frameBufferId = GL30.glGenFramebuffers();
-        this.renderBufferId = GL30.glGenRenderbuffers();
+        this.frameBufferId = GL46.glGenFramebuffers();
+        this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
-        this.getCubeMapProgram().createCubeMap(size, GL30.GL_DEPTH_COMPONENT, GL30.GL_DEPTH_COMPONENT, filtering, clamp);
-        GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, this.getCubeMapProgram().getTextureId(), 0);
+        this.getCubeMapProgram().createCubeMap(size, GL46.GL_DEPTH_COMPONENT, GL46.GL_DEPTH_COMPONENT, filtering, clamp);
+        GL46.glFramebufferTexture(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_ATTACHMENT, this.getCubeMapProgram().getTextureId(), 0);
 
-        GL30.glDrawBuffer(GL30.GL_NONE);
-        GL30.glReadBuffer(GL30.GL_NONE);
+        GL46.glDrawBuffer(GL46.GL_NONE);
+        GL46.glReadBuffer(GL46.GL_NONE);
 
-        if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
+        if (GL46.glCheckFramebufferStatus(GL46.GL_FRAMEBUFFER) != GL46.GL_FRAMEBUFFER_COMPLETE) {
             throw new JGemsRuntimeException("Failed to create framebuffer!");
         }
 
@@ -45,24 +45,24 @@ public class FBOCubeMapProgram {
     }
 
     public void createFrameBufferCubeMapColor(Vector2i size, boolean depthBuffer, int internalFormat, int textureFormat, int filtering, int clamp) {
-        this.frameBufferId = GL30.glGenFramebuffers();
-        this.renderBufferId = GL30.glGenRenderbuffers();
+        this.frameBufferId = GL46.glGenFramebuffers();
+        this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
         this.getCubeMapProgram().createCubeMap(size, internalFormat, textureFormat, filtering, clamp);
         for (int i = 0; i < 6; i++) {
-            GL32.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL32.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, this.getCubeMapProgram().getTextureId(), 0);
+            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, this.getCubeMapProgram().getTextureId(), 0);
         }
-        GL30.glDrawBuffers(new int[]{GL30.GL_COLOR_ATTACHMENT0});
+        GL46.glDrawBuffers(new int[]{GL46.GL_COLOR_ATTACHMENT0});
 
         if (depthBuffer) {
-            GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);
-            GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH24_STENCIL8, size.x, size.y);
-            GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL30.GL_RENDERBUFFER, this.renderBufferId);
-            GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
+            GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, this.renderBufferId);
+            GL46.glRenderbufferStorage(GL46.GL_RENDERBUFFER, GL46.GL_DEPTH24_STENCIL8, size.x, size.y);
+            GL46.glFramebufferRenderbuffer(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_STENCIL_ATTACHMENT, GL46.GL_RENDERBUFFER, this.renderBufferId);
+            GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, 0);
         }
 
-        if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE) {
+        if (GL46.glCheckFramebufferStatus(GL46.GL_FRAMEBUFFER) != GL46.GL_FRAMEBUFFER_COMPLETE) {
             throw new JGemsRuntimeException("Failed to create framebuffer!");
         }
 
@@ -70,7 +70,7 @@ public class FBOCubeMapProgram {
     }
 
     public void connectCubeMapToBuffer(int attachment, int j) {
-        GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
+        GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
     }
 
     public CubeMapProgram getCubeMapProgram() {
@@ -86,19 +86,19 @@ public class FBOCubeMapProgram {
     }
 
     public void bindRenderDepthFBO() {
-        GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.renderBufferId);
+        GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, this.renderBufferId);
     }
 
     public void unBindRenderDepthFBO() {
-        GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
+        GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, 0);
     }
 
     public void bindFBO() {
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.frameBufferId);
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, this.frameBufferId);
     }
 
     public void unBindFBO() {
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
     }
 
     public void bindCubeMap() {
@@ -113,7 +113,7 @@ public class FBOCubeMapProgram {
         this.unBindFBO();
         this.unBindRenderDepthFBO();
         this.getCubeMapProgram().cleanCubeMap();
-        GL30.glDeleteRenderbuffers(this.renderBufferId);
-        GL30.glDeleteFramebuffers(this.frameBufferId);
+        GL46.glDeleteRenderbuffers(this.renderBufferId);
+        GL46.glDeleteFramebuffers(this.frameBufferId);
     }
 }

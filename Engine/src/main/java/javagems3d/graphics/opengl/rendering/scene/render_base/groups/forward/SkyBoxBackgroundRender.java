@@ -20,7 +20,7 @@ import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 
 public class SkyBoxBackgroundRender extends SceneRenderBase {
     private final SkyBox skyBox;
@@ -30,7 +30,7 @@ public class SkyBoxBackgroundRender extends SceneRenderBase {
         this.skyBox = skyBox;
     }
     public void renderSkyBoxBackground(FrameTicking frameTicking) {
-        GL30.glDisable(GL30.GL_BLEND);
+        GL46.glDisable(GL46.GL_BLEND);
         for (AbstractSceneObject abstractSceneObject : this.getSkyBox().getBackground().getToRenderSet()) {
             abstractSceneObject.renderFabric().onRender(frameTicking, this, abstractSceneObject);
         }

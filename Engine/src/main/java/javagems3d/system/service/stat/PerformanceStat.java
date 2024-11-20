@@ -11,7 +11,7 @@
 
 package javagems3d.system.service.stat;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.NVXGPUMemoryInfo;
 
 import java.lang.management.ManagementFactory;
@@ -21,9 +21,9 @@ public abstract class PerformanceStat {
     public static Result getSystemStat() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         int[] maxTextureSizeA = new int[1];
-        GL11.glGetIntegerv(GL11.GL_MAX_TEXTURE_SIZE, maxTextureSizeA);
+        GL46.glGetIntegerv(GL46.GL_MAX_TEXTURE_SIZE, maxTextureSizeA);
         int[] dedicatedMemory = new int[1];
-        GL11.glGetIntegerv(NVXGPUMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, dedicatedMemory);
+        GL46.glGetIntegerv(NVXGPUMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, dedicatedMemory);
 
         int maxMemoryMB = (int) (Runtime.getRuntime().maxMemory() / (long) (1024 * 1024));
         int maxTextureSize = maxTextureSizeA[0];

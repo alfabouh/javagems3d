@@ -20,7 +20,7 @@ import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -46,7 +46,7 @@ public class LiquidsRender extends SceneRenderBase {
         gemsShaderManager.beginShading();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
-        for (MeshGroup.Node meshNode : object.getModel().getMeshGroup().getModelNodeList()) {
+        for (MeshGroup.Node meshNode : object.getModel().getMeshStructure().getModelNodeList()) {
             gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(object.getRenderLiquidData().getLiquidMaterial());
             gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(object.getRenderLiquidData().getLiquidMaterial().getFullOpacity()));

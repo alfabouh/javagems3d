@@ -15,7 +15,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderEntity;
 import javagems3d.graphics.opengl.rendering.items.objects.EntityObject;
 import javagems3d.system.map.loaders.tbox.placers.TDefaultRenderContainer;
-import javagems3d.system.resources.assets.models.properties.ModelRenderProperties;
+import javagems3d.system.resources.old.properties.ModelRenderProperties;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 import api.app.main.JGemsTBoxApplication;

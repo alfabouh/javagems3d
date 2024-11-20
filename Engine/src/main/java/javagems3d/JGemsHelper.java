@@ -17,8 +17,8 @@ import javagems3d.graphics.opengl.rendering.items.IAnimated;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.joml.*;
 import javagems3d.audio.SoundManager;
 import javagems3d.graphics.opengl.camera.FreeControlledCamera;
@@ -55,7 +55,7 @@ import javagems3d.system.graph.Graph;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
 import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.localisation.Lang;
 import javagems3d.system.resources.localisation.Localisation;
@@ -410,7 +410,7 @@ public abstract class JGemsHelper {
         }
 
         public static float calcDistanceToMostFarPoint(MeshGroup meshGroup, Vector3f scaling) {
-            return JGemsHelper.UTILS.calcDistanceToMostFarPoint(meshGroup, scaling, DefaultPointers.POSITIONS.getIndex());
+            return JGemsHelper.UTILS.calcDistanceToMostFarPoint(meshGroup, scaling, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
         }
 
         public static float calcDistanceToMostFarPoint(MeshGroup meshGroup, Vector3f scaling, int positionsAttributeIndex) {
@@ -493,7 +493,7 @@ public abstract class JGemsHelper {
         }
 
         public static boolean createMeshCollisionData(MeshGroup meshGroup) {
-            return JGemsHelper.UTILS.createMeshCollisionData(meshGroup, DefaultPointers.POSITIONS.getIndex());
+            return JGemsHelper.UTILS.createMeshCollisionData(meshGroup, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
         }
 
         @SuppressWarnings("all")
@@ -528,12 +528,12 @@ public abstract class JGemsHelper {
         }
 
         public static ICulled.RenderAABB calcRenderAABBWithTransforms(Model<Format3D> model) {
-            if (model.getMeshGroup().getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
+            if (model.getMeshStructure().getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
                 return null;
             }
 
-            Vector3f min = new Vector3f(model.getMeshGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMin());
-            Vector3f max = new Vector3f(model.getMeshGroup().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMax());
+            Vector3f min = new Vector3f(model.getMeshStructure().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMin());
+            Vector3f max = new Vector3f(model.getMeshStructure().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMax());
 
             Matrix4f modelMatrix = Transformation.getModelMatrix(model.getFormat());
 
@@ -563,18 +563,18 @@ public abstract class JGemsHelper {
             return new ICulled.RenderAABB(transformedMin, transformedMax);
         }
 
-        public static List<Vector3f> getVertexPositionsFromMesh(Mesh mesh, Format3D format3D) {
-            return JGemsHelper.UTILS.getVertexPositionsFromMesh(mesh, format3D, DefaultPointers.POSITIONS.getIndex());
+        public static List<Vector3f> getVertexPositionsFromMesh(DirectRenderMesh directRenderMesh, Format3D format3D) {
+            return JGemsHelper.UTILS.getVertexPositionsFromMesh(directRenderMesh, format3D, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
         }
 
-        public static List<Vector3f> getVertexPositionsFromMesh(Mesh mesh, Format3D format3D, int positionsAttributeIndex) {
-            List<Integer> integers = mesh.getVertexIndexes();
-            List<Float> floats = mesh.tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
+        public static List<Vector3f> getVertexPositionsFromMesh(DirectRenderMesh directRenderMesh, Format3D format3D, int positionsAttributeIndex) {
+            List<Integer> integers = directRenderMesh.getVertexIndexes();
+            List<Float> floats = directRenderMesh.tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
             List<Vector3f> vertexes = new ArrayList<>();
             Matrix4f modelMat = Transformation.getModelMatrix(format3D);
 
             for (int i = 0; i < integers.size(); i++) {
-                int i1 = mesh.getVertexIndexes().get(i) * 3;
+                int i1 = directRenderMesh.getVertexIndexes().get(i) * 3;
                 Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMat);
                 vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
             }

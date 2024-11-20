@@ -17,8 +17,8 @@ import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
-import javagems3d.system.resources.assets.models.properties.ModelRenderData;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.old.properties.ModelRenderData;
 
 public abstract class AbstractSceneObject implements IModeled, IRendered, ICulled, ILightsKeeper {
     private float animationSpeed;
@@ -57,7 +57,7 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
     }
 
     public void nextAnimationFrame() {
-        this.nextAnimationFrame(DefaultPointers.POSITIONS.getIndex());
+        this.nextAnimationFrame(DefaultAttributePointers.ATTR_POSITIONS.getIndex());
     }
 
     public void nextAnimationFrame(int positionAttributeIndex) {
@@ -68,11 +68,11 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
     }
 
     public void recreateModelRenderAABB() {
-        this.getModel().getMeshGroup().createRenderAABB();
+        this.getModel().getMeshStructure().createRenderAABB();
     }
 
     public void recreateModelRenderAABB(int positionAttributeIndex) {
-        this.getModel().getMeshGroup().createRenderAABB(positionAttributeIndex);
+        this.getModel().getMeshStructure().createRenderAABB(positionAttributeIndex);
     }
 
     @Override
@@ -82,14 +82,14 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
 
     @Override
     public AnimationData setAnimationByID(int id) {
-        if (!this.hasModel()) {
+        if (!this.hasModel() || !this.hasAnimations()) {
             return null;
         }
-        if (id < 0 || id >= this.getModel().getMeshGroup().getAnimationList().size()) {
+        if (id < 0 || id >= this.getModel().getMeshStructure().getAnimationList().size()) {
             JGemsHelper.getLogger().error("Couldn't set animation for: " + this);
             return null;
         }
-        AnimationData animationData = new AnimationData(this.getModel().getMeshGroup().getAnimationList().get(id));
+        AnimationData animationData = new AnimationData(this.getModel().getMeshStructure().getAnimationList().get(id));
         this.setAnimationData(animationData);
         this.nextAnimationFrame();
         this.recreateModelRenderAABB();
@@ -100,7 +100,7 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
         return this.model;
     }
 
-    public abstract ModelRenderData getMeshRenderData();
+    public abstract ModelRenderData getObjectRenderSettings();
 
     public boolean hasModel() {
         return this.getModel() != null && this.getModel().isValid();

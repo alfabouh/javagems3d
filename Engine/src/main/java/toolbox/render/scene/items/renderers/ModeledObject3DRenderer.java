@@ -13,7 +13,7 @@ package toolbox.render.scene.items.renderers;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import toolbox.render.scene.dear_imgui.content.EditorContent;
@@ -41,7 +41,7 @@ public class ModeledObject3DRenderer implements ITBoxObjectRenderer {
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogDensity"),  DefaultUniformActions.FLOAT(properties.getFogProp().getFogDensity()));
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogColor"), DefaultUniformActions.VEC3F(properties.getFogProp().getFogColor()));
 
-        TBoxSceneUtils.renderModelTextured(tBoxAbstractObject.getRenderData().getShaderManager(), tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
+        TBoxSceneUtils.renderModelTextured(tBoxAbstractObject.getRenderData().getShaderManager(), tBoxAbstractObject.getModel(), GL46.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().endShading();
     }
 

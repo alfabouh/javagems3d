@@ -17,7 +17,7 @@ import javagems3d.graphics.opengl.environment.light.LightManager;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
-import javagems3d.system.resources.assets.models.ModelLoader;
+import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
@@ -69,7 +69,7 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     protected void initObjects(ResourceCache resourceCache) {
         this.addShaderLibraryContainerInGlobalList(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
 
-        this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * ModelLoader.ANIM_MAX_BONES);
+        this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * ModelLoadingUtils.ANIM_MAX_BONES);
         ShaderStorageBufferProgram.createSSBO(this.Bones);
 
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);

@@ -20,7 +20,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
@@ -139,15 +139,15 @@ public class DIMGuiRenderJGems {
             this.getShaderManager().performUniform(new UniformString("scale"), DefaultUniformActions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
             this.getShaderManager().performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
 
-            GL30.glEnable(GL30.GL_BLEND);
-            GL30.glBlendEquation(GL30.GL_FUNC_ADD);
-            GL30.glBlendFuncSeparate(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA, GL30.GL_ONE, GL30.GL_ONE_MINUS_SRC_ALPHA);
-            GL30.glDisable(GL30.GL_DEPTH_TEST);
-            GL30.glDisable(GL30.GL_CULL_FACE);
+            GL46.glEnable(GL46.GL_BLEND);
+            GL46.glBlendEquation(GL46.GL_FUNC_ADD);
+            GL46.glBlendFuncSeparate(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA, GL46.GL_ONE, GL46.GL_ONE_MINUS_SRC_ALPHA);
+            GL46.glDisable(GL46.GL_DEPTH_TEST);
+            GL46.glDisable(GL46.GL_CULL_FACE);
 
-            GL30.glBindVertexArray(this.getImguiMesh().getVaoId());
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.getImguiMesh().getVerticesVbo());
-            GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, this.getImguiMesh().getIndicesVbo());
+            GL46.glBindVertexArray(this.getImguiMesh().getVaoId());
+            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.getImguiMesh().getVerticesVbo());
+            GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getImguiMesh().getIndicesVbo());
 
             int numLists = drawData.getCmdListsCount();
 
@@ -163,8 +163,8 @@ public class DIMGuiRenderJGems {
             final float clipScaleY = fbScale.y;
 
             for (int i = 0; i < numLists; i++) {
-                GL30.glBufferData(GL30.GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(i), GL30.GL_STREAM_DRAW);
-                GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(i), GL30.GL_STREAM_DRAW);
+                GL46.glBufferData(GL46.GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(i), GL46.GL_STREAM_DRAW);
+                GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(i), GL46.GL_STREAM_DRAW);
 
                 for (int j = 0; j < drawData.getCmdListCmdBufferSize(i); j++) {
                     final int elemCount = drawData.getCmdListCmdBufferElemCount(i, j);
@@ -172,9 +172,9 @@ public class DIMGuiRenderJGems {
                     final int indices = idxBufferOffset * ImDrawData.SIZEOF_IM_DRAW_IDX;
 
                     int textureId = drawData.getCmdListCmdBufferTextureId(i, j);
-                    GL30.glActiveTexture(GL30.GL_TEXTURE0);
+                    GL46.glActiveTexture(GL46.GL_TEXTURE0);
                     if (textureId > 0) {
-                        GL30.glBindTexture(GL30.GL_TEXTURE_2D, textureId);
+                        GL46.glBindTexture(GL46.GL_TEXTURE_2D, textureId);
                     } else {
                         this.getTextureSample().bindTexture();
                     }
@@ -191,16 +191,16 @@ public class DIMGuiRenderJGems {
                         continue;
                     }
 
-                    GL30.glEnable(GL30.GL_SCISSOR_TEST);
-                    GL30.glScissor((int) clipMinX, (int) (fbHeight - clipMaxY), (int) (clipMaxX - clipMinX), (int) (clipMaxY - clipMinY));
-                    GL30.glDrawElements(GL30.GL_TRIANGLES, elemCount, GL30.GL_UNSIGNED_SHORT, indices);
-                    GL30.glDisable(GL30.GL_SCISSOR_TEST);
+                    GL46.glEnable(GL46.GL_SCISSOR_TEST);
+                    GL46.glScissor((int) clipMinX, (int) (fbHeight - clipMaxY), (int) (clipMaxX - clipMinX), (int) (clipMaxY - clipMinY));
+                    GL46.glDrawElements(GL46.GL_TRIANGLES, elemCount, GL46.GL_UNSIGNED_SHORT, indices);
+                    GL46.glDisable(GL46.GL_SCISSOR_TEST);
                 }
             }
 
-            GL30.glEnable(GL30.GL_DEPTH_TEST);
-            GL30.glEnable(GL30.GL_CULL_FACE);
-            GL30.glDisable(GL30.GL_BLEND);
+            GL46.glEnable(GL46.GL_DEPTH_TEST);
+            GL46.glEnable(GL46.GL_CULL_FACE);
+            GL46.glDisable(GL46.GL_BLEND);
 
             this.getShaderManager().endShading();
 

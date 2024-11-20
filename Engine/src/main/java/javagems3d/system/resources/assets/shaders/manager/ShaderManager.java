@@ -17,8 +17,8 @@ import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.programs.shaders.CShaderProgram;
@@ -85,9 +85,9 @@ public abstract class ShaderManager implements ICached {
             JGemsHelper.getLogger().warn("[" + this + "]" + " doesn't have compute program!");
             return;
         }
-        GL43.glDispatchCompute(grX, grY, grZ);
+        GL46.glDispatchCompute(grX, grY, grZ);
         if (barrier > 0) {
-            GL43.glMemoryBarrier(barrier);
+            GL46.glMemoryBarrier(barrier);
         }
     }
 
@@ -187,12 +187,12 @@ public abstract class ShaderManager implements ICached {
             return;
         }
 
-        GL30.glActiveTexture(GL30.GL_TEXTURE0 + textureUnit);
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + textureUnit);
 
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
-        GL30.glBindTexture(GL30.GL_TEXTURE_CUBE_MAP, 0);
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
 
-        GL30.glBindTexture(textureAttachment, textureID);
+        GL46.glBindTexture(textureAttachment, textureID);
         this.performUniform(uniform, DefaultUniformActions.INTEGER(textureUnit));
     }
 
@@ -202,7 +202,7 @@ public abstract class ShaderManager implements ICached {
             this.graphicShaderHandler = new ShaderHandler(this.getShaderContainer().getId());
             if (gShaderProgram.createShader(this.getShaderContainer().getFragmentShader(), this.getShaderContainer().getVertexShader(), this.getShaderContainer().getGeometricShader(), this.getShaderContainer().getTesselationControlShader(), this.getShaderContainer().getTesselationEvaluationShader())) {
                 if (gShaderProgram.link()) {
-                    JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked");
+                    JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked (program id=" + gShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in g-shader " + this);
                 }
@@ -214,7 +214,7 @@ public abstract class ShaderManager implements ICached {
             this.computingShaderHandler = new ShaderHandler(this.getShaderContainer().getId());
             if (cShaderProgram.createShader(this.getShaderContainer().getComputeShader())) {
                 if (cShaderProgram.link()) {
-                    JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked");
+                    JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked (program id=" + cShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in c-shader " + this);
                 }

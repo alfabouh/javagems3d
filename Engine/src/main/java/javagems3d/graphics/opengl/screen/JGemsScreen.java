@@ -17,10 +17,7 @@ import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
@@ -47,6 +44,7 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.awt.*;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 public class JGemsScreen implements IScreen {
@@ -87,6 +85,9 @@ public class JGemsScreen implements IScreen {
             this.checkVSync();
 
             GL.createCapabilities();
+            if (JGems3D.DEBUG_MODE) {
+                JGemsScreen.registerOGLDebugOutput();
+            }
             JGemsResourceManager.createShaders();
 
             this.showGameLoadingScreen("System01");
@@ -131,7 +132,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public void normalizeViewPort() {
-        GL30.glViewport(0, 0, this.getWindowDimensions().x, this.getWindowDimensions().y);
+        GL46.glViewport(0, 0, this.getWindowDimensions().x, this.getWindowDimensions().y);
     }
 
     public boolean tryToBuildScreen() {
@@ -142,14 +143,12 @@ public class JGemsScreen implements IScreen {
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 6);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL20.GL_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL46.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
-        if (JGems3D.DEBUG_MODE) {
-            GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
-        }
+
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         boolean flag = vidMode != null && JGems3D.get().getGameSettings().windowMode.getValue() == 0;
         this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : JGemsSceneGlobalConstants.defaultW, flag ? vidMode.height() : JGemsSceneGlobalConstants.defaultH, JGems3D.get().toString()), APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getWindowIcon());
@@ -166,6 +165,102 @@ public class JGemsScreen implements IScreen {
         }
         GLFW.glfwMakeContextCurrent(window);
         return true;
+    }
+
+    public static void registerOGLDebugOutput() {
+        JGemsHelper.getLogger().debug("Enabled OpenGL Debug Context");
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
+        GL46.glEnable(GL46.GL_DEBUG_OUTPUT);
+        GL46.glEnable(GL46.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        GL46.glDebugMessageCallback((source, type, id, severity, length, message, param) -> {
+            if (severity == GL46.GL_DEBUG_SEVERITY_NOTIFICATION) {
+                return;
+            }
+            String msgS = MemoryUtil.memUTF8(message, length);
+            String sourceS = "unknown";
+            String typeS = "unknown";
+            String severityS = "unknown";
+            switch (source) {
+                case GL46.GL_DEBUG_SOURCE_API: {
+                    sourceS = "OpenGL API Functions";
+                    break;
+                }
+                case GL46.GL_DEBUG_SOURCE_WINDOW_SYSTEM: {
+                    sourceS = "Window Functions";
+                    break;
+                }
+                case GL46.GL_DEBUG_SOURCE_THIRD_PARTY: {
+                    sourceS = "Third Party Functions";
+                    break;
+                }
+                case GL46.GL_DEBUG_SOURCE_APPLICATION: {
+                    sourceS = "Application";
+                    break;
+                }
+                case GL46.GL_DEBUG_SOURCE_OTHER: {
+                    sourceS = "Other";
+                    break;
+                }
+            }
+            switch (type) {
+                case GL46.GL_DEBUG_TYPE_ERROR: {
+                    typeS = "OpenGL API Error";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: {
+                    typeS = "Deprecated Function Error";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: {
+                    typeS = "Undefined Error";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_PORTABILITY: {
+                    typeS = "Portable Function Error";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_PERFORMANCE: {
+                    typeS = "Performance Warning";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_MARKER: {
+                    typeS = "Annotation/Marker";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_PUSH_GROUP: {
+                    typeS = "Push Group Stack Error";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_POP_GROUP: {
+                    typeS = "Pop Group Stack Error";
+                    break;
+                }
+                case GL46.GL_DEBUG_TYPE_OTHER: {
+                    typeS = "Some Error";
+                    break;
+                }
+            }
+            switch (severity) {
+                case GL46.GL_DEBUG_SEVERITY_HIGH: {
+                    severityS = "HIGH SEVERITY/ERROR";
+                    break;
+                }
+                case GL46.GL_DEBUG_SEVERITY_MEDIUM: {
+                    severityS = "MEDIUM SEVERITY/WARNING";
+                    break;
+                }
+                case GL46.GL_DEBUG_SEVERITY_LOW: {
+                    severityS = "WARNING";
+                    break;
+                }
+                case GL46.GL_DEBUG_SEVERITY_NOTIFICATION: {
+                    severityS = "NOTIFICATION";
+                    break;
+                }
+            }
+            JGemsHelper.getLogger().error("[OpenGL]: " + msgS + " ::: \n" + sourceS + ", (type = " + typeS + "), severity: " + severityS);
+        }, 0L);
+        //GL46.glDebugMessageControl(GL46.GL_DONT_CARE, GL46.GL_DONT_CARE, GL46.GL_DEBUG_SEVERITY_LOW, (IntBuffer) null, true); DOES NOT WORK!!
     }
 
     public void checkVSync() {
@@ -225,7 +320,7 @@ public class JGemsScreen implements IScreen {
     public void startScreenRenderProcess() {
         JGemsHelper.getLogger().log("Starting screen...");
         SoundListener.updateListenerGain();
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
         JGems3D.get().showMainMenu();
@@ -276,11 +371,11 @@ public class JGemsScreen implements IScreen {
     }
 
     private void renderGameScene(float delta) throws InterruptedException {
-        GL30.glEnable(GL30.GL_CULL_FACE);
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
-        GL30.glCullFace(GL30.GL_BACK);
-        GL30.glClearDepth(1.0f);
-        GL11.glDepthFunc(GL11.GL_LESS);
+        GL46.glEnable(GL46.GL_CULL_FACE);
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
+        GL46.glCullFace(GL46.GL_BACK);
+        GL46.glClearDepth(1.0f);
+        GL46.glDepthFunc(GL46.GL_LESS);
         this.getScene().renderScene(delta);
         this.updateSound();
         JGemsSceneUtils.checkGLErrors();
@@ -355,8 +450,8 @@ public class JGemsScreen implements IScreen {
         }
 
         public void updateScreen() {
-            GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             int strokes = 0;
             for (Pair<Integer, String> s : this.lines) {
                 String textPre = strokes < 3 ? "[*] " : "[" + ++this.counter + "] ";
@@ -379,7 +474,7 @@ public class JGemsScreen implements IScreen {
         }
 
         public void clean() {
-            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.guiFont.cleanUp();
             this.lines.clear();
         }

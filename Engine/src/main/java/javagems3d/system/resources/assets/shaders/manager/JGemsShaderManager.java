@@ -16,7 +16,7 @@ import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUnif
 import javagems3d.graphics.opengl.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.shadow.CascadeShadow;
@@ -25,7 +25,7 @@ import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.Transformation;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
@@ -34,7 +34,7 @@ import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.properties.ModelRenderData;
+import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
@@ -103,7 +103,7 @@ public final class JGemsShaderManager extends ShaderManager {
             JGemsShaderManager.this.performUniform(new UniformString("lighting_code"), DefaultUniformActions.INTEGER(lighting_code));
         }
 
-        public void performModelMaterialOnShader(Material material) {
+        public void performModelMaterialOnShader(MaterialOld material) {
             if (material == null) {
                 return;
             }
@@ -185,7 +185,7 @@ public final class JGemsShaderManager extends ShaderManager {
             for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getShadowScene().getCascadeShadows().get(i);
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL30.GL_TEXTURE_2D);
+                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), DefaultUniformActions.FLOAT(cascadeShadow.getSplitDistance()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), DefaultUniformActions.MAT4F(cascadeShadow.getLightProjectionViewMatrix()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT));
@@ -202,7 +202,7 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performCubeMapProgram(UniformString uniform, int cubeMapTextureId) {
-            JGemsShaderManager.this.performUniformTexture(uniform, cubeMapTextureId, GL30.GL_TEXTURE_CUBE_MAP);
+            JGemsShaderManager.this.performUniformTexture(uniform, cubeMapTextureId, GL46.GL_TEXTURE_CUBE_MAP);
         }
 
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Format3D format3D) {

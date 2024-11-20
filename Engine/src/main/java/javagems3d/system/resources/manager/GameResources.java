@@ -11,6 +11,7 @@
 
 package javagems3d.system.resources.manager;
 
+import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
@@ -19,8 +20,7 @@ import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
-import javagems3d.system.resources.assets.models.ModelLoader;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.assets.models.loaders.ModelLoader;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * The GameResources class contains a cache, as well as tools for loading resources
  */
-public class GameResources {
+public final class GameResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsLoader> assetsLoaderSet;
 
@@ -47,22 +47,22 @@ public class GameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshGroup createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB, boolean isAnimated) {
-        MeshGroup meshGroup = this.createMesh(modelPath, constructRenderAABB, isAnimated);
+    public MeshBuffer createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB, boolean isAnimated) {
+        MeshBuffer meshGroup = this.createMesh(modelPath, constructRenderAABB, isAnimated);
         if (constructCollisionMesh) {
-            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
+            //JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
         }
         return meshGroup;
     }
 
-    public MeshGroup createMesh(JGemsPath modelPath, boolean constructRenderAABB, boolean isAnimated) {
+    public MeshBuffer createMesh(JGemsPath modelPath, boolean constructRenderAABB, boolean isAnimated) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
-        MeshGroup meshGroup = ModelLoader.createMesh(this, modelPath, isAnimated);
+        MeshBuffer meshGroup = ModelLoader.createMesh(this, modelPath, isAnimated);
         if (meshGroup == null) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
         } else {
             if (constructRenderAABB) {
-                meshGroup.createRenderAABB();
+               // meshGroup.createRenderAABB();
             }
         }
         return meshGroup;

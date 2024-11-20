@@ -14,7 +14,7 @@ package toolbox.render.scene.items.renderers;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
@@ -40,7 +40,7 @@ public class AABBZoneObject3DRenderer implements ITBoxObjectRenderer {
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogColor"), DefaultUniformActions.VEC3F(properties.getFogProp().getFogColor()));
 
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(color, 1.0f)));
-        TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL30.GL_TRIANGLES);
+        TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL46.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().endShading();
     }
 

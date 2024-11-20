@@ -12,18 +12,17 @@
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.transparent;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -56,26 +55,26 @@ public class WorldTransparentRender extends SceneRenderBase {
     }
 
     private void renderIModeledSceneObject(AbstractSceneObject object) {
-        Material overMaterial = object.getMeshRenderData().getOverlappingMaterial();
-        JGemsShaderManager gemsShaderManager = object.getMeshRenderData().getOverridenTransparencyShader();
+        MaterialOld overMaterial = object.getObjectRenderSettings().getOverlappingMaterial();
+        JGemsShaderManager gemsShaderManager = object.getObjectRenderSettings().getOverridenTransparencyShader();
         if (gemsShaderManager == null) {
             gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
         }
         gemsShaderManager.beginShading();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
-        for (MeshGroup.Node meshNode : object.getModel().getMeshGroup().getModelNodeList()) {
+        for (MeshGroup.Node meshNode : object.getModel().getMeshStructure().getModelNodeList()) {
             gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : meshNode.getMaterial());
-            gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity() * object.getMeshRenderData().getRenderAttributes().getObjectOpacity()));
+            gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity() * object.getObjectRenderSettings().getRenderAttributes().getObjectOpacity()));
 
-            boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
-            if (object.getMeshRenderData().getRenderAttributes().isDisabledFaceCulling()) {
-                GL30.glDisable(GL11.GL_CULL_FACE);
+            boolean f = GL46.glIsEnabled(GL46.GL_CULL_FACE);
+            if (object.getObjectRenderSettings().getRenderAttributes().isDisabledFaceCulling()) {
+                GL46.glDisable(GL46.GL_CULL_FACE);
             }
             JGemsSceneUtils.renderModelNode(meshNode);
             if (f) {
-                GL30.glEnable(GL11.GL_CULL_FACE);
+                GL46.glEnable(GL46.GL_CULL_FACE);
             }
             gemsShaderManager.clearUsedTextureSlots();
         }
@@ -94,13 +93,13 @@ public class WorldTransparentRender extends SceneRenderBase {
         gemsShaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
         gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity()));
 
-        boolean f = GL30.glIsEnabled(GL11.GL_CULL_FACE);
+        boolean f = GL46.glIsEnabled(GL46.GL_CULL_FACE);
         if (disableCulling) {
-            GL30.glDisable(GL11.GL_CULL_FACE);
+            GL46.glDisable(GL46.GL_CULL_FACE);
         }
         JGemsSceneUtils.renderModelNode(meshNode);
         if (f) {
-            GL30.glEnable(GL11.GL_CULL_FACE);
+            GL46.glEnable(GL46.GL_CULL_FACE);
         }
         gemsShaderManager.clearUsedTextureSlots();
         gemsShaderManager.endShading();

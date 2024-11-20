@@ -11,11 +11,11 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D3;
 
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
-import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector3f;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
@@ -31,14 +31,14 @@ public class VectorModel3D implements BasicModelCreator<Format3D> {
 
     @Override
     public Model<Format3D> generateModel() {
-        return new Model<>(new Format3D(), this.generateMesh(), Material.createDefault());
+        return new Model<>(new Format3D(), this.generateMesh(), MaterialOld.createDefault());
     }
 
     @Override
-    public Mesh generateMesh() {
-        Mesh mesh = new Mesh();
+    public DirectRenderMesh generateMesh() {
+        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
 
-        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
 
         vaPositions.put(this.v1.x);
         vaPositions.put(this.v1.y);
@@ -48,12 +48,12 @@ public class VectorModel3D implements BasicModelCreator<Format3D> {
         vaPositions.put(this.v2.y);
         vaPositions.put(this.v2.z);
 
-        mesh.putVertexIndex(0);
-        mesh.putVertexIndex(1);
+        directRenderMesh.putVertexIndex(0);
+        directRenderMesh.putVertexIndex(1);
 
-        mesh.addVertexAttributeInMesh(vaPositions);
+        directRenderMesh.addVertexAttributeInMesh(vaPositions);
 
-        mesh.bakeMesh();
-        return mesh;
+        directRenderMesh.bakeMesh();
+        return directRenderMesh;
     }
 }

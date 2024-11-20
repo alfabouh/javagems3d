@@ -29,7 +29,7 @@ import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.properties.ModelRenderData;
+import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import api.app.events.bus.Events;
@@ -165,7 +165,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
     public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
-        if (this.getMeshRenderData().getRenderAttributes().isShouldInterpolateMovement()) {
+        if (this.getObjectRenderSettings().getRenderAttributes().isShouldInterpolateMovement()) {
             this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);
@@ -216,7 +216,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
     }
 
     public JGemsShaderManager getShaderManager() {
-        return this.getMeshRenderData().getShaderManager();
+        return this.getObjectRenderSettings().getShaderManager();
     }
 
     public Vector3f getScale() {
@@ -256,7 +256,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
     }
 
     @Override
-    public ModelRenderData getMeshRenderData() {
+    public ModelRenderData getObjectRenderSettings() {
         return this.getRenderData().getMeshRenderData();
     }
 

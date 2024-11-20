@@ -1,22 +1,27 @@
-package javagems3d.system.resources.assets.models.mesh.attributes.pointer;
+package javagems3d.system.resources.assets.models.mesh.vertex.pointers;
 
-public final class AttributePointer {
+public final class RenderAttributePointer {
     private final int index;
     private final int size;
     private final boolean normalized;
     private final int stride;
     private final int pointer;
 
-    public AttributePointer(int index, int size) {
+    public RenderAttributePointer(int index, int size) {
         this(index, size, false, 0, 0);
     }
 
-    public AttributePointer(int index, int size, boolean normalized, int stride, int pointer) {
+    public RenderAttributePointer(int index, int size, boolean normalized, int stride, int pointer) {
         this.index = index;
         this.size = size;
         this.normalized = normalized;
         this.stride = stride;
         this.pointer = pointer;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getIndex();
     }
 
     public int getIndex() {

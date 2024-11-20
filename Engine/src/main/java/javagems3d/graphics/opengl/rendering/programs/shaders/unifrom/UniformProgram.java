@@ -16,7 +16,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -35,7 +35,7 @@ public class UniformProgram {
     }
 
     public boolean createUniform(UniformString uniformName) {
-        int uniformLocation = GL20.glGetUniformLocation(this.programId, uniformName.toString());
+        int uniformLocation = GL46.glGetUniformLocation(this.programId, uniformName.toString());
         this.getUniforms().put(uniformName, uniformLocation);
         return uniformLocation >= 0;
     }

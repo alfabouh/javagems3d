@@ -11,63 +11,44 @@
 
 package javagems3d.system.resources.assets.models;
 
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.formats.IFormat;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
 
 import java.io.Serializable;
 
 public final class Model<T extends IFormat> implements Serializable, AutoCloseable {
     private static final long serialVersionUID = -228L;
     private final T format;
-    private MeshGroup meshGroup;
+    private MeshStructure meshStructure;
 
     @SuppressWarnings("unchecked")
     public Model(Model<?> model) {
         this.format = (T) model.getFormat().copy();
-        this.meshGroup = model.getMeshGroup();
+        this.meshStructure = model.getMeshStructure();
     }
 
     public Model(Model<?> model, T format) {
         this.format = format;
-        this.meshGroup = model.getMeshGroup();
+        this.meshStructure = model.getMeshStructure();
     }
 
-    public Model(@NotNull T t, MeshGroup meshGroup) {
+    public Model(@NotNull T t, MeshStructure meshStructure) {
         this.format = t;
-        this.meshGroup = meshGroup;
-    }
-
-    public Model(@NotNull T t, MeshGroup.Node meshNode) {
-        this.format = t;
-        this.meshGroup = new MeshGroup();
-        this.meshGroup.putNode(meshNode);
-    }
-
-    public Model(@NotNull T t, Mesh mesh, Material material) {
-        this.format = t;
-        this.meshGroup = new MeshGroup();
-        this.meshGroup.putNode(new MeshGroup.Node(mesh, material));
-    }
-
-    public Model(@NotNull T t, Mesh mesh) {
-        this.format = t;
-        this.meshGroup = new MeshGroup(mesh);
+        this.meshStructure = meshStructure;
     }
 
     public Model(@NotNull T t) {
         this.format = t;
-        this.meshGroup = null;
+        this.meshStructure = null;
     }
 
     public void clean() {
-        if (this.getMeshGroup() == null) {
+        if (this.getMeshStructure() == null) {
             return;
         }
-        this.getMeshGroup().clean();
-        this.meshGroup = null;
+        this.getMeshStructure().clean();
+        this.meshStructure = null;
     }
 
     @Override
@@ -76,15 +57,11 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
     }
 
     public boolean isValid() {
-        return this.getMeshGroup() != null;
+        return this.getMeshStructure() != null;
     }
 
-    public MeshGroup getMeshGroup() {
-        return this.meshGroup;
-    }
-
-    public int totalMeshGroups() {
-        return this.getMeshGroup().getModelNodeList().size();
+    public MeshStructure getMeshStructure() {
+        return this.meshStructure;
     }
 
     public T getFormat() {

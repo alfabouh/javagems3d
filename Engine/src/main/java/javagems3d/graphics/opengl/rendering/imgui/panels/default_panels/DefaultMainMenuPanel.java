@@ -15,8 +15,8 @@ import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUnif
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
@@ -49,14 +49,14 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), DefaultUniformActions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), DefaultUniformActions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
             JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
-            JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+            JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }
     }
 
     public void createFBOs(Vector2i dim) {
         this.postFbo.clearFBO();
-        this.postFbo.createFrameBuffer2DTexture(dim, new T2DAttachmentContainer(GL30.GL_COLOR_ATTACHMENT0, GL43.GL_RGB, GL30.GL_RGB), false, GL30.GL_LINEAR, GL30.GL_COMPARE_REF_TO_TEXTURE, GL30.GL_LESS, GL30.GL_CLAMP_TO_BORDER, null);
+        this.postFbo.createFrameBuffer2DTexture(dim, new T2DAttachmentContainer(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB), false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
     }
 
     public void onWindowResize(Vector2i dim) {

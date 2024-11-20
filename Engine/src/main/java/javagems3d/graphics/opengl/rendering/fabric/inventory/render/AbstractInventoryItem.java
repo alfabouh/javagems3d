@@ -13,7 +13,7 @@ package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.fabric.inventory.IRenderInventoryFabric;
@@ -23,7 +23,7 @@ import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
@@ -38,14 +38,14 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
 
     @Override
     public void preRender(SceneRenderBase sceneRenderBase, javagems3d.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
-        GL30.glDepthFunc(GL30.GL_ALWAYS);
+        GL46.glDepthFunc(GL46.GL_ALWAYS);
         inventoryItemRenderData.getShaderManager().beginShading();
         inventoryItemRenderData.getShaderManager().performUniform(new UniformString("projection_matrix"), DefaultUniformActions.MAT4F(Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f)));
     }
 
     @Override
     public void postRender(SceneRenderBase sceneRenderBase, javagems3d.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
-        GL30.glDepthFunc(GL30.GL_LESS);
+        GL46.glDepthFunc(GL46.GL_LESS);
         inventoryItemRenderData.getShaderManager().endShading();
     }
 
@@ -57,11 +57,11 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
             } else {
                 shaderManager.getUtils().performUniformSample(new UniformString("diffuse_map"), TextureAssetsLoader.DEFAULT);
             }
-            GL30.glBindVertexArray(meshNode.getMesh().getVao());
+            GL46.glBindVertexArray(meshNode.getMesh().getVao());
             meshNode.getMesh().enableAllMeshAttributes();
-            GL30.glDrawElements(GL30.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL30.GL_UNSIGNED_INT, 0);
+            GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
             meshNode.getMesh().disableAllMeshAttributes();
-            GL30.glBindVertexArray(0);
+            GL46.glBindVertexArray(0);
         }
     }
 }

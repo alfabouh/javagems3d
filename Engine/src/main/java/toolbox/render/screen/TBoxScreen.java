@@ -11,15 +11,16 @@
 
 package toolbox.render.screen;
 
+import javagems3d.graphics.opengl.screen.JGemsScreen;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
@@ -66,8 +67,11 @@ public class TBoxScreen implements IScreen {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL20.GL_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL46.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
+
+        JGemsScreen.registerOGLDebugOutput();
+
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         this.tBoxWindow = new Window(new Window.WindowProperties(JGemsSceneGlobalConstants.defaultW, JGemsSceneGlobalConstants.defaultH, ToolBox.get().toString()), new JGemsPath("/assets/jgems/icons/icon.png"));
         long window = this.getWindow().getDescriptor();
@@ -87,7 +91,7 @@ public class TBoxScreen implements IScreen {
     }
 
     private void loadResourcesAndRenderLoadingScreen() {
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.getScene().getDimGuiRenderTBox().setCurrentContentToRender(new LoadingContent());
         for (int i = 0; i < 5; i++) {
             this.getScene().getDimGuiRenderTBox().render(0);
@@ -105,7 +109,7 @@ public class TBoxScreen implements IScreen {
 
     public void startScreenRenderProcess() {
         SystemLogging.get().getLogManager().log("Starting screen...");
-        GL11.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+        GL46.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
         this.getScene().createGUI();
         this.loadResourcesAndRenderLoadingScreen();
         this.getScene().preRender();
@@ -125,7 +129,7 @@ public class TBoxScreen implements IScreen {
     private void renderLoop() throws InterruptedException {
         JGemsTimer deltaTimer = this.getTimerPool().createTimer();
         JGemsTimer fpsTimer = this.getTimerPool().createTimer();
-        GL30.glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
+        GL46.glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
         int fps = 0;
 
 
@@ -153,10 +157,10 @@ public class TBoxScreen implements IScreen {
     }
 
     private void renderGameScene(float delta) throws InterruptedException {
-        GL30.glEnable(GL30.GL_CULL_FACE);
-        GL30.glCullFace(GL30.GL_BACK);
-        GL11.glDepthFunc(GL11.GL_LESS);
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL46.glEnable(GL46.GL_CULL_FACE);
+        GL46.glCullFace(GL46.GL_BACK);
+        GL46.glDepthFunc(GL46.GL_LESS);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.getScene().render(delta);
         JGemsSceneUtils.checkGLErrors();
     }
@@ -167,7 +171,7 @@ public class TBoxScreen implements IScreen {
     }
 
     public void normalizeViewPort() {
-        GL30.glViewport(0, 0, this.getDimensions().x, this.getDimensions().y);
+        GL46.glViewport(0, 0, this.getDimensions().x, this.getDimensions().y);
     }
 
     private void setScreenCallbacks() {

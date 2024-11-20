@@ -15,12 +15,12 @@ import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
-import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
+import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
@@ -58,13 +58,13 @@ public class SkyBoxCubeMapRender extends SceneRenderBase {
 
     public SkyBoxCubeMapRender(SkyBox skyBox, JGemsOpenGLRenderer sceneRender) {
         super(3, sceneRender, new RenderGroup("SKY_FORWARD"));
-        Mesh mesh = new Mesh();
-        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
+        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         vaPositions.putArray(SkyBoxCubeMapRender.skyboxPos);
-        mesh.putVertexIndexes(SkyBoxCubeMapRender.skyboxInd);
-        mesh.addVertexAttributeInMesh(vaPositions);
-        mesh.bakeMesh();
-        SkyBoxCubeMapRender.skyBoxModel = new Model<>(new Format3D(), mesh);
+        directRenderMesh.putVertexIndexes(SkyBoxCubeMapRender.skyboxInd);
+        directRenderMesh.addVertexAttributeInMesh(vaPositions);
+        directRenderMesh.bakeMesh();
+        SkyBoxCubeMapRender.skyBoxModel = new Model<>(new Format3D(), directRenderMesh);
         this.skyBox = skyBox;
     }
 
@@ -72,23 +72,23 @@ public class SkyBoxCubeMapRender extends SceneRenderBase {
         JGemsShaderManager shaderManager = JGemsResourceManager.globalShaderAssets.skybox;
         Model<Format3D> model = SkyBoxCubeMapRender.skyBoxModel;
         shaderManager.beginShading();
-        GL30.glDisable(GL30.GL_CULL_FACE);
-        GL30.glDepthFunc(GL30.GL_LEQUAL);
+        GL46.glDisable(GL46.GL_CULL_FACE);
+        GL46.glDepthFunc(GL46.GL_LEQUAL);
         shaderManager.getUtils().performPerspectiveMatrix();
         Matrix4f Matrix4f = Transformation.getModelViewMatrix(model.getFormat(), JGemsSceneUtils.getMainCameraViewMatrix());
         Matrix4f.m30(0);
         Matrix4f.m31(0);
         Matrix4f.m32(0);
-        shaderManager.performUniformTexture(new UniformString("skybox_background_sampler"), this.getSceneRenderer().getSkyBoxBackGroundBuffer().getTextureIDByIndex(0), GL30.GL_TEXTURE_2D);
+        shaderManager.performUniformTexture(new UniformString("skybox_background_sampler"), this.getSceneRenderer().getSkyBoxBackGroundBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
         shaderManager.performUniform(new UniformString("covered_by_fog"), DefaultUniformActions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
         shaderManager.performUniform(new UniformString("view_mat_inverted"), DefaultUniformActions.MAT4F(new Matrix4f(JGemsSceneUtils.getMainCameraViewMatrix()).invert()));
         shaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
         shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), this.getSkyBox().getSky2DTexture().getTextureId());
         //shaderManager.getUtils().performCubeMapProgram(new UniformString("skybox"), this.getSceneRenderer().getShadowScene().getPointLightShadows().get(0).getPointLightCubeMap().getCubeMapProgram().getTextureId());
-        JGemsSceneUtils.renderModel(model, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         shaderManager.endShading();
-        GL30.glDepthFunc(GL30.GL_LESS);
-        GL30.glEnable(GL30.GL_CULL_FACE);
+        GL46.glDepthFunc(GL46.GL_LESS);
+        GL46.glEnable(GL46.GL_CULL_FACE);
     }
 
     public void onRender(FrameTicking frameTicking) {

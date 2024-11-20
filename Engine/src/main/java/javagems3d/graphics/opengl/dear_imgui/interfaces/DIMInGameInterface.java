@@ -21,7 +21,7 @@ import javagems3d.system.graph.Graph;
 import javagems3d.system.profiler.SpeedProfiler;
 import logger.managers.LoggingManager;
 import org.joml.Vector2i;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -181,7 +181,7 @@ public class DIMInGameInterface implements DIMInterface {
         }
 
         if (ImGui.collapsingHeader("Frame Buffers")) {
-            GL30.glScissor(0, 0, 1, 1);
+            GL46.glScissor(0, 0, 1, 1);
             ImGui.beginChild("inner1");
             if (ImGui.collapsingHeader("GBuffer")) {
                 ImGui.beginChild("Images1", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);

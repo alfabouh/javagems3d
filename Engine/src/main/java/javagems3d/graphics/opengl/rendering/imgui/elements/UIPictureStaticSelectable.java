@@ -15,8 +15,8 @@ import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUnif
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -50,11 +50,11 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
-        GL30.glActiveTexture(GL13.GL_TEXTURE0);
+        GL46.glActiveTexture(GL46.GL_TEXTURE0);
         this.iImageSample.bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
         this.getCurrentShader().performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(this.isSelected()));
-        JGemsSceneUtils.renderModel(this.imageModel, GL30.GL_TRIANGLES);
+        JGemsSceneUtils.renderModel(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 }

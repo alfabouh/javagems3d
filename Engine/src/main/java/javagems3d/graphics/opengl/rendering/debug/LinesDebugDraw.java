@@ -19,10 +19,10 @@ import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -44,16 +44,16 @@ public class LinesDebugDraw {
     private int vbo;
 
     public void setupBuffers() {
-        this.vao = GL30.glGenVertexArrays();
-        this.vbo = GL15.glGenBuffers();
+        this.vao = GL46.glGenVertexArrays();
+        this.vbo = GL46.glGenBuffers();
 
-        GL30.glBindVertexArray(this.vao);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
+        GL46.glBindVertexArray(this.vao);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vbo);
 
-        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+        GL46.glVertexAttribPointer(0, 3, GL46.GL_FLOAT, false, 0, 0);
 
-        GL30.glBindVertexArray(0);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL46.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
     }
 
     public void drawAABBLinesRN(JGemsShaderManager debugShaders, List<ICulled> culleds) {
@@ -112,15 +112,15 @@ public class LinesDebugDraw {
             return;
         }
         debugShaders.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(0.0f, 1.0f, 0.0f, 1.0f)));
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.navMeshFloatBuffer, GL15.GL_DYNAMIC_DRAW);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vbo);
+        GL46.glBufferData(GL46.GL_ARRAY_BUFFER, this.navMeshFloatBuffer, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
 
-        GL30.glBindVertexArray(this.vao);
-        GL20.glEnableVertexAttribArray(0);
-        GL11.glDrawArrays(GL11.GL_LINES, 0, this.navMeshPointsSize);
-        GL20.glDisableVertexAttribArray(0);
-        GL30.glBindVertexArray(0);
+        GL46.glBindVertexArray(this.vao);
+        GL46.glEnableVertexAttribArray(0);
+        GL46.glDrawArrays(GL46.GL_LINES, 0, this.navMeshPointsSize);
+        GL46.glDisableVertexAttribArray(0);
+        GL46.glBindVertexArray(0);
     }
 
     private void drawAABB(Vector3f min, Vector3f max) {
@@ -152,20 +152,20 @@ public class LinesDebugDraw {
             vertexArray[i * 3 + 2] = vertices[indices[i]].z;
         }
 
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexArray, GL15.GL_DYNAMIC_DRAW);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vbo);
+        GL46.glBufferData(GL46.GL_ARRAY_BUFFER, vertexArray, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
 
-        GL30.glBindVertexArray(this.vao);
-        GL20.glEnableVertexAttribArray(0);
-        GL11.glDrawArrays(GL11.GL_LINES, 0, vertexArray.length / 3);
-        GL20.glDisableVertexAttribArray(0);
-        GL30.glBindVertexArray(0);
+        GL46.glBindVertexArray(this.vao);
+        GL46.glEnableVertexAttribArray(0);
+        GL46.glDrawArrays(GL46.GL_LINES, 0, vertexArray.length / 3);
+        GL46.glDisableVertexAttribArray(0);
+        GL46.glBindVertexArray(0);
     }
 
     public void cleanup() {
         MemoryUtil.memFree(this.navMeshFloatBuffer);
-        GL30.glDeleteBuffers(this.vbo);
-        GL30.glDeleteVertexArrays(this.vao);
+        GL46.glDeleteBuffers(this.vbo);
+        GL46.glDeleteVertexArrays(this.vao);
     }
 }

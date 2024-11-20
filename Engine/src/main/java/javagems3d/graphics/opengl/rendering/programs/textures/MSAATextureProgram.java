@@ -12,8 +12,8 @@
 package javagems3d.graphics.opengl.rendering.programs.textures;
 
 import org.joml.Vector2i;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 
 public class MSAATextureProgram implements ITextureProgram {
     private final int msaa;
@@ -21,19 +21,19 @@ public class MSAATextureProgram implements ITextureProgram {
 
     public MSAATextureProgram(int msaa) {
         this.msaa = msaa;
-        this.textureId = GL30.glGenTextures();
+        this.textureId = GL46.glGenTextures();
     }
 
     public void createTexture(Vector2i size, int internalFormat) {
-        this.bindTexture(GL43.GL_TEXTURE_2D_MULTISAMPLE);
-        GL43.glTexImage2DMultisample(GL43.GL_TEXTURE_2D_MULTISAMPLE, this.msaa, internalFormat, size.x, size.y, true);
+        this.bindTexture(GL46.GL_TEXTURE_2D_MULTISAMPLE);
+        GL46.glTexImage2DMultisample(GL46.GL_TEXTURE_2D_MULTISAMPLE, this.msaa, internalFormat, size.x, size.y, true);
         this.unBindTexture();
     }
 
     @Override
     public void cleanUp() {
         this.unBindTexture();
-        GL30.glDeleteTextures(this.getTextureId());
+        GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
     }
 

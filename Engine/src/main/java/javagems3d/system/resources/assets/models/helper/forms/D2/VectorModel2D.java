@@ -11,9 +11,9 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D2;
 
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
-import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector2f;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
@@ -34,10 +34,10 @@ public class VectorModel2D implements BasicModelCreator<Format2D> {
     }
 
     @Override
-    public Mesh generateMesh() {
-        Mesh mesh = new Mesh();
-        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
-        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultPointers.TEXTURE_COORDINATES);
+    public DirectRenderMesh generateMesh() {
+        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
+        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);
 
         vaPositions.put(this.v1.x);
         vaPositions.put(this.v1.y);
@@ -45,12 +45,12 @@ public class VectorModel2D implements BasicModelCreator<Format2D> {
         vaPositions.put(this.v2.x);
         vaPositions.put(this.v2.y);
 
-        mesh.putVertexIndex(0);
-        mesh.putVertexIndex(1);
+        directRenderMesh.putVertexIndex(0);
+        directRenderMesh.putVertexIndex(1);
 
-        mesh.addVertexAttributeInMesh(vaPositions);
-        mesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        mesh.bakeMesh();
-        return mesh;
+        directRenderMesh.addVertexAttributeInMesh(vaPositions);
+        directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        directRenderMesh.bakeMesh();
+        return directRenderMesh;
     }
 }

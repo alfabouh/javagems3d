@@ -1,17 +1,16 @@
 package javagems3d.system.resources.assets.models.mesh;
 
-import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.models.mesh.attributes.VertexAttribute;
+import javagems3d.system.resources.assets.models.mesh.vertex.attributes.VertexAttribute;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 import java.util.*;
 
-public class Mesh implements IMesh {
+public class DirectRenderMesh implements IMesh {
+    private int positionsIdx;
+
     private int vao;
     private int totalVertices;
 
@@ -23,7 +22,8 @@ public class Mesh implements IMesh {
 
     private boolean baked;
 
-    public Mesh() {
+    public DirectRenderMesh() {
+        this.positionsIdx = IMesh.DEFAULT_POS_IDX;
         this.vertexIndexes = new ArrayList<>();
 
         this.baked = false;
@@ -40,10 +40,8 @@ public class Mesh implements IMesh {
         }
     }
 
-    public void putVertexIndexes(int[] indexes) {
-        for (int o : indexes) {
-            this.getVertexIndexes().add(o);
-        }
+    public void putVertexIndexes(List<Integer> indexes) {
+        this.getVertexIndexes().addAll(indexes);
     }
 
     public void putVertexIndex(int index) {
@@ -69,57 +67,58 @@ public class Mesh implements IMesh {
 
     public void disableMeshAttributes(int... a) {
         for (int vertexAttribute : a) {
-            GL30.glDisableVertexAttribArray(vertexAttribute);
+            GL46.glDisableVertexAttribArray(vertexAttribute);
         }
     }
 
     public void enableMeshAttributes(int... a) {
         for (int vertexAttribute : a) {
-            GL30.glEnableVertexAttribArray(vertexAttribute);
+            GL46.glEnableVertexAttribArray(vertexAttribute);
         }
     }
 
     public void disableAllMeshAttributes() {
         for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
-            GL30.glDisableVertexAttribArray(vertexAttribute.getIndex());
+            GL46.glDisableVertexAttribArray(vertexAttribute.getIndex());
         }
     }
 
     public void enableAllMeshAttributes() {
         for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
-            GL30.glEnableVertexAttribArray(vertexAttribute.getIndex());
+            GL46.glEnableVertexAttribArray(vertexAttribute.getIndex());
         }
     }
 
-    @Override
     public void bakeMesh() {
         if (this.isBaked()) {
             throw new JGemsRuntimeException("Tried to bake model, that is already had been baked!");
         }
 
-        int[] index = JGemsHelper.UTILS.convertIntsArray(this.getVertexIndexes());
-        this.totalVertices = index.length;
-        IntBuffer inxBuffer =  MemoryUtil.memAllocInt(index.length);
-        inxBuffer.put(index).flip();
+        this.totalVertices = this.getVertexIndexes().size();
+        IntBuffer inxBuffer =  MemoryUtil.memAllocInt(this.totalVertices);
+        for (int i : this.getVertexIndexes()) {
+            inxBuffer.put(i);
+        }
+        inxBuffer.flip();
 
-        this.vao = GL30.glGenVertexArrays();
-        this.vertexIndexesIBO = GL30.glGenBuffers();
+        this.vao = GL46.glGenVertexArrays();
+        this.vertexIndexesIBO = GL46.glGenBuffers();
 
-        GL30.glBindVertexArray(this.getVao());
-        GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, this.getVertexIndexesIBO());
-        GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, inxBuffer, GL30.GL_STATIC_DRAW);
+        GL46.glBindVertexArray(this.getVao());
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getVertexIndexesIBO());
+        GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, inxBuffer, GL46.GL_STATIC_DRAW);
 
         for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
             vertexAttribute.bake();
-            int vbo = GL30.glGenBuffers();
+            int vbo = GL46.glGenBuffers();
             this.vboMap.put(vertexAttribute.getIndex(), vbo);
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, vbo);
+            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vbo);
             vertexAttribute.pushGLBuffer();
-            GL30.glVertexAttribPointer(vertexAttribute.getIndex(), vertexAttribute.getAttributePointer().getSize(), vertexAttribute.attributeType(), vertexAttribute.getAttributePointer().isNormalized(), vertexAttribute.getAttributePointer().getStride(), vertexAttribute.getAttributePointer().getPointer());
+            GL46.glVertexAttribPointer(vertexAttribute.getIndex(), vertexAttribute.getAttributePointer().getSize(), vertexAttribute.attributeType(), vertexAttribute.getAttributePointer().isNormalized(), vertexAttribute.getAttributePointer().getStride(), vertexAttribute.getAttributePointer().getPointer());
         }
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
+        GL46.glBindVertexArray(0);
         this.baked = true;
     }
 
@@ -129,17 +128,26 @@ public class Mesh implements IMesh {
             v.clearData();
         }
         for (int a : this.vboMap.values()) {
-            GL30.glDeleteBuffers(a);
+            GL46.glDeleteBuffers(a);
         }
 
         this.vboMap.clear();
         this.vertexAttributesMap.clear();
 
         this.getVertexIndexes().clear();
-        GL30.glDeleteBuffers(this.getVertexIndexesIBO());
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
-        GL30.glBindVertexArray(0);
-        GL30.glDeleteVertexArrays(this.getVao());
+        GL46.glDeleteBuffers(this.getVertexIndexesIBO());
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
+        GL46.glBindVertexArray(0);
+        GL46.glDeleteVertexArrays(this.getVao());
+    }
+
+    public void setPositionsIdx(int idx) {
+        this.positionsIdx = idx;
+    }
+
+    @Override
+    public int positionsIndex() {
+        return this.positionsIdx;
     }
 
     public int getVertexIndexesIBO() {

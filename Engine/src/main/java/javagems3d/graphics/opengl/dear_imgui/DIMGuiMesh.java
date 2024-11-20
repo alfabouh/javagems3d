@@ -12,7 +12,7 @@
 package javagems3d.graphics.opengl.dear_imgui;
 
 import imgui.ImDrawData;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 
 public class DIMGuiMesh {
     private final int indicesVbo;
@@ -20,31 +20,31 @@ public class DIMGuiMesh {
     private final int verticesVbo;
 
     public DIMGuiMesh() {
-        this.vaoId = GL30.glGenVertexArrays();
-        GL30.glBindVertexArray(this.vaoId);
+        this.vaoId = GL46.glGenVertexArrays();
+        GL46.glBindVertexArray(this.vaoId);
 
-        this.verticesVbo = GL30.glGenBuffers();
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, this.verticesVbo);
+        this.verticesVbo = GL46.glGenBuffers();
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.verticesVbo);
 
-        GL30.glEnableVertexAttribArray(0);
-        GL30.glVertexAttribPointer(0, 2, GL30.GL_FLOAT, false, ImDrawData.SIZEOF_IM_DRAW_VERT, 0);
+        GL46.glEnableVertexAttribArray(0);
+        GL46.glVertexAttribPointer(0, 2, GL46.GL_FLOAT, false, ImDrawData.SIZEOF_IM_DRAW_VERT, 0);
 
-        GL30.glEnableVertexAttribArray(1);
-        GL30.glVertexAttribPointer(1, 2, GL30.GL_FLOAT, false, ImDrawData.SIZEOF_IM_DRAW_VERT, 8);
+        GL46.glEnableVertexAttribArray(1);
+        GL46.glVertexAttribPointer(1, 2, GL46.GL_FLOAT, false, ImDrawData.SIZEOF_IM_DRAW_VERT, 8);
 
-        GL30.glEnableVertexAttribArray(2);
-        GL30.glVertexAttribPointer(2, 4, GL30.GL_UNSIGNED_BYTE, true, ImDrawData.SIZEOF_IM_DRAW_VERT, 16);
+        GL46.glEnableVertexAttribArray(2);
+        GL46.glVertexAttribPointer(2, 4, GL46.GL_UNSIGNED_BYTE, true, ImDrawData.SIZEOF_IM_DRAW_VERT, 16);
 
-        this.indicesVbo = GL30.glGenBuffers();
+        this.indicesVbo = GL46.glGenBuffers();
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
+        GL46.glBindVertexArray(0);
     }
 
     public void cleanUp() {
-        GL30.glDeleteBuffers(this.indicesVbo);
-        GL30.glDeleteBuffers(this.verticesVbo);
-        GL30.glDeleteVertexArrays(this.vaoId);
+        GL46.glDeleteBuffers(this.indicesVbo);
+        GL46.glDeleteBuffers(this.verticesVbo);
+        GL46.glDeleteVertexArrays(this.vaoId);
     }
 
     public int getIndicesVbo() {

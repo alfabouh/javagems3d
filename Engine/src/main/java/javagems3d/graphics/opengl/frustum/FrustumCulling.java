@@ -14,6 +14,7 @@ package javagems3d.graphics.opengl.frustum;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +43,12 @@ public class FrustumCulling {
        this.frustumIntersection.set(new Matrix4f(this.projectionViewMatrix));
     }
 
-    public boolean isInFrustum(ICulled.RenderAABB renderSphere) {
-        if (renderSphere == null) {
+
+
+    public boolean isInFrustum(ICulled.RenderAABB renderAABB) {
+        if (renderAABB == null) {
             return true;
         }
-        return this.frustumIntersection.testAab(renderSphere.getMin(), renderSphere.getMax());
+        return true;
     }
 }

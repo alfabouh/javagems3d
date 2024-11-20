@@ -11,18 +11,18 @@
 
 package toolbox.resources.utils;
 
-import javagems3d.system.resources.assets.models.mesh.attributes.pointer.DefaultPointers;
-import javagems3d.system.resources.assets.models.mesh.attributes.FloatVertexAttribute;
-import javagems3d.system.resources.assets.models.mesh.Mesh;
+import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
-import javagems3d.system.resources.assets.models.ModelLoader;
-import javagems3d.system.resources.assets.models.mesh.MeshGroup;
+import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
@@ -44,10 +44,10 @@ public class SimpleModelLoader {
 
         if (JGems3D.checkFileExistsInJar(modelPath)) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
-                try (AIScene scene = Assimp.aiImportFileEx(modelPath.getFullPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoader.AI_FILE_OPEN).CloseProc(ModelLoader.AI_FILE_CLOSE))) {
+                try (AIScene scene = Assimp.aiImportFileEx(modelPath.getFullPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoadingUtils.AI_FILE_OPEN).CloseProc(ModelLoadingUtils.AI_FILE_CLOSE))) {
                     if (scene != null) {
                         int totalMaterials = scene.mNumMaterials();
-                        List<Material> materialList = new ArrayList<>();
+                        List<MaterialOld> materialList = new ArrayList<>();
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
                                 materialList.add(SimpleModelLoader.readMaterial(tBoxResourceManager, aiMaterial, modelPath.getParentPath()));
@@ -57,13 +57,13 @@ public class SimpleModelLoader {
                         PointerBuffer aiMeshes = scene.mMeshes();
                         for (int i = 0; i < totalMeshes; i++) {
                             try (AIMesh aiMesh = AIMesh.create(Objects.requireNonNull(aiMeshes).get(i))) {
-                                Mesh mesh = SimpleModelLoader.readMesh(aiMesh);
+                                DirectRenderMesh directRenderMesh = SimpleModelLoader.readMesh(aiMesh);
                                 int matIdx = aiMesh.mMaterialIndex();
-                                Material material = new Material();
+                                MaterialOld material = new MaterialOld();
                                 if (matIdx >= 0 && matIdx < materialList.size()) {
                                     material = materialList.get(matIdx);
                                 }
-                                meshGroup.putNode(new MeshGroup.Node(mesh, material));
+                                meshGroup.putNode(new MeshGroup.Node(directRenderMesh, material));
                             }
                         }
                     } else {
@@ -92,7 +92,7 @@ public class SimpleModelLoader {
         return meshGroup;
     }
 
-    private static Mesh readMesh(AIMesh aiMesh) {
+    private static DirectRenderMesh readMesh(AIMesh aiMesh) {
         int[] vertices = SimpleModelLoader.readVertices(aiMesh);
         float[] textureCoordinates = SimpleModelLoader.readTextureCoordinates(aiMesh);
         float[] positions = SimpleModelLoader.readPositions(aiMesh);
@@ -103,23 +103,23 @@ public class SimpleModelLoader {
             textureCoordinates = new float[totalElements];
         }
 
-        Mesh mesh = new Mesh();
+        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
 
-        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultPointers.POSITIONS);
-        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultPointers.TEXTURE_COORDINATES);
-        FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultPointers.NORMALS);
+        FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
+        FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);
+        FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultAttributePointers.ATTR_NORMALS);
 
-        mesh.putVertexIndexes(vertices);
+        directRenderMesh.putVertexIndexes(vertices);
         vaPositions.putArray(positions);
         vaNormals.putArray(normals);
         vaTextureCoordinates.putArray(textureCoordinates);
 
-        mesh.addVertexAttributeInMesh(vaPositions);
-        mesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        mesh.addVertexAttributeInMesh(vaNormals);
+        directRenderMesh.addVertexAttributeInMesh(vaPositions);
+        directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        directRenderMesh.addVertexAttributeInMesh(vaNormals);
 
-        mesh.bakeMesh();
-        return mesh;
+        directRenderMesh.bakeMesh();
+        return directRenderMesh;
     }
 
     private static float[] readTextureCoordinates(AIMesh aiMesh) {
@@ -178,8 +178,8 @@ public class SimpleModelLoader {
         return data;
     }
 
-    private static Material readMaterial(TBoxResourceManager tBoxResourceManager, AIMaterial aiMaterial, String fullPath) {
-        Material material = new Material();
+    private static MaterialOld readMaterial(TBoxResourceManager tBoxResourceManager, AIMaterial aiMaterial, String fullPath) {
+        MaterialOld material = new MaterialOld();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4D = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4D) == Assimp.aiReturn_SUCCESS) {

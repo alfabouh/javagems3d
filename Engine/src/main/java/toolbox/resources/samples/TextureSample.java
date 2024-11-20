@@ -13,8 +13,8 @@ package toolbox.resources.samples;
 
 import com.google.common.io.ByteStreams;
 import org.joml.Vector2i;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -111,25 +111,25 @@ public class TextureSample implements ITextureSample {
     }
 
     private void createTexture(ByteBuffer buffer) {
-        this.textureId = GL20.glGenTextures();
-        GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.getTextureId());
-        GL20.glPixelStorei(GL20.GL_UNPACK_ALIGNMENT, 1);
-        GL20.glTexImage2D(GL20.GL_TEXTURE_2D, 0, GL20.GL_RGBA, this.size().x, this.size().y, 0, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, buffer);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR_MIPMAP_NEAREST);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_BASE_LEVEL, 0);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 11);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_S, GL30.GL_REPEAT);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_WRAP_T, GL30.GL_REPEAT);
-        GL30.glGenerateMipmap(GL20.GL_TEXTURE_2D);
-        GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
+        this.textureId = GL46.glGenTextures();
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, this.getTextureId());
+        GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA, this.size().x, this.size().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, buffer);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR_MIPMAP_NEAREST);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_BASE_LEVEL, 0);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAX_LEVEL, 11);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, GL46.GL_REPEAT);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, GL46.GL_REPEAT);
+        GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
         STBImage.stbi_image_free(buffer);
         SystemLogging.get().getLogManager().log("Texture " + this.getName() + " successfully created!");
     }
 
     public void clear() {
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
-        GL30.glDeleteTextures(this.getTextureId());
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+        GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
     }
 
@@ -137,7 +137,7 @@ public class TextureSample implements ITextureSample {
         if (!this.isValid()) {
             throw new JGemsRuntimeException("Tried to bind invalid texture");
         }
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, this.getTextureId());
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, this.getTextureId());
     }
 
     @Override
@@ -155,7 +155,7 @@ public class TextureSample implements ITextureSample {
 
     @Override
     public int getTextureAttachment() {
-        return GL30.GL_TEXTURE_2D;
+        return GL46.GL_TEXTURE_2D;
     }
 
     public boolean isValid() {
