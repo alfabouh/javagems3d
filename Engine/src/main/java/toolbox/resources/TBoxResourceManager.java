@@ -12,7 +12,7 @@
 package toolbox.resources;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.old.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -64,7 +64,7 @@ public class TBoxResourceManager {
     }
 
     public ICached getResource(String key) {
-        return ToolBox.get().getResourceManager().getCache().getCachedObject(key);
+        return this.getCache().getCachedObject(key);
     }
 
     public void loadResources() {
@@ -73,7 +73,7 @@ public class TBoxResourceManager {
     }
 
     public void destroy() {
-        this.getCache().cleanCache();
+        this.getCache().clearCache();
     }
 
     public ShaderResources getShaderAssets() {

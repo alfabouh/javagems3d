@@ -26,15 +26,14 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderProp;
 import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.map.MapInfo;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.MeshGroup;
-import javagems3d.system.resources.old.properties.ModelRenderProperties;
-import javagems3d.system.resources.old.properties.ModelRenderData;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
@@ -47,9 +46,9 @@ import org.joml.Vector3f;
 public class TestMap implements IMapLoader {
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshGroup meshGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj"), true, false);
+        MeshGroup meshGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj")).getFirst();
         sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup),
-                new ModelRenderData(new ModelRenderProperties().setAlphaDiscard(0.7f), JGemsResourceManager.globalShaderAssets.world_gbuffer)));
+                new ObjectRenderSettings(JGemsResourceManager.globalShaderAssets.world_gbuffer).setAlphaDiscardValue(0.7f)));
     }
 
     @Override

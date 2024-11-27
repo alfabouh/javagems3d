@@ -1,7 +1,5 @@
 package javagems3d.graphics.opengl.dear_imgui.interfaces;
 
-import api.app.events.bus.Events;
-import api.bridge.events.APIEventsLauncher;
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
@@ -37,7 +35,7 @@ public class DIMInGameInterface implements DIMInterface {
         }
         ICamera camera = JGems3D.get().getScreen().getCamera();
         IPlayer entityPlayerSP = JGems3D.get().getPlayer();
-        SceneWorld sceneWorld = JGems3D.get().getSceneWorld();
+        SceneWorld sceneWorld = JGemsHelper.getSceneWorld();
         JGemsOpenGLRenderer sceneRender = JGems3D.get().getScreen().getScene().getSceneRenderer();
 
         float logX = (float) windowSize.x / 3;
@@ -71,7 +69,7 @@ public class DIMInGameInterface implements DIMInterface {
             } else {
                 ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
             }
-            ImGui.text("entities: " + JGems3D.get().getPhysicsWorld().countItems());
+            ImGui.text("entities: " + JGemsHelper.getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
             ImGui.text("current speed(scalar): " + String.format("%.4f", entityPlayerSP.getScalarSpeed()));
         }

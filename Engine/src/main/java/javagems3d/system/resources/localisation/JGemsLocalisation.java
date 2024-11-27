@@ -23,26 +23,26 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-public class Localisation {
+public class JGemsLocalisation {
     public static Lang defaultSystemLang = Lang.DefaultEnglish;
 
     static {
         Locale defaultLocale = Locale.getDefault();
         String defLang = defaultLocale.getDisplayLanguage(Locale.ENGLISH);
-        Localisation.defaultSystemLang = Lang.getLangByName(defLang);
+        JGemsLocalisation.defaultSystemLang = Lang.getLangByName(defLang);
     }
 
     private Lang currentlang;
     private LangMap currentLangTable;
 
-    public Localisation() {
+    public JGemsLocalisation() {
         this.currentlang = null;
     }
 
     public static Lang createLocalisation(String langName, JGemsPath path) {
         if (Lang.checkLangInSet(langName)) {
             Lang l = Lang.getLangByName(langName);
-            Localisation.setLangLocalisationPath(l, path);
+            JGemsLocalisation.setLangLocalisationPath(l, path);
             return l;
         } else {
             return Lang.createLang(langName, path);

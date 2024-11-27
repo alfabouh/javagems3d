@@ -1,6 +1,5 @@
 package javagems3d.system.resources.assets.material;
 
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.base.ISample;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;

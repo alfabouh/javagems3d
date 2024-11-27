@@ -14,19 +14,23 @@ package javagems3d.system.resources.manager;
 import javagems3d.JGems3D;
 import api.bridge.APIContainer;
 import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import javagems3d.graphics.opengl.rendering.fabric.inventory.table.InventoryRenderTable;
+import javagems3d.system.resources.manager.inventory.InventoryRenderTable;
 import javagems3d.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
 import javagems3d.system.inventory.items.InventoryItem;
 import javagems3d.system.resources.assets.loaders.*;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
+import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class JGemsResourceManager {
     public static final InventoryRenderTable inventoryItemRenderTable = new InventoryRenderTable();
@@ -40,10 +44,13 @@ public final class JGemsResourceManager {
     private final GameResources globalResources;
     private final GameResources localResources;
 
+    private final MeshBuffersDrawCache meshBuffersDrawCache;
+
     public JGemsResourceManager() {
         JGemsResourceManager.globalShaderAssets = new ShadersAssetsLoader();
         this.globalResources = new GameResources(new ResourceCache("Global"));
         this.localResources = new GameResources(new ResourceCache("Local"));
+        this.meshBuffersDrawCache = new MeshBuffersDrawCache();
     }
 
     public static void addInventoryItemRenderer(Class<? extends InventoryItem> itemClass, InventoryItemRenderData inventoryItemRenderData) {
@@ -78,6 +85,23 @@ public final class JGemsResourceManager {
         return font1;
     }
 
+    public MeshBuffersDrawCache constructMeshBuffersDataCache() {
+        this.getMeshBuffersDrawCache().clear();
+        this.getMeshBuffersDrawCache().init(this.getAllDataMeshes());
+        return this.getMeshBuffersDrawCache();
+    }
+
+    public Set<MeshBuffersArray> getAllDataMeshes() {
+        HashSet<MeshBuffersArray> set = new HashSet<>();
+        set.add(this.getGlobalResources().getDataMeshArray());
+        set.add(this.getLocalResources().getDataMeshArray());
+        return set;
+    }
+
+    public MeshBuffersDrawCache getMeshBuffersDrawCache() {
+        return this.meshBuffersDrawCache;
+    }
+
     public static GameResources getLocalGameResources() {
         return JGems3D.get().getResourceManager().getLocalResources();
     }
@@ -88,7 +112,8 @@ public final class JGemsResourceManager {
 
     public void destroy() {
         GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
-        this.cleanAllCaches();
+        this.getMeshBuffersDrawCache().clear();
+        this.clearAllCaches();
     }
 
     public void loadGlobalResources() {
@@ -115,17 +140,17 @@ public final class JGemsResourceManager {
         this.getLocalResources().destroy();
     }
 
-    public void cleanGlobalCache() {
-        this.getGlobalResources().cleanCache();
+    public void clearGlobalCache() {
+        this.getGlobalResources().destroy();
     }
 
-    public void cleanLocalCache() {
-        this.getLocalResources().cleanCache();
+    public void clearLocalCache() {
+        this.getLocalResources().destroy();
     }
 
-    public void cleanAllCaches() {
-        this.cleanLocalCache();
-        this.cleanGlobalCache();
+    public void clearAllCaches() {
+        this.clearLocalCache();
+        this.clearGlobalCache();
     }
 
     public void reloadTexturesInGlobalCache() {

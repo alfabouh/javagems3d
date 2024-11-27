@@ -119,26 +119,26 @@ public final class ShadersContainer {
         this.getGUniformsFullSet().addAll(uniformList);
     }
 
-    public void clean() {
+    public void clear() {
         this.getGUniformsFullSet().clear();
         this.getCUniformsFullSet().clear();
         if (this.getFragmentShader() != null) {
-            this.getFragmentShader().clean();
+            this.getFragmentShader().clear();
         }
         if (this.getVertexShader() != null) {
-            this.getVertexShader().clean();
+            this.getVertexShader().clear();
         }
         if (this.getGeometricShader() != null) {
-            this.getGeometricShader().clean();
+            this.getGeometricShader().clear();
         }
         if (this.getTesselationControlShader() != null) {
-            this.getTesselationControlShader().clean();
+            this.getTesselationControlShader().clear();
         }
         if (this.getTesselationEvaluationShader() != null) {
-            this.getTesselationEvaluationShader().clean();
+            this.getTesselationEvaluationShader().clear();
         }
         if (this.getComputeShader() != null) {
-            this.getComputeShader().clean();
+            this.getComputeShader().clear();
         }
     }
 

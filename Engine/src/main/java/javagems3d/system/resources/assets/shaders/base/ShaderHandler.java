@@ -97,8 +97,8 @@ public class ShaderHandler {
         return uniformBufferProgram;
     }
 
-    public void clean() {
-        this.getShaderProgram().clean();
+    public void clear() {
+        this.getShaderProgram().clear();
     }
 
     public boolean checkUniformInProgram(UniformString uniformString) {

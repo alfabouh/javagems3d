@@ -3,7 +3,7 @@ package javagems3d.physics.entities.kinematic.player;
 import javagems3d.physics.entities.kinematic.JGemsKinematicItem;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.physics.world.thread.PhysicsThread;
+import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.controller.objects.IController;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -53,7 +53,7 @@ public abstract class JGemsKinematicControlledItem extends JGemsKinematicItem im
             return;
         }
         this.getCameraRotation().add(new Vector3f(rotationInput, 0.0f));
-        if (this.inputMotion.size() < PhysicsThread.TICKS_PER_SECOND) {
+        if (this.inputMotion.size() < JGemsPhysics.TICKS_PER_SECOND) {
             this.inputMotion.addFirst(new Vector3f(xyzInput));
         }
         this.clampCameraRotation();

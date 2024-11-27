@@ -20,10 +20,9 @@ import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.util.BufferUtils;
-import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.old.MeshGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,15 +120,11 @@ public abstract class DynamicsUtils {
         return new IndexedMesh(BufferUtils.createFloatBuffer(pos), BufferUtils.createIntBuffer(ind));
     }
 
-    public static CompoundMesh getCompoundMesh(MeshGroup meshGroup) {
-        return DynamicsUtils.getCompoundMesh(meshGroup, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
-    }
-
-    public static CompoundMesh getCompoundMesh(MeshGroup meshGroup, int positionsAttributeIndex) {
+    public static CompoundMesh getCompoundMesh(MeshStructure<?> meshStructure) {
         CompoundMesh compoundMesh = new CompoundMesh();
         List<IndexedMesh> indexedMeshList = new ArrayList<>();
-        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
-            float[] positions = JGemsHelper.UTILS.convertFloatsArray(meshNode.getMesh().tryGetValuesFromAttributeByIndex(positionsAttributeIndex));
+        for (MeshStructure.Node<?> meshNode : meshStructure.getMeshNodes()) {
+            float[] positions = JGemsHelper.UTILS.convertFloatsArray(meshNode.getMesh().getVertexPositions());
             int[] indexes = JGemsHelper.UTILS.convertIntsArray(meshNode.getMesh().getVertexIndexes());
             indexedMeshList.add(DynamicsUtils.getIndexMesh(positions, indexes));
         }

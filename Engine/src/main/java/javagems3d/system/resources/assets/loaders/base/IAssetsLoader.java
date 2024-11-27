@@ -16,13 +16,13 @@ import javagems3d.system.resources.manager.GameResources;
 public interface IAssetsLoader {
     void load(GameResources gameResources);
 
-    LoadMode loadMode();
+    LaunchMode loadMode();
 
     LoadPriority loadPriority();
 
-    enum LoadMode {
+    enum LaunchMode {
         PARALLEL,
-        NORMAL
+        REGULAR
     }
 
     enum LoadPriority {

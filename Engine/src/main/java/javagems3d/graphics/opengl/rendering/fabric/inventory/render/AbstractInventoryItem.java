@@ -12,6 +12,7 @@
 package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
@@ -23,7 +24,6 @@ import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
@@ -50,7 +50,7 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
     }
 
     protected void renderInventoryModel(MeshGroup meshGroup, JGemsShaderManager shaderManager) {
-        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+        for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
             ITextureSample sample1 = (ITextureSample) meshNode.getMaterial().getDiffuse();
             if (sample1 != null) {
                 shaderManager.getUtils().performUniformSample(new UniformString("diffuse_map"), sample1);

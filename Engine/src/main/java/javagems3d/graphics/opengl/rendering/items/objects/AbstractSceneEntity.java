@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.items.objects;
 
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
@@ -29,7 +30,6 @@ import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import api.app.events.bus.Events;
@@ -141,13 +141,6 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
         }
     }
 
-    public RenderAABB getRenderAABB() {
-        if (!this.hasRender() || !this.hasModel()) {
-            return null;
-        }
-        return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
-    }
-
     @Override
     public boolean canBeCulled() {
         return true;
@@ -165,7 +158,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
     public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
-        if (this.getObjectRenderSettings().getRenderAttributes().isShouldInterpolateMovement()) {
+        if (this.getObjectRenderSettings().isAllowedMovementInterpolation()) {
             this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);
@@ -216,7 +209,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
     }
 
     public JGemsShaderManager getShaderManager() {
-        return this.getObjectRenderSettings().getShaderManager();
+        return this.getObjectRenderSettings().getModelRenderShader();
     }
 
     public Vector3f getScale() {
@@ -256,8 +249,8 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
     }
 
     @Override
-    public ModelRenderData getObjectRenderSettings() {
-        return this.getRenderData().getMeshRenderData();
+    public ObjectRenderSettings getObjectRenderSettings() {
+        return this.getRenderData().getObjectRenderSettings();
     }
 
     public boolean isVisible() {

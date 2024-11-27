@@ -41,12 +41,12 @@ public class WorldDeferredRender extends SceneRenderBase {
         for (AbstractSceneObject entityItem : renderObjects) {
             if (entityItem.hasRender()) {
                 if (entityItem.isVisible()) {
-                    entityItem.getObjectRenderSettings().getShaderManager().beginShading();
-                    entityItem.getObjectRenderSettings().getShaderManager().getUtils().performPerspectiveMatrix();
+                    entityItem.getObjectRenderSettings().getModelRenderShader().beginShading();
+                    entityItem.getObjectRenderSettings().getModelRenderShader().getUtils().performPerspectiveMatrix();
                     entityItem.renderFabric().onPreRender(entityItem);
                     entityItem.renderFabric().onRender(frameTicking, this, entityItem);
                     entityItem.renderFabric().onPostRender(entityItem);
-                    entityItem.getObjectRenderSettings().getShaderManager().endShading();
+                    entityItem.getObjectRenderSettings().getModelRenderShader().endShading();
                 }
             }
         }

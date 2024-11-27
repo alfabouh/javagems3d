@@ -11,8 +11,10 @@
 
 package toolbox.resources.utils;
 
+import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector4f;
@@ -20,9 +22,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.JGems3D;
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
-import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
@@ -47,7 +47,7 @@ public class SimpleModelLoader {
                 try (AIScene scene = Assimp.aiImportFileEx(modelPath.getFullPath(), FLAGS, AIFileIO.calloc(stack).OpenProc(ModelLoadingUtils.AI_FILE_OPEN).CloseProc(ModelLoadingUtils.AI_FILE_CLOSE))) {
                     if (scene != null) {
                         int totalMaterials = scene.mNumMaterials();
-                        List<MaterialOld> materialList = new ArrayList<>();
+                        List<Material> materialList = new ArrayList<>();
                         for (int i = 0; i < totalMaterials; i++) {
                             try (AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(scene.mMaterials()).get(i))) {
                                 materialList.add(SimpleModelLoader.readMaterial(tBoxResourceManager, aiMaterial, modelPath.getParentPath()));
@@ -57,13 +57,13 @@ public class SimpleModelLoader {
                         PointerBuffer aiMeshes = scene.mMeshes();
                         for (int i = 0; i < totalMeshes; i++) {
                             try (AIMesh aiMesh = AIMesh.create(Objects.requireNonNull(aiMeshes).get(i))) {
-                                DirectRenderMesh directRenderMesh = SimpleModelLoader.readMesh(aiMesh);
+                                RenderMesh renderMesh = SimpleModelLoader.readMesh(aiMesh);
                                 int matIdx = aiMesh.mMaterialIndex();
-                                MaterialOld material = new MaterialOld();
+                                Material material = new Material();
                                 if (matIdx >= 0 && matIdx < materialList.size()) {
                                     material = materialList.get(matIdx);
                                 }
-                                meshGroup.putNode(new MeshGroup.Node(directRenderMesh, material));
+                                meshGroup.putMeshNode(new MeshGroup.MeshGroupNode(renderMesh, material));
                             }
                         }
                     } else {
@@ -92,94 +92,35 @@ public class SimpleModelLoader {
         return meshGroup;
     }
 
-    private static DirectRenderMesh readMesh(AIMesh aiMesh) {
-        int[] vertices = SimpleModelLoader.readVertices(aiMesh);
-        float[] textureCoordinates = SimpleModelLoader.readTextureCoordinates(aiMesh);
-        float[] positions = SimpleModelLoader.readPositions(aiMesh);
-        float[] normals = SimpleModelLoader.readNormals(aiMesh);
+    private static RenderMesh readMesh(AIMesh aiMesh) {
+        List<Integer> vertices = ModelLoadingUtils.readVertices(aiMesh);
+        List<Float> textureCoordinates = ModelLoadingUtils.readTextureCoordinates(aiMesh);
+        List<Float> positions = ModelLoadingUtils.readPositions(aiMesh);
+        List<Float> normals = ModelLoadingUtils.readNormals(aiMesh);
+        List<Float> tangents = ModelLoadingUtils.readTangents(aiMesh);
+        List<Float> biTangents = ModelLoadingUtils.readBiTangents(aiMesh);
 
-        if (textureCoordinates.length == 0) {
-            int totalElements = (positions.length / 3) * 2;
-            textureCoordinates = new float[totalElements];
-        }
-
-        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+        RenderMesh renderMesh = new RenderMesh();
 
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);
         FloatVertexAttribute vaNormals = new FloatVertexAttribute(DefaultAttributePointers.ATTR_NORMALS);
 
-        directRenderMesh.putVertexIndexes(vertices);
-        vaPositions.putArray(positions);
-        vaNormals.putArray(normals);
-        vaTextureCoordinates.putArray(textureCoordinates);
+        renderMesh.putVertexIndexes(vertices);
+        vaPositions.put(positions);
+        vaNormals.put(normals);
+        vaTextureCoordinates.put(textureCoordinates);
 
-        directRenderMesh.addVertexAttributeInMesh(vaPositions);
-        directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        directRenderMesh.addVertexAttributeInMesh(vaNormals);
+        renderMesh.addVertexAttributeInMesh(vaPositions);
+        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        renderMesh.addVertexAttributeInMesh(vaNormals);
 
-        directRenderMesh.bakeMesh();
-        return directRenderMesh;
+        renderMesh.bakeMesh();
+        return renderMesh;
     }
 
-    private static float[] readTextureCoordinates(AIMesh aiMesh) {
-        AIVector3D.Buffer buffer = aiMesh.mTextureCoords(0);
-        if (buffer == null) {
-            return new float[]{};
-        }
-        float[] data = new float[buffer.remaining() * 2];
-        int pos = 0;
-        while (buffer.remaining() > 0) {
-            AIVector3D textCoord = buffer.get();
-            data[pos++] = textCoord.x();
-            data[pos++] = 1 - textCoord.y();
-        }
-        return data;
-    }
-
-    private static float[] readNormals(AIMesh aiMesh) {
-        AIVector3D.Buffer buffer = aiMesh.mNormals();
-        assert buffer != null;
-        float[] data = new float[buffer.remaining() * 3];
-        int pos = 0;
-        while (buffer.remaining() > 0) {
-            AIVector3D normal = buffer.get();
-            data[pos++] = normal.x();
-            data[pos++] = normal.y();
-            data[pos++] = normal.z();
-        }
-        return data;
-    }
-
-    private static int[] readVertices(AIMesh aiMesh) {
-        List<Integer> indices = new ArrayList<>();
-        int numFaces = aiMesh.mNumFaces();
-        AIFace.Buffer aiFaces = aiMesh.mFaces();
-        for (int i = 0; i < numFaces; i++) {
-            AIFace aiFace = aiFaces.get(i);
-            IntBuffer buffer = aiFace.mIndices();
-            while (buffer.remaining() > 0) {
-                indices.add(buffer.get());
-            }
-        }
-        return indices.stream().mapToInt(Integer::intValue).toArray();
-    }
-
-    private static float[] readPositions(AIMesh aiMesh) {
-        AIVector3D.Buffer buffer = aiMesh.mVertices();
-        float[] data = new float[buffer.remaining() * 3];
-        int pos = 0;
-        while (buffer.remaining() > 0) {
-            AIVector3D position = buffer.get();
-            data[pos++] = position.x();
-            data[pos++] = position.y();
-            data[pos++] = position.z();
-        }
-        return data;
-    }
-
-    private static MaterialOld readMaterial(TBoxResourceManager tBoxResourceManager, AIMaterial aiMaterial, String fullPath) {
-        MaterialOld material = new MaterialOld();
+    private static Material readMaterial(TBoxResourceManager tBoxResourceManager, AIMaterial aiMaterial, String fullPath) {
+        Material material = new Material();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4D = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4D) == Assimp.aiReturn_SUCCESS) {

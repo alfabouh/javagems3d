@@ -11,25 +11,25 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.old.MeshGroup;
 
 public class InventoryCommon extends AbstractInventoryItem {
     protected final MeshGroup model1;
 
     public InventoryCommon(TextureSample diffuse) {
-        DirectRenderMesh directRenderMesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
-        MaterialOld material1 = MaterialOld.createDefault();
+        RenderMesh renderMesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
+        Material material1 = Material.createDefault();
         material1.setDiffuse(diffuse);
-        MeshGroup.Node meshNode1 = new MeshGroup.Node(directRenderMesh, material1);
+        MeshGroup.MeshGroupNode meshNode1 = new MeshGroup.MeshGroupNode(renderMesh, material1);
         this.model1 = new MeshGroup(meshNode1);
     }
 

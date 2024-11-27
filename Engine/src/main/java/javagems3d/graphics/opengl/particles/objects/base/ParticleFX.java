@@ -26,7 +26,7 @@ import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
 
-public abstract class ParticleFX implements IWorldObject, ICulled {
+public abstract class ParticleFX implements IWorldObject {
     private final Vector3f position;
     private final Vector2f scaling;
     private final Vector3f colorMask;
@@ -98,11 +98,6 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
         this.dead = true;
     }
 
-    public RenderAABB getRenderAABB() {
-        float max = Math.max(this.getScaling().x, this.getScaling().y);
-        return new RenderAABB(new Vector3f(this.getPosition()).add(new Vector3f(max)), new Vector3f(this.getPosition()).add(new Vector3f(-max)));
-    }
-
     public boolean hasTexturePack() {
         return this.getParticleTexturePack() != null;
     }
@@ -148,11 +143,6 @@ public abstract class ParticleFX implements IWorldObject, ICulled {
 
     public SceneWorld getWorld() {
         return this.world;
-    }
-
-    @Override
-    public boolean canBeCulled() {
-        return true;
     }
 
     public double getLivingTicks() {

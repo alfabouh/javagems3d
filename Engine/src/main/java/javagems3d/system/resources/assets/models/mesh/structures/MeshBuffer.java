@@ -11,76 +11,59 @@
 
 package javagems3d.system.resources.assets.models.mesh.structures;
 
-import javagems3d.system.resources.assets.models.mesh.IndirectRenderMesh;
-import javagems3d.system.resources.assets.models.mesh.data.IMeshUserData;
+import javagems3d.system.resources.assets.models.mesh.DataMesh;
+import javagems3d.system.resources.assets.models.mesh.udata.IMeshUserData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeshBuffer extends MeshStructure {
-    private final List<MeshNode> meshes;
-    private final List<DrawData> drawData;
+public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
+    private final List<PassData> passData;
 
     public MeshBuffer() {
-        this(null);
+        this.passData = new ArrayList<>();
     }
 
-    public MeshBuffer(List<MeshNode> meshes) {
-        this.drawData = new ArrayList<>();
-        this.meshes = new ArrayList<>();
-        if (meshes != null) {
-            this.getMeshes().addAll(meshes);
-        }
+    public MeshBuffer(List<MeshBufferNode> nodes) {
+        super(nodes);
+        this.passData = new ArrayList<>();
     }
 
-    @SuppressWarnings("all")
-    public <T extends IMeshUserData> T getUnSafeMeshUserData(String key) {
-        return this.getMeshUserData(key, null);
+    public MeshBuffer(MeshBufferNode... t) {
+        super(t);
+        this.passData = new ArrayList<>();
     }
 
-    @SuppressWarnings("all")
-    public <T extends IMeshUserData> T getMeshUserData(String key, Class<T> tClass) {
-        if (this.getMeshUserData(key) == null) {
-            return null;
-        }
-        if (tClass == null || this.getMeshUserData(key).getClass().isAssignableFrom(tClass)) {
-            return (T) this.getMeshUserData(key);
-        }
-        return null;
-    }
-
-    public void putMeshNode(MeshNode meshNode) {
-        this.getMeshes().add(meshNode);
-    }
-
-    public List<DrawData> getDrawData() {
-        return this.drawData;
-    }
-
-    public List<MeshNode> getMeshes() {
-        return this.meshes;
+    public List<PassData> getPassData() {
+        return this.passData;
     }
 
     @Override
-    public void clean() {
+    public List<MeshBufferNode> getMeshNodes() {
+        return super.getMeshNodes();
     }
 
     @Override
-    public MeshRenderTarget getMeshTargetType() {
-        return MeshRenderTarget.INDIRECT;
+    public MeshDataType getMeshDataType() {
+        return MeshDataType.INDIRECT_RENDER_DATA;
     }
 
-    public static final class MeshNode {
-        private final IndirectRenderMesh meshData;
-        private final int materialId;
+    public static final class MeshBufferNode extends MeshStructure.Node <DataMesh> {
+        private int materialId;
 
-        public MeshNode(IndirectRenderMesh meshData, int materialId) {
-            this.meshData = meshData;
+        public MeshBufferNode(@NotNull DataMesh meshData, int materialId) {
+            super(meshData);
             this.materialId = materialId;
         }
 
-        public IndirectRenderMesh getMesh() {
-            return this.meshData;
+        public void clearMesh() {
+            this.getMesh().clearMesh();
+        }
+
+        public MeshBufferNode setMaterialId(int materialId) {
+            this.materialId = materialId;
+            return this;
         }
 
         public int getMaterialId() {
@@ -88,13 +71,13 @@ public class MeshBuffer extends MeshStructure {
         }
     }
 
-    public static final class DrawData {
+    public static final class PassData {
         private final int sizeInBytes;
         private final int materialId;
         private final int offset;
         private final int vertices;
 
-        public DrawData(int sizeInBytes, int materialId, int offset, int vertices) {
+        public PassData(int sizeInBytes, int materialId, int offset, int vertices) {
             this.sizeInBytes = sizeInBytes;
             this.materialId = materialId;
             this.offset = offset;

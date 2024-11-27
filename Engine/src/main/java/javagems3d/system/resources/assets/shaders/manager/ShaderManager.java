@@ -72,12 +72,12 @@ public abstract class ShaderManager implements ICached {
 
     public void destroyProgram() {
         if (this.getComputingShaderGroup() != null) {
-            this.getComputingShaderGroup().clean();
+            this.getComputingShaderGroup().clear();
         }
         if (this.getGraphicShaderGroup() != null) {
-            this.getGraphicShaderGroup().clean();
+            this.getGraphicShaderGroup().clear();
         }
-        this.getShaderContainer().clean();
+        this.getShaderContainer().clear();
     }
 
     public void dispatchComputeShader(int grX, int grY, int grZ, int barrier) {

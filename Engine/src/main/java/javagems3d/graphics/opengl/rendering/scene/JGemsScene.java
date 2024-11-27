@@ -11,16 +11,15 @@
 
 package javagems3d.graphics.opengl.rendering.scene;
 
+import javagems3d.graphics.opengl.rendering.scene.inderect.IndirectRenderBuffer;
+import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.camera.AttachedCamera;
 import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
-import javagems3d.graphics.opengl.frustum.FrustumCulling;
 import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
 import javagems3d.graphics.opengl.rendering.scene.base.IScene;
@@ -30,13 +29,13 @@ import javagems3d.graphics.opengl.screen.window.Window;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.physics.world.thread.PhysicsThread;
+import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.controller.objects.IController;
 import javagems3d.system.service.synchronizing.SyncManager;
 
 public class JGemsScene implements IScene {
     private final TransformationUtils transformationUtils;
-    private final FrustumCulling frustumCulling;
+    private final IndirectRenderBuffer sceneIndirectRenderBuffer;
     private final ImmediateUI immediateUI;
     private final SceneData sceneData;
     private JGemsOpenGLRenderer sceneRenderer;
@@ -46,19 +45,19 @@ public class JGemsScene implements IScene {
     public JGemsScene(Window window, TransformationUtils transformationUtils, SceneWorld sceneWorld) {
         this.transformationUtils = transformationUtils;
 
+        this.sceneIndirectRenderBuffer = new IndirectRenderBuffer();
         this.sceneData = new SceneData(sceneWorld, null);
-        this.frustumCulling = new FrustumCulling();
         this.immediateUI = new ImmediateUI();
 
-        this.setSceneRenderer(new JGemsOpenGLRenderer(window, this.getSceneData()));
+        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getSceneIndirectRenderBuffer(), this.getImmediateUI(), window, this.getSceneData()));
     }
 
-    public static void activeGlTexture(int code) {
-        GL46.glActiveTexture(GL46.GL_TEXTURE0 + code);
+    public void initSceneIndirectRenderBuffer(MeshBuffersDrawCache meshBuffersDrawCache) {
+        this.getSceneIndirectRenderBuffer().clear();
+        this.getSceneIndirectRenderBuffer().init(meshBuffersDrawCache);
     }
 
     public void preRender() {
-        this.getSceneWorld().setFrustumCulling(this.getFrustumCulling());
         JGemsHelper.getLogger().log("Starting scene rendering!");
         this.getSceneRenderer().onStartRender();
         JGemsHelper.getLogger().log("Scene rendering started!");
@@ -70,7 +69,7 @@ public class JGemsScene implements IScene {
             JGems3D.get().getScreen().normalizeViewPort();
             JGemsOpenGLRenderer.getGameUboShader().beginShading();
             if (this.getCurrentCamera() != null) {
-                this.elapsedTime += frameDeltaTime / PhysicsThread.getFrameTime();
+                this.elapsedTime += frameDeltaTime / JGemsPhysics.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
                     SyncManager.SyncPhysics.free();
                     this.refresh = true;
@@ -87,7 +86,6 @@ public class JGemsScene implements IScene {
 
     @SuppressWarnings("all")
     public void updateSceneComponents(final FrameTicking frameTicking) throws InterruptedException {
-        this.getFrustumCulling().refreshFrustumCullingState(this.getTransformationUtils().getPerspectiveMatrix(), this.getTransformationUtils().getMainCameraViewMatrix());
         this.getSceneWorld().updateWorldObjects(this.refresh, frameTicking);
         this.refresh = false;
         this.getSceneWorld().onWorldUpdate();
@@ -99,7 +97,8 @@ public class JGemsScene implements IScene {
         JGemsHelper.getLogger().log("Stopping scene rendering!");
         this.getSceneRenderer().onStopRender();
         JGemsHelper.getLogger().log("Destroying resources!");
-        this.UI().destroyUI();
+        this.getImmediateUI().destroyUI();
+        this.getSceneIndirectRenderBuffer().clear();
         JGemsHelper.getLogger().log("Scene rendering stopped");
     }
 
@@ -109,7 +108,7 @@ public class JGemsScene implements IScene {
 
     public void onWindowResize(Vector2i dim) {
         this.getSceneRenderer().onWindowResize(dim);
-        this.UI().onWindowResize(dim);
+        this.getImmediateUI().onWindowResize(dim);
     }
 
     public void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
@@ -128,8 +127,12 @@ public class JGemsScene implements IScene {
         return this.transformationUtils;
     }
 
-    public ImmediateUI UI() {
+    public ImmediateUI getImmediateUI() {
         return this.immediateUI;
+    }
+
+    public IndirectRenderBuffer getSceneIndirectRenderBuffer() {
+        return this.sceneIndirectRenderBuffer;
     }
 
     public SceneData getSceneData() {
@@ -152,19 +155,11 @@ public class JGemsScene implements IScene {
         return JGemsHelper.getScreen().getWindow();
     }
 
-    public boolean isCameraAttachedToItem(AbstractSceneEntity abstractSceneEntity) {
-        return this.getCurrentCamera() instanceof AttachedCamera && ((AttachedCamera) this.getCurrentCamera()).getPhysXObject() == abstractSceneEntity;
-    }
-
     public JGemsOpenGLRenderer getSceneRenderer() {
         return this.sceneRenderer;
     }
 
     public void setSceneRenderer(JGemsOpenGLRenderer sceneRenderer) {
         this.sceneRenderer = sceneRenderer;
-    }
-
-    public FrustumCulling getFrustumCulling() {
-        return this.frustumCulling;
     }
 }

@@ -13,6 +13,7 @@ package toolbox.render.scene;
 
 import javafx.util.Pair;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL45;
@@ -28,7 +29,6 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import logger.SystemLogging;
@@ -84,7 +84,7 @@ public class TBoxScene {
 
     @SuppressWarnings("all")
     public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshGroup meshGroup, int code) {
-        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+        for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
             if (meshNode.getMaterial() != null) {
                 if (meshNode.getMaterial().getDiffuse() instanceof ColorSample) {
                     shaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(false));
@@ -183,7 +183,7 @@ public class TBoxScene {
             TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
             TBoxSceneUtils.renderModel(modelSun, GL46.GL_LINES);
             TBoxResourceManager.shaderResources().world_lines.endShading();
-            modelSun.clean();
+            modelSun.clear();
             TBoxScene.sceneForwardFbo.unBindFBO();
             GL46.glDisable(GL46.GL_BLEND);
 
@@ -228,7 +228,7 @@ public class TBoxScene {
                 TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
                 TBoxSceneUtils.renderModel(model, GL46.GL_LINES);
                 TBoxResourceManager.shaderResources().world_lines.endShading();
-                model.clean();
+                model.clear();
                 GL46.glEnable(GL46.GL_DEPTH_TEST);
             }
 

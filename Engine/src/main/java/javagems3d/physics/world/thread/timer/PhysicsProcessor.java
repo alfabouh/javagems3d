@@ -23,14 +23,14 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
 import api.app.events.bus.Events;
 
-public class PhysicsTimer implements IPhysTimer {
+public class PhysicsProcessor implements IPhysicsProcessor {
     public static final Object lockObject = new Object();
     public static int TPS;
     private final DynamicsSystem dynamicsSystem;
     private final PhysicsWorld world;
 
     @SuppressWarnings("all")
-    public PhysicsTimer() {
+    public PhysicsProcessor() {
         this.dynamicsSystem = new DynamicsSystem();
         this.world = new PhysicsWorld();
     }
@@ -49,14 +49,14 @@ public class PhysicsTimer implements IPhysTimer {
                 SyncManager.SyncPhysics.mark();
                 SyncManager.SyncPhysics.blockCurrentThread(true);
                 if (JGems3D.get().getEngineSystem().engineState().isEngineIsReady() && !JGems3D.get().getEngineSystem().engineState().isPaused()) {
-                    synchronized (PhysicsTimer.lockObject) {
+                    synchronized (PhysicsProcessor.lockObject) {
                         this.world.onWorldUpdate();
                         APIEventsLauncher.pushEvent(new Events.BulletUpdate(this.dynamicsSystem));
                         this.dynamicsSystem.step(time, 0);
                         this.dynamicsSystem.collideTest();
                     }
                 }
-                PhysicsTimer.TPS += 1;
+                PhysicsProcessor.TPS += 1;
             }
             JGemsHelper.getLogger().log("Stopping physics!");
         } catch (JGemsException e) {
@@ -64,7 +64,7 @@ public class PhysicsTimer implements IPhysTimer {
         }
     }
 
-    public void cleanResources() {
+    public void clearResources() {
         JGemsHelper.getLogger().log("Cleaning physics world resources...");
         this.getDynamicsSystem().destroy();
     }
@@ -77,12 +77,12 @@ public class PhysicsTimer implements IPhysTimer {
         this.getDynamicsSystem().addCollisionObject(physicsCollisionObject);
     }
 
-    public PhysicsWorld getWorld() {
+    public PhysicsWorld getPhysicsWorld() {
         return this.world;
     }
 
     public DynamicsSystem getDynamicsSystem() {
-        synchronized (PhysicsTimer.lockObject) {
+        synchronized (PhysicsProcessor.lockObject) {
             return this.dynamicsSystem;
         }
     }

@@ -11,28 +11,28 @@
 package javagems3d.system.map.loaders.tbox.placers;
 
 import javagems3d.graphics.opengl.rendering.items.IRendered;
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import javagems3d.system.resources.old.properties.ModelRenderProperties;
 import javagems3d.system.service.path.JGemsPath;
 
 /**
  * This class represents the rendering information for an object inside the engine itself
  */
 public final class TDefaultRenderContainer {
-    private final ModelRenderProperties modelRenderProperties;
+    private final ObjectRenderSettings objectRenderSettings;
     private final JGemsPath pathToRenderModel;
     private final JGemsPath pathToRenderShader;
     private final Class<? extends AbstractSceneEntity> sceneEntityClass;
     private final IRenderObjectFabric renderFabric;
 
-    public TDefaultRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull ModelRenderProperties modelRenderProperties) {
+    public TDefaultRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull ObjectRenderSettings objectRenderSettings) {
         this.renderFabric = renderFabric;
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
         this.pathToRenderModel = pathToRenderModel;
-        this.modelRenderProperties = modelRenderProperties;
+        this.objectRenderSettings = objectRenderSettings;
     }
 
     /**
@@ -45,8 +45,8 @@ public final class TDefaultRenderContainer {
     /**
      * These are the attributes that affect the rendering of the mesh in the JGems pipeline
      */
-    public @NotNull ModelRenderProperties getMeshRenderAttributes() {
-        return this.modelRenderProperties;
+    public @NotNull ObjectRenderSettings getObjectRenderSettings() {
+        return this.objectRenderSettings;
     }
 
     /**

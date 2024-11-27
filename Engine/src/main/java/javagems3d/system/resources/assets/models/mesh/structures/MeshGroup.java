@@ -1,74 +1,52 @@
 package javagems3d.system.resources.assets.models.mesh.structures;
 
 import javagems3d.system.resources.assets.material.Material;
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeshGroup extends MeshStructure {
-    private final List<MeshNode> meshMeshNodeList;
-
+public class MeshGroup extends MeshStructure<MeshGroup.MeshGroupNode> {
     public MeshGroup() {
-        this.meshMeshNodeList = new ArrayList<>();
+        super();
     }
 
-    public MeshGroup(MeshNode meshNode) {
-        this();
-        this.putMeshNode(meshNode);
+    public MeshGroup(List<MeshGroupNode> nodes) {
+        super(nodes);
     }
 
-    public MeshGroup(DirectRenderMesh directRenderMesh) {
-        this(new MeshNode(directRenderMesh));
-    }
-
-    public void createRenderAABB() {
-        this.createRenderAABB(DefaultAttributePointers.ATTR_POSITIONS.getIndex());
-    }
-
-    public void createRenderAABB(int positionAttributeIndex) {
-        //JGemsHelper.UTILS.createMeshRenderAABBData(this, positionAttributeIndex);
-    }
-
-    public void putMeshNode(MeshNode meshNode) {
-        this.meshMeshNodeList.add(meshNode);
-    }
-
-    public void clean() {
-        this.getModelNodeList().forEach(MeshNode::cleanMesh);
-        this.getModelNodeList().clear();
+    public MeshGroup(MeshGroupNode... t) {
+        super(t);
     }
 
     @Override
-    public MeshRenderTarget getMeshTargetType() {
-        return MeshRenderTarget.DIRECT;
+    public MeshDataType getMeshDataType() {
+        return MeshDataType.DIRECT_RENDER_DATA;
     }
 
-    public List<MeshNode> getModelNodeList() {
-        return this.meshMeshNodeList;
+    @Override
+    public List<MeshGroupNode> getMeshNodes() {
+        return super.getMeshNodes();
     }
 
-    public static class MeshNode {
-        private final DirectRenderMesh directRenderMesh;
-        private final Material material;
+    public static class MeshGroupNode extends MeshStructure.Node <RenderMesh> {
+        private Material material;
 
-        public MeshNode(DirectRenderMesh directRenderMesh, Material material) {
-            this.directRenderMesh = directRenderMesh;
+        public MeshGroupNode(@NotNull RenderMesh renderMesh) {
+            this(renderMesh, null);
+        }
+
+        public MeshGroupNode(@NotNull RenderMesh renderMesh, @Nullable Material material) {
+            super(renderMesh);
+            this.material = material == null ? Material.createDefault() : material;
+        }
+
+        public MeshGroupNode setMaterial(Material material) {
             this.material = material;
-        }
-
-        public MeshNode(DirectRenderMesh directRenderMesh) {
-            this.directRenderMesh = directRenderMesh;
-            this.material = null;
-        }
-
-        public void cleanMesh() {
-            this.getMesh().cleanMesh();
-        }
-
-        public DirectRenderMesh getMesh() {
-            return this.directRenderMesh;
+            return this;
         }
 
         public Material getMaterial() {

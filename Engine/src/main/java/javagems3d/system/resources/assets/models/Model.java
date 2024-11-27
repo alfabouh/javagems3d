@@ -11,7 +11,9 @@
 
 package javagems3d.system.resources.assets.models;
 
+import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.system.resources.assets.models.formats.IFormat;
 
@@ -20,7 +22,7 @@ import java.io.Serializable;
 public final class Model<T extends IFormat> implements Serializable, AutoCloseable {
     private static final long serialVersionUID = -228L;
     private final T format;
-    private MeshStructure meshStructure;
+    private MeshStructure<?> meshStructure;
 
     @SuppressWarnings("unchecked")
     public Model(Model<?> model) {
@@ -33,7 +35,7 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
         this.meshStructure = model.getMeshStructure();
     }
 
-    public Model(@NotNull T t, MeshStructure meshStructure) {
+    public Model(@NotNull T t, MeshStructure<?> meshStructure) {
         this.format = t;
         this.meshStructure = meshStructure;
     }
@@ -43,24 +45,33 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
         this.meshStructure = null;
     }
 
-    public void clean() {
+    public void clear() {
         if (this.getMeshStructure() == null) {
             return;
         }
-        this.getMeshStructure().clean();
+        this.getMeshStructure().clear();
         this.meshStructure = null;
     }
 
     @Override
     public void close() {
-        this.clean();
+        this.clear();
     }
 
     public boolean isValid() {
         return this.getMeshStructure() != null;
     }
 
-    public MeshStructure getMeshStructure() {
+    @SuppressWarnings("all")
+    public <R extends MeshStructure<?>> R getMeshStructureWithUnSafeCast() {
+        try {
+            return (R) this.meshStructure;
+        } catch (ClassCastException e) {
+            throw new JGemsRuntimeException("Unable to cast!\n" + e.getMessage());
+        }
+    }
+
+    public MeshStructure<?> getMeshStructure() {
         return this.meshStructure;
     }
 

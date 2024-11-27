@@ -55,13 +55,13 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
         line.render(frameDeltaTicks);
         brick.render(frameDeltaTicks);
 
-        line.cleanData();
-        brick.cleanData();
+        line.clearData();
+        brick.clearData();
 
         UIText uiText = new UIText(this.title + " " + (int) (this.getOptionValue() * 100.0f) + "%", guiFont, this.hexColor, new Vector2i(this.getPosition()).add(this.getSize().x + 30, -3), this.zValue);
         uiText.buildUI();
         uiText.render(frameDeltaTicks);
-        uiText.cleanData();
+        uiText.clearData();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     }
 
     @Override
-    public void cleanData() {
+    public void clearData() {
     }
 
     @Override

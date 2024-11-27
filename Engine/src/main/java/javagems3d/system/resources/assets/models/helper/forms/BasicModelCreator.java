@@ -13,10 +13,10 @@ package javagems3d.system.resources.assets.models.helper.forms;
 
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.IFormat;
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 
 public interface BasicModelCreator<T extends IFormat> {
     Model<T> generateModel();
 
-    DirectRenderMesh generateMesh();
+    RenderMesh generateMesh();
 }

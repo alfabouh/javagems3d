@@ -2,13 +2,14 @@ package javagems3d.system.resources.assets.models.mesh;
 
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.VertexAttribute;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 import java.util.*;
 
-public class DirectRenderMesh implements IMesh {
+public class RenderMesh implements IMesh {
     private int positionsIdx;
 
     private int vao;
@@ -22,7 +23,7 @@ public class DirectRenderMesh implements IMesh {
 
     private boolean baked;
 
-    public DirectRenderMesh() {
+    public RenderMesh() {
         this.positionsIdx = IMesh.DEFAULT_POS_IDX;
         this.vertexIndexes = new ArrayList<>();
 
@@ -52,8 +53,9 @@ public class DirectRenderMesh implements IMesh {
         this.vertexAttributesMap.put(vertexAttribute.getIndex(), vertexAttribute);
     }
 
-    public VertexAttribute<?> getVertexAttributeByIndex(int index) {
-        return this.vertexAttributesMap.get(index);
+    @SuppressWarnings("all")
+    public <T> VertexAttribute<T> getVertexAttributeByIndex(int index) {
+        return (VertexAttribute<T>) this.vertexAttributesMap.get(index);
     }
 
     public int getVBOByAttributeIndex(int index) {
@@ -63,7 +65,6 @@ public class DirectRenderMesh implements IMesh {
     public int getVBOByVertexAttribute(VertexAttribute<?> vertexAttribute) {
         return this.getVBOByAttributeIndex(vertexAttribute.getIndex());
     }
-
 
     public void disableMeshAttributes(int... a) {
         for (int vertexAttribute : a) {
@@ -114,7 +115,7 @@ public class DirectRenderMesh implements IMesh {
             this.vboMap.put(vertexAttribute.getIndex(), vbo);
             GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vbo);
             vertexAttribute.pushGLBuffer();
-            GL46.glVertexAttribPointer(vertexAttribute.getIndex(), vertexAttribute.getAttributePointer().getSize(), vertexAttribute.attributeType(), vertexAttribute.getAttributePointer().isNormalized(), vertexAttribute.getAttributePointer().getStride(), vertexAttribute.getAttributePointer().getPointer());
+            GL46.glVertexAttribPointer(vertexAttribute.getIndex(), vertexAttribute.getAttributePointer().getLengthInMemory(), vertexAttribute.attributeType(), vertexAttribute.getAttributePointer().isNormalized(), vertexAttribute.getAttributePointer().getStride(), vertexAttribute.getAttributePointer().getPointer());
         }
 
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
@@ -123,7 +124,7 @@ public class DirectRenderMesh implements IMesh {
     }
 
     @Override
-    public void cleanMesh() {
+    public void clearMesh() {
         for (VertexAttribute<?> v : this.vertexAttributesMap.values()) {
             v.clearData();
         }
@@ -158,8 +159,13 @@ public class DirectRenderMesh implements IMesh {
         return this.totalVertices;
     }
 
-    public List<Integer> getVertexIndexes() {
+    public @NotNull List<Integer> getVertexIndexes() {
         return this.vertexIndexes;
+    }
+
+    @Override
+    public @NotNull List<Float> getVertexPositions() {
+        return this.<Float>getVertexAttributeByIndex(this.positionsIndex()).getValues();
     }
 
     public int getVao() {

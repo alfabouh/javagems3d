@@ -14,5 +14,5 @@ package javagems3d.system.core;
 public interface IEngine {
     void startSystem();
 
-    EngineSystem.EngineState engineState();
+    JGemsEngineSystem.EngineState engineState();
 }

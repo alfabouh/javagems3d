@@ -86,9 +86,9 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    public void cleanData() {
-        this.buttonModel.clean();
-        this.uiText.cleanData();
+    public void clearData() {
+        this.buttonModel.clear();
+        this.uiText.clearData();
     }
 
     @Override

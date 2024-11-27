@@ -57,14 +57,7 @@ public class LinesDebugDraw {
     }
 
     public void drawAABBLinesRN(JGemsShaderManager debugShaders, List<ICulled> culleds) {
-        for (ICulled c : culleds) {
-            debugShaders.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(0.0f, 0.0f, 1.0f, 1.0f)));
-            ICulled.RenderAABB renderAABB = c.getRenderAABB();
-            if (renderAABB == null) {
-                continue;
-            }
-            this.drawAABB(DynamicsUtils.convertV3F_JME(renderAABB.getMin()), DynamicsUtils.convertV3F_JME(renderAABB.getMax()));
-        }
+
     }
 
     public void drawAABBLinesBT(JGemsShaderManager debugShaders, DynamicsSystem dynamicsSystem) {
@@ -163,7 +156,7 @@ public class LinesDebugDraw {
         GL46.glBindVertexArray(0);
     }
 
-    public void cleanup() {
+    public void cleanUp() {
         MemoryUtil.memFree(this.navMeshFloatBuffer);
         GL46.glDeleteBuffers(this.vbo);
         GL46.glDeleteVertexArrays(this.vao);

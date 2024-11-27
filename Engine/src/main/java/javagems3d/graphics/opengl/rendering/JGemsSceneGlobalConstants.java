@@ -34,11 +34,12 @@ public abstract class JGemsSceneGlobalConstants {
     public static float Z_NEAR = 0.1f;
     public static float Z_FAR = (float) JGems3D.MAP_MAX_SIZE * 2.0f;
 
+    public static float DEFAULT_ALPHA_DISCARD = 0.7f;
 
     public static float EVSM_POSITIVE_EXPONENT = 60.0f;
     public static float EVSM_NEGATIVE_EXPONENT = 5.0f;
-    public static float MAX_ALPHA_TO_CULL_SHADOW = 0.5f;
-    public static float MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT = 0.75f;
+    public static float MAX_ALPHA_TO_IGNORE_SHADOW = 0.5f;
+    public static float MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT = JGemsSceneGlobalConstants.DEFAULT_ALPHA_DISCARD;
     public static int MAX_SHADOW_RES = 1024;
     public static boolean DRAW_BACK_FACES_FOR_SHADOWS = true;
 

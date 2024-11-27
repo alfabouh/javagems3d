@@ -1,5 +1,6 @@
 package javagems3d.graphics.opengl.rendering.items.settings;
 
+import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("all")
 public class ObjectRenderSettings implements IRenderSettings {
     private JGemsShaderManager modelRenderShader;
+
+    private float renderDistance;
+    private float alphaDiscardValue;
 
     private boolean allowMoveMeshesIntoTransparencyPass;
     private boolean lightsAffected;
@@ -18,6 +22,9 @@ public class ObjectRenderSettings implements IRenderSettings {
 
     public ObjectRenderSettings(@NotNull JGemsShaderManager modelRenderShader) {
         this.modelRenderShader = modelRenderShader;
+
+        this.alphaDiscardValue = JGemsSceneGlobalConstants.DEFAULT_ALPHA_DISCARD;
+        this.renderDistance = -1.0f;
 
         this.allowMoveMeshesIntoTransparencyPass = true;
         this.lightsAffected = true;
@@ -37,7 +44,25 @@ public class ObjectRenderSettings implements IRenderSettings {
         return this;
     }
 
-    public boolean isAllowMoveMeshesIntoTransparencyPass() {
+    public float getRenderDistance() {
+        return this.renderDistance;
+    }
+
+    public ObjectRenderSettings setRenderDistance(float renderDistance) {
+        this.renderDistance = renderDistance;
+        return this;
+    }
+
+    public float getAlphaDiscardValue() {
+        return this.alphaDiscardValue;
+    }
+
+    public ObjectRenderSettings setAlphaDiscardValue(float alphaDiscardValue) {
+        this.alphaDiscardValue = alphaDiscardValue;
+        return this;
+    }
+
+    public boolean isAllowedMoveMeshesIntoTransparencyPass() {
         return this.allowMoveMeshesIntoTransparencyPass;
     }
 
@@ -82,7 +107,7 @@ public class ObjectRenderSettings implements IRenderSettings {
         return this;
     }
 
-    public boolean isAllowMovementInterpolation() {
+    public boolean isAllowedMovementInterpolation() {
         return this.allowMovementInterpolation;
     }
 
@@ -91,7 +116,7 @@ public class ObjectRenderSettings implements IRenderSettings {
         return this;
     }
 
-    public boolean isDisableFaceCulling() {
+    public boolean isDisabledFaceCulling() {
         return this.disableFaceCulling;
     }
 
@@ -103,13 +128,13 @@ public class ObjectRenderSettings implements IRenderSettings {
     @Override
     public @NotNull ObjectRenderSettings copy() {
         ObjectRenderSettings objectRenderSettings = new ObjectRenderSettings(this.getModelRenderShader());
-        objectRenderSettings.setAllowMovementInterpolation(this.isAllowMovementInterpolation());
-        this.setDisableFaceCulling(this.isDisableFaceCulling());
+        objectRenderSettings.setAllowMovementInterpolation(this.isAllowedMovementInterpolation());
+        this.setDisableFaceCulling(this.isDisabledFaceCulling());
         this.setLightsAffected(this.isLightsAffected());
-        this.setAllowMovementInterpolation(this.isAllowMovementInterpolation());
+        this.setAllowMovementInterpolation(this.isAllowedMovementInterpolation());
         this.setShadowCaster(this.isShadowCaster());
         this.setShadowReceiver(this.isShadowReceiver());
-        this.setAllowMoveMeshesIntoTransparencyPass(this.isAllowMoveMeshesIntoTransparencyPass());
+        this.setAllowMoveMeshesIntoTransparencyPass(this.isAllowedMoveMeshesIntoTransparencyPass());
         this.setDefaultBrightLighted(this.isDefaultBrightLighted());
         return objectRenderSettings;
     }

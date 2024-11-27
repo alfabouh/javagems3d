@@ -34,7 +34,7 @@ public final class ShaderLibrariesManager {
         }
     }
 
-    public void clean() {
+    public void clear() {
         this.getContainerMap().clear();
     }
 

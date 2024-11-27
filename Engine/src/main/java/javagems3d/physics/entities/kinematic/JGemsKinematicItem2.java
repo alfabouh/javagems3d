@@ -16,7 +16,7 @@ import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.physics.world.thread.PhysicsThread;
+import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.jetbrains.annotations.NotNull;
@@ -77,7 +77,7 @@ public abstract class JGemsKinematicItem2 extends WorldItem implements IWorldTic
         this.setSlopeAngle(Math.toRadians(10.0f));
         this.setStepHeight(0.25f);
         this.setLinearVelDamping(0.7f);
-        this.setJumpCooldown(PhysicsThread.TICKS_PER_SECOND / 2);
+        this.setJumpCooldown(JGemsPhysics.TICKS_PER_SECOND / 2);
     }
 
     protected float gravityDiv() {

@@ -24,7 +24,7 @@ public class OrientedBoxCollider implements IColliderConstructor {
     }
 
     @Override
-    public CollisionShape createCollisionShape() {
+    public CollisionShape execute() {
         Vector3f vector3f = new Vector3f(this.size);
         return new BoxCollisionShape(DynamicsUtils.convertV3F_JME(vector3f).mult(0.5f));
     }

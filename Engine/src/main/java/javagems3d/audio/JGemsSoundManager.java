@@ -27,14 +27,14 @@ import java.nio.IntBuffer;
 import java.util.Iterator;
 import java.util.Set;
 
-public final class SoundManager {
+public final class JGemsSoundManager {
     public static final Set<GameSound> sounds = SyncManager.createSyncronisedSet();
     private final Set<GameSound> tempSet;
     private boolean isSystemCreated;
     private long device;
     private long context;
 
-    public SoundManager() {
+    public JGemsSoundManager() {
         this.tempSet = SyncManager.createSyncronisedSet();
         this.isSystemCreated = false;
     }
@@ -81,11 +81,11 @@ public final class SoundManager {
         this.isSystemCreated = true;
         JGemsHelper.getLogger().log("OpenAL system successfully created!");
         AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
     }
 
     public void stopAllSounds() {
-        Iterator<GameSound> gameSoundIterator = SoundManager.sounds.iterator();
+        Iterator<GameSound> gameSoundIterator = JGemsSoundManager.sounds.iterator();
         while (gameSoundIterator.hasNext()) {
             GameSound gameSound = gameSoundIterator.next();
             gameSound.stopSound();
@@ -96,7 +96,7 @@ public final class SoundManager {
     }
 
     public void pauseAllSounds() {
-        for (GameSound gameSound : SoundManager.sounds) {
+        for (GameSound gameSound : JGemsSoundManager.sounds) {
             if (gameSound.isPlaying()) {
                 if (gameSound.getSoundType() != SoundType.SYSTEM) {
                     gameSound.pauseSound();
@@ -117,7 +117,7 @@ public final class SoundManager {
 
     public void destroy() {
         this.isSystemCreated = false;
-        SoundManager.sounds.clear();
+        JGemsSoundManager.sounds.clear();
         ALC10.alcMakeContextCurrent(MemoryUtil.NULL);
         ALC10.alcCloseDevice(this.getDevice());
         ALC10.alcDestroyContext(this.getContext());
@@ -163,7 +163,7 @@ public final class SoundManager {
         if (!this.isSystemCreated()) {
             return;
         }
-        Iterator<GameSound> gameSoundIterator = SoundManager.sounds.iterator();
+        Iterator<GameSound> gameSoundIterator = JGemsSoundManager.sounds.iterator();
         while (gameSoundIterator.hasNext()) {
             GameSound gameSound = gameSoundIterator.next();
             if (gameSound.isValid()) {
@@ -177,7 +177,7 @@ public final class SoundManager {
                 gameSoundIterator.remove();
             }
         }
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
     }
 
     public long getContext() {

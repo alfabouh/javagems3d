@@ -64,8 +64,8 @@ public class UIPictureStatic extends UIElement {
     }
 
     @Override
-    public void cleanData() {
-        this.imageModel.clean();
+    public void clearData() {
+        this.imageModel.clear();
     }
 
     protected Model<Format2D> constructModel(Vector2i imageSize) {

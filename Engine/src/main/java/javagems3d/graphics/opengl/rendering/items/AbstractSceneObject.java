@@ -14,11 +14,11 @@ package javagems3d.graphics.opengl.rendering.items;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.frustum.ICulled;
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.old.properties.ModelRenderData;
 
 public abstract class AbstractSceneObject implements IModeled, IRendered, ICulled, ILightsKeeper {
     private float animationSpeed;
@@ -64,15 +64,6 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
         if (this.hasAnimations()) {
             this.getAnimationData().nextFrame();
         }
-        this.recreateModelRenderAABB(positionAttributeIndex);
-    }
-
-    public void recreateModelRenderAABB() {
-        this.getModel().getMeshStructure().createRenderAABB();
-    }
-
-    public void recreateModelRenderAABB(int positionAttributeIndex) {
-        this.getModel().getMeshStructure().createRenderAABB(positionAttributeIndex);
     }
 
     @Override
@@ -92,7 +83,6 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
         AnimationData animationData = new AnimationData(this.getModel().getMeshStructure().getAnimationList().get(id));
         this.setAnimationData(animationData);
         this.nextAnimationFrame();
-        this.recreateModelRenderAABB();
         return animationData;
     }
 
@@ -100,7 +90,7 @@ public abstract class AbstractSceneObject implements IModeled, IRendered, ICulle
         return this.model;
     }
 
-    public abstract ModelRenderData getObjectRenderSettings();
+    public abstract ObjectRenderSettings getObjectRenderSettings();
 
     public boolean hasModel() {
         return this.getModel() != null && this.getModel().isValid();

@@ -59,7 +59,7 @@ public class Shader {
         this.loadUniforms(this.getShaderText());
     }
 
-    public void clean() {
+    public void clear() {
         this.structs.clear();
         this.uniforms.clear();
     }

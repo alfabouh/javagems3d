@@ -11,11 +11,11 @@
 
 package toolbox.render.scene.utils;
 
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.MeshGroup;
 import toolbox.ToolBox;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
@@ -37,12 +37,12 @@ public class TBoxSceneUtils {
     }
 
     public static void renderModel(Model<Format3D> model, int code) {
-        TBoxSceneUtils.renderModel(model.getMeshStructure(), code);
+        TBoxSceneUtils.renderModel(model.getMeshStructureWithUnSafeCast(), code);
     }
 
     @SuppressWarnings("all")
     public static void renderModel(MeshGroup meshGroup, int code) {
-        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+        for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
             GL46.glBindVertexArray(meshNode.getMesh().getVao());
             meshNode.getMesh().enableAllMeshAttributes();
             GL46.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
@@ -56,7 +56,7 @@ public class TBoxSceneUtils {
         if (model == null) {
             return;
         }
-        TBoxSceneUtils.renderModelTextured(shaderManager, model.getMeshStructure(), code);
+        TBoxSceneUtils.renderModelTextured(shaderManager, model.getMeshStructureWithUnSafeCast(), code);
     }
 
     @SuppressWarnings("all")
@@ -64,7 +64,7 @@ public class TBoxSceneUtils {
         if (meshGroup == null) {
             return;
         }
-        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
+        for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
             shaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
             GL46.glBindVertexArray(meshNode.getMesh().getVao());
             meshNode.getMesh().enableAllMeshAttributes();

@@ -75,7 +75,7 @@ public class CubeMapSample implements ISample, ICached {
         return this.textureId;
     }
 
-    public void cleanCubeMap() {
+    public void clearCubeMap() {
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
@@ -83,6 +83,6 @@ public class CubeMapSample implements ISample, ICached {
 
     @Override
     public void onCleaningCache(ResourceCache resourceCache) {
-        this.cleanCubeMap();
+        this.clearCubeMap();
     }
 }

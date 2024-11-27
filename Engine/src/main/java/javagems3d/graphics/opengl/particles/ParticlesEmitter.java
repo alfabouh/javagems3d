@@ -78,12 +78,12 @@ public final class ParticlesEmitter implements IParticlesEmitter {
 
     @Override
     public void destroy(SceneWorld sceneWorld) {
-        this.commonParticleModel2D.clean();
-        this.cleanParticles(sceneWorld);
+        this.commonParticleModel2D.clear();
+        this.clearParticles(sceneWorld);
         JGemsHelper.getLogger().log("Destroyed particles emitter!");
     }
 
-    public void cleanParticles(SceneWorld sceneWorld) {
+    public void clearParticles(SceneWorld sceneWorld) {
         this.getParticlesSet().forEach(e -> e.onDestroy(sceneWorld));
         this.getParticlesSet().clear();
     }
@@ -93,7 +93,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     }
 
     public Set<ParticleFX> getCulledParticlesSet(SceneData sceneData) {
-        return sceneData.getSceneWorld().getCollectionFrustumCulledList(this.getParticlesSet()).stream().map(e -> (ParticleFX) e).filter(e -> e.getPosition().distance(sceneData.getCamera().getCamPosition()) <= e.getParticleAttributes().getDistanceToRender()).collect(Collectors.toSet());
+        return this.getParticlesSet().stream().filter(e -> e.getPosition().distance(sceneData.getCamera().getCamPosition()) <= e.getParticleAttributes().getDistanceToRender()).collect(Collectors.toSet());
     }
 
     public Set<ParticleFX> getParticlesSet() {

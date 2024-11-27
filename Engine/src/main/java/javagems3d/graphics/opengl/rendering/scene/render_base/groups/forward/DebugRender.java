@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.forward;
 
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import org.joml.Vector3f;
@@ -52,10 +53,10 @@ public class DebugRender extends SceneRenderBase {
             List<ICulled> culleds = new ArrayList<>();
             culleds.addAll(this.getSceneWorld().getLiquids());
             culleds.addAll(this.getSceneWorld().getModeledSceneEntities());
-            culleds.addAll(this.getSceneWorld().getParticlesEmitter().getParticlesSet());
+            //culleds.addAll(this.getSceneWorld().getParticlesEmitter().getParticlesSet());
 
             JGemsDebugGlobalConstants.linesDebugDraw.drawAABBLinesRN(this.debugShaders, culleds);
-            JGemsDebugGlobalConstants.linesDebugDraw.drawAABBLinesBT(this.debugShaders, JGems3D.get().getPhysicsWorld().getDynamics());
+            JGemsDebugGlobalConstants.linesDebugDraw.drawAABBLinesBT(this.debugShaders, JGemsHelper.getPhysicsWorld().getDynamics());
             JGemsDebugGlobalConstants.linesDebugDraw.drawNavMeshLines(this.debugShaders);
 
             this.renderDebugSunDirection();
@@ -71,7 +72,7 @@ public class DebugRender extends SceneRenderBase {
 
     public void onStopRender() {
         super.onStopRender();
-        JGemsDebugGlobalConstants.linesDebugDraw.cleanup();
+        JGemsDebugGlobalConstants.linesDebugDraw.cleanUp();
     }
 
     private void renderDebugSunDirection() {

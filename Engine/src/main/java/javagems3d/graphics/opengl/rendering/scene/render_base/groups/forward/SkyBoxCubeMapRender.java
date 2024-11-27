@@ -15,7 +15,8 @@ import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.joml.Matrix4f;
@@ -58,13 +59,13 @@ public class SkyBoxCubeMapRender extends SceneRenderBase {
 
     public SkyBoxCubeMapRender(SkyBox skyBox, JGemsOpenGLRenderer sceneRender) {
         super(3, sceneRender, new RenderGroup("SKY_FORWARD"));
-        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+        RenderMesh renderMesh = new RenderMesh();
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         vaPositions.putArray(SkyBoxCubeMapRender.skyboxPos);
-        directRenderMesh.putVertexIndexes(SkyBoxCubeMapRender.skyboxInd);
-        directRenderMesh.addVertexAttributeInMesh(vaPositions);
-        directRenderMesh.bakeMesh();
-        SkyBoxCubeMapRender.skyBoxModel = new Model<>(new Format3D(), directRenderMesh);
+        renderMesh.putIndexesArr(SkyBoxCubeMapRender.skyboxInd);
+        renderMesh.addVertexAttributeInMesh(vaPositions);
+        renderMesh.bakeMesh();
+        SkyBoxCubeMapRender.skyBoxModel = new Model<>(new Format3D(), new MeshGroup(new MeshGroup.MeshGroupNode(renderMesh)));
         this.skyBox = skyBox;
     }
 

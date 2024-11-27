@@ -14,7 +14,7 @@ package javagems3d.audio.sound;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
-import javagems3d.audio.SoundManager;
+import javagems3d.audio.JGemsSoundManager;
 import javagems3d.audio.sound.data.SoundType;
 import javagems3d.physics.world.basic.WorldItem;
 
@@ -58,12 +58,12 @@ public class GameSound {
     private void setupSound() {
         this.source = AL10.alGenSources();
 
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
         AL10.alSourcei(this.source, AL10.AL_SOURCE_RELATIVE, this.getSoundType().getSoundData().isLocatedInWorld() ? AL10.AL_FALSE : AL10.AL_TRUE);
         AL10.alSourcei(this.source, AL10.AL_LOOPING, this.getSoundType().getSoundData().isLooped() ? AL10.AL_TRUE : AL10.AL_FALSE);
         AL10.alSourcei(this.source, AL10.AL_BUFFER, this.getSoundBuffer().getBuffer());
         AL10.alSourcef(this.source, AL10.AL_REFERENCE_DISTANCE, Math.max(Math.max(this.getVolume(), 0.0f) * 2.0f, 1.0f));
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
 
         if (this.getAttachedTo() != null) {
             this.setPosition(this.getAttachedTo().getPosition());
@@ -73,21 +73,21 @@ public class GameSound {
 
         this.setVelocity(new Vector3f(0.0f, 0.0f, 0.0f));
 
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
         this.updateParams();
-        SoundManager.checkALonErrors();
-        SoundManager.sounds.add(this);
+        JGemsSoundManager.checkALonErrors();
+        JGemsSoundManager.sounds.add(this);
     }
 
     private void updateParams() {
         AL10.alSourcef(this.source, AL10.AL_ROLLOFF_FACTOR, this.getRollOff());
         AL10.alSourcef(this.source, AL10.AL_GAIN, this.getVolume());
         AL10.alSourcef(this.source, AL10.AL_PITCH, this.getPitch());
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
     }
 
     public void updateSound() {
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
         this.updateParams();
         if (this.isPaused() || this.isStopped()) {
             return;
@@ -99,7 +99,7 @@ public class GameSound {
                 return;
             }
         }
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
     }
 
     @Override
@@ -163,7 +163,7 @@ public class GameSound {
     public void playSound() {
         if (!this.isValid()) {
             this.setupSound();
-            SoundManager.checkALonErrors();
+            JGemsSoundManager.checkALonErrors();
         }
         AL10.alSourcePlay(this.source);
     }
@@ -190,7 +190,7 @@ public class GameSound {
             AL10.alSourcei(this.source, AL10.AL_BUFFER, AL10.AL_NONE);
             AL10.alDeleteSources(this.source);
             this.source = AL10.AL_NONE;
-            SoundManager.checkALonErrors();
+            JGemsSoundManager.checkALonErrors();
         }
     }
 

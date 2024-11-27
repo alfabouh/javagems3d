@@ -11,29 +11,9 @@
 
 package javagems3d.graphics.opengl.frustum;
 
-import javagems3d.system.resources.assets.models.mesh.data.IMeshUserData;
+import javagems3d.system.resources.assets.models.mesh.udata.IMeshUserData;
 import org.joml.Vector3f;
 
 public interface ICulled {
     boolean canBeCulled();
-
-    RenderAABB getRenderAABB();
-
-    class RenderAABB implements IMeshUserData {
-        private final Vector3f min;
-        private final Vector3f max;
-
-        public RenderAABB(Vector3f min, Vector3f max) {
-            this.min = min;
-            this.max = max;
-        }
-
-        public Vector3f getMax() {
-            return this.max;
-        }
-
-        public Vector3f getMin() {
-            return this.min;
-        }
-    }
 }

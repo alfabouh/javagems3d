@@ -71,8 +71,8 @@ public class TextureAssetsLoader implements IAssetsLoader {
     }
 
     @Override
-    public LoadMode loadMode() {
-        return LoadMode.NORMAL;
+    public LaunchMode loadMode() {
+        return LaunchMode.REGULAR;
     }
 
     @Override

@@ -14,7 +14,7 @@ package javagems3d.audio.sound;
 import org.lwjgl.openal.AL10;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.audio.SoundManager;
+import javagems3d.audio.JGemsSoundManager;
 import javagems3d.audio.sound.loaders.ogg.Ogg;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -47,7 +47,7 @@ public class SoundBuffer implements ICached {
 
     public boolean loadSound(int soundFormat) {
         this.buffer = AL10.alGenBuffers();
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
         try {
             try (InputStream inputStream = JGems3D.loadFileFromJar(this.getSoundPath())) {
                 return this.readOgg(inputStream, soundFormat);
@@ -64,7 +64,7 @@ public class SoundBuffer implements ICached {
         if (ogg != null) {
             AL10.alBufferData(this.buffer, soundFormat, ogg.getPcm(), ogg.getSampleRate());
             ogg.dispose();
-            SoundManager.checkALonErrors();
+            JGemsSoundManager.checkALonErrors();
             return true;
         } else {
             JGemsHelper.getLogger().warn("Failed to read sound: " + this.getSoundPath());
@@ -83,6 +83,6 @@ public class SoundBuffer implements ICached {
     @Override
     public void onCleaningCache(ResourceCache resourceCache) {
         AL10.alDeleteBuffers(this.getBuffer());
-        SoundManager.checkALonErrors();
+        JGemsSoundManager.checkALonErrors();
     }
 }

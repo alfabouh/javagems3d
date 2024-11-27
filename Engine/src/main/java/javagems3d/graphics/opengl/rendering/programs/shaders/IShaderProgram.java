@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL46;
 public interface IShaderProgram {
     int getProgramId();
 
-    default void clean() {
+    default void clear() {
         this.unbind();
         if (this.getProgramId() != 0) {
             GL46.glDeleteProgram(this.getProgramId());

@@ -35,16 +35,15 @@ import javagems3d.graphics.opengl.screen.timer.TimerPool;
 import javagems3d.graphics.opengl.screen.window.Window;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.physics.world.thread.timer.PhysicsTimer;
+import javagems3d.physics.world.thread.timer.PhysicsProcessor;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.core.EngineSystem;
+import javagems3d.system.core.JGemsEngineSystem;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.awt.*;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 public class JGemsScreen implements IScreen {
@@ -307,7 +306,7 @@ public class JGemsScreen implements IScreen {
         if (GLFW.glfwGetCurrentContext() == 0L) {
             return;
         }
-        this.loadingScreen.clean();
+        this.loadingScreen.clear();
         this.loadingScreen = null;
     }
 
@@ -319,7 +318,7 @@ public class JGemsScreen implements IScreen {
 
     public void startScreenRenderProcess() {
         JGemsHelper.getLogger().log("Starting screen...");
-        SoundListener.updateListenerGain();
+        SoundListener.updateListenerGain(JGemsHelper.getCoreObject().getGameSettings());
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
@@ -359,9 +358,9 @@ public class JGemsScreen implements IScreen {
             }
             fps += 1;
             if (perSecondTimer.resetTimerAfterReachedSeconds(1.0d)) {
-                JGemsScreen.PHYS_TPS = PhysicsTimer.TPS;
+                JGemsScreen.PHYS_TPS = PhysicsProcessor.TPS;
                 JGemsScreen.RENDER_FPS = fps;
-                PhysicsTimer.TPS = 0;
+                PhysicsProcessor.TPS = 0;
                 fps = 0;
             }
             SpeedProfiler.clear();
@@ -386,7 +385,7 @@ public class JGemsScreen implements IScreen {
         if (JGems3D.get().isValidPlayer()) {
             SoundListener.updateOrientationAndPosition(JGemsSceneUtils.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
         }
-        SoundListener.updateListenerGain();
+        SoundListener.updateListenerGain(JGemsHelper.getCoreObject().getGameSettings());
     }
 
     public SceneWorld getSceneWorld() {
@@ -443,7 +442,7 @@ public class JGemsScreen implements IScreen {
             Font gameFont = JGemsResourceManager.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
-            this.lines.add(new Pair<>(0x00ff00, EngineSystem.ENG_NAME + " : " + EngineSystem.ENG_VER));
+            this.lines.add(new Pair<>(0x00ff00, JGemsEngineSystem.ENG_NAME + " : " + JGemsEngineSystem.ENG_VER));
             this.lines.add(new Pair<>(0x00ff00, title));
             this.lines.add(new Pair<>(0x00ff00, "..."));
             this.counter = 0;
@@ -458,7 +457,7 @@ public class JGemsScreen implements IScreen {
                 UIText textUI = new UIText(textPre + s.getSecond(), this.guiFont, s.getFirst(), new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
                 textUI.buildUI();
                 textUI.render(0.0f);
-                textUI.cleanData();
+                textUI.clearData();
             }
             GLFW.glfwSwapBuffers(JGemsScreen.this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();
@@ -473,7 +472,7 @@ public class JGemsScreen implements IScreen {
             this.updateScreen();
         }
 
-        public void clean() {
+        public void clear() {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.guiFont.cleanUp();
             this.lines.clear();

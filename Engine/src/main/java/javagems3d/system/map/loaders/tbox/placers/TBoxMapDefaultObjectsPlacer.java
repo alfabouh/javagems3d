@@ -22,7 +22,9 @@
 
 package javagems3d.system.map.loaders.tbox.placers;
 
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import javagems3d.physics.colliders.MeshCollider;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
@@ -37,8 +39,6 @@ import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
 import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.MeshGroup;
-import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.GameResources;
 import api.app.main.tbox.containers.TUserData;
@@ -56,11 +56,11 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         Vector3f scale = attributesContainer.getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         Boolean isProp = attributesContainer.getValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
 
-        MeshGroup meshGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel(), true, false);
+        MeshGroup meshGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel()).getFirst();
         JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
 
         if (isProp != null && (isProp)) {
-            ModelRenderData modelRenderData = new ModelRenderData(renderContainer.getMeshRenderAttributes(), shaderManager);
+            ObjectRenderSettings modelRenderData = renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager);
             IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 
             Model<Format3D> model = new Model<>(new Format3D(), meshGroup);
@@ -69,10 +69,9 @@ public abstract class TBoxMapDefaultObjectsPlacer {
             model.getFormat().setScaling(scale);
             JGemsHelper.WORLD.addPropInScene(new SceneProp(renderFabric, model, modelRenderData));
         } else {
-            RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), new ModelRenderData(renderContainer.getMeshRenderAttributes(), shaderManager));
+            RenderEntityData renderEntityData = new RenderEntityData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager));
 
             Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
-            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
             if (isStatic == null || isStatic) {
                 JGemsStaticBody worldModeledBrush = new JGemsStaticBody(MeshCollider.getStatic(meshGroup), physicsWorld, pos, id);
                 JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(renderEntityData, meshGroup));

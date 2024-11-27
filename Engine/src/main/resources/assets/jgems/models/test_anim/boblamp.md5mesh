@@ -40,7 +40,7 @@ joints {
 	"tiptoe.L"	31 ( -5.196635 -5.288682 0.732652 ) ( 0.707107 0.000000 0.707107 )		// toe.L
 }
 
-directRenderMesh {
+renderMesh {
 	shader "textures/bob/guard1_body.png"
 
 	numverts 494
@@ -2039,7 +2039,7 @@ directRenderMesh {
 	weight 866 6 0.333333 ( 1.266308 -0.302701 8.949338 )
 }
 
-directRenderMesh {
+renderMesh {
 	shader "textures/bob/guard1_face.png"
 
 	numverts 110
@@ -2556,7 +2556,7 @@ directRenderMesh {
 	weight 219 6 0.500000 ( 2.879976 6.007261 2.446972 )
 }
 
-directRenderMesh {
+renderMesh {
 	shader "textures/bob/guard1_helmet.png"
 
 	numverts 80
@@ -2804,7 +2804,7 @@ directRenderMesh {
 	weight 79 7 1.000000 ( 3.465529 6.157989 -0.054405 )
 }
 
-directRenderMesh {
+renderMesh {
 	shader "textures/bob/iron_grill.png"
 
 	numverts 18
@@ -2866,7 +2866,7 @@ directRenderMesh {
 	weight 17 15 1.000000 ( -1.004310 12.394255 2.442826 )
 }
 
-directRenderMesh {
+renderMesh {
 	shader "textures/bob/round_grill.png"
 
 	numverts 38
@@ -2974,7 +2974,7 @@ directRenderMesh {
 	weight 37 15 1.000000 ( -1.004310 12.394255 2.442826 )
 }
 
-directRenderMesh {
+renderMesh {
 	shader "textures/bob/guard1_body.png"
 
 	numverts 135

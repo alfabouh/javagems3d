@@ -110,7 +110,7 @@ public final class ImmediateUI {
         this.frameDeltaTicks = frameDeltaTicks;
 
         if (this.requestCleanFrame) {
-            this.cleanFrame();
+            this.clearFrame();
             this.requestCleanFrame = false;
         }
 
@@ -123,7 +123,7 @@ public final class ImmediateUI {
         while (uiElementIterator.hasNext()) {
             UIElement element = uiElementIterator.next();
             if (element.getUnUsedTicks() > JGemsSceneGlobalConstants.TICKS_TO_CLEAN_UNUSED_UI) {
-                element.cleanData();
+                element.clearData();
                 uiElementIterator.remove();
             }
         }
@@ -197,7 +197,7 @@ public final class ImmediateUI {
             UIElement cachedUiElement = this.getUiFrameCache().get(hash);
             if (uiElement.equals(cachedUiElement)) {
                 cachedUiElement.zeroUnusedTicks();
-                uiElement.cleanData();
+                uiElement.clearData();
                 return clazz.cast(cachedUiElement);
             }
         } else {
@@ -219,15 +219,15 @@ public final class ImmediateUI {
     }
 
     public void destroyUI() {
-        this.cleanFrame();
+        this.clearFrame();
         if (this.getCurrentPanel() != null) {
             this.getCurrentPanel().onDestruct(this);
             this.currentPanel = null;
         }
     }
 
-    private void cleanFrame() {
-        this.getUiFrameCache().forEach((key, value) -> value.cleanData());
+    private void clearFrame() {
+        this.getUiFrameCache().forEach((key, value) -> value.clearData());
         this.getUiFrameCache().clear();
     }
 

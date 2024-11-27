@@ -3,14 +3,13 @@ package javagems3d.system.resources.assets.models.loaders;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.material.Material;
-import javagems3d.system.resources.assets.material.IndirectMeshesMaterialsTable;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.components.Bone;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.loaders.utils.AnimationLoadingUtils;
 import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
-import javagems3d.system.resources.assets.models.mesh.IndirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -18,6 +17,8 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModelMeshLoader {
-    public static final IndirectMeshesMaterialsTable indirectMeshesMaterialsTable = new IndirectMeshesMaterialsTable();
     private final JGemsPath path;
 
     public ModelMeshLoader(JGemsPath modelPath) {
@@ -77,12 +77,75 @@ public class ModelMeshLoader {
 
         meshStructure.loadAnimations(animations);
         JGemsHelper.getLogger().log("Loaded animation (size:" + animations.size() + ")  for: " + this.getPath());
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loaded animation(size:" + animations.size() + ")");
 
         return skeletonData;
     }
 
+    public Pair<MeshGroup, MeshBuffer> createMeshStructures(GameResources gameResources) {
+        return this.createMeshStructures(gameResources, FLAGS.DEFAULT);
+    }
+
+    public Pair<MeshGroup, MeshBuffer> createMeshStructures(GameResources gameResources, int Flags) {
+        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
+        MeshBuffer meshBuffer = (Flags & FLAGS.RETURN_AND_USE_INDIRECT_BUFFER) != 0 ? this.createMeshBuffer(gameResources, animated) : null;
+        MeshGroup meshGroup = (Flags & FLAGS.RETURN_BAKED_RENDER_MESH) != 0 ? this.createMeshGroup(gameResources, animated) : null;
+        if (meshBuffer == null && meshGroup == null) {
+            throw new JGemsNullException("Nothing loaded!");
+        }
+        if (meshBuffer != null) {
+            gameResources.getDataMeshArray().putMeshBuffer(meshBuffer);
+        }
+        return new Pair<>(meshGroup, meshBuffer);
+    }
+
     @SuppressWarnings("all")
-    public MeshGroup createDirectMeshStructure(GameResources gameResources, boolean isAnimated) {
+    private MeshBuffer createMeshBuffer(GameResources gameResources, boolean isAnimated) {
+        MeshBuffer meshStructure = new MeshBuffer();
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            AIScene aiScene = this.loadAIScene(stack, this.getPath(), isAnimated);
+            int totalMaterials = aiScene.mNumMaterials();
+            List<Material> materialList = new ArrayList<>();
+
+            for (int i = 0; i < totalMaterials; i++) {
+                AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
+                Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
+                materialList.add(material);
+                gameResources.getDataMeshArray().putMaterial(material);
+            }
+
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building MeshBuffer...");
+            int totalMeshes = aiScene.mNumMeshes();
+            PointerBuffer aiMeshes = aiScene.mMeshes();
+            SkeletonData skeletonData = null;
+            for (int i = 0; i < totalMeshes; i++) {
+                AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+                if (isAnimated) {
+                    skeletonData = this.readSkeleton(meshStructure, aiScene, aiMesh);
+                }
+                DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
+
+                int matIdx = aiMesh.mMaterialIndex();
+                int matId = MeshBuffersDrawCache.MAT_START_IDX;
+                if (matIdx >= 0 && matIdx < materialList.size()) {
+                    matId = materialList.get(matIdx).getId();
+                }
+
+                meshStructure.putMeshNode(new MeshBuffer.MeshBufferNode(meshData, matId));
+            }
+            Assimp.aiReleaseImport(aiScene);
+
+        } catch (Exception e) {
+            JGemsHelper.getLogger().error(e.getMessage());
+            return null;
+        }
+
+        return meshStructure;
+    }
+
+    @SuppressWarnings("all")
+    private MeshGroup createMeshGroup(GameResources gameResources, boolean isAnimated) {
         MeshGroup meshStructure = new MeshGroup();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -95,7 +158,8 @@ public class ModelMeshLoader {
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
                 materialList.add(material);
             }
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Writing mesh...");
+
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building MeshGroup...");
             int totalMeshes = aiScene.mNumMeshes();
             PointerBuffer aiMeshes = aiScene.mMeshes();
             SkeletonData skeletonData = null;
@@ -104,14 +168,14 @@ public class ModelMeshLoader {
                 if (isAnimated) {
                     skeletonData = this.readSkeleton(meshStructure, aiScene, aiMesh);
                 }
-                DirectRenderMesh meshData = this.createDirectMeshData(aiMesh, skeletonData);
+                RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
 
                 int matIdx = aiMesh.mMaterialIndex();
                 Material material = new Material();
                 if (matIdx >= 0 && matIdx < materialList.size()) {
                     material = materialList.get(matIdx);
                 }
-                meshStructure.putMeshNode(new MeshGroup.MeshNode(meshData, material));
+                meshStructure.putMeshNode(new MeshGroup.MeshGroupNode(meshData, material));
             }
             Assimp.aiReleaseImport(aiScene);
 
@@ -123,50 +187,7 @@ public class ModelMeshLoader {
         return meshStructure;
     }
 
-    @SuppressWarnings("all")
-    public MeshBuffer createIndirectMeshStructure(GameResources gameResources, boolean isAnimated) {
-        MeshBuffer meshStructure = new MeshBuffer();
-
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            AIScene aiScene = this.loadAIScene(stack, this.getPath(), isAnimated);
-            int totalMaterials = aiScene.mNumMaterials();
-            List<Material> materialList = new ArrayList<>();
-
-            for (int i = 0; i < totalMaterials; i++) {
-                AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
-                Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
-                materialList.add(material);
-                ModelMeshLoader.indirectMeshesMaterialsTable.addMaterial(material);
-            }
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Writing mesh...");
-            int totalMeshes = aiScene.mNumMeshes();
-            PointerBuffer aiMeshes = aiScene.mMeshes();
-            SkeletonData skeletonData = null;
-            for (int i = 0; i < totalMeshes; i++) {
-                AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-                if (isAnimated) {
-                    skeletonData = this.readSkeleton(meshStructure, aiScene, aiMesh);
-                }
-                IndirectRenderMesh meshData = this.createIndirectMeshData(aiMesh, skeletonData);
-
-                int matIdx = aiMesh.mMaterialIndex();
-                int matId = IndirectMeshesMaterialsTable.START_IDX;
-                if (matIdx >= 0 && matIdx < materialList.size()) {
-                    matId = materialList.get(matIdx).getId();
-                }
-                meshStructure.putMeshNode(new MeshBuffer.MeshNode(meshData, matId));
-            }
-            Assimp.aiReleaseImport(aiScene);
-
-        } catch (Exception e) {
-            JGemsHelper.getLogger().error(e.getMessage());
-            return null;
-        }
-
-        return meshStructure;
-    }
-
-    private IndirectRenderMesh createIndirectMeshData(AIMesh aiMesh, SkeletonData skeletonData) {
+    private DataMesh createDataMesh(AIMesh aiMesh, SkeletonData skeletonData) {
         List<Integer> vertices = ModelLoadingUtils.readVertices(aiMesh);
         List<Float> textureCoordinates = ModelLoadingUtils.readTextureCoordinates(aiMesh);
         List<Float> positions = ModelLoadingUtils.readPositions(aiMesh);
@@ -179,13 +200,13 @@ public class ModelMeshLoader {
             textureCoordinates = new ArrayList<>(totalElements);
         }
 
-        IndirectRenderMesh indirectRenderMesh = new IndirectRenderMesh();
-        indirectRenderMesh.putIndexes(vertices);
-        indirectRenderMesh.putBufferInMeshData(DefaultAttributePointers.INDIR_ATTR_POSITIONS, positions);
-        indirectRenderMesh.putBufferInMeshData(DefaultAttributePointers.INDIR_ATTR_TEXTURE_COORDINATES, textureCoordinates);
-        indirectRenderMesh.putBufferInMeshData(DefaultAttributePointers.INDIR_ATTR_POSITIONS, normals);
-        indirectRenderMesh.putBufferInMeshData(DefaultAttributePointers.INDIR_ATTR_TANGENTS, tangents);
-        indirectRenderMesh.putBufferInMeshData(DefaultAttributePointers.INDIR_ATTR_BI_TANGENTS, biTangents);
+        DataMesh dataMesh = new DataMesh();
+        dataMesh.putIndexes(vertices);
+        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_POSITIONS, positions);
+        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, textureCoordinates);
+        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_NORMALS, normals);
+        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_TANGENTS, tangents);
+        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_BI_TANGENTS, biTangents);
 
         if (skeletonData != null) {
             IntegerVertexAttribute boneIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONE_INDEXES);
@@ -198,10 +219,10 @@ public class ModelMeshLoader {
            // directMeshData.addVertexAttributeInMesh(boneWeights);
         }
 
-        return indirectRenderMesh;
+        return dataMesh;
     }
 
-    private DirectRenderMesh createDirectMeshData(AIMesh aiMesh, SkeletonData skeletonData) {
+    private RenderMesh createRenderMesh(AIMesh aiMesh, SkeletonData skeletonData) {
         List<Integer> vertices = ModelLoadingUtils.readVertices(aiMesh);
         List<Float> textureCoordinates = ModelLoadingUtils.readTextureCoordinates(aiMesh);
         List<Float> positions = ModelLoadingUtils.readPositions(aiMesh);
@@ -214,7 +235,7 @@ public class ModelMeshLoader {
             textureCoordinates = new ArrayList<>(totalElements);
         }
 
-        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+        RenderMesh renderMesh = new RenderMesh();
 
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);
@@ -222,18 +243,18 @@ public class ModelMeshLoader {
         FloatVertexAttribute vaTangents = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TANGENTS);
         FloatVertexAttribute vaBiTangents = new FloatVertexAttribute(DefaultAttributePointers.ATTR_BI_TANGENTS);
 
-        directRenderMesh.putVertexIndexes(vertices);
+        renderMesh.putVertexIndexes(vertices);
         vaPositions.put(positions);
         vaNormals.put(normals);
         vaTextureCoordinates.put(textureCoordinates);
         vaTangents.put(tangents);
         vaBiTangents.put(biTangents);
 
-        directRenderMesh.addVertexAttributeInMesh(vaPositions);
-        directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        directRenderMesh.addVertexAttributeInMesh(vaNormals);
-        directRenderMesh.addVertexAttributeInMesh(vaTangents);
-        directRenderMesh.addVertexAttributeInMesh(vaBiTangents);
+        renderMesh.addVertexAttributeInMesh(vaPositions);
+        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        renderMesh.addVertexAttributeInMesh(vaNormals);
+        renderMesh.addVertexAttributeInMesh(vaTangents);
+        renderMesh.addVertexAttributeInMesh(vaBiTangents);
 
         if (skeletonData != null) {
             IntegerVertexAttribute boneIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONE_INDEXES);
@@ -242,15 +263,25 @@ public class ModelMeshLoader {
             boneIndexes.putArray(skeletonData.getBoneIds());
             boneWeights.putArray(skeletonData.getWeights());
 
-            directRenderMesh.addVertexAttributeInMesh(boneIndexes);
-            directRenderMesh.addVertexAttributeInMesh(boneWeights);
+            renderMesh.addVertexAttributeInMesh(boneIndexes);
+            renderMesh.addVertexAttributeInMesh(boneWeights);
         }
 
-        directRenderMesh.bakeMesh();
-        return directRenderMesh;
+        renderMesh.bakeMesh();
+        return renderMesh;
     }
 
     public JGemsPath getPath() {
         return this.path;
+    }
+
+    public static class FLAGS {
+        public static final int
+                RETURN_BAKED_RENDER_MESH = 1 << 2,
+                RETURN_AND_USE_INDIRECT_BUFFER = 1 << 3,
+                LOAD_ANIMATIONS = 1 << 4;
+
+        public static final int DEFAULT = FLAGS.RETURN_BAKED_RENDER_MESH | FLAGS.RETURN_AND_USE_INDIRECT_BUFFER;
+        public static final int ALL = FLAGS.DEFAULT | FLAGS.LOAD_ANIMATIONS;
     }
 }

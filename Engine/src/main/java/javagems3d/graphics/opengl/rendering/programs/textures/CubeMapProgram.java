@@ -55,7 +55,7 @@ public class CubeMapProgram {
         return this.textureId;
     }
 
-    public void cleanCubeMap() {
+    public void clearCubeMap() {
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;

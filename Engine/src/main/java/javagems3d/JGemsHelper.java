@@ -12,15 +12,14 @@
 package javagems3d;
 
 import javagems3d.graphics.opengl.environment.skybox.SkyBox;
-import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.opengl.rendering.items.IAnimated;
 import javagems3d.graphics.transformation.Transformation;
-import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
-import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
 import org.joml.*;
-import javagems3d.audio.SoundManager;
+import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.opengl.camera.FreeControlledCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.environment.Environment;
@@ -55,10 +54,8 @@ import javagems3d.system.graph.Graph;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
 import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
-import javagems3d.system.resources.old.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.localisation.Lang;
-import javagems3d.system.resources.localisation.Localisation;
+import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
@@ -92,18 +89,18 @@ public abstract class JGemsHelper {
     }
 
     public static SceneWorld getSceneWorld() {
-        return JGems3D.get().getSceneWorld();
+        return JGems3D.get().getEngineSystem().getScreen().getSceneWorld();
     }
 
     public static PhysicsWorld getPhysicsWorld() {
-        return JGems3D.get().getPhysicsWorld();
+        return JGems3D.get().getEngineSystem().getPhysics().getPhysicsProcessor().getPhysicsWorld();
     }
 
     public static JGems3D getCoreObject() {
         return JGems3D.get();
     }
 
-    public static SoundManager getSoundManager() {
+    public static JGemsSoundManager getSoundManager() {
         return JGems3D.get().getSoundManager();
     }
 
@@ -166,14 +163,14 @@ public abstract class JGemsHelper {
     // section Localisation
     public static abstract class LOCALISATION {
         public static Lang createLocalisation(String langName, JGemsPath path) {
-            return Localisation.createLocalisation(langName, path);
+            return JGemsLocalisation.createLocalisation(langName, path);
         }
 
         public static void setLangLocalisationPath(Lang lang, JGemsPath path) {
-            Localisation.setLangLocalisationPath(lang, path);
+            JGemsLocalisation.setLangLocalisationPath(lang, path);
         }
 
-        public static Localisation getLocalisation() {
+        public static JGemsLocalisation getLocalisation() {
             return JGems3D.get().getLocalisation();
         }
     }
@@ -327,7 +324,7 @@ public abstract class JGemsHelper {
     // section World
     public static abstract class WORLD {
         public static Graph genSimpleMapGraphFromStartPoint(Vector3f start) {
-            return MapNavGraphGenerator.createGraphWithStartPoint(JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getDynamicsSystem(), DynamicsUtils.convertV3F_JME(start));
+            return MapNavGraphGenerator.createGraphWithStartPoint(JGems3D.get().getPhysics().getPhysicsProcessor().getDynamicsSystem(), DynamicsUtils.convertV3F_JME(start));
         }
 
         public static void removePropFromScene(SceneProp sceneProp) {
@@ -409,34 +406,6 @@ public abstract class JGemsHelper {
             }
         }
 
-        public static float calcDistanceToMostFarPoint(MeshGroup meshGroup, Vector3f scaling) {
-            return JGemsHelper.UTILS.calcDistanceToMostFarPoint(meshGroup, scaling, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
-        }
-
-        public static float calcDistanceToMostFarPoint(MeshGroup meshGroup, Vector3f scaling, int positionsAttributeIndex) {
-            float max = Float.MIN_VALUE;
-
-            for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
-                List<Float> floats = meshNode.getMesh().tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
-                for (int i = 0; i < floats.size(); i += 3) {
-                    float i1 = floats.get(i);
-                    float i2 = floats.get(i + 1);
-                    float i3 = floats.get(i + 2);
-
-                    float scaledX = i1 * scaling.x;
-                    float scaledY = i2 * scaling.y;
-                    float scaledZ = i3 * scaling.z;
-
-                    float length = (float) Math.sqrt(scaledX * scaledX + scaledY * scaledY + scaledZ * scaledZ);
-
-                    if (length > max) {
-                        max = length;
-                    }
-                }
-            }
-            return max;
-        }
-
         public static int[] convertIntsArray(List<Integer> list) {
             if (list == null || list.isEmpty()) {
                 return null;
@@ -492,89 +461,29 @@ public abstract class JGemsHelper {
             return new Vector3f(lX, lY, lZ);
         }
 
-        public static boolean createMeshCollisionData(MeshGroup meshGroup) {
-            return JGemsHelper.UTILS.createMeshCollisionData(meshGroup, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
+        public static void createMeshCollisionData(MeshStructure<?>... m) {
+            for (MeshStructure<?> o : m) {
+                JGemsHelper.UTILS.createMeshCollisionData(o);
+            }
         }
 
         @SuppressWarnings("all")
-        public static boolean createMeshCollisionData(MeshGroup meshGroup, int positionsAttributeIndex) {
-            if (meshGroup != null && meshGroup.getMeshUserData(MeshGroup.MESH_COLLISION_UD) == null) {
-                meshGroup.setMeshUserData(MeshGroup.MESH_COLLISION_UD, new MeshCollisionData(meshGroup, positionsAttributeIndex));
+        public static boolean createMeshCollisionData(MeshStructure<?> meshGroup) {
+            if (meshGroup != null && meshGroup.getMeshUserData(MeshStructure.MESH_COLLISION_UD) == null) {
+                meshGroup.setMeshUserData(MeshStructure.MESH_COLLISION_UD, new MeshCollisionData(meshGroup));
                 return true;
             }
             return false;
         }
 
-        @SuppressWarnings("all")
-        public static boolean createMeshRenderAABBData(MeshGroup meshGroup, int positionsAttributeIndex) {
-            if (meshGroup != null && meshGroup.getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
-                Vector3f min = new Vector3f(Float.MAX_VALUE);
-                Vector3f max = new Vector3f(Float.MIN_VALUE);
-                for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
-                    List<Float> positions = meshNode.getMesh().tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
-                    List<Integer> indices = meshNode.getMesh().getVertexIndexes();
-                    for (int index : indices) {
-                        int i1 = index * 3;
-                        Vector4f Vector4f = new Vector4f(positions.get(i1), positions.get(i1 + 1), positions.get(i1 + 2), 1.0f);
-                        Vector3f vector3f = new Vector3f(Vector4f.x, Vector4f.y, Vector4f.z);
-                        min.min(vector3f);
-                        max.max(vector3f);
-                    }
-                }
-                meshGroup.setMeshUserData(MeshGroup.MESH_RENDER_AABB_UD, new ICulled.RenderAABB(min.add(new Vector3f(-0.05f)), max.add(new Vector3f(0.05f))));
-                return true;
-            }
-            return false;
-        }
-
-        public static ICulled.RenderAABB calcRenderAABBWithTransforms(Model<Format3D> model) {
-            if (model.getMeshStructure().getMeshUserData(MeshGroup.MESH_RENDER_AABB_UD) == null) {
-                return null;
-            }
-
-            Vector3f min = new Vector3f(model.getMeshStructure().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMin());
-            Vector3f max = new Vector3f(model.getMeshStructure().<ICulled.RenderAABB>getUnSafeMeshUserData(MeshGroup.MESH_RENDER_AABB_UD).getMax());
-
-            Matrix4f modelMatrix = Transformation.getModelMatrix(model.getFormat());
-
-            Vector3f[] vertices = new Vector3f[8];
-            vertices[0] = new Vector3f(min.x, min.y, min.z);
-            vertices[1] = new Vector3f(max.x, min.y, min.z);
-            vertices[2] = new Vector3f(min.x, max.y, min.z);
-            vertices[3] = new Vector3f(max.x, max.y, min.z);
-            vertices[4] = new Vector3f(min.x, min.y, max.z);
-            vertices[5] = new Vector3f(max.x, min.y, max.z);
-            vertices[6] = new Vector3f(min.x, max.y, max.z);
-            vertices[7] = new Vector3f(max.x, max.y, max.z);
-
-            Vector3f transformedMin = new Vector3f(Float.MAX_VALUE);
-            Vector3f transformedMax = new Vector3f(-Float.MAX_VALUE);
-
-            for (Vector3f vertex : vertices) {
-                Vector4f transformedVertex = new Vector4f(vertex, 1.0f).mul(modelMatrix);
-                transformedMin.x = Math.min(transformedMin.x, transformedVertex.x);
-                transformedMin.y = Math.min(transformedMin.y, transformedVertex.y);
-                transformedMin.z = Math.min(transformedMin.z, transformedVertex.z);
-                transformedMax.x = Math.max(transformedMax.x, transformedVertex.x);
-                transformedMax.y = Math.max(transformedMax.y, transformedVertex.y);
-                transformedMax.z = Math.max(transformedMax.z, transformedVertex.z);
-            }
-
-            return new ICulled.RenderAABB(transformedMin, transformedMax);
-        }
-
-        public static List<Vector3f> getVertexPositionsFromMesh(DirectRenderMesh directRenderMesh, Format3D format3D) {
-            return JGemsHelper.UTILS.getVertexPositionsFromMesh(directRenderMesh, format3D, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
-        }
-
-        public static List<Vector3f> getVertexPositionsFromMesh(DirectRenderMesh directRenderMesh, Format3D format3D, int positionsAttributeIndex) {
-            List<Integer> integers = directRenderMesh.getVertexIndexes();
-            List<Float> floats = directRenderMesh.tryGetValuesFromAttributeByIndex(positionsAttributeIndex);
+        public static List<Vector3f> getVertexPositionsFromMesh(RenderMesh renderMesh, Format3D format3D) {
+            List<Integer> integers = renderMesh.getVertexIndexes();
+            List<Float> floats = renderMesh.getVertexPositions();
             List<Vector3f> vertexes = new ArrayList<>();
             Matrix4f modelMat = Transformation.getModelMatrix(format3D);
 
             for (int i = 0; i < integers.size(); i++) {
-                int i1 = directRenderMesh.getVertexIndexes().get(i) * 3;
+                int i1 = renderMesh.getVertexIndexes().get(i) * 3;
                 Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMat);
                 vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
             }

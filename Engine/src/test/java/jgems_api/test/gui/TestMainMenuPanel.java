@@ -46,7 +46,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
 
 public class TestMainMenuPanel extends AbstractPanelUI {
     private final FBOTexture2DProgram postFbo;

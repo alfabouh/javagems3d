@@ -12,7 +12,8 @@
 package javagems3d.graphics.opengl.rendering.imgui.elements;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +71,7 @@ public class UIText extends UIElement {
     }
 
     @Override
-    public void cleanData() {
+    public void clearData() {
         if (this.textModel != null) {
             this.textModel.clear();
         }
@@ -125,7 +126,7 @@ public class UIText extends UIElement {
         }
 
         private Model<Format2D> buildModel() {
-            DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+            RenderMesh renderMesh = new RenderMesh();
             char[] chars = UIText.this.getText().toCharArray();
             float z = UIText.this.getZValue();
             this.height = UIText.this.fontTexture.getHeight();
@@ -141,46 +142,46 @@ public class UIText extends UIElement {
                 vaPositions.put(z);
                 vaTextureCoordinates.put((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(0.0f);
-                directRenderMesh.putVertexIndex(i * 4);
+                renderMesh.putVertexIndex(i * 4);
 
                 vaPositions.put(startX);
                 vaPositions.put(this.getHeight());
                 vaPositions.put(z);
                 vaTextureCoordinates.put((float) charInfo.getStartX() / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(1.0f);
-                directRenderMesh.putVertexIndex(i * 4 + 1);
+                renderMesh.putVertexIndex(i * 4 + 1);
 
                 vaPositions.put(startX + charInfo.getWidth());
                 vaPositions.put(this.getHeight());
                 vaPositions.put(z);
                 vaTextureCoordinates.put((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(1.0f);
-                directRenderMesh.putVertexIndex(i * 4 + 2);
+                renderMesh.putVertexIndex(i * 4 + 2);
 
                 vaPositions.put(startX + charInfo.getWidth());
                 vaPositions.put(0.0f);
                 vaPositions.put(z);
                 vaTextureCoordinates.put((float) (charInfo.getStartX() + charInfo.getWidth()) / (float) UIText.this.fontTexture.getWidth());
                 vaTextureCoordinates.put(0.0f);
-                directRenderMesh.putVertexIndex(i * 4 + 3);
+                renderMesh.putVertexIndex(i * 4 + 3);
 
-                directRenderMesh.putVertexIndex(i * 4);
-                directRenderMesh.putVertexIndex(i * 4 + 2);
+                renderMesh.putVertexIndex(i * 4);
+                renderMesh.putVertexIndex(i * 4 + 2);
 
                 startX += charInfo.getWidth();
             }
             this.width = startX;
 
-            directRenderMesh.addVertexAttributeInMesh(vaPositions);
-            directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+            renderMesh.addVertexAttributeInMesh(vaPositions);
+            renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
 
-            directRenderMesh.bakeMesh();
-            return new Model<>(new Format2D(), directRenderMesh);
+            renderMesh.bakeMesh();
+            return new Model<>(new Format2D(), new MeshGroup(new MeshGroup.MeshGroupNode(renderMesh)));
         }
 
         public void clear() {
             if (this.getModel() != null) {
-                this.getModel().clean();
+                this.getModel().clear();
             }
         }
 

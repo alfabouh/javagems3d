@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.items.props;
 
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -23,7 +24,6 @@ import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.ArrayList;
@@ -34,21 +34,21 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
     private AnimationData animationData;
     private final List<Light> lightList;
     private final IRenderObjectFabric renderFabric;
-    private ModelRenderData modelRenderData;
+    private ObjectRenderSettings objectRenderSettings;
     private boolean isVisible;
 
-    public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ModelRenderData modelRenderData) {
+    public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderSettings objectRenderSettings) {
         super(model);
         this.lightList = new ArrayList<>();
 
         this.animationData = null;
         this.renderFabric = renderFabric;
-        this.modelRenderData = modelRenderData;
+        this.objectRenderSettings = objectRenderSettings;
         this.isVisible = true;
     }
 
     public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, model, ModelRenderData.defaultMeshRenderData(shaderManager));
+        this(renderFabric, model, new ObjectRenderSettings(shaderManager));
     }
 
     public void clearLights() {
@@ -103,16 +103,8 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
         JGemsHelper.getLogger().log("Removed light from: " + this);
     }
 
-    @Override
-    public RenderAABB getRenderAABB() {
-        if (!this.getModel().isValid()) {
-            return null;
-        }
-        return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
-    }
-
-    public AbstractSceneProp setModelRenderConstraints(ModelRenderData modelRenderData) {
-        this.modelRenderData = modelRenderData;
+    public AbstractSceneProp setModelRenderConstraints(ObjectRenderSettings objectRenderSettings) {
+        this.objectRenderSettings = objectRenderSettings;
         return this;
     }
 
@@ -125,8 +117,8 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
         return this.lightList;
     }
 
-    public ModelRenderData getObjectRenderSettings() {
-        return this.modelRenderData;
+    public ObjectRenderSettings getObjectRenderSettings() {
+        return this.objectRenderSettings;
     }
 
     public boolean isVisible() {

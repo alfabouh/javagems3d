@@ -23,6 +23,7 @@
 package jgems_api.test.manager.bindings;
 
 import javagems3d.JGems3D;
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
 import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultPausePanel;
 import javagems3d.system.controller.binding.BindingManager;
@@ -63,7 +64,7 @@ public class TestBindings extends BindingManager {
         this.keyBlock1 = new Key(GLFW.GLFW_KEY_F);
         this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
         this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
-        this.keyClear = new FunctionalKey(e -> JGems3D.get().getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
+        this.keyClear = new FunctionalKey(e -> JGemsHelper.getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
         this.keyX = new Key(GLFW.GLFW_KEY_X);
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 

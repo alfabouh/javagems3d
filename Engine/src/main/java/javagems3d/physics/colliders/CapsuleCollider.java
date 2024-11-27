@@ -24,7 +24,7 @@ public class CapsuleCollider implements IColliderConstructor {
     }
 
     @Override
-    public CollisionShape createCollisionShape() {
+    public CollisionShape execute() {
         return new CapsuleCollisionShape(this.size.x, size.y);
     }
 }

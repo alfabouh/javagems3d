@@ -9,12 +9,12 @@
  *
  */
 
-package javagems3d.system.resources.assets.models.mesh.data;
+package javagems3d.system.resources.assets.models.mesh.udata;
 
 import com.jme3.bullet.collision.shapes.infos.CompoundMesh;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
-import javagems3d.system.resources.old.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 
 import java.util.ArrayList;
@@ -24,19 +24,15 @@ public class MeshCollisionData implements IMeshUserData {
     private final float[] allPositions;
     private final CompoundMesh compoundMesh;
 
-    public MeshCollisionData(MeshGroup meshGroup) {
-        this(meshGroup, DefaultAttributePointers.ATTR_POSITIONS.getIndex());
+    public MeshCollisionData(MeshStructure<?> meshStructure) {
+        this.compoundMesh = DynamicsUtils.getCompoundMesh(meshStructure);
+        this.allPositions = this.pickAllPositions(meshStructure);
     }
 
-    public MeshCollisionData(MeshGroup meshGroup, int positionsAttributeIndex) {
-        this.compoundMesh = DynamicsUtils.getCompoundMesh(meshGroup);
-        this.allPositions = this.pickAllPositions(meshGroup, positionsAttributeIndex);
-    }
-
-    private float[] pickAllPositions(MeshGroup meshGroup, int positionsAttributeIndex) {
+    private float[] pickAllPositions(MeshStructure<?> meshStructure) {
         List<Float> floats = new ArrayList<>();
-        for (MeshGroup.Node meshNode : meshGroup.getModelNodeList()) {
-            floats.addAll(meshNode.getMesh().tryGetValuesFromAttributeByIndex(positionsAttributeIndex));
+        for (MeshStructure.Node<?> meshNode : meshStructure.getMeshNodes()) {
+            floats.addAll(meshNode.getMesh().getVertexPositions());
         }
         return JGemsHelper.UTILS.convertFloatsArray(floats);
     }

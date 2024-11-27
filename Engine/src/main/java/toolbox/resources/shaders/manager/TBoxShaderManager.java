@@ -12,11 +12,10 @@
 package toolbox.resources.shaders.manager;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.system.resources.assets.material.Material;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.opengl.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.Transformation;
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.base.ISample;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
@@ -62,7 +61,7 @@ public final class TBoxShaderManager extends ShaderManager {
         public TBoxShaderUtils() {
         }
 
-        public void performModelMaterialOnShader(MaterialOld material) {
+        public void performModelMaterialOnShader(Material material) {
             if (material == null) {
                 return;
             }
@@ -70,7 +69,7 @@ public final class TBoxShaderManager extends ShaderManager {
 
             int texturing_code = 0;
             for (int i = 0; i < 1; i++) {
-                JGemsScene.activeGlTexture(i);
+                GL46.glActiveTexture(GL46.GL_TEXTURE0 + i);
                 GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
             }
             TBoxShaderManager.this.performUniformNoWarn(new UniformString("alpha_discard"), DefaultUniformActions.FLOAT(EditorContent.alphaDiscard));
@@ -81,7 +80,7 @@ public final class TBoxShaderManager extends ShaderManager {
                 if (diffuse instanceof ITextureSample) {
                     final int code = 0;
                     ITextureSample imageSample = ((ITextureSample) diffuse);
-                    JGemsScene.activeGlTexture(code);
+                    GL46.glActiveTexture(GL46.GL_TEXTURE0 + code);
                     imageSample.bindTexture();
                     TBoxShaderManager.this.performUniformNoWarn(new UniformString("diffuse_map"), DefaultUniformActions.INTEGER(code));
                     texturing_code |= 1 << 2;

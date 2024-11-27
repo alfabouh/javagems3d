@@ -111,7 +111,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     }
 
     protected void init(DynamicsSystem dynamicsSystem) {
-        this.physicsRigidBody = new JGemsPhysicsRigidBody(this.constructCollision().createCollisionShape());
+        this.physicsRigidBody = new JGemsPhysicsRigidBody(this.getColliderConstructor().execute());
         this.getPhysicsRigidBody().setContactStiffness(Float.MAX_VALUE);
         this.getPhysicsRigidBody().setContactDamping(0.0f);
         this.getPhysicsRigidBody().setUserObject(this);
@@ -124,7 +124,7 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
 
     protected abstract void postInit(DynamicsSystem dynamicsSystem, JGemsPhysicsRigidBody jGemsPhysicsRigidBody);
 
-    protected abstract IColliderConstructor constructCollision();
+    protected abstract IColliderConstructor getColliderConstructor();
 
     @Override
     public Vector3f getScaling() {

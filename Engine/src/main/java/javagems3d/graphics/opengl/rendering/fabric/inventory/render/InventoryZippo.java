@@ -11,7 +11,9 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
@@ -20,9 +22,7 @@ import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 import javagems3d.graphics.opengl.screen.timer.JGemsTimer;
 import javagems3d.system.inventory.items.ItemZippo;
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
 public class InventoryZippo extends AbstractInventoryItem {
@@ -35,12 +35,12 @@ public class InventoryZippo extends AbstractInventoryItem {
     public InventoryZippo() {
         this.jGemsTimer = JGemsHelper.createTimer();
 
-        DirectRenderMesh directRenderMesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
-        MaterialOld material1 = MaterialOld.createDefault();
-        MaterialOld material2 = MaterialOld.createDefault();
+        RenderMesh renderMesh = MeshHelper.generatePlane3DMesh(new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f));
+        Material material1 = Material.createDefault();
+        Material material2 = Material.createDefault();
         material2.setDiffuse(JGemsResourceManager.globalTextureAssets.zippo2);
-        MeshGroup.Node meshNode1 = new MeshGroup.Node(directRenderMesh, material1);
-        MeshGroup.Node meshNode2 = new MeshGroup.Node(directRenderMesh, material2);
+        MeshGroup.MeshGroupNode meshNode1 = new MeshGroup.MeshGroupNode(renderMesh, material1);
+        MeshGroup.MeshGroupNode meshNode2 = new MeshGroup.MeshGroupNode(renderMesh, material2);
         this.model1 = new MeshGroup(meshNode1);
         this.model2 = new MeshGroup(meshNode2);
     }
@@ -57,7 +57,7 @@ public class InventoryZippo extends AbstractInventoryItem {
         if (this.jGemsTimer.resetTimerAfterReachedSeconds(0.3f)) {
             this.animState = this.animState == 0 ? 1 : 0;
         }
-        this.model1.getModelNodeList().get(0).getMaterial().setDiffuse(this.animState == 0 ? JGemsResourceManager.globalTextureAssets.zippo1 : JGemsResourceManager.globalTextureAssets.zippo1_1);
+        this.model1.getMeshNodes().get(0).getMaterial().setDiffuse(this.animState == 0 ? JGemsResourceManager.globalTextureAssets.zippo1 : JGemsResourceManager.globalTextureAssets.zippo1_1);
     }
 
     @Override

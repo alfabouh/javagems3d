@@ -34,7 +34,7 @@ public class JGemsStaticBody extends JGemsAbstractStaticBody {
     }
 
     @Override
-    protected IColliderConstructor constructCollision() {
+    protected IColliderConstructor getColliderConstructor() {
         return this.colliderConstructor;
     }
 }

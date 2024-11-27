@@ -12,7 +12,7 @@
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.transparent;
 
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
-import javagems3d.system.resources.old.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
@@ -22,7 +22,6 @@ import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -55,21 +54,17 @@ public class WorldTransparentRender extends SceneRenderBase {
     }
 
     private void renderIModeledSceneObject(AbstractSceneObject object) {
-        MaterialOld overMaterial = object.getObjectRenderSettings().getOverlappingMaterial();
-        JGemsShaderManager gemsShaderManager = object.getObjectRenderSettings().getOverridenTransparencyShader();
-        if (gemsShaderManager == null) {
-            gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
-        }
+        JGemsShaderManager gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
         gemsShaderManager.beginShading();
         gemsShaderManager.getUtils().performPerspectiveMatrix();
         gemsShaderManager.getUtils().performViewAndModelMatricesSeparately(object.getModel());
-        for (MeshGroup.Node meshNode : object.getModel().getMeshStructure().getModelNodeList()) {
+        for (MeshGroup.MeshGroupNode meshNode : object.getModel().<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
             gemsShaderManager.getUtils().performShadowsInfo();
-            gemsShaderManager.getUtils().performModelMaterialOnShader(overMaterial != null ? overMaterial : meshNode.getMaterial());
-            gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity() * object.getObjectRenderSettings().getRenderAttributes().getObjectOpacity()));
+            gemsShaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
+            gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity()));
 
             boolean f = GL46.glIsEnabled(GL46.GL_CULL_FACE);
-            if (object.getObjectRenderSettings().getRenderAttributes().isDisabledFaceCulling()) {
+            if (object.getObjectRenderSettings().isDisabledFaceCulling()) {
                 GL46.glDisable(GL46.GL_CULL_FACE);
             }
             JGemsSceneUtils.renderModelNode(meshNode);
@@ -81,7 +76,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         gemsShaderManager.endShading();
     }
 
-    private void renderModelNode(JGemsShaderManager gemsShaderManager, boolean disableCulling, MeshGroup.Node meshNode, Format3D format3D) {
+    private void renderModelNode(JGemsShaderManager gemsShaderManager, boolean disableCulling, MeshGroup.MeshGroupNode meshNode, Format3D format3D) {
         if (gemsShaderManager == null) {
             gemsShaderManager = this.getSceneRenderer().getBasicOITShader();
         }
@@ -129,11 +124,11 @@ public class WorldTransparentRender extends SceneRenderBase {
 
     public static class RenderNodeInfo {
         private final JGemsShaderManager overlappingTransparencyShader;
-        private final MeshGroup.Node meshNode;
+        private final MeshGroup.MeshGroupNode meshNode;
         private final Format3D modelTransforms;
         private final boolean disableFaceCulling;
 
-        public RenderNodeInfo(@Nullable JGemsShaderManager overlappingTransparencyShader, boolean disableFaceCulling, @NotNull MeshGroup.Node meshNode, @NotNull Format3D modelTransforms) {
+        public RenderNodeInfo(@Nullable JGemsShaderManager overlappingTransparencyShader, boolean disableFaceCulling, @NotNull MeshGroup.MeshGroupNode meshNode, @NotNull Format3D modelTransforms) {
             this.overlappingTransparencyShader = overlappingTransparencyShader;
             this.disableFaceCulling = disableFaceCulling;
             this.meshNode = meshNode;
@@ -144,7 +139,7 @@ public class WorldTransparentRender extends SceneRenderBase {
             return this.overlappingTransparencyShader;
         }
 
-        public MeshGroup.Node getModelNode() {
+        public MeshGroup.MeshGroupNode getModelNode() {
             return this.meshNode;
         }
 

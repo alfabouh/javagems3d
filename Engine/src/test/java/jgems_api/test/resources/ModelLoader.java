@@ -24,7 +24,7 @@ package jgems_api.test.resources;
 
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
-import javagems3d.system.resources.old.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 
@@ -34,12 +34,12 @@ public class ModelLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), true, true);
+        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj")).getFirst();
     }
 
     @Override
-    public LoadMode loadMode() {
-        return LoadMode.NORMAL;
+    public LaunchMode loadMode() {
+        return LaunchMode.REGULAR;
     }
 
     @Override

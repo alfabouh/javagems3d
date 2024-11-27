@@ -11,6 +11,7 @@
 
 package toolbox.render.scene.items.collision;
 
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.joml.Intersectionf;
 import org.joml.Matrix4f;
@@ -19,16 +20,15 @@ import org.joml.Vector4f;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.MeshGroup;
 
 import java.util.List;
 
 public final class LocalCollision {
-    private final MeshGroup meshGroup;
+    private final MeshStructure<?> meshStructure;
     private AABB aabb;
 
     public LocalCollision(Model<Format3D> model) {
-        this.meshGroup = model.getMeshStructure();
+        this.meshStructure = model.getMeshStructure();
         this.calcAABB(model.getFormat());
     }
 
@@ -38,8 +38,8 @@ public final class LocalCollision {
         Vector3f min = new Vector3f((float) Double.POSITIVE_INFINITY);
         Vector3f max = new Vector3f((float) Double.NEGATIVE_INFINITY);
 
-        for (MeshGroup.Node meshNode : this.getMeshDataGroup().getModelNodeList()) {
-            List<Float> positions = meshNode.getMesh().tryGetValuesFromAttributeByIndex(DefaultAttributePointers.ATTR_POSITIONS.getIndex());
+        for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
+            List<Float> positions = meshNode.getMesh().getVertexPositions();
             List<Integer> indices = meshNode.getMesh().getVertexIndexes();
 
             for (int index : indices) {
@@ -59,9 +59,9 @@ public final class LocalCollision {
         Matrix4f modelMatrix = Transformation.getModelMatrix(format3D);
 
         Vector3f closestVector = null;
-        for (MeshGroup.Node meshNode : this.getMeshDataGroup().getModelNodeList()) {
-            List<Float> floats = meshNode.getMesh().tryGetValuesFromAttributeByIndex(DefaultAttributePointers.ATTR_POSITIONS.getIndex());
-            for (int i = 0; i < meshNode.getMesh().getTotalVertices(); i += 3) {
+        for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
+            List<Float> floats = meshNode.getMesh().getVertexPositions();
+            for (int i = 0; i < meshNode.getMesh().getVertexesLength(); i += 3) {
                 int i1 = meshNode.getMesh().getVertexIndexes().get(i) * 3;
                 int i2 = meshNode.getMesh().getVertexIndexes().get(i + 1) * 3;
                 int i3 = meshNode.getMesh().getVertexIndexes().get(i + 2) * 3;
@@ -89,9 +89,9 @@ public final class LocalCollision {
     public boolean isRayIntersectObjectMesh(Format3D format3D, Vector3f rayStart, Vector3f rayEnd) {
         Matrix4f modelMatrix = Transformation.getModelMatrix(format3D);
 
-        for (MeshGroup.Node meshNode : this.getMeshDataGroup().getModelNodeList()) {
-            List<Float> floats = meshNode.getMesh().tryGetValuesFromAttributeByIndex(DefaultAttributePointers.ATTR_POSITIONS.getIndex());
-            for (int i = 0; i < meshNode.getMesh().getTotalVertices(); i += 3) {
+        for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
+            List<Float> floats = meshNode.getMesh().getVertexPositions();
+            for (int i = 0; i < meshNode.getMesh().getVertexesLength(); i += 3) {
                 int i1 = meshNode.getMesh().getVertexIndexes().get(i) * 3;
                 int i2 = meshNode.getMesh().getVertexIndexes().get(i + 1) * 3;
                 int i3 = meshNode.getMesh().getVertexIndexes().get(i + 2) * 3;
@@ -119,8 +119,8 @@ public final class LocalCollision {
         return this.aabb;
     }
 
-    public MeshGroup getMeshDataGroup() {
-        return this.meshGroup;
+    public MeshStructure<?> getMeshStructure() {
+        return this.meshStructure;
     }
 
     public static class AABB {

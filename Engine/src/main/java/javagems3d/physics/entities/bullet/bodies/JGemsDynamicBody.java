@@ -34,7 +34,7 @@ public class JGemsDynamicBody extends JGemsAbstractDynamicBody {
     }
 
     @Override
-    protected IColliderConstructor constructCollision() {
+    protected IColliderConstructor getColliderConstructor() {
         return this.colliderConstructor;
     }
 }

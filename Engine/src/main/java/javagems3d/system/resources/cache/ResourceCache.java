@@ -30,7 +30,7 @@ public class ResourceCache {
         this.cache = new LinkedHashMap<>();
     }
 
-    public void cleanGroupInCache(Class<? extends ICached> clazz) {
+    public void clearGroupInCache(Class<? extends ICached> clazz) {
         Iterator<ICached> cachedIterator = this.cache.values().iterator();
         while (cachedIterator.hasNext()) {
             ICached cached = cachedIterator.next();
@@ -42,7 +42,7 @@ public class ResourceCache {
         JGemsHelper.getLogger().log("Cleaned cache: " + this + ". Group " + clazz.getName());
     }
 
-    public void cleanCache() {
+    public void clearCache() {
         if (this.cache.isEmpty()) {
             return;
         }

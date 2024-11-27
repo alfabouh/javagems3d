@@ -32,8 +32,6 @@ public final class LiquidObject implements ICulled {
         this.liquid = iLiquid;
         this.textureScaling = new Vector2f(1.0f);
         this.model = this.constructModel(iLiquid);
-
-        this.model.getMeshStructure().createRenderAABB();
     }
 
     private Model<Format3D> constructModel(Liquid liquid) {
@@ -73,13 +71,5 @@ public final class LiquidObject implements ICulled {
     @Override
     public boolean canBeCulled() {
         return true;
-    }
-
-    @Override
-    public RenderAABB getRenderAABB() {
-        if (!this.getModel().isValid()) {
-            return null;
-        }
-        return JGemsHelper.UTILS.calcRenderAABBWithTransforms(this.getModel());
     }
 }

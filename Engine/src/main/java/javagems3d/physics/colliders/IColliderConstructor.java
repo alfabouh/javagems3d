@@ -15,7 +15,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 
 @FunctionalInterface
 public interface IColliderConstructor {
-    CollisionShape createCollisionShape();
+    CollisionShape execute();
 
     static IColliderConstructor get(CollisionShape collisionShape) {
         return () -> collisionShape;

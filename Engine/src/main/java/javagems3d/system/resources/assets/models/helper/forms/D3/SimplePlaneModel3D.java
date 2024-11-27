@@ -11,11 +11,12 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D3;
 
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector3f;
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
@@ -61,12 +62,12 @@ public class SimplePlaneModel3D implements BasicModelCreator<Format3D> {
 
     @Override
     public Model<Format3D> generateModel() {
-        return new Model<>(new Format3D(), this.generateMesh(), MaterialOld.createDefault());
+        return new Model<>(new Format3D(), new MeshGroup(new MeshGroup.MeshGroupNode(this.generateMesh(), Material.createDefault())));
     }
 
     @Override
-    public DirectRenderMesh generateMesh() {
-        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+    public RenderMesh generateMesh() {
+        RenderMesh renderMesh = new RenderMesh();
         List<Vector3f> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
 
         Vector3f v1 = list.get(0);
@@ -126,24 +127,24 @@ public class SimplePlaneModel3D implements BasicModelCreator<Format3D> {
         vaTextureCoordinates.put(0.0f);
         vaTextureCoordinates.put(1.0f);
 
-        directRenderMesh.putVertexIndex(1);
-        directRenderMesh.putVertexIndex(2);
-        directRenderMesh.putVertexIndex(0);
-        directRenderMesh.putVertexIndex(3);
-        directRenderMesh.putVertexIndex(0);
-        directRenderMesh.putVertexIndex(2);
+        renderMesh.putVertexIndex(1);
+        renderMesh.putVertexIndex(2);
+        renderMesh.putVertexIndex(0);
+        renderMesh.putVertexIndex(3);
+        renderMesh.putVertexIndex(0);
+        renderMesh.putVertexIndex(2);
 
-        directRenderMesh.putVertexIndex(5);
-        directRenderMesh.putVertexIndex(6);
-        directRenderMesh.putVertexIndex(4);
-        directRenderMesh.putVertexIndex(7);
-        directRenderMesh.putVertexIndex(4);
-        directRenderMesh.putVertexIndex(6);
+        renderMesh.putVertexIndex(5);
+        renderMesh.putVertexIndex(6);
+        renderMesh.putVertexIndex(4);
+        renderMesh.putVertexIndex(7);
+        renderMesh.putVertexIndex(4);
+        renderMesh.putVertexIndex(6);
 
-        directRenderMesh.addVertexAttributeInMesh(vaPositions);
-        directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        renderMesh.addVertexAttributeInMesh(vaPositions);
+        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
 
-        directRenderMesh.bakeMesh();
-        return directRenderMesh;
+        renderMesh.bakeMesh();
+        return renderMesh;
     }
 }

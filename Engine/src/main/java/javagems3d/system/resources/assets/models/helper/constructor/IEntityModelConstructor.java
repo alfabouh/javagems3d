@@ -11,7 +11,7 @@
 
 package javagems3d.system.resources.assets.models.helper.constructor;
 
-import javagems3d.system.resources.old.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 
 @FunctionalInterface
 public interface IEntityModelConstructor<T> {

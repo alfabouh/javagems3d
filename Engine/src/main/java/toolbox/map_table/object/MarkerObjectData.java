@@ -11,8 +11,8 @@
 
 package toolbox.map_table.object;
 
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributesContainer;
 import toolbox.render.scene.items.renderers.ITBoxObjectRenderer;
 import toolbox.render.scene.items.renderers.MarkerObject3DRenderer;

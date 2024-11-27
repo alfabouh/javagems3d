@@ -11,7 +11,11 @@
 
 package javagems3d.system.resources.manager;
 
+import javagems3d.system.resources.assets.models.loaders.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
+import javagems3d.system.service.collections.Pair;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
@@ -20,7 +24,6 @@ import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
-import javagems3d.system.resources.assets.models.loaders.ModelLoader;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -34,11 +37,13 @@ import java.util.stream.Collectors;
 /**
  * The GameResources class contains a cache, as well as tools for loading resources
  */
-public final class GameResources {
+public final class GameResources implements IGameResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsLoader> assetsLoaderSet;
+    private final MeshBuffersArray meshBuffersArray;
 
     public GameResources(ResourceCache resourceCache) {
+        this.meshBuffersArray = new MeshBuffersArray();
         this.resourceCache = resourceCache;
         this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsLoader) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
     }
@@ -47,25 +52,18 @@ public final class GameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshBuffer createMesh(JGemsPath modelPath, boolean constructCollisionMesh, boolean constructRenderAABB, boolean isAnimated) {
-        MeshBuffer meshGroup = this.createMesh(modelPath, constructRenderAABB, isAnimated);
-        if (constructCollisionMesh) {
-            //JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
-        }
-        return meshGroup;
+    public Pair<MeshGroup, MeshBuffer> createMesh(JGemsPath modelPath) {
+        return this.createMesh(modelPath, ModelMeshLoader.FLAGS.DEFAULT);
     }
 
-    public MeshBuffer createMesh(JGemsPath modelPath, boolean constructRenderAABB, boolean isAnimated) {
+    public Pair<MeshGroup, MeshBuffer> createMesh(JGemsPath modelPath, int modelLoadingFlags) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
-        MeshBuffer meshGroup = ModelLoader.createMesh(this, modelPath, isAnimated);
-        if (meshGroup == null) {
+        try {
+            return new ModelMeshLoader(modelPath).createMeshStructures(this, modelLoadingFlags);
+        } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
-        } else {
-            if (constructRenderAABB) {
-               // meshGroup.createRenderAABB();
-            }
+            throw e;
         }
-        return meshGroup;
     }
 
     public TextureSample createTexture(JGemsPath path, TextureSample.Params params) {
@@ -120,12 +118,13 @@ public final class GameResources {
     }
 
     public void destroy() {
-        this.cleanCache();
+        this.clearCache();
+        this.getDataMeshArray().clear();
         this.getAssetsLoaderSet().clear();
     }
 
-    public void cleanCache() {
-        this.getResourceCache().cleanCache();
+    public void clearCache() {
+        this.getResourceCache().clearCache();
     }
 
     public void reloadTexturesInCache() {
@@ -137,7 +136,7 @@ public final class GameResources {
     private Set<Thread> initAssets() {
         Set<Thread> set = new HashSet<>();
         for (IAssetsLoader assets : this.getAssetsLoaderSet()) {
-            if (assets.loadMode() == IAssetsLoader.LoadMode.PARALLEL) {
+            if (assets.loadMode() == IAssetsLoader.LaunchMode.PARALLEL) {
                 Thread thread = new Thread(() -> {
                     try {
                         assets.load(this);
@@ -156,7 +155,7 @@ public final class GameResources {
         JGemsHelper.getLogger().log("Loading rendering resources...");
         Set<Thread> threads = this.initAssets();
         threads.forEach(Thread::start);
-        List<IAssetsLoader> normalLoad = this.getAssetsLoaderSet().stream().filter(e -> e.loadMode() == IAssetsLoader.LoadMode.NORMAL).collect(Collectors.toList());
+        List<IAssetsLoader> normalLoad = this.getAssetsLoaderSet().stream().filter(e -> e.loadMode() == IAssetsLoader.LaunchMode.REGULAR).collect(Collectors.toList());
         threads.forEach(e -> {
             try {
                 e.join();
@@ -186,6 +185,10 @@ public final class GameResources {
 
     public Set<IAssetsLoader> getAssetsLoaderSet() {
         return this.assetsLoaderSet;
+    }
+
+    public MeshBuffersArray getDataMeshArray() {
+        return this.meshBuffersArray;
     }
 
     public ResourceCache getResourceCache() {

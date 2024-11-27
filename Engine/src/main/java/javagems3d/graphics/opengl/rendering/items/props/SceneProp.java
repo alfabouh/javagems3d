@@ -11,16 +11,16 @@
 
 package javagems3d.graphics.opengl.rendering.items.props;
 
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.opengl.rendering.fabric.objects.IRenderObjectFabric;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class SceneProp extends AbstractSceneProp {
-    public SceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ModelRenderData modelRenderData) {
-        super(renderFabric, model, modelRenderData);
+    public SceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderSettings objectRenderSettings) {
+        super(renderFabric, model, objectRenderSettings);
     }
 
     public SceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {

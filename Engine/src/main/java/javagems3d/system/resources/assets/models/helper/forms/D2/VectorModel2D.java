@@ -11,7 +11,9 @@
 
 package javagems3d.system.resources.assets.models.helper.forms.D2;
 
-import javagems3d.system.resources.assets.models.mesh.DirectRenderMesh;
+import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector2f;
@@ -30,12 +32,12 @@ public class VectorModel2D implements BasicModelCreator<Format2D> {
 
     @Override
     public Model<Format2D> generateModel() {
-        return new Model<>(new Format2D(), this.generateMesh());
+        return new Model<>(new Format2D(), new MeshGroup(new MeshGroup.MeshGroupNode(this.generateMesh(), Material.createDefault())));
     }
 
     @Override
-    public DirectRenderMesh generateMesh() {
-        DirectRenderMesh directRenderMesh = new DirectRenderMesh();
+    public RenderMesh generateMesh() {
+        RenderMesh renderMesh = new RenderMesh();
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);
 
@@ -45,12 +47,12 @@ public class VectorModel2D implements BasicModelCreator<Format2D> {
         vaPositions.put(this.v2.x);
         vaPositions.put(this.v2.y);
 
-        directRenderMesh.putVertexIndex(0);
-        directRenderMesh.putVertexIndex(1);
+        renderMesh.putVertexIndex(0);
+        renderMesh.putVertexIndex(1);
 
-        directRenderMesh.addVertexAttributeInMesh(vaPositions);
-        directRenderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        directRenderMesh.bakeMesh();
-        return directRenderMesh;
+        renderMesh.addVertexAttributeInMesh(vaPositions);
+        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        renderMesh.bakeMesh();
+        return renderMesh;
     }
 }

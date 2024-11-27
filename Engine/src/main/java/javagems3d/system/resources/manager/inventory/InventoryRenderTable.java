@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.graphics.opengl.rendering.fabric.inventory.table;
+package javagems3d.system.resources.manager.inventory;
 
 import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import javagems3d.system.inventory.items.InventoryItem;

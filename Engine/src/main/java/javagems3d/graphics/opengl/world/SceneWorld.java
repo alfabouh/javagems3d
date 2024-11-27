@@ -18,7 +18,6 @@ import javagems3d.graphics.opengl.camera.AttachedCamera;
 import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.environment.Environment;
 import javagems3d.graphics.opengl.environment.light.Light;
-import javagems3d.graphics.opengl.frustum.FrustumCulling;
 import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.opengl.particles.ParticlesEmitter;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
@@ -58,7 +57,6 @@ public final class SceneWorld implements IWorld {
     private final Set<AbstractSceneObject> toRenderSet;
     private final Set<LiquidObject> liquids;
     private final Environment environment;
-    private FrustumCulling frustumCulling;
     private int ticks;
 
     public SceneWorld() {
@@ -68,7 +66,6 @@ public final class SceneWorld implements IWorld {
         this.toRenderSet = SyncManager.createSyncronisedSet();
 
         this.environment = new Environment();
-        this.frustumCulling = null;
 
         this.particlesEmitter = new ParticlesEmitter();
     }
@@ -106,7 +103,7 @@ public final class SceneWorld implements IWorld {
         APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.PRE, this));
         this.getParticlesEmitter().destroy(this);
         this.getEnvironment().destroyEnvironment(this);
-        this.cleanAll();
+        this.clearAll();
         APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.POST, this));
     }
 
@@ -142,14 +139,14 @@ public final class SceneWorld implements IWorld {
         while (iterator2.hasNext()) {
             LiquidObject liquidObject = iterator2.next();
             if (liquidObject.getLiquid().isDead()) {
-                liquidObject.getModel().clean();
+                liquidObject.getModel().clear();
                 iterator2.remove();
             }
         }
     }
 
     //section WorldClean
-    private void cleanAll() {
+    private void clearAll() {
         Iterator<AbstractSceneObject> iterator = this.getModeledSceneEntities().iterator();
         while (iterator.hasNext()) {
             AbstractSceneObject modeledSceneObject = iterator.next();
@@ -163,7 +160,7 @@ public final class SceneWorld implements IWorld {
         Iterator<LiquidObject> iterator1 = this.getLiquids().iterator();
         while (iterator1.hasNext()) {
             LiquidObject liquidObject = iterator1.next();
-            liquidObject.getModel().clean();
+            liquidObject.getModel().clear();
             iterator1.remove();
         }
         this.getObjectMap().clear();
@@ -174,21 +171,11 @@ public final class SceneWorld implements IWorld {
             return true;
         }
         ICamera camera = JGems3D.get().getScreen().getCamera();
-        return renderObject.getObjectRenderSettings().getRenderAttributes().getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderObject.getObjectRenderSettings().getRenderAttributes().getRenderDistance();
-    }
-
-    public Collection<? extends ICulled> getCollectionFrustumCulledList(Collection<? extends ICulled> list) {
-        if (this.getFrustumCulling() == null) {
-            return list;
-        }
-        return list.stream().filter(e -> this.getFrustumCulling().isInFrustum(e.getRenderAABB()) || !e.canBeCulled()).collect(Collectors.toList());
+        return renderObject.getObjectRenderSettings().getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderObject.getObjectRenderSettings().getRenderDistance();
     }
 
     public Set<AbstractSceneObject> getFilteredEntitySet(RenderPass renderPass) {
-        if (this.getFrustumCulling() == null) {
-            return this.getModeledSceneEntities();
-        }
-        return this.getCollectionFrustumCulledList(this.getModeledSceneEntities()).stream().map(e -> (AbstractSceneObject) e).filter(e -> (renderPass == null || e.getObjectRenderSettings().getShaderManager().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toSet());
+        return this.getModeledSceneEntities().stream().filter(e -> (renderPass == null || e.getObjectRenderSettings().getModelRenderShader().checkShaderRenderPass(renderPass)) && e.isVisible() && !this.checkReachedRenderDistance(e)).collect(Collectors.toSet());
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {
@@ -303,7 +290,7 @@ public final class SceneWorld implements IWorld {
     }
 
     public void removeLiquid(LiquidObject liquid) {
-        liquid.getModel().clean();
+        liquid.getModel().clear();
         this.getLiquids().remove(liquid);
     }
 
@@ -339,13 +326,5 @@ public final class SceneWorld implements IWorld {
 
     public int getTicks() {
         return this.ticks;
-    }
-
-    public FrustumCulling getFrustumCulling() {
-        return this.frustumCulling;
-    }
-
-    public void setFrustumCulling(FrustumCulling frustumCulling) {
-        this.frustumCulling = frustumCulling;
     }
 }

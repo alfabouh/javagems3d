@@ -53,8 +53,8 @@ public abstract class ShadersLoader<T extends ShaderManager> {
         return new UniformBufferObject(id, binding, bSize);
     }
 
-    public void cleanShaders(ResourceCache resourceCache) {
-        resourceCache.cleanGroupInCache(ShaderManager.class);
+    public void clearShaders(ResourceCache resourceCache) {
+        resourceCache.clearGroupInCache(ShaderManager.class);
     }
 
     public void destroyShaderPrograms(ResourceCache resourceCache) {
@@ -78,7 +78,7 @@ public abstract class ShadersLoader<T extends ShaderManager> {
     }
 
     public void createShaders(ResourceCache resourceCache) {
-        this.getGlobalShaderLibrary().clean();
+        this.getGlobalShaderLibrary().clear();
         this.initObjects(resourceCache);
         this.initShaders(resourceCache);
         this.startShaders(resourceCache);

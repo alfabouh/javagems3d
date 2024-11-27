@@ -12,8 +12,10 @@
 package javagems3d.system.resources.assets.shaders.manager;
 
 import javagems3d.graphics.opengl.rendering.items.IAnimated;
+import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
 import javagems3d.graphics.opengl.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
@@ -25,7 +27,6 @@ import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.Transformation;
-import javagems3d.system.resources.old.MaterialOld;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
@@ -34,7 +35,6 @@ import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.old.properties.ModelRenderData;
 import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
@@ -92,18 +92,18 @@ public final class JGemsShaderManager extends ShaderManager {
             }
         }
 
-        public void performRenderDataOnShader(ModelRenderData modelRenderData) {
+        public void performRenderDataOnShader(ObjectRenderSettings objectRenderSettings) {
             if (!JGemsShaderManager.this.isUniformExist(new UniformString("lighting_code"))) {
                 return;
             }
             int lighting_code = 0;
-            if (modelRenderData.getRenderAttributes().isBright()) {
+            if (objectRenderSettings.isDefaultBrightLighted()) {
                 lighting_code |= 1 << 2;
             }
             JGemsShaderManager.this.performUniform(new UniformString("lighting_code"), DefaultUniformActions.INTEGER(lighting_code));
         }
 
-        public void performModelMaterialOnShader(MaterialOld material) {
+        public void performModelMaterialOnShader(Material material) {
             if (material == null) {
                 return;
             }

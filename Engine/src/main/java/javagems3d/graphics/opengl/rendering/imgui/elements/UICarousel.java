@@ -61,11 +61,11 @@ public class UICarousel extends UIElement {
     }
 
     @Override
-    public void cleanData() {
-        this.left.cleanData();
-        this.right.cleanData();
-        this.uiText.cleanData();
-        this.uiTitle.cleanData();
+    public void clearData() {
+        this.left.clearData();
+        this.right.clearData();
+        this.uiText.clearData();
+        this.uiTitle.clearData();
     }
 
     @Override

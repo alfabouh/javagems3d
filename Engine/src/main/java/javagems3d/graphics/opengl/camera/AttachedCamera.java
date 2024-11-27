@@ -30,10 +30,10 @@ public class AttachedCamera extends Camera {
 
     @Override
     public void updateCamera(float frameDeltaTicks) {
-        AbstractSceneEntity abstractSceneEntity = this.getPhysXObject();
+        AbstractSceneEntity abstractSceneEntity = this.getAttachedObject();
         if (abstractSceneEntity != null) {
-            Vector3f pos = new Vector3f(this.getPhysXObject().getRenderPosition()).add(this.cameraOffset());
-            Vector3f rot = new Vector3f(this.getPhysXObject().getRenderRotation());
+            Vector3f pos = new Vector3f(this.getAttachedObject().getRenderPosition()).add(this.cameraOffset());
+            Vector3f rot = new Vector3f(this.getAttachedObject().getRenderRotation());
             this.setCameraPosition(pos);
             this.setCameraRotation(rot);
         }
@@ -41,8 +41,8 @@ public class AttachedCamera extends Camera {
 
     private Vector3f cameraOffset() {
         Vector3f vector3f = new Vector3f(0.0f);
-        if (this.getPhysXObject() != null && this.getPhysXObject().getWorldItem() instanceof IPlayer) {
-            IPlayer entityPlayerSP = (IPlayer) this.getPhysXObject().getWorldItem();
+        if (this.getAttachedObject() != null && this.getAttachedObject().getWorldItem() instanceof IPlayer) {
+            IPlayer entityPlayerSP = (IPlayer) this.getAttachedObject().getWorldItem();
             vector3f.add(0, entityPlayerSP.getEyeHeight(), 0);
         }
         return vector3f;
@@ -55,7 +55,7 @@ public class AttachedCamera extends Camera {
         this.setCameraRotation(abstractSceneEntity.getRenderRotation());
     }
 
-    public AbstractSceneEntity getPhysXObject() {
+    public AbstractSceneEntity getAttachedObject() {
         return this.abstractSceneEntity;
     }
 }

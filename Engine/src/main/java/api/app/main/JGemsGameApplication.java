@@ -12,7 +12,7 @@
 package api.app.main;
 
 import org.jetbrains.annotations.NotNull;
-import javagems3d.system.core.EngineSystem;
+import javagems3d.system.core.JGemsEngineSystem;
 import api.app.events.IAppEventSubscriber;
 import api.app.manager.AppManager;
 import api.app.resources.IAppResourceLoader;
@@ -36,14 +36,14 @@ public interface JGemsGameApplication {
      *
      * @param engineSystem engine core
      */
-    void preInitEvent(EngineSystem engineSystem);
+    void preInitEvent(JGemsEngineSystem engineSystem);
 
     /**
      * Post init event(launches after base system initialization).
      *
      * @param engineSystem engine core
      */
-    void postInitEvent(EngineSystem engineSystem);
+    void postInitEvent(JGemsEngineSystem engineSystem);
 
     /**
      * Application state manager.

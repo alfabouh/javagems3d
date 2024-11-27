@@ -11,18 +11,14 @@
 
 package javagems3d.system.core;
 
-import com.jme3.bullet.collision.shapes.Box2dShape;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.math.FastMath;
 import com.jme3.math.Plane;
-import com.jme3.math.Quaternion;
+import javagems3d.audio.JGemsSoundManager;
+import javagems3d.graphics.opengl.screen.JGemsScreen;
 import javagems3d.physics.entities.bullet.wrappers.BulletBody;
-import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
+import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -51,22 +47,30 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.util.Properties;
 
-public class EngineSystem implements IEngine {
+public class JGemsEngineSystem implements IEngine {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
     public static final String ENG_VER = "0.30a-dev";
 
+    private final JGemsSoundManager jGemsSoundManager;
+    private final JGemsScreen jGemsScreen;
+    private final JGemsPhysics jGemsPhysics;
     private final JGemsResourceManager resourceManager;
+
     private final EngineState engineState;
     private final RequestsFromThreads requestsFromThreads;
-    private Thread thread;
+    private Thread systemThread;
     private IMapLoader mapLoader;
     private LocalPlayer localPlayer;
 
-    public EngineSystem() {
-        this.thread = null;
-        this.engineState = new EngineState();
+    public JGemsEngineSystem() {
+        this.jGemsPhysics = new JGemsPhysics(JGemsPhysics.TICKS_PER_SECOND);
+        this.jGemsSoundManager = new JGemsSoundManager();
+        this.jGemsScreen = new JGemsScreen();
         this.resourceManager = new JGemsResourceManager();
+
+        this.engineState = new EngineState();
+        this.systemThread = null;
         this.mapLoader = null;
 
         this.requestsFromThreads = new RequestsFromThreads();
@@ -87,7 +91,7 @@ public class EngineSystem implements IEngine {
             return;
         }
         if (this.getMapLoader() != null) {
-            JGemsHelper.getLogger().warn("Firstly, the current map should be destroyed!");
+            JGemsHelper.getLogger().error("Firstly, the current map should be destroyed!");
             return;
         }
         this.mapLoader = mapLoader;
@@ -103,13 +107,13 @@ public class EngineSystem implements IEngine {
         JGemsHelper.getLogger().log("Destroying map!");
         APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
         this.pauseGame();
-        JGems3D.get().getScreen().showGameLoadingScreen("Exit world...");
-        this.clean();
+        this.getScreen().showGameLoadingScreen("Exit world...");
+        this.clear();
         JGemsHelper.GAME.unPauseGameAndUnLockUnPausing();
         JGemsHelper.GAME.unLockController();
         JGemsHelper.CAMERA.setCurrentCamera(null);
         JGemsHelper.WINDOW.setWindowFocus(false);
-        JGems3D.get().getScreen().removeLoadingScreen();
+        this.getScreen().removeLoadingScreen();
         this.mapLoader = null;
         JGems3D.get().showMainMenu();
         APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.POST, mapLoader));
@@ -131,11 +135,11 @@ public class EngineSystem implements IEngine {
         GameResources globalRes = this.getResourceManager().getGlobalResources();
         GameResources localRes = this.getResourceManager().getLocalResources();
 
-        JGems3D.get().getScreen().showGameLoadingScreen("Loading Map...");
+        this.getScreen().showGameLoadingScreen("Loading Map...");
         this.startWorlds();
         JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
-        PhysicsWorld physicsWorld = JGemsHelper.getPhysicsWorld();
-        SceneWorld sceneWorld = JGemsHelper.getSceneWorld();
+        PhysicsWorld physicsWorld = this.getPhysics().getPhysicsProcessor().getPhysicsWorld();
+        SceneWorld sceneWorld = this.getScreen().getSceneWorld();
         APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
         this.getMapLoader().preLoad(physicsWorld, sceneWorld);
 
@@ -184,9 +188,10 @@ public class EngineSystem implements IEngine {
 
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
         APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
+        this.getScreen().getScene().initSceneIndirectRenderBuffer(this.getResourceManager().constructMeshBuffersDataCache());
 
         JGemsHelper.WINDOW.setWindowFocus(true);
-        JGemsHelper.getScreen().removeLoadingScreen();
+        this.getScreen().removeLoadingScreen();
 
         this.unPauseGame();
     }
@@ -209,10 +214,6 @@ public class EngineSystem implements IEngine {
         physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape6, 0), "border_wall6"));
     }
 
-    public LocalPlayer getLocalPlayer() {
-        return this.localPlayer;
-    }
-
     public void pauseGame() {
         this.engineState().paused = true;
     }
@@ -223,7 +224,7 @@ public class EngineSystem implements IEngine {
         }
     }
 
-    public void clean() {
+    public void clear() {
         if (this.mapLoader == null) {
             return;
         }
@@ -231,26 +232,23 @@ public class EngineSystem implements IEngine {
             JGemsHelper.getLogger().warn("Engine thread is not ready to be cleaned!");
             return;
         }
-        JGems3D.get().getSoundManager().stopAllSounds();
-        JGemsHelper.getLogger().log("Cleaning worlds!");
+        this.getSoundManager().stopAllSounds();
         this.endWorlds();
-        this.getResourceManager().getLocalResources().cleanCache();
-        System.gc();
+        this.getScreen().getScene().getSceneIndirectRenderBuffer().clear();
+        this.getResourceManager().getLocalResources().destroy();
+        this.getResourceManager().getMeshBuffersDrawCache().clear();
         this.localPlayer = null;
+        System.gc();
     }
 
     private void startWorlds() {
-        JGemsHelper.getPhysicsWorld().onWorldStart();
-        JGemsHelper.getSceneWorld().onWorldStart();
+        this.getPhysics().getPhysicsProcessor().getPhysicsWorld().onWorldStart();
+        this.getScreen().getSceneWorld().onWorldStart();
     }
 
     private void endWorlds() {
-        JGemsHelper.getPhysicsWorld().onWorldEnd();
-        JGemsHelper.getSceneWorld().onWorldEnd();
-    }
-
-    public JGemsResourceManager getResourceManager() {
-        return this.resourceManager;
+        this.getPhysics().getPhysicsProcessor().getPhysicsWorld().onWorldEnd();
+        this.getScreen().getSceneWorld().onWorldEnd();
     }
 
     @SuppressWarnings("all")
@@ -260,7 +258,7 @@ public class EngineSystem implements IEngine {
             JGemsHelper.getLogger().warn("Engine thread is currently running!");
             return;
         }
-        this.thread = new Thread(() -> {
+        this.systemThread = new Thread(() -> {
             boolean badExit = true;
             try {
                 APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent(this);
@@ -268,31 +266,31 @@ public class EngineSystem implements IEngine {
                 this.getResourceManager().initGlobalResources();
                 this.getResourceManager().initLocalResources();
                 APIContainer.get().getApiTBoxInfo().getAppInstance().initEntitiesUserData(this.getResourceManager(), APIContainer.get().getTBoxEntitiesUserData());
-                JGems3D.get().getSoundManager().createSystem();
-                JGems3D.get().getPhysicThreadManager().initService();
+                this.getSoundManager().createSystem();
+                this.getPhysics().initService();
                 this.createGraphics();
                 APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent(this);
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
-                JGems3D.get().getScreen().startScreenRenderProcess();
+                this.getScreen().startScreenRenderProcess();
                 badExit = false;
             } catch (Exception e) {
                 JGemsHelper.getLogger().exception(e);
                 badExit = true;
             } finally {
                 try {
-                    this.clean();
+                    this.clear();
                     JGems3D.get().destroyGame();
-                    JGems3D.get().getSoundManager().stopAllSounds();
-                    JGems3D.get().getResourceManager().destroy();
-                    JGems3D.get().getSoundManager().destroy();
-                    if (!JGems3D.get().getPhysicThreadManager().waitForFullTermination()) {
+                    this.getSoundManager().stopAllSounds();
+                    this.getResourceManager().destroy();
+                    this.getSoundManager().destroy();
+                    if (!this.getPhysics().waitForFullTermination()) {
                         JGemsHelper.getLogger().error("Waited for physics termination too long...");
                     }
-                    if (JGems3D.get().getPhysicThreadManager().badExit) {
+                    if (this.getPhysics().badExit) {
                         badExit = true;
                     }
-                    JGems3D.get().getPhysicThreadManager().getPhysicsTimer().cleanResources();
+                    this.getPhysics().getPhysicsProcessor().clearResources();
                     JGemsHelper.getLogger().log("Engine-Off");
                 } catch (Exception e) {
                     JGemsHelper.getLogger().exception(e);
@@ -304,16 +302,36 @@ public class EngineSystem implements IEngine {
                 }
             }
         });
-        this.thread.setName("system");
-        this.thread.start();
+        this.systemThread.setName("system");
+        this.systemThread.start();
+    }
+
+    public JGemsSoundManager getSoundManager() {
+        return this.jGemsSoundManager;
+    }
+
+    public JGemsScreen getScreen() {
+        return this.jGemsScreen;
+    }
+
+    public JGemsPhysics getPhysics() {
+        return this.jGemsPhysics;
+    }
+
+    public LocalPlayer getLocalPlayer() {
+        return this.localPlayer;
+    }
+
+    public JGemsResourceManager getResourceManager() {
+        return this.resourceManager;
     }
 
     public String currentMapName() {
         return this.getMapLoader().getLevelInfo().getMapProperties().getMapName();
     }
 
-    public Thread getThread() {
-        return this.thread;
+    public Thread getSystemThread() {
+        return this.systemThread;
     }
 
     public IMapLoader getMapLoader() {
@@ -395,13 +413,13 @@ public class EngineSystem implements IEngine {
     }
 
     private void createGraphics() {
-        JGems3D.get().getScreen().buildScreen();
+        this.getScreen().buildScreen();
         if (JGems3D.FIRST_LAUNCH) {
             JGems3D.get().getGameSettings().setDefaultByPerfStat(PerformanceStat.getSystemStat());
             JGems3D.get().getGameSettings().saveOptions();
         }
         this.printGraphicsInfo();
-        JGems3D.get().getResourceManager().loadGlobalResources();
+        this.getResourceManager().loadGlobalResources();
     }
 
     private class RequestsFromThreads {
@@ -410,11 +428,11 @@ public class EngineSystem implements IEngine {
 
         public void update() {
             if (this.destroyMap) {
-                EngineSystem.this.destroyMap();
+                JGemsEngineSystem.this.destroyMap();
                 return;
             }
             if (this.loadMap != null) {
-                EngineSystem.this.loadMap(this.loadMap);
+                JGemsEngineSystem.this.loadMap(this.loadMap);
             }
         }
     }
@@ -445,7 +463,7 @@ public class EngineSystem implements IEngine {
         }
 
         public boolean isPaused() {
-            return EngineSystem.this.getMapLoader() == null || this.paused;
+            return JGemsEngineSystem.this.getMapLoader() == null || this.paused;
         }
     }
 }

@@ -112,7 +112,7 @@ public class FBOCubeMapProgram {
     public void clearFBO() {
         this.unBindFBO();
         this.unBindRenderDepthFBO();
-        this.getCubeMapProgram().cleanCubeMap();
+        this.getCubeMapProgram().clearCubeMap();
         GL46.glDeleteRenderbuffers(this.renderBufferId);
         GL46.glDeleteFramebuffers(this.frameBufferId);
     }

@@ -15,17 +15,17 @@ import org.lwjgl.glfw.GLFW;
 import api.bridge.APIContainer;
 import api.bridge.APILauncher;
 import api.bridge.events.APIEventsLauncher;
-import javagems3d.audio.SoundManager;
+import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
 import javagems3d.graphics.opengl.rendering.imgui.panels.base.PanelUI;
 import javagems3d.graphics.opengl.screen.JGemsScreen;
 import javagems3d.graphics.opengl.world.SceneWorld;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.physics.world.thread.PhysicsThread;
-import javagems3d.system.core.EngineSystem;
+import javagems3d.physics.world.thread.JGemsPhysics;
+import javagems3d.system.core.JGemsEngineSystem;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.localisation.Localisation;
+import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNotFoundException;
@@ -56,42 +56,33 @@ public final class JGems3D {
     public static Random random;
     private static JGems3D mainObject;
 
-    private final SoundManager soundManager;
-    private final JGemsScreen screen;
-    private final PhysicsThread physicsThread;
+    private JGemsEngineSystem engineSystem;
     private final JGemsSettings jGemsSettings;
-    private final Localisation localisation;
+    private final JGemsLocalisation jGemsLocalisation;
 
     private boolean shouldBeClosed;
-    private EngineSystem engineSystem;
 
     private JGems3D() {
         try {
             SystemLogging.get().setCurrentLogging(SystemLogging.jGemsLogging);
-        } catch (IOException e) {
-            throw new JGemsRuntimeException(e);
-        }
-
-        APILauncher.get().launchGameAPI();
-        APILauncher.get().launchToolBoxAPI();
-        APILauncher.get().disposeReflection();
-
-        JGems3D.rngSeed = JGems3D.systemTime();
-        JGems3D.random = new Random(JGems3D.rngSeed);
-
-        this.shouldBeClosed = false;
-        this.physicsThread = new PhysicsThread(PhysicsThread.TICKS_PER_SECOND);
-        this.soundManager = new SoundManager();
-        this.screen = new JGemsScreen();
-
-        try {
+            this.api();
             JGems3D.checkFilesDirectory();
         } catch (IOException e) {
             throw new JGemsRuntimeException(e);
         }
+        this.shouldBeClosed = false;
+
+        JGems3D.rngSeed = JGems3D.systemTime();
+        JGems3D.random = new Random(JGems3D.rngSeed);
 
         this.jGemsSettings = new JGemsSettings(new File(JGems3D.getGameFilesFolder().toFile(), "jgems_settings.txt"));
-        this.localisation = new Localisation();
+        this.jGemsLocalisation = new JGemsLocalisation();
+    }
+
+    private void api() {
+        APILauncher.get().launchGameAPI();
+        APILauncher.get().launchToolBoxAPI();
+        APILauncher.get().disposeReflection();
     }
 
     public static long systemTime() {
@@ -119,7 +110,7 @@ public final class JGems3D {
         try {
             JGemsHelper.getLogger().log("Engine-On");
             JGemsHelper.getLogger().log("Starting system! Date: " + JGems3D.date());
-            JGemsHelper.getLogger().log(JGems3D.getGameString() + ": " + EngineSystem.ENG_NAME + " - " + EngineSystem.ENG_VER);
+            JGemsHelper.getLogger().log(JGems3D.getGameString() + ": " + JGemsEngineSystem.ENG_NAME + " - " + JGemsEngineSystem.ENG_VER);
             JGemsHelper.getLogger().log("===============================================================");
             JGemsHelper.getLogger().log("Loading settings from path...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
@@ -127,7 +118,7 @@ public final class JGems3D {
             } else {
                 JGems3D.get().getGameSettings().loadOptions();
             }
-            JGems3D.get().engineSystem = new EngineSystem();
+            JGems3D.get().engineSystem = new JGemsEngineSystem();
             JGems3D.get().getEngineSystem().startSystem();
         } catch (Exception e) {
             JGemsHelper.getLogger().exception(e);
@@ -193,19 +184,19 @@ public final class JGems3D {
 
     public static Path getEngineFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase();
+        String folderPath = "." + JGemsEngineSystem.ENG_FILEPATH.toLowerCase();
         return java.nio.file.Paths.get(appdataPath, folderPath);
     }
 
     public static Path getGameFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase() + "//" + JGems3D.getGameTitle().toLowerCase();
+        String folderPath = "." + JGemsEngineSystem.ENG_FILEPATH.toLowerCase() + "//" + JGems3D.getGameTitle().toLowerCase();
         return java.nio.file.Paths.get(appdataPath, folderPath);
     }
 
     public static Path getFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + EngineSystem.ENG_FILEPATH.toLowerCase();
+        String folderPath = "." + JGemsEngineSystem.ENG_FILEPATH.toLowerCase();
         return java.nio.file.Paths.get(appdataPath, folderPath);
     }
 
@@ -283,19 +274,19 @@ public final class JGems3D {
 
     public void destroyGame() {
         SyncManager.freeAll();
-        synchronized (PhysicsThread.locker) {
+        synchronized (JGemsPhysics.locker) {
             JGems3D.get().shouldBeClosed = true;
-            PhysicsThread.locker.notifyAll();
+            JGemsPhysics.locker.notifyAll();
         }
     }
 
-    public JGemsScreen getScreen() {
-        return this.screen;
-    }
+   public JGemsScreen getScreen() {
+       return this.getEngineSystem().getScreen();
+   }
 
-    public PhysicsThread getPhysicThreadManager() {
-        return this.physicsThread;
-    }
+   public JGemsPhysics getPhysics() {
+       return this.getEngineSystem().getPhysics();
+   }
 
     public JGemsSettings getGameSettings() {
         synchronized (this.jGemsSettings) {
@@ -303,26 +294,26 @@ public final class JGems3D {
         }
     }
 
-    public SoundManager getSoundManager() {
-        synchronized (this.soundManager) {
-            return this.soundManager;
+    public JGemsSoundManager getSoundManager() {
+        synchronized (this.getEngineSystem().getSoundManager()) {
+            return this.getEngineSystem().getSoundManager();
         }
     }
 
-    public EngineSystem getEngineSystem() {
+    public JGemsEngineSystem getEngineSystem() {
         synchronized (this) {
             return this.engineSystem;
         }
     }
 
-    public Localisation getLocalisation() {
-        synchronized (this.localisation) {
-            return this.localisation;
+    public JGemsLocalisation getLocalisation() {
+        synchronized (this.jGemsLocalisation) {
+            return this.jGemsLocalisation;
         }
     }
 
     public ImmediateUI getUI() {
-        return this.getScreen().getScene().UI();
+        return this.getScreen().getScene().getImmediateUI();
     }
 
     public boolean isCurrentMapIsValid() {
@@ -338,14 +329,6 @@ public final class JGems3D {
         return this.shouldBeClosed;
     }
 
-    public PhysicsWorld getPhysicsWorld() {
-        return this.getPhysicThreadManager().getPhysicsTimer().getWorld();
-    }
-
-    public SceneWorld getSceneWorld() {
-        return this.getScreen().getSceneWorld();
-    }
-
     public boolean isValidPlayer() {
         return this.getEngineSystem().getLocalPlayer() != null && this.getPlayer() != null;
     }
@@ -359,7 +342,7 @@ public final class JGems3D {
     }
 
     public String toString() {
-        return EngineSystem.ENG_NAME + ": " + EngineSystem.ENG_VER + " - " + JGems3D.getGameString();
+        return JGemsEngineSystem.ENG_NAME + ": " + JGemsEngineSystem.ENG_VER + " - " + JGems3D.getGameString();
     }
 
     public static class Paths {

@@ -125,6 +125,6 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public DynamicsSystem getDynamics() {
-        return JGems3D.get().getPhysicThreadManager().getPhysicsTimer().getDynamicsSystem();
+        return JGems3D.get().getPhysics().getPhysicsProcessor().getDynamicsSystem();
     }
 }

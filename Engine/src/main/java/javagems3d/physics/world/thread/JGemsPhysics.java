@@ -14,37 +14,37 @@ package javagems3d.physics.world.thread;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.physics.world.thread.timer.PhysicsTimer;
+import javagems3d.physics.world.thread.timer.PhysicsProcessor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-public class PhysicsThread {
+public class JGemsPhysics {
     public static final Object locker = new Object();
     public static final int TICKS_PER_SECOND = 40;
-    private final PhysicsTimer physicsTimer;
+    private final PhysicsProcessor physicsProcessor;
     private final int tps;
     private final ExecutorService executor;
     public boolean badExit;
 
     @SuppressWarnings("all")
-    public PhysicsThread(int tps) {
+    public JGemsPhysics(int tps) {
         this.tps = tps;
-        this.physicsTimer = new PhysicsTimer();
+        this.physicsProcessor = new PhysicsProcessor();
         this.executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("physics"));
         this.badExit = false;
     }
 
     public static double getFrameTime() {
-        return 1.0d / PhysicsThread.TICKS_PER_SECOND;
+        return 1.0d / JGemsPhysics.TICKS_PER_SECOND;
     }
 
     public void initService() {
         this.getExecutor().execute(() -> {
             try {
-                this.getPhysicsTimer().updateTimer(this.getTps());
+                this.getPhysicsProcessor().updateTimer(this.getTps());
             } catch (Exception e) {
                 JGemsHelper.getLogger().exception(e);
                 this.badExit = true;
@@ -67,8 +67,8 @@ public class PhysicsThread {
         return this.tps;
     }
 
-    public final PhysicsTimer getPhysicsTimer() {
-        return this.physicsTimer;
+    public final PhysicsProcessor getPhysicsProcessor() {
+        return this.physicsProcessor;
     }
 
     private static class NamedThreadFactory implements ThreadFactory {

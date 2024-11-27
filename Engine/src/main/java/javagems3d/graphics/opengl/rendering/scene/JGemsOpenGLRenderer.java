@@ -15,25 +15,23 @@ import javagems3d.graphics.opengl.camera.ICamera;
 import javagems3d.graphics.opengl.dear_imgui.interfaces.DIMInGameInterface;
 import javagems3d.graphics.opengl.dear_imgui.interfaces.DIMInMenuInterface;
 import javagems3d.graphics.opengl.dear_imgui.interfaces.DIMInterface;
+import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.scene.inderect.IndirectRenderBuffer;
 import javagems3d.system.profiler.SpeedProfiler;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL45;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.opengl.dear_imgui.DIMGuiRenderJGems;
-import javagems3d.graphics.opengl.environment.Environment;
 import javagems3d.graphics.opengl.environment.light.LightManager;
 import javagems3d.graphics.opengl.environment.shadow.ShadowManager;
-import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.items.AbstractSceneObject;
@@ -96,7 +94,13 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     private Model<Format2D> screenModel;
 
-    public JGemsOpenGLRenderer(Window window, SceneData sceneData) {
+    private final ImmediateUI immediateUI;
+    private final IndirectRenderBuffer indirectRenderBuffer;
+
+    public JGemsOpenGLRenderer(IndirectRenderBuffer indirectRenderBuffer, ImmediateUI immediateUI, Window window, SceneData sceneData) {
+        this.immediateUI = immediateUI;
+        this.indirectRenderBuffer = indirectRenderBuffer;
+
         JGemsOpenGLRenderer.inGameInterface = new DIMInGameInterface();
         JGemsOpenGLRenderer.inMenuInterface = new DIMInMenuInterface();
 
@@ -309,7 +313,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getSceneRenderBaseContainer().addBaseInTransparencyContainer(this.getWorldTransparentRender());
 
         this.getSceneRenderBaseContainer().addBaseInInventoryForwardContainer(new InventoryRender(this));
-        this.getSceneRenderBaseContainer().addBaseInGUIContainer(new GuiRender(this));
+        this.getSceneRenderBaseContainer().addBaseInGUIContainer(new GuiRender(this.getImmediateUI(), this));
     }
 
     @Override
@@ -324,7 +328,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
         this.getDearImGuiRender().cleanUp();
         this.getSceneRenderBaseContainer().endAll();
         this.destroyResources();
-        this.screenModel.clean();
+        this.screenModel.clear();
     }
 
     //section HDR
@@ -641,7 +645,7 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     private void remakeScreenModel() {
         if (this.screenModel != null) {
-            this.screenModel.clean();
+            this.screenModel.clear();
             this.screenModel = JGemsSceneUtils.createScreenModel();
         }
     }
@@ -656,6 +660,14 @@ public class JGemsOpenGLRenderer implements ISceneRenderer {
 
     public void takeScreenShot() {
         this.wantToTakeScreenshot = true;
+    }
+
+    public ImmediateUI getImmediateUI() {
+        return this.immediateUI;
+    }
+
+    public IndirectRenderBuffer getIndirectRenderBuffer() {
+        return this.indirectRenderBuffer;
     }
 
     public LightManager getLightManager() {

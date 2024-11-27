@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.forward;
 
+import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
@@ -19,15 +20,18 @@ import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
 import javagems3d.graphics.opengl.rendering.scene.tick.FrameTicking;
 
 public class GuiRender extends SceneRenderBase {
-    public GuiRender(JGemsOpenGLRenderer sceneRender) {
+    private final ImmediateUI immediateUI;
+
+    public GuiRender(ImmediateUI immediateUI, JGemsOpenGLRenderer sceneRender) {
         super(-1, sceneRender, new RenderGroup("GUI_FORWARD"));
+        this.immediateUI = immediateUI;
     }
 
     public void onRender(FrameTicking frameTicking) {
         GL46.glDisable(GL46.GL_DEPTH_TEST);
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
-        JGems3D.get().getUI().renderFrame(frameTicking.getFrameDeltaTime());
+        this.immediateUI.renderFrame(frameTicking.getFrameDeltaTime());
         GL46.glDisable(GL46.GL_BLEND);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
     }

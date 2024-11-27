@@ -16,7 +16,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;

@@ -53,8 +53,8 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    public void cleanData() {
-        this.imageStaticUI.cleanData();
+    public void clearData() {
+        this.imageStaticUI.clearData();
     }
 
     @Override

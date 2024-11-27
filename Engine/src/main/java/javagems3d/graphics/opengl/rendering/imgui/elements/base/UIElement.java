@@ -40,7 +40,7 @@ public abstract class UIElement implements UIScalable {
 
     public abstract void buildUI();
 
-    public abstract void cleanData();
+    public abstract void clearData();
 
     public abstract @NotNull Vector2i getSize();
 

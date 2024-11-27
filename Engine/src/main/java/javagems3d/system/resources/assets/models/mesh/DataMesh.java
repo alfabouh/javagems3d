@@ -1,20 +1,22 @@
 package javagems3d.system.resources.assets.models.mesh;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IndirectRenderMesh implements IMesh {
+public class DataMesh implements IMesh {
     private int positionsIdx;
 
-    private final Map<RenderAttributePointer, VertexBuffer<Float>> bufferMap;
+    private final Map<Integer, VertexBuffer<Float>> bufferMap;
     private VertexBuffer<Integer> indexes;
 
-    public IndirectRenderMesh() {
+    public DataMesh() {
         this.positionsIdx = IMesh.DEFAULT_POS_IDX;
         this.bufferMap = new HashMap<>();
     }
@@ -25,34 +27,44 @@ public class IndirectRenderMesh implements IMesh {
             buffer.put(i);
         }
         buffer.flip();
-        this.indexes = new VertexBuffer<>(indexes);
+        this.indexes = new VertexBuffer<>(null, indexes);
     }
 
     @SuppressWarnings("all")
-    public <T> IndirectRenderMesh putBufferInMeshData(RenderAttributePointer attributePointer, List<T> array) {
-        this.getBufferMap().put(attributePointer, new VertexBuffer(array));
+    public <T> DataMesh putBufferInMeshData(RenderAttributePointer attributePointer, List<T> array) {
+        this.getBufferMap().put(attributePointer.getIndex(), new VertexBuffer(attributePointer, array));
         return this;
     }
 
-    public VertexBuffer<Integer> getIndexes() {
+    public VertexBuffer<Integer> getIndexesBuffer() {
         return this.indexes;
     }
 
     @SuppressWarnings("all")
-    public VertexBuffer getBufferById(int id) {
-        return this.getBufferMap().get(id);
+    public <T> VertexBuffer<T> getBufferById(int id) {
+        return (VertexBuffer<T>) this.getBufferMap().get(id);
     }
 
     public VertexBuffer<?> getBufferById(RenderAttributePointer id) {
-        return this.getBufferMap().get(id);
+        return this.getBufferMap().get(id.getIndex());
     }
 
-    public Map<RenderAttributePointer, VertexBuffer<Float>> getBufferMap() {
+    public Map<Integer, VertexBuffer<Float>> getBufferMap() {
         return this.bufferMap;
     }
 
     @Override
-    public void cleanMesh() {
+    public @NotNull List<Integer> getVertexIndexes() {
+        return this.getIndexesBuffer().getValues();
+    }
+
+    @Override
+    public @NotNull List<Float> getVertexPositions() {
+        return this.<Float>getBufferById(this.positionsIndex()).getValues();
+    }
+
+    @Override
+    public void clearMesh() {
         for (VertexBuffer<?> buffer : this.getBufferMap().values()) {
             buffer.getValues().clear();
         }

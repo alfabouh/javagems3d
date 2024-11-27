@@ -11,27 +11,28 @@
 
 package toolbox.map_table.object;
 
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.system.resources.old.MeshGroup;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributesContainer;
 import toolbox.render.scene.items.renderers.ITBoxObjectRenderer;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
 public abstract class AbstractObjectData {
     private final TBoxShaderManager shaderManager;
-    private final MeshGroup meshGroup;
+    private final MeshGroup meshStructure;
     private final ObjectCategory objectCategory;
     private final AttributesContainer attributesContainer;
 
-    public AbstractObjectData(@NotNull AttributesContainer attributesContainer, @NotNull TBoxShaderManager shaderManager, @NotNull MeshGroup meshGroup, ObjectCategory objectCategory) {
+    public AbstractObjectData(@NotNull AttributesContainer attributesContainer, @NotNull TBoxShaderManager shaderManager, @NotNull MeshGroup meshStructure, ObjectCategory objectCategory) {
         this.attributesContainer = attributesContainer;
         this.shaderManager = shaderManager;
-        this.meshGroup = meshGroup;
+        this.meshStructure = meshStructure;
         this.objectCategory = objectCategory;
     }
 
-    public AbstractObjectData(@NotNull TBoxShaderManager shaderManager, @NotNull MeshGroup meshGroup, ObjectCategory objectCategory) {
-        this(new AttributesContainer(), shaderManager, meshGroup, objectCategory);
+    public AbstractObjectData(@NotNull TBoxShaderManager shaderManager, @NotNull MeshGroup meshStructure, ObjectCategory objectCategory) {
+        this(new AttributesContainer(), shaderManager, meshStructure, objectCategory);
     }
 
     public TBoxShaderManager getShaderManager() {
@@ -49,7 +50,7 @@ public abstract class AbstractObjectData {
     }
 
     public MeshGroup meshDataGroup() {
-        return this.meshGroup;
+        return this.meshStructure;
     }
 
     public ObjectCategory objectType() {

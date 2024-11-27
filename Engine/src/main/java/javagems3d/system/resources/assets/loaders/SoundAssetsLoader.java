@@ -41,8 +41,8 @@ public class SoundAssetsLoader implements IAssetsLoader {
     }
 
     @Override
-    public LoadMode loadMode() {
-        return LoadMode.PARALLEL;
+    public LaunchMode loadMode() {
+        return LaunchMode.PARALLEL;
     }
 
     @Override
