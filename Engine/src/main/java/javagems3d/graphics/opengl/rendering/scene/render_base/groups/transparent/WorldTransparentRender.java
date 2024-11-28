@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.transparent;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +61,7 @@ public class WorldTransparentRender extends SceneRenderBase {
         for (MeshGroup.MeshGroupNode meshNode : object.getModel().<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
             gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
-            gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity()));
+            gemsShaderManager.performUniform(new UniformString("alpha_factor"), UniformFunctions.FLOAT(meshNode.getMaterial().getFullOpacity()));
 
             boolean f = GL46.glIsEnabled(GL46.GL_CULL_FACE);
             if (object.getObjectRenderSettings().isDisabledFaceCulling()) {
@@ -86,7 +86,7 @@ public class WorldTransparentRender extends SceneRenderBase {
 
         gemsShaderManager.getUtils().performShadowsInfo();
         gemsShaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
-        gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(meshNode.getMaterial().getFullOpacity()));
+        gemsShaderManager.performUniform(new UniformString("alpha_factor"), UniformFunctions.FLOAT(meshNode.getMaterial().getFullOpacity()));
 
         boolean f = GL46.glIsEnabled(GL46.GL_CULL_FACE);
         if (disableCulling) {

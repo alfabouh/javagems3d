@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.imgui.elements;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -66,8 +66,8 @@ public class UIButton extends UIInteractiveElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
-        shaderManager.performUniform(new UniformString("background_color"), DefaultUniformActions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
-        shaderManager.performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(this.isSelected()));
+        shaderManager.performUniform(new UniformString("background_color"), UniformFunctions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
+        shaderManager.performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
         JGemsSceneUtils.renderModel(this.buttonModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
         this.uiText.render(frameDeltaTicks);

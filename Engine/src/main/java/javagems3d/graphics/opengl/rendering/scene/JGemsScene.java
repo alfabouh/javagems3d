@@ -12,6 +12,7 @@
 package javagems3d.graphics.opengl.rendering.scene;
 
 import javagems3d.graphics.opengl.rendering.scene.inderect.IndirectRenderBuffer;
+import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -45,7 +46,7 @@ public class JGemsScene implements IScene {
     public JGemsScene(Window window, TransformationUtils transformationUtils, SceneWorld sceneWorld) {
         this.transformationUtils = transformationUtils;
 
-        this.sceneIndirectRenderBuffer = new IndirectRenderBuffer();
+        this.sceneIndirectRenderBuffer = new IndirectRenderBuffer(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
         this.sceneData = new SceneData(sceneWorld, null);
         this.immediateUI = new ImmediateUI();
 

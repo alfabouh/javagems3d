@@ -14,7 +14,7 @@ package toolbox.render.scene.dear_imgui;
 import imgui.*;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -131,8 +131,8 @@ public class DIMGuiRenderTBox {
         io.getDisplaySize(dSize);
 
         this.getShaderManager().beginShading();
-        this.getShaderManager().performUniform(new UniformString("scale"), DefaultUniformActions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
-        this.getShaderManager().performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
+        this.getShaderManager().performUniform(new UniformString("scale"), UniformFunctions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
+        this.getShaderManager().performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
 
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendEquation(GL46.GL_FUNC_ADD);

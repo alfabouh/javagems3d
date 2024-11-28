@@ -12,7 +12,7 @@
 package toolbox.render.scene;
 
 import javafx.util.Pair;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
@@ -87,10 +87,10 @@ public class TBoxScene {
         for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
             if (meshNode.getMaterial() != null) {
                 if (meshNode.getMaterial().getDiffuse() instanceof ColorSample) {
-                    shaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(false));
+                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
                 } else {
-                    shaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(true));
-                    shaderManager.performUniformNoWarn(new UniformString("diffuse_map"),  DefaultUniformActions.INTEGER(0));
+                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
+                    shaderManager.performUniformNoWarn(new UniformString("diffuse_map"),  UniformFunctions.INTEGER(0));
                     GL46.glActiveTexture(GL46.GL_TEXTURE0);
                     GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((TextureSample) meshNode.getMaterial().getDiffuse()).getTextureId());
                 }
@@ -180,7 +180,7 @@ public class TBoxScene {
             TBoxResourceManager.shaderResources().world_lines.beginShading();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-            TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
+            TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  UniformFunctions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
             TBoxSceneUtils.renderModel(modelSun, GL46.GL_LINES);
             TBoxResourceManager.shaderResources().world_lines.endShading();
             modelSun.clear();
@@ -225,7 +225,7 @@ public class TBoxScene {
                 TBoxResourceManager.shaderResources().world_lines.beginShading();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-                TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
+                TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  UniformFunctions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
                 TBoxSceneUtils.renderModel(model, GL46.GL_LINES);
                 TBoxResourceManager.shaderResources().world_lines.endShading();
                 model.clear();
@@ -267,7 +267,7 @@ public class TBoxScene {
         TBoxResourceManager.shaderResources().world_xyz.beginShading();
         TBoxResourceManager.shaderResources().world_xyz.getUtils().performOrthographicMatrix(this.getWindow().getWindowDimensions().x / (float) this.getWindow().getWindowDimensions().y, 36.0f);
         TBoxResourceManager.shaderResources().world_xyz.getUtils().performModel3DMatrix(model);
-        TBoxResourceManager.shaderResources().world_xyz.performUniform(new UniformString("view_inversed"),  DefaultUniformActions.MAT4F(inversedView));
+        TBoxResourceManager.shaderResources().world_xyz.performUniform(new UniformString("view_inversed"),  UniformFunctions.MAT4F(inversedView));
         TBoxSceneUtils.renderModelTextured(TBoxResourceManager.shaderResources().world_xyz, model, GL46.GL_TRIANGLES);
         TBoxResourceManager.shaderResources().world_xyz.endShading();
         GL46.glDisable(GL46.GL_DEPTH_TEST);

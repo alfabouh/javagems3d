@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.scene.render_base.groups.transparent;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.particles.objects.base.ParticleFX;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
@@ -44,13 +44,13 @@ public class ParticlesRender extends SceneRenderBase {
         gemsShaderManager.getUtils().performShadowsInfo();
         if (particleFX.hasTexturePack()) {
             gemsShaderManager.performUniformTexture(new UniformString("diffuse_map"), particleFX.getCurrentFrame().getTextureId(), GL46.GL_TEXTURE_2D);
-            gemsShaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(true));
+            gemsShaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
         } else {
-            gemsShaderManager.performUniform(new UniformString("use_texture"), DefaultUniformActions.BOOLEAN(false));
+            gemsShaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
         }
-        gemsShaderManager.performUniform(new UniformString("color_mask"), DefaultUniformActions.VEC3F(particleFX.getColorMask()));
-        gemsShaderManager.performUniform(new UniformString("brightness"), DefaultUniformActions.FLOAT(particleFX.getParticleAttributes().getBrightness()));
-        gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(particleFX.getParticleAttributes().getOpacity()));
+        gemsShaderManager.performUniform(new UniformString("color_mask"), UniformFunctions.VEC3F(particleFX.getColorMask()));
+        gemsShaderManager.performUniform(new UniformString("brightness"), UniformFunctions.FLOAT(particleFX.getParticleAttributes().getBrightness()));
+        gemsShaderManager.performUniform(new UniformString("alpha_factor"), UniformFunctions.FLOAT(particleFX.getParticleAttributes().getOpacity()));
         JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
         gemsShaderManager.endShading();
     }

@@ -33,7 +33,7 @@ import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultL
 import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultSettingsPanel;
 import javagems3d.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.opengl.screen.window.Window;
 import javagems3d.system.map.loaders.custom.DefaultMap;
 import javagems3d.system.resources.assets.models.Model;
@@ -60,8 +60,8 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         Vector2f res = new Vector2f(window.getWindowDimensions().x, window.getWindowDimensions().y);
         try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
             JGemsResourceManager.globalShaderAssets.menu.beginShading();
-            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), DefaultUniformActions.VEC3F(color));
-            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), DefaultUniformActions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
+            JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
             JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
             JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();

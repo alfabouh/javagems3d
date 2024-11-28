@@ -41,11 +41,11 @@ public class DataMesh implements IMesh {
     }
 
     @SuppressWarnings("all")
-    public <T> VertexBuffer<T> getBufferById(int id) {
-        return (VertexBuffer<T>) this.getBufferMap().get(id);
+    public VertexBuffer<Float> getBufferById(int id) {
+        return this.getBufferMap().get(id);
     }
 
-    public VertexBuffer<?> getBufferById(RenderAttributePointer id) {
+    public VertexBuffer<Float> getBufferById(RenderAttributePointer id) {
         return this.getBufferMap().get(id.getIndex());
     }
 

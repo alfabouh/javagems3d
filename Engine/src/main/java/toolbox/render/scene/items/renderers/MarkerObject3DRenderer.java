@@ -11,7 +11,7 @@
 
 package toolbox.render.scene.items.renderers;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
@@ -27,13 +27,13 @@ public class MarkerObject3DRenderer implements ITBoxObjectRenderer {
         tBoxAbstractObject.getRenderData().getShaderManager().beginShading();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
         tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"), DefaultUniformActions.BOOLEAN(false));
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), DefaultUniformActions.BOOLEAN(tBoxAbstractObject.isSelected()));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"), UniformFunctions.BOOLEAN(false));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(tBoxAbstractObject.isSelected()));
         Vector3f color = tBoxAbstractObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
         if (color == null) {
             color = new Vector3f(1.0f);
         }
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), DefaultUniformActions.VEC4F(new Vector4f(color, 1.0f)));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(new Vector4f(color, 1.0f)));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL46.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().endShading();
     }

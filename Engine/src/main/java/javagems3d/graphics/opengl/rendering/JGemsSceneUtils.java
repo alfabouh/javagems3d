@@ -12,7 +12,7 @@
 package javagems3d.graphics.opengl.rendering;
 
 import javagems3d.graphics.opengl.camera.ICamera;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
@@ -63,7 +63,7 @@ public abstract class JGemsSceneUtils {
             shaderManager.getUtils().performViewAndModelMatricesSeparately(camera == null ? JGemsSceneUtils.getMainCameraViewMatrix() : TransformationUtils.getAbstractCameraViewMatrix(camera), model);
             shaderManager.getUtils().performRenderDataOnShader(sceneObject.getObjectRenderSettings());
             if (shaderManager.isUniformExist(new UniformString("alpha_discard"))) {
-                shaderManager.performUniform(new UniformString("alpha_discard"),  DefaultUniformActions.FLOAT(sceneObject.getObjectRenderSettings().getAlphaDiscardValue()));
+                shaderManager.performUniform(new UniformString("alpha_discard"),  UniformFunctions.FLOAT(sceneObject.getObjectRenderSettings().getAlphaDiscardValue()));
                 if (sceneObject.getObjectRenderSettings().getAlphaDiscardValue() > 0) {
                     GL46.glDisable(GL46.GL_BLEND);
                 }

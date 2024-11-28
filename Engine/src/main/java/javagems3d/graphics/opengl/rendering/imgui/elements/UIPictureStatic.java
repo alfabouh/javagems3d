@@ -11,11 +11,10 @@
 
 package javagems3d.graphics.opengl.rendering.imgui.elements;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.imgui.elements.base.UIElement;
@@ -53,7 +52,7 @@ public class UIPictureStatic extends UIElement {
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
         GL46.glActiveTexture(GL46.GL_TEXTURE0);
         this.iImageSample.bindTexture();
-        shaderManager.performUniform(new UniformString("texture_sampler"),  DefaultUniformActions.INTEGER(0));
+        shaderManager.performUniform(new UniformString("texture_sampler"),  UniformFunctions.INTEGER(0));
         JGemsSceneUtils.renderModel(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }

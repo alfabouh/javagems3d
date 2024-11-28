@@ -3,7 +3,6 @@ package javagems3d.system.resources.assets.models.mesh;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 public interface IMesh {
@@ -24,11 +23,11 @@ public interface IMesh {
         }
     }
 
-    default int getVertexesLength() {
+    default int numVertices() {
         return this.getVertexIndexes().size();
     }
 
-    default int getPositionsLength() {
+    default int numPositions() {
         return this.getVertexPositions().size();
     }
 

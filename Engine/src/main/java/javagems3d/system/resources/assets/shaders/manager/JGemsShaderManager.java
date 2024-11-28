@@ -13,7 +13,7 @@ package javagems3d.system.resources.assets.shaders.manager;
 
 import javagems3d.graphics.opengl.rendering.items.IAnimated;
 import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.opengl.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -83,7 +83,7 @@ public final class JGemsShaderManager extends ShaderManager {
         public void performUniformSample(UniformString uniform, ISample sample) {
             if (sample instanceof ColorSample) {
                 ColorSample colorSample = (ColorSample) sample;
-                JGemsShaderManager.this.performUniform(uniform, DefaultUniformActions.VEC4F(colorSample.getColor()));
+                JGemsShaderManager.this.performUniform(uniform, UniformFunctions.VEC4F(colorSample.getColor()));
             } else {
                 if (sample instanceof TextureSample) {
                     TextureSample textureSample = (TextureSample) sample;
@@ -100,7 +100,7 @@ public final class JGemsShaderManager extends ShaderManager {
             if (objectRenderSettings.isDefaultBrightLighted()) {
                 lighting_code |= 1 << 2;
             }
-            JGemsShaderManager.this.performUniform(new UniformString("lighting_code"), DefaultUniformActions.INTEGER(lighting_code));
+            JGemsShaderManager.this.performUniform(new UniformString("lighting_code"), UniformFunctions.INTEGER(lighting_code));
         }
 
         public void performModelMaterialOnShader(Material material) {
@@ -153,7 +153,7 @@ public final class JGemsShaderManager extends ShaderManager {
                 texturing_code |= 1 << 6;
             }
 
-            JGemsShaderManager.this.performUniformNoWarn(new UniformString("texturing_code"), DefaultUniformActions.INTEGER(texturing_code));
+            JGemsShaderManager.this.performUniformNoWarn(new UniformString("texturing_code"), UniformFunctions.INTEGER(texturing_code));
         }
 
         public boolean performAnimationsInfo(IAnimated animated) {
@@ -168,16 +168,16 @@ public final class JGemsShaderManager extends ShaderManager {
                         }
                         ShaderStorageBufferProgram.fillSSBOWithData(JGemsResourceManager.globalShaderAssets.Bones, fb);
                     }
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("hasAnimations"), DefaultUniformActions.BOOLEAN(true));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("hasAnimations"), UniformFunctions.BOOLEAN(true));
                     return true;
                 }
             }
-            JGemsShaderManager.this.performUniformNoWarn(new UniformString("hasAnimations"), DefaultUniformActions.BOOLEAN(false));
+            JGemsShaderManager.this.performUniformNoWarn(new UniformString("hasAnimations"), UniformFunctions.BOOLEAN(false));
             return false;
         }
 
         public void performCameraData() {
-            JGemsShaderManager.this.performUniformNoWarn(new UniformString("camera_pos"), DefaultUniformActions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
+            JGemsShaderManager.this.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
         }
 
         public void performShadowsInfo() {
@@ -186,15 +186,15 @@ public final class JGemsShaderManager extends ShaderManager {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getShadowScene().getCascadeShadows().get(i);
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
                     JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), DefaultUniformActions.FLOAT(cascadeShadow.getSplitDistance()));
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), DefaultUniformActions.MAT4F(cascadeShadow.getLightProjectionViewMatrix()));
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT));
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("NegExp"), DefaultUniformActions.FLOAT(JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascadeShadow.getSplitDistance()));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascadeShadow.getLightProjectionViewMatrix()));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT));
                 }
             }
             for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getShadowScene().getPointLightShadows().get(i);
-                JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), DefaultUniformActions.FLOAT(pointLightShadow.farPlane()));
+                JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap", i))) {
                     this.performCubeMapProgram(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram().getTextureId());
                 }
@@ -234,27 +234,27 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performPerspectiveMatrix(Matrix4f matrix4f) {
-            JGemsShaderManager.this.performUniform(new UniformString("projection_matrix"), DefaultUniformActions.MAT4F(matrix4f));
+            JGemsShaderManager.this.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
 
         public void performOrthographicMatrix(Model<Format2D> model) {
-            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), DefaultUniformActions.MAT4F(Transformation.getModelOrthographicMatrix(model.getFormat(), JGemsSceneUtils.getMainOrthographicMatrix())));
+            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(Transformation.getModelOrthographicMatrix(model.getFormat(), JGemsSceneUtils.getMainOrthographicMatrix())));
         }
 
         public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {
-            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), DefaultUniformActions.MAT4F(Transformation.getModelViewMatrix(model.getFormat(), view)));
+            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(Transformation.getModelViewMatrix(model.getFormat(), view)));
         }
 
         public void performModel3DViewMatrix(Matrix4f model, Matrix4f view) {
-            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), DefaultUniformActions.MAT4F(new Matrix4f(view).mul(model)));
+            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(view).mul(model)));
         }
 
         public void performModel3DViewMatrix(Matrix4f matrix4f) {
-            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), DefaultUniformActions.MAT4F(matrix4f));
+            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
 
         public void performViewMatrix(Matrix4f matrix4f) {
-            JGemsShaderManager.this.performUniform(new UniformString("view_matrix"), DefaultUniformActions.MAT4F(matrix4f));
+            JGemsShaderManager.this.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
 
         public void performModel3DMatrix(Model<Format3D> model) {
@@ -262,7 +262,7 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performModel3DMatrix(Matrix4f matrix4f) {
-            JGemsShaderManager.this.performUniform(new UniformString("model_matrix"), DefaultUniformActions.MAT4F(matrix4f));
+            JGemsShaderManager.this.performUniform(new UniformString("model_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
     }
 }

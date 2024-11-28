@@ -11,13 +11,12 @@
 
 package javagems3d.system.resources.assets.shaders.manager;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformProgram;
 import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
@@ -153,13 +152,13 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
-    private boolean setUniform(UniformString uniform, UniformProgram.UniformAction uniformAction) {
+    private boolean setUniform(UniformString uniform, UniformProgram.UFunction UFUnction) {
         switch (this.activeShader) {
             case COMPUTE: {
-                return this.getComputingShaderGroup().getUniformProgram().setUniform(uniform, uniformAction);
+                return this.getComputingShaderGroup().getUniformProgram().setUniform(uniform, UFUnction);
             }
             case GRAPHICAL: {
-                return this.getGraphicShaderGroup().getUniformProgram().setUniform(uniform, uniformAction);
+                return this.getGraphicShaderGroup().getUniformProgram().setUniform(uniform, UFUnction);
             }
             case NONE:
             default: {
@@ -193,7 +192,7 @@ public abstract class ShaderManager implements ICached {
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
 
         GL46.glBindTexture(textureAttachment, textureID);
-        this.performUniform(uniform, DefaultUniformActions.INTEGER(textureUnit));
+        this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));
     }
 
     private void initShaders(ShadersContainer shadersContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {
@@ -227,8 +226,8 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public void performUniform(UniformString uniform, UniformProgram.UniformAction uniformAction) {
-        if (uniformAction == null) {
+    public void performUniform(UniformString uniform, UniformProgram.UFunction UFUnction) {
+        if (UFUnction == null) {
             JGemsHelper.getLogger().error("[" + this + "] NULL uniform " + uniform);
             return;
         }
@@ -236,12 +235,12 @@ public abstract class ShaderManager implements ICached {
             JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
-        if (!this.setUniform(uniform, uniformAction)) {
+        if (!this.setUniform(uniform, UFUnction)) {
             JGemsHelper.getLogger().warn("[" + this + "] Wrong arguments! U: " + uniform);
         }
     }
 
-    public void performUniformNoWarn(UniformString uniformString, UniformProgram.UniformAction o) {
+    public void performUniformNoWarn(UniformString uniformString, UniformProgram.UFunction o) {
         if (this.isUniformExist(uniformString)) {
             this.performUniform(uniformString, o);
         }

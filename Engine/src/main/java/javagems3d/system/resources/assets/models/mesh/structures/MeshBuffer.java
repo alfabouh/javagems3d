@@ -49,7 +49,7 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
         return MeshDataType.INDIRECT_RENDER_DATA;
     }
 
-    public static final class MeshBufferNode extends MeshStructure.Node <DataMesh> {
+    public static final class MeshBufferNode extends MeshStructure.Node<DataMesh> {
         private int materialId;
 
         public MeshBufferNode(@NotNull DataMesh meshData, int materialId) {

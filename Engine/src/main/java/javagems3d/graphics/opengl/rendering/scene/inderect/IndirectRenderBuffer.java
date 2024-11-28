@@ -6,6 +6,7 @@ import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffe
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -18,18 +19,34 @@ public final class IndirectRenderBuffer {
     private int staticVao;
     private final List<Integer> vboList;
 
-    public IndirectRenderBuffer() {
+    private List<MeshBuffer> allStaticMeshBuffers;
+    private List<MeshBuffer> allAnimatedMeshBuffers;
+
+    private int totalStaticMeshStructures;
+    private int totalAnimatedMeshStructures;
+
+    private final Layout layout;
+
+    public IndirectRenderBuffer(RenderAttributePointer... attributePointers) {
+        this(new Layout(attributePointers));
+    }
+
+    public IndirectRenderBuffer(@NotNull Layout layout) {
         this.vboList = new ArrayList<>();
+        this.totalStaticMeshStructures = 0;
+        this.layout = layout;
     }
 
     public void init(MeshBuffersDrawCache meshBuffersDrawCache) {
         Map<Boolean, List<MeshBuffer>> partitionedModels = meshBuffersDrawCache.getMeshBuffers().stream().collect(Collectors.partitioningBy(MeshStructure::isAnimationsNotEmpty));
 
-        List<MeshBuffer> staticModels = partitionedModels.get(false);
-        List<MeshBuffer> animatedModels = partitionedModels.get(true);
+        this.allStaticMeshBuffers = partitionedModels.get(false);
+        this.allAnimatedMeshBuffers = partitionedModels.get(true);
 
-        this.forStatic(staticModels);
-        this.forStatic(animatedModels);
+        this.forStatic(this.getAllStaticMeshBuffers());
+        this.forStatic(this.getAllAnimatedMeshBuffers());
+
+        this.totalStaticMeshStructures = this.allStaticMeshBuffers.size();
     }
 
     private void forStatic(List<MeshBuffer> obj) {
@@ -46,23 +63,24 @@ public final class IndirectRenderBuffer {
         int offset = 0;
 
         for (MeshBuffer meshBuffer : obj) {
-            List<MeshBuffer.PassData> passDataList = meshBuffer.getPassData();
-            List<MeshBuffer.MeshBufferNode> nodes = meshBuffer.getMeshNodes();
-            for (MeshBuffer.MeshBufferNode node : nodes) {
+            for (MeshBuffer.MeshBufferNode node : meshBuffer.getMeshNodes()) {
                 DataMesh dataMesh = node.getMesh();
-                int meshSizeInBytes = 0;
-                int posLength = dataMesh.getPositionsLength();
-                indexesSize += dataMesh.getIndexesBuffer().getLength();
+                int posLength = dataMesh.numPositions();
+                indexesSize += dataMesh.numVertices();
                 positionsSize += posLength;
 
                 for (VertexBuffer<Float> attributePointer : dataMesh.getBufferMap().values()) {
-                    RenderAttributePointer renderAttributePointer = attributePointer.getRenderAttributePointer();
                     structSize += attributePointer.getLength();
-                    meshSizeInBytes += renderAttributePointer.getLengthInMemory() * renderAttributePointer.getBytes();
                 }
 
+                int meshSizeInBytes = 0;
+                for (int i = 0; i < this.getLayout().getAttributesNum(); i++) {
+                    RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(i);
+                    meshSizeInBytes += renderAttributePointer.getLengthInMemory() * renderAttributePointer.getBytes();
+                }
                 meshSizeInBytes *= posLength;
-                passDataList.add(new MeshBuffer.PassData(meshSizeInBytes, node.getMaterialId(), offset, dataMesh.getIndexesBuffer().getLength()));
+
+                meshBuffer.getPassData().add(new MeshBuffer.PassData(meshSizeInBytes, node.getMaterialId(), offset, dataMesh.numVertices()));
                 offset = positionsSize / 3;
             }
         }
@@ -78,12 +96,11 @@ public final class IndirectRenderBuffer {
             }
         }
         meshesBuffer.flip();
-
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vboId);
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, meshesBuffer, GL46.GL_STATIC_DRAW);
         MemoryUtil.memFree(meshesBuffer);
 
-        this.defineVertexAttributes(obj.get(0).getFirstNode().getMesh());
+        this.defineVertexAttributes();
 
         vboId = GL46.glGenBuffers();
         this.getVboList().add(vboId);
@@ -115,33 +132,27 @@ public final class IndirectRenderBuffer {
         List<VertexBuffer<Float>> values = new ArrayList<>(dataMesh.getBufferMap().values());
         values.sort(Comparator.comparingInt(e -> e.getRenderAttributePointer().getIndex()));
 
-        Map<Integer, Integer> loopPointer = new HashMap<>();
-        for (int i = 0; i < dataMesh.getPositionsLength(); i += 3) {
-            for (VertexBuffer<Float> p : values) {
-                int idx = p.getRenderAttributePointer().getIndex();
-                loopPointer.put(idx, 0);
-                int curr = loopPointer.get(idx);
-                int len = p.getRenderAttributePointer().getLengthInMemory();
-                int next = curr + len;
-                for (int j = curr; j < next; j += 1) {
-                    floatBuffer.put(p.getValues().get(j));
+        for (int row = 0; row < dataMesh.numPositions() / 3; row += 1) {
+            for (int j = 0; j < this.getLayout().getAttributesNum(); j++) {
+                RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(j);
+                for (int i = 0; i < renderAttributePointer.getLengthInMemory(); i++) {
+                    floatBuffer.put(dataMesh.getBufferById(j).getValues().get(row * renderAttributePointer.getLengthInMemory() + i));
                 }
-                loopPointer.replace(idx, next);
             }
         }
     }
 
-    private void defineVertexAttributes(DataMesh renderMesh) {
+    private void defineVertexAttributes() {
         int stride = 0;
         int pointer = 0;
 
-        for (VertexBuffer<Float> vertexBuffer : renderMesh.getBufferMap().values()) {
-            RenderAttributePointer renderAttributePointer = vertexBuffer.getRenderAttributePointer();
+        for (int i = 0; i < this.getLayout().getAttributesNum(); i++) {
+            RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(i);
             stride += renderAttributePointer.getLengthInMemory() * renderAttributePointer.getBytes();
         }
 
-        for (VertexBuffer<Float> vertexBuffer : renderMesh.getBufferMap().values()) {
-            RenderAttributePointer renderAttributePointer = vertexBuffer.getRenderAttributePointer();
+        for (int i = 0; i < this.getLayout().getAttributesNum(); i++) {
+            RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(i);
             int idx = renderAttributePointer.getIndex();
             int size = renderAttributePointer.getLengthInMemory();
 
@@ -157,6 +168,22 @@ public final class IndirectRenderBuffer {
         this.getVboList().clear();
     }
 
+    public Layout getLayout() {
+        return this.layout;
+    }
+
+    public List<MeshBuffer> getAllStaticMeshBuffers() {
+        return this.allStaticMeshBuffers;
+    }
+
+    public List<MeshBuffer> getAllAnimatedMeshBuffers() {
+        return this.allAnimatedMeshBuffers;
+    }
+
+    public int getTotalStaticMeshStructures() {
+        return this.totalStaticMeshStructures;
+    }
+
     public int getStaticVao() {
         return this.staticVao;
     }
@@ -167,5 +194,22 @@ public final class IndirectRenderBuffer {
 
     public List<Integer> getVboList() {
         return this.vboList;
+    }
+
+    public static class Layout {
+        private final List<RenderAttributePointer> renderAttributePointers;
+
+        public Layout(RenderAttributePointer... attributePointers) {
+            this.renderAttributePointers = new ArrayList<>(Arrays.asList(attributePointers));
+            this.renderAttributePointers.sort(Comparator.comparingInt(RenderAttributePointer::getIndex));
+        }
+
+        public List<RenderAttributePointer> getRenderAttributePointers() {
+            return this.renderAttributePointers;
+        }
+
+        public int getAttributesNum() {
+            return this.getRenderAttributePointers().size();
+        }
     }
 }

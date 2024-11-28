@@ -53,6 +53,7 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
     public JGemsShaderManager skybox;
     public JGemsShaderManager skybox_background;
     public JGemsShaderManager world_gbuffer;
+    public JGemsShaderManager world_gbuffer_indirect;
     public JGemsShaderManager world_ssao;
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager weighted_oit;
@@ -108,6 +109,8 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
         this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_particle_oit")).setShaderRenderPass(RenderPass.TRANSPARENCY);
 
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer")).setShaderRenderPass(RenderPass.DEFERRED);
+        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_indirect")).setShaderRenderPass(RenderPass.DEFERRED);
+
         this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_deferred")).attachUBOs(this.SunLight, this.PointLights, this.Fog);
 
         this.menu = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/menu"));

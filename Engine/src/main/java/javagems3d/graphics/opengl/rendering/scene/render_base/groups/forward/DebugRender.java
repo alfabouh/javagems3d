@@ -13,11 +13,10 @@ package javagems3d.graphics.opengl.rendering.scene.render_base.groups.forward;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.frustum.ICulled;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
-import javagems3d.JGems3D;
 import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
@@ -77,7 +76,7 @@ public class DebugRender extends SceneRenderBase {
 
     private void renderDebugSunDirection() {
         try (Model<Format3D> model = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(this.getSceneWorld().getEnvironment().getSkyBox().getSun().getSunPosition()).mul(1000.0f))) {
-            this.debugShaders.performUniform(new UniformString("colour"),  DefaultUniformActions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
+            this.debugShaders.performUniform(new UniformString("colour"),  UniformFunctions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
             JGemsSceneUtils.renderModel(model, GL46.GL_LINES);
         }
     }

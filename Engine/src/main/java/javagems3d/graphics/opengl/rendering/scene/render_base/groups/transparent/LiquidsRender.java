@@ -15,7 +15,7 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.opengl.frustum.ICulled;
 import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
 import javagems3d.graphics.opengl.rendering.items.objects.LiquidObject;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.opengl.rendering.scene.JGemsOpenGLRenderer;
 import javagems3d.graphics.opengl.rendering.scene.render_base.RenderGroup;
 import javagems3d.graphics.opengl.rendering.scene.render_base.SceneRenderBase;
@@ -49,8 +49,8 @@ public class LiquidsRender extends SceneRenderBase {
         for (MeshGroup.MeshGroupNode meshNode : object.getModel().<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
             gemsShaderManager.getUtils().performShadowsInfo();
             gemsShaderManager.getUtils().performModelMaterialOnShader(object.getRenderLiquidData().getLiquidMaterial());
-            gemsShaderManager.performUniform(new UniformString("alpha_factor"), DefaultUniformActions.FLOAT(object.getRenderLiquidData().getLiquidMaterial().getFullOpacity()));
-            gemsShaderManager.performUniform(new UniformString("texture_scaling"), DefaultUniformActions.VEC2F(object.getTextureScaling()));
+            gemsShaderManager.performUniform(new UniformString("alpha_factor"), UniformFunctions.FLOAT(object.getRenderLiquidData().getLiquidMaterial().getFullOpacity()));
+            gemsShaderManager.performUniform(new UniformString("texture_scaling"), UniformFunctions.VEC2F(object.getTextureScaling()));
             JGemsSceneUtils.renderModelNode(meshNode);
             gemsShaderManager.clearUsedTextureSlots();
         }

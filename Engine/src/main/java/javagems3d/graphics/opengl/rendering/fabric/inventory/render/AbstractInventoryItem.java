@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.fabric.inventory.render;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
@@ -40,7 +40,7 @@ public abstract class AbstractInventoryItem implements IRenderInventoryFabric {
     public void preRender(SceneRenderBase sceneRenderBase, javagems3d.system.inventory.items.InventoryItem inventoryItem, InventoryItemRenderData inventoryItemRenderData) {
         GL46.glDepthFunc(GL46.GL_ALWAYS);
         inventoryItemRenderData.getShaderManager().beginShading();
-        inventoryItemRenderData.getShaderManager().performUniform(new UniformString("projection_matrix"), DefaultUniformActions.MAT4F(Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f)));
+        inventoryItemRenderData.getShaderManager().performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(Transformation.getPerspectiveMatrix(JGems3D.get().getScreen().getWindow(), JGemsSceneGlobalConstants.FOV, 0.1f, 10.0f)));
     }
 
     @Override

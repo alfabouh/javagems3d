@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.opengl.rendering.imgui.elements;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.DefaultUniformActions;
+import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
@@ -55,8 +55,8 @@ public class UIText extends UIElement {
         shaderManager.getUtils().performOrthographicMatrix(this.textModel.getModel());
         GL46.glActiveTexture(GL46.GL_TEXTURE0);
         this.getFontTexture().getTexture().bindTexture();
-        shaderManager.performUniform(new UniformString("texture_sampler"), DefaultUniformActions.INTEGER(0));
-        shaderManager.performUniform(new UniformString("colour"), DefaultUniformActions.VEC4F(new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f)));
+        shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
+        shaderManager.performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsSceneUtils.renderModel(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
