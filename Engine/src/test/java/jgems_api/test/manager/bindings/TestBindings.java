@@ -24,8 +24,8 @@ package jgems_api.test.manager.bindings;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
-import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultPausePanel;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels.DefaultGamePanel;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels.DefaultPausePanel;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.components.FunctionalKey;
 import javagems3d.system.controller.components.IKeyAction;

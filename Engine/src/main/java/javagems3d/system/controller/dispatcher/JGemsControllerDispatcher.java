@@ -16,8 +16,8 @@ import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import api.bridge.APIContainer;
-import javagems3d.graphics.opengl.screen.window.IWindow;
-import javagems3d.graphics.opengl.screen.window.Window;
+import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.screen.window.Window;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.controller.binding.BindingManager;
@@ -99,7 +99,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
             this.getCurrentController().updateControllerState(window);
             if (!JGems3D.get().isPaused()) {
                 if (this.getCurrentControlledItem() != null) {
-                    if (window.isInFocus() && this.getCurrentControlledItem() instanceof IInventoryOwner) {
+                    if (window.isWindowInFocus() && this.getCurrentControlledItem() instanceof IInventoryOwner) {
                         this.getCurrentController().updateItemWithInventory(((IInventoryOwner) this.getCurrentControlledItem()));
                     }
                     this.performControllerToItem(window, this.getCurrentController(), this.getCurrentControlledItem());
@@ -111,6 +111,6 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     private void performControllerToItem(IWindow window, IController iController, IControllable iControllable) {
         Vector2f d1 = JGemsControllerDispatcher.getNormalizedRotationInput(iController);
         Vector3f d2 = JGemsControllerDispatcher.getNormalizedPositionInput(iController);
-        iControllable.performController(d1, d2, window.isInFocus());
+        iControllable.performController(d1, d2, window.isWindowInFocus());
     }
 }

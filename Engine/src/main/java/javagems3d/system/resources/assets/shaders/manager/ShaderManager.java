@@ -11,18 +11,17 @@
 
 package javagems3d.system.resources.assets.shaders.manager;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformProgram;
-import javagems3d.system.resources.assets.shaders.RenderPass;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.programs.shaders.CShaderProgram;
-import javagems3d.graphics.opengl.rendering.programs.shaders.GShaderProgram;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformBufferProgram;
+import javagems3d.graphics.rendering.JGemsSceneUtils;
+import javagems3d.graphics.rendering.programs.shaders.CShaderProgram;
+import javagems3d.graphics.rendering.programs.shaders.GShaderProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -36,19 +35,16 @@ import java.util.*;
  * ShaderManager objects are shader packages that have functions for managing the state of the shader, its uniforms and uni-buffers
  */
 public abstract class ShaderManager implements ICached {
-
     private final Set<UniformBufferObject> uniformBufferObjects;
     private final ShadersContainer shadersContainer;
     private ActiveShader activeShader;
     private ShaderHandler graphicShaderHandler;
     private ShaderHandler computingShaderHandler;
-    private RenderPass renderPass;
     private int usedTextureUnits;
 
     public ShaderManager(ShadersContainer shadersContainer) {
         this.uniformBufferObjects = new HashSet<>();
         this.shadersContainer = shadersContainer;
-        this.renderPass = RenderPass.FORWARD;
         this.activeShader = ActiveShader.NONE;
         this.usedTextureUnits = 0;
     }
@@ -290,19 +286,6 @@ public abstract class ShaderManager implements ICached {
         }
     }
 
-    public boolean checkShaderRenderPass(RenderPass renderPass) {
-        return this.getShaderRenderPass().equals(renderPass);
-    }
-
-    public RenderPass getShaderRenderPass() {
-        return this.renderPass;
-    }
-
-    public ShaderManager setShaderRenderPass(RenderPass renderPass) {
-        this.renderPass = renderPass;
-        return this;
-    }
-
     public ShaderHandler getComputingShaderGroup() {
         return this.computingShaderHandler;
     }
@@ -329,5 +312,4 @@ public abstract class ShaderManager implements ICached {
         GRAPHICAL,
         NONE
     }
-
 }

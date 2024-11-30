@@ -15,7 +15,7 @@ import api.app.main.tbox.containers.TUserData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import javagems3d.graphics.opengl.world.SceneWorld;
+import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.map.loaders.tbox.placers.TBoxMapDefaultObjectsPlacer;
 import javagems3d.system.resources.manager.GameResources;

@@ -52,14 +52,20 @@ public final class GameResources implements IGameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public Pair<MeshGroup, MeshBuffer> createMesh(JGemsPath modelPath) {
-        return this.createMesh(modelPath, ModelMeshLoader.FLAGS.DEFAULT);
-    }
-
-    public Pair<MeshGroup, MeshBuffer> createMesh(JGemsPath modelPath, int modelLoadingFlags) {
+    public MeshBuffer createMeshBuffer(JGemsPath modelPath, int modelLoadingFlags) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
         try {
-            return new ModelMeshLoader(modelPath).createMeshStructures(this, modelLoadingFlags);
+            return new ModelMeshLoader(modelPath).createMeshBuffer(this, modelLoadingFlags);
+        } catch (Exception e) {
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
+            throw e;
+        }
+    }
+
+    public MeshGroup createMeshGroup(JGemsPath modelPath, int modelLoadingFlags) {
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
+        try {
+            return new ModelMeshLoader(modelPath).createMeshGroup(this, modelLoadingFlags);
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
             throw e;

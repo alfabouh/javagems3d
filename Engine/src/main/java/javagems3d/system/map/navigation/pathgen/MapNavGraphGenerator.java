@@ -13,7 +13,7 @@ package javagems3d.system.map.navigation.pathgen;
 
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.math.Vector3f;
-import javagems3d.graphics.opengl.rendering.JGemsDebugGlobalConstants;
+import javagems3d.graphics.rendering.JGemsDebugGlobalConstants;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;

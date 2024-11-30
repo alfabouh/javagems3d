@@ -12,13 +12,12 @@
 package javagems3d.system.resources.assets.loaders;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.opengl.environment.Environment;
-import javagems3d.graphics.opengl.environment.light.LightManager;
-import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
-import javagems3d.graphics.opengl.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.lighting.LightManager;
+import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
 import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
-import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
@@ -104,12 +103,12 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
 
         this.world_ssao = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/screen_ssao"));
 
-        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_liquid_oit")).setShaderRenderPass(RenderPass.TRANSPARENCY);
-        this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_oit")).setShaderRenderPass(RenderPass.TRANSPARENCY);
-        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_particle_oit")).setShaderRenderPass(RenderPass.TRANSPARENCY);
+        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_liquid_oit"));
+        this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_oit"));
+        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_particle_oit"));
 
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer")).setShaderRenderPass(RenderPass.DEFERRED);
-        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_indirect")).setShaderRenderPass(RenderPass.DEFERRED);
+        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer"));
+        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_indirect"));
 
         this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_deferred")).attachUBOs(this.SunLight, this.PointLights, this.Fog);
 

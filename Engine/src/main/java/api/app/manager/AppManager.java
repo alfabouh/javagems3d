@@ -14,7 +14,7 @@ package api.app.manager;
 import api.app.configuration.AppConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javagems3d.graphics.opengl.rendering.imgui.panels.base.PanelUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.map.loaders.IMapLoader;

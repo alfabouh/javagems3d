@@ -15,7 +15,7 @@ import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.data.SoundType;
-import javagems3d.graphics.opengl.environment.light.PointLight;
+import javagems3d.graphics.environment.lighting.PointLight;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.inventory.IInventoryOwner;

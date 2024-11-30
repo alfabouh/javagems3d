@@ -11,8 +11,8 @@
 
 package javagems3d;
 
-import javagems3d.graphics.opengl.environment.skybox.SkyBox;
-import javagems3d.graphics.opengl.rendering.items.IAnimated;
+import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
@@ -20,25 +20,25 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
 import org.joml.*;
 import javagems3d.audio.JGemsSoundManager;
-import javagems3d.graphics.opengl.camera.FreeControlledCamera;
-import javagems3d.graphics.opengl.camera.ICamera;
-import javagems3d.graphics.opengl.environment.Environment;
-import javagems3d.graphics.opengl.environment.fog.FogManager;
-import javagems3d.graphics.opengl.environment.light.Light;
-import javagems3d.graphics.opengl.environment.light.PointLight;
-import javagems3d.graphics.opengl.particles.ParticlesEmitter;
-import javagems3d.graphics.opengl.particles.attributes.ParticleAttributes;
-import javagems3d.graphics.opengl.particles.objects.SimpleColoredParticle;
-import javagems3d.graphics.opengl.particles.objects.SimpleTexturedParticle;
-import javagems3d.graphics.opengl.particles.objects.base.ParticleFX;
-import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
-import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderLiquidData;
-import javagems3d.graphics.opengl.rendering.imgui.panels.base.PanelUI;
-import javagems3d.graphics.opengl.rendering.items.objects.AbstractSceneEntity;
-import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
-import javagems3d.graphics.opengl.screen.JGemsScreen;
-import javagems3d.graphics.opengl.screen.timer.JGemsTimer;
-import javagems3d.graphics.opengl.world.SceneWorld;
+import javagems3d.graphics.camera.ControlledCamera;
+import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.fog.FogManager;
+import javagems3d.graphics.environment.lighting.Light;
+import javagems3d.graphics.environment.lighting.PointLight;
+import javagems3d.graphics.particles.ParticlesEmitter;
+import javagems3d.graphics.particles.attributes.ParticleAttributes;
+import javagems3d.graphics.particles.objects.SimpleColoredParticle;
+import javagems3d.graphics.particles.objects.SimpleTexturedParticle;
+import javagems3d.graphics.particles.objects.base.ParticleFX;
+import javagems3d.graphics.objects.rendering.data.EntityRenderData;
+import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
+import javagems3d.graphics.objects.entities.AbstractSceneEntity;
+import javagems3d.graphics.objects.props.SceneProp;
+import javagems3d.graphics.screen.JGemsScreen;
+import javagems3d.graphics.screen.timer.JGemsTimer;
+import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.PhysicsWorld;
@@ -66,6 +66,9 @@ import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Using the JGemsHelper class, you can conveniently access most of the most important functions for managing the state of the engine. This utility class is divided into sections for easier navigation.
@@ -148,7 +151,7 @@ public abstract class JGemsHelper {
         }
 
         public static void enableFreeCamera(IController controller, Vector3f pos, Vector3f rot) {
-            JGemsHelper.getScreen().getScene().setCamera(new FreeControlledCamera(controller, pos, rot));
+            JGemsHelper.getScreen().getScene().setCamera(new ControlledCamera(controller, pos, rot));
         }
 
         public static void enableAttachedCamera(WorldItem worldItem) {
@@ -339,7 +342,7 @@ public abstract class JGemsHelper {
             worldItem.setDead();
         }
 
-        public static void addItemInWorld(WorldItem worldItem, RenderEntityData renderData) {
+        public static void addItemInWorld(WorldItem worldItem, EntityRenderData renderData) {
             JGemsHelper.getPhysicsWorld().addItem(worldItem);
             JGemsHelper.getSceneWorld().addItem(worldItem, renderData);
         }
@@ -354,9 +357,9 @@ public abstract class JGemsHelper {
             JGemsHelper.getScreen().getScene().getSceneRenderer().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
         }
 
-        public static void addLiquid(Liquid liquid, RenderLiquidData renderLiquidData) {
+        public static void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {
             JGemsHelper.getPhysicsWorld().addItem(liquid);
-            JGemsHelper.getSceneWorld().addLiquid(liquid, renderLiquidData);
+            JGemsHelper.getSceneWorld().addLiquid(liquid, liquidRenderData);
         }
 
         public static void addTriggerZone(ITriggerZone triggerZone) {
@@ -489,6 +492,10 @@ public abstract class JGemsHelper {
             }
 
             return vertexes;
+        }
+
+        public static <K, V, U> void putObjectInMapOrUpdate(Map<K, V> map, K key, V defaultValue, BiFunction<V, U, V> updateFunction, U updateValue) {
+            map.merge(key, defaultValue, (existingValue, newValue) -> updateFunction.apply(existingValue, updateValue));
         }
     }
 }

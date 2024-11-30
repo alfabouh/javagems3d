@@ -12,7 +12,6 @@
 package toolbox.resources.shaders;
 
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
-import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;

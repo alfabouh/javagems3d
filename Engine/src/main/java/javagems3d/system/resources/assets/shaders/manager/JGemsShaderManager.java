@@ -11,21 +11,21 @@
 
 package javagems3d.system.resources.assets.shaders.manager;
 
-import javagems3d.graphics.opengl.rendering.items.IAnimated;
-import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.opengl.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.environment.shadow.CascadeShadow;
-import javagems3d.graphics.opengl.environment.shadow.PointLightShadow;
-import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
-import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.scene.JGemsScene;
+import javagems3d.graphics.environment.shadows.CascadeShadow;
+import javagems3d.graphics.environment.shadows.PointLightShadow;
+import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.graphics.rendering.JGemsSceneUtils;
+import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
@@ -35,7 +35,6 @@ import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.shaders.RenderPass;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -49,11 +48,6 @@ public final class JGemsShaderManager extends ShaderManager {
     public JGemsShaderManager(ShadersContainer shadersContainer) {
         super(shadersContainer);
         this.shaderUtils = new JGemsShaderUtils();
-    }
-
-    @Override
-    public JGemsShaderManager setShaderRenderPass(RenderPass renderPass) {
-        return (JGemsShaderManager) super.setShaderRenderPass(renderPass);
     }
 
     @Override
@@ -92,12 +86,12 @@ public final class JGemsShaderManager extends ShaderManager {
             }
         }
 
-        public void performRenderDataOnShader(ObjectRenderSettings objectRenderSettings) {
+        public void performRenderDataOnShader(ObjectRenderConfiguration objectRenderingConfiguration) {
             if (!JGemsShaderManager.this.isUniformExist(new UniformString("lighting_code"))) {
                 return;
             }
             int lighting_code = 0;
-            if (objectRenderSettings.isDefaultBrightLighted()) {
+            if (objectRenderingConfiguration.isDefaultBrightLighted()) {
                 lighting_code |= 1 << 2;
             }
             JGemsShaderManager.this.performUniform(new UniformString("lighting_code"), UniformFunctions.INTEGER(lighting_code));

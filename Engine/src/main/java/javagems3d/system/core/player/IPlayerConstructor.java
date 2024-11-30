@@ -12,12 +12,12 @@
 package javagems3d.system.core.player;
 
 import org.joml.Vector3f;
-import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
+import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.service.collections.Pair;
 
 @FunctionalInterface
 public interface IPlayerConstructor {
-    Pair<IPlayer, RenderEntityData> constructPlayer(PhysicsWorld world, Vector3f startPos, Vector3f startRot);
+    Pair<IPlayer, EntityRenderData> constructPlayer(PhysicsWorld world, Vector3f startPos, Vector3f startRot);
 }

@@ -11,9 +11,9 @@
 
 package javagems3d.system.map.loaders.custom;
 
-import javagems3d.graphics.opengl.environment.skybox.SkyBox;
-import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderSimpleBackgroundProp;
-import javagems3d.graphics.opengl.rendering.items.props.SceneProp;
+import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.OLD.fabric.objects.render.RenderSimpleBackgroundProp;
+import javagems3d.graphics.objects.props.SceneProp;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -22,8 +22,8 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.rendering.fabric.objects.data.RenderEntityData;
-import javagems3d.graphics.opengl.world.SceneWorld;
+import javagems3d.graphics.objects.rendering.data.EntityRenderData;
+import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.entities.collectabes.EntityCollectableItem;
 import javagems3d.physics.world.PhysicsWorld;
@@ -48,7 +48,7 @@ public class DefaultMap implements IMapLoader {
         //world.setMapNavGraph(Graph.readFromFile(new JGemsPath("/assets/jgems/nav.mesh")));
 
         JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(JGemsResourceManager.globalModelAssets.ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
-        JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
+        JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
         worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
 
         Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
@@ -71,9 +71,9 @@ public class DefaultMap implements IMapLoader {
 
     @Override
     public void fillSkyBox(SkyBox.Background background) {
-        MeshGroup meshGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH).getFirst();
+        MeshGroup meshGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
         SceneProp sceneProp3 = new SceneProp(new RenderSimpleBackgroundProp(background), new Model<>(new Format3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), JGemsResourceManager.globalShaderAssets.skybox_background);
-        sceneProp3.getObjectRenderSettings().setAlphaDiscardValue(0.5f);
+        sceneProp3.getObjectRenderConfiguration().setAlphaDiscardValue(0.5f);
         background.addObjectInBackGround(sceneProp3);
     }
 

@@ -13,8 +13,8 @@ package javagems3d.graphics.transformation;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import javagems3d.graphics.opengl.camera.ICamera;
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.screen.window.IWindow;
 
 public class TransformationUtils {
     private final Vector3f projectionData;
@@ -38,7 +38,7 @@ public class TransformationUtils {
     }
 
     public void updateOrthographicMatrix() {
-        this.orthographicMatrix.set(Transformation.getOrthographic2DMatrix(0, this.window.getWindowDimensions().x, this.window.getWindowDimensions().y, 0));
+        this.orthographicMatrix.set(Transformation.getOrthographic2DMatrix(0, this.window.getWindowSize().x, this.window.getWindowSize().y, 0));
     }
 
     public void updatePerspectiveMatrix() {

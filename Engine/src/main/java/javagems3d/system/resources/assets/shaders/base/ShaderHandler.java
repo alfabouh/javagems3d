@@ -17,9 +17,9 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.rendering.programs.shaders.IShaderProgram;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformBufferProgram;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformProgram;
+import javagems3d.graphics.rendering.programs.shaders.IShaderProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
 
 import java.util.HashMap;
 import java.util.HashSet;

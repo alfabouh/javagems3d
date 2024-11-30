@@ -15,7 +15,7 @@ import javagems3d.JGems3D;
 import api.bridge.APIContainer;
 import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
 import javagems3d.system.resources.manager.inventory.InventoryRenderTable;
-import javagems3d.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.inventory.items.InventoryItem;
 import javagems3d.system.resources.assets.loaders.*;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;

@@ -24,17 +24,17 @@ package jgems_api.test.gui;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.imgui.ImmediateUI;
-import javagems3d.graphics.opengl.rendering.imgui.panels.base.AbstractPanelUI;
-import javagems3d.graphics.opengl.rendering.imgui.panels.base.PanelUI;
-import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultGamePanel;
-import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultLeaveConfirmationPanel;
-import javagems3d.graphics.opengl.rendering.imgui.panels.default_panels.DefaultSettingsPanel;
-import javagems3d.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.opengl.screen.window.Window;
+import javagems3d.graphics.rendering.JGemsSceneUtils;
+import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels.DefaultGamePanel;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels.DefaultLeaveConfirmationPanel;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels.DefaultSettingsPanel;
+import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.map.loaders.custom.DefaultMap;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
@@ -57,7 +57,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
 
     public static void renderMenuBackGround(Vector3f color) {
         Window window = JGems3D.get().getScreen().getWindow();
-        Vector2f res = new Vector2f(window.getWindowDimensions().x, window.getWindowDimensions().y);
+        Vector2f res = new Vector2f(window.getWindowSize().x, window.getWindowSize().y);
         try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
             JGemsResourceManager.globalShaderAssets.menu.beginShading();
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
@@ -73,15 +73,15 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         this.postFbo.createFrameBuffer2DTexture(dim, new T2DAttachmentContainer(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB), false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
     }
 
-    public void onWindowResize(Vector2i dim) {
+    public void onWindowResize(Window window) {
         this.createFBOs(dim);
     }
 
     @Override
     public void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks) {
         Window window = immediateUI.getWindow();
-        int windowW = window.getWindowDimensions().x;
-        int windowH = window.getWindowDimensions().y;
+        int windowW = window.getWindowSize().x;
+        int windowH = window.getWindowSize().y;
 
         this.renderContent(immediateUI, window, frameDeltaTicks);
 
@@ -109,8 +109,8 @@ public class TestMainMenuPanel extends AbstractPanelUI {
     }
 
     private void renderContent(ImmediateUI immediateUI, Window window, float frameDeltaTicks) {
-        int windowW = window.getWindowDimensions().x;
-        int windowH = window.getWindowDimensions().y;
+        int windowW = window.getWindowSize().x;
+        int windowH = window.getWindowSize().y;
 
         TestMainMenuPanel.renderMenuBackGround(new Vector3f(1.0f));
         immediateUI.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);

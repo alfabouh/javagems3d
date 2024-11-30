@@ -22,8 +22,7 @@
 
 package jgems_api.test.manager;
 
-import javagems3d.graphics.opengl.rendering.imgui.panels.base.PanelUI;
-import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.map.loaders.IMapLoader;

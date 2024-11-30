@@ -16,8 +16,8 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.camera.FreeControlledCamera;
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.camera.ControlledCamera;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.objects.devices.MouseKeyboard;
@@ -83,10 +83,10 @@ public class MouseKeyboardController implements IController {
         this.getRotationInput().set(0.0d);
         this.normalizedPositionInput.set(0.0d);
         this.normalizedRotationInput.set(0.0d);
-        if (!window.isInFocus()) {
+        if (!window.isWindowInFocus()) {
             return;
         }
-        Vector2i posM = new Vector2i((int) (window.getWindowDimensions().x / 2.0f), (int) (window.getWindowDimensions().y / 2.0f));
+        Vector2i posM = new Vector2i((int) (window.getWindowSize().x / 2.0f), (int) (window.getWindowSize().y / 2.0f));
         double[] xy = this.getMouseAndKeyboard().getCursorCoordinates();
         float d1 = (float) (xy[0] - posM.x);
         float d2 = (float) (xy[1] - posM.y);
@@ -116,7 +116,7 @@ public class MouseKeyboardController implements IController {
 
     @Override
     public void updateItemWithInventory(IInventoryOwner hasInventory) {
-        if (JGemsHelper.CAMERA.getCurrentCamera() instanceof FreeControlledCamera) {
+        if (JGemsHelper.CAMERA.getCurrentCamera() instanceof ControlledCamera) {
             return;
         }
         Inventory inventory = hasInventory.getInventory();
@@ -130,7 +130,7 @@ public class MouseKeyboardController implements IController {
     }
 
     public void setCursorInCenter() {
-        Vector2i posM = new Vector2i((int) (this.getWindow().getWindowDimensions().x / 2.0f), (int) (this.getWindow().getWindowDimensions().y / 2.0f));
+        Vector2i posM = new Vector2i((int) (this.getWindow().getWindowSize().x / 2.0f), (int) (this.getWindow().getWindowSize().y / 2.0f));
         this.getMouseAndKeyboard().setCursorCoordinates(new double[]{posM.x, posM.y});
     }
 }

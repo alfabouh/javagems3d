@@ -14,14 +14,14 @@ package toolbox.render.scene.dear_imgui;
 import imgui.*;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.opengl.dear_imgui.DIMGuiMesh;
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.rendering.ui.dear_imgui.DIMGuiMesh;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -44,7 +44,7 @@ public class DIMGuiRenderTBox {
     public DIMGuiRenderTBox(IWindow window, ResourceCache resourceCache) {
         this.shaderManager = TBoxResourceManager.shaderResources().imgui;
 
-        this.createUIResources(resourceCache, window.getWindowDimensions());
+        this.createUIResources(resourceCache, window.getWindowSize());
         this.createUICallbacks(window);
         this.currentContentToRender = null;
     }

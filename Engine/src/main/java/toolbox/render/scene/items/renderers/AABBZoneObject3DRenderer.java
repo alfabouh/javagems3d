@@ -11,7 +11,7 @@
 
 package toolbox.render.scene.items.renderers;
 
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;

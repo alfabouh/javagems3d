@@ -13,8 +13,8 @@ package javagems3d.graphics.transformation;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import javagems3d.graphics.opengl.camera.ICamera;
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 
@@ -31,7 +31,7 @@ public class Transformation {
     }
 
     public static Matrix4f getPerspectiveMatrix(IWindow window, float fov, float zNear, float zFar) {
-        return new Matrix4f().identity().perspective(fov, window.getWindowDimensions().x / (float) window.getWindowDimensions().y, zNear, zFar);
+        return new Matrix4f().identity().perspective(fov, window.getWindowSize().x / (float) window.getWindowSize().y, zNear, zFar);
     }
 
     public static Matrix4f getViewMatrix(ICamera camera) {

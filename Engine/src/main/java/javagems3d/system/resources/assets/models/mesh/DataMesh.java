@@ -31,7 +31,7 @@ public class DataMesh implements IMesh {
     }
 
     @SuppressWarnings("all")
-    public <T> DataMesh putBufferInMeshData(RenderAttributePointer attributePointer, List<T> array) {
+    public DataMesh putBufferInMeshData(RenderAttributePointer attributePointer, List<Float> array) {
         this.getBufferMap().put(attributePointer.getIndex(), new VertexBuffer(attributePointer, array));
         return this;
     }
@@ -60,12 +60,13 @@ public class DataMesh implements IMesh {
 
     @Override
     public @NotNull List<Float> getVertexPositions() {
-        return this.<Float>getBufferById(this.positionsIndex()).getValues();
+        return this.getBufferById(this.positionsIndex()).getValues();
     }
 
     @Override
     public void clearMesh() {
-        for (VertexBuffer<?> buffer : this.getBufferMap().values()) {
+        this.getIndexesBuffer().getValues().clear();
+        for (VertexBuffer<Float> buffer : this.getBufferMap().values()) {
             buffer.getValues().clear();
         }
     }

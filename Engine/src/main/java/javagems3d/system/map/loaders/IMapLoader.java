@@ -11,9 +11,9 @@
 
 package javagems3d.system.map.loaders;
 
-import javagems3d.graphics.opengl.environment.skybox.SkyBox;
+import javagems3d.graphics.environment.skybox.SkyBox;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.graphics.opengl.world.SceneWorld;
+import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.map.MapInfo;
 import javagems3d.system.resources.manager.GameResources;

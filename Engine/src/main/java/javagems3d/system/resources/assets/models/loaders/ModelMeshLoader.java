@@ -82,25 +82,43 @@ public class ModelMeshLoader {
         return skeletonData;
     }
 
-    public Pair<MeshGroup, MeshBuffer> createMeshStructures(GameResources gameResources) {
-        return this.createMeshStructures(gameResources, FLAGS.DEFAULT);
-    }
-
-    public Pair<MeshGroup, MeshBuffer> createMeshStructures(GameResources gameResources, int Flags) {
+    public MeshGroup createMeshGroup(GameResources gameResources, int Flags) {
         boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
-        MeshBuffer meshBuffer = (Flags & FLAGS.RETURN_AND_USE_INDIRECT_BUFFER) != 0 ? this.createMeshBuffer(gameResources, animated) : null;
-        MeshGroup meshGroup = (Flags & FLAGS.RETURN_BAKED_RENDER_MESH) != 0 ? this.createMeshGroup(gameResources, animated) : null;
-        if (meshBuffer == null && meshGroup == null) {
+        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
+        boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
+        MeshGroup meshGroup = this.processMeshGroup(gameResources, animated);
+        if (meshGroup == null) {
             throw new JGemsNullException("Nothing loaded!");
         }
-        if (meshBuffer != null) {
-            gameResources.getDataMeshArray().putMeshBuffer(meshBuffer);
+
+        if (loadInIndirectBuffer) {
+            if (this.processMeshBuffer(gameResources, animated, true) == null) {
+                throw new JGemsNullException("Nothing loaded!");
+            }
         }
-        return new Pair<>(meshGroup, meshBuffer);
+
+        if (createCollision) {
+            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
+        }
+        return meshGroup;
+    }
+
+    public MeshBuffer createMeshBuffer(GameResources gameResources, int Flags) {
+        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
+        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
+        boolean loadInIndirectBuffer = (Flags & ~FLAGS.LOAD_IN_INDIRECT_BUFFER) == 0;
+        MeshBuffer meshBuffer = this.processMeshBuffer(gameResources, animated, loadInIndirectBuffer);
+        if (meshBuffer == null) {
+            throw new JGemsNullException("Nothing loaded!");
+        }
+        if (createCollision) {
+            JGemsHelper.UTILS.createMeshCollisionData(meshBuffer);
+        }
+        return meshBuffer;
     }
 
     @SuppressWarnings("all")
-    private MeshBuffer createMeshBuffer(GameResources gameResources, boolean isAnimated) {
+    private MeshBuffer processMeshBuffer(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer) {
         MeshBuffer meshStructure = new MeshBuffer();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -112,7 +130,9 @@ public class ModelMeshLoader {
                 AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
                 materialList.add(material);
-                gameResources.getDataMeshArray().putMaterial(material);
+                if (loadInIndirectBuffer) {
+                    gameResources.getDataMeshArray().putMaterial(material);
+                }
             }
 
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building MeshBuffer...");
@@ -141,11 +161,15 @@ public class ModelMeshLoader {
             return null;
         }
 
+        if (loadInIndirectBuffer) {
+            gameResources.getDataMeshArray().putMeshBuffer(meshStructure);
+        }
+
         return meshStructure;
     }
 
     @SuppressWarnings("all")
-    private MeshGroup createMeshGroup(GameResources gameResources, boolean isAnimated) {
+    private MeshGroup processMeshGroup(GameResources gameResources, boolean isAnimated) {
         MeshGroup meshStructure = new MeshGroup();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -277,11 +301,11 @@ public class ModelMeshLoader {
 
     public static class FLAGS {
         public static final int
-                RETURN_BAKED_RENDER_MESH = 1 << 2,
-                RETURN_AND_USE_INDIRECT_BUFFER = 1 << 3,
-                LOAD_ANIMATIONS = 1 << 4;
+                CREATE_COLLISION_UD = 1 << 2,
+                LOAD_ANIMATIONS = 1 << 3,
+                LOAD_IN_INDIRECT_BUFFER = 1 << 4;
 
-        public static final int DEFAULT = FLAGS.RETURN_BAKED_RENDER_MESH | FLAGS.RETURN_AND_USE_INDIRECT_BUFFER;
-        public static final int ALL = FLAGS.DEFAULT | FLAGS.LOAD_ANIMATIONS;
+        public static final int DEFAULT = 0x0;
+        public static final int ALL = FLAGS.LOAD_IN_INDIRECT_BUFFER | FLAGS.CREATE_COLLISION_UD | FLAGS.LOAD_ANIMATIONS;
     }
 }

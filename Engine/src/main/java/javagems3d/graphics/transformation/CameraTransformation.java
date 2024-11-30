@@ -12,7 +12,7 @@
 package javagems3d.graphics.transformation;
 
 import org.joml.Matrix4f;
-import javagems3d.graphics.opengl.camera.ICamera;
+import javagems3d.graphics.camera.base.ICamera;
 
 public class CameraTransformation {
     private final Matrix4f viewMatrix;

@@ -11,11 +11,6 @@
 
 package jgems_api.test;
 
-import javagems3d.JGems3D;
-import javagems3d.graphics.opengl.rendering.fabric.objects.render.RenderEntity;
-import javagems3d.graphics.opengl.rendering.items.objects.EntityObject;
-import javagems3d.graphics.opengl.rendering.items.settings.ObjectRenderSettings;
-import javagems3d.system.map.loaders.tbox.placers.TDefaultRenderContainer;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 import api.app.main.JGemsTBoxApplication;
@@ -23,7 +18,6 @@ import api.app.main.JGemsTBoxEntry;
 import api.app.main.tbox.ITBoxEntitiesObjectData;
 import api.app.main.tbox.TBoxEntitiesUserData;
 import api.app.main.tbox.containers.TObjectData;
-import api.app.main.tbox.containers.TUserData;
 import javagems3d.temp.map_sys.save.objects.object_attributes.Attribute;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeTarget;

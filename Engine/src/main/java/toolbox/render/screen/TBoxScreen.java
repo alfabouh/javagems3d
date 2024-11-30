@@ -11,7 +11,7 @@
 
 package toolbox.render.screen;
 
-import javagems3d.graphics.opengl.screen.JGemsScreen;
+import javagems3d.graphics.screen.JGemsScreen;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -19,16 +19,14 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
-import javagems3d.graphics.opengl.rendering.JGemsSceneGlobalConstants;
-import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.screen.IScreen;
-import javagems3d.graphics.opengl.screen.timer.JGemsTimer;
-import javagems3d.graphics.opengl.screen.timer.TimerPool;
-import javagems3d.graphics.opengl.screen.window.IWindow;
-import javagems3d.graphics.opengl.screen.window.Window;
+import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.graphics.rendering.JGemsSceneUtils;
+import javagems3d.graphics.screen.IScreen;
+import javagems3d.graphics.screen.timer.JGemsTimer;
+import javagems3d.graphics.screen.timer.TimerPool;
+import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
@@ -244,7 +242,7 @@ public class TBoxScreen implements IScreen {
     }
 
     public Vector2i getDimensions() {
-        return this.getWindow().getWindowDimensions();
+        return this.getWindow().getWindowSize();
     }
 
     public Window getWindow() {

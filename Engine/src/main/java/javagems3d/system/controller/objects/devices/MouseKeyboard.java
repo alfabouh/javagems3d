@@ -13,7 +13,7 @@ package javagems3d.system.controller.objects.devices;
 
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.components.Key;
 

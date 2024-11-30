@@ -11,7 +11,7 @@
 
 package javagems3d.system.controller.dispatcher;
 
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.objects.IController;
 
 public interface IControllerDispatcher {

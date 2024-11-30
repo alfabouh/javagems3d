@@ -12,8 +12,8 @@
 package javagems3d.system.resources.assets.loaders;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.opengl.rendering.imgui.elements.base.font.FontCode;
-import javagems3d.graphics.opengl.rendering.imgui.elements.base.font.GuiFont;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
+import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;

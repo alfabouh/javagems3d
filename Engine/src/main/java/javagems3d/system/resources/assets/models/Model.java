@@ -11,7 +11,6 @@
 
 package javagems3d.system.resources.assets.models;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;

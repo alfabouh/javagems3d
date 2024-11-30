@@ -35,7 +35,7 @@ public class ModelLoader implements IAssetsLoader {
 
     @Override
     public void load(GameResources gameResources) {
-        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH).getFirst();
+        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
     }
 
     @Override

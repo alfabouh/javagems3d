@@ -12,17 +12,18 @@
 package toolbox.render.scene;
 
 import javafx.util.Pair;
-import javagems3d.graphics.opengl.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL45;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.opengl.camera.ICamera;
-import javagems3d.graphics.opengl.rendering.JGemsSceneUtils;
-import javagems3d.graphics.opengl.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.opengl.rendering.programs.fbo.attachments.T2DAttachmentContainer;
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.rendering.JGemsSceneUtils;
+import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.models.Model;
@@ -43,7 +44,7 @@ import javagems3d.temp.map_sys.save.objects.object_attributes.Attribute;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
 import toolbox.map_table.TBoxMapTable;
 import toolbox.map_table.object.AbstractObjectData;
-import toolbox.render.scene.camera.TBoxFreeCamera;
+import toolbox.render.scene.camera.TBoxCameraBase;
 import toolbox.render.scene.container.SceneContainer;
 import toolbox.render.scene.dear_imgui.DIMGuiRenderTBox;
 import toolbox.render.scene.dear_imgui.content.EditorContent;
@@ -140,8 +141,8 @@ public class TBoxScene {
     }
 
     public void preRender() {
-        this.createFBOs(this.getWindow().getWindowDimensions());
-        this.camera = new TBoxFreeCamera(ToolBox.get().getScreen().getControllerDispatcher().getCurrentController(), new Vector3f(-0.0f), new Vector3f(0.0f));
+        this.createFBOs(this.getWindow().getWindowSize());
+        this.camera = new TBoxCameraBase(ToolBox.get().getScreen().getControllerDispatcher().getCurrentController(), new Vector3f(-0.0f), new Vector3f(0.0f));
         this.setGUIEditor();
         SystemLogging.get().getLogManager().log("Pre-Scene Render");
 
@@ -187,7 +188,7 @@ public class TBoxScene {
             TBoxScene.sceneForwardFbo.unBindFBO();
             GL46.glDisable(GL46.GL_BLEND);
 
-            TBoxScene.sceneForwardFbo.copyFBOtoFBODepth(TBoxScene.sceneTransparentFbo.getFrameBufferId(), this.getWindow().getWindowDimensions());
+            TBoxScene.sceneForwardFbo.copyFBOtoFBODepth(TBoxScene.sceneTransparentFbo.getFrameBufferId(), this.getWindow().getWindowSize());
             GL46.glDepthMask(false);
             GL46.glEnable(GL46.GL_BLEND);
             GL45.glBlendFunci(0, GL45.GL_ONE, GL45.GL_ONE);
@@ -207,7 +208,7 @@ public class TBoxScene {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             GL46.glEnable(GL46.GL_DEPTH_TEST);
 
-            try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowDimensions()), 0.5f)) {
+            try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowSize()), 0.5f)) {
                 TBoxShaderManager gluing = TBoxResourceManager.shaderResources().scene_gluing;
                 gluing.beginShading();
                 gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0).getTextureId(), GL46.GL_TEXTURE_2D);
@@ -265,7 +266,7 @@ public class TBoxScene {
         Matrix4f.getNormalizedRotation(quaterniond);
         Matrix4f inversedView = new Matrix4f().identity().rotate(quaterniond);
         TBoxResourceManager.shaderResources().world_xyz.beginShading();
-        TBoxResourceManager.shaderResources().world_xyz.getUtils().performOrthographicMatrix(this.getWindow().getWindowDimensions().x / (float) this.getWindow().getWindowDimensions().y, 36.0f);
+        TBoxResourceManager.shaderResources().world_xyz.getUtils().performOrthographicMatrix(this.getWindow().getWindowSize().x / (float) this.getWindow().getWindowSize().y, 36.0f);
         TBoxResourceManager.shaderResources().world_xyz.getUtils().performModel3DMatrix(model);
         TBoxResourceManager.shaderResources().world_xyz.performUniform(new UniformString("view_inversed"),  UniformFunctions.MAT4F(inversedView));
         TBoxSceneUtils.renderModelTextured(TBoxResourceManager.shaderResources().world_xyz, model, GL46.GL_TRIANGLES);
@@ -410,7 +411,7 @@ public class TBoxScene {
         this.getSceneContainer().addObject(scene3DObject);
     }
 
-    public void onWindowResize(Vector2i dim) {
+    public void onWindowResize(Window window) {
         this.getDimGuiRenderTBox().onResize(dim);
 
         this.destroyFBOs();

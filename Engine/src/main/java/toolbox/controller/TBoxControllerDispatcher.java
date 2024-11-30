@@ -13,7 +13,7 @@ package toolbox.controller;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import javagems3d.graphics.opengl.screen.window.IWindow;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.dispatcher.IControllerDispatcher;
 import javagems3d.system.controller.objects.IController;
 import javagems3d.system.controller.objects.MouseKeyboardController;
