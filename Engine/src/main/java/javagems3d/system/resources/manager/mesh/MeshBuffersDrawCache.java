@@ -2,7 +2,6 @@ package javagems3d.system.resources.manager.mesh;
 
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 
 import java.util.ArrayList;
 import java.util.HashSet;

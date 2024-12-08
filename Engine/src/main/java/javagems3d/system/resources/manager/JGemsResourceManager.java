@@ -13,10 +13,7 @@ package javagems3d.system.resources.manager;
 
 import javagems3d.JGems3D;
 import api.bridge.APIContainer;
-import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import javagems3d.system.resources.manager.inventory.InventoryRenderTable;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
-import javagems3d.system.inventory.items.InventoryItem;
 import javagems3d.system.resources.assets.loaders.*;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -33,8 +30,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class JGemsResourceManager {
-    public static final InventoryRenderTable inventoryItemRenderTable = new InventoryRenderTable();
-
     public static ShadersAssetsLoader globalShaderAssets = null;
     public static TextureAssetsLoader globalTextureAssets = null;
     public static ModelAssetsLoader globalModelAssets = null;
@@ -51,10 +46,6 @@ public final class JGemsResourceManager {
         this.globalResources = new GameResources(new ResourceCache("Global"));
         this.localResources = new GameResources(new ResourceCache("Local"));
         this.meshBuffersDrawCache = new MeshBuffersDrawCache();
-    }
-
-    public static void addInventoryItemRenderer(Class<? extends InventoryItem> itemClass, InventoryItemRenderData inventoryItemRenderData) {
-        JGemsResourceManager.inventoryItemRenderTable.addItem(itemClass, inventoryItemRenderData);
     }
 
     public static void createShaders() {
@@ -111,7 +102,7 @@ public final class JGemsResourceManager {
     }
 
     public void destroy() {
-        GuiFont.allCreatedFonts.forEach(GuiFont::cleanUp);
+        GuiFont.allCreatedFonts.forEach(GuiFont::clear);
         this.getMeshBuffersDrawCache().clear();
         this.clearAllCaches();
     }

@@ -13,7 +13,7 @@ package javagems3d;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
@@ -68,7 +68,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Using the JGemsHelper class, you can conveniently access most of the most important functions for managing the state of the engine. This utility class is divided into sections for easier navigation.
@@ -92,11 +91,11 @@ public abstract class JGemsHelper {
     }
 
     public static SceneWorld getSceneWorld() {
-        return JGems3D.get().getEngineSystem().getScreen().getSceneWorld();
+        return JGems3D.get().getCore().getScreen().getSceneWorld();
     }
 
     public static PhysicsWorld getPhysicsWorld() {
-        return JGems3D.get().getEngineSystem().getPhysics().getPhysicsProcessor().getPhysicsWorld();
+        return JGems3D.get().getCore().getPhysics().getPhysicsProcessor().getPhysicsWorld();
     }
 
     public static JGems3D getCoreObject() {
@@ -159,7 +158,7 @@ public abstract class JGemsHelper {
         }
 
         public static void enableAttachedCamera(AbstractSceneEntity abstractSceneEntity) {
-            JGemsHelper.getScreen().getScene().enableAttachedCamera(abstractSceneEntity);
+            JGemsHelper.getScreen().getScene().setCamera(JGemsHelper.getSceneWorld().createAttachedCamera(abstractSceneEntity));
         }
     }
 
@@ -270,7 +269,7 @@ public abstract class JGemsHelper {
         }
 
         public static IMapLoader getCurrentMap() {
-            return JGems3D.get().getEngineSystem().getMapLoader();
+            return JGems3D.get().getCore().getMapLoader();
         }
 
         public static void unPauseGameAndUnLockUnPausing() {
@@ -315,8 +314,8 @@ public abstract class JGemsHelper {
 
     // section UI
     public static abstract class UI {
-        public static void removeUIPanel() {
-            JGems3D.get().removeUIPanel();
+        public static void closeUIPanel() {
+            JGems3D.get().closeUIPanel();
         }
 
         public static void openUIPanel(PanelUI ui) {
@@ -349,12 +348,12 @@ public abstract class JGemsHelper {
 
         public static void addPointLight(WorldItem worldItem, PointLight light, int attachShadowScene) {
             JGemsHelper.WORLD.addLight(worldItem, light);
-            JGemsHelper.getScreen().getScene().getSceneRenderer().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
+            JGemsHelper.ENVIRONMENT.getWorldEnvironment().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
         }
 
         public static void addPointLight(PointLight light, int attachShadowScene) {
             JGemsHelper.WORLD.addLight(light);
-            JGemsHelper.getScreen().getScene().getSceneRenderer().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
+            JGemsHelper.ENVIRONMENT.getWorldEnvironment().getShadowScene().bindPointLightToShadowScene(attachShadowScene, light);
         }
 
         public static void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {
@@ -483,7 +482,7 @@ public abstract class JGemsHelper {
             List<Integer> integers = renderMesh.getVertexIndexes();
             List<Float> floats = renderMesh.getVertexPositions();
             List<Vector3f> vertexes = new ArrayList<>();
-            Matrix4f modelMat = Transformation.getModelMatrix(format3D);
+            Matrix4f modelMat = TransformationUtils.getModelMatrix(format3D);
 
             for (int i = 0; i < integers.size(); i++) {
                 int i1 = renderMesh.getVertexIndexes().get(i) * 3;

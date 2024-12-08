@@ -28,7 +28,7 @@ public final class ShaderResources extends ShadersLoader<TBoxShaderManager> {
     public TBoxShaderManager scene_gluing;
 
     protected void initObjects(ResourceCache resourceCache) {
-        this.world_transparent_color = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_transparent_color")).setShaderRenderPass(RenderPass.TRANSPARENCY);
+        this.world_transparent_color = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_transparent_color"));
         this.world_isometric_object = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_isometric_object"));
         this.world_object = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_object"));
         this.world_object_nolight = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_object_nolight"));

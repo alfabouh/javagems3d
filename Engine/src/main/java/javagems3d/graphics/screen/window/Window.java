@@ -77,7 +77,7 @@ public class Window implements IWindow {
         }
     }
 
-    public void onWindowChanged() {
+    public void onWindowChangedCallback() {
         IntBuffer xPos = BufferUtils.createIntBuffer(1);
         IntBuffer yPos = BufferUtils.createIntBuffer(1);
         GLFW.glfwGetWindowPos(window, xPos, yPos);

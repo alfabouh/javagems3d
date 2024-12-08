@@ -27,7 +27,7 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
@@ -49,7 +49,7 @@ public class TBoxScreen implements IScreen {
     private TBoxControllerDispatcher controllerDispatcher;
     private TBoxScene scene;
     private TBoxResourceManager resourceManager;
-    private TransformationUtils transformationUtils;
+    private Transformation transformation;
 
     public TBoxScreen() {
         this.timerPool = new TimerPool();
@@ -163,9 +163,9 @@ public class TBoxScreen implements IScreen {
         JGemsSceneUtils.checkGLErrors();
     }
 
-    private void resizeWindow(Vector2i dim) {
+    private void resizeWindow(IWindow window) {
         this.normalizeViewPort();
-        this.getScene().onWindowResize(dim);
+        this.getScene().onWindowResize(window);
     }
 
     public void normalizeViewPort() {
@@ -175,7 +175,7 @@ public class TBoxScreen implements IScreen {
     private void setScreenCallbacks() {
         Callbacks.glfwFreeCallbacks(this.getWindow().getDescriptor());
         GLFW.glfwSetWindowSizeCallback(this.getWindow().getDescriptor(), (a, b, c) -> {
-            this.resizeWindow(new Vector2i(b, c));
+            this.resizeWindow(this.getWindow());
         });
         GLFWErrorCallback glfwErrorCallback = GLFW.glfwSetErrorCallback(null);
         if (glfwErrorCallback != null) {
@@ -188,7 +188,7 @@ public class TBoxScreen implements IScreen {
     }
 
     private void createTransformation() {
-        this.transformationUtils = new TransformationUtils(this.getWindow(), TBoxSceneUtils.FOV, TBoxSceneUtils.Z_NEAR, TBoxSceneUtils.Z_FAR);
+        this.transformation = new Transformation(this.getWindow(), TBoxSceneUtils.FOV, TBoxSceneUtils.Z_NEAR, TBoxSceneUtils.Z_FAR);
     }
 
     private void createObjects(IWindow window) {
@@ -225,8 +225,8 @@ public class TBoxScreen implements IScreen {
         return this.resourceManager;
     }
 
-    public TransformationUtils getTransformationUtils() {
-        return transformationUtils;
+    public Transformation getTransformationUtils() {
+        return transformation;
     }
 
     public TBoxControllerDispatcher getControllerDispatcher() {

@@ -16,9 +16,7 @@ import org.lwjgl.glfw.GLFW;
 
 public interface IWindow {
     long getDescriptor();
-
     Vector2i getWindowSize();
-
     boolean isWindowInFocus();
 
     default boolean isWindowActive() {
@@ -28,7 +26,7 @@ public interface IWindow {
         return GLFW.glfwGetWindowAttrib(this.getDescriptor(), GLFW.GLFW_ICONIFIED) == 0;
     }
 
-    interface ResizeCallback {
+    interface ResizeEvent {
         void onWindowResize(IWindow window);
     }
 }

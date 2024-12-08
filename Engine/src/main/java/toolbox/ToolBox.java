@@ -12,7 +12,7 @@
 package toolbox;
 
 import api.bridge.APILauncher;
-import javagems3d.system.core.JGemsEngineSystem;
+import javagems3d.system.core.JGemsCore;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;
@@ -64,7 +64,7 @@ public final class ToolBox {
 
     public static Path getTBoxFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + JGemsEngineSystem.ENG_FILEPATH.toLowerCase() + "//tool_box";
+        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase() + "//tool_box";
         return Paths.get(appdataPath, folderPath);
     }
 
@@ -104,6 +104,6 @@ public final class ToolBox {
     }
 
     public String toString() {
-        return JGemsEngineSystem.ENG_NAME + " - [ToolBox v" + ToolBox.VERSION + "]";
+        return JGemsCore.ENG_NAME + " - [ToolBox v" + ToolBox.VERSION + "]";
     }
 }

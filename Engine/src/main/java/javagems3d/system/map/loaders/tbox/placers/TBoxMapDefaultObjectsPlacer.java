@@ -24,10 +24,10 @@ package javagems3d.system.map.loaders.tbox.placers;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.physics.colliders.MeshCollider;
+import javagems3d.system.resources.assets.models.loaders.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.OLD.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.props.SceneProp;
 import javagems3d.graphics.world.SceneWorld;
@@ -56,20 +56,20 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         Vector3f scale = attributesContainer.getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         Boolean isProp = attributesContainer.getValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
 
-        MeshGroup meshGroup = localGameResources.createMesh(renderContainer.getPathToRenderModel()).getFirst();
+        MeshGroup meshGroup = localGameResources.createMeshGroup(renderContainer.getPathToRenderModel(), ModelMeshLoader.FLAGS.DEFAULT);
         JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
 
         if (isProp != null && (isProp)) {
             ObjectRenderConfiguration modelRenderData = renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager);
-            IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
+            //IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 
             Model<Format3D> model = new Model<>(new Format3D(), meshGroup);
             model.getFormat().setPosition(pos);
             model.getFormat().setRotation(rot);
             model.getFormat().setScaling(scale);
-            JGemsHelper.WORLD.addPropInScene(new SceneProp(renderFabric, model, modelRenderData));
+            JGemsHelper.WORLD.addPropInScene(new SceneProp(null, model, modelRenderData));
         } else {
-            EntityRenderData entityRenderData = new EntityRenderData(renderContainer.getRenderFabric(), renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager));
+            EntityRenderData entityRenderData = new EntityRenderData(null, renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager));
 
             Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
             if (isStatic == null || isStatic) {

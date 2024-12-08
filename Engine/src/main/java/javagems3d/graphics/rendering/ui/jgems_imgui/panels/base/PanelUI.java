@@ -12,14 +12,12 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels.base;
 
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.screen.window.Window;
-import org.joml.Vector2i;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 
-public interface PanelUI extends IWindow.ResizeCallback {
-    void onConstruct(ImmediateUI immediateUI);
+public interface PanelUI extends IWindow.ResizeEvent {
+    void onConstruct(JGemsUI JGemsUI);
 
-    void onDestruct(ImmediateUI immediateUI);
+    void onDestruct(JGemsUI JGemsUI);
 
-    void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks);
+    void drawPanel(JGemsUI JGemsUI, float frameDeltaTicks);
 }

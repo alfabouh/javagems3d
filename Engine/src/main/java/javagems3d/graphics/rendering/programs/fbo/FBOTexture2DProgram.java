@@ -167,7 +167,7 @@ public class FBOTexture2DProgram {
             return;
         }
         for (ITextureProgram textureProgram : this.getTexturePrograms()) {
-            textureProgram.cleanUp();
+            textureProgram.clear();
         }
         this.getTexturePrograms().clear();
         GL46.glDeleteRenderbuffers(this.renderBufferId);

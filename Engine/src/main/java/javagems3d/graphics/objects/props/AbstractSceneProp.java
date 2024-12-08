@@ -12,13 +12,13 @@
 package javagems3d.graphics.objects.props;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.lighting.Light;
-import javagems3d.graphics.OLD.fabric.objects.IRenderObjectFabric;
-import javagems3d.graphics.objects.AbstractSceneObject;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -30,14 +30,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneProp extends AbstractSceneObject implements IWorldObject, IWorldTicked {
+public abstract class AbstractSceneProp extends SceneObject implements IWorldObject, IWorldTicked {
     private AnimationData animationData;
     private final List<Light> lightList;
-    private final IRenderObjectFabric renderFabric;
+    private final IRenderFabric renderFabric;
     private ObjectRenderConfiguration objectRenderingConfiguration;
     private boolean isVisible;
 
-    public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public AbstractSceneProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
         super(model);
         this.lightList = new ArrayList<>();
 
@@ -47,7 +47,7 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
         this.isVisible = true;
     }
 
-    public AbstractSceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
+    public AbstractSceneProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
         this(renderFabric, model, new ObjectRenderConfiguration(shaderManager));
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
     public void onSpawn(IWorld iWorld) {
         JGemsHelper.getLogger().log("[ " + this + " ]" + " - PreRender");
         if (this.hasRender()) {
-            this.getRenderFabric().onPreRender(this);
+            this.getRenderFabric().createResources(this);
         }
     }
 
@@ -85,7 +85,7 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
     public void onDestroy(IWorld iWorld) {
         JGemsHelper.getLogger().log("[ " + this + " ]" + " - PostRender");
         if (this.hasRender()) {
-            this.getRenderFabric().onPostRender(this);
+            this.getRenderFabric().destroyResources(this);
         }
         this.clearLights();
     }
@@ -130,13 +130,8 @@ public abstract class AbstractSceneProp extends AbstractSceneObject implements I
     }
 
     @Override
-    public IRenderObjectFabric getRenderFabric() {
+    public IRenderFabric getRenderFabric() {
         return this.renderFabric;
-    }
-
-    @Override
-    public boolean hasRender() {
-        return true;
     }
 
     @Override

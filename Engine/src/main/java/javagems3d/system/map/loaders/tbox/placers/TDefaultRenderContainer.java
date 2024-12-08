@@ -12,8 +12,8 @@ package javagems3d.system.map.loaders.tbox.placers;
 
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.graphics.OLD.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.objects.entities.AbstractSceneEntity;
 import javagems3d.system.service.path.JGemsPath;
 
@@ -25,9 +25,9 @@ public final class TDefaultRenderContainer {
     private final JGemsPath pathToRenderModel;
     private final JGemsPath pathToRenderShader;
     private final Class<? extends AbstractSceneEntity> sceneEntityClass;
-    private final IRenderObjectFabric renderFabric;
+    private final IRenderFabric renderFabric;
 
-    public TDefaultRenderContainer(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public TDefaultRenderContainer(@NotNull IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
         this.renderFabric = renderFabric;
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
@@ -61,7 +61,7 @@ public final class TDefaultRenderContainer {
      *
      * @see IRendered
      */
-    public @NotNull IRenderObjectFabric getRenderFabric() {
+    public @NotNull IRenderFabric getRenderFabric() {
         return this.renderFabric;
     }
 

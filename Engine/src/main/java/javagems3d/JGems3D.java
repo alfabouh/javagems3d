@@ -11,17 +11,17 @@
 
 package javagems3d;
 
+import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import org.lwjgl.glfw.GLFW;
 import api.bridge.APIContainer;
 import api.bridge.APILauncher;
 import api.bridge.events.APIEventsLauncher;
 import javagems3d.audio.JGemsSoundManager;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
-import javagems3d.system.core.JGemsEngineSystem;
+import javagems3d.system.core.JGemsCore;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -54,7 +54,7 @@ public final class JGems3D {
     public static Random random;
     private static JGems3D mainObject;
 
-    private JGemsEngineSystem engineSystem;
+    private JGemsCore core;
     private final JGemsSettings jGemsSettings;
     private final JGemsLocalisation jGemsLocalisation;
 
@@ -108,7 +108,7 @@ public final class JGems3D {
         try {
             JGemsHelper.getLogger().log("Engine-On");
             JGemsHelper.getLogger().log("Starting system! Date: " + JGems3D.date());
-            JGemsHelper.getLogger().log(JGems3D.getGameString() + ": " + JGemsEngineSystem.ENG_NAME + " - " + JGemsEngineSystem.ENG_VER);
+            JGemsHelper.getLogger().log(JGems3D.getGameString() + ": " + JGemsCore.ENG_NAME + " - " + JGemsCore.ENG_VER);
             JGemsHelper.getLogger().log("===============================================================");
             JGemsHelper.getLogger().log("Loading settings from path...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
@@ -116,8 +116,8 @@ public final class JGems3D {
             } else {
                 JGems3D.get().getGameSettings().loadOptions();
             }
-            JGems3D.get().engineSystem = new JGemsEngineSystem();
-            JGems3D.get().getEngineSystem().startSystem();
+            JGems3D.get().core = new JGemsCore();
+            JGems3D.get().getCore().startSystem();
         } catch (Exception e) {
             JGemsHelper.getLogger().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
@@ -182,19 +182,19 @@ public final class JGems3D {
 
     public static Path getEngineFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + JGemsEngineSystem.ENG_FILEPATH.toLowerCase();
+        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase();
         return java.nio.file.Paths.get(appdataPath, folderPath);
     }
 
     public static Path getGameFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + JGemsEngineSystem.ENG_FILEPATH.toLowerCase() + "//" + JGems3D.getGameTitle().toLowerCase();
+        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase() + "//" + JGems3D.getGameTitle().toLowerCase();
         return java.nio.file.Paths.get(appdataPath, folderPath);
     }
 
     public static Path getFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + JGemsEngineSystem.ENG_FILEPATH.toLowerCase();
+        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase();
         return java.nio.file.Paths.get(appdataPath, folderPath);
     }
 
@@ -223,11 +223,11 @@ public final class JGems3D {
     }
 
     public void openUIPanel(PanelUI panelUI) {
-        this.getUI().setPanel(panelUI);
+        this.getSceneRenderer().UIPanelActionRequest(panelUI);
     }
 
-    public void removeUIPanel() {
-        this.getUI().removePanel();
+    public void closeUIPanel() {
+        this.getSceneRenderer().UIPanelActionRequest(null);
     }
 
     public void lockController() {
@@ -240,34 +240,34 @@ public final class JGems3D {
 
     public void pauseGameAndLockUnPausing(boolean pauseSounds) {
         this.pauseGame(pauseSounds);
-        this.getEngineSystem().setLockedUnPausing(true);
+        this.getCore().setLockedUnPausing(true);
     }
 
     public void unPauseGameAndUnLockUnPausing() {
         this.unPauseGame();
-        this.getEngineSystem().setLockedUnPausing(false);
+        this.getCore().setLockedUnPausing(false);
     }
 
     public void pauseGame(boolean pauseSounds) {
-        this.getEngineSystem().pauseGame();
+        this.getCore().pauseGame();
         if (pauseSounds) {
             this.getSoundManager().pauseAllSounds();
         }
     }
 
     public void unPauseGame() {
-        this.getEngineSystem().unPauseGame();
-        if (!this.getEngineSystem().isLockedUnPausing()) {
+        this.getCore().unPauseGame();
+        if (!this.getCore().isLockedUnPausing()) {
             this.getSoundManager().resumeAllSounds();
         }
     }
 
     public void loadMap(IMapLoader mapLoader) {
-        this.getEngineSystem().loadMap(mapLoader);
+        this.getCore().loadMap(mapLoader);
     }
 
     public void destroyMap() {
-        this.getEngineSystem().destroyMap();
+        this.getCore().destroyMap();
     }
 
     public void destroyGame() {
@@ -278,13 +278,17 @@ public final class JGems3D {
         }
     }
 
-   public JGemsScreen getScreen() {
-       return this.getEngineSystem().getScreen();
-   }
+    public ISceneRenderer getSceneRenderer() {
+        return this.getScreen().getScene().getSceneRenderer();
+    }
 
-   public JGemsPhysics getPhysics() {
-       return this.getEngineSystem().getPhysics();
-   }
+    public JGemsScreen getScreen() {
+        return this.getCore().getScreen();
+    }
+
+    public JGemsPhysics getPhysics() {
+        return this.getCore().getPhysics();
+    }
 
     public JGemsSettings getGameSettings() {
         synchronized (this.jGemsSettings) {
@@ -293,14 +297,14 @@ public final class JGems3D {
     }
 
     public JGemsSoundManager getSoundManager() {
-        synchronized (this.getEngineSystem().getSoundManager()) {
-            return this.getEngineSystem().getSoundManager();
+        synchronized (this.getCore().getSoundManager()) {
+            return this.getCore().getSoundManager();
         }
     }
 
-    public JGemsEngineSystem getEngineSystem() {
+    public JGemsCore getCore() {
         synchronized (this) {
-            return this.engineSystem;
+            return this.core;
         }
     }
 
@@ -310,16 +314,12 @@ public final class JGems3D {
         }
     }
 
-    public ImmediateUI getUI() {
-        return this.getScreen().getScene().getImmediateUI();
-    }
-
     public boolean isCurrentMapIsValid() {
-        return this.getEngineSystem().getMapLoader() != null;
+        return this.getCore().getMapLoader() != null;
     }
 
     public JGemsResourceManager getResourceManager() {
-        return this.getEngineSystem().getResourceManager();
+        return this.getCore().getResourceManager();
     }
 
     @SuppressWarnings("all")
@@ -328,19 +328,19 @@ public final class JGems3D {
     }
 
     public boolean isValidPlayer() {
-        return this.getEngineSystem().getLocalPlayer() != null && this.getPlayer() != null;
+        return this.getCore().getLocalPlayer() != null && this.getPlayer() != null;
     }
 
     public IPlayer getPlayer() {
-        return this.getEngineSystem().getLocalPlayer().getEntityPlayer();
+        return this.getCore().getLocalPlayer().getEntityPlayer();
     }
 
     public boolean isPaused() {
-        return this.getEngineSystem().engineState().isPaused();
+        return this.getCore().engineState().isPaused();
     }
 
     public String toString() {
-        return JGemsEngineSystem.ENG_NAME + ": " + JGemsEngineSystem.ENG_VER + " - " + JGems3D.getGameString();
+        return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " - " + JGems3D.getGameString();
     }
 
     public static class Paths {

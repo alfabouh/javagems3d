@@ -53,7 +53,7 @@ public final class PhysicsWorld implements IWorld {
     public void onWorldEnd() {
         APIEventsLauncher.pushEvent(new Events.PhysWorldEnd(Events.Stage.PRE, this));
         this.removeNavGraph();
-        this.cleanUp();
+        this.clear();
         APIEventsLauncher.pushEvent(new Events.PhysWorldEnd(Events.Stage.POST, this));
     }
 
@@ -61,8 +61,8 @@ public final class PhysicsWorld implements IWorld {
         this.getWorldObjectsContainer().killItems();
     }
 
-    public void cleanUp() {
-        this.getWorldObjectsContainer().cleanUp();
+    public void clear() {
+        this.getWorldObjectsContainer().clear();
     }
 
     public void addItem(IWorldObject worldObject) {

@@ -11,18 +11,22 @@
 
 package javagems3d.graphics.rendering.scene;
 
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.world.SceneWorld;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public interface ISceneRenderer extends IWindow.ResizeCallback {
+public interface ISceneRenderer extends IWindow.ResizeEvent {
     void onStartRender();
-
     void onRender(FrameTicking frameTicking);
-
     void onStopRender();
 
-    IWindow getWindow();
+    void UIPanelActionRequest(@Nullable PanelUI panelUI);
 
-    JGemsSceneData getSceneData();
+    @NotNull SceneWorld getSceneWorld();
+    @NotNull IWindow getWindow();
+    @NotNull Transformation getTransformationManager();
 }

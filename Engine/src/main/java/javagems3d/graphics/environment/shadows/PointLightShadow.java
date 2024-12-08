@@ -16,7 +16,7 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.environment.lighting.PointLight;
 import javagems3d.graphics.rendering.programs.fbo.FBOCubeMapProgram;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.TransformationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class PointLightShadow {
     }
 
     public void configureMatrices() {
-        this.shadowDirections = Transformation.getAllDirectionViewSpaces(this.getPointLight().getLightPos(), this.nearPlane(), this.farPlane());
+        this.shadowDirections = TransformationUtils.getAllDirectionViewSpaces(this.getPointLight().getLightPos(), this.nearPlane(), this.farPlane());
     }
 
     public int getId() {

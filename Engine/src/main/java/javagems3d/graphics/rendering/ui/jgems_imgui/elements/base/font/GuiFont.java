@@ -91,7 +91,7 @@ public class GuiFont {
         graphics2D.setColor(Color.WHITE);
     }
 
-    public void cleanUp() {
+    public void clear() {
         this.getTexture().clear();
     }
 

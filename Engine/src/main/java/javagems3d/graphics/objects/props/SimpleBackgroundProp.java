@@ -12,9 +12,9 @@
 package javagems3d.graphics.objects.props;
 
 import javagems3d.graphics.environment.lighting.Light;
-import javagems3d.graphics.OLD.fabric.objects.IRenderObjectFabric;
-import javagems3d.graphics.objects.AbstractSceneObject;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -23,19 +23,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SimpleBackgroundProp extends AbstractSceneObject {
+public class SimpleBackgroundProp extends SceneObject {
     private AnimationData animationData;
-    private final IRenderObjectFabric renderFabric;
+    private final IRenderFabric renderFabric;
     private ObjectRenderConfiguration objectRenderingConfiguration;
 
-    public SimpleBackgroundProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public SimpleBackgroundProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
         super(model);
         this.renderFabric = renderFabric;
         this.objectRenderingConfiguration = objectRenderingConfiguration;
         this.animationData = null;
     }
 
-    public SimpleBackgroundProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
+    public SimpleBackgroundProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
         this(renderFabric, model, new ObjectRenderConfiguration(shaderManager));
     }
 
@@ -78,7 +78,7 @@ public class SimpleBackgroundProp extends AbstractSceneObject {
     }
 
     @Override
-    public IRenderObjectFabric getRenderFabric() {
+    public IRenderFabric getRenderFabric() {
         return this.renderFabric;
     }
 

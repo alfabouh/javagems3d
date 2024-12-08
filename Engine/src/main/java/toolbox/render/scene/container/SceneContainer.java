@@ -49,11 +49,11 @@ public class SceneContainer {
     }
 
     public void renderForward(float deltaTime) {
-        this.getSceneObjects().stream().filter(e -> e.getRenderData().getShaderManager().checkShaderRenderPass(RenderPass.FORWARD)).forEach(e -> e.getRenderData().getObjectRenderer().onRender(this.getMapProperties(), e, deltaTime));
+        //this.getSceneObjects().stream().filter(e -> e.getRenderData().getShaderManager().checkShaderRenderPass(RenderPass.FORWARD)).forEach(e -> e.getRenderData().getObjectRenderer().onRender(this.getMapProperties(), e, deltaTime));
     }
 
     public void renderTransparent(float deltaTime) {
-        this.getSceneObjects().stream().filter(e -> e.getRenderData().getShaderManager().checkShaderRenderPass(RenderPass.TRANSPARENCY)).forEach(e -> e.getRenderData().getObjectRenderer().onRender(this.getMapProperties(), e, deltaTime));
+       // this.getSceneObjects().stream().filter(e -> e.getRenderData().getShaderManager().checkShaderRenderPass(RenderPass.TRANSPARENCY)).forEach(e -> e.getRenderData().getObjectRenderer().onRender(this.getMapProperties(), e, deltaTime));
     }
 
     public void clear() {

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.system.controller.objects.IController;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
@@ -58,7 +58,7 @@ public abstract class UIElement implements UIScalable {
 
     @Override
     public Vector2f getScaling() {
-        return new Vector2f(this.scaling).mul(ImmediateUI.GET_GLOBAL_UI_SCALING());
+        return new Vector2f(this.scaling).mul(JGemsUI.GET_GLOBAL_UI_SCALING());
     }
 
     public UIElement setScaling(Vector2f scaling) {

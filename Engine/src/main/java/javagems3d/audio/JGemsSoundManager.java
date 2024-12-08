@@ -89,7 +89,7 @@ public final class JGemsSoundManager {
         while (gameSoundIterator.hasNext()) {
             GameSound gameSound = gameSoundIterator.next();
             gameSound.stopSound();
-            gameSound.cleanUp();
+            gameSound.clear();
             gameSoundIterator.remove();
         }
         this.tempSet.clear();
@@ -170,7 +170,7 @@ public final class JGemsSoundManager {
                 if (!gameSound.isStopped()) {
                     gameSound.updateSound();
                 } else {
-                    gameSound.cleanUp();
+                    gameSound.clear();
                     gameSoundIterator.remove();
                 }
             } else {

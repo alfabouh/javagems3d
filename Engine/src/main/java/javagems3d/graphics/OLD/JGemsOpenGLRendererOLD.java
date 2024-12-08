@@ -11,73 +11,14 @@
 
 package javagems3d.graphics.OLD;
 
-import javagems3d.graphics.OLD.render_base.groups.forward.*;
-import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DIMInGameInterface;
-import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DIMInMenuInterface;
-import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DIMInterface;
-import javagems3d.graphics.rendering.OLD.render_base.groups.forward.*;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
-import javagems3d.graphics.opengl.rendering.OLD.render_base.groups.forward.*;
-import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
-import javagems3d.graphics.opengl.rendering.scene.old.render_base.groups.forward.*;
-import javagems3d.graphics.transformation.Transformation;
-import javagems3d.system.profiler.SpeedProfiler;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshDataType;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
-import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL45;
-import org.lwjgl.system.MemoryUtil;
-import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import api.bridge.events.APIEventsLauncher;
-import javagems3d.graphics.rendering.ui.dear_imgui.DIMGuiRenderJGems;
-import javagems3d.graphics.environment.lighting.LightManager;
-import javagems3d.graphics.environment.shadows.ShadowManager;
-import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
-import javagems3d.graphics.objects.AbstractSceneObject;
-import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
-import javagems3d.graphics.rendering.programs.textures.TextureProgram;
-import javagems3d.graphics.rendering.scene.ISceneRenderer;
-import javagems3d.graphics.OLD.render_base.SceneRenderBase;
-import javagems3d.graphics.OLD.render_base.groups.deferred.WorldDeferredRender;
-import javagems3d.graphics.OLD.render_base.groups.transparent.LiquidsRender;
-import javagems3d.graphics.OLD.render_base.groups.transparent.ParticlesRender;
-import javagems3d.graphics.OLD.render_base.groups.transparent.WorldTransparentRender;
-import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.screen.window.Window;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.manager.JGemsResourceManager;
-import api.app.events.bus.Events;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
-public class JGemsOpenGLRendererOLD implements ISceneRenderer {
-    public static DIMInterface inGameInterface;
-    public static DIMInterface inMenuInterface;
+public class JGemsOpenGLRendererOLD {
+    /*
+    public static DearUIInterface inGameInterface;
+    public static DearUIInterface inMenuInterface;
 
     private final SceneData sceneData;
     private final SceneRenderBaseContainer sceneRenderBaseContainer;
-    private final DIMGuiRenderJGems dearImGuiRender;
+    private final DearUIRenderer dearImGuiRender;
     private final Set<FBOTexture2DProgram> fboSet;
     private boolean wantToTakeScreenshot;
     private WorldTransparentRender worldTransparentRender;
@@ -99,15 +40,15 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
 
     private Model<Format2D> screenModel;
 
-    private final ImmediateUI immediateUI;
+    private final JGemsUI jGemsUI;
     private final IndirectRenderBuffer indirectRenderBuffer;
 
-    public JGemsOpenGLRendererOLD(IndirectRenderBuffer indirectRenderBuffer, ImmediateUI immediateUI, Window window, SceneData sceneData) {
-        this.immediateUI = immediateUI;
+    public JGemsOpenGLRendererOLD(IndirectRenderBuffer indirectRenderBuffer, JGemsUI JGemsUI, Window window, SceneData sceneData) {
+        this.jGemsUI = JGemsUI;
         this.indirectRenderBuffer = indirectRenderBuffer;
 
-        JGemsOpenGLRendererOLD.inGameInterface = new DIMInGameInterface();
-        JGemsOpenGLRendererOLD.inMenuInterface = new DIMInMenuInterface();
+        JGemsOpenGLRendererOLD.inGameInterface = new DearUIGameInterface();
+        JGemsOpenGLRendererOLD.inMenuInterface = new DearUIMenuInterface();
 
         this.fboSet = new HashSet<>();
 
@@ -117,7 +58,7 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
 
         this.createResources(window.getWindowSize());
 
-        this.dearImGuiRender = new DIMGuiRenderJGems(window, JGemsResourceManager.getGlobalGameResources().getResourceCache());
+        this.dearImGuiRender = new DearUIRenderer(window, JGemsResourceManager.getGlobalGameResources().getResourceCache());
     }
 
     public static JGemsShaderManager getGameUboShader() {
@@ -282,15 +223,15 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
 
     private void destroySsaoTextures() {
         if (this.getSsaoNoiseTexture() != null) {
-            this.getSsaoNoiseTexture().cleanUp();
+            this.getSsaoNoiseTexture().clear();
             this.ssaoNoiseTexture = null;
         }
         if (this.getSsaoKernelTexture() != null) {
-            this.getSsaoKernelTexture().cleanUp();
+            this.getSsaoKernelTexture().clear();
             this.ssaoKernelTexture = null;
         }
         if (this.getSsaoBufferTexture() != null) {
-            this.getSsaoBufferTexture().cleanUp();
+            this.getSsaoBufferTexture().clear();
             this.ssaoBufferTexture = null;
         }
     }
@@ -330,7 +271,7 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
 
     @Override
     public void onStopRender() {
-        this.getDearImGuiRender().cleanUp();
+        this.getDearImGuiRender().clear();
         this.getSceneRenderBaseContainer().endAll();
         this.destroyResources();
         this.screenModel.clear();
@@ -603,14 +544,14 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
         this.getForwardAndDeferredScenesBuffer().copyFBOtoFBODepth(this.getTransparencySceneBuffer().getFrameBufferId(), windowSize);
         GL46.glDepthMask(false);
         GL46.glEnable(GL46.GL_BLEND);
-        GL45.glBlendFunci(0, GL45.GL_ONE, GL45.GL_ONE);
-        GL45.glBlendFunci(1, GL45.GL_ZERO, GL45.GL_ONE_MINUS_SRC_COLOR);
-        GL45.glBlendFunci(2, GL45.GL_ONE, GL45.GL_ONE);
-        GL45.glBlendEquation(GL46.GL_FUNC_ADD);
+        GL46.glBlendFunci(0, GL46.GL_ONE, GL46.GL_ONE);
+        GL46.glBlendFunci(1, GL46.GL_ZERO, GL46.GL_ONE_MINUS_SRC_COLOR);
+        GL46.glBlendFunci(2, GL46.GL_ONE, GL46.GL_ONE);
+        GL46.glBlendEquation(GL46.GL_FUNC_ADD);
         this.getTransparencySceneBuffer().bindFBO();
-        GL45.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-        GL45.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
-        GL45.glClearBufferfv(GL46.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        GL46.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        GL46.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
+        GL46.glClearBufferfv(GL46.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
         SceneRenderBaseContainer.renderSceneRenderSet(frameTicking, this.getSceneRenderBaseContainer().getTransparencyRenderSet());
         this.getTransparencySceneBuffer().unBindFBO();
         GL46.glDisable(GL46.GL_BLEND);
@@ -730,8 +671,8 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
         this.wantToTakeScreenshot = true;
     }
 
-    public ImmediateUI getImmediateUI() {
-        return this.immediateUI;
+    public JGemsUI getImmediateUI() {
+        return this.jGemsUI;
     }
 
     public IndirectRenderBuffer getIndirectRenderBuffer() {
@@ -750,7 +691,7 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
         return this.fboSet;
     }
 
-    public DIMGuiRenderJGems getDearImGuiRender() {
+    public DearUIRenderer getDearImGuiRender() {
         return this.dearImGuiRender;
     }
 
@@ -952,4 +893,6 @@ public class JGemsOpenGLRendererOLD implements ISceneRenderer {
             return this.forwardRenderSet;
         }
     }
+
+     */
 }

@@ -16,8 +16,7 @@ import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.system.inventory.Inventory;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.graphics.opengl.rendering.fabric.inventory.data.InventoryItemRenderData;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
@@ -31,51 +30,51 @@ public class DefaultGamePanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks) {
-        this.renderTextOnScreen(immediateUI, frameDeltaTicks);
-        this.renderImagesOnScreen(immediateUI, frameDeltaTicks);
+    public void drawPanel(JGemsUI JGemsUI, float frameDeltaTicks) {
+        this.renderTextOnScreen(JGemsUI, frameDeltaTicks);
+        this.renderImagesOnScreen(JGemsUI, frameDeltaTicks);
     }
 
-    protected void renderTextOnScreen(ImmediateUI immediateUI, float frameDeltaTicks) {
-        Window window = immediateUI.getWindow();
+    protected void renderTextOnScreen(JGemsUI JGemsUI, float frameDeltaTicks) {
+        Window window = JGemsUI.getWindow();
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
         final WorldItem entityPlayerSP = (WorldItem) JGems3D.get().getPlayer();
 
-        if (entityPlayerSP instanceof IInventoryOwner) {
-            IInventoryOwner dynamicPlayer = (IInventoryOwner) entityPlayerSP;
+       //if (entityPlayerSP instanceof IInventoryOwner) {
+       //    IInventoryOwner dynamicPlayer = (IInventoryOwner) entityPlayerSP;
 
-            Inventory inventory = dynamicPlayer.getInventory();
-            int j = 0;
+       //    Inventory inventory = dynamicPlayer.getInventory();
+       //    int j = 0;
 
-            if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
-                immediateUI.textUI(inventory.getCurrentItem().getDescription(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(80, 80), 0xffffff, 0.5f);
-            }
+       //    if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
+       //        JGemsUI.textUI(inventory.getCurrentItem().getDescription(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(80, 80), 0xffffff, 0.5f);
+       //    }
 
-            for (Inventory.Slot slot : inventory.getInventorySlots()) {
-                if (slot.getInventoryItem() == null) {
-                    continue;
-                }
-                InventoryItemRenderData inventoryItemRenderData = JGemsResourceManager.inventoryItemRenderTable.getMap().get(slot.getInventoryItem().getClass());
+       //    for (Inventory.Slot slot : inventory.getInventorySlots()) {
+       //        if (slot.getInventoryItem() == null) {
+       //            continue;
+       //        }
+       //        InventoryItemRenderData inventoryItemRenderData = JGemsResourceManager.inventoryItemRenderTable.getMap().get(slot.getInventoryItem().getClass());
 
-                TextureSample sample = inventoryItemRenderData == null ? null : inventoryItemRenderData.getInventoryIcon();
-                if (sample == null) {
-                    sample = TextureAssetsLoader.DEFAULT;
-                }
-                immediateUI.imageUI(sample, new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
+       //        TextureSample sample = inventoryItemRenderData == null ? null : inventoryItemRenderData.getInventoryIcon();
+       //        if (sample == null) {
+       //            sample = TextureAssetsLoader.DEFAULT;
+       //        }
+       //        JGemsUI.imageUI(sample, new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
 
-                immediateUI.textUI("[" + j + "]", JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(94 * j, windowH - 132), inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0xffffff, 0.5f);
-            }
-        }
+       //        JGemsUI.textUI("[" + j + "]", JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(94 * j, windowH - 132), inventory.getCurrentSlot() == slot.getId() ? 0xff0000 : 0xffffff, 0.5f);
+       //    }
+       //}
     }
 
-    protected void renderImagesOnScreen(ImmediateUI immediateUI, float frameDeltaTicks) {
-        Window window = immediateUI.getWindow();
+    protected void renderImagesOnScreen(JGemsUI JGemsUI, float frameDeltaTicks) {
+        Window window = JGemsUI.getWindow();
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
         int crossSize = 32;
-        immediateUI.imageUI(JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
+        JGemsUI.imageUI(JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
     }
 }

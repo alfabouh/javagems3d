@@ -30,7 +30,7 @@ public class MSAATextureProgram implements ITextureProgram {
     }
 
     @Override
-    public void cleanUp() {
+    public void clear() {
         this.unBindTexture();
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;

@@ -12,7 +12,6 @@
 package javagems3d.system.map.loaders.custom;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
-import javagems3d.graphics.OLD.fabric.objects.render.RenderSimpleBackgroundProp;
 import javagems3d.graphics.objects.props.SceneProp;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.system.resources.assets.models.Model;
@@ -57,8 +56,8 @@ public class DefaultMap implements IMapLoader {
         //CubeAI cubeAI = new CubeAI(world, new Vector3f(0.0f), "grass");
         //JGemsHelper.WORLD.addItemInWorld(cubeAI, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.entityCube, JGemsResourceManager.globalModelAssets.cube));
 
-        EntityCollectableItem collectableItem = new EntityCollectableItem(world, new ItemZippo(), new Vector3f(3.0f, -4.5f, 0.0f), "zippo");
-        JGemsHelper.WORLD.addItemInWorld(collectableItem, JGemsResourceManager.globalRenderDataAssets.zippo_world);
+        //EntityCollectableItem collectableItem = new EntityCollectableItem(world, new ItemZippo(), new Vector3f(3.0f, -4.5f, 0.0f), "zippo");
+        //JGemsHelper.WORLD.addItemInWorld(collectableItem, JGemsResourceManager.globalRenderDataAssets.zippo_world);
     }
 
     @Override
@@ -71,10 +70,10 @@ public class DefaultMap implements IMapLoader {
 
     @Override
     public void fillSkyBox(SkyBox.Background background) {
-        MeshGroup meshGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
-        SceneProp sceneProp3 = new SceneProp(new RenderSimpleBackgroundProp(background), new Model<>(new Format3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), JGemsResourceManager.globalShaderAssets.skybox_background);
-        sceneProp3.getObjectRenderConfiguration().setAlphaDiscardValue(0.5f);
-        background.addObjectInBackGround(sceneProp3);
+        //MeshGroup meshGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
+        //SceneProp sceneProp3 = new SceneProp(new RenderSimpleBackgroundProp(background), new Model<>(new Format3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), JGemsResourceManager.globalShaderAssets.skybox_background);
+        //sceneProp3.getObjectRenderConfiguration().setAlphaDiscardValue(0.5f);
+        //background.addObjectInBackGround(sceneProp3);
     }
 
     @Override

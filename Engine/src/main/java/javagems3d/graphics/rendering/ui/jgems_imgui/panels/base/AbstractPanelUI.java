@@ -11,12 +11,11 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels.base;
 
-import javagems3d.graphics.screen.window.Window;
-import org.joml.Vector2i;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 
-public abstract class AbstractPanelUI implements PanelUI {
+public abstract class AbstractPanelUI implements PanelUI, IWindow.ResizeEvent {
     private final PanelUI prevPanel;
 
     public AbstractPanelUI(PanelUI prevPanel) {
@@ -24,27 +23,27 @@ public abstract class AbstractPanelUI implements PanelUI {
     }
 
     @Override
-    public void onConstruct(ImmediateUI immediateUI) {
+    public void onConstruct(JGemsUI JGemsUI) {
 
     }
 
     @Override
-    public void onDestruct(ImmediateUI immediateUI) {
+    public void onDestruct(JGemsUI JGemsUI) {
 
     }
 
     @Override
-    public void onWindowResize(Window window) {
+    public void onWindowResize(IWindow window) {
 
     }
 
-    public void closePanel(ImmediateUI immediateUI) {
-        immediateUI.removePanel();
+    public void closePanel(JGemsUI JGemsUI) {
+        JGemsUI.removePanel();
     }
 
-    public void goBack(ImmediateUI immediateUI) {
-        if (immediateUI != null) {
-            immediateUI.setPanel(this.prevPanel);
+    public void goBack(JGemsUI JGemsUI) {
+        if (JGemsUI != null) {
+            JGemsUI.setPanel(this.prevPanel);
         } else {
             JGemsHelper.getLogger().warn("Couldn't go back to NULL UI panel!");
         }

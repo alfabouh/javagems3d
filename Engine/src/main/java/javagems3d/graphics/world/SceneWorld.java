@@ -18,14 +18,13 @@ import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lighting.Light;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.particles.ParticlesEmitter;
 import javagems3d.graphics.rendering.JGemsDebugGlobalConstants;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.ILightsKeeper;
-import javagems3d.graphics.objects.AbstractSceneObject;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.AbstractSceneEntity;
 import javagems3d.graphics.objects.entities.LiquidObject;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -41,7 +40,6 @@ import api.app.events.bus.Events;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * In the world of the scene, logic is being updated for the functioning of the render based on information from the physical world.
@@ -54,8 +52,10 @@ public final class SceneWorld implements IWorld {
 
     private final Set<Pair<WorldItem, Light>> lightAttachmentQueue;
     private final Map<Integer, AbstractSceneEntity> objectMap;
-    private final Set<AbstractSceneObject> toRenderSet;
+
+    private final Set<SceneObject> toRenderSet;
     private final Set<LiquidObject> liquids;
+
     private int ticks;
 
     public SceneWorld() {
@@ -112,9 +112,9 @@ public final class SceneWorld implements IWorld {
     public void updateWorldObjects(boolean refresh, FrameTicking frameTicking) {
         this.getParticlesEmitter().onUpdateParticles(frameTicking.getFrameDeltaTime(), this);
 
-        Iterator<AbstractSceneObject> iterator = this.getModeledSceneEntities().iterator();
+        Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
-            AbstractSceneObject sceneObject = iterator.next();
+            SceneObject sceneObject = iterator.next();
             sceneObject.updateAnimation();
             if (sceneObject instanceof IWorldTicked) {
                 IWorldTicked worldTicked = (IWorldTicked) sceneObject;
@@ -148,9 +148,9 @@ public final class SceneWorld implements IWorld {
 
     //section WorldClean
     private void clearAll() {
-        Iterator<AbstractSceneObject> iterator = this.getModeledSceneEntities().iterator();
+        Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
-            AbstractSceneObject modeledSceneObject = iterator.next();
+            SceneObject modeledSceneObject = iterator.next();
             if (modeledSceneObject instanceof AbstractSceneEntity) {
                 AbstractSceneEntity abstractSceneEntity = (AbstractSceneEntity) modeledSceneObject;
                 abstractSceneEntity.onDestroy(this);
@@ -167,24 +167,8 @@ public final class SceneWorld implements IWorld {
         this.getObjectMap().clear();
     }
 
-    @SuppressWarnings("all")
-    public Set<AbstractSceneObject> getFilteredSet(Set<AbstractSceneObject> sceneObjects) {
-        return sceneObjects.stream().filter(e -> {
-            if (!e.isVisible()) {
-                return false;
-            }
-            ICamera camera = JGems3D.get().getScreen().getCamera();
-            ObjectRenderConfiguration objectRenderConfiguration = e.getObjectRenderConfiguration();
-            if (objectRenderConfiguration.getRenderDistance() > 0.0f && objectRenderConfiguration.getRenderDistance() > camera.getCamPosition().distance(e.getModel().getFormat().getPosition())) {
-                return false;
-            }
-            return true;
-        }).collect(Collectors.toSet());
-    }
-
-    public boolean checkReachedRenderDistance(AbstractSceneObject renderObject) {
-        ICamera camera = JGems3D.get().getScreen().getCamera();
-        return renderObject.getObjectRenderConfiguration().getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderObject.getObjectRenderConfiguration().getRenderDistance();
+    public AttachedCamera createAttachedCamera(AbstractSceneEntity abstractSceneEntity) {
+        return new AttachedCamera(abstractSceneEntity);
     }
 
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {
@@ -272,12 +256,12 @@ public final class SceneWorld implements IWorld {
         abstractSceneEntity.removeLightById(i);
     }
 
-    public void addObjectInWorld(AbstractSceneObject renderObject) {
-        this.getModeledSceneEntities().add(renderObject);
+    public void addObjectInWorld(SceneObject renderObject) {
+        this.getSceneObjects().add(renderObject);
     }
 
-    public void removeObjectFromWorld(AbstractSceneObject renderObject) {
-        if (!this.getModeledSceneEntities().remove(renderObject)) {
+    public void removeObjectFromWorld(SceneObject renderObject) {
+        if (!this.getSceneObjects().remove(renderObject)) {
             JGemsHelper.getLogger().warn("Couldn't remove a render object from scene rendering!");
         }
     }
@@ -337,7 +321,7 @@ public final class SceneWorld implements IWorld {
         return this.liquids;
     }
 
-    public Set<AbstractSceneObject> getModeledSceneEntities() {
+    public Set<SceneObject> getSceneObjects() {
         return this.toRenderSet;
     }
 

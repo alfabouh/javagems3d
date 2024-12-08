@@ -16,7 +16,7 @@ import org.joml.Intersectionf;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 
@@ -32,7 +32,7 @@ public final class LocalCollision {
     }
 
     public void calcAABB(Format3D format3D) {
-        Matrix4f modelMatrix = Transformation.getModelMatrix(format3D);
+        Matrix4f modelMatrix = TransformationUtils.getModelMatrix(format3D);
 
         Vector3f min = new Vector3f((float) Double.POSITIVE_INFINITY);
         Vector3f max = new Vector3f((float) Double.NEGATIVE_INFINITY);
@@ -55,7 +55,7 @@ public final class LocalCollision {
     }
 
     public Vector3f findClosesPointRayIntersectObjectMesh(Format3D format3D, Vector3f rayStart, Vector3f rayEnd) {
-        Matrix4f modelMatrix = Transformation.getModelMatrix(format3D);
+        Matrix4f modelMatrix = TransformationUtils.getModelMatrix(format3D);
 
         Vector3f closestVector = null;
         for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
@@ -86,7 +86,7 @@ public final class LocalCollision {
 
     //969FE1C0623D4457
     public boolean isRayIntersectObjectMesh(Format3D format3D, Vector3f rayStart, Vector3f rayEnd) {
-        Matrix4f modelMatrix = Transformation.getModelMatrix(format3D);
+        Matrix4f modelMatrix = TransformationUtils.getModelMatrix(format3D);
 
         for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
             List<Float> floats = meshNode.getMesh().getVertexPositions();

@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIAction;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
@@ -80,8 +80,8 @@ public class UIButton extends UIInteractiveElement {
     }
 
     private Vector2i getFontPos(String text, Vector2i buttonSize) {
-        int posX = buttonSize.x / 2 - ImmediateUI.getTextWidth(this.guiFont, text) / 2;
-        int posY = buttonSize.y / 2 - ImmediateUI.getFontHeight(this.guiFont) / 2;
+        int posX = buttonSize.x / 2 - JGemsUI.getTextWidth(this.guiFont, text) / 2;
+        int posY = buttonSize.y / 2 - JGemsUI.getFontHeight(this.guiFont) / 2;
         return new Vector2i(posX, posY);
     }
 

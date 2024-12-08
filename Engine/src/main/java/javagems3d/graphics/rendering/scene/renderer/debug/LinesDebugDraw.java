@@ -152,7 +152,7 @@ public class LinesDebugDraw {
         GL46.glBindVertexArray(0);
     }
 
-    public void cleanUp() {
+    public void clear() {
         MemoryUtil.memFree(this.navMeshFloatBuffer);
         GL46.glDeleteBuffers(this.vbo);
         GL46.glDeleteVertexArrays(this.vao);

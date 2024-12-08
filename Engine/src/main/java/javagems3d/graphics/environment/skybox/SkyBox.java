@@ -2,7 +2,7 @@ package javagems3d.graphics.environment.skybox;
 
 import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.objects.AbstractSceneObject;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import org.jetbrains.annotations.NotNull;
@@ -96,7 +96,7 @@ public class SkyBox implements ISkyBox {
 
     public static class Background {
         private final FixedCamera scaledCameraBackground;
-        private final Set<AbstractSceneObject> toRenderSet;
+        private final Set<SceneObject> toRenderSet;
         private float viewScaling;
 
         public Background() {
@@ -115,13 +115,13 @@ public class SkyBox implements ISkyBox {
         }
 
         public void clearBackGround() {
-            this.getToRenderSet().forEach(e -> e.getRenderFabric().onPostRender(e));
-            this.getToRenderSet().clear();
+            //this.getToRenderSet().forEach(e -> e.getRenderFabric().onPostRender(e));
+            //this.getToRenderSet().clear();
         }
 
-        public void addObjectInBackGround(AbstractSceneObject modeledSceneObject) {
-            this.getToRenderSet().add(modeledSceneObject);
-            modeledSceneObject.getRenderFabric().onPreRender(modeledSceneObject);
+        public void addObjectInBackGround(SceneObject modeledSceneObject) {
+           //this.getToRenderSet().add(modeledSceneObject);
+           //modeledSceneObject.getRenderFabric().onPreRender(modeledSceneObject);
         }
 
         public FixedCamera getScaledCameraBackground() {
@@ -132,7 +132,7 @@ public class SkyBox implements ISkyBox {
             return this.viewScaling;
         }
 
-        public Set<AbstractSceneObject> getToRenderSet() {
+        public Set<SceneObject> getToRenderSet() {
             return this.toRenderSet;
         }
     }

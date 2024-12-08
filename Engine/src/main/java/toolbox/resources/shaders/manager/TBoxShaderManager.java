@@ -15,7 +15,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.material.Material;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.base.ISample;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
@@ -36,11 +36,6 @@ public final class TBoxShaderManager extends ShaderManager {
     public TBoxShaderManager(ShadersContainer shadersContainer) {
         super(shadersContainer);
         this.shaderUtils = new TBoxShaderUtils();
-    }
-
-    @Override
-    public TBoxShaderManager setShaderRenderPass(RenderPass renderPass) {
-        return (TBoxShaderManager) super.setShaderRenderPass(renderPass);
     }
 
     @Override
@@ -114,7 +109,7 @@ public final class TBoxShaderManager extends ShaderManager {
         }
 
         public void performOrthographicMatrix(float aspectRatio, float borders) {
-            this.performPerspectiveMatrix(Transformation.getOrthographic3DMatrix(-borders * aspectRatio, borders * aspectRatio, -borders, borders, 0, 100, true));
+            this.performPerspectiveMatrix(TransformationUtils.getOrthographic3DMatrix(-borders * aspectRatio, borders * aspectRatio, -borders, borders, 0, 100, true));
         }
 
         public void performPerspectiveMatrix() {
@@ -126,11 +121,11 @@ public final class TBoxShaderManager extends ShaderManager {
         }
 
         public void performOrthographicMatrix(Model<Format2D> model) {
-            TBoxShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(Transformation.getModelOrthographicMatrix(model.getFormat(), TBoxSceneUtils.getMainOrthographicMatrix())));
+            TBoxShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(model.getFormat(), TBoxSceneUtils.getMainOrthographicMatrix())));
         }
 
         public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {
-            TBoxShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(Transformation.getModelViewMatrix(model.getFormat(), view)));
+            TBoxShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelViewMatrix(model.getFormat(), view)));
         }
 
         public void performModel3DViewMatrix(Matrix4f matrix4f) {
@@ -142,11 +137,11 @@ public final class TBoxShaderManager extends ShaderManager {
         }
 
         public void performModel3DMatrix(Format3D format3D) {
-            this.performModel3DMatrix(Transformation.getModelMatrix(format3D));
+            this.performModel3DMatrix(TransformationUtils.getModelMatrix(format3D));
         }
 
         public void performModel3DMatrix(Model<Format3D> model) {
-            this.performModel3DMatrix(Transformation.getModelMatrix(model.getFormat()));
+            this.performModel3DMatrix(TransformationUtils.getModelMatrix(model.getFormat()));
         }
 
         public void performModel3DMatrix(Matrix4f matrix4f) {

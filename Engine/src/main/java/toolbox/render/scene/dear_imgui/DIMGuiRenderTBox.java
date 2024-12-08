@@ -20,7 +20,7 @@ import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.rendering.ui.dear_imgui.DIMGuiMesh;
+import javagems3d.graphics.rendering.ui.dear_imgui.DearUIMesh;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -36,7 +36,7 @@ import java.nio.ByteBuffer;
 
 public class DIMGuiRenderTBox {
     private final TBoxShaderManager shaderManager;
-    private DIMGuiMesh dearImGuiMesh;
+    private DearUIMesh dearImGuiMesh;
     private TextureSample textureSample;
     private GLFWKeyCallback prevKeyCallback;
     private ImGuiContent currentContentToRender;
@@ -62,7 +62,7 @@ public class DIMGuiRenderTBox {
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
         this.textureSample = TextureSample.createTexture(resourceCache, "imgui_fonts", width.get(), height.get(), buffer);
-        this.dearImGuiMesh = new DIMGuiMesh();
+        this.dearImGuiMesh = new DearUIMesh();
     }
 
     private void createUICallbacks(IWindow window) {
@@ -216,9 +216,9 @@ public class DIMGuiRenderTBox {
         imGuiIO.setMouseWheel(mouseKeyboardController.getMouseAndKeyboard().getScrollVector());
     }
 
-    public void onResize(Vector2i size) {
+    public void onResize(IWindow window) {
         ImGuiIO io = ImGui.getIO();
-        io.setDisplaySize(size.x, size.y);
+        io.setDisplaySize(window.getWindowSize().x, window.getWindowSize().y);
     }
 
     public ImGuiContent getCurrentContentToRender() {
@@ -229,7 +229,7 @@ public class DIMGuiRenderTBox {
         this.currentContentToRender = currentContentToRender;
     }
 
-    public DIMGuiMesh getImguiMesh() {
+    public DearUIMesh getImguiMesh() {
         return this.dearImGuiMesh;
     }
 
@@ -241,8 +241,8 @@ public class DIMGuiRenderTBox {
         return this.textureSample;
     }
 
-    public void cleanUp() {
-        this.getImguiMesh().cleanUp();
+    public void clear() {
+        this.getImguiMesh().clear();
         if (this.prevKeyCallback != null) {
             this.prevKeyCallback.free();
         }

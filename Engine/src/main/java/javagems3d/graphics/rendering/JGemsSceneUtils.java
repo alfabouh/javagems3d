@@ -22,15 +22,15 @@ import javagems3d.system.resources.assets.models.helper.MeshHelper;
 
 public abstract class JGemsSceneUtils {
     public static Matrix4f getMainCameraViewMatrix() {
-        return JGemsHelper.getScreen().getTransformationUtils().getMainCameraViewMatrix();
+        return JGemsHelper.getScreen().getTransformation().getMainCameraViewMatrix();
     }
 
     public static Matrix4f getMainPerspectiveMatrix() {
-        return JGemsHelper.getScreen().getTransformationUtils().getPerspectiveMatrix();
+        return JGemsHelper.getScreen().getTransformation().getPerspectiveMatrix();
     }
 
     public static Matrix4f getMainOrthographicMatrix() {
-        return JGemsHelper.getScreen().getTransformationUtils().getOrthographicMatrix();
+        return JGemsHelper.getScreen().getTransformation().getOrthographicMatrix();
     }
 
     // section SimpleRender

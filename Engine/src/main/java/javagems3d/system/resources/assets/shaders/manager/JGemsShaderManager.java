@@ -26,7 +26,7 @@ import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.scene.JGemsScene;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
@@ -177,9 +177,9 @@ public final class JGemsShaderManager extends ShaderManager {
         public void performShadowsInfo() {
             JGemsScene scene = JGems3D.get().getScreen().getScene();
             for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
-                CascadeShadow cascadeShadow = scene.getSceneRenderer().getShadowScene().getCascadeShadows().get(i);
+                CascadeShadow cascadeShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getCascadeShadows().get(i);
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascadeShadow.getSplitDistance()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascadeShadow.getLightProjectionViewMatrix()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT));
@@ -187,7 +187,7 @@ public final class JGemsShaderManager extends ShaderManager {
                 }
             }
             for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
-                PointLightShadow pointLightShadow = scene.getSceneRenderer().getShadowScene().getPointLightShadows().get(i);
+                PointLightShadow pointLightShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getPointLightShadows().get(i);
                 JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap", i))) {
                     this.performCubeMapProgram(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram().getTextureId());
@@ -200,10 +200,10 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Format3D format3D) {
-            Matrix4f modelM = new Matrix4f(Transformation.getModelMatrix(format3D));
+            Matrix4f modelM = new Matrix4f(TransformationUtils.getModelMatrix(format3D));
             if (JGemsShaderManager.this.isUniformExist(new UniformString("model_matrix"))) {
                 if (format3D.isOrientedToViewMatrix()) {
-                    modelM = Transformation.getOrientedToViewModelMatrix(format3D, viewMatrix);
+                    modelM = TransformationUtils.getOrientedToViewModelMatrix(format3D, viewMatrix);
                 }
                 this.performModel3DMatrix(modelM);
             }
@@ -232,11 +232,11 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performOrthographicMatrix(Model<Format2D> model) {
-            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(Transformation.getModelOrthographicMatrix(model.getFormat(), JGemsSceneUtils.getMainOrthographicMatrix())));
+            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(model.getFormat(), JGemsSceneUtils.getMainOrthographicMatrix())));
         }
 
         public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {
-            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(Transformation.getModelViewMatrix(model.getFormat(), view)));
+            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelViewMatrix(model.getFormat(), view)));
         }
 
         public void performModel3DViewMatrix(Matrix4f model, Matrix4f view) {
@@ -252,7 +252,7 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performModel3DMatrix(Model<Format3D> model) {
-            this.performModel3DMatrix(Transformation.getModelMatrix(model.getFormat()));
+            this.performModel3DMatrix(TransformationUtils.getModelMatrix(model.getFormat()));
         }
 
         public void performModel3DMatrix(Matrix4f matrix4f) {

@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.environment.lighting;
 
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -102,7 +103,7 @@ public class LightManager implements ILightManager {
         value1Buffer.put(0.0f);
 
         value1Buffer.flip();
-        JGemsOpenGLRendererOLD.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.SunLight, value1Buffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.SunLight, value1Buffer);
     }
 
     private void updatePointLightsUbo(MemoryStack stack, Matrix4f viewMatrix) {
@@ -133,17 +134,17 @@ public class LightManager implements ILightManager {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
             value1Buffer.flip();
-            JGemsOpenGLRendererOLD.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightManager.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
+            JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightManager.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
         }
 
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(total);
         intBuffer.flip();
-        JGemsOpenGLRendererOLD.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
     }
 
     public void removeAllLights(MemoryStack stack) {
-        boolean flag = JGemsOpenGLRendererOLD.getGameUboShader().beginShading();
+        boolean flag = JGemsOpenGLRenderer.UBOShader().beginShading();
         FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
         for (int i = 0; i < this.getPointLightList().size(); i++) {
             value1Buffer.put(0.0f);
@@ -167,16 +168,16 @@ public class LightManager implements ILightManager {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
             value1Buffer.flip();
-            JGemsOpenGLRendererOLD.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightManager.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
+            JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightManager.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
         }
 
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(0);
         intBuffer.flip();
-        JGemsOpenGLRendererOLD.getGameUboShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
         this.getPointLightList().clear();
         if (flag) {
-            JGemsOpenGLRendererOLD.getGameUboShader().endShading();
+            JGemsOpenGLRenderer.UBOShader().endShading();
         }
     }
 }

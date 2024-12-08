@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL46;
 public interface ITextureProgram {
     int getTextureId();
 
-    void cleanUp();
+    void clear();
 
     default void bindTexture(int code) {
         GL46.glBindTexture(code, this.getTextureId());

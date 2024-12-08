@@ -15,81 +15,58 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Transformation {
-    public static Matrix4f getOrthographic2DMatrix(float left, float right, float bottom, float top) {
-        return new Matrix4f().identity().setOrtho2D(left, right, bottom, top);
+    private final Vector3f projectionData;
+
+    private final CameraMatrix cameraMatrix;
+    private final Matrix4f perspectiveMatrix;
+    private final Matrix4f orthographicMatrix;
+    private final IWindow window;
+
+    public Transformation(IWindow window, float fov, float zNear, float zFar) {
+        this.window = window;
+        this.projectionData = new Vector3f(fov, zNear, zFar);
+        this.cameraMatrix = new CameraMatrix();
+        this.perspectiveMatrix = new Matrix4f().identity();
+        this.orthographicMatrix = new Matrix4f().identity();
+        this.updateMatrices();
     }
 
-    public static Matrix4f getOrthographic3DMatrix(float left, float right, float bottom, float top, float zNear, float zFar, boolean zZeroToOne) {
-        return new Matrix4f().identity().setOrtho(left, right, bottom, top, zNear, zFar, zZeroToOne);
+    public void updateCamera(ICamera camera) {
+        this.getCameraTransformation().update(camera);
     }
 
-    public static Matrix4f getPerspectiveMatrix(IWindow window, float fov, float zNear, float zFar) {
-        return new Matrix4f().identity().perspective(fov, window.getWindowSize().x / (float) window.getWindowSize().y, zNear, zFar);
+    public void updateOrthographicMatrix() {
+        this.orthographicMatrix.set(TransformationUtils.getOrthographic2DMatrix(0, this.window.getWindowSize().x, this.window.getWindowSize().y, 0));
     }
 
-    public static Matrix4f getViewMatrix(ICamera camera) {
-        Vector3f cameraPos = camera.getCamPosition();
-        Vector3f cameraRot = camera.getCamRotation();
-        return new Matrix4f().identity().rotateXYZ(cameraRot.x, cameraRot.y, cameraRot.z).translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+    public void updatePerspectiveMatrix() {
+        this.perspectiveMatrix.set(TransformationUtils.getPerspectiveMatrix(this.window, this.projectionData.x, this.projectionData.y, this.projectionData.z));
     }
 
-    public static Matrix4f getModelMatrix(Format3D format) {
-        Vector3f rotation = format.getRotation();
-        return new Matrix4f().identity().translate(format.getPosition()).rotateXYZ(-rotation.x, -rotation.y, -rotation.z).scale(format.getScaling());
+    public void updateMatrices() {
+        this.updateOrthographicMatrix();
+        this.updatePerspectiveMatrix();
     }
 
-    public static Matrix4f getModelViewMatrix(Format3D format3D, Matrix4f viewMatrix) {
-        if (format3D.isOrientedToViewMatrix()) {
-            return Transformation.getOrientedToViewModelViewMatrix(format3D, viewMatrix);
-        }
-        return new Matrix4f(viewMatrix).mul(Transformation.getModelMatrix(format3D));
+    public static Matrix4f getAbstractCameraViewMatrix(ICamera camera) {
+        return TransformationUtils.getViewMatrix(camera);
     }
 
-    public static Matrix4f getOrientedToViewModelViewMatrix(Format3D format3D, Matrix4f viewMatrix) {
-        Matrix4f m1 = Transformation.getModelMatrix(format3D);
-        viewMatrix.transpose3x3(m1);
-        return new Matrix4f(viewMatrix).mul(m1);
+    public Matrix4f getMainCameraViewMatrix() {
+        return this.getCameraTransformation().getViewMatrix();
     }
 
-    public static Matrix4f getOrientedToViewModelMatrix(Format3D format3D, Matrix4f viewMatrix) {
-        Matrix4f m1 = Transformation.getModelMatrix(format3D);
-        Vector3f scaling = new Vector3f();
-        m1.getScale(scaling);
-        return viewMatrix.transpose3x3(m1).scale(scaling);
+    public Matrix4f getOrthographicMatrix() {
+        return new Matrix4f(this.orthographicMatrix);
     }
 
-    public static Matrix4f getModelOrthographicMatrix(Format2D format2D, Matrix4f orthographicMatrix) {
-        return new Matrix4f(orthographicMatrix).mul(new Matrix4f().identity().translate(new Vector3f(format2D.getPosition(), 0.0f)).rotateZ(-format2D.getRotation()).scaleXY(format2D.getScale().x, format2D.getScale().y));
+    public Matrix4f getPerspectiveMatrix() {
+        return new Matrix4f(this.perspectiveMatrix);
     }
 
-    public static Matrix4f getLookAtMatrix(Vector3f eye, Vector3f up, Vector3f destination) {
-        return new Matrix4f().identity().setLookAt(eye, destination, up);
-    }
-
-    public static List<Matrix4f> getAllDirectionViewSpaces(Vector3f pos, float near, float far) {
-        List<Matrix4f> directions = new ArrayList<>();
-        Matrix4f perspective = new Matrix4f().perspective((float) Math.toRadians(90.0f), 1.0f, near, far);
-
-        Matrix4f projectionViewMatrix1 = new Matrix4f(perspective).mul(Transformation.getLookAtMatrix(pos, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(pos).add(1.0f, 0.0f, 0.0f)));
-        Matrix4f projectionViewMatrix2 = new Matrix4f(perspective).mul(Transformation.getLookAtMatrix(pos, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(pos).add(-1.0f, 0.0f, 0.0f)));
-        Matrix4f projectionViewMatrix3 = new Matrix4f(perspective).mul(Transformation.getLookAtMatrix(pos, new Vector3f(0.0f, 0.0f, 1.0f), new Vector3f(pos).add(0.0f, 1.0f, 0.0f)));
-        Matrix4f projectionViewMatrix4 = new Matrix4f(perspective).mul(Transformation.getLookAtMatrix(pos, new Vector3f(0.0f, 0.0f, -1.0f), new Vector3f(pos).add(0.0f, -1.0f, 0.0f)));
-        Matrix4f projectionViewMatrix5 = new Matrix4f(perspective).mul(Transformation.getLookAtMatrix(pos, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(pos).add(0.0f, 0.0f, 1.0f)));
-        Matrix4f projectionViewMatrix6 = new Matrix4f(perspective).mul(Transformation.getLookAtMatrix(pos, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(pos).add(0.0f, 0.0f, -1.0f)));
-
-        directions.add(projectionViewMatrix1);
-        directions.add(projectionViewMatrix2);
-        directions.add(projectionViewMatrix3);
-        directions.add(projectionViewMatrix4);
-        directions.add(projectionViewMatrix5);
-        directions.add(projectionViewMatrix6);
-        return directions;
+    public CameraMatrix getCameraTransformation() {
+        return this.cameraMatrix;
     }
 }

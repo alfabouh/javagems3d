@@ -17,14 +17,13 @@ import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL45;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.Transformation;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
@@ -73,13 +72,13 @@ public class TBoxScene {
     public static FBOTexture2DProgram previewItemFbo;
     private final SceneContainer sceneObjects;
     private final IWindow window;
-    private final TransformationUtils transformationUtils;
+    private final Transformation transformation;
     private DIMGuiRenderTBox dimGuiRenderTBox;
     private ICamera camera;
 
-    public TBoxScene(TransformationUtils transformationUtils, IWindow window) {
+    public TBoxScene(Transformation transformation, IWindow window) {
         this.sceneObjects = new SceneContainer();
-        this.transformationUtils = transformationUtils;
+        this.transformation = transformation;
         this.window = window;
     }
 
@@ -110,7 +109,7 @@ public class TBoxScene {
         this.setGUIEditor();
     }
 
-    private void createFBOs(Vector2i dim) {
+    private void createFBOs(IWindow window) {
         TBoxScene.sceneFbo = new FBOTexture2DProgram(true);
         TBoxScene.previewItemFbo = new FBOTexture2DProgram(true);
         TBoxScene.sceneForwardFbo = new FBOTexture2DProgram(true);
@@ -119,18 +118,18 @@ public class TBoxScene {
         T2DAttachmentContainer fbo = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        TBoxScene.sceneFbo.createFrameBuffer2DTexture(dim, fbo, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
         TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
 
         T2DAttachmentContainer fbo2 = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        TBoxScene.sceneForwardFbo.createFrameBuffer2DTexture(dim, fbo2, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneForwardFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo2, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
         T2DAttachmentContainer fbo3 = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_R8, GL46.GL_RED);
         }};
-        TBoxScene.sceneTransparentFbo.createFrameBuffer2DTexture(dim, fbo3, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneTransparentFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo3, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
     }
 
     private void destroyFBOs() {
@@ -141,7 +140,7 @@ public class TBoxScene {
     }
 
     public void preRender() {
-        this.createFBOs(this.getWindow().getWindowSize());
+        this.createFBOs(this.getWindow());
         this.camera = new TBoxCameraBase(ToolBox.get().getScreen().getControllerDispatcher().getCurrentController(), new Vector3f(-0.0f), new Vector3f(0.0f));
         this.setGUIEditor();
         SystemLogging.get().getLogManager().log("Pre-Scene Render");
@@ -156,7 +155,7 @@ public class TBoxScene {
         SystemLogging.get().getLogManager().log("Post-Scene Render");
         this.clear();
         this.destroyFBOs();
-        this.getDimGuiRenderTBox().cleanUp();
+        this.getDimGuiRenderTBox().clear();
         ToolBox.get().getScreen().getResourceManager().destroy();
     }
 
@@ -191,12 +190,12 @@ public class TBoxScene {
             TBoxScene.sceneForwardFbo.copyFBOtoFBODepth(TBoxScene.sceneTransparentFbo.getFrameBufferId(), this.getWindow().getWindowSize());
             GL46.glDepthMask(false);
             GL46.glEnable(GL46.GL_BLEND);
-            GL45.glBlendFunci(0, GL45.GL_ONE, GL45.GL_ONE);
-            GL45.glBlendFunci(1, GL45.GL_ZERO, GL45.GL_ONE_MINUS_SRC_COLOR);
-            GL45.glBlendEquation(GL46.GL_FUNC_ADD);
+            GL46.glBlendFunci(0, GL46.GL_ONE, GL46.GL_ONE);
+            GL46.glBlendFunci(1, GL46.GL_ZERO, GL46.GL_ONE_MINUS_SRC_COLOR);
+            GL46.glBlendEquation(GL46.GL_FUNC_ADD);
             TBoxScene.sceneTransparentFbo.bindFBO();
-            GL45.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
-            GL45.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
+            GL46.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+            GL46.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
             this.getSceneContainer().renderTransparent(deltaTime);
             TBoxScene.sceneTransparentFbo.unBindFBO();
             GL46.glDisable(GL46.GL_BLEND);
@@ -411,11 +410,11 @@ public class TBoxScene {
         this.getSceneContainer().addObject(scene3DObject);
     }
 
-    public void onWindowResize(Window window) {
-        this.getDimGuiRenderTBox().onResize(dim);
+    public void onWindowResize(IWindow window) {
+        this.getDimGuiRenderTBox().onResize(window);
 
         this.destroyFBOs();
-        this.createFBOs(dim);
+        this.createFBOs(window);
     }
 
     public void tryLoadMap(File file) {
@@ -539,8 +538,8 @@ public class TBoxScene {
         this.camera = camera;
     }
 
-    public TransformationUtils getTransformationUtils() {
-        return this.transformationUtils;
+    public Transformation getTransformationUtils() {
+        return this.transformation;
     }
 
     public IWindow getWindow() {

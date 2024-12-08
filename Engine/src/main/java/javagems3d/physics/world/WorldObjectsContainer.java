@@ -54,7 +54,7 @@ public final class WorldObjectsContainer {
         new HashSet<>(this.getWorldObjects()).stream().filter(e -> e instanceof WorldItem).map(e -> (WorldItem) e).forEach(WorldItem::setDead);
     }
 
-    public void cleanUp() {
+    public void clear() {
         this.getWorldObjects().forEach(e -> e.onDestroy(this.getWorld()));
         this.getWorldObjects().clear();
         this.getWorldTickedObjects().clear();

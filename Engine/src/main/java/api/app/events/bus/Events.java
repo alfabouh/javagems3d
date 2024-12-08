@@ -12,11 +12,10 @@
 package api.app.events.bus;
 
 import org.joml.Vector2i;
-import javagems3d.graphics.rendering.ui.dear_imgui.DIMGuiRenderJGems;
+import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.environment.lighting.Light;
 import javagems3d.graphics.objects.entities.AbstractSceneEntity;
 import javagems3d.graphics.OLD.JGemsOpenGLRendererOLD;
-import javagems3d.graphics.OLD.render_base.SceneRenderBase;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -203,10 +202,10 @@ public abstract class Events {
     }
 
     public static final class DearIMGUIRender implements IEvent {
-        public final DIMGuiRenderJGems render;
+        public final DearUIRenderer render;
         public final Vector2i windowSize;
 
-        public DearIMGUIRender(Vector2i windowSize, DIMGuiRenderJGems render) {
+        public DearIMGUIRender(Vector2i windowSize, DearUIRenderer render) {
             this.render = render;
             this.windowSize = windowSize;
         }
@@ -310,32 +309,6 @@ public abstract class Events {
             this.jGemsOpenGLRendererOLD = jGemsOpenGLRendererOLD;
             this.ticking = ticking;
             this.windowSize = windowSize;
-        }
-    }
-
-    public static final class RenderBaseStartRender implements IEvent {
-        public final SceneRenderBase base;
-
-        public RenderBaseStartRender(SceneRenderBase base) {
-            this.base = base;
-        }
-    }
-
-    public static final class RenderBaseEndRender implements IEvent {
-        public final SceneRenderBase base;
-
-        public RenderBaseEndRender(SceneRenderBase base) {
-            this.base = base;
-        }
-    }
-
-    public static final class RenderBaseRender extends Cancellable implements IEvent {
-        public final SceneRenderBase base;
-        public final FrameTicking ticking;
-
-        public RenderBaseRender(FrameTicking ticking, SceneRenderBase base) {
-            this.base = base;
-            this.ticking = ticking;
         }
     }
 }

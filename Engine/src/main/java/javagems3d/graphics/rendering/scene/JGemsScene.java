@@ -11,53 +11,48 @@
 
 package javagems3d.graphics.rendering.scene;
 
-import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
-import javagems3d.graphics.OLD.JGemsOpenGLRendererOLD;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.Transformation;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.synchronizing.SyncManager;
 
 public class JGemsScene implements IScene {
-    private final JGemsSceneData sceneData;
-    private OpenGLRenderer sceneRenderer;
+    private final IWindow window;
+    private final Transformation transformation;
+    private final SceneWorld sceneWorld;
+    protected OpenGLRenderer sceneRenderer;
+
     private float elapsedTime;
     private boolean refresh;
 
-    public JGemsScene(Window window, TransformationUtils transformationUtils, SceneWorld sceneWorld) {
-        ImmediateUI immediateUI = new ImmediateUI();
-        IndirectRenderBuffer renderBuffer = new IndirectRenderBuffer(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
-        this.sceneData = new JGemsSceneData(transformationUtils, sceneWorld, immediateUI, renderBuffer);
-        this.setSceneRenderer(new JGemsOpenGLRenderer(window, this.getData()));
+    public JGemsScene(IWindow window, Transformation transformation, SceneWorld sceneWorld) {
+        this.transformation = transformation;
+        this.sceneWorld = sceneWorld;
+        this.window = window;
+        this.setDefaultRenderer();
     }
 
-    public void initSceneIndirectRenderBuffer(MeshBuffersDrawCache meshBuffersDrawCache) {
-        this.getSceneIndirectRenderBuffer().clear();
-        this.getSceneIndirectRenderBuffer().init(meshBuffersDrawCache);
+    protected void setDefaultRenderer() {
+        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getWindow(), this.getSceneWorld(), this.getTransformation()));
     }
 
     public void preRender() {
         JGemsHelper.getLogger().log("Starting scene rendering!");
         this.getSceneRenderer().onStartRender();
-        JGemsHelper.getLogger().log("Scene rendering started!");
     }
 
     @SuppressWarnings("all")
     public void renderScene(float frameDeltaTime) throws InterruptedException {
         if (JGemsHelper.WINDOW.isWindowActive()) {
             JGems3D.get().getScreen().normalizeViewPort();
-            JGemsOpenGLRendererOLD.getGameUboShader().beginShading();
+            JGemsOpenGLRenderer.UBOShader().beginShading();
             if (this.getCamera() != null) {
                 this.elapsedTime += frameDeltaTime / JGemsPhysics.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
@@ -70,7 +65,7 @@ public class JGemsScene implements IScene {
                 this.elapsedTime = 0.0f;
             }
             this.getSceneRenderer().onRender(new FrameTicking(this.elapsedTime, frameDeltaTime));
-            JGemsOpenGLRendererOLD.getGameUboShader().endShading();
+            JGemsOpenGLRenderer.UBOShader().endShading();
         }
     }
 
@@ -80,22 +75,17 @@ public class JGemsScene implements IScene {
         this.refresh = false;
         this.getSceneWorld().onWorldUpdate();
         this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
-        this.getTransformationUtils().updateCamera(this.getCamera());
+        this.getTransformation().updateCamera(this.getCamera());
     }
 
     public void postRender() {
         JGemsHelper.getLogger().log("Stopping scene rendering!");
         this.getSceneRenderer().onStopRender();
-        JGemsHelper.getLogger().log("Destroying resources!");
-        this.getImmediateUI().destroyUI();
-        this.getSceneIndirectRenderBuffer().clear();
-        JGemsHelper.getLogger().log("Scene rendering stopped");
     }
 
     @Override
     public void onWindowResize(IWindow window) {
         this.getSceneRenderer().onWindowResize(window);
-        this.getImmediateUI().onWindowResize(window);
     }
 
     public void setCamera(ICamera camera) {
@@ -110,30 +100,18 @@ public class JGemsScene implements IScene {
         return this.getSceneWorld().getCamera();
     }
 
-    public JGemsSceneData getData() {
-        return this.sceneData;
-    }
-
-    public Window getWindow() {
-        return JGemsHelper.getScreen().getWindow();
-    }
-
-    public IndirectRenderBuffer getSceneIndirectRenderBuffer() {
-        return this.getData().getSceneIndirectRenderBuffer();
-    }
-
-    public ImmediateUI getImmediateUI() {
-        return this.getData().getImmediateUI();
+    public IWindow getWindow() {
+        return this.window;
     }
 
     @Override
     public SceneWorld getSceneWorld() {
-        return this.getData().getSceneWorld();
+        return this.sceneWorld;
     }
 
     @Override
-    public TransformationUtils getTransformationUtils() {
-        return this.getData().getTransformationUtils();
+    public Transformation getTransformation() {
+        return this.transformation;
     }
 
     @Override

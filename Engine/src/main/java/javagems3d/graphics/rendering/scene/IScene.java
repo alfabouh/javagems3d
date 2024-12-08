@@ -13,11 +13,13 @@ package javagems3d.graphics.rendering.scene;
 
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.Transformation;
 import javagems3d.graphics.world.SceneWorld;
 
-public interface IScene extends IWindow.ResizeCallback {
+public interface IScene extends IWindow.ResizeEvent {
+    IWindow getWindow();
     SceneWorld getSceneWorld();
-    TransformationUtils getTransformationUtils();
+    Transformation getTransformation();
+
     OpenGLRenderer getSceneRenderer();
 }

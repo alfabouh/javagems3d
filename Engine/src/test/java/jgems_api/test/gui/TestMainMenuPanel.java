@@ -25,7 +25,7 @@ package jgems_api.test.gui;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels.DefaultGamePanel;
@@ -34,6 +34,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels.Defaul
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.map.loaders.custom.DefaultMap;
 import javagems3d.system.resources.assets.models.Model;
@@ -68,61 +69,61 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         }
     }
 
-    public void createFBOs(Vector2i dim) {
+    public void createFBOs(IWindow window) {
         this.postFbo.clearFBO();
-        this.postFbo.createFrameBuffer2DTexture(dim, new T2DAttachmentContainer(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB), false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        this.postFbo.createFrameBuffer2DTexture(window.getWindowSize(), new T2DAttachmentContainer(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB), false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
     }
 
-    public void onWindowResize(Window window) {
-        this.createFBOs(dim);
+    public void onWindowResize(IWindow window) {
+        this.createFBOs(window);
     }
 
     @Override
-    public void drawPanel(ImmediateUI immediateUI, float frameDeltaTicks) {
-        Window window = immediateUI.getWindow();
+    public void drawPanel(JGemsUI JGemsUI, float frameDeltaTicks) {
+        Window window = JGemsUI.getWindow();
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
-        this.renderContent(immediateUI, window, frameDeltaTicks);
+        this.renderContent(JGemsUI, window, frameDeltaTicks);
 
-        immediateUI.buttonUI("SponzaMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0xffffff, 0.5f)
+        JGemsUI.buttonUI("SponzaMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().loadMap(new TestMap());
                     JGemsHelper.UI.openUIPanel(new DefaultGamePanel(null));
                 });
 
-        immediateUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+        JGemsUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().loadMap(new DefaultMap());
                     JGemsHelper.UI.openUIPanel(new DefaultGamePanel(null));
                 });
 
-        immediateUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
+        JGemsUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().openUIPanel(new DefaultSettingsPanel(this));
                 });
 
-        immediateUI.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
+        JGemsUI.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().openUIPanel(new DefaultLeaveConfirmationPanel(this));
                 });
     }
 
-    private void renderContent(ImmediateUI immediateUI, Window window, float frameDeltaTicks) {
+    private void renderContent(JGemsUI JGemsUI, Window window, float frameDeltaTicks) {
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
         TestMainMenuPanel.renderMenuBackGround(new Vector3f(1.0f));
-        immediateUI.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);
+        JGemsUI.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);
     }
 
     @Override
-    public void onConstruct(ImmediateUI immediateUI) {
-        this.createFBOs(JGems3D.get().getScreen().getWindowDimensions());
+    public void onConstruct(JGemsUI JGemsUI) {
+        this.createFBOs(JGems3D.get().getScreen().getWindow());
     }
 
     @Override
-    public void onDestruct(ImmediateUI immediateUI) {
+    public void onDestruct(JGemsUI JGemsUI) {
         this.postFbo.clearFBO();
     }
 }

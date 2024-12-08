@@ -12,10 +12,11 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
-import javagems3d.graphics.objects.rendering.fabric.IObjectRenderFabric;
+import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
+import org.jetbrains.annotations.Nullable;
 
 public interface IRendered {
-    IObjectRenderFabric getRenderFabric();
+    IRenderFabric getRenderFabric();
     ObjectRenderConfiguration getObjectRenderConfiguration();
     
     default boolean hasRender() {

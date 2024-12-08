@@ -11,6 +11,7 @@
 
 package javagems3d.physics.world.thread;
 
+import javagems3d.physics.world.PhysicsWorld;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
@@ -65,6 +66,10 @@ public class JGemsPhysics {
 
     public int getTps() {
         return this.tps;
+    }
+
+    public PhysicsWorld getPhysicsWorld() {
+        return this.getPhysicsProcessor().getPhysicsWorld();
     }
 
     public final PhysicsProcessor getPhysicsProcessor() {

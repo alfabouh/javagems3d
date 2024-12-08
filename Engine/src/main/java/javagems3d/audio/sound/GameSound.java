@@ -104,7 +104,7 @@ public class GameSound {
 
     @Override
     protected void finalize() {
-        this.cleanUp();
+        this.clear();
     }
 
     public void setPosition(Vector3f vector3f) {
@@ -180,7 +180,7 @@ public class GameSound {
         }
     }
 
-    public void cleanUp() {
+    public void clear() {
         if (this.isValid()) {
             int bufferProcessed = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
             while (bufferProcessed-- > 0) {

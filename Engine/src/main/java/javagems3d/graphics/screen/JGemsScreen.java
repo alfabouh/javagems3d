@@ -11,12 +11,10 @@
 
 package javagems3d.graphics.screen;
 
+import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
 import org.joml.Vector2i;
-import org.lwjgl.glfw.Callbacks;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
@@ -34,10 +32,10 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.Transformation;
 import javagems3d.physics.world.thread.timer.PhysicsProcessor;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.core.JGemsEngineSystem;
+import javagems3d.system.core.JGemsCore;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -50,7 +48,7 @@ public class JGemsScreen implements IScreen {
     public static int RENDER_FPS;
     public static int PHYS_TPS;
     private final TimerPool timerPool;
-    private TransformationUtils transformationUtils;
+    private Transformation transformation;
     private JGemsControllerDispatcher controllerDispatcher;
     private JGemsScene scene;
     private Window window;
@@ -105,11 +103,11 @@ public class JGemsScreen implements IScreen {
     private void setScreenCallbacks() {
         Callbacks.glfwFreeCallbacks(this.getWindow().getDescriptor());
         GLFW.glfwSetWindowSizeCallback(this.getWindow().getDescriptor(), (a, b, c) -> {
-            this.resizeWindow(new Vector2i(b, c));
-            this.getWindow().onWindowChanged();
+            this.resizeWindow(this.getWindow());
+            this.getWindow().onWindowChangedCallback();
         });
         GLFW.glfwSetWindowPosCallback(this.getWindow().getDescriptor(), (a, b, c) -> {
-            this.getWindow().onWindowChanged();
+            this.getWindow().onWindowChangedCallback();
         });
         GLFWErrorCallback glfwErrorCallback = GLFW.glfwSetErrorCallback(null);
         if (glfwErrorCallback != null) {
@@ -118,16 +116,16 @@ public class JGemsScreen implements IScreen {
     }
 
     private void createTransformationUtils() {
-        this.transformationUtils = new TransformationUtils(this.window, JGemsSceneGlobalConstants.FOV, JGemsSceneGlobalConstants.Z_NEAR, JGemsSceneGlobalConstants.Z_FAR);
+        this.transformation = new Transformation(this.window, JGemsSceneGlobalConstants.FOV, JGemsSceneGlobalConstants.Z_NEAR, JGemsSceneGlobalConstants.Z_FAR);
     }
 
     private void createObjects(Window window) {
         this.controllerDispatcher = new JGemsControllerDispatcher(window);
-        this.scene = new JGemsScene(window, this.getTransformationUtils(), new SceneWorld());
+        this.scene = new JGemsScene(window, this.getTransformation(), new SceneWorld());
     }
 
-    private void resizeWindow(Vector2i dim) {
-        this.getScene().onWindowResize(dim);
+    private void resizeWindow(IWindow window) {
+        this.getScene().onWindowResize(window);
     }
 
     public void normalizeViewPort() {
@@ -346,12 +344,12 @@ public class JGemsScreen implements IScreen {
                 JGems3D.get().destroyGame();
                 break;
             }
-            JGems3D.get().getEngineSystem().update();
+            JGems3D.get().getCore().update();
 
             this.updateController();
             this.getWindow().refreshFocusState();
             this.getTimerPool().update();
-            this.getTransformationUtils().updateMatrices();
+            this.getTransformation().updateMatrices();
             this.renderGameScene(deltaTimer.getDeltaTime());
             if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsSceneGlobalConstants.RENDER_TICKS_UPD_RATE)) {
                 this.renderTicks += 0.01f;
@@ -393,7 +391,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public ICamera getCamera() {
-        return this.getScene().getCurrentCamera();
+        return this.getScene().getCamera();
     }
 
     public void zeroRenderTick() {
@@ -422,9 +420,9 @@ public class JGemsScreen implements IScreen {
         return this.window;
     }
 
-    public TransformationUtils getTransformationUtils() {
+    public Transformation getTransformation() {
         synchronized (this) {
-            return this.transformationUtils;
+            return this.transformation;
         }
     }
 
@@ -442,7 +440,7 @@ public class JGemsScreen implements IScreen {
             Font gameFont = JGemsResourceManager.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
-            this.lines.add(new Pair<>(0x00ff00, JGemsEngineSystem.ENG_NAME + " : " + JGemsEngineSystem.ENG_VER));
+            this.lines.add(new Pair<>(0x00ff00, JGemsCore.ENG_NAME + " : " + JGemsCore.ENG_VER));
             this.lines.add(new Pair<>(0x00ff00, title));
             this.lines.add(new Pair<>(0x00ff00, "..."));
             this.counter = 0;
@@ -474,7 +472,7 @@ public class JGemsScreen implements IScreen {
 
         public void clear() {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-            this.guiFont.cleanUp();
+            this.guiFont.clear();
             this.lines.clear();
         }
     }

@@ -44,7 +44,7 @@ public final class IndirectRenderBuffer {
         this.allAnimatedMeshBuffers = partitionedModels.get(true);
 
         this.forStatic(this.getAllStaticMeshBuffers());
-        this.forStatic(this.getAllAnimatedMeshBuffers());
+        //this.forStatic(this.getAllAnimatedMeshBuffers());
 
         this.totalStaticMeshStructures = this.allStaticMeshBuffers.size();
     }

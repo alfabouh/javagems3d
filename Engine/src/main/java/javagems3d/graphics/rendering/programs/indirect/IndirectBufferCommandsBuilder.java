@@ -23,7 +23,7 @@ public class IndirectBufferCommandsBuilder {
     }
 
     public void destroyBuffer() {
-        GL46.glDeleteBuffers(this.getStaticRenderBufferHandle());
+        GL46.glDeleteBuffers(this.getRenderBufferHandle());
     }
 
     public void buildCommands(Map<MeshBuffer, Integer> meshBufferCountMap) {
@@ -38,7 +38,7 @@ public class IndirectBufferCommandsBuilder {
         int baseInstance = 0;
         ByteBuffer commandBuffer = MemoryUtil.memAlloc(allMeshes * COM_SIZE);
         for (MeshBuffer meshBuffer : this.getIndirectRenderBuffer().getAllStaticMeshBuffers()) {
-            int entitiesCount = meshBufferCountMap.get(meshBuffer);
+            int entitiesCount = meshBufferCountMap.getOrDefault(meshBuffer, 0);
             for (MeshBuffer.PassData data : meshBuffer.getPassData()) {
                 commandBuffer.putInt(data.getVertices());
                 commandBuffer.putInt(entitiesCount);
@@ -63,11 +63,11 @@ public class IndirectBufferCommandsBuilder {
         return this.indirectRenderBuffer;
     }
 
-    public int getStaticRenderBufferHandle() {
+    public int getRenderBufferHandle() {
         return this.staticRenderBufferHandle;
     }
 
-    public int getStaticDrawCount() {
+    public int getDrawCount() {
         return this.staticDrawCount;
     }
 }

@@ -14,7 +14,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.settings.objects.SettingSlot;
@@ -38,7 +38,7 @@ public class UICarousel extends UIElement {
         this.right.getPosition().sub(this.right.getSize().x, 0);
 
         int centerX = (this.left.getPosition().x + this.right.getPosition().x + this.right.getSize().x) / 2;
-        int textWidth = ImmediateUI.getTextWidth(guiFont, settingIntSlots.getCurrentName());
+        int textWidth = JGemsUI.getTextWidth(guiFont, settingIntSlots.getCurrentName());
 
         this.uiText = new UIText(settingIntSlots.getCurrentName(), guiFont, hexColor, new Vector2i(centerX - textWidth / 2, position.y), zValue);
         this.uiTitle = new UIText(text, guiFont, hexColor, new Vector2i(position.x + this.getSize().x + 30, position.y), zValue);

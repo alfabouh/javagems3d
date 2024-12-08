@@ -12,6 +12,7 @@
 package javagems3d.graphics.objects.entities;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
@@ -19,9 +20,8 @@ import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.environment.lighting.Light;
-import javagems3d.graphics.OLD.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
-import javagems3d.graphics.objects.AbstractSceneObject;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.IWorld;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneEntity extends AbstractSceneObject implements IWorldObject, IWorldTicked {
+public abstract class AbstractSceneEntity extends SceneObject implements IWorldObject, IWorldTicked {
     private AnimationData animationData;
     private final List<Light> lightList;
     private final SceneWorld sceneWorld;
@@ -82,7 +82,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
             } else {
                 this.initModel();
             }
-            this.getRenderFabric().onPreRender(this);
+            this.getRenderFabric().createResources(this);
         }
         APIEventsLauncher.pushEvent(new Events.ItemSpawnInRenderWorld(this));
     }
@@ -92,7 +92,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
         APIEventsLauncher.pushEvent(new Events.ItemDestroyInRenderWorld(this));
         JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
         if (this.hasRender()) {
-            this.getRenderFabric().onPostRender(this);
+            this.getRenderFabric().destroyResources(this);
         }
         this.clearLights();
     }
@@ -262,7 +262,7 @@ public abstract class AbstractSceneEntity extends AbstractSceneObject implements
     }
 
     @Override
-    public IRenderObjectFabric getRenderFabric() {
+    public IRenderFabric getRenderFabric() {
         return this.getRenderData().getRenderFabric();
     }
 

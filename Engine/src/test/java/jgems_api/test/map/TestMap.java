@@ -24,7 +24,6 @@ package jgems_api.test.map;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.skybox.SkyBox;
-import javagems3d.graphics.OLD.fabric.objects.render.RenderProp;
 import javagems3d.graphics.objects.props.SceneProp;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.world.SceneWorld;
@@ -46,9 +45,9 @@ import org.joml.Vector3f;
 public class TestMap implements IMapLoader {
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshGroup meshGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj")).getFirst();
-        sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup),
-                new ObjectRenderConfiguration(JGemsResourceManager.globalShaderAssets.world_gbuffer).setAlphaDiscardValue(0.7f)));
+       //MeshGroup meshGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj")).getFirst();
+       //sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup),
+       //        new ObjectRenderConfiguration(JGemsResourceManager.globalShaderAssets.world_gbuffer).setAlphaDiscardValue(0.7f)));
     }
 
     @Override

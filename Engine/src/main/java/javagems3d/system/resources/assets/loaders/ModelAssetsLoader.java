@@ -22,16 +22,16 @@ import javagems3d.system.service.path.JGemsPath;
 
 public class ModelAssetsLoader implements IAssetsLoader {
     public MeshBuffer cube;
-    public MeshGroup ground2;
+    public MeshBuffer ground2;
     public MeshGroup ground3;
     public MeshGroup test_anim;
 
     @Override
     public void load(GameResources gameResources) {
-        this.cube = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "cube/cube.obj")).getSecond();
-        this.ground2 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
-        this.ground3 = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "map05/map05.obj"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
-        this.test_anim = gameResources.createMesh(new JGemsPath(JGems3D.Paths.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
+        this.cube = gameResources.createMeshBuffer(new JGemsPath(JGems3D.Paths.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
+        this.ground2 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.Paths.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.DEFAULT);
+        this.ground3 = gameResources.createMeshGroup(new JGemsPath(JGems3D.Paths.MODELS, "map05/map05.obj"), ModelMeshLoader.FLAGS.DEFAULT);
+        this.test_anim = gameResources.createMeshGroup(new JGemsPath(JGems3D.Paths.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);
 
         JGemsHelper.UTILS.createMeshCollisionData(this.cube, this.ground2, this.ground3, this.test_anim);
     }

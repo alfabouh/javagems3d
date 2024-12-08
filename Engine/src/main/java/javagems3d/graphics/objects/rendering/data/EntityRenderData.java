@@ -12,11 +12,11 @@
 package javagems3d.graphics.objects.rendering.data;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javagems3d.graphics.OLD.fabric.objects.IRenderObjectFabric;
 import javagems3d.graphics.objects.entities.AbstractSceneEntity;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.basic.WorldItem;
@@ -32,13 +32,13 @@ import java.lang.reflect.InvocationTargetException;
 
 @SuppressWarnings("all")
 public class EntityRenderData {
-    private final IRenderObjectFabric renderFabric;
+    private final IRenderFabric renderFabric;
     private final Class<? extends AbstractSceneEntity> abstractEntityClass;
     private IEntityModelConstructor<WorldItem> entityModelConstructor;
     private MeshStructure<?> meshStructure;
     private ObjectRenderConfiguration objectRenderingConfiguration;
 
-    public EntityRenderData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager, @Nullable MeshStructure<?> meshStructure) {
+    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager, @Nullable MeshStructure<?> meshStructure) {
         this.abstractEntityClass = abstractEntityClass;
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
@@ -46,7 +46,7 @@ public class EntityRenderData {
         this.objectRenderingConfiguration = new ObjectRenderConfiguration(shaderManager);
     }
 
-    public EntityRenderData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ObjectRenderConfiguration objectRenderingConfiguration, @Nullable MeshStructure<?> meshStructure) {
+    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ObjectRenderConfiguration objectRenderingConfiguration, @Nullable MeshStructure<?> meshStructure) {
         this.abstractEntityClass = abstractEntityClass;
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
@@ -54,11 +54,11 @@ public class EntityRenderData {
         this.objectRenderingConfiguration = objectRenderingConfiguration;
     }
 
-    public EntityRenderData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager) {
+    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager) {
         this(renderFabric, abstractEntityClass, shaderManager, null);
     }
 
-    public EntityRenderData(@NotNull IRenderObjectFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
         this.abstractEntityClass = abstractEntityClass;
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
@@ -96,7 +96,7 @@ public class EntityRenderData {
         return this;
     }
 
-    public IRenderObjectFabric getRenderFabric() {
+    public IRenderFabric getRenderFabric() {
         return this.renderFabric;
     }
 

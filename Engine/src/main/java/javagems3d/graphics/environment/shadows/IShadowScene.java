@@ -11,7 +11,11 @@
 
 package javagems3d.graphics.environment.shadows;
 
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+
 public interface IShadowScene {
+    JGemsShaderManager getPointLightShadowShader();
+
     void createResources();
 
     void destroyResources();

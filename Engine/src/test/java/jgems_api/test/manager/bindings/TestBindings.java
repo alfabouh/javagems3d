@@ -86,11 +86,11 @@ public class TestBindings extends BindingManager {
                         }
                         JGems3D.get().unPauseGame();
                         JGems3D.get().getScreen().getWindow().setInFocus(true);
-                        JGems3D.get().getUI().setPanel(new DefaultGamePanel(null));
+                        JGems3D.get().openUIPanel(new DefaultGamePanel(null));
                     } else {
                         JGems3D.get().pauseGame(true);
                         JGems3D.get().getScreen().getWindow().setInFocus(false);
-                        JGems3D.get().getUI().setPanel(new DefaultPausePanel(null));
+                        JGems3D.get().openUIPanel(new DefaultPausePanel(null));
                     }
                 }
             }
@@ -104,7 +104,7 @@ public class TestBindings extends BindingManager {
 
         this.keyF2 = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                JGems3D.get().getScreen().getScene().getSceneRenderer().takeScreenShot();
+               // JGems3D.get().getScreen().getScene().getSceneRenderer().takeScreenShot();
             }
         }, GLFW.GLFW_KEY_F2);
 

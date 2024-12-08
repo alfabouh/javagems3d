@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.particles;
 
+import javagems3d.graphics.camera.base.ICamera;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
@@ -91,8 +92,8 @@ public final class ParticlesEmitter implements IParticlesEmitter {
         return new Model<>(this.commonParticleModel2D, new Format3D(particleFX.getPosition(), new Vector3f(0.0f), new Vector3f(particleFX.getScaling(), 1.0f)).setOrientedToView(true));
     }
 
-    public Set<ParticleFX> getCulledParticlesSet(SceneData sceneData) {
-        return this.getParticlesSet().stream().filter(e -> e.getPosition().distance(sceneData.getCamera().getCamPosition()) <= e.getParticleAttributes().getDistanceToRender()).collect(Collectors.toSet());
+    public Set<ParticleFX> getCulledParticlesSet(ICamera camera) {
+        return this.getParticlesSet().stream().filter(e -> e.getPosition().distance(camera.getCamPosition()) <= e.getParticleAttributes().getDistanceToRender()).collect(Collectors.toSet());
     }
 
     public Set<ParticleFX> getParticlesSet() {

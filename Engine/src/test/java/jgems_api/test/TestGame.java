@@ -11,7 +11,7 @@
 
 package jgems_api.test;
 
-import javagems3d.system.core.JGemsEngineSystem;
+import javagems3d.system.core.JGemsCore;
 import api.app.main.JGemsGameApplication;
 import api.app.main.JGemsGameEntry;
 import api.app.main.JGemsGameInstance;
@@ -42,11 +42,11 @@ public class TestGame implements JGemsGameApplication {
     }
 
     @Override
-    public void preInitEvent(JGemsEngineSystem engineSystem) {
+    public void preInitEvent(JGemsCore engineSystem) {
     }
 
     @Override
-    public void postInitEvent(JGemsEngineSystem engineSystem) {
+    public void postInitEvent(JGemsCore engineSystem) {
     }
 
     @Override

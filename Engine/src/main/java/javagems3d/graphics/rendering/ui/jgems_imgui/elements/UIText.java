@@ -22,7 +22,7 @@ import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
-import javagems3d.graphics.rendering.ui.jgems_imgui.ImmediateUI;
+import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.models.Model;
@@ -56,7 +56,7 @@ public class UIText extends UIElement {
         GL46.glActiveTexture(GL46.GL_TEXTURE0);
         this.getFontTexture().getTexture().bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
-        shaderManager.performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(ImmediateUI.HEX2RGB(this.hexColor), 1.0f)));
+        shaderManager.performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsSceneUtils.renderModel(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }

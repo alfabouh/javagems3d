@@ -12,18 +12,18 @@
 package javagems3d.graphics.objects.props;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.graphics.OLD.fabric.objects.IRenderObjectFabric;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public class SceneProp extends AbstractSceneProp {
-    public SceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public SceneProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
         super(renderFabric, model, objectRenderingConfiguration);
     }
 
-    public SceneProp(IRenderObjectFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
+    public SceneProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
         super(renderFabric, model, shaderManager);
     }
 
