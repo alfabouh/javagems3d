@@ -1,12 +1,14 @@
 package javagems3d.graphics.rendering.programs.indirect;
 
+import javagems3d.graphics.objects.IModeled;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
-import java.util.Map;
+import java.util.*;
 
 public class IndirectBufferCommandsBuilder {
     private final IndirectRenderBuffer indirectRenderBuffer;
@@ -53,8 +55,66 @@ public class IndirectBufferCommandsBuilder {
         commandBuffer.flip();
 
         this.staticDrawCount = commandBuffer.remaining() / COM_SIZE;
+
         GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, this.staticRenderBufferHandle);
         GL46.glBufferData(GL46.GL_DRAW_INDIRECT_BUFFER, commandBuffer, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, 0);
+
+        MemoryUtil.memFree(commandBuffer);
+    }
+
+    public void buildCommands2(List<Integer> integerList, Set<SceneObject> sceneObjects) {
+        final int COM_SIZE = 5 * Float.BYTES;
+
+        Map<SceneObject, Integer> idMap = new HashMap<>();
+
+        int i1 = 0;
+        int allMeshes = 0;
+        for (SceneObject sceneObject : sceneObjects) {
+            allMeshes += sceneObject.getModel().<MeshBuffer>getMeshStructureWithUnSafeCast().getPassData().size();
+            idMap.put(sceneObject, i1++);
+        }
+
+        Map<MeshBuffer, Set<SceneObject>> countM = new HashMap<>();
+        for (SceneObject sceneObject : sceneObjects) {
+            MeshBuffer meshBuffer = sceneObject.getModel().getMeshStructureWithUnSafeCast();
+            if (countM.containsKey(meshBuffer)) {
+                countM.get(meshBuffer).add(sceneObject);
+            } else {
+                countM.put(meshBuffer, new HashSet<SceneObject>() {{ add(sceneObject); }});
+            }
+        }
+
+        int firstIdx = 0;
+        int baseInstance = 0;
+        ByteBuffer commandBuffer = MemoryUtil.memAlloc(allMeshes * COM_SIZE);
+        for (MeshBuffer meshBuffer : this.getIndirectRenderBuffer().getAllStaticMeshBuffers()) {
+            if (!countM.containsKey(meshBuffer)) {
+                continue;
+            }
+            int entitiesCount = countM.get(meshBuffer).size();
+            for (MeshBuffer.PassData data : meshBuffer.getPassData()) {
+                commandBuffer.putInt(data.getVertices());
+                commandBuffer.putInt(entitiesCount);
+                commandBuffer.putInt(firstIdx);
+                commandBuffer.putInt(data.getOffset());
+                commandBuffer.putInt(baseInstance);
+
+                firstIdx += data.getVertices();
+                baseInstance += entitiesCount;
+
+                for (SceneObject modeled : countM.get(meshBuffer)) {
+                    integerList.add(idMap.get(modeled));
+                }
+            }
+        }
+        commandBuffer.flip();
+
+        this.staticDrawCount = commandBuffer.remaining() / COM_SIZE;
+
+        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, this.staticRenderBufferHandle);
+        GL46.glBufferData(GL46.GL_DRAW_INDIRECT_BUFFER, commandBuffer, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, 0);
 
         MemoryUtil.memFree(commandBuffer);
     }

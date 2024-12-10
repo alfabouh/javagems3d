@@ -12,8 +12,7 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.ShaderType;
-import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesManager;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.path.JGemsPath;
 

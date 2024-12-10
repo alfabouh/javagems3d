@@ -2,11 +2,9 @@ package javagems3d.system.resources.assets.models.mesh.structures;
 
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MeshGroup extends MeshStructure<MeshGroup.MeshGroupNode> {
@@ -24,7 +22,7 @@ public class MeshGroup extends MeshStructure<MeshGroup.MeshGroupNode> {
 
     @Override
     public MeshDataType getMeshDataType() {
-        return MeshDataType.DIRECT_RENDER_DATA;
+        return MeshDataType.GROUP;
     }
 
     @Override

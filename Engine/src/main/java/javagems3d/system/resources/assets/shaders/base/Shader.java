@@ -12,10 +12,9 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.shaders.ShaderType;
-import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesManager;
-import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
-import javagems3d.system.resources.assets.shaders.library.ShaderLibrary;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrary;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;

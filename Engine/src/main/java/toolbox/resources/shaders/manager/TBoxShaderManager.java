@@ -13,6 +13,7 @@ package toolbox.resources.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.transformation.TransformationUtils;
@@ -33,8 +34,8 @@ import toolbox.render.scene.utils.TBoxSceneUtils;
 public final class TBoxShaderManager extends ShaderManager {
     private final TBoxShaderUtils shaderUtils;
 
-    public TBoxShaderManager(ShadersContainer shadersContainer) {
-        super(shadersContainer);
+    public TBoxShaderManager(ShaderRenderingTarget shaderRenderingTarget, ShadersContainer shadersContainer) {
+        super(shaderRenderingTarget, shadersContainer);
         this.shaderUtils = new TBoxShaderUtils();
     }
 
@@ -44,7 +45,7 @@ public final class TBoxShaderManager extends ShaderManager {
     }
 
     public TBoxShaderManager copy() {
-        return new TBoxShaderManager(this.getShaderContainer());
+        return new TBoxShaderManager(this.getShaderTarget(), this.getShaderContainer());
     }
 
     public TBoxShaderUtils getUtils() {

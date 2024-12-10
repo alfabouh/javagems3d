@@ -5,10 +5,11 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
+import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.rendering.JGemsDebugGlobalConstants;
-import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.global.JGemsDebugGlobalConstants;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.Nodes;
 import javagems3d.graphics.rendering.scene.renderer.nodes.predefined.IDeferredRenderNode;
@@ -60,7 +61,7 @@ public class DearUIGameInterface implements DearUIInterface {
         }
         ImGui.end();
 
-        ImGui.setNextWindowSize(JGemsSceneGlobalConstants.defaultW / 3.0f, JGemsSceneGlobalConstants.defaultH / 3.0f, ImGuiCond.Once);
+        ImGui.setNextWindowSize(JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);
         ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
         ImGui.begin("Debug");
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
@@ -101,44 +102,44 @@ public class DearUIGameInterface implements DearUIInterface {
         }
 
         if (ImGui.collapsingHeader("Scene")) {
-            if (ImGui.checkbox("HDR", JGemsSceneGlobalConstants.USE_HDR)) {
-                JGemsSceneGlobalConstants.USE_HDR = !JGemsSceneGlobalConstants.USE_HDR;
+            if (ImGui.checkbox("HDR", JGemsRenderingGlobalConstants.USE_HDR)) {
+                JGemsRenderingGlobalConstants.USE_HDR = !JGemsRenderingGlobalConstants.USE_HDR;
             }
             if (ImGui.treeNode("HDR Settings")) {
-                float[] exposure = new float[]{JGemsSceneGlobalConstants.HDR_EXPOSURE};
+                float[] exposure = new float[]{JGemsRenderingGlobalConstants.HDR_EXPOSURE};
                 ImGui.sliderFloat("exposure", exposure, 0.0f, 5.0f);
-                JGemsSceneGlobalConstants.HDR_EXPOSURE = exposure[0];
-                float[] gamma = new float[]{JGemsSceneGlobalConstants.HDR_GAMMA};
+                JGemsRenderingGlobalConstants.HDR_EXPOSURE = exposure[0];
+                float[] gamma = new float[]{JGemsRenderingGlobalConstants.HDR_GAMMA};
                 ImGui.sliderFloat("gamma", gamma, 0.0f, 3.0f);
-                JGemsSceneGlobalConstants.HDR_GAMMA = gamma[0];
+                JGemsRenderingGlobalConstants.HDR_GAMMA = gamma[0];
                 ImGui.treePop();
             }
 
-            if (ImGui.checkbox("FXAA", JGemsSceneGlobalConstants.USE_FXAA)) {
-                JGemsSceneGlobalConstants.USE_FXAA = !JGemsSceneGlobalConstants.USE_FXAA;
+            if (ImGui.checkbox("FXAA", JGemsRenderingGlobalConstants.USE_FXAA)) {
+                JGemsRenderingGlobalConstants.USE_FXAA = !JGemsRenderingGlobalConstants.USE_FXAA;
             }
-            if (ImGui.checkbox("Bloom", JGemsSceneGlobalConstants.USE_BLOOM)) {
-                JGemsSceneGlobalConstants.USE_BLOOM = !JGemsSceneGlobalConstants.USE_BLOOM;
+            if (ImGui.checkbox("Bloom", JGemsRenderingGlobalConstants.USE_BLOOM)) {
+                JGemsRenderingGlobalConstants.USE_BLOOM = !JGemsRenderingGlobalConstants.USE_BLOOM;
             }
 
-            if (ImGui.checkbox("SSAO", JGemsSceneGlobalConstants.USE_SSAO)) {
-                JGemsSceneGlobalConstants.USE_SSAO = !JGemsSceneGlobalConstants.USE_SSAO;
+            if (ImGui.checkbox("SSAO", JGemsRenderingGlobalConstants.USE_SSAO)) {
+                JGemsRenderingGlobalConstants.USE_SSAO = !JGemsRenderingGlobalConstants.USE_SSAO;
             }
             if (ImGui.treeNode("SSAO Settings")) {
-                float[] radius = new float[]{JGemsSceneGlobalConstants.SSAO_RADIUS};
+                float[] radius = new float[]{JGemsRenderingGlobalConstants.SSAO_RADIUS};
                 ImGui.sliderFloat("radius", radius, 0.0f, 5.0f);
-                JGemsSceneGlobalConstants.SSAO_RADIUS = radius[0];
-                float[] bias = new float[]{JGemsSceneGlobalConstants.SSAO_BIAS};
+                JGemsRenderingGlobalConstants.SSAO_RADIUS = radius[0];
+                float[] bias = new float[]{JGemsRenderingGlobalConstants.SSAO_BIAS};
                 ImGui.sliderFloat("bias", bias, 0.0f, 0.1f);
-                JGemsSceneGlobalConstants.SSAO_BIAS = bias[0];
-                float[] range = new float[]{JGemsSceneGlobalConstants.SSAO_RANGE};
+                JGemsRenderingGlobalConstants.SSAO_BIAS = bias[0];
+                float[] range = new float[]{JGemsRenderingGlobalConstants.SSAO_RANGE};
                 ImGui.sliderFloat("range", range, 1.0f, 10.0f);
-                JGemsSceneGlobalConstants.SSAO_RANGE = range[0];
+                JGemsRenderingGlobalConstants.SSAO_RANGE = range[0];
                 ImGui.treePop();
             }
 
-            if (ImGui.checkbox("Shadows", JGemsSceneGlobalConstants.USE_SHADOWS)) {
-                JGemsSceneGlobalConstants.USE_SHADOWS = !JGemsSceneGlobalConstants.USE_SHADOWS;
+            if (ImGui.checkbox("Shadows", JGemsRenderingGlobalConstants.USE_SHADOWS)) {
+                JGemsRenderingGlobalConstants.USE_SHADOWS = !JGemsRenderingGlobalConstants.USE_SHADOWS;
             }
         }
 
@@ -184,19 +185,19 @@ public class DearUIGameInterface implements DearUIInterface {
             GL46.glScissor(0, 0, 1, 1);
             ImGui.beginChild("inner1");
             if (ImGui.collapsingHeader("GBuffer")) {
-                ImGui.beginChild("Images1", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);
+                ImGui.beginChild("Images1", JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f + 60, true);
 
                 IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(Nodes.DEFERRED_RENDER_PASS);
 
-                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(0).getTextureId(), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
-                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(1).getTextureId(), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(2).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(2).getTextureId(), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
-                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(3).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(3).getTextureId(), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(4).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutFboGBuffer().getTexturePrograms().get(4).getTextureId(), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
 
                 ImGui.endChild();

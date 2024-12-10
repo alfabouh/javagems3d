@@ -12,22 +12,26 @@
 package javagems3d.system.resources.assets.loaders;
 
 import javagems3d.JGems3D;
+import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lighting.LightManager;
-import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
 import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
-import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
 public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
     public ShaderStorageBufferObject Bones;
+    public ShaderStorageBufferObject IndirectBufferData;
+
     public UniformBufferObject SunLight;
     public UniformBufferObject PointLights;
     public UniformBufferObject Misc;
@@ -72,61 +76,64 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
         this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * ModelLoadingUtils.ANIM_MAX_BONES);
         ShaderStorageBufferProgram.createSSBO(this.Bones);
 
+        this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16 * Float.BYTES));
+        ShaderStorageBufferProgram.createSSBO(this.IndirectBufferData);
+
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
-        this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);
+        this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);
         this.Misc = this.createUBO("Misc", 2, Float.BYTES);
         this.Fog = this.createUBO("Fog", 3, Environment.FOG_STRUCT_SIZE * Float.BYTES);
 
-        this.world_pickable = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_pickable"));
-        this.debug = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "debug"));
-        this.gui_text = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_text"));
-        this.gui_noised = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_noised"));
+        this.world_pickable = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_pickable"));
+        this.debug = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "debug"));
+        this.gui_text = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_text"));
+        this.gui_noised = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_noised"));
 
-        this.gui_button = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_button"));
-        this.gui_image = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_image"));
-        this.gui_image_selectable = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_image_selectable"));
+        this.gui_button = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_button"));
+        this.gui_image = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_image"));
+        this.gui_image_selectable = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gui/gui_image_selectable"));
 
-        this.blur_ssao = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur_ssao"));
-        this.blur5 = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur5"));
-        this.blur9 = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur9"));
-        this.blur13 = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur13"));
-        this.blur_box = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur_box"));
+        this.blur_ssao = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur_ssao"));
+        this.blur5 = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur5"));
+        this.blur9 = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur9"));
+        this.blur13 = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur13"));
+        this.blur_box = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/blur_box"));
 
-        this.imgui = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/imgui"));
+        this.imgui = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gui/imgui"));
 
-        this.fxaa = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/fxaa"));
-        this.hdr = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/hdr"));
-        this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/scene_gluing"));
+        this.fxaa = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/fxaa"));
+        this.hdr = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/hdr"));
+        this.scene_gluing = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/scene_gluing"));
 
-        this.skybox = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/skybox")).attachUBOs(this.SunLight);
-        this.skybox_background = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/skybox_background")).attachUBOs(this.SunLight, this.Fog);
+        this.skybox = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "world/skybox")).attachUBOs(this.SunLight);
+        this.skybox_background = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "world/skybox_background")).attachUBOs(this.SunLight, this.Fog);
 
-        this.world_ssao = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "post/screen_ssao"));
+        this.world_ssao = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "post/screen_ssao"));
 
-        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_liquid_oit"));
-        this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_oit"));
-        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_particle_oit"));
+        this.weighted_liquid_oit = this.createShaderManager(resourceCache, ShaderRenderingTarget.TRANSPARENCY_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_liquid_oit"));
+        this.weighted_oit = this.createShaderManager(resourceCache, ShaderRenderingTarget.TRANSPARENCY_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_oit"));
+        this.weighted_particle_oit = this.createShaderManager(resourceCache, ShaderRenderingTarget.TRANSPARENCY_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "oit/weighted_particle_oit"));
 
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer"));
-        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_indirect"));
+        this.world_gbuffer = this.createShaderManager(resourceCache, ShaderRenderingTarget.DEFERRED_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer"));
+        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, ShaderRenderingTarget.INDIRECT_DEFERRED_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_indirect"));
 
-        this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_deferred")).attachUBOs(this.SunLight, this.PointLights, this.Fog);
+        this.world_deferred = this.createShaderManager(resourceCache, ShaderRenderingTarget.DEFERRED_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_deferred")).attachUBOs(this.SunLight, this.PointLights, this.Fog);
 
-        this.menu = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gui/menu"));
+        this.menu = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gui/menu"));
 
-        this.inventory_common_item = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "inventory/inventory_common_item"));
+        this.inventory_common_item = this.createShaderManager(resourceCache, ShaderRenderingTarget.FORWARD_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "inventory/inventory_common_item"));
 
-        this.simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/simple"));
-        this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "shadows/depth_sun"));
+        this.simple = this.createShaderManager(resourceCache, ShaderRenderingTarget.FORWARD_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "world/simple"));
+        this.depth_sun = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "shadows/depth_sun"));
 
-        this.world_selected_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_selected_gbuffer"));
-        this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "shadows/depth_plight"));
+        this.world_selected_gbuffer = this.createShaderManager(resourceCache, ShaderRenderingTarget.DEFERRED_RENDERING, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_selected_gbuffer"));
+        this.depth_plight = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "shadows/depth_plight"));
 
-        this.gameUbo = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "gameubo")).attachUBOs(this.SunLight, this.Misc, this.PointLights, this.Fog);
+        this.gameUbo = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath(JGems3D.Paths.SHADERS, "gameubo")).attachUBOs(this.SunLight, this.Misc, this.PointLights, this.Fog);
     }
 
     @Override
-    protected JGemsShaderManager createShaderObject(JGemsPath shaderPath) {
-        return new JGemsShaderManager(new ShadersContainer(this.getGlobalShaderLibrary(), shaderPath));
+    protected JGemsShaderManager createShaderObject(ShaderRenderingTarget shaderRenderingTarget, JGemsPath shaderPath) {
+        return new JGemsShaderManager(shaderRenderingTarget, new ShadersContainer(this.getGlobalShaderLibrary(), shaderPath));
     }
 }

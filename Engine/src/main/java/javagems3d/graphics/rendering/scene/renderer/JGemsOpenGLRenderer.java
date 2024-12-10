@@ -12,10 +12,12 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.shadows.ShadowScene;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.rendering.JGemsSceneUtils;
+import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
@@ -31,27 +33,35 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.loaders.IMapLoader;
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format2D;
+import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit {
-    private final Map<Nodes, IRenderNode> conveyorNodes;
+    protected Map<Nodes, IRenderNode> conveyorNodes;
 
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
 
-    private final IndirectRenderBuffer sceneIndirectRenderBuffer;
+    protected IndirectRenderBuffer sceneIndirectRenderBuffer;
 
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
+
+    protected Model<Format2D> sceenModel;
 
     public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld, Transformation transformation) {
         super(window, sceneWorld, transformation);
@@ -62,6 +72,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         JGemsOpenGLRenderer.inMenuInterface = new DearUIMenuInterface();
 
         this.sceneIndirectRenderBuffer = new IndirectRenderBuffer(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
+        this.sceenModel = null;
+    }
+
+    @Override
+    public @NotNull Vector2i getRenderingResolution() {
+        return this.getWindowSize();
     }
 
     protected void initNodes() {
@@ -71,9 +87,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     protected void setDefaults() {
-        this.setDeferredRenderNode(new IDeferredRenderNode.Default(this));
+        IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(this);
+
+        this.setDeferredRenderNode(defaultDeferredNode);
         this.setForwardRenderNode(new IForwardRenderNode.Default(this));
-        this.setGluingRenderNode(new IGluingRenderNode.Default(this));
+        this.setGluingRenderNode(new IGluingRenderNode.Default(defaultDeferredNode, this));
         this.setTransparencyRenderNode(new ITransparencyRenderNode.Default(this));
         this.setPostFXRenderNode(new IPostFXRenderNode.Default(this));
         this.setUIRenderNode(new IUIRenderNode.Default(this.getJGemsUI(), this));
@@ -103,8 +121,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         this.getConveyorNodes().replace(Nodes.POST_EFFECTS_RENDER_PASS, node);
     }
 
+    @SuppressWarnings("all")
+    public @NotNull <T extends IRenderNode> T getRenderNodeByPass(Nodes node) {
+        return (T) this.getConveyorNodes().get(node);
+    }
+
     @Override
     public void onStartRender() {
+        this.constructScreenModel();
         this.jGemsUI = new JGemsUI();
         this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.getGlobalGameResources().getResourceCache());
         this.setDefaults();
@@ -113,12 +137,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        IDeferredRenderNode deferredRenderNode = (IDeferredRenderNode) this.getConveyorNodes().get(Nodes.DEFERRED_RENDER_PASS);
-        IForwardRenderNode forwardRenderNode = (IForwardRenderNode) this.getConveyorNodes().get(Nodes.FORWARD_RENDER_PASS);
-        ITransparencyRenderNode transparencyRenderNode = (ITransparencyRenderNode) this.getConveyorNodes().get(Nodes.TRANSPARENCY_RENDER_PASS);
-        IGluingRenderNode gluingRenderNode = (IGluingRenderNode) this.getConveyorNodes().get(Nodes.GLUING_RENDER_PASS);
-        IPostFXRenderNode postRenderNode = (IPostFXRenderNode) this.getConveyorNodes().get(Nodes.POST_EFFECTS_RENDER_PASS);
-        IUIRenderNode uiRenderNode = (IUIRenderNode) this.getConveyorNodes().get(Nodes.UI_RENDER_PASS);
+        IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(Nodes.DEFERRED_RENDER_PASS);
+        IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(Nodes.FORWARD_RENDER_PASS);
+        ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(Nodes.TRANSPARENCY_RENDER_PASS);
+        IGluingRenderNode gluingRenderNode = this.getRenderNodeByPass(Nodes.GLUING_RENDER_PASS);
+        IPostFXRenderNode postRenderNode = this.getRenderNodeByPass(Nodes.POST_EFFECTS_RENDER_PASS);
+        IUIRenderNode uiRenderNode = this.getRenderNodeByPass(Nodes.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         //this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld(), this.getSceneWorld().getCamera());
@@ -141,15 +165,28 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         deferredRenderNode.onRender(frameTicking);
         //forwardRenderNode.onRender(frameTicking);
         //transparencyRenderNode.onRender(frameTicking);
+        gluingRenderNode.onRender(frameTicking);
         uiRenderNode.onRender(frameTicking);
-       //gluingRenderNode.onRender(frameTicking);
        //postRenderNode.onRender(frameTicking);
 
+        this.renderFinalSceneInMainBuffer(gluingRenderNode.getOutGluedScene());
         this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
+    }
+
+    protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
+        JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
+        imgShader.beginShading();
+        imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
+        JGemsSceneUtils.renderModel(this.getScreenModel(), GL46.GL_TRIANGLES);
+        imgShader.endShading();
     }
 
     @Override
     public void onStopRender() {
+        if (this.sceenModel != null) {
+            this.sceenModel.clear();
+        }
         this.getSceneIndirectBuffer().clear();
         this.getJGemsUI().destroyUI();
         this.getDearUIRenderer().destroyUI();
@@ -157,9 +194,21 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         this.destroyResources();
     }
 
+    protected void constructScreenModel() {
+        if (this.sceenModel != null) {
+            this.sceenModel.clear();
+        }
+        this.sceenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getRenderingResolution()), 0);
+    }
+
     @Override
     public void UIPanelActionRequest(@Nullable PanelUI panelUI) {
         this.getJGemsUI().setPanel(panelUI);
+    }
+
+    @Override
+    public @NotNull Model<Format2D> getScreenModel() {
+        return this.sceenModel;
     }
 
     @Override
@@ -194,6 +243,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         if (this.getDearUIRenderer() != null) {
             this.getDearUIRenderer().onWindowResize(window);
         }
+        this.constructScreenModel();
         this.getConveyorNodes().values().stream().filter(Objects::nonNull).forEach(e -> e.onWindowResize(window));
     }
 
@@ -220,7 +270,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     @SuppressWarnings("all")
     public static Set<SceneObject> getFilteredSetToRender(Set<SceneObject> sceneObjects) {
         return sceneObjects.stream().filter(e -> {
-            if (!e.isVisible() || !e.hasRender()) {
+            if (!e.isVisible() || !e.hasRender() || !e.hasModel()) {
                 return false;
             }
             if (JGemsOpenGLRenderer.checkReachedRenderDistance(e)) {

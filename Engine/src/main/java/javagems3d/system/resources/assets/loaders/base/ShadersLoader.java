@@ -13,9 +13,10 @@ package javagems3d.system.resources.assets.loaders.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
-import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesManager;
-import javagems3d.system.resources.assets.shaders.library.ShaderLibrariesContainer;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
+import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
@@ -28,16 +29,16 @@ public abstract class ShadersLoader<T extends ShaderManager> {
 
     protected abstract void initObjects(ResourceCache resourceCache);
 
-    protected abstract T createShaderObject(JGemsPath shaderPath);
+    protected abstract T createShaderObject(ShaderRenderingTarget shaderRenderingTarget, JGemsPath shaderPath);
 
     @SuppressWarnings("unchecked")
-    public T createShaderManager(ResourceCache resourceCache, JGemsPath shaderPath) {
+    public T createShaderManager(ResourceCache resourceCache, ShaderRenderingTarget shaderRenderingTarget, JGemsPath shaderPath) {
         if (resourceCache.checkObjectInCache(shaderPath)) {
             JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists!");
             return (T) resourceCache.getCachedObject(shaderPath);
         }
         JGemsHelper.getLogger().log("Creating shader " + shaderPath + "...");
-        T shaderManager = this.createShaderObject(shaderPath);
+        T shaderManager = this.createShaderObject(shaderRenderingTarget, shaderPath);
         resourceCache.addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }

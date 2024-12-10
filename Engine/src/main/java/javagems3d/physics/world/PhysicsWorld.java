@@ -13,7 +13,7 @@ package javagems3d.physics.world;
 
 import javagems3d.JGems3D;
 import api.bridge.events.APIEventsLauncher;
-import javagems3d.graphics.rendering.JGemsDebugGlobalConstants;
+import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;

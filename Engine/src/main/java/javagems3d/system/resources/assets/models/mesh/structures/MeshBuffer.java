@@ -12,7 +12,6 @@
 package javagems3d.system.resources.assets.models.mesh.structures;
 
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
-import javagems3d.system.resources.assets.models.mesh.udata.IMeshUserData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
 
     @Override
     public MeshDataType getMeshDataType() {
-        return MeshDataType.INDIRECT_RENDER_DATA;
+        return MeshDataType.BUFFER;
     }
 
     public static final class MeshBufferNode extends MeshStructure.Node<DataMesh> {

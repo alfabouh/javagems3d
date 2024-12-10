@@ -166,6 +166,7 @@ public final class IndirectRenderBuffer {
         GL46.glDeleteVertexArrays(this.getStaticVao());
         this.getVboList().forEach(GL46::glDeleteBuffers);
         this.getVboList().clear();
+        this.staticVao = 0;
     }
 
     public Layout getLayout() {

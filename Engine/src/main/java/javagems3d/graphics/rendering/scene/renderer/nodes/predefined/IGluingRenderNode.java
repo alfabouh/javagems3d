@@ -3,28 +3,43 @@ package javagems3d.graphics.rendering.scene.renderer.nodes.predefined;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.processors.predefined.SceneGluingRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import org.jetbrains.annotations.NotNull;
 
 public interface IGluingRenderNode extends IRenderNode {
-    final class Default extends IRenderNode.Template implements IGluingRenderNode {
+    @NotNull FBOTexture2DProgram getOutGluedScene();
 
-        public Default(OpenGLRenderer openGLRenderer) {
+    final class Default extends IRenderNode.Template implements IGluingRenderNode {
+        private final SceneGluingRenderProcessor sceneGluingRenderProcessor;
+
+        public Default(@NotNull IDeferredRenderNode deferredRenderNode, OpenGLRenderer openGLRenderer) {
             super(openGLRenderer);
+            this.sceneGluingRenderProcessor = new SceneGluingRenderProcessor(deferredRenderNode, openGLRenderer);
         }
 
         @Override
         public void onRender(FrameTicking frameTicking) {
-
+            this.getSceneGluingRenderProcessor().onRender(frameTicking);
         }
 
         @Override
         public void createResources() {
-
+            this.getSceneGluingRenderProcessor().createResources();
         }
 
         @Override
         public void destroyResources() {
+            this.getSceneGluingRenderProcessor().destroyResources();
+        }
 
+        public SceneGluingRenderProcessor getSceneGluingRenderProcessor() {
+            return this.sceneGluingRenderProcessor;
+        }
+
+        @Override
+        public @NotNull FBOTexture2DProgram getOutGluedScene() {
+            return this.getSceneGluingRenderProcessor().getGluedScene();
         }
     }
 }

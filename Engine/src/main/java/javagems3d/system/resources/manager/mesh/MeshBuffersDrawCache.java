@@ -42,7 +42,6 @@ public final class MeshBuffersDrawCache {
             material.setId(currentMaterialsSize + material.getId());
             this.getMaterials().add(material);
         }
-        array.clear();
     }
 
     public List<Material> getMaterials() {

@@ -19,7 +19,7 @@ import javagems3d.graphics.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.particles.objects.SimpleColoredParticle;
 import javagems3d.graphics.particles.objects.SimpleTexturedParticle;
 import javagems3d.graphics.particles.objects.base.ParticleFX;
-import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
@@ -64,7 +64,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     @Override
     public void emitParticle(ParticleFX particleFX) {
         this.getParticlesSet().add(particleFX);
-        if (this.getParticlesSet().size() > JGemsSceneGlobalConstants.MAX_PARTICLES) {
+        if (this.getParticlesSet().size() > JGemsRenderingGlobalConstants.MAX_PARTICLES) {
             this.getParticlesSet().remove(this.getParticlesSet().stream().findFirst().get());
         }
     }

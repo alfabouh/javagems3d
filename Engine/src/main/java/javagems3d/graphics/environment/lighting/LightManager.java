@@ -18,8 +18,7 @@ import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.environment.Environment;
-import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
-import javagems3d.graphics.OLD.JGemsOpenGLRendererOLD;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -51,13 +50,13 @@ public class LightManager implements ILightManager {
     }
 
     private void initCollections() {
-        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(JGemsSceneGlobalConstants.MAX_POINT_LIGHTS));
+        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS));
     }
 
     public void addLight(Light light) {
         if ((light.lightCode() & Light.POINT_LIGHT) != 0) {
-            if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= JGemsSceneGlobalConstants.MAX_POINT_LIGHTS) {
-                throw new JGemsRuntimeException("Reached active point lights limit: " + JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
+            if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS) {
+                throw new JGemsRuntimeException("Reached active point lights limit: " + JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS);
             }
             this.getPointLightList().add((PointLight) light);
         }
@@ -109,7 +108,7 @@ public class LightManager implements ILightManager {
     private void updatePointLightsUbo(MemoryStack stack, Matrix4f viewMatrix) {
         List<PointLight> pointLights = this.getPointLightList().stream().filter(PointLight::isEnabled).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1)).collect(Collectors.toList());
 
-        FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS);
         int total = pointLights.size();
         for (int i = 0; i < total; i++) {
             PointLight pointLight = pointLights.get(i);
@@ -140,12 +139,12 @@ public class LightManager implements ILightManager {
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(total);
         intBuffer.flip();
-        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
     }
 
     public void removeAllLights(MemoryStack stack) {
         boolean flag = JGemsOpenGLRenderer.UBOShader().beginShading();
-        FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsSceneGlobalConstants.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS);
         for (int i = 0; i < this.getPointLightList().size(); i++) {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
@@ -174,7 +173,7 @@ public class LightManager implements ILightManager {
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(0);
         intBuffer.flip();
-        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsSceneGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
         this.getPointLightList().clear();
         if (flag) {
             JGemsOpenGLRenderer.UBOShader().endShading();

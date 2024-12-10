@@ -26,10 +26,6 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * This class contains information for rendering an object from a scene.
- */
-
 @SuppressWarnings("all")
 public class EntityRenderData {
     private final IRenderFabric renderFabric;

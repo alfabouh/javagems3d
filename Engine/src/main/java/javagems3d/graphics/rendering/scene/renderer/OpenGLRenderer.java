@@ -4,8 +4,6 @@ import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.Nodes;
-import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
-import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.graphics.world.SceneWorld;
@@ -29,6 +27,8 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
     public final Vector2i getWindowSize() {
         return this.getWindow().getWindowSize();
     }
+
+    public abstract @NotNull Vector2i getRenderingResolution();
 
     public abstract IndirectRenderBuffer getSceneIndirectBuffer();
     public abstract Map<Nodes, IRenderNode> getConveyorNodes();

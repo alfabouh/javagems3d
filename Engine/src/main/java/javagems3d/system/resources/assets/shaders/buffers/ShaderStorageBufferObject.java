@@ -15,6 +15,10 @@ public final class ShaderStorageBufferObject {
     private final int binding;
     private final int bufferSize;
 
+    public ShaderStorageBufferObject(int binding) {
+        this(binding, -1);
+    }
+
     public ShaderStorageBufferObject(int binding, int bufferSize) {
         this.binding = binding;
         this.bufferSize = bufferSize;

@@ -19,7 +19,7 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lighting.Light;
 import javagems3d.graphics.particles.ParticlesEmitter;
-import javagems3d.graphics.rendering.JGemsDebugGlobalConstants;
+import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.objects.IAnimated;

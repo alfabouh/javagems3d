@@ -18,7 +18,7 @@ import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.environment.fog.FogManager;
 import javagems3d.graphics.environment.lighting.LightManager;
 import javagems3d.graphics.environment.shadows.ShadowScene;
-import javagems3d.graphics.rendering.JGemsDebugGlobalConstants;
+import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.manager.JGemsResourceManager;

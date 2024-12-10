@@ -1,6 +1,6 @@
 package javagems3d.graphics.objects.rendering.configuration;
 
-import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,21 +16,21 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
     private boolean lightsAffected;
     private boolean shadowCaster;
     private boolean shadowReceiver;
-    private boolean isDefaultBrightLighted;
+    private boolean defaultBrightLighted;
     private boolean allowMovementInterpolation;
     private boolean disableFaceCulling;
 
     public ObjectRenderConfiguration(@NotNull JGemsShaderManager modelRenderShader) {
         this.modelRenderShader = modelRenderShader;
 
-        this.alphaDiscardValue = JGemsSceneGlobalConstants.DEFAULT_ALPHA_DISCARD;
+        this.alphaDiscardValue = JGemsRenderingGlobalConstants.DEFAULT_ALPHA_DISCARD;
         this.renderDistance = -1.0f;
 
         this.allowMoveMeshesIntoTransparencyPass = true;
         this.lightsAffected = true;
         this.shadowCaster = true;
         this.shadowReceiver = true;
-        this.isDefaultBrightLighted = false;
+        this.defaultBrightLighted = false;
         this.allowMovementInterpolation = true;
         this.disableFaceCulling = false;
     }
@@ -99,11 +99,11 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
     }
 
     public boolean isDefaultBrightLighted() {
-        return this.isDefaultBrightLighted;
+        return this.defaultBrightLighted;
     }
 
     public ObjectRenderConfiguration setDefaultBrightLighted(boolean defaultBrightLighted) {
-        isDefaultBrightLighted = defaultBrightLighted;
+        this.defaultBrightLighted = defaultBrightLighted;
         return this;
     }
 

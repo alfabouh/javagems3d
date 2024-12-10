@@ -1,4 +1,4 @@
-package javagems3d.system.resources.assets.shaders.library;
+package javagems3d.system.resources.assets.shaders.libraries;
 
 import javagems3d.system.service.path.JGemsPath;
 

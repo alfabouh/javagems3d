@@ -123,11 +123,11 @@ public abstract class JGemsHelper {
     // section Resources
     public static abstract class RESOURCES {
         public static GameResources getGlobalResources() {
-            return JGemsHelper.RESOURCES.getJGemsResourceManager().getGlobalResources();
+            return JGemsResourceManager.getGlobalGameResources();
         }
 
         public static GameResources getLocalResources() {
-            return JGemsHelper.RESOURCES.getJGemsResourceManager().getLocalResources();
+            return JGemsResourceManager.getLocalGameResources();
         }
 
         public static JGemsResourceManager getJGemsResourceManager() {

@@ -23,7 +23,7 @@ public interface IRenderNode extends IWindow.ResizeEvent, IResourceInit {
     abstract class Template {
         private final OpenGLRenderer openGLRenderer;
 
-        public Template(OpenGLRenderer openGLRenderer) {
+        public Template(@NotNull OpenGLRenderer openGLRenderer) {
             this.openGLRenderer = openGLRenderer;
         }
 

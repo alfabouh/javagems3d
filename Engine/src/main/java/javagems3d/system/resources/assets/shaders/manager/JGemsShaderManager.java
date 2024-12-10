@@ -23,7 +23,7 @@ import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.shadows.CascadeShadow;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
-import javagems3d.graphics.rendering.JGemsSceneGlobalConstants;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
@@ -45,8 +45,8 @@ import java.nio.FloatBuffer;
 public final class JGemsShaderManager extends ShaderManager {
     private final JGemsShaderUtils shaderUtils;
 
-    public JGemsShaderManager(ShadersContainer shadersContainer) {
-        super(shadersContainer);
+    public JGemsShaderManager(ShaderRenderingTarget shaderRenderingTarget, ShadersContainer shadersContainer) {
+        super(shaderRenderingTarget, shadersContainer);
         this.shaderUtils = new JGemsShaderUtils();
     }
 
@@ -56,7 +56,7 @@ public final class JGemsShaderManager extends ShaderManager {
     }
 
     public JGemsShaderManager copy() {
-        return new JGemsShaderManager(this.getShaderContainer());
+        return new JGemsShaderManager(this.getShaderTarget(), this.getShaderContainer());
     }
 
     public JGemsShaderUtils getUtils() {
@@ -160,7 +160,7 @@ public final class JGemsShaderManager extends ShaderManager {
                         for (int i = 0; i < length; i++) {
                             matrices[i].get(16 * i, fb);
                         }
-                        ShaderStorageBufferProgram.fillSSBOWithData(JGemsResourceManager.globalShaderAssets.Bones, fb);
+                        ShaderStorageBufferProgram.fillSSBOWithData(JGemsResourceManager.globalShaderAssets.Bones, 0, fb);
                     }
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("hasAnimations"), UniformFunctions.BOOLEAN(true));
                     return true;
@@ -176,17 +176,17 @@ public final class JGemsShaderManager extends ShaderManager {
 
         public void performShadowsInfo() {
             JGemsScene scene = JGems3D.get().getScreen().getScene();
-            for (int i = 0; i < JGemsSceneGlobalConstants.CASCADE_SPLITS; i++) {
+            for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getCascadeShadows().get(i);
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
                     JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascadeShadow.getSplitDistance()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascadeShadow.getLightProjectionViewMatrix()));
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsSceneGlobalConstants.EVSM_POSITIVE_EXPONENT));
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsSceneGlobalConstants.EVSM_NEGATIVE_EXPONENT));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
                 }
             }
-            for (int i = 0; i < JGemsSceneGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
+            for (int i = 0; i < JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getPointLightShadows().get(i);
                 JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap", i))) {

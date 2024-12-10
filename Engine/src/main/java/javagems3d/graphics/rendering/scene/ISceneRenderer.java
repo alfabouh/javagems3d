@@ -16,6 +16,8 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.Transformation;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +27,8 @@ public interface ISceneRenderer extends IWindow.ResizeEvent {
     void onStopRender();
 
     void UIPanelActionRequest(@Nullable PanelUI panelUI);
+
+    @NotNull Model<Format2D> getScreenModel();
 
     @NotNull SceneWorld getSceneWorld();
     @NotNull IWindow getWindow();

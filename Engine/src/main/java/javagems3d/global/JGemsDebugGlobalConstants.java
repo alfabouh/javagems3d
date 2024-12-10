@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.graphics.rendering;
+package javagems3d.global;
 
 import javagems3d.graphics.rendering.scene.renderer.debug.LinesDebugDraw;
 

@@ -1,30 +1,34 @@
-package javagems3d.graphics.rendering.scene.renderer.processors;
+package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
 
 import javagems3d.JGemsHelper;
+import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.fabric.args.ArbitraryArguments;
-import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.indirect.IndirectBufferCommandsBuilder;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshDataType;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.service.collections.Pair;
+import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryUtil;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.*;
 
 public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
-    private FBOTexture2DProgram gBuffer;
     private Set<SceneObject> indirectMeshObjects;
 
     public IndirectGeometryRenderProcessor(@NotNull OpenGLRenderer openGLRenderer) {
@@ -34,61 +38,72 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void createResources() {
-        this.gBuffer = new FBOTexture2DProgram(true);
-        T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
-            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
-            add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
-            add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
-            add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
-        }};
-        this.gBuffer.createFrameBuffer2DTexture(this.getWindowSize(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
     public void destroyResources() {
-        if (this.getGBuffer() != null) {
-            this.getGBuffer().clearFBO();
-        }
     }
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        this.getGBuffer().bindFBO();
-        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         IndirectRenderBuffer renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
-
         Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects());
+
+        int collect = 0;
         for (Map.Entry<JGemsShaderManager, Set<SceneObject>> sceneObjects : map.entrySet()) {
             IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
             indirectBufferCommandsBuilder1.createBuffer();
-            indirectBufferCommandsBuilder1.buildCommands(this.splitMeshes(sceneObjects.getValue()));
+            //indirectBufferCommandsBuilder1.buildCommands(this.splitMeshes(sceneObjects.getValue()));
+
+            List<Integer> integerList = new ArrayList<>();
+            indirectBufferCommandsBuilder1.buildCommands2(integerList, sceneObjects.getValue());
+
+            this.fillSSBO(integerList, collect, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData);
             this.render(sceneObjects.getKey(), indirectBufferCommandsBuilder1, renderBuffer, sceneObjects.getValue());
             indirectBufferCommandsBuilder1.destroyBuffer();
+
+            collect += sceneObjects.getValue().size();
         }
-        this.getGBuffer().unBindFBO();
     }
 
     private void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBuffer renderBuffer, Set<SceneObject> sceneObjects) {
         shaderManager.beginShading();
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getPerspectiveMatrix()));
         shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getMainCameraViewMatrix()));
-
-        int entityIdx = 0;
-        for (SceneObject a : sceneObjects) {
-            shaderManager.performUniform(new UniformString("modelMatrices", entityIdx++), UniformFunctions.MAT4F(TransformationUtils.getModelMatrix(a.getModel().getFormat())));
-        }
-
-        int drawElement = 0;
-        for (SceneObject a : sceneObjects) {
-            shaderManager.performUniform(new UniformString("modelMatrixIdx", entityIdx++), UniformFunctions.INTEGER(drawElement++));
-        }
-
         GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
         GL46.glBindVertexArray(renderBuffer.getStaticVao());
         GL46.glMultiDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, 0, indirectBufferCommandsBuilder.getDrawCount(), 0);
         GL46.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, 0);
         shaderManager.endShading();
+    }
+
+    private void fillSSBO(List<Integer> integerList, int initialOffset, Set<SceneObject> sceneObjects, ShaderStorageBufferObject shaderStorageBufferObject) {
+        int matricesSize = JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16;
+
+        FloatBuffer matrices = MemoryUtil.memAllocFloat(JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16);
+        IntBuffer indexes = MemoryUtil.memAllocInt(JGemsGlobalConfiguration.MAX_SCENE_OBJECTS);
+
+        Map<SceneObject, Integer> idMap = new HashMap<>();
+
+        int id = 0;
+        for (SceneObject sceneObject : sceneObjects) {
+            Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
+            matrices.put(matrix.get(new float[16]));
+        }
+
+        for (int a : integerList) {
+            indexes.put(a);
+        }
+
+        matrices.flip();
+        indexes.flip();
+
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) initialOffset * Float.BYTES, matrices);
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) initialOffset * Integer.BYTES + (long) (matricesSize) * Float.BYTES, indexes);
+
+        MemoryUtil.memFree(matrices);
+        MemoryUtil.memFree(indexes);
     }
 
     private Map<JGemsShaderManager, Set<SceneObject>> splitObjectsByShaderGroups(Set<SceneObject> sceneObjects) {
@@ -107,8 +122,12 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private Map<MeshBuffer, Integer> splitMeshes(Set<SceneObject> sceneObjects) {
         Map<MeshBuffer, Integer> splitOnGroups = new HashMap<>();
         for (SceneObject sceneObject : sceneObjects) {
-            MeshBuffer meshBuffer = sceneObject.getModel().getMeshStructureWithUnSafeCast();
-            JGemsHelper.UTILS.putObjectInMapOrUpdate(splitOnGroups, meshBuffer, 1, Integer::sum, 1);
+            try {
+                MeshBuffer meshBuffer = sceneObject.getModel().getMeshStructureWithUnSafeCast();
+                JGemsHelper.UTILS.putObjectInMapOrUpdate(splitOnGroups, meshBuffer, 1, Integer::sum, 1);
+            } catch (ClassCastException classCastException) {
+                throw new JGemsRuntimeException("Object with ShaderTarget " + ShaderRenderingTarget.INDIRECT_DEFERRED_RENDERING + " should have " + MeshDataType.BUFFER + " mesh data type!");
+            }
         }
         return splitOnGroups;
     }
@@ -119,9 +138,5 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     public Set<SceneObject> getIndirectMeshObjects() {
         return this.indirectMeshObjects;
-    }
-
-    public FBOTexture2DProgram getGBuffer() {
-        return this.gBuffer;
     }
 }
