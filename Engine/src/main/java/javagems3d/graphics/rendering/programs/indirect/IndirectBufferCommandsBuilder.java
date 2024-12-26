@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.programs.indirect;
 
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
@@ -8,6 +9,7 @@ import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.*;
 
 public class IndirectBufferCommandsBuilder {
@@ -63,36 +65,33 @@ public class IndirectBufferCommandsBuilder {
         MemoryUtil.memFree(commandBuffer);
     }
 
-    public void buildCommands2(List<Integer> integerList, Set<SceneObject> sceneObjects) {
+    public void buildCommands(List<Integer> indexesList, Set<SceneObject> sceneObjects) {
         final int COM_SIZE = 5 * Float.BYTES;
 
         Map<SceneObject, Integer> idMap = new HashMap<>();
 
         int i1 = 0;
         int allMeshes = 0;
-        for (SceneObject sceneObject : sceneObjects) {
-            allMeshes += sceneObject.getModel().<MeshBuffer>getMeshStructureWithUnSafeCast().getPassData().size();
-            idMap.put(sceneObject, i1++);
-        }
-
-        Map<MeshBuffer, Set<SceneObject>> countM = new HashMap<>();
+        Map<MeshBuffer, Set<SceneObject>> objectsMap = new HashMap<>();
         for (SceneObject sceneObject : sceneObjects) {
             MeshBuffer meshBuffer = sceneObject.getModel().getMeshStructureWithUnSafeCast();
-            if (countM.containsKey(meshBuffer)) {
-                countM.get(meshBuffer).add(sceneObject);
-            } else {
-                countM.put(meshBuffer, new HashSet<SceneObject>() {{ add(sceneObject); }});
-            }
+            allMeshes += meshBuffer.getPassData().size();
+            idMap.put(sceneObject, i1++);
+            JGemsHelper.UTILS.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{ add(sceneObject); }}, (ex, nw) ->
+            {
+                ex.add(nw);
+                return ex;
+            }, sceneObject);
         }
 
         int firstIdx = 0;
         int baseInstance = 0;
         ByteBuffer commandBuffer = MemoryUtil.memAlloc(allMeshes * COM_SIZE);
         for (MeshBuffer meshBuffer : this.getIndirectRenderBuffer().getAllStaticMeshBuffers()) {
-            if (!countM.containsKey(meshBuffer)) {
+            if (!objectsMap.containsKey(meshBuffer)) {
                 continue;
             }
-            int entitiesCount = countM.get(meshBuffer).size();
+            int entitiesCount = objectsMap.get(meshBuffer).size();
             for (MeshBuffer.PassData data : meshBuffer.getPassData()) {
                 commandBuffer.putInt(data.getVertices());
                 commandBuffer.putInt(entitiesCount);
@@ -103,8 +102,8 @@ public class IndirectBufferCommandsBuilder {
                 firstIdx += data.getVertices();
                 baseInstance += entitiesCount;
 
-                for (SceneObject modeled : countM.get(meshBuffer)) {
-                    integerList.add(idMap.get(modeled));
+                for (SceneObject modeled : objectsMap.get(meshBuffer)) {
+                    indexesList.add(idMap.get(modeled));
                 }
             }
         }

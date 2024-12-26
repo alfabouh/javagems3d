@@ -19,6 +19,7 @@ import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
@@ -49,24 +50,22 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         IndirectRenderBuffer renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
         Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects());
 
-        int collect = 0;
+        Capacitor capacitor = new Capacitor();
         for (Map.Entry<JGemsShaderManager, Set<SceneObject>> sceneObjects : map.entrySet()) {
+            List<Integer> indexesList = new ArrayList<>();
+
             IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
             indirectBufferCommandsBuilder1.createBuffer();
-            //indirectBufferCommandsBuilder1.buildCommands(this.splitMeshes(sceneObjects.getValue()));
+            indirectBufferCommandsBuilder1.buildCommands(indexesList, sceneObjects.getValue());
 
-            List<Integer> integerList = new ArrayList<>();
-            indirectBufferCommandsBuilder1.buildCommands2(integerList, sceneObjects.getValue());
-
-            this.fillSSBO(integerList, collect, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData);
-            this.render(sceneObjects.getKey(), indirectBufferCommandsBuilder1, renderBuffer, sceneObjects.getValue());
+            this.fillSSBO(capacitor, indexesList, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData);
+            this.render(sceneObjects.getKey(), indirectBufferCommandsBuilder1, renderBuffer);
             indirectBufferCommandsBuilder1.destroyBuffer();
-
-            collect += sceneObjects.getValue().size();
         }
+        capacitor.clean();
     }
 
-    private void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBuffer renderBuffer, Set<SceneObject> sceneObjects) {
+    private void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBuffer renderBuffer) {
         shaderManager.beginShading();
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getPerspectiveMatrix()));
         shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getMainCameraViewMatrix()));
@@ -78,29 +77,29 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         shaderManager.endShading();
     }
 
-    private void fillSSBO(List<Integer> integerList, int initialOffset, Set<SceneObject> sceneObjects, ShaderStorageBufferObject shaderStorageBufferObject) {
-        int matricesSize = JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16;
+    private void fillSSBO(Capacitor capacitor, List<Integer> indexesList, Set<SceneObject> sceneObjects, ShaderStorageBufferObject shaderStorageBufferObject) {
+        int matricesSize = sceneObjects.size() * 16;
 
-        FloatBuffer matrices = MemoryUtil.memAllocFloat(JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16);
-        IntBuffer indexes = MemoryUtil.memAllocInt(JGemsGlobalConfiguration.MAX_SCENE_OBJECTS);
+        IntBuffer indexes = MemoryUtil.memAllocInt(indexesList.size());
+        FloatBuffer matrices = MemoryUtil.memAllocFloat(matricesSize);
 
-        Map<SceneObject, Integer> idMap = new HashMap<>();
-
-        int id = 0;
         for (SceneObject sceneObject : sceneObjects) {
             Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
             matrices.put(matrix.get(new float[16]));
         }
 
-        for (int a : integerList) {
+        for (int a : indexesList) {
             indexes.put(a);
         }
 
         matrices.flip();
         indexes.flip();
 
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) initialOffset * Float.BYTES, matrices);
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) initialOffset * Integer.BYTES + (long) (matricesSize) * Float.BYTES, indexes);
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) capacitor.get(0) * Float.BYTES, matrices);
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) capacitor.get(1) * Integer.BYTES + (long) (matricesSize) * Float.BYTES, indexes);
+
+        capacitor.add(0, sceneObjects.size());
+        capacitor.add(1, indexesList.size());
 
         MemoryUtil.memFree(matrices);
         MemoryUtil.memFree(indexes);
@@ -119,24 +118,31 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         return map;
     }
 
-    private Map<MeshBuffer, Integer> splitMeshes(Set<SceneObject> sceneObjects) {
-        Map<MeshBuffer, Integer> splitOnGroups = new HashMap<>();
-        for (SceneObject sceneObject : sceneObjects) {
-            try {
-                MeshBuffer meshBuffer = sceneObject.getModel().getMeshStructureWithUnSafeCast();
-                JGemsHelper.UTILS.putObjectInMapOrUpdate(splitOnGroups, meshBuffer, 1, Integer::sum, 1);
-            } catch (ClassCastException classCastException) {
-                throw new JGemsRuntimeException("Object with ShaderTarget " + ShaderRenderingTarget.INDIRECT_DEFERRED_RENDERING + " should have " + MeshDataType.BUFFER + " mesh data type!");
-            }
-        }
-        return splitOnGroups;
-    }
-
     public void setIndirectMeshObjects(@NotNull Set<SceneObject> sceneObjects) {
         this.indirectMeshObjects = sceneObjects;
     }
 
     public Set<SceneObject> getIndirectMeshObjects() {
         return this.indirectMeshObjects;
+    }
+
+    private static class Capacitor {
+        private final Map<Integer, Integer> capacitor;
+
+        public Capacitor() {
+            this.capacitor = new HashMap<>();
+        }
+
+        public int get(int id) {
+            return this.capacitor.getOrDefault(id, 0);
+        }
+
+        public void add(int id, int num) {
+            JGemsHelper.UTILS.putObjectInMapOrUpdate(this.capacitor, id, num, Integer::sum, num);
+        }
+
+        public void clean() {
+            this.capacitor.clear();
+        }
     }
 }
