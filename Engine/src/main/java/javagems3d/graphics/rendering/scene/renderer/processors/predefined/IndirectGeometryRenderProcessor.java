@@ -90,7 +90,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         matrices.flip();
 
         ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, matrices);
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, Integer.BYTES + (long) (matricesSize) * Float.BYTES, indexes);
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) (matricesSize) * Float.BYTES, indexes);
 
         MemoryUtil.memFree(matrices);
         MemoryUtil.memFree(indexes);
