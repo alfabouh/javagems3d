@@ -49,20 +49,16 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         IndirectRenderBuffer renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
         Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects());
 
-        int collect = 0;
         for (Map.Entry<JGemsShaderManager, Set<SceneObject>> sceneObjects : map.entrySet()) {
             IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
             indirectBufferCommandsBuilder1.createBuffer();
-            //indirectBufferCommandsBuilder1.buildCommands(this.splitMeshes(sceneObjects.getValue()));
 
-            List<Integer> integerList = new ArrayList<>();
-            indirectBufferCommandsBuilder1.buildCommands2(integerList, sceneObjects.getValue());
+            IntBuffer indexes = MemoryUtil.memAllocInt(JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS);
+            indirectBufferCommandsBuilder1.buildCommands(indexes, sceneObjects.getValue());
 
-            this.fillSSBO(integerList, collect, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData);
+            this.fillSSBO(indexes, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData);
             this.render(sceneObjects.getKey(), indirectBufferCommandsBuilder1, renderBuffer, sceneObjects.getValue());
             indirectBufferCommandsBuilder1.destroyBuffer();
-
-            collect += sceneObjects.getValue().size();
         }
     }
 
@@ -78,11 +74,10 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         shaderManager.endShading();
     }
 
-    private void fillSSBO(List<Integer> integerList, int initialOffset, Set<SceneObject> sceneObjects, ShaderStorageBufferObject shaderStorageBufferObject) {
-        int matricesSize = JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16;
+    private void fillSSBO(IntBuffer indexes, Set<SceneObject> sceneObjects, ShaderStorageBufferObject shaderStorageBufferObject) {
+        int matricesSize = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
 
-        FloatBuffer matrices = MemoryUtil.memAllocFloat(JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16);
-        IntBuffer indexes = MemoryUtil.memAllocInt(JGemsGlobalConfiguration.MAX_SCENE_OBJECTS);
+        FloatBuffer matrices = MemoryUtil.memAllocFloat(matricesSize);
 
         Map<SceneObject, Integer> idMap = new HashMap<>();
 
@@ -92,15 +87,10 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
             matrices.put(matrix.get(new float[16]));
         }
 
-        for (int a : integerList) {
-            indexes.put(a);
-        }
-
         matrices.flip();
-        indexes.flip();
 
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) initialOffset * Float.BYTES, matrices);
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, (long) initialOffset * Integer.BYTES + (long) (matricesSize) * Float.BYTES, indexes);
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, matrices);
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, Integer.BYTES + (long) (matricesSize) * Float.BYTES, indexes);
 
         MemoryUtil.memFree(matrices);
         MemoryUtil.memFree(indexes);
@@ -117,19 +107,6 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
             }, sceneObject);
         }
         return map;
-    }
-
-    private Map<MeshBuffer, Integer> splitMeshes(Set<SceneObject> sceneObjects) {
-        Map<MeshBuffer, Integer> splitOnGroups = new HashMap<>();
-        for (SceneObject sceneObject : sceneObjects) {
-            try {
-                MeshBuffer meshBuffer = sceneObject.getModel().getMeshStructureWithUnSafeCast();
-                JGemsHelper.UTILS.putObjectInMapOrUpdate(splitOnGroups, meshBuffer, 1, Integer::sum, 1);
-            } catch (ClassCastException classCastException) {
-                throw new JGemsRuntimeException("Object with ShaderTarget " + ShaderRenderingTarget.INDIRECT_DEFERRED_RENDERING + " should have " + MeshDataType.BUFFER + " mesh data type!");
-            }
-        }
-        return splitOnGroups;
     }
 
     public void setIndirectMeshObjects(@NotNull Set<SceneObject> sceneObjects) {
