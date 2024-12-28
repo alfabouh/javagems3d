@@ -75,12 +75,18 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
         private final int materialId;
         private final int offset;
         private final int vertices;
+        private final int firstIndexOffset;
 
-        public PassData(int sizeInBytes, int materialId, int offset, int vertices) {
+        public PassData(int firstIndexOffset, int sizeInBytes, int materialId, int offset, int vertices) {
+            this.firstIndexOffset = firstIndexOffset;
             this.sizeInBytes = sizeInBytes;
             this.materialId = materialId;
             this.offset = offset;
             this.vertices = vertices;
+        }
+
+        public int getFirstIndexOffset() {
+            return this.firstIndexOffset;
         }
 
         public int getSizeInBytes() {

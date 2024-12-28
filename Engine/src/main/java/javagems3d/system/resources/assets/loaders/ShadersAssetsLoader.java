@@ -76,7 +76,7 @@ public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager>
         this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * ModelLoadingUtils.ANIM_MAX_BONES);
         ShaderStorageBufferProgram.createSSBO(this.Bones);
 
-        this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_SCENE_OBJECTS * 16 * Float.BYTES));
+        this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
         ShaderStorageBufferProgram.createSSBO(this.IndirectBufferData);
 
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);

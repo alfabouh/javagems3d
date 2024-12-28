@@ -22,9 +22,6 @@ public final class IndirectRenderBuffer {
     private List<MeshBuffer> allStaticMeshBuffers;
     private List<MeshBuffer> allAnimatedMeshBuffers;
 
-    private int totalStaticMeshStructures;
-    private int totalAnimatedMeshStructures;
-
     private final Layout layout;
 
     public IndirectRenderBuffer(RenderAttributePointer... attributePointers) {
@@ -33,7 +30,6 @@ public final class IndirectRenderBuffer {
 
     public IndirectRenderBuffer(@NotNull Layout layout) {
         this.vboList = new ArrayList<>();
-        this.totalStaticMeshStructures = 0;
         this.layout = layout;
     }
 
@@ -45,8 +41,6 @@ public final class IndirectRenderBuffer {
 
         this.forStatic(this.getAllStaticMeshBuffers());
         //this.forStatic(this.getAllAnimatedMeshBuffers());
-
-        this.totalStaticMeshStructures = this.allStaticMeshBuffers.size();
     }
 
     private void forStatic(List<MeshBuffer> obj) {
@@ -61,8 +55,11 @@ public final class IndirectRenderBuffer {
         int indexesSize = 0;
         int positionsSize = 0;
         int offset = 0;
+        int firstIndexOffset = 0;
 
         for (MeshBuffer meshBuffer : obj) {
+            meshBuffer.getPassData().clear();
+            int collect = 0;
             for (MeshBuffer.MeshBufferNode node : meshBuffer.getMeshNodes()) {
                 DataMesh dataMesh = node.getMesh();
                 int posLength = dataMesh.numPositions();
@@ -80,9 +77,11 @@ public final class IndirectRenderBuffer {
                 }
                 meshSizeInBytes *= posLength;
 
-                meshBuffer.getPassData().add(new MeshBuffer.PassData(meshSizeInBytes, node.getMaterialId(), offset, dataMesh.numVertices()));
+                meshBuffer.getPassData().add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, node.getMaterialId(), offset, dataMesh.numVertices()));
                 offset = positionsSize / 3;
+                collect += node.getMesh().numVertices();
             }
+            firstIndexOffset += collect;
         }
 
         int vboId = GL46.glGenBuffers();
@@ -181,16 +180,8 @@ public final class IndirectRenderBuffer {
         return this.allAnimatedMeshBuffers;
     }
 
-    public int getTotalStaticMeshStructures() {
-        return this.totalStaticMeshStructures;
-    }
-
     public int getStaticVao() {
         return this.staticVao;
-    }
-
-    public void setStaticVao(int staticVao) {
-        this.staticVao = staticVao;
     }
 
     public List<Integer> getVboList() {
