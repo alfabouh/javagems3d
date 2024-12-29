@@ -12,7 +12,7 @@
 package javagems3d.temp.map_sys.save.objects.map_prop;
 
 import org.joml.Vector3f;
-import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
+import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 
 public class SkyProp {
     private final Vector3f sunPos;
@@ -21,7 +21,7 @@ public class SkyProp {
     private String skyBoxPath;
 
     public SkyProp() {
-        this(TextureAssetsLoader.defaultSkyCubeMapPath.toString(), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f), 1.0f);
+        this(TextureAssetsInitializer.defaultSkyCubeMapPath.toString(), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f), 1.0f);
     }
 
     public SkyProp(String skyBoxPath, Vector3f sunPos, Vector3f sunColor, float sunBrightness) {

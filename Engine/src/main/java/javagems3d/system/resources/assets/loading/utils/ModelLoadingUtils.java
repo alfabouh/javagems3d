@@ -1,8 +1,8 @@
-package javagems3d.system.resources.assets.models.loaders.utils;
+package javagems3d.system.resources.assets.loading.utils;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
+import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.material.samples.ColorSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
@@ -207,7 +207,7 @@ public abstract class ModelLoadingUtils {
             String diffuse = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
             try {
                 if (!diffuse.isEmpty()) {
-                    TextureSample textureSample = gameResources.createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(fullPath, diffuse), new TextureSample.Params(true));
+                    TextureSample textureSample = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(fullPath, diffuse), new TextureSample.Params(true));
                     if (textureSample.isValid()) {
                         material.setDiffuse(textureSample);
                     }

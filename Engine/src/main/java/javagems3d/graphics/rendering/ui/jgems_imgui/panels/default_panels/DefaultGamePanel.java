@@ -11,17 +11,13 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels;
 
-import javagems3d.system.inventory.IInventoryOwner;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
-import javagems3d.system.inventory.Inventory;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
-import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
 public class DefaultGamePanel extends AbstractPanelUI {
@@ -60,7 +56,7 @@ public class DefaultGamePanel extends AbstractPanelUI {
 
        //        TextureSample sample = inventoryItemRenderData == null ? null : inventoryItemRenderData.getInventoryIcon();
        //        if (sample == null) {
-       //            sample = TextureAssetsLoader.DEFAULT;
+       //            sample = TextureAssetsInitializer.DEFAULT;
        //        }
        //        JGemsUI.imageUI(sample, new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
 

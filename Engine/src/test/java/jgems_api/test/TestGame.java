@@ -20,7 +20,7 @@ import api.app.manager.AppManager;
 import api.app.resources.IAppResourceLoader;
 import jgems_api.test.events.TestEvents;
 import jgems_api.test.manager.TestManager;
-import jgems_api.test.resources.ModelLoader;
+import jgems_api.test.resources.ModelInitializer;
 import org.jetbrains.annotations.NotNull;
 
 @JGemsGameEntry(gameTitle = "Test", gameVersion = "0.1a", devStage = JGemsGameEntry.DevStage.PRE_ALPHA)
@@ -33,7 +33,7 @@ public class TestGame implements JGemsGameApplication {
 
     @Override
     public void loadResources(IAppResourceLoader appResourceLoader) {
-        appResourceLoader.addAssetsLoader(new ModelLoader());
+        appResourceLoader.addAssetsLoader(new ModelInitializer());
     }
 
     @Override

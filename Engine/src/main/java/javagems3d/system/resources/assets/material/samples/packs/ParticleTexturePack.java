@@ -12,7 +12,7 @@
 package javagems3d.system.resources.assets.material.samples.packs;
 
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.loaders.TextureAssetsLoader;
+import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
 import javagems3d.system.resources.manager.JGemsResourceManager;
@@ -49,7 +49,7 @@ public class ParticleTexturePack {
     private void loadTextures() {
         JGemsHelper.getLogger().log("Loading particle texture pack: " + this.pathToTexturePath);
         for (int i = 0; i < this.texturesNum; i++) {
-            this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTextureOrDefault(TextureAssetsLoader.DEFAULT, new JGemsPath(this.pathToTexturePath, String.format("%s%d%s", "particle_", i, this.format)), new TextureSample.Params(true));
+            this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(this.pathToTexturePath, String.format("%s%d%s", "particle_", i, this.format)), new TextureSample.Params(true));
         }
     }
 }

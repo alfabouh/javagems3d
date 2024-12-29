@@ -9,11 +9,11 @@
  *
  */
 
-package javagems3d.system.resources.assets.loaders.base;
+package javagems3d.system.resources.assets.initialization.base;
 
 import javagems3d.system.resources.manager.GameResources;
 
-public interface IAssetsLoader {
+public interface IAssetsInitializer {
     void load(GameResources gameResources);
 
     LaunchMode loadMode();

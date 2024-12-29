@@ -1,13 +1,13 @@
-package javagems3d.system.resources.assets.models.loaders;
+package javagems3d.system.resources.assets.loading;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
+import javagems3d.system.resources.assets.loading.utils.AnimationLoadingUtils;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.components.Bone;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
-import javagems3d.system.resources.assets.models.loaders.utils.AnimationLoadingUtils;
-import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.loading.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
@@ -18,7 +18,6 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
@@ -129,6 +128,7 @@ public class ModelMeshLoader {
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
+                material.setId(i);
                 materialList.add(material);
                 if (loadInIndirectBuffer) {
                     gameResources.getDataMeshArray().putMaterial(material);

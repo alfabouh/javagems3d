@@ -9,18 +9,17 @@
  *
  */
 
-package javagems3d.system.resources.assets.loaders;
+package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
-import javagems3d.system.resources.assets.models.loaders.ModelMeshLoader;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.loading.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 
-public class ModelAssetsLoader implements IAssetsLoader {
+public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshBuffer cube;
     public MeshBuffer ground2;
     public MeshBuffer ground3;

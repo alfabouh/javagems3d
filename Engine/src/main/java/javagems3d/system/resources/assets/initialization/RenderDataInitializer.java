@@ -9,9 +9,10 @@
  *
  */
 
-package javagems3d.system.resources.assets.loaders;
+package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.graphics.objects.rendering.fabric.IndirectGBufferRenderFabric;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.material.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
@@ -23,19 +24,18 @@ import javagems3d.graphics.objects.entities.EntityObject;
 import javagems3d.graphics.objects.entities.PlayerSPObject;
 import javagems3d.graphics.objects.entities.WorldEntity;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
-public class RenderDataLoader implements IAssetsLoader {
+public class RenderDataInitializer implements IAssetsInitializer {
     public EntityRenderData entityCube;
     public EntityRenderData player;
     public EntityRenderData ground;
     public LiquidRenderData water;
 
-    public RenderDataLoader() {
+    public RenderDataInitializer() {
     }
 
     @Override

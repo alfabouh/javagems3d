@@ -11,35 +11,35 @@
 
 package api.app.resources;
 
-import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
-import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public final class AppResourceLoader implements IAppResourceLoader {
-    private final Set<IAssetsLoader> assetsLoaderSet;
-    private final Set<ShadersLoader<JGemsShaderManager>> shadersLoaders;
+    private final Set<IAssetsInitializer> assetsLoaderSet;
+    private final Set<ShadersInitializer<JGemsShaderManager>> shadersLoaders;
 
     public AppResourceLoader() {
         this.assetsLoaderSet = new HashSet<>();
         this.shadersLoaders = new HashSet<>();
     }
 
-    public void addAssetsLoader(IAssetsLoader assetsLoader) {
+    public void addAssetsLoader(IAssetsInitializer assetsLoader) {
         this.assetsLoaderSet.add(assetsLoader);
     }
 
-    public void addShadersLoader(ShadersLoader<JGemsShaderManager> shadersLoader) {
+    public void addShadersLoader(ShadersInitializer<JGemsShaderManager> shadersLoader) {
         this.shadersLoaders.add(shadersLoader);
     }
 
-    public Set<ShadersLoader<JGemsShaderManager>> getShadersLoaders() {
+    public Set<ShadersInitializer<JGemsShaderManager>> getShadersLoaders() {
         return this.shadersLoaders;
     }
 
-    public Set<IAssetsLoader> getAssetsLoaderSet() {
+    public Set<IAssetsInitializer> getAssetsLoaderSet() {
         return this.assetsLoaderSet;
     }
 }

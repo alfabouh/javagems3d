@@ -11,8 +11,8 @@
 
 package api.app.resources;
 
-import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
-import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public interface IAppResourceLoader {
@@ -22,7 +22,7 @@ public interface IAppResourceLoader {
      *
      * @param assetsLoader
      */
-    void addAssetsLoader(IAssetsLoader assetsLoader);
+    void addAssetsLoader(IAssetsInitializer assetsLoader);
 
     /**
      * Using this method, you can add a shaders loader to the initialization process of
@@ -30,5 +30,5 @@ public interface IAppResourceLoader {
      *
      * @param assetsLoader
      */
-    void addShadersLoader(ShadersLoader<JGemsShaderManager> shadersLoader);
+    void addShadersLoader(ShadersInitializer<JGemsShaderManager> shadersLoader);
 }

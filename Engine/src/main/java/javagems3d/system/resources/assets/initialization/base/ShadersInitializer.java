@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.resources.assets.loaders.base;
+package javagems3d.system.resources.assets.initialization.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
@@ -20,10 +20,10 @@ import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
-public abstract class ShadersLoader<T extends ShaderManager> {
+public abstract class ShadersInitializer<T extends ShaderManager> {
     private final ShaderLibrariesManager shaderLibrary;
 
-    public ShadersLoader() {
+    public ShadersInitializer() {
         this.shaderLibrary = new ShaderLibrariesManager();
     }
 

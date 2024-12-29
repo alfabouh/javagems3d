@@ -12,7 +12,7 @@
 package toolbox.resources.utils;
 
 import javagems3d.system.resources.assets.material.Material;
-import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.loading.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;

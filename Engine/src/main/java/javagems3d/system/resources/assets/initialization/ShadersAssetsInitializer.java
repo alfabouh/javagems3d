@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.resources.assets.loaders;
+package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
 import javagems3d.global.JGemsGlobalConfiguration;
@@ -17,8 +17,8 @@ import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lighting.LightManager;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
-import javagems3d.system.resources.assets.loaders.base.ShadersLoader;
-import javagems3d.system.resources.assets.models.loaders.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
+import javagems3d.system.resources.assets.loading.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
@@ -28,7 +28,7 @@ import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
-public final class ShadersAssetsLoader extends ShadersLoader<JGemsShaderManager> {
+public final class ShadersAssetsInitializer extends ShadersInitializer<JGemsShaderManager> {
     public ShaderStorageBufferObject Bones;
     public ShaderStorageBufferObject IndirectBufferData;
 

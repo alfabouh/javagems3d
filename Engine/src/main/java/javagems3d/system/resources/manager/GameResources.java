@@ -11,16 +11,15 @@
 
 package javagems3d.system.resources.manager;
 
-import javagems3d.system.resources.assets.models.loaders.ModelMeshLoader;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.loading.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
-import javagems3d.system.service.collections.Pair;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
 import javagems3d.system.resources.assets.material.samples.CubeMapSample;
 import javagems3d.system.resources.assets.material.samples.TextureSample;
 import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
@@ -39,13 +38,13 @@ import java.util.stream.Collectors;
  */
 public final class GameResources implements IGameResources {
     private final ResourceCache resourceCache;
-    private final Set<IAssetsLoader> assetsLoaderSet;
+    private final Set<IAssetsInitializer> assetsLoaderSet;
     private final MeshBuffersArray meshBuffersArray;
 
     public GameResources(ResourceCache resourceCache) {
         this.meshBuffersArray = new MeshBuffersArray();
         this.resourceCache = resourceCache;
-        this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsLoader) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
+        this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsInitializer) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
     }
 
     public SoundBuffer createSoundBuffer(JGemsPath soundPath, int soundFormat) {
@@ -141,8 +140,8 @@ public final class GameResources implements IGameResources {
 
     private Set<Thread> initAssets() {
         Set<Thread> set = new HashSet<>();
-        for (IAssetsLoader assets : this.getAssetsLoaderSet()) {
-            if (assets.loadMode() == IAssetsLoader.LaunchMode.PARALLEL) {
+        for (IAssetsInitializer assets : this.getAssetsLoaderSet()) {
+            if (assets.loadMode() == IAssetsInitializer.LaunchMode.PARALLEL) {
                 Thread thread = new Thread(() -> {
                     try {
                         assets.load(this);
@@ -161,7 +160,7 @@ public final class GameResources implements IGameResources {
         JGemsHelper.getLogger().log("Loading rendering resources...");
         Set<Thread> threads = this.initAssets();
         threads.forEach(Thread::start);
-        List<IAssetsLoader> normalLoad = this.getAssetsLoaderSet().stream().filter(e -> e.loadMode() == IAssetsLoader.LaunchMode.REGULAR).collect(Collectors.toList());
+        List<IAssetsInitializer> normalLoad = this.getAssetsLoaderSet().stream().filter(e -> e.loadMode() == IAssetsInitializer.LaunchMode.REGULAR).collect(Collectors.toList());
         threads.forEach(e -> {
             try {
                 e.join();
@@ -169,27 +168,27 @@ public final class GameResources implements IGameResources {
                 throw new JGemsRuntimeException(ex);
             }
         });
-        for (IAssetsLoader assets : normalLoad) {
+        for (IAssetsInitializer assets : normalLoad) {
             assets.load(this);
         }
         JGemsHelper.getLogger().log("Rendering resources loaded!");
     }
 
-    public void addAssetsLoaders(IAssetsLoader... a) {
+    public void addAssetsLoaders(IAssetsInitializer... a) {
         if (a == null) {
             throw new JGemsNullException("Caught NULL AssetsLoader!");
         }
         this.assetsLoaderSet.addAll(Arrays.asList(a));
     }
 
-    public void addAssetsLoaders(Collection<IAssetsLoader> a) {
+    public void addAssetsLoaders(Collection<IAssetsInitializer> a) {
         if (a == null) {
             throw new JGemsNullException("Caught NULL AssetsLoader Collection!");
         }
         this.assetsLoaderSet.addAll(a);
     }
 
-    public Set<IAssetsLoader> getAssetsLoaderSet() {
+    public Set<IAssetsInitializer> getAssetsLoaderSet() {
         return this.assetsLoaderSet;
     }
 

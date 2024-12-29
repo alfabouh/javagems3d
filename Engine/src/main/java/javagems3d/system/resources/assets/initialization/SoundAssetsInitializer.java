@@ -9,16 +9,16 @@
  *
  */
 
-package javagems3d.system.resources.assets.loaders;
+package javagems3d.system.resources.assets.initialization;
 
 import org.lwjgl.openal.AL10;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.system.resources.assets.loaders.base.IAssetsLoader;
+import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 
-public class SoundAssetsLoader implements IAssetsLoader {
+public class SoundAssetsInitializer implements IAssetsInitializer {
     public SoundBuffer zippo_o;
     public SoundBuffer zippo_c;
     public SoundBuffer pick;
