@@ -17,6 +17,9 @@ import imgui.type.ImInt;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.manager.GameResources;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -43,15 +46,15 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     private GLFWKeyCallback prevKeyCallback;
     private final IWindow window;
 
-    public DearUIRenderer(IWindow window, ResourceCache resourceCache) {
+    public DearUIRenderer(IWindow window, GameResources gameResources) {
         this.shaderManager = JGemsResourceManager.globalShaderAssets.imgui;
         this.window = window;
 
-        this.createUIResources(resourceCache);
+        this.createUIResources(gameResources);
         this.createUICallbacks(this.getWindow());
     }
 
-    private void createUIResources(ResourceCache resourceCache) {
+    private void createUIResources(GameResources gameResources) {
         ImGui.createContext();
 
         ImGuiIO imGuiIO = ImGui.getIO();
@@ -63,7 +66,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = ImageTexture.registerTexture(resourceCache, "imgui_fonts", new Vector2i(width.get(), height.get()), buffer, new ImageTexture.Params(false, false, false, false));
+        this.textureSample = gameResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false));
         this.dearImGuiMesh = new DearUIMesh();
     }
 

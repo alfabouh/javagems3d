@@ -47,22 +47,22 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
 
     public void load(GameResources gameResources) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading textures...");
-        TextureAssetsInitializer.DEFAULT = gameResources.createTexture(new JGemsPath(JGems3D.Paths.TEXTURES, "default.png"), new ImageTexture.Params(false, true, false, false));
+        TextureAssetsInitializer.DEFAULT = gameResources.createTexture(null, new JGemsPath(JGems3D.Paths.TEXTURES, "default.png"), new ImageTexture.Properties(false, true, false, false));
 
         Font gameFont = JGemsResourceManager.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
 
-        this.standardFont2 = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);
-        this.standardFont = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
-        this.buttonFont = new GuiFont(gameResources.getResourceCache(), gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
+        this.standardFont2 = new GuiFont(gameResources, gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);
+        this.standardFont = new GuiFont(gameResources, gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
+        this.buttonFont = new GuiFont(gameResources, gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);
 
-        this.waterNormals = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water_n.png"), new ImageTexture.Params(true));
-        this.waterTexture = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water.png"), new ImageTexture.Params(true));
-        this.crosshair = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/crosshair.png"), new ImageTexture.Params(false, false, false, false));
-        this.gui1 = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/gui1.png"), new ImageTexture.Params(false, false, false, false));
+        this.waterNormals = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water_n.png"), new ImageTexture.Properties(true));
+        this.waterTexture = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "liquids/water.png"), new ImageTexture.Properties(true));
+        this.crosshair = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/crosshair.png"), new ImageTexture.Properties(false, false, false, false));
+        this.gui1 = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "gui/gui1.png"), new ImageTexture.Properties(false, false, false, false));
 
-        this.zippo1 = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1.png"), new ImageTexture.Params(false, false, false, false));
-        this.zippo1_1 = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1_1.png"), new ImageTexture.Params(false, false, false, false));
-        this.zippo2 = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo2.png"), new ImageTexture.Params(false, false, false, false));
+        this.zippo1 = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1.png"), new ImageTexture.Properties(false, false, false, false));
+        this.zippo1_1 = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo1_1.png"), new ImageTexture.Properties(false, false, false, false));
+        this.zippo2 = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(JGems3D.Paths.TEXTURES, "items/zippo/zippo2.png"), new ImageTexture.Properties(false, false, false, false));
 
         this.particleTexturesPack = new ParticleTexturesPack(new JGemsPath(JGems3D.Paths.PARTICLES, "flame"), ".png", 4, 0.25f);
 

@@ -11,8 +11,10 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font;
 
+import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 
 import javax.imageio.ImageIO;
@@ -36,10 +38,10 @@ public class GuiFont {
     private int height;
     private int width;
 
-    public GuiFont(ResourceCache resourceCache, Font font, FontCode fontCode) {
+    public GuiFont(GameResources gameResources, Font font, FontCode fontCode) {
         this.fontCode = fontCode;
         try {
-            this.initFontTexture(resourceCache, font);
+            this.initFontTexture(gameResources, font);
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
@@ -50,7 +52,7 @@ public class GuiFont {
         this(null, font, fontCode);
     }
 
-    private void initFontTexture(ResourceCache resourceCache, Font font) throws IOException {
+    private void initFontTexture(GameResources gameResources, Font font) throws IOException {
         BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(font);
@@ -82,7 +84,11 @@ public class GuiFont {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
-        this.texture = ImageTexture.registerTexture(resourceCache, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Params(false, false, false, false));
+        if (gameResources != null) {
+            this.texture = gameResources.createTexture(null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false));
+        } else {
+            this.texture = new TexturesLoader(null, "font" + GuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false), inputStream);
+        }
         inputStream.close();
     }
 

@@ -52,7 +52,7 @@ public class CubeMapTexture implements ISample, ICached {
 
         for (int i = 0; i < 6; i++) {
             CubeMapTexturingDataPack.Data data = cubeMapTexturingDataPack.getTextureArray()[i];
-            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, data.getSize().x, data.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.buffer);
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, data.getSize().x, data.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getBuffer());
         }
         cubeMapTexturingDataPack.freeBuffers();
 

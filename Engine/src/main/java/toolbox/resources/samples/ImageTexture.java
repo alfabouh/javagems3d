@@ -12,6 +12,7 @@
 package toolbox.resources.samples;
 
 import com.google.common.io.ByteStreams;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
@@ -137,6 +138,16 @@ public class ImageTexture implements IImageTexture {
             throw new JGemsRuntimeException("Tried to bind invalid texture");
         }
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, this.getTextureId());
+    }
+
+    @Override
+    public void init(@Nullable IProperties properties, Data data) {
+
+    }
+
+    @Override
+    public void reload(@Nullable IProperties properties) {
+
     }
 
     @Override

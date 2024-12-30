@@ -4,7 +4,7 @@ import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.IImageTexture;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
@@ -22,24 +22,26 @@ import java.nio.IntBuffer;
 public class TexturesLoader {
     public static final String DEFAULT_NAME = "unknown";
     private final String name;
-    private final GameResources gameResources;
+    private final ResourceCache resourceCache;
 
-    public TexturesLoader(@NotNull GameResources gameResources, @Nullable String name) {
+    public TexturesLoader(@Nullable ResourceCache resourceCache, @Nullable String name) {
         this.name = name == null ? TexturesLoader.DEFAULT_NAME : name;
-        this.gameResources = gameResources;
+        this.resourceCache = resourceCache;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull IImageTexture.Data data) {
-        if (!this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
-            if (this.getGameResources().getResourceCache().checkObjectInCache(this.getName())) {
-                return this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(this.getName());
+        if (this.isValidCache() && !this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
+            if (this.getResourceCache().checkObjectInCache(this.getName())) {
+                return this.getResourceCache().getCachedObjectUnSafeCast(this.getName());
             }
         }
         ImageTexture imageTexture = new ImageTexture(textureProperties, data, this.getName());
-        if (this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
-            this.getGameResources().getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);
-        } else {
-            this.getGameResources().getResourceCache().addObjectInBuffer(this.getName(), imageTexture);
+        if (this.isValidCache()) {
+            if (this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
+                this.getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);
+            } else {
+                this.getResourceCache().addObjectInBuffer(this.getName(), imageTexture);
+            }
         }
         return imageTexture;
     }
@@ -71,8 +73,12 @@ public class TexturesLoader {
         }
     }
 
-    public GameResources getGameResources() {
-        return this.gameResources;
+    public boolean isValidCache() {
+        return this.getResourceCache() != null;
+    }
+
+    public ResourceCache getResourceCache() {
+        return this.resourceCache;
     }
 
     public String getName() {

@@ -56,7 +56,7 @@ public class Material {
     }
 
     public Material setDefaultDiffuse() {
-        this.diffuse = RGBAColor.createColor(new Vector4f(1.0f, 0.0f, 1.0f, 1.0f));
+        this.diffuse = new RGBAColor(new Vector4f(1.0f, 0.0f, 1.0f, 1.0f));
         return this;
     }
 

@@ -66,15 +66,15 @@ public final class GameResources implements IGameResources {
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this, path.toString()).createImageTexture(textureProperties, path));
+        return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this.getResourceCache(), path.toString()).createImageTexture(textureProperties, path));
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, new IImageTexture.Data(buffer, size)));
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this.getResourceCache(), name).createImageTexture(textureProperties, new IImageTexture.Data(buffer, size)));
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, stream));
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this.getResourceCache(), name).createImageTexture(textureProperties, stream));
     }
 
     private <T> T loadModel(@NotNull JGemsPath modelPath, Supplier<T> modelLoader) {

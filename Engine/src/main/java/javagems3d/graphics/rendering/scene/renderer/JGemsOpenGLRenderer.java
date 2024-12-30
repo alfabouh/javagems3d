@@ -130,7 +130,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     public void onStartRender() {
         this.constructScreenModel();
         this.jGemsUI = new JGemsUI();
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.getGlobalGameResources().getResourceCache());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.getGlobalGameResources());
         this.setDefaults();
         this.createResources();
     }

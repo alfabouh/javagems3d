@@ -124,7 +124,7 @@ public class SimpleModelLoader {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4D = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4D) == Assimp.aiReturn_SUCCESS) {
-                material.setDiffuse(RGBAColor.createColor(new Vector4f(color4D.r(), color4D.g(), color4D.b(), color4D.a())));
+                material.setDiffuse(new RGBAColor(new Vector4f(color4D.r(), color4D.g(), color4D.b(), color4D.a())));
             }
             color4D.clear();
             String diffuse = SimpleModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
