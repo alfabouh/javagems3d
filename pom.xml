@@ -247,7 +247,7 @@
             <version>24.1.0</version>
         </dependency>
     </dependencies>
-    <properties>
+    <textureProperties>
         <github.global.server>github</github.global.server>
         <lwjgl.version>3.3.4</lwjgl.version>
         <joml.version>1.10.8</joml.version>
@@ -255,7 +255,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    </textureProperties>
     <repositories>
         <repository>
             <id>central</id>

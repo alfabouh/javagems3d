@@ -22,14 +22,14 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
-import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
-import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 
 public abstract class ParticleFX implements IWorldObject {
     private final Vector3f position;
     private final Vector2f scaling;
     private final Vector3f colorMask;
-    private final ParticleTexturePack particleTexturePack;
+    private final ParticleTexturesPack particleTexturesPack;
     private final SceneWorld world;
     private final JGemsTimer liveTimer;
     private final JGemsTimer frameTimer;
@@ -37,7 +37,7 @@ public abstract class ParticleFX implements IWorldObject {
     private boolean dead;
     private int currentFrame;
 
-    public ParticleFX(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @Nullable ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
+    public ParticleFX(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @Nullable ParticleTexturesPack particleTexturesPack, Vector3f pos, Vector2f scaling) {
         this.dead = false;
         this.position = new Vector3f(pos);
         this.scaling = new Vector2f(scaling);
@@ -45,11 +45,11 @@ public abstract class ParticleFX implements IWorldObject {
 
         this.particleAttributes = particleAttributes;
         this.world = world;
-        this.particleTexturePack = particleTexturePack;
+        this.particleTexturesPack = particleTexturesPack;
 
         this.liveTimer = JGemsHelper.createTimer();
 
-        if (particleTexturePack != null) {
+        if (particleTexturesPack != null) {
             this.frameTimer = JGemsHelper.createTimer();
         } else {
             this.frameTimer = null;
@@ -77,7 +77,7 @@ public abstract class ParticleFX implements IWorldObject {
         if (this.hasTexturePack()) {
             this.frameTimer.reset();
             if (this.getParticleTexturePack().getAnimationRate() <= 0.0f) {
-                this.currentFrame = JGems3D.random.nextInt(particleTexturePack.getTexturesNum());
+                this.currentFrame = JGems3D.random.nextInt(particleTexturesPack.getTexturesNum());
             }
         }
     }
@@ -101,8 +101,8 @@ public abstract class ParticleFX implements IWorldObject {
         return this.getParticleTexturePack() != null;
     }
 
-    public ITextureSample getCurrentFrame() {
-        return this.getParticleTexturePack().getiImageSample()[this.currentFrame];
+    public IImageTexture getCurrentFrame() {
+        return this.getParticleTexturePack().getTextureSamples()[this.currentFrame];
     }
 
     public ParticleAttributes getParticleAttributes() {
@@ -136,8 +136,8 @@ public abstract class ParticleFX implements IWorldObject {
         return this;
     }
 
-    public ParticleTexturePack getParticleTexturePack() {
-        return this.particleTexturePack;
+    public ParticleTexturesPack getParticleTexturePack() {
+        return this.particleTexturesPack;
     }
 
     public SceneWorld getWorld() {

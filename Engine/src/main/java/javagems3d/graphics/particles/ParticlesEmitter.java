@@ -22,7 +22,7 @@ import javagems3d.graphics.particles.objects.base.ParticleFX;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
-import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
+import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -40,8 +40,8 @@ public final class ParticlesEmitter implements IParticlesEmitter {
         this.particlesSet = SyncManager.createSyncronisedSet();
     }
 
-    public static SimpleTexturedParticle createSimpleTexturedParticle(SceneWorld sceneWorld, ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
-        return new SimpleTexturedParticle(sceneWorld, particleAttributes, particleTexturePack, pos, scaling);
+    public static SimpleTexturedParticle createSimpleTexturedParticle(SceneWorld sceneWorld, ParticleAttributes particleAttributes, ParticleTexturesPack particleTexturesPack, Vector3f pos, Vector2f scaling) {
+        return new SimpleTexturedParticle(sceneWorld, particleAttributes, particleTexturesPack, pos, scaling);
     }
 
     public static SimpleColoredParticle createSimpleColoredParticle(SceneWorld world, ParticleAttributes particleAttributes, Vector3f color, Vector3f pos, Vector2f scaling) {

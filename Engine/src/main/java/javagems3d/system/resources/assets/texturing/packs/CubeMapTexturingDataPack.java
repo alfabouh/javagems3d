@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.resources.assets.material.samples.packs;
+package javagems3d.system.resources.assets.texturing.packs;
 
 import com.google.common.io.ByteStreams;
 import org.joml.Vector2i;
@@ -25,14 +25,14 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public class CubeMapTexturePack {
+public final class CubeMapTexturingDataPack {
     private final Data[] textures;
-    private final String id;
+    private final String name;
 
     @SuppressWarnings("all")
-    public CubeMapTexturePack(JGemsPath pathToCubeMap, String textureType) {
+    public CubeMapTexturingDataPack(JGemsPath pathToCubeMap, String textureType) {
         this.textures = new Data[6];
-        this.id = new JGemsPath(pathToCubeMap).getFullPath();
+        this.name = new JGemsPath(pathToCubeMap).getFullPath();
         for (int i = 0; i < 6; i++) {
             StringBuilder builder = new StringBuilder();
             builder.append(pathToCubeMap);
@@ -72,8 +72,8 @@ public class CubeMapTexturePack {
     }
 
     public void freeBuffers() {
-        for (Data buffer : this.textures) {
-            STBImage.stbi_image_free(buffer.buffer);
+        for (Data data : this.textures) {
+            STBImage.stbi_image_free(data.getBuffer());
         }
     }
 
@@ -81,17 +81,25 @@ public class CubeMapTexturePack {
         return this.textures;
     }
 
-    public String getId() {
-        return this.id;
+    public String getName() {
+        return this.name;
     }
 
     public static class Data {
-        public final Vector2i size;
-        public final ByteBuffer buffer;
+        private final Vector2i size;
+        private final ByteBuffer buffer;
 
         public Data(Vector2i size, ByteBuffer buffer) {
             this.size = size;
             this.buffer = buffer;
+        }
+
+        public Vector2i getSize() {
+            return this.size;
+        }
+
+        public ByteBuffer getBuffer() {
+            return this.buffer;
         }
     }
 }

@@ -12,14 +12,14 @@
 package toolbox.resources.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.material.samples.ColorSample;
-import javagems3d.system.resources.assets.material.samples.base.ISample;
-import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
+import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -72,16 +72,16 @@ public final class TBoxShaderManager extends ShaderManager {
             this.performCameraData();
 
             if (diffuse != null) {
-                if (diffuse instanceof ITextureSample) {
+                if (diffuse instanceof IImageTexture) {
                     final int code = 0;
-                    ITextureSample imageSample = ((ITextureSample) diffuse);
+                    IImageTexture imageSample = ((IImageTexture) diffuse);
                     GL46.glActiveTexture(GL46.GL_TEXTURE0 + code);
                     imageSample.bindTexture();
                     TBoxShaderManager.this.performUniformNoWarn(new UniformString("diffuse_map"), UniformFunctions.INTEGER(code));
                     texturing_code |= 1 << 2;
                 } else {
-                    if (diffuse instanceof ColorSample) {
-                        TBoxShaderManager.this.performUniformNoWarn(new UniformString("diffuse_color"), UniformFunctions.VEC4F(((ColorSample) diffuse).getColor()));
+                    if (diffuse instanceof RGBAColor) {
+                        TBoxShaderManager.this.performUniformNoWarn(new UniformString("diffuse_color"), UniformFunctions.VEC4F(((RGBAColor) diffuse).getColor()));
                     }
                 }
             }

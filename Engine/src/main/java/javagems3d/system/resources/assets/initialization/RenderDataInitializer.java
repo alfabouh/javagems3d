@@ -13,7 +13,7 @@ package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.graphics.objects.rendering.fabric.IndirectGBufferRenderFabric;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;

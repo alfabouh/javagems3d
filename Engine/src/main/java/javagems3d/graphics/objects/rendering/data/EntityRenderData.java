@@ -13,7 +13,7 @@ package javagems3d.graphics.objects.rendering.data;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

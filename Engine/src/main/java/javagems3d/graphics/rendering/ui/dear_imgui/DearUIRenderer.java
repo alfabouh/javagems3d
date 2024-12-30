@@ -27,7 +27,7 @@ import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.objects.MouseKeyboardController;
-import javagems3d.system.resources.assets.material.samples.TextureSample;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -39,7 +39,7 @@ import java.nio.ByteBuffer;
 public class DearUIRenderer implements IWindow.ResizeEvent {
     private final JGemsShaderManager shaderManager;
     private DearUIMesh dearImGuiMesh;
-    private TextureSample textureSample;
+    private ImageTexture textureSample;
     private GLFWKeyCallback prevKeyCallback;
     private final IWindow window;
 
@@ -63,7 +63,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = TextureSample.registerTexture(resourceCache, "imgui_fonts", new Vector2i(width.get(), height.get()), buffer, new TextureSample.Params(false, false, false, false));
+        this.textureSample = ImageTexture.registerTexture(resourceCache, "imgui_fonts", new Vector2i(width.get(), height.get()), buffer, new ImageTexture.Params(false, false, false, false));
         this.dearImGuiMesh = new DearUIMesh();
     }
 
@@ -226,7 +226,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         return this.shaderManager;
     }
 
-    public TextureSample getTextureSample() {
+    public ImageTexture getTextureSample() {
         return this.textureSample;
     }
 

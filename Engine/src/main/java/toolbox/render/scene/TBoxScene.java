@@ -13,7 +13,6 @@ package toolbox.render.scene;
 
 import javafx.util.Pair;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
@@ -24,7 +23,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.Transformation;
-import javagems3d.system.resources.assets.material.samples.ColorSample;
+import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -53,7 +52,7 @@ import toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 import toolbox.render.scene.utils.TBoxSceneUtils;
 import toolbox.resources.TBoxResourceManager;
-import toolbox.resources.samples.TextureSample;
+import toolbox.resources.samples.ImageTexture;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
 import javax.swing.*;
@@ -86,13 +85,13 @@ public class TBoxScene {
     public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshGroup meshGroup, int code) {
         for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
             if (meshNode.getMaterial() != null) {
-                if (meshNode.getMaterial().getDiffuse() instanceof ColorSample) {
+                if (meshNode.getMaterial().getDiffuse() instanceof RGBAColor) {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
                 } else {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                     shaderManager.performUniformNoWarn(new UniformString("diffuse_map"),  UniformFunctions.INTEGER(0));
                     GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((TextureSample) meshNode.getMaterial().getDiffuse()).getTextureId());
+                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((ImageTexture) meshNode.getMaterial().getDiffuse()).getTextureId());
                 }
             }
             GL46.glBindVertexArray(meshNode.getMesh().getVao());

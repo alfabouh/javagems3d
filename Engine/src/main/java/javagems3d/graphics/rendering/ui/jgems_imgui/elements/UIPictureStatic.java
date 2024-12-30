@@ -18,7 +18,7 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
-import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -27,14 +27,14 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
 public class UIPictureStatic extends UIElement {
-    protected final ITextureSample iImageSample;
+    protected final IImageTexture iImageSample;
     private final Vector2i position;
     private final Vector2i size;
     private final Vector2f textureXY;
     private final Vector2f textureWH;
     protected Model<Format2D> imageModel;
 
-    public UIPictureStatic(@NotNull ITextureSample iImageSample, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
+    public UIPictureStatic(@NotNull IImageTexture iImageSample, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_image, zValue);
         this.iImageSample = iImageSample;
         this.position = position;
@@ -59,7 +59,7 @@ public class UIPictureStatic extends UIElement {
 
     @Override
     public void buildUI() {
-        this.imageModel = this.constructModel(iImageSample.size());
+        this.imageModel = this.constructModel(iImageSample.getSize());
     }
 
     @Override

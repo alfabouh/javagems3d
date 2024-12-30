@@ -53,7 +53,7 @@ import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
-import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
+import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.localisation.Lang;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.manager.GameResources;
@@ -179,8 +179,8 @@ public abstract class JGemsHelper {
 
     // section Particles
     public static abstract class PARTICLES {
-        public static SimpleTexturedParticle createSimpleTexturedParticle(ParticleAttributes particleAttributes, ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
-            return ParticlesEmitter.createSimpleTexturedParticle(JGemsHelper.getSceneWorld(), particleAttributes, particleTexturePack, pos, scaling);
+        public static SimpleTexturedParticle createSimpleTexturedParticle(ParticleAttributes particleAttributes, ParticleTexturesPack particleTexturesPack, Vector3f pos, Vector2f scaling) {
+            return ParticlesEmitter.createSimpleTexturedParticle(JGemsHelper.getSceneWorld(), particleAttributes, particleTexturesPack, pos, scaling);
         }
 
         public static SimpleColoredParticle createSimpleColoredParticle(ParticleAttributes particleAttributes, Vector3f color, Vector3f pos, Vector2f scaling) {

@@ -1,13 +1,13 @@
-package javagems3d.system.resources.assets.loading;
+package javagems3d.system.resources.assets.loading.models;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.loading.utils.AnimationLoadingUtils;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.loading.models.utils.AnimationLoadingUtils;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.components.Bone;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
-import javagems3d.system.resources.assets.loading.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
@@ -128,7 +128,7 @@ public class ModelMeshLoader {
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
-                material.setId(i);
+                material.setId(gameResources.getDataMeshArray().getMaterials().size());
                 materialList.add(material);
                 if (loadInIndirectBuffer) {
                     gameResources.getDataMeshArray().putMaterial(material);

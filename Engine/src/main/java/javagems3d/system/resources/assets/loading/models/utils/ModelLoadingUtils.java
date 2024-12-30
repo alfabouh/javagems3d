@@ -1,11 +1,11 @@
-package javagems3d.system.resources.assets.loading.utils;
+package javagems3d.system.resources.assets.loading.models.utils;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
-import javagems3d.system.resources.assets.material.Material;
-import javagems3d.system.resources.assets.material.samples.ColorSample;
-import javagems3d.system.resources.assets.material.samples.TextureSample;
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -183,7 +183,7 @@ public abstract class ModelLoadingUtils {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4Dd = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
-                material.setDiffuse(ColorSample.createColor(new Vector4f(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a())));
+                material.setDiffuse(RGBAColor.createColor(new Vector4f(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a())));
             }
 
             PointerBuffer properties = aiMaterial.mProperties();
@@ -207,37 +207,37 @@ public abstract class ModelLoadingUtils {
             String diffuse = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
             try {
                 if (!diffuse.isEmpty()) {
-                    TextureSample textureSample = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(fullPath, diffuse), new TextureSample.Params(true));
+                    ImageTexture textureSample = gameResources.createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(fullPath, diffuse), new ImageTexture.Params(true));
                     if (textureSample.isValid()) {
                         material.setDiffuse(textureSample);
                     }
                 }
                 if (!opacity.isEmpty()) {
-                    TextureSample textureSample = gameResources.createTexture(new JGemsPath(fullPath, opacity), new TextureSample.Params(true));
+                    ImageTexture textureSample = gameResources.createTexture(new JGemsPath(fullPath, opacity), new ImageTexture.Params(true));
                     if (textureSample.isValid()) {
                         material.setOpacityMap(textureSample);
                     }
                 }
                 if (!normals.isEmpty()) {
-                    TextureSample textureSample = gameResources.createTexture(new JGemsPath(fullPath, normals), new TextureSample.Params(true));
+                    ImageTexture textureSample = gameResources.createTexture(new JGemsPath(fullPath, normals), new ImageTexture.Params(true));
                     if (textureSample.isValid()) {
                         material.setNormalsMap(textureSample);
                     }
                 }
                 if (!emission.isEmpty()) {
-                    TextureSample textureSample = gameResources.createTexture(new JGemsPath(fullPath, emission), new TextureSample.Params(true));
+                    ImageTexture textureSample = gameResources.createTexture(new JGemsPath(fullPath, emission), new ImageTexture.Params(true));
                     if (textureSample.isValid()) {
                         material.setEmissionMap(textureSample);
                     }
                 }
                 if (!metallic.isEmpty()) {
-                    TextureSample textureSample = gameResources.createTexture(new JGemsPath(fullPath, metallic), new TextureSample.Params(true));
+                    ImageTexture textureSample = gameResources.createTexture(new JGemsPath(fullPath, metallic), new ImageTexture.Params(true));
                     if (textureSample.isValid()) {
                         material.setMetallicMap(textureSample);
                     }
                 }
                 if (!specular.isEmpty()) {
-                    TextureSample textureSample = gameResources.createTexture(new JGemsPath(fullPath, specular), new TextureSample.Params(true));
+                    ImageTexture textureSample = gameResources.createTexture(new JGemsPath(fullPath, specular), new ImageTexture.Params(true));
                     if (textureSample.isValid()) {
                         material.setSpecularMap(textureSample);
                     }

@@ -9,30 +9,30 @@
  *
  */
 
-package javagems3d.system.resources.assets.material.samples;
+package javagems3d.system.resources.assets.texturing;
 
 import org.lwjgl.opengl.GL46;
-import javagems3d.system.resources.assets.material.samples.base.ISample;
-import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
+import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.packs.CubeMapTexturingDataPack;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
-public class CubeMapSample implements ISample, ICached {
+public class CubeMapTexture implements ISample, ICached {
     private int textureId;
 
-    public CubeMapSample() {
+    public CubeMapTexture() {
     }
 
-    public static CubeMapSample createCubeMap(ResourceCache resourceCache, CubeMapTexturePack cubeMapTexturePack) {
-        CubeMapSample cubeMap = new CubeMapSample();
-        cubeMap.registerCubeMap(cubeMapTexturePack);
+    public static CubeMapTexture createCubeMap(ResourceCache resourceCache, CubeMapTexturingDataPack cubeMapTexturingDataPack) {
+        CubeMapTexture cubeMap = new CubeMapTexture();
+        cubeMap.registerCubeMap(cubeMapTexturingDataPack);
         if (resourceCache != null) {
-            if (resourceCache.checkObjectInCache(cubeMapTexturePack.getId())) {
-                return (CubeMapSample) resourceCache.getCachedObject(cubeMapTexturePack.getId());
+            if (resourceCache.checkObjectInCache(cubeMapTexturingDataPack.getName())) {
+                return (CubeMapTexture) resourceCache.getCachedObject(cubeMapTexturingDataPack.getName());
             }
             if (cubeMap.isValid()) {
-                resourceCache.addObjectInBuffer(cubeMapTexturePack.getId(), cubeMap);
+                resourceCache.addObjectInBuffer(cubeMapTexturingDataPack.getName(), cubeMap);
             } else {
                 throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
             }
@@ -40,7 +40,7 @@ public class CubeMapSample implements ISample, ICached {
         return cubeMap;
     }
 
-    public void registerCubeMap(CubeMapTexturePack cubeMapTexturePack) {
+    public void registerCubeMap(CubeMapTexturingDataPack cubeMapTexturingDataPack) {
         this.textureId = GL46.glGenTextures();
 
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, this.textureId);
@@ -51,10 +51,10 @@ public class CubeMapSample implements ISample, ICached {
         GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
 
         for (int i = 0; i < 6; i++) {
-            CubeMapTexturePack.Data data = cubeMapTexturePack.getTextureArray()[i];
-            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, data.size.x, data.size.y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.buffer);
+            CubeMapTexturingDataPack.Data data = cubeMapTexturingDataPack.getTextureArray()[i];
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, data.getSize().x, data.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.buffer);
         }
-        cubeMapTexturePack.freeBuffers();
+        cubeMapTexturingDataPack.freeBuffers();
 
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
     }

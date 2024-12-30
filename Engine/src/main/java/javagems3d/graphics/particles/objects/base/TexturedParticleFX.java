@@ -16,10 +16,10 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.graphics.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
+import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 
 public abstract class TexturedParticleFX extends ParticleFX {
-    public TexturedParticleFX(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @NotNull ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
-        super(world, particleAttributes, particleTexturePack, pos, scaling);
+    public TexturedParticleFX(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @NotNull ParticleTexturesPack particleTexturesPack, Vector3f pos, Vector2f scaling) {
+        super(world, particleAttributes, particleTexturesPack, pos, scaling);
     }
 }

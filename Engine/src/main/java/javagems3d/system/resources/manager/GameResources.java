@@ -12,7 +12,7 @@
 package javagems3d.system.resources.manager;
 
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.ModelMeshLoader;
+import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
@@ -20,9 +20,9 @@ import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.system.resources.assets.material.samples.CubeMapSample;
-import javagems3d.system.resources.assets.material.samples.TextureSample;
-import javagems3d.system.resources.assets.material.samples.packs.CubeMapTexturePack;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.packs.CubeMapTexturingDataPack;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -71,30 +71,30 @@ public final class GameResources implements IGameResources {
         }
     }
 
-    public TextureSample createTexture(JGemsPath path, TextureSample.Params params) {
+    public ImageTexture createTexture(JGemsPath path, ImageTexture.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
         try {
-            return TextureSample.registerTexture(this.getResourceCache(), path, params);
+            return ImageTexture.registerTexture(this.getResourceCache(), path, params);
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + path);
             throw e;
         }
     }
 
-    public CubeMapSample createCubeMap(JGemsPath pathToCubeMap, String type) {
+    public CubeMapTexture createCubeMap(JGemsPath pathToCubeMap, String type) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading CubeMap: " + pathToCubeMap);
         try {
-            return CubeMapSample.createCubeMap(this.getResourceCache(), new CubeMapTexturePack(pathToCubeMap, type));
+            return CubeMapTexture.createCubeMap(this.getResourceCache(), new CubeMapTexturingDataPack(pathToCubeMap, type));
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + pathToCubeMap);
             throw e;
         }
     }
 
-    public TextureSample createTextureOrDefault(TextureSample defaultT, JGemsPath path, TextureSample.Params params) {
+    public ImageTexture createTextureOrDefault(ImageTexture defaultT, JGemsPath path, ImageTexture.Params params) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
         try {
-            return TextureSample.registerTexture(this.getResourceCache(), path, params);
+            return ImageTexture.registerTexture(this.getResourceCache(), path, params);
         } catch (Exception e) {
             String s = "Couldn't load: " + path + ". Default texture returned!";
             JGemsHelper.getLogger().error(s);
@@ -103,9 +103,9 @@ public final class GameResources implements IGameResources {
         }
     }
 
-    public TextureSample createTexture(String name, Vector2i size, ByteBuffer buffer, TextureSample.Params params) {
+    public ImageTexture createTexture(String name, Vector2i size, ByteBuffer buffer, ImageTexture.Params params) {
         try {
-            return TextureSample.registerTexture(this.getResourceCache(), name, size, buffer, params);
+            return ImageTexture.registerTexture(this.getResourceCache(), name, size, buffer, params);
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
             throw e;
@@ -133,8 +133,8 @@ public final class GameResources implements IGameResources {
     }
 
     public void reloadTexturesInCache() {
-        for (TextureSample cached : this.getResourceCache().getAllCachedObjectsCollection(TextureSample.class)) {
-            cached.reloadTexture();
+        for (ImageTexture cached : this.getResourceCache().getAllCachedObjectsCollection(ImageTexture.class)) {
+            cached.reload(null);
         }
     }
 

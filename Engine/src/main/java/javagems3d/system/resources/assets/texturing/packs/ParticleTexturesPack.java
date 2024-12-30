@@ -9,24 +9,24 @@
  *
  */
 
-package javagems3d.system.resources.assets.material.samples.packs;
+package javagems3d.system.resources.assets.texturing.packs;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
-import javagems3d.system.resources.assets.material.samples.TextureSample;
-import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 
-public class ParticleTexturePack {
-    private final ITextureSample[] iImageSample;
+public final class ParticleTexturesPack {
+    private final IImageTexture[] iImageSample;
     private final int texturesNum;
     private final float animationRateSeconds;
     private final JGemsPath pathToTexturePath;
     private final String format;
 
-    public ParticleTexturePack(JGemsPath pathToTexturePath, String format, int texturesNum, float animationRateSeconds) {
-        this.iImageSample = new ITextureSample[texturesNum];
+    public ParticleTexturesPack(JGemsPath pathToTexturePath, String format, int texturesNum, float animationRateSeconds) {
+        this.iImageSample = new IImageTexture[texturesNum];
         this.pathToTexturePath = pathToTexturePath;
         this.format = format;
         this.texturesNum = texturesNum;
@@ -42,14 +42,14 @@ public class ParticleTexturePack {
         return this.texturesNum;
     }
 
-    public ITextureSample[] getiImageSample() {
+    public IImageTexture[] getTextureSamples() {
         return this.iImageSample;
     }
 
     private void loadTextures() {
         JGemsHelper.getLogger().log("Loading particle texture pack: " + this.pathToTexturePath);
         for (int i = 0; i < this.texturesNum; i++) {
-            this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(this.pathToTexturePath, String.format("%s%d%s", "particle_", i, this.format)), new TextureSample.Params(true));
+            this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTextureOrDefault(TextureAssetsInitializer.DEFAULT, new JGemsPath(this.pathToTexturePath, String.format("%s%d%s", "particle_", i, this.format)), new ImageTexture.Params(true));
         }
     }
 }

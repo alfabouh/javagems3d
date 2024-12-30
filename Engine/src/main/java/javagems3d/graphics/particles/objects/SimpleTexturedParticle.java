@@ -18,13 +18,13 @@ import javagems3d.graphics.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.particles.objects.base.TexturedParticleFX;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
-import javagems3d.system.resources.assets.material.samples.packs.ParticleTexturePack;
+import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 
 public class SimpleTexturedParticle extends TexturedParticleFX {
     private double maxLivingSeconds;
 
-    public SimpleTexturedParticle(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @NotNull ParticleTexturePack particleTexturePack, Vector3f pos, Vector2f scaling) {
-        super(world, particleAttributes, particleTexturePack, pos, scaling);
+    public SimpleTexturedParticle(SceneWorld world, @NotNull ParticleAttributes particleAttributes, @NotNull ParticleTexturesPack particleTexturesPack, Vector3f pos, Vector2f scaling) {
+        super(world, particleAttributes, particleTexturesPack, pos, scaling);
         this.maxLivingSeconds = 1.5;
     }
 

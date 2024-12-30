@@ -14,12 +14,11 @@ package toolbox.resources.samples;
 import com.google.common.io.ByteStreams;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -31,20 +30,20 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public class TextureSample implements ITextureSample {
+public class ImageTexture implements IImageTexture {
     private final String name;
     private int width;
     private int height;
     private int textureId;
 
-    private TextureSample(String name, int width, int height, ByteBuffer buffer) {
+    private ImageTexture(String name, int width, int height, ByteBuffer buffer) {
         this.name = name;
         this.width = width;
         this.height = height;
         this.createTexture(buffer);
     }
 
-    private TextureSample(String fullPath) {
+    private ImageTexture(String fullPath) {
         this.name = fullPath;
         SystemLogging.get().getLogManager().log("Loading " + this.getName());
         try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(fullPath))) {
@@ -54,16 +53,16 @@ public class TextureSample implements ITextureSample {
         }
     }
 
-    private TextureSample(String id, InputStream inputStream) {
+    private ImageTexture(String id, InputStream inputStream) {
         this.name = id + "_inputStream";
         this.createTexture(this.readTextureFromMemory(id, inputStream));
     }
 
-    public static TextureSample createTexture(ResourceCache resourceCache, String fullPath) {
+    public static ImageTexture createTexture(ResourceCache resourceCache, String fullPath) {
         if (resourceCache.checkObjectInCache(fullPath)) {
-            return (TextureSample) resourceCache.getCachedObject(fullPath);
+            return (ImageTexture) resourceCache.getCachedObject(fullPath);
         }
-        TextureSample textureSample = new TextureSample(fullPath);
+        ImageTexture textureSample = new ImageTexture(fullPath);
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
@@ -72,11 +71,11 @@ public class TextureSample implements ITextureSample {
         return textureSample;
     }
 
-    public static TextureSample createTexture(ResourceCache resourceCache, String name, int width, int height, ByteBuffer buffer) {
+    public static ImageTexture createTexture(ResourceCache resourceCache, String name, int width, int height, ByteBuffer buffer) {
         if (resourceCache.checkObjectInCache(name)) {
-            return (TextureSample) resourceCache.getCachedObject(name);
+            return (ImageTexture) resourceCache.getCachedObject(name);
         }
-        TextureSample textureSample = new TextureSample(name, width, height, buffer);
+        ImageTexture textureSample = new ImageTexture(name, width, height, buffer);
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(name, textureSample);
         } else {
@@ -114,7 +113,7 @@ public class TextureSample implements ITextureSample {
         this.textureId = GL46.glGenTextures();
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, this.getTextureId());
         GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA, this.size().x, this.size().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, buffer);
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA, this.getSize().x, this.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, buffer);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR_MIPMAP_NEAREST);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_BASE_LEVEL, 0);
@@ -141,7 +140,7 @@ public class TextureSample implements ITextureSample {
     }
 
     @Override
-    public Vector2i size() {
+    public Vector2i getSize() {
         return new Vector2i(this.width, this.height);
     }
 

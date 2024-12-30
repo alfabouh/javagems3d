@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font;
 
-import javagems3d.system.resources.assets.material.samples.TextureSample;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 
@@ -32,7 +32,7 @@ public class GuiFont {
     private static int globalFonts = 0;
     private final FontCode fontCode;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
-    private TextureSample texture;
+    private ImageTexture texture;
     private int height;
     private int width;
 
@@ -82,7 +82,7 @@ public class GuiFont {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
-        this.texture = TextureSample.registerTexture(resourceCache, "font" + GuiFont.globalFonts++, inputStream, new TextureSample.Params(false, false, false, false));
+        this.texture = ImageTexture.registerTexture(resourceCache, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Params(false, false, false, false));
         inputStream.close();
     }
 
@@ -99,7 +99,7 @@ public class GuiFont {
         return this.charMap.get(c);
     }
 
-    public TextureSample getTexture() {
+    public ImageTexture getTexture() {
         return this.texture;
     }
 

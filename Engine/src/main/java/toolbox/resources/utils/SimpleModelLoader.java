@@ -11,8 +11,8 @@
 
 package toolbox.resources.utils;
 
-import javagems3d.system.resources.assets.material.Material;
-import javagems3d.system.resources.assets.loading.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -22,12 +22,12 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.material.samples.ColorSample;
+import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
 import toolbox.resources.TBoxResourceManager;
-import toolbox.resources.samples.TextureSample;
+import toolbox.resources.samples.ImageTexture;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -124,12 +124,12 @@ public class SimpleModelLoader {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4D = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4D) == Assimp.aiReturn_SUCCESS) {
-                material.setDiffuse(ColorSample.createColor(new Vector4f(color4D.r(), color4D.g(), color4D.b(), color4D.a())));
+                material.setDiffuse(RGBAColor.createColor(new Vector4f(color4D.r(), color4D.g(), color4D.b(), color4D.a())));
             }
             color4D.clear();
             String diffuse = SimpleModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
             if (diffuse != null) {
-                TextureSample textureSample = (TextureSample) tBoxResourceManager.getResource(fullPath + diffuse);
+                ImageTexture textureSample = (ImageTexture) tBoxResourceManager.getResource(fullPath + diffuse);
                 if (textureSample == null) {
                     textureSample = tBoxResourceManager.createTexture(fullPath + diffuse);
                 }

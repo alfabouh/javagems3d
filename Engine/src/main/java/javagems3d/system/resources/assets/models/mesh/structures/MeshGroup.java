@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh.structures;
 
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -14,7 +14,7 @@ package javagems3d.system.resources.assets.initialization;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.ModelMeshLoader;
+import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.path.JGemsPath;

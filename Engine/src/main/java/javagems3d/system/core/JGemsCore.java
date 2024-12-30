@@ -19,7 +19,7 @@ import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.JGemsPhysics;
-import javagems3d.system.resources.assets.material.samples.CubeMapSample;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
@@ -158,7 +158,7 @@ public class JGemsCore implements ICore {
         }
 
         if (skyProp != null) {
-            CubeMapSample cubeMapProgram = globalRes.getResource(skyProp.getSkyBoxPath());
+            CubeMapTexture cubeMapProgram = globalRes.getResource(skyProp.getSkyBoxPath());
             if (cubeMapProgram != null) {
                 environment.getSkyBox().setSky2DTexture(cubeMapProgram);
             }

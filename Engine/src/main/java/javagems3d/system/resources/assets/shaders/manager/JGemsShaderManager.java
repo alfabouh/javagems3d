@@ -15,7 +15,7 @@ import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
@@ -27,11 +27,11 @@ import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.material.samples.ColorSample;
-import javagems3d.system.resources.assets.material.samples.CubeMapSample;
-import javagems3d.system.resources.assets.material.samples.TextureSample;
-import javagems3d.system.resources.assets.material.samples.base.ISample;
-import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
+import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -75,12 +75,12 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performUniformSample(UniformString uniform, ISample sample) {
-            if (sample instanceof ColorSample) {
-                ColorSample colorSample = (ColorSample) sample;
-                JGemsShaderManager.this.performUniform(uniform, UniformFunctions.VEC4F(colorSample.getColor()));
+            if (sample instanceof RGBAColor) {
+                RGBAColor RGBAColor = (RGBAColor) sample;
+                JGemsShaderManager.this.performUniform(uniform, UniformFunctions.VEC4F(RGBAColor.getColor()));
             } else {
-                if (sample instanceof TextureSample) {
-                    TextureSample textureSample = (TextureSample) sample;
+                if (sample instanceof ImageTexture) {
+                    ImageTexture textureSample = (ImageTexture) sample;
                     JGemsShaderManager.this.performUniformTexture(uniform, textureSample.getTextureId(), textureSample.getTextureAttachment());
                 }
             }
@@ -103,11 +103,11 @@ public final class JGemsShaderManager extends ShaderManager {
             }
 
             ISample diffuse = material.getDiffuse();
-            ITextureSample emission = material.getEmissionMap();
-            ITextureSample metallic = material.getMetallicMap();
-            ITextureSample normals = material.getNormalsMap();
-            ITextureSample specular = material.getSpecularMap();
-            CubeMapSample cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
+            IImageTexture emission = material.getEmissionMap();
+            IImageTexture metallic = material.getMetallicMap();
+            IImageTexture normals = material.getNormalsMap();
+            IImageTexture specular = material.getSpecularMap();
+            CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
 
             int texturing_code = 0;
 
@@ -117,11 +117,11 @@ public final class JGemsShaderManager extends ShaderManager {
             }
 
             if (diffuse != null) {
-                if (diffuse instanceof ITextureSample) {
+                if (diffuse instanceof IImageTexture) {
                     this.performUniformSampleNoWarn(new UniformString("diffuse_map"), diffuse);
                     texturing_code |= 1 << 2;
                 } else {
-                    if (diffuse instanceof ColorSample) {
+                    if (diffuse instanceof RGBAColor) {
                         this.performUniformSampleNoWarn(new UniformString("diffuse_color"), diffuse);
                     }
                 }

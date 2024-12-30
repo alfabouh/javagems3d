@@ -1,6 +1,6 @@
 package javagems3d.system.resources.manager.mesh;
 
-import javagems3d.system.resources.assets.material.Material;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public final class MeshBuffersDrawCache {
     public void clear() {
         this.getMaterials().clear();
         this.getMeshBuffers().clear();
+        this.getMaterials().add(Material.createDefault());
     }
 
     public void init(Set<MeshBuffersArray> meshBuffersArraySet) {

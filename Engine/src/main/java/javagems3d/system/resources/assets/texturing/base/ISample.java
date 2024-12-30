@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.resources.assets.material.samples.base;
+package javagems3d.system.resources.assets.texturing.base;
 
 public interface ISample {
 }

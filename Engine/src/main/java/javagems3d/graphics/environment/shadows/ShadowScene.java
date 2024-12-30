@@ -29,8 +29,8 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.material.samples.ColorSample;
-import javagems3d.system.resources.assets.material.samples.base.ITextureSample;
+import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -341,15 +341,15 @@ public class ShadowScene implements IShadowScene {
         float alphaValue = 1.0f;
         try {
             for (MeshGroup.MeshGroupNode meshNode : model.<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
-                if (meshNode.getMaterial().getDiffuse() instanceof ITextureSample) {
+                if (meshNode.getMaterial().getDiffuse() instanceof IImageTexture) {
                     shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
                     GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    ((ITextureSample) meshNode.getMaterial().getDiffuse()).bindTexture();
+                    ((IImageTexture) meshNode.getMaterial().getDiffuse()).bindTexture();
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                 } else {
-                    if (meshNode.getMaterial().getDiffuse() instanceof ColorSample) {
-                        ColorSample colorSample = (ColorSample) meshNode.getMaterial().getDiffuse();
-                        alphaValue *= colorSample.getColor().w;
+                    if (meshNode.getMaterial().getDiffuse() instanceof RGBAColor) {
+                        RGBAColor RGBAColor = (RGBAColor) meshNode.getMaterial().getDiffuse();
+                        alphaValue *= RGBAColor.getColor().w;
                     }
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
                 }

@@ -24,7 +24,7 @@ package javagems3d.system.map.loaders.tbox.placers;
 
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.physics.colliders.MeshCollider;
-import javagems3d.system.resources.assets.loading.ModelMeshLoader;
+import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
