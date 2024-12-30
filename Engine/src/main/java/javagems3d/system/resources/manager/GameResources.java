@@ -13,10 +13,13 @@ package javagems3d.system.resources.manager;
 
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
+import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
-import org.joml.Vector2i;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.SoundBuffer;
@@ -28,9 +31,12 @@ import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
+import org.joml.Vector2i;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -51,33 +57,48 @@ public final class GameResources implements IGameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshBuffer createMeshBuffer(JGemsPath modelPath, int modelLoadingFlags) {
+    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, int modelLoadingFlags) {
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(modelLoadingFlags));
+    }
+
+    public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags) {
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags));
+    }
+
+    public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this, path.toString()).createImageTexture(textureProperties, path));
+    }
+
+    public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, new IImageTexture.Data(buffer, size)));
+    }
+
+    public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, stream));
+    }
+
+    private <T> T loadModel(@NotNull JGemsPath modelPath, Supplier<T> modelLoader) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
         try {
-            return new ModelMeshLoader(modelPath).createMeshBuffer(this, modelLoadingFlags);
+            return modelLoader.get();
         } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading model: " + modelPath);
             throw e;
         }
     }
 
-    public MeshGroup createMeshGroup(JGemsPath modelPath, int modelLoadingFlags) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
+    private ImageTexture loadTexture(@Nullable ImageTexture returnDefault, @Nullable String name, Supplier<ImageTexture> textureLoader) {
+        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + name);
         try {
-            return new ModelMeshLoader(modelPath).createMeshGroup(this, modelLoadingFlags);
+            return textureLoader.get();
         } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading texture: " + modelPath);
-            throw e;
-        }
-    }
-
-    public ImageTexture createTexture(JGemsPath path, ImageTexture.Params params) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
-        try {
-            return ImageTexture.registerTexture(this.getResourceCache(), path, params);
-        } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + path);
-            throw e;
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
+            if (returnDefault != null) {
+                JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default texture returned!");
+                return returnDefault;
+            } else {
+                throw new JGemsRuntimeException(e);
+            }
         }
     }
 
@@ -87,27 +108,6 @@ public final class GameResources implements IGameResources {
             return CubeMapTexture.createCubeMap(this.getResourceCache(), new CubeMapTexturingDataPack(pathToCubeMap, type));
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + pathToCubeMap);
-            throw e;
-        }
-    }
-
-    public ImageTexture createTextureOrDefault(ImageTexture defaultT, JGemsPath path, ImageTexture.Params params) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + path);
-        try {
-            return ImageTexture.registerTexture(this.getResourceCache(), path, params);
-        } catch (Exception e) {
-            String s = "Couldn't load: " + path + ". Default texture returned!";
-            JGemsHelper.getLogger().error(s);
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, s);
-            return defaultT;
-        }
-    }
-
-    public ImageTexture createTexture(String name, Vector2i size, ByteBuffer buffer, ImageTexture.Params params) {
-        try {
-            return ImageTexture.registerTexture(this.getResourceCache(), name, size, buffer, params);
-        } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
             throw e;
         }
     }

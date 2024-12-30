@@ -21,6 +21,7 @@ import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
@@ -68,6 +69,11 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
         this.defaultSkyboxCubeMap = gameResources.createCubeMap(TextureAssetsInitializer.defaultSkyCubeMapPath, ".png");
         this.skyboxCubeMap = gameResources.createCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyDay", "sky_"), ".png");
         this.skyboxCubeMap2 = gameResources.createCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyNight", "sky_"), ".bmp");
+    }
+
+    @NotNull
+    public static ImageTexture DEFAULT_2D_TEXTURE() {
+        return TextureAssetsInitializer.DEFAULT;
     }
 
     @Override

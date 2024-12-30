@@ -46,17 +46,24 @@ public class ModelMeshLoader {
         boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
         boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
         MeshGroup meshGroup = null;
-        if (this.getGameResources().getResourceCache().checkObjectInCache(this.getStr(MeshDataType.GROUP))) {
-            meshGroup = this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(this.getStr(MeshDataType.GROUP));
+        String grString = this.getStr(MeshDataType.GROUP);
+        String bffString = this.getStr(MeshDataType.BUFFER);
+        if (this.getGameResources().getResourceCache().checkObjectInCache(grString)) {
+            meshGroup = this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(grString);
         } else {
             meshGroup = this.processMeshGroup(this.getGameResources(), animated);
+            this.getGameResources().getResourceCache().addObjectInBuffer(grString, meshGroup);
         }
         if (meshGroup == null) {
-            throw new JGemsNullException("Nothing loaded!");
+            throw new JGemsNullException("There was an error, while loading the model!");
         }
-        if (loadInIndirectBuffer) {
-            if (this.processMeshBuffer(this.getGameResources(), animated, true) == null) {
-                throw new JGemsNullException("Nothing loaded!");
+        if (!this.getGameResources().getResourceCache().checkObjectInCache(bffString)) {
+            if (loadInIndirectBuffer) {
+                MeshBuffer meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, true);
+                if (meshBuffer == null) {
+                    throw new JGemsNullException("There was an error, while loading the model!");
+                }
+                this.getGameResources().getResourceCache().addObjectInBuffer(bffString, meshBuffer);
             }
         }
         if (createCollision) {
@@ -69,9 +76,16 @@ public class ModelMeshLoader {
         boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
         boolean loadInIndirectBuffer = (Flags & ~FLAGS.LOAD_IN_INDIRECT_BUFFER) == 0;
-        MeshBuffer meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, loadInIndirectBuffer);
+        String bffString = this.getStr(MeshDataType.BUFFER);
+        MeshBuffer meshBuffer = null;
+        if (this.getGameResources().getResourceCache().checkObjectInCache(bffString)) {
+            meshBuffer = this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(bffString);
+        } else {
+            meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, loadInIndirectBuffer);
+            this.getGameResources().getResourceCache().addObjectInBuffer(bffString, meshBuffer);
+        }
         if (meshBuffer == null) {
-            throw new JGemsNullException("Nothing loaded!");
+            throw new JGemsNullException("There was an error, while loading the model!");
         }
         if (createCollision) {
             JGemsHelper.UTILS.createMeshCollisionData(meshBuffer);
@@ -80,11 +94,11 @@ public class ModelMeshLoader {
     }
 
     public String getStr(MeshDataType dataType) {
-        return this.getPath().toString() + this.getSuffix(dataType);
+        return ModelMeshLoader.getModelStr(this.getPath(), dataType);
     }
 
-    public String getSuffix(MeshDataType dataType) {
-        return dataType == MeshDataType.BUFFER ? "_buff" : "_gr";
+    public static String getModelStr(JGemsPath path, MeshDataType dataType) {
+        return path + dataType.getSuffix();
     }
 
     //++++++++++++++++++++++++++

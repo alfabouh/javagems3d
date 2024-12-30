@@ -4,7 +4,6 @@ import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.IImageTexture;
-import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
@@ -31,22 +30,25 @@ public class TexturesLoader {
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull IImageTexture.Data data) {
-        ImageTexture imageTexture = new ImageTexture(textureProperties, data, this.getName());
-        if (this.getGameResources() != null) {
-            if (this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
-                this.getGameResources().getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);
-            } else {
-                this.getGameResources().getResourceCache().addObjectInBuffer(this.getName(), imageTexture);
+        if (!this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
+            if (this.getGameResources().getResourceCache().checkObjectInCache(this.getName())) {
+                return this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(this.getName());
             }
+        }
+        ImageTexture imageTexture = new ImageTexture(textureProperties, data, this.getName());
+        if (this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
+            this.getGameResources().getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);
+        } else {
+            this.getGameResources().getResourceCache().addObjectInBuffer(this.getName(), imageTexture);
         }
         return imageTexture;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPath pathToTexture) {
-        return this.createImageTextureFromStream(textureProperties, JGems3D.loadFileFromJar(pathToTexture));
+        return this.createImageTexture(textureProperties, JGems3D.loadFileFromJar(pathToTexture));
     }
 
-    public ImageTexture createImageTextureFromStream(@Nullable ImageTexture.Properties textureProperties, @NotNull InputStream inputStream) {
+    public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull InputStream inputStream) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(1);
