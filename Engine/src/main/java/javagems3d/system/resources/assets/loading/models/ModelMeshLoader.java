@@ -10,6 +10,7 @@ import javagems3d.system.resources.assets.models.animation.components.SkeletonDa
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshDataType;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -21,6 +22,8 @@ import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -31,10 +34,60 @@ import java.util.List;
 
 public class ModelMeshLoader {
     private final JGemsPath path;
+    private final GameResources gameResources;
 
-    public ModelMeshLoader(JGemsPath modelPath) {
+    public ModelMeshLoader(@NotNull GameResources gameResources, @NotNull JGemsPath modelPath) {
         this.path = modelPath;
+        this.gameResources = gameResources;
     }
+
+    public MeshGroup createMeshGroup(int Flags) {
+        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
+        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
+        boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
+        MeshGroup meshGroup = null;
+        if (this.getGameResources().getResourceCache().checkObjectInCache(this.getStr(MeshDataType.GROUP))) {
+            meshGroup = this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(this.getStr(MeshDataType.GROUP));
+        } else {
+            meshGroup = this.processMeshGroup(this.getGameResources(), animated);
+        }
+        if (meshGroup == null) {
+            throw new JGemsNullException("Nothing loaded!");
+        }
+        if (loadInIndirectBuffer) {
+            if (this.processMeshBuffer(this.getGameResources(), animated, true) == null) {
+                throw new JGemsNullException("Nothing loaded!");
+            }
+        }
+        if (createCollision) {
+            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
+        }
+        return meshGroup;
+    }
+
+    public MeshBuffer createMeshBuffer(int Flags) {
+        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
+        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
+        boolean loadInIndirectBuffer = (Flags & ~FLAGS.LOAD_IN_INDIRECT_BUFFER) == 0;
+        MeshBuffer meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, loadInIndirectBuffer);
+        if (meshBuffer == null) {
+            throw new JGemsNullException("Nothing loaded!");
+        }
+        if (createCollision) {
+            JGemsHelper.UTILS.createMeshCollisionData(meshBuffer);
+        }
+        return meshBuffer;
+    }
+
+    public String getStr(MeshDataType dataType) {
+        return this.getPath().toString() + this.getSuffix(dataType);
+    }
+
+    public String getSuffix(MeshDataType dataType) {
+        return dataType == MeshDataType.BUFFER ? "_buff" : "_gr";
+    }
+
+    //++++++++++++++++++++++++++
 
     private AIScene loadAIScene(MemoryStack stack, JGemsPath path, boolean isAnimated) {
         if (JGems3D.checkFileExistsInJar(path)) {
@@ -79,41 +132,6 @@ public class ModelMeshLoader {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loaded animation(size:" + animations.size() + ")");
 
         return skeletonData;
-    }
-
-    public MeshGroup createMeshGroup(GameResources gameResources, int Flags) {
-        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
-        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
-        boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
-        MeshGroup meshGroup = this.processMeshGroup(gameResources, animated);
-        if (meshGroup == null) {
-            throw new JGemsNullException("Nothing loaded!");
-        }
-
-        if (loadInIndirectBuffer) {
-            if (this.processMeshBuffer(gameResources, animated, true) == null) {
-                throw new JGemsNullException("Nothing loaded!");
-            }
-        }
-
-        if (createCollision) {
-            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
-        }
-        return meshGroup;
-    }
-
-    public MeshBuffer createMeshBuffer(GameResources gameResources, int Flags) {
-        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
-        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
-        boolean loadInIndirectBuffer = (Flags & ~FLAGS.LOAD_IN_INDIRECT_BUFFER) == 0;
-        MeshBuffer meshBuffer = this.processMeshBuffer(gameResources, animated, loadInIndirectBuffer);
-        if (meshBuffer == null) {
-            throw new JGemsNullException("Nothing loaded!");
-        }
-        if (createCollision) {
-            JGemsHelper.UTILS.createMeshCollisionData(meshBuffer);
-        }
-        return meshBuffer;
     }
 
     @SuppressWarnings("all")
@@ -293,6 +311,10 @@ public class ModelMeshLoader {
 
         renderMesh.bakeMesh();
         return renderMesh;
+    }
+
+    public GameResources getGameResources() {
+        return this.gameResources;
     }
 
     public JGemsPath getPath() {

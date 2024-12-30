@@ -89,6 +89,11 @@ public class ResourceCache {
         return cached;
     }
 
+    @SuppressWarnings("all")
+    public <T extends ICached> T getCachedObjectUnSafeCast(String key) {
+        return (T) this.getCachedObject(key);
+    }
+
     public boolean checkObjectInCache(JGemsPath key) {
         return this.checkObjectInCache(key.getFullPath());
     }

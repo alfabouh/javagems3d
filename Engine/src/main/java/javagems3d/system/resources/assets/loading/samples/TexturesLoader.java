@@ -4,6 +4,8 @@ import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.cache.ICached;
+import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
@@ -19,14 +21,25 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class TexturesLoader {
+    public static final String DEFAULT_NAME = "unknown";
     private final String name;
+    private final GameResources gameResources;
 
-    public TexturesLoader(@Nullable String name) {
-        this.name = name == null ? "unknowns" : name;
+    public TexturesLoader(@NotNull GameResources gameResources, @Nullable String name) {
+        this.name = name == null ? TexturesLoader.DEFAULT_NAME : name;
+        this.gameResources = gameResources;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull IImageTexture.Data data) {
-        return new ImageTexture(textureProperties, data, this.getName());
+        ImageTexture imageTexture = new ImageTexture(textureProperties, data, this.getName());
+        if (this.getGameResources() != null) {
+            if (this.getName().equals(TexturesLoader.DEFAULT_NAME)) {
+                this.getGameResources().getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);
+            } else {
+                this.getGameResources().getResourceCache().addObjectInBuffer(this.getName(), imageTexture);
+            }
+        }
+        return imageTexture;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPath pathToTexture) {
@@ -54,6 +67,10 @@ public class TexturesLoader {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
+    }
+
+    public GameResources getGameResources() {
+        return this.gameResources;
     }
 
     public String getName() {
