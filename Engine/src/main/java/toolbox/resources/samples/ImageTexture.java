@@ -141,7 +141,7 @@ public class ImageTexture implements IImageTexture {
     }
 
     @Override
-    public void init(@Nullable IProperties properties, Data data) {
+    public void init(@Nullable IProperties properties, javagems3d.system.resources.assets.texturing.ImageTexture.Data data) {
 
     }
 
@@ -173,7 +173,7 @@ public class ImageTexture implements IImageTexture {
     }
 
     @Override
-    public void onCleaningCache(ResourceCache resourceCache) {
+    public void onClearingCache(ResourceCache resourceCache) {
         this.clear();
     }
 }

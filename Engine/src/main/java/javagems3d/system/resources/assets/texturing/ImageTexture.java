@@ -21,6 +21,9 @@ import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.stb.STBImage;
+
+import java.nio.ByteBuffer;
 
 public class ImageTexture implements IImageTexture {
     private final String name;
@@ -36,38 +39,37 @@ public class ImageTexture implements IImageTexture {
         if (properties == null) {
             properties = new Properties();
         }
-        if (properties instanceof Properties) {
-            Properties properties1 = (Properties) properties;
-            int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
-            boolean linear = properties1.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
-            boolean anisotropic = properties1.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
+        Properties properties1 = (Properties) properties;
+        int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
+        boolean linear = properties1.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
+        boolean anisotropic = properties1.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
 
-            GL46.glBindTexture(GL46.GL_TEXTURE_2D, this.getTextureId());
-            GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST);
-            GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
-            GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
-            GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
-            if (anisotropic) {
-                GL46.glTexParameterf(GL46.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL46.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-            }
-            GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
-            GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_BASE_LEVEL, quality);
-            GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAX_LEVEL, 11);
-            GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+        this.bindTexture();
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        if (anisotropic) {
+            GL46.glTexParameterf(GL46.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL46.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
         }
+        GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_BASE_LEVEL, quality);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAX_LEVEL, 11);
+        this.unBindTexture();
     }
 
     @Override
-    public void init(IProperties properties, Data data) {
-        if (data == null) {
+    public void init(IProperties properties, IData iData) {
+        if (iData == null) {
             throw new JGemsIOException("Couldn't create texture " + this.getName());
         }
+        Data data = (Data) iData;
         this.size = data.getSize();
         this.textureId = GL46.glGenTextures();
-        GL46.glBindTexture(GL46.GL_TEXTURE_2D, this.getTextureId());
+        this.bindTexture();
         GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
         GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA, this.getSize().x, this.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getBuffer());
-        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+        this.unBindTexture();
         data.clear();
         this.setProperties(properties);
         JGemsHelper.getLogger().log("Texture " + this.getName() + " successfully created!");
@@ -103,13 +105,13 @@ public class ImageTexture implements IImageTexture {
     }
 
     public void clear() {
-        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+        this.unBindTexture();
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
     }
 
     @Override
-    public void onCleaningCache(ResourceCache resourceCache) {
+    public void onClearingCache(ResourceCache resourceCache) {
         this.clear();
     }
 
@@ -148,6 +150,28 @@ public class ImageTexture implements IImageTexture {
 
         public boolean isQualityAffected() {
             return this.qualityAffected;
+        }
+    }
+
+    public static final class Data implements IData {
+        private final ByteBuffer buffer;
+        private final Vector2i size;
+
+        public Data(@NotNull ByteBuffer buffer, @NotNull Vector2i size) {
+            this.buffer = buffer;
+            this.size = size;
+        }
+
+        public void clear() {
+            STBImage.stbi_image_free(this.getBuffer());
+        }
+
+        public ByteBuffer getBuffer() {
+            return this.buffer;
+        }
+
+        public Vector2i getSize() {
+            return this.size;
         }
     }
 }

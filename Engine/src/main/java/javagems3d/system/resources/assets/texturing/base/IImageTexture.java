@@ -11,49 +11,25 @@
 
 package javagems3d.system.resources.assets.texturing.base;
 
-import org.jetbrains.annotations.NotNull;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import javagems3d.system.resources.cache.ICached;
-import org.lwjgl.stb.STBImage;
-
-import java.nio.ByteBuffer;
+import org.lwjgl.opengl.GL46;
 
 public interface IImageTexture extends ISample, ICached {
     int getTextureId();
     int getTextureAttachment();
     void bindTexture();
-    void init(@Nullable IProperties properties, Data data);
+    void init(@Nullable IProperties properties, IData data);
     void reload(@Nullable IProperties properties);
     Vector2i getSize();
 
+    default void unBindTexture() {
+        GL46.glBindTexture(this.getTextureAttachment(), 0);
+    }
+
     default boolean isValid() {
         return this.getTextureId() > 0;
-    }
-
-    interface IProperties {
-
-    }
-
-    class Data {
-        private final ByteBuffer buffer;
-        private final Vector2i size;
-
-        public Data(@NotNull ByteBuffer buffer, @NotNull Vector2i size) {
-            this.buffer = buffer;
-            this.size = size;
-        }
-
-        public void clear() {
-            STBImage.stbi_image_free(this.getBuffer());
-        }
-
-        public ByteBuffer getBuffer() {
-            return this.buffer;
-        }
-
-        public Vector2i getSize() {
-            return this.size;
-        }
     }
 }

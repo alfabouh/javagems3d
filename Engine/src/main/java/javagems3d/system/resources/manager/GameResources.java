@@ -16,14 +16,13 @@ import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
 import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.CubeMapTextureOLD;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.packs.CubeMapTexturingDataPack;
 import javagems3d.system.resources.cache.ICached;
@@ -70,7 +69,7 @@ public final class GameResources implements IGameResources {
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this.getResourceCache(), name).createImageTexture(textureProperties, new IImageTexture.Data(buffer, size)));
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this.getResourceCache(), name).createImageTexture(textureProperties, new ImageTexture.Data(buffer, size)));
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
@@ -102,10 +101,10 @@ public final class GameResources implements IGameResources {
         }
     }
 
-    public CubeMapTexture createCubeMap(JGemsPath pathToCubeMap, String type) {
+    public CubeMapTextureOLD createCubeMap(JGemsPath pathToCubeMap, String type) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading CubeMap: " + pathToCubeMap);
         try {
-            return CubeMapTexture.createCubeMap(this.getResourceCache(), new CubeMapTexturingDataPack(pathToCubeMap, type));
+            return CubeMapTextureOLD.createCubeMap(this.getResourceCache(), new CubeMapTexturingDataPack(pathToCubeMap, type));
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + pathToCubeMap);
             throw e;

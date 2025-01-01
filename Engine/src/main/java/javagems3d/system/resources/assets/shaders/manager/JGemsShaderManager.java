@@ -28,7 +28,7 @@ import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.CubeMapTextureOLD;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.assets.texturing.base.IImageTexture;
@@ -107,7 +107,7 @@ public final class JGemsShaderManager extends ShaderManager {
             IImageTexture metallic = material.getMetallicMap();
             IImageTexture normals = material.getNormalsMap();
             IImageTexture specular = material.getSpecularMap();
-            CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
+            CubeMapTextureOLD cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
 
             int texturing_code = 0;
 

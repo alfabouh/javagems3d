@@ -305,7 +305,7 @@ public abstract class ShaderManager implements ICached {
     }
 
     @Override
-    public void onCleaningCache(ResourceCache resourceCache) {
+    public void onClearingCache(ResourceCache resourceCache) {
         this.destroyProgram();
     }
 

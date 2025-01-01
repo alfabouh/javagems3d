@@ -32,8 +32,6 @@ public class TextureProgram implements ITextureProgram {
         GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, textureFormat, size.x, size.y, 0, internalFormat, GL46.GL_FLOAT, pixels);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, filtering_mag);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, filtering_min);
-
-
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, clamp_s);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, clamp_t);
         if (borderColor != null) {
