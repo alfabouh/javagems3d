@@ -4,7 +4,7 @@ import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.system.resources.assets.texturing.CubeMapTextureOLD;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -13,11 +13,11 @@ import java.util.Set;
 
 public class SkyBox implements ISkyBox {
     private final Background background;
-    private CubeMapTextureOLD sky2DTexture;
+    private CubeMapTexture sky2DTexture;
     private final Sun sun;
     private boolean isSkyCoveredByFog;
 
-    public SkyBox(CubeMapTextureOLD sky2DTexture) {
+    public SkyBox(CubeMapTexture sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
         this.sun = new Sun(new Vector3f(1.0f), null, 1.0f);
         this.isSkyCoveredByFog = false;
@@ -28,7 +28,7 @@ public class SkyBox implements ISkyBox {
         this.isSkyCoveredByFog = skyCoveredByFog;
     }
 
-    public void setSky2DTexture(CubeMapTextureOLD sky2DTexture) {
+    public void setSky2DTexture(CubeMapTexture sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
     }
 
@@ -44,7 +44,7 @@ public class SkyBox implements ISkyBox {
         return this.sun;
     }
 
-    public CubeMapTextureOLD getSky2DTexture() {
+    public CubeMapTexture getSky2DTexture() {
         return this.sky2DTexture;
     }
 

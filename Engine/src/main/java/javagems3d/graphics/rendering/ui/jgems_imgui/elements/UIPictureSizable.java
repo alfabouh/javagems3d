@@ -18,7 +18,7 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -27,12 +27,12 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 
 public class UIPictureSizable extends UIElement {
-    protected final IImageTexture iImageSample;
+    protected final IImageBasedTexture iImageSample;
     private final Vector2i position;
     private final Vector2i size;
     protected Model<Format2D> imageModel;
 
-    public UIPictureSizable(@NotNull IImageTexture iImageSample, @NotNull Vector2i position, @NotNull Vector2i size, float zValue) {
+    public UIPictureSizable(@NotNull IImageBasedTexture iImageSample, @NotNull Vector2i position, @NotNull Vector2i size, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_image, zValue);
         this.iImageSample = iImageSample;
         this.position = position;

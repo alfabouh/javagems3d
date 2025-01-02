@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.loading.models;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
+import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.loading.models.utils.AnimationLoadingUtils;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.animation.Animation;
@@ -17,6 +18,7 @@ import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAtt
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -32,7 +34,7 @@ import org.lwjgl.system.MemoryStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelMeshLoader {
+public class ModelMeshLoader implements ILoadingHelper {
     private final JGemsPath path;
     private final GameResources gameResources;
 
@@ -48,22 +50,22 @@ public class ModelMeshLoader {
         MeshGroup meshGroup = null;
         String grString = this.getStr(MeshDataType.GROUP);
         String bffString = this.getStr(MeshDataType.BUFFER);
-        if (this.getGameResources().getResourceCache().checkObjectInCache(grString)) {
-            meshGroup = this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(grString);
+        if (this.getResourceCache().checkObjectInCache(grString)) {
+            meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
         } else {
             meshGroup = this.processMeshGroup(this.getGameResources(), animated);
-            this.getGameResources().getResourceCache().addObjectInBuffer(grString, meshGroup);
+            this.getResourceCache().addObjectInBuffer(grString, meshGroup);
         }
         if (meshGroup == null) {
             throw new JGemsNullException("There was an error, while loading the model!");
         }
-        if (!this.getGameResources().getResourceCache().checkObjectInCache(bffString)) {
+        if (!this.getResourceCache().checkObjectInCache(bffString)) {
             if (loadInIndirectBuffer) {
                 MeshBuffer meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, true);
                 if (meshBuffer == null) {
                     throw new JGemsNullException("There was an error, while loading the model!");
                 }
-                this.getGameResources().getResourceCache().addObjectInBuffer(bffString, meshBuffer);
+                this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
             }
         }
         if (createCollision) {
@@ -78,11 +80,11 @@ public class ModelMeshLoader {
         boolean loadInIndirectBuffer = (Flags & ~FLAGS.LOAD_IN_INDIRECT_BUFFER) == 0;
         String bffString = this.getStr(MeshDataType.BUFFER);
         MeshBuffer meshBuffer = null;
-        if (this.getGameResources().getResourceCache().checkObjectInCache(bffString)) {
-            meshBuffer = this.getGameResources().getResourceCache().getCachedObjectUnSafeCast(bffString);
+        if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
+            meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
         } else {
             meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, loadInIndirectBuffer);
-            this.getGameResources().getResourceCache().addObjectInBuffer(bffString, meshBuffer);
+            this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
         }
         if (meshBuffer == null) {
             throw new JGemsNullException("There was an error, while loading the model!");
@@ -333,6 +335,10 @@ public class ModelMeshLoader {
 
     public JGemsPath getPath() {
         return this.path;
+    }
+
+    public ResourceCache getResourceCache() {
+        return this.getGameResources().getResourceCache();
     }
 
     public static class FLAGS {

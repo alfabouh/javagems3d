@@ -11,19 +11,18 @@
 
 package javagems3d.system.resources.assets.texturing.base;
 
-import javagems3d.system.resources.assets.texturing.ImageTexture;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import javagems3d.system.resources.cache.ICached;
 import org.lwjgl.opengl.GL46;
 
-public interface IImageTexture extends ISample, ICached {
+public interface IImageBasedTexture extends ISample, ICached {
     int getTextureId();
     int getTextureAttachment();
     void bindTexture();
-    void init(@Nullable IProperties properties, IData data);
+    void init(@Nullable IProperties properties, @NotNull IData data);
     void reload(@Nullable IProperties properties);
-    Vector2i getSize();
 
     default void unBindTexture() {
         GL46.glBindTexture(this.getTextureAttachment(), 0);

@@ -13,7 +13,6 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font;
 
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
-import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 

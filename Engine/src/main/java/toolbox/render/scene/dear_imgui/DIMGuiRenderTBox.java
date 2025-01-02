@@ -29,7 +29,7 @@ import toolbox.ToolBox;
 import toolbox.controller.TBoxControllerDispatcher;
 import toolbox.render.scene.dear_imgui.content.ImGuiContent;
 import toolbox.resources.TBoxResourceManager;
-import toolbox.resources.samples.ImageTexture;
+import toolbox.resources.samples.ImageBasedTexture;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
 import java.nio.ByteBuffer;
@@ -37,7 +37,7 @@ import java.nio.ByteBuffer;
 public class DIMGuiRenderTBox {
     private final TBoxShaderManager shaderManager;
     private DearUIMesh dearImGuiMesh;
-    private ImageTexture textureSample;
+    private ImageBasedTexture textureSample;
     private GLFWKeyCallback prevKeyCallback;
     private ImGuiContent currentContentToRender;
 
@@ -61,7 +61,7 @@ public class DIMGuiRenderTBox {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = ImageTexture.createTexture(resourceCache, "imgui_fonts", width.get(), height.get(), buffer);
+        this.textureSample = ImageBasedTexture.createTexture(resourceCache, "imgui_fonts", width.get(), height.get(), buffer);
         this.dearImGuiMesh = new DearUIMesh();
     }
 
@@ -237,7 +237,7 @@ public class DIMGuiRenderTBox {
         return this.shaderManager;
     }
 
-    public ImageTexture getTextureSample() {
+    public ImageBasedTexture getTextureSample() {
         return this.textureSample;
     }
 

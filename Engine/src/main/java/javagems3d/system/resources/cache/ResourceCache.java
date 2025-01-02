@@ -35,7 +35,7 @@ public class ResourceCache {
         while (cachedIterator.hasNext()) {
             ICached cached = cachedIterator.next();
             if (clazz.isInstance(cached)) {
-                cached.onCleaningCache(this);
+                cached.onClearingCache(this);
                 cachedIterator.remove();
             }
         }
@@ -46,7 +46,7 @@ public class ResourceCache {
         if (this.cache.isEmpty()) {
             return;
         }
-        this.cache.forEach((o, e) -> e.onCleaningCache(this));
+        this.cache.forEach((o, e) -> e.onClearingCache(this));
         this.cache.clear();
         JGemsHelper.getLogger().log("Cleaned cache: " + this);
     }

@@ -1,24 +1,18 @@
 package javagems3d.system.resources.assets.texturing;
 
-import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.packs.CubeMapTexturingDataPack;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
-import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL46;
 
-import java.nio.ByteBuffer;
-
-public class CubeMapTexture implements IImageTexture {
-    private final String name;
+public class CubeMapTexture implements IImageBasedTexture {
+    private Vector2i[] size6;
     private int textureId;
 
-    public CubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data, @NotNull String name) {
-        this.name = name;
+    public CubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
         this.init(textureProperties, data);
     }
 
@@ -28,15 +22,16 @@ public class CubeMapTexture implements IImageTexture {
     }
 
     @Override
-    public void init(@Nullable IProperties properties, IData iData) {
+    public void init(@Nullable IProperties properties, @NotNull IData iData) {
         Data data = (Data) iData;
+        this.size6 = new Vector2i[6];
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
         for (int i = 0; i < 6; i++) {
-            ImageTexture.Data data1 = data.getDataSet()[i];
-            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, data1.getSize().x, data1.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data1.getBuffer());
-            data1.clear();
+            this.size6[i] = data.getDataSet()[i].getSize();
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, this.getSize()[i].x, this.getSize()[i].y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getDataSet()[i].getBuffer());
         }
+        data.clear();
         this.unBindTexture();
         this.setProperties(properties);
     }
@@ -71,12 +66,8 @@ public class CubeMapTexture implements IImageTexture {
         this.clear();
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public Vector2i getSize() {
-        return this.size;
+    public Vector2i[] getSize() {
+        return this.size6;
     }
 
     public int getTextureId() {
@@ -93,6 +84,12 @@ public class CubeMapTexture implements IImageTexture {
 
         public Data(ImageTexture.Data[] dataSet) {
             this.dataSet = dataSet;
+        }
+
+        public void clear() {
+            for (int i = 0; i < 6; i++) {
+                this.getDataSet()[i].clear();
+            }
         }
 
         public ImageTexture.Data[] getDataSet() {

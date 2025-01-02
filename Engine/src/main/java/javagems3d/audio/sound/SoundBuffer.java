@@ -81,7 +81,7 @@ public class SoundBuffer implements ICached {
     }
 
     @Override
-    public void onCleaningCache(ResourceCache resourceCache) {
+    public void onClearingCache(ResourceCache resourceCache) {
         AL10.alDeleteBuffers(this.getBuffer());
         JGemsSoundManager.checkALonErrors();
     }

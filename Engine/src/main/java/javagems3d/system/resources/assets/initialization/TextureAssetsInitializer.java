@@ -15,7 +15,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.texturing.CubeMapTextureOLD;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.manager.GameResources;
@@ -32,9 +32,9 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
     public ImageTexture waterTexture;
     public ImageTexture waterNormals;
     public ParticleTexturesPack particleTexturesPack;
-    public CubeMapTextureOLD defaultSkyboxCubeMap;
-    public CubeMapTextureOLD skyboxCubeMap;
-    public CubeMapTextureOLD skyboxCubeMap2;
+    public CubeMapTexture defaultSkyboxCubeMap;
+    public CubeMapTexture skyboxCubeMap;
+    public CubeMapTexture skyboxCubeMap2;
     public GuiFont standardFont2;
     public GuiFont standardFont;
     public GuiFont buttonFont;
@@ -66,9 +66,9 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
 
         this.particleTexturesPack = new ParticleTexturesPack(new JGemsPath(JGems3D.Paths.PARTICLES, "flame"), ".png", 4, 0.25f);
 
-        this.defaultSkyboxCubeMap = gameResources.createCubeMap(TextureAssetsInitializer.defaultSkyCubeMapPath, ".png");
-        this.skyboxCubeMap = gameResources.createCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyDay", "sky_"), ".png");
-        this.skyboxCubeMap2 = gameResources.createCubeMap(new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyNight", "sky_"), ".bmp");
+        this.defaultSkyboxCubeMap = gameResources.createCubeMapTexture(null, TextureAssetsInitializer.defaultSkyCubeMapPath, "png", new CubeMapTexture.Properties(true));
+        this.skyboxCubeMap = gameResources.createCubeMapTexture(null, new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyDay", "sky_"), "png", new CubeMapTexture.Properties(true));
+        this.skyboxCubeMap2 = gameResources.createCubeMapTexture(null, new JGemsPath(JGems3D.Paths.CUBE_MAPS, "skyNight", "sky_"), "bmp", new CubeMapTexture.Properties(true));
     }
 
     @NotNull

@@ -14,19 +14,19 @@ package javagems3d.system.resources.assets.texturing.packs;
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 
 public final class ParticleTexturesPack {
-    private final IImageTexture[] iImageSample;
+    private final IImageBasedTexture[] iImageSample;
     private final int texturesNum;
     private final float animationRateSeconds;
     private final JGemsPath pathToTexturePath;
     private final String format;
 
     public ParticleTexturesPack(JGemsPath pathToTexturePath, String format, int texturesNum, float animationRateSeconds) {
-        this.iImageSample = new IImageTexture[texturesNum];
+        this.iImageSample = new IImageBasedTexture[texturesNum];
         this.pathToTexturePath = pathToTexturePath;
         this.format = format;
         this.texturesNum = texturesNum;
@@ -42,7 +42,7 @@ public final class ParticleTexturesPack {
         return this.texturesNum;
     }
 
-    public IImageTexture[] getTextureSamples() {
+    public IImageBasedTexture[] getTextureSamples() {
         return this.iImageSample;
     }
 

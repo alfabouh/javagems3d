@@ -12,6 +12,8 @@
 package toolbox.resources.samples;
 
 import com.google.common.io.ByteStreams;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -19,7 +21,7 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -31,20 +33,20 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public class ImageTexture implements IImageTexture {
+public class ImageBasedTexture implements IImageBasedTexture {
     private final String name;
     private int width;
     private int height;
     private int textureId;
 
-    private ImageTexture(String name, int width, int height, ByteBuffer buffer) {
+    private ImageBasedTexture(String name, int width, int height, ByteBuffer buffer) {
         this.name = name;
         this.width = width;
         this.height = height;
         this.createTexture(buffer);
     }
 
-    private ImageTexture(String fullPath) {
+    private ImageBasedTexture(String fullPath) {
         this.name = fullPath;
         SystemLogging.get().getLogManager().log("Loading " + this.getName());
         try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(fullPath))) {
@@ -54,16 +56,16 @@ public class ImageTexture implements IImageTexture {
         }
     }
 
-    private ImageTexture(String id, InputStream inputStream) {
+    private ImageBasedTexture(String id, InputStream inputStream) {
         this.name = id + "_inputStream";
         this.createTexture(this.readTextureFromMemory(id, inputStream));
     }
 
-    public static ImageTexture createTexture(ResourceCache resourceCache, String fullPath) {
+    public static ImageBasedTexture createTexture(ResourceCache resourceCache, String fullPath) {
         if (resourceCache.checkObjectInCache(fullPath)) {
-            return (ImageTexture) resourceCache.getCachedObject(fullPath);
+            return (ImageBasedTexture) resourceCache.getCachedObject(fullPath);
         }
-        ImageTexture textureSample = new ImageTexture(fullPath);
+        ImageBasedTexture textureSample = new ImageBasedTexture(fullPath);
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
@@ -72,11 +74,11 @@ public class ImageTexture implements IImageTexture {
         return textureSample;
     }
 
-    public static ImageTexture createTexture(ResourceCache resourceCache, String name, int width, int height, ByteBuffer buffer) {
+    public static ImageBasedTexture createTexture(ResourceCache resourceCache, String name, int width, int height, ByteBuffer buffer) {
         if (resourceCache.checkObjectInCache(name)) {
-            return (ImageTexture) resourceCache.getCachedObject(name);
+            return (ImageBasedTexture) resourceCache.getCachedObject(name);
         }
-        ImageTexture textureSample = new ImageTexture(name, width, height, buffer);
+        ImageBasedTexture textureSample = new ImageBasedTexture(name, width, height, buffer);
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(name, textureSample);
         } else {
@@ -141,7 +143,7 @@ public class ImageTexture implements IImageTexture {
     }
 
     @Override
-    public void init(@Nullable IProperties properties, javagems3d.system.resources.assets.texturing.ImageTexture.Data data) {
+    public void init(@Nullable IProperties properties, @NotNull IData data) {
 
     }
 
@@ -150,7 +152,6 @@ public class ImageTexture implements IImageTexture {
 
     }
 
-    @Override
     public Vector2i getSize() {
         return new Vector2i(this.width, this.height);
     }

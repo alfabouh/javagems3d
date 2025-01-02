@@ -52,7 +52,7 @@ import toolbox.render.scene.items.objects.base.TBoxAbstractObject;
 import toolbox.render.scene.items.renderers.data.TBoxObjectRenderData;
 import toolbox.render.scene.utils.TBoxSceneUtils;
 import toolbox.resources.TBoxResourceManager;
-import toolbox.resources.samples.ImageTexture;
+import toolbox.resources.samples.ImageBasedTexture;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
 import javax.swing.*;
@@ -91,7 +91,7 @@ public class TBoxScene {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                     shaderManager.performUniformNoWarn(new UniformString("diffuse_map"),  UniformFunctions.INTEGER(0));
                     GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((ImageTexture) meshNode.getMaterial().getDiffuse()).getTextureId());
+                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((ImageBasedTexture) meshNode.getMaterial().getDiffuse()).getTextureId());
                 }
             }
             GL46.glBindVertexArray(meshNode.getMesh().getVao());

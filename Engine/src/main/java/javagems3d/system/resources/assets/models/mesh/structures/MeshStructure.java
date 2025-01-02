@@ -62,7 +62,7 @@ public abstract class MeshStructure <T extends MeshStructure.Node<? extends IMes
     }
 
     @Override
-    public void onCleaningCache(ResourceCache resourceCache) {
+    public void onClearingCache(ResourceCache resourceCache) {
         this.clear();
     }
 

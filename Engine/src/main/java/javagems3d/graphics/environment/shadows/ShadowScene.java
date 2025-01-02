@@ -30,7 +30,7 @@ import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentConta
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -341,10 +341,10 @@ public class ShadowScene implements IShadowScene {
         float alphaValue = 1.0f;
         try {
             for (MeshGroup.MeshGroupNode meshNode : model.<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
-                if (meshNode.getMaterial().getDiffuse() instanceof IImageTexture) {
+                if (meshNode.getMaterial().getDiffuse() instanceof IImageBasedTexture) {
                     shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
                     GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    ((IImageTexture) meshNode.getMaterial().getDiffuse()).bindTexture();
+                    ((IImageBasedTexture) meshNode.getMaterial().getDiffuse()).bindTexture();
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                 } else {
                     if (meshNode.getMaterial().getDiffuse() instanceof RGBAColor) {

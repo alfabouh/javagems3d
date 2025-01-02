@@ -16,6 +16,7 @@ import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfigura
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
@@ -28,10 +29,9 @@ import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
-import javagems3d.system.resources.assets.texturing.CubeMapTextureOLD;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -103,11 +103,11 @@ public final class JGemsShaderManager extends ShaderManager {
             }
 
             ISample diffuse = material.getDiffuse();
-            IImageTexture emission = material.getEmissionMap();
-            IImageTexture metallic = material.getMetallicMap();
-            IImageTexture normals = material.getNormalsMap();
-            IImageTexture specular = material.getSpecularMap();
-            CubeMapTextureOLD cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
+            IImageBasedTexture emission = material.getEmissionMap();
+            IImageBasedTexture metallic = material.getMetallicMap();
+            IImageBasedTexture normals = material.getNormalsMap();
+            IImageBasedTexture specular = material.getSpecularMap();
+            CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
 
             int texturing_code = 0;
 
@@ -117,7 +117,7 @@ public final class JGemsShaderManager extends ShaderManager {
             }
 
             if (diffuse != null) {
-                if (diffuse instanceof IImageTexture) {
+                if (diffuse instanceof IImageBasedTexture) {
                     this.performUniformSampleNoWarn(new UniformString("diffuse_map"), diffuse);
                     texturing_code |= 1 << 2;
                 } else {

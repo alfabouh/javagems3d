@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -72,9 +72,9 @@ public final class TBoxShaderManager extends ShaderManager {
             this.performCameraData();
 
             if (diffuse != null) {
-                if (diffuse instanceof IImageTexture) {
+                if (diffuse instanceof IImageBasedTexture) {
                     final int code = 0;
-                    IImageTexture imageSample = ((IImageTexture) diffuse);
+                    IImageBasedTexture imageSample = ((IImageBasedTexture) diffuse);
                     GL46.glActiveTexture(GL46.GL_TEXTURE0 + code);
                     imageSample.bindTexture();
                     TBoxShaderManager.this.performUniformNoWarn(new UniformString("diffuse_map"), UniformFunctions.INTEGER(code));

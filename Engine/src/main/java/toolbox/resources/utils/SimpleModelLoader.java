@@ -27,7 +27,7 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
 import toolbox.resources.TBoxResourceManager;
-import toolbox.resources.samples.ImageTexture;
+import toolbox.resources.samples.ImageBasedTexture;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class SimpleModelLoader {
             color4D.clear();
             String diffuse = SimpleModelLoader.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
             if (diffuse != null) {
-                ImageTexture textureSample = (ImageTexture) tBoxResourceManager.getResource(fullPath + diffuse);
+                ImageBasedTexture textureSample = (ImageBasedTexture) tBoxResourceManager.getResource(fullPath + diffuse);
                 if (textureSample == null) {
                     textureSample = tBoxResourceManager.createTexture(fullPath + diffuse);
                 }

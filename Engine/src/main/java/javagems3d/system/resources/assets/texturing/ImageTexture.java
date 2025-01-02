@@ -12,12 +12,10 @@
 package javagems3d.system.resources.assets.texturing;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.system.service.exceptions.JGemsIOException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL46;
@@ -25,13 +23,11 @@ import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 
-public class ImageTexture implements IImageTexture {
-    private final String name;
+public class ImageTexture implements IImageBasedTexture {
     private Vector2i size;
     private int textureId;
 
-    public ImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull Data data, @NotNull String name) {
-        this.name = name;
+    public ImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull Data data) {
         this.init(textureProperties, data);
     }
 
@@ -59,10 +55,7 @@ public class ImageTexture implements IImageTexture {
     }
 
     @Override
-    public void init(IProperties properties, IData iData) {
-        if (iData == null) {
-            throw new JGemsIOException("Couldn't create texture " + this.getName());
-        }
+    public void init(IProperties properties, @NotNull IData iData) {
         Data data = (Data) iData;
         this.size = data.getSize();
         this.textureId = GL46.glGenTextures();
@@ -72,7 +65,6 @@ public class ImageTexture implements IImageTexture {
         this.unBindTexture();
         data.clear();
         this.setProperties(properties);
-        JGemsHelper.getLogger().log("Texture " + this.getName() + " successfully created!");
     }
 
     @Override
@@ -95,11 +87,6 @@ public class ImageTexture implements IImageTexture {
         GL46.glBindTexture(this.getTextureAttachment(), this.getTextureId());
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
     public Vector2i getSize() {
         return this.size;
     }

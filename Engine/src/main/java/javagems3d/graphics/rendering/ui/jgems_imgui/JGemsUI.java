@@ -14,6 +14,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.*;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -24,7 +25,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.system.resources.assets.texturing.base.IImageTexture;
+import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.settings.objects.SettingFloatBar;
 import javagems3d.system.settings.objects.SettingSlot;
@@ -153,11 +154,11 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         return this.checkUIInCacheAndRender(UIText.class, new UIText(text, guiFont, hexColor, position, zValue));
     }
 
-    public UIPictureStatic imageUI(IImageTexture iImageSample, Vector2i position, Vector2f textureXY, Vector2f textureWH, float zValue) {
+    public UIPictureStatic imageUI(ImageTexture iImageSample, Vector2i position, Vector2f textureXY, Vector2f textureWH, float zValue) {
         return this.checkUIInCacheAndRender(UIPictureStatic.class, new UIPictureStatic(iImageSample, position, textureXY, textureWH, zValue));
     }
 
-    public UIPictureSizable imageUI(IImageTexture iImageSample, Vector2i position, Vector2i size, float zValue) {
+    public UIPictureSizable imageUI(ImageTexture iImageSample, Vector2i position, Vector2i size, float zValue) {
         return this.checkUIInCacheAndRender(UIPictureSizable.class, new UIPictureSizable(iImageSample, position, size, zValue));
     }
 
