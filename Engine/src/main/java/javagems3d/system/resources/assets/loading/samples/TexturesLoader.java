@@ -6,6 +6,7 @@ import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
@@ -22,11 +23,11 @@ import java.nio.IntBuffer;
 
 public class TexturesLoader implements ILoadingHelper {
     private String name;
-    private final ResourceCache resourceCache;
+    private final GameResources gameResources;
 
-    public TexturesLoader(@Nullable ResourceCache resourceCache, @Nullable String name) {
+    public TexturesLoader(@Nullable GameResources gameResources, @Nullable String name) {
         this.name = name == null ? ILoadingHelper.DEFAULT_NAME : name;
-        this.resourceCache = resourceCache;
+        this.gameResources = gameResources;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data) {
@@ -48,6 +49,7 @@ public class TexturesLoader implements ILoadingHelper {
             } else {
                 this.getResourceCache().addObjectInBuffer(name, imageTexture);
             }
+            this.getGameResources().getBindlessTexturesArray().add(imageTexture);
         }
         return imageTexture;
     }
@@ -80,8 +82,12 @@ public class TexturesLoader implements ILoadingHelper {
         }
     }
 
+    public GameResources getGameResources() {
+        return this.gameResources;
+    }
+
     public ResourceCache getResourceCache() {
-        return this.resourceCache;
+        return this.getGameResources().getResourceCache();
     }
 
     public String getName() {

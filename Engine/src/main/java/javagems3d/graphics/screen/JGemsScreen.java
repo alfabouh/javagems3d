@@ -352,7 +352,7 @@ public class JGemsScreen implements IScreen {
             this.getTimerPool().update();
             this.getTransformation().updateMatrices();
             this.renderGameScene(deltaTimer.getDeltaTime());
-            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsRenderingGlobalConstants.RENDER_TICKS_UPD_RATE)) {
+            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsGlobalConfiguration.RENDER_TICKS_UPD_RATE)) {
                 this.renderTicks += 0.01f;
             }
             fps += 1;

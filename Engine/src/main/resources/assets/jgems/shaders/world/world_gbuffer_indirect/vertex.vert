@@ -14,6 +14,8 @@ out mat3 TBN;
 out mat4 view;
 out mat4 model;
 
+out flat uint ent_id;
+
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
@@ -22,21 +24,17 @@ layout(std430, binding = 1) buffer IndirectBufferData {
     int entityId[1024];
 };
 
-flat out uint outMaterialIdx;
-
 void main()
 {
     vec4 startPos = vec4(aPosition, 1.0);
     vec4 startNormal = vec4(aNormal, 0.0);
     vec4 startTangent = vec4(aTangent, 0.0);
     vec4 startBiTangent = vec4(aBitangent, 0.0);
-
     uint idx = gl_BaseInstance + gl_InstanceID;
-
-    outMaterialIdx = 0;
+    ent_id = entityId[idx];
 
     view = view_matrix;
-    model = modelMatrices[entityId[idx]];
+    model = modelMatrices[ent_id];
 
     mat4 model_view_matrix = view_matrix * model;
     vec4 mv_pos = model_view_matrix * startPos;

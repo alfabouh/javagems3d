@@ -13,11 +13,13 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
+import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
@@ -37,16 +39,20 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.manager.JGemsResourceManager;
 import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
+import javagems3d.system.resources.manager.texturing.BindlessTexturesCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryUtil;
 
+import java.nio.LongBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -213,13 +219,23 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     @Override
     public void onMapLoaded(IMapLoader loader, JGemsResourceManager resourceManager) {
+        resourceManager.constructBindlessTexturesCache();
         resourceManager.constructMeshBuffersDataCache();
         this.initSceneIndirectRenderBuffer(resourceManager.getMeshBuffersDrawCache());
+        this.loadBindlessHandlersInSSBO(resourceManager.constructBindlessTexturesCache(), JGemsResourceManager.globalShaderAssets.BindlessTextures);
     }
 
     @Override
     public void onMapDestroyed(IMapLoader loader, JGemsResourceManager resourceManager) {
         this.getSceneIndirectBuffer().clear();
+    }
+
+    public void loadBindlessHandlersInSSBO(BindlessTexturesCache bindlessTexturesCache, ShaderStorageBufferObject shaderStorageBufferObject) {
+        LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
+        for (Long l : bindlessTexturesCache.getAllHandlers()) {
+            longBuffer.put(l);
+        }
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, longBuffer);
     }
 
     public void initSceneIndirectRenderBuffer(MeshBuffersDrawCache meshBuffersDrawCache) {

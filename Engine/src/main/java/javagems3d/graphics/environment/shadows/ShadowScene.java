@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.environment.shadows;
 
+import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
@@ -93,8 +94,8 @@ public class ShadowScene implements IShadowScene {
     }
 
     private void initPointLightShadows() {
-        this.pointLightShadows = new ArrayList<>(JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS);
-        for (int i = 0; i < JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
+        this.pointLightShadows = new ArrayList<>(JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS);
+        for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
             this.pointLightShadows.add(new PointLightShadow(i));
         }
     }
@@ -233,7 +234,7 @@ public class ShadowScene implements IShadowScene {
             }
             this.getShadowPostFBO().unBindFBO();
 
-            for (int i = 0; i < JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
+            for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
                 pointLightShadow.getPointLightCubeMap().bindFBO();
                 for (int j = 0; j < 6; j++) {
@@ -307,7 +308,7 @@ public class ShadowScene implements IShadowScene {
         this.getPointLightShadowShader().beginShading();
         GL46.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
-        for (int i = 0; i < JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
+        for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {
                 pointLightShadow.getPointLightCubeMap().bindFBO();
@@ -368,8 +369,8 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void bindPointLightToShadowScene(int attachCode, PointLight pointLight) {
-        if (attachCode >= JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS) {
-            JGemsHelper.getLogger().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS);
+        if (attachCode >= JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS) {
+            JGemsHelper.getLogger().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS);
             return;
         }
         PointLightShadow pointLightShadow = this.getPointLightShadows().get(attachCode);

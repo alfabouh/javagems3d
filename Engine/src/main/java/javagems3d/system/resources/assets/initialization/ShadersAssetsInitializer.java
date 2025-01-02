@@ -15,7 +15,6 @@ import javagems3d.JGems3D;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lighting.LightManager;
-import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
@@ -31,6 +30,8 @@ import javagems3d.system.service.path.JGemsPath;
 public final class ShadersAssetsInitializer extends ShadersInitializer<JGemsShaderManager> {
     public ShaderStorageBufferObject Bones;
     public ShaderStorageBufferObject IndirectBufferData;
+    public ShaderStorageBufferObject BindlessTextures;
+    public ShaderStorageBufferObject MaterialsData;
 
     public UniformBufferObject SunLight;
     public UniformBufferObject PointLights;
@@ -79,8 +80,14 @@ public final class ShadersAssetsInitializer extends ShadersInitializer<JGemsShad
         this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
         ShaderStorageBufferProgram.createSSBO(this.IndirectBufferData);
 
+        this.BindlessTextures = new ShaderStorageBufferObject(2, 8 * Float.BYTES * JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
+        ShaderStorageBufferProgram.createSSBO(this.BindlessTextures);
+
+        this.MaterialsData = new ShaderStorageBufferObject(3, Float.BYTES * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
+        ShaderStorageBufferProgram.createSSBO(this.MaterialsData);
+
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
-        this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS) + Integer.BYTES);
+        this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsGlobalConfiguration.MAX_POINT_LIGHTS) + Integer.BYTES);
         this.Misc = this.createUBO("Misc", 2, Float.BYTES);
         this.Fog = this.createUBO("Fog", 3, Environment.FOG_STRUCT_SIZE * Float.BYTES);
 

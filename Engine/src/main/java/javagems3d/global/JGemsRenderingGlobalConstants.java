@@ -15,14 +15,7 @@ import javagems3d.JGems3D;
 import org.joml.Vector2f;
 
 public abstract class JGemsRenderingGlobalConstants {
-    public static final double RENDER_TICKS_UPD_RATE = 60.0d;
-
-    public static final int MAX_POINT_LIGHTS = 128;
-    public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
-
     public static final int CASCADE_SPLITS = 3;
-
-    public static int MAX_PARTICLES = 256;
 
     public static int SSAO_NOISE_SIZE = 4;
 

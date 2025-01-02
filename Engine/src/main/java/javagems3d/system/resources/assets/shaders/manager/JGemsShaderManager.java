@@ -11,6 +11,7 @@
 
 package javagems3d.system.resources.assets.shaders.manager;
 
+import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
@@ -186,7 +187,7 @@ public final class JGemsShaderManager extends ShaderManager {
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
                 }
             }
-            for (int i = 0; i < JGemsRenderingGlobalConstants.MAX_POINT_LIGHTS_SHADOWS; i++) {
+            for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getPointLightShadows().get(i);
                 JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap", i))) {

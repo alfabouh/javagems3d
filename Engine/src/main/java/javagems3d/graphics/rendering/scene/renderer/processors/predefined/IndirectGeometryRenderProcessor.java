@@ -8,12 +8,14 @@ import javagems3d.graphics.rendering.programs.indirect.IndirectBufferCommandsBui
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshDataType;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
@@ -39,6 +41,9 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void createResources() {
+        //JGems3D.get().getResourceManager().getGlobalResources().getResourceCache().clearGroupInCache(MeshBuffer.class);
+        //JGemsResourceManager.globalModelAssets.load(JGems3D.get().getResourceManager().getGlobalResources());
+        ((JGemsOpenGLRenderer) JGemsHelper.getScreen().getScene().getSceneRenderer()).initSceneIndirectRenderBuffer(JGems3D.get().getResourceManager().constructMeshBuffersDataCache()); //DEBUG
     }
 
     @Override
@@ -78,10 +83,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     private void fillSSBO(IntBuffer indexes, Set<SceneObject> sceneObjects, ShaderStorageBufferObject shaderStorageBufferObject) {
         int matricesSize = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
-
         FloatBuffer matrices = MemoryUtil.memAllocFloat(matricesSize);
-
-        Map<SceneObject, Integer> idMap = new HashMap<>();
 
         int id = 0;
         for (SceneObject sceneObject : sceneObjects) {

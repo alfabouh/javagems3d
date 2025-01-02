@@ -21,6 +21,8 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
 import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
+import javagems3d.system.resources.manager.texturing.BindlessTexturesArray;
+import javagems3d.system.resources.manager.texturing.BindlessTexturesCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 
@@ -40,6 +42,7 @@ public final class JGemsResourceManager {
     private final GameResources globalResources;
     private final GameResources localResources;
 
+    private final BindlessTexturesCache bindlessTexturesCache;
     private final MeshBuffersDrawCache meshBuffersDrawCache;
 
     public JGemsResourceManager() {
@@ -47,6 +50,7 @@ public final class JGemsResourceManager {
         this.globalResources = new GameResources(new ResourceCache("Global"));
         this.localResources = new GameResources(new ResourceCache("Local"));
         this.meshBuffersDrawCache = new MeshBuffersDrawCache();
+        this.bindlessTexturesCache = new BindlessTexturesCache();
     }
 
     public static void createShaders() {
@@ -77,17 +81,36 @@ public final class JGemsResourceManager {
         return font1;
     }
 
+    @SuppressWarnings("all")
     public MeshBuffersDrawCache constructMeshBuffersDataCache() {
         this.getMeshBuffersDrawCache().clear();
         this.getMeshBuffersDrawCache().init(this.getAllDataMeshes());
         return this.getMeshBuffersDrawCache();
     }
 
+    @SuppressWarnings("all")
+    public BindlessTexturesCache constructBindlessTexturesCache() {
+        this.getBindlessTexturesCache().clear();
+        this.getBindlessTexturesCache().init(this.getAllBindlessTexturesArrays());
+        return this.getBindlessTexturesCache();
+    }
+
     public Set<MeshBuffersArray> getAllDataMeshes() {
         HashSet<MeshBuffersArray> set = new HashSet<>();
-        set.add(this.getGlobalResources().getDataMeshArray());
-        set.add(this.getLocalResources().getDataMeshArray());
+        set.add(this.getGlobalResources().getMeshBuffersArray());
+        set.add(this.getLocalResources().getMeshBuffersArray());
         return set;
+    }
+
+    public Set<BindlessTexturesArray> getAllBindlessTexturesArrays() {
+        HashSet<BindlessTexturesArray> set = new HashSet<>();
+        set.add(this.getGlobalResources().getBindlessTexturesArray());
+        set.add(this.getLocalResources().getBindlessTexturesArray());
+        return set;
+    }
+
+    public BindlessTexturesCache getBindlessTexturesCache() {
+        return this.bindlessTexturesCache;
     }
 
     public MeshBuffersDrawCache getMeshBuffersDrawCache() {

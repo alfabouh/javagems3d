@@ -2,7 +2,7 @@ package javagems3d.system.resources.assets.texturing.ext;
 
 import org.lwjgl.opengl.ARBBindlessTexture;
 
-public interface IBindLessTxtExt {
+public interface IBindlessTexture {
     long getBindingHandler();
     default long createBindingHandler(int textureId) {
         return ARBBindlessTexture.glGetTextureHandleARB(textureId);

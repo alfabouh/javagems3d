@@ -19,6 +19,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
+import javagems3d.system.resources.manager.texturing.BindlessTexturesArray;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
@@ -45,9 +46,11 @@ public final class GameResources implements IGameResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsInitializer> assetsLoaderSet;
     private final MeshBuffersArray meshBuffersArray;
+    private final BindlessTexturesArray bindlessTexturesArray;
 
     public GameResources(@NotNull ResourceCache resourceCache) {
         this.meshBuffersArray = new MeshBuffersArray();
+        this.bindlessTexturesArray = new BindlessTexturesArray();
         this.resourceCache = resourceCache;
         this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsInitializer) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
     }
@@ -65,23 +68,23 @@ public final class GameResources implements IGameResources {
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this.getResourceCache(), path.toString()).createImageTexture(textureProperties, path));
+        return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this, path.toString()).createImageTexture(textureProperties, path));
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this.getResourceCache(), name).createImageTexture(textureProperties, new ImageTexture.Data(buffer, size)));
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, new ImageTexture.Data(buffer, size)));
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this.getResourceCache(), name).createImageTexture(textureProperties, stream));
+        return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, stream));
     }
 
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture returnDefault, @NotNull String name, @NotNull ImageTexture.Data[] dataSet, @Nullable CubeMapTexture.Properties textureProperties) {
-        return this.loadCubeMap(returnDefault, name, () -> new CubeMapsLoader(this.getResourceCache(), name).createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet)));
+        return this.loadCubeMap(returnDefault, name, () -> new CubeMapsLoader(this, name).createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet)));
     }
 
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
-        return this.loadCubeMap(returnDefault, pathToCubeMapFile.toString(), () -> new CubeMapsLoader(this.getResourceCache(), pathToCubeMapFile.toString()).createCubeMapTexture(textureProperties, pathToCubeMapFile, textureDescriptor));
+        return this.loadCubeMap(returnDefault, pathToCubeMapFile.toString(), () -> new CubeMapsLoader(this, pathToCubeMapFile.toString()).createCubeMapTexture(textureProperties, pathToCubeMapFile, textureDescriptor));
     }
 
     private <T> T loadModel(@NotNull JGemsPath modelPath, Supplier<T> modelLoader) {
@@ -136,7 +139,8 @@ public final class GameResources implements IGameResources {
 
     public void destroy() {
         this.clearCache();
-        this.getDataMeshArray().clear();
+        this.getBindlessTexturesArray().clear();
+        this.getMeshBuffersArray().clear();
         this.getAssetsLoaderSet().clear();
     }
 
@@ -204,7 +208,11 @@ public final class GameResources implements IGameResources {
         return this.assetsLoaderSet;
     }
 
-    public MeshBuffersArray getDataMeshArray() {
+    public BindlessTexturesArray getBindlessTexturesArray() {
+        return this.bindlessTexturesArray;
+    }
+
+    public MeshBuffersArray getMeshBuffersArray() {
         return this.meshBuffersArray;
     }
 

@@ -12,7 +12,7 @@
 package javagems3d.system.resources.assets.texturing;
 
 import javagems3d.JGems3D;
-import javagems3d.system.resources.assets.texturing.ext.IBindLessTxtExt;
+import javagems3d.system.resources.assets.texturing.ext.IBindlessTexture;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -24,7 +24,7 @@ import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 
-public class ImageTexture extends ImageBasedTexture implements IBindLessTxtExt {
+public class ImageTexture extends ImageBasedTexture implements IBindlessTexture {
     private Vector2i size;
     private int textureId;
     private long bindLessHandler;

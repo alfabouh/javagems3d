@@ -25,7 +25,6 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -162,10 +161,10 @@ public class ModelMeshLoader implements ILoadingHelper {
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
-                material.setId(gameResources.getDataMeshArray().getMaterials().size());
+                material.setId(gameResources.getMeshBuffersArray().getMaterials().size());
                 materialList.add(material);
                 if (loadInIndirectBuffer) {
-                    gameResources.getDataMeshArray().putMaterial(material);
+                    gameResources.getMeshBuffersArray().putMaterial(material);
                 }
             }
 
@@ -196,7 +195,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         }
 
         if (loadInIndirectBuffer) {
-            gameResources.getDataMeshArray().putMeshBuffer(meshStructure);
+            gameResources.getMeshBuffersArray().putMeshBuffer(meshStructure);
         }
 
         return meshStructure;

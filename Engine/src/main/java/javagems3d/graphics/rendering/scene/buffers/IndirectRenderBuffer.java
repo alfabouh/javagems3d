@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.scene.buffers;
 
+import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
@@ -47,7 +48,7 @@ public final class IndirectRenderBuffer {
         if (obj.isEmpty()) {
             return;
         }
-
+        JGemsHelper.getLogger().log("Creating static indirect buffer: " + obj.size());
         this.staticVao = GL46.glGenVertexArrays();
         GL46.glBindVertexArray(this.getStaticVao());
 

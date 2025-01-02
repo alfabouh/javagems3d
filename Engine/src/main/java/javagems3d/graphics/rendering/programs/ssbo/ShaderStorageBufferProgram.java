@@ -6,9 +6,7 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL46;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,28 +25,27 @@ public abstract class ShaderStorageBufferProgram {
         shaderStorageBuffers.put(shaderStorageBufferObject, ssboID);
     }
 
-    public static void fillSSBOWithData(ShaderStorageBufferObject shaderStorageBufferObject, long offset, ByteBuffer buffer) {
+    public static void fillSSBOWithData(ShaderStorageBufferObject shaderStorageBufferObject, long offset, Buffer buffer) {
         int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
-        GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, buffer);
+
+        if (buffer instanceof ByteBuffer) {
+            GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, (ByteBuffer) buffer);
+        } else if (buffer instanceof IntBuffer) {
+            GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, (IntBuffer) buffer);
+        } else if (buffer instanceof FloatBuffer) {
+            GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, (FloatBuffer) buffer);
+        } else if (buffer instanceof LongBuffer) {
+            GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, (LongBuffer) buffer);
+        } else {
+            throw new IllegalArgumentException("Unsupported buffer type: " + buffer.getClass().getName());
+        }
+
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
     }
 
-    public static void fillSSBOWithData(ShaderStorageBufferObject shaderStorageBufferObject, long offset, IntBuffer intBuffer) {
-        int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
-        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
-        GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, intBuffer);
-        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
-    }
 
-    public static void fillSSBOWithData(ShaderStorageBufferObject shaderStorageBufferObject, long offset, FloatBuffer floatBuffer) {
-        int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
-        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
-        GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, floatBuffer);
-        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
-    }
-
-    public static ShaderStorageBufferObject SSBO_TEMPLATE(int id) {
+    public static ShaderStorageBufferObject SSBO(int id) {
         return new ShaderStorageBufferObject(id);
     }
 

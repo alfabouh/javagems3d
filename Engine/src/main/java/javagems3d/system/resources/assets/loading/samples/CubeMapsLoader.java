@@ -7,6 +7,7 @@ import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.manager.GameResources;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
@@ -25,11 +26,11 @@ import java.nio.IntBuffer;
 public class CubeMapsLoader implements ILoadingHelper {
     public static final String DEFAULT_NAME = "unknown";
     private String name;
-    private final ResourceCache resourceCache;
+    private final GameResources gameResources;
 
-    public CubeMapsLoader(@Nullable ResourceCache resourceCache, @Nullable String name) {
+    public CubeMapsLoader(@Nullable GameResources gameResources, @Nullable String name) {
         this.name = name == null ? ILoadingHelper.DEFAULT_NAME : name;
-        this.resourceCache = resourceCache;
+        this.gameResources = gameResources;
     }
 
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
@@ -104,8 +105,12 @@ public class CubeMapsLoader implements ILoadingHelper {
         }
     }
 
+    public GameResources getGameResources() {
+        return this.gameResources;
+    }
+
     public ResourceCache getResourceCache() {
-        return this.resourceCache;
+        return this.getGameResources().getResourceCache();
     }
 
     public String getName() {
