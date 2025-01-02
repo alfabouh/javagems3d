@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.texturing;
 
-import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
+import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.jetbrains.annotations.NotNull;
@@ -8,17 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
-public class CubeMapTexture implements IImageBasedTexture {
+public class CubeMapTexture extends ImageBasedTexture {
     private Vector2i[] size6;
     private int textureId;
 
     public CubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
         this.init(textureProperties, data);
-    }
-
-    @Override
-    public void bindTexture() {
-        GL46.glBindTexture(this.getTextureAttachment(), this.getTextureId());
     }
 
     @Override

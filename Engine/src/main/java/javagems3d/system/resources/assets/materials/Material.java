@@ -2,7 +2,7 @@ package javagems3d.system.resources.assets.materials;
 
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
+import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import org.joml.Vector4f;
 
 @SuppressWarnings("all")
@@ -10,11 +10,11 @@ public class Material {
     private int id;
     private float fullOpacity;
     private ISample diffuse;
-    private IImageBasedTexture opacityMap;
-    private IImageBasedTexture normalsMap;
-    private IImageBasedTexture emissionMap;
-    private IImageBasedTexture specularMap;
-    private IImageBasedTexture metallicMap;
+    private ImageBasedTexture opacityMap;
+    private ImageBasedTexture normalsMap;
+    private ImageBasedTexture emissionMap;
+    private ImageBasedTexture specularMap;
+    private ImageBasedTexture metallicMap;
 
     public Material(ISample diffuse) {
         this();
@@ -80,38 +80,38 @@ public class Material {
         return this;
     }
 
-    public IImageBasedTexture getEmissionMap() {
+    public ImageBasedTexture getEmissionMap() {
         return this.emissionMap;
     }
 
-    public Material setEmissionMap(IImageBasedTexture emissionMap) {
+    public Material setEmissionMap(ImageBasedTexture emissionMap) {
         this.emissionMap = emissionMap;
         return this;
     }
 
-    public IImageBasedTexture getMetallicMap() {
+    public ImageBasedTexture getMetallicMap() {
         return this.metallicMap;
     }
 
-    public Material setMetallicMap(IImageBasedTexture metallicMap) {
+    public Material setMetallicMap(ImageBasedTexture metallicMap) {
         this.metallicMap = metallicMap;
         return this;
     }
 
-    public IImageBasedTexture getNormalsMap() {
+    public ImageBasedTexture getNormalsMap() {
         return this.normalsMap;
     }
 
-    public Material setNormalsMap(IImageBasedTexture normalsMap) {
+    public Material setNormalsMap(ImageBasedTexture normalsMap) {
         this.normalsMap = normalsMap;
         return this;
     }
 
-    public IImageBasedTexture getSpecularMap() {
+    public ImageBasedTexture getSpecularMap() {
         return this.specularMap;
     }
 
-    public Material setSpecularMap(IImageBasedTexture specularMap) {
+    public Material setSpecularMap(ImageBasedTexture specularMap) {
         this.specularMap = specularMap;
         return this;
     }
@@ -129,7 +129,7 @@ public class Material {
         return this.opacityMap;
     }
 
-    public Material setOpacityMap(IImageBasedTexture opacityMap) {
+    public Material setOpacityMap(ImageBasedTexture opacityMap) {
         this.opacityMap = opacityMap;
         return this;
     }

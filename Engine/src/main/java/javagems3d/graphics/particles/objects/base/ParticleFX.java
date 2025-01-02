@@ -22,7 +22,7 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
-import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
+import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 
 public abstract class ParticleFX implements IWorldObject {
@@ -101,7 +101,7 @@ public abstract class ParticleFX implements IWorldObject {
         return this.getParticleTexturePack() != null;
     }
 
-    public IImageBasedTexture getCurrentFrame() {
+    public ImageBasedTexture getCurrentFrame() {
         return this.getParticleTexturePack().getTextureSamples()[this.currentFrame];
     }
 

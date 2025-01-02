@@ -13,22 +13,28 @@ package javagems3d.system.resources.assets.texturing.base;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2i;
 import javagems3d.system.resources.cache.ICached;
 import org.lwjgl.opengl.GL46;
 
-public interface IImageBasedTexture extends ISample, ICached {
-    int getTextureId();
-    int getTextureAttachment();
-    void bindTexture();
-    void init(@Nullable IProperties properties, @NotNull IData data);
-    void reload(@Nullable IProperties properties);
+public abstract class ImageBasedTexture implements ISample, ICached {
+    public ImageBasedTexture() {
+    }
 
-    default void unBindTexture() {
+    public void bindTexture() {
+        GL46.glBindTexture(this.getTextureAttachment(), this.getTextureId());
+    }
+
+    public void unBindTexture() {
         GL46.glBindTexture(this.getTextureAttachment(), 0);
     }
 
-    default boolean isValid() {
+    public abstract int getTextureId();
+    public abstract int getTextureAttachment();
+
+    public boolean isValid() {
         return this.getTextureId() > 0;
     }
+
+    protected abstract void init(@Nullable IProperties properties, @NotNull IData data);
+    public abstract void reload(@Nullable IProperties properties);
 }

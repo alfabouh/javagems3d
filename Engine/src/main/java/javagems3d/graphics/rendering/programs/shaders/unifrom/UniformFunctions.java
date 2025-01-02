@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.programs.shaders.unifrom;
 
 import org.joml.*;
+import org.lwjgl.opengl.ARBBindlessTexture;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 
@@ -45,6 +46,13 @@ public abstract class UniformFunctions {
     public static UniformProgram.UFunction VEC2I(Vector2i value) {
         return e -> {
             GL46.glUniform2f(e, value.x, value.y);
+            return true;
+        };
+    }
+
+    public static UniformProgram.UFunction TEXTURE64ARB(long handler) {
+        return e -> {
+            ARBBindlessTexture.glUniformHandleui64ARB(e, handler);
             return true;
         };
     }

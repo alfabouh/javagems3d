@@ -12,10 +12,11 @@
 package javagems3d.system.resources.assets.texturing;
 
 import javagems3d.JGems3D;
+import javagems3d.system.resources.assets.texturing.ext.IBindLessTxtExt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
-import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
+import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL46;
@@ -23,11 +24,14 @@ import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 
-public class ImageTexture implements IImageBasedTexture {
+public class ImageTexture extends ImageBasedTexture implements IBindLessTxtExt {
     private Vector2i size;
     private int textureId;
+    private long bindLessHandler;
 
     public ImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull Data data) {
+        this.bindLessHandler = 0;
+        this.textureId = 0;
         this.init(textureProperties, data);
     }
 
@@ -65,6 +69,9 @@ public class ImageTexture implements IImageBasedTexture {
         this.unBindTexture();
         data.clear();
         this.setProperties(properties);
+
+        this.bindLessHandler = this.createBindingHandler(this.getTextureId());
+        this.createARB64Handling();
     }
 
     @Override
@@ -82,17 +89,12 @@ public class ImageTexture implements IImageBasedTexture {
         return GL46.GL_TEXTURE_2D;
     }
 
-    @Override
-    public void bindTexture() {
-        GL46.glBindTexture(this.getTextureAttachment(), this.getTextureId());
-    }
-
     public Vector2i getSize() {
         return this.size;
     }
 
     public void clear() {
-        this.unBindTexture();
+        this.removeARB64Handling();
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
     }
@@ -100,6 +102,11 @@ public class ImageTexture implements IImageBasedTexture {
     @Override
     public void onClearingCache(ResourceCache resourceCache) {
         this.clear();
+    }
+
+    @Override
+    public long getBindingHandler() {
+        return this.bindLessHandler;
     }
 
     public static final class Properties implements IProperties {

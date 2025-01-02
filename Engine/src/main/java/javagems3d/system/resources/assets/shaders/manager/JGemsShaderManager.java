@@ -31,7 +31,7 @@ import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.base.IImageBasedTexture;
+import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -103,10 +103,10 @@ public final class JGemsShaderManager extends ShaderManager {
             }
 
             ISample diffuse = material.getDiffuse();
-            IImageBasedTexture emission = material.getEmissionMap();
-            IImageBasedTexture metallic = material.getMetallicMap();
-            IImageBasedTexture normals = material.getNormalsMap();
-            IImageBasedTexture specular = material.getSpecularMap();
+            ImageBasedTexture emission = material.getEmissionMap();
+            ImageBasedTexture metallic = material.getMetallicMap();
+            ImageBasedTexture normals = material.getNormalsMap();
+            ImageBasedTexture specular = material.getSpecularMap();
             CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
 
             int texturing_code = 0;
@@ -117,7 +117,7 @@ public final class JGemsShaderManager extends ShaderManager {
             }
 
             if (diffuse != null) {
-                if (diffuse instanceof IImageBasedTexture) {
+                if (diffuse instanceof ImageBasedTexture) {
                     this.performUniformSampleNoWarn(new UniformString("diffuse_map"), diffuse);
                     texturing_code |= 1 << 2;
                 } else {

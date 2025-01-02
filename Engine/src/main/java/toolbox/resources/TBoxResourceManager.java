@@ -21,7 +21,7 @@ import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
 import toolbox.ToolBox;
 import toolbox.resources.models.ModelResources;
-import toolbox.resources.samples.ImageBasedTexture;
+import toolbox.resources.samples.ImageTexture;
 import toolbox.resources.shaders.ShaderResources;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 import toolbox.resources.utils.SimpleModelLoader;
@@ -56,8 +56,8 @@ public class TBoxResourceManager {
         return shaderManager;
     }
 
-    public ImageBasedTexture createTexture(String fullPath) {
-        return ImageBasedTexture.createTexture(this.getCache(), fullPath);
+    public ImageTexture createTexture(String fullPath) {
+        return ImageTexture.createTexture(this.getCache(), fullPath);
     }
 
     public MeshGroup createModel(JGemsPath modelPath) {

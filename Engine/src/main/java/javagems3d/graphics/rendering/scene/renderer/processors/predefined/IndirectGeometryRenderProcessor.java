@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
 
+import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.SceneObject;
@@ -64,6 +65,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     private void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBuffer renderBuffer, Set<SceneObject> sceneObjects) {
         shaderManager.beginShading();
+        shaderManager.performUniform(new UniformString("textures"), UniformFunctions.TEXTURE64ARB(JGemsResourceManager.globalTextureAssets.waterTexture.getBindingHandler()));
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getPerspectiveMatrix()));
         shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getMainCameraViewMatrix()));
         GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
