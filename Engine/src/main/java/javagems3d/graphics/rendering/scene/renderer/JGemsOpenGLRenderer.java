@@ -236,7 +236,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     public void loadBindlessHandlersInSSBO(BindlessTexturesArray bindlessTexturesArray, ShaderStorageBufferObject shaderStorageBufferObject) {
         LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
         for (IBindlessTexture l : bindlessTexturesArray.getBindlessTexturesIdMap().keySet()) {
-            longBuffer.put(JGemsResourceManager.globalTextureAssets.waterTexture.getBindingHandler());
+            longBuffer.put(l.getBindingHandler());
         }
         longBuffer.flip();
         ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, longBuffer);
@@ -258,13 +258,16 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
                 byteBuffer.putFloat(rgbaColor.getColor().z);
                 byteBuffer.putFloat(rgbaColor.getColor().w);
             } else {
-                byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(1.0f);
+                byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
             }
-           //byteBuffer.putInt(diffuse instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) diffuse) : 0);
-           //byteBuffer.putInt(normals instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) normals) : 0);
-           //byteBuffer.putInt(emission instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) emission) : 0);
-           //byteBuffer.putInt(specular instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) specular) : 0);
-           //byteBuffer.putInt(metallic instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) metallic) : 0);
+            byteBuffer.putInt(diffuse instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) diffuse) : 0);
+            byteBuffer.putInt(normals instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) normals) : 0);
+            byteBuffer.putInt(emission instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) emission) : 0);
+            byteBuffer.putInt(specular instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) specular) : 0);
+            byteBuffer.putInt(metallic instanceof IBindlessTexture ? bindlessTexturesArray.getTextureId((IBindlessTexture) metallic) : 0);
+            byteBuffer.putInt(0);
+            byteBuffer.putInt(0);
+            byteBuffer.putInt(0);
         }
         byteBuffer.flip();
         ShaderStorageBufferProgram.fillSSBOWithData(JGemsResourceManager.globalShaderAssets.MaterialsData, 0L, byteBuffer);

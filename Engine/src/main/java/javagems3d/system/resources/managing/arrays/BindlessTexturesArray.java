@@ -32,7 +32,7 @@ public final class BindlessTexturesArray {
         this.getBindlessTexturesIdMap().put(bindlessTexture, this.totalTextures());
     }
 
-    public final Map<IBindlessTexture, Integer> getBindlessTexturesIdMap() {
+    public Map<IBindlessTexture, Integer> getBindlessTexturesIdMap() {
         return this.bindlessTexturesIdMap;
     }
 }

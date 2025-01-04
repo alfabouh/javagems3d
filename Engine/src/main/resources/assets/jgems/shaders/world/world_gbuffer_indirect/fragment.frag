@@ -23,6 +23,11 @@ struct Properties {
 
 struct Material {
     vec4 diffuse_color;
+    int diffuse_map_id;
+    int normals_map_id;
+    int emissive_map_id;
+    int specular_map_id;
+    int metallic_map_id;
 };
 
 layout(std430, binding = 2) buffer BindlessTextures {
@@ -49,7 +54,11 @@ void main()
     vec3 normals = mv_vertex_normal;
     gNormal = vec4(normals, 1.0);
     gPosition = vec4(mv_vertex_pos, 1.0);
-    gColor = vec4(mat.diffuse_color.rgb, 1.0);
+    if (mat.diffuse_color.a > 0) {
+        gColor = vec4(mat.diffuse_color.rgb, 1.0);
+    } else {
+        gColor = texture2D(textures[mat.diffuse_map_id], texture_coordinates);
+    }
     gEmission = vec4(vec3(0.0), 1.0);
     gSpecular = vec4(vec3(0.0), 1.0);
 }

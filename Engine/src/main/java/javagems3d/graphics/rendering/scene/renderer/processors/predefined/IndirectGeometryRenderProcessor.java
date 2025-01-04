@@ -53,7 +53,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-       // ((JGemsOpenGLRenderer) JGemsHelper.getScreen().getScene().getSceneRenderer()).loadMeshMaterialsIsSSBO(JGems3D.get().getResourceManager().getResourceArrays().getBindlessTexturesArray(), JGems3D.get().getResourceManager().getResourceArrays().getMeshBuffersDataArray());
+       ((JGemsOpenGLRenderer) JGemsHelper.getScreen().getScene().getSceneRenderer()).loadMeshMaterialsIsSSBO(JGems3D.get().getResourceManager().getResourceArrays().getBindlessTexturesArray(), JGems3D.get().getResourceManager().getResourceArrays().getMeshBuffersDataArray());
         IndirectRenderBuffer renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
         Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects());
 
