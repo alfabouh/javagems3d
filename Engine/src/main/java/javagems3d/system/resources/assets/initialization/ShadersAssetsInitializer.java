@@ -32,6 +32,7 @@ public final class ShadersAssetsInitializer extends ShadersInitializer<JGemsShad
     public ShaderStorageBufferObject IndirectBufferData;
     public ShaderStorageBufferObject BindlessTextures;
     public ShaderStorageBufferObject MaterialsData;
+    public ShaderStorageBufferObject PropertiesData;
 
     public UniformBufferObject SunLight;
     public UniformBufferObject PointLights;
@@ -77,14 +78,17 @@ public final class ShadersAssetsInitializer extends ShadersInitializer<JGemsShad
         this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * ModelLoadingUtils.ANIM_MAX_BONES);
         ShaderStorageBufferProgram.createSSBO(this.Bones);
 
-        this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        this.IndirectBufferData = new ShaderStorageBufferObject(1, 2 * (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
         ShaderStorageBufferProgram.createSSBO(this.IndirectBufferData);
 
-        this.BindlessTextures = new ShaderStorageBufferObject(2, 8 * Float.BYTES * JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
+        this.BindlessTextures = new ShaderStorageBufferObject(2, Long.BYTES * JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
         ShaderStorageBufferProgram.createSSBO(this.BindlessTextures);
 
-        this.MaterialsData = new ShaderStorageBufferObject(3, Float.BYTES * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
+        this.MaterialsData = new ShaderStorageBufferObject(3, Integer.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
         ShaderStorageBufferProgram.createSSBO(this.MaterialsData);
+
+        this.PropertiesData = new ShaderStorageBufferObject(4, Integer.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS);
+        ShaderStorageBufferProgram.createSSBO(this.PropertiesData);
 
         this.SunLight = this.createUBO("SunLight", 0, LightManager.SN_STRUCT_SIZE * Float.BYTES);
         this.PointLights = this.createUBO("PointLights", 1, ((LightManager.PL_STRUCT_SIZE * Float.BYTES) * JGemsGlobalConfiguration.MAX_POINT_LIGHTS) + Integer.BYTES);

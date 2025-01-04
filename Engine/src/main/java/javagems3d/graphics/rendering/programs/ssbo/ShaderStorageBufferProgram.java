@@ -44,11 +44,6 @@ public abstract class ShaderStorageBufferProgram {
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
     }
 
-
-    public static ShaderStorageBufferObject SSBO(int id) {
-        return new ShaderStorageBufferObject(id);
-    }
-
     public static int getSSBO_ID(ShaderStorageBufferObject shaderStorageBufferObject) {
         return shaderStorageBuffers.get(shaderStorageBufferObject);
     }

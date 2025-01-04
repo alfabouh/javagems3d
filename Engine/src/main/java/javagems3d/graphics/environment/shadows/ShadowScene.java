@@ -38,7 +38,7 @@ import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 import java.lang.Math;
 import java.util.ArrayList;

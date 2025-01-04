@@ -18,8 +18,8 @@ import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
-import javagems3d.system.resources.manager.GameResources;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 

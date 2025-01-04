@@ -11,7 +11,7 @@
 
 package jgems_api.test;
 
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 import api.app.main.JGemsTBoxApplication;
 import api.app.main.JGemsTBoxEntry;

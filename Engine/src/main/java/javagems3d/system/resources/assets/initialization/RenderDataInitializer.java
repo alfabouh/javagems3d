@@ -26,8 +26,8 @@ import javagems3d.graphics.objects.entities.WorldEntity;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
-import javagems3d.system.resources.manager.GameResources;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class RenderDataInitializer implements IAssetsInitializer {
     public EntityRenderData entityCube;

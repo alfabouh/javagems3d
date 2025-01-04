@@ -24,7 +24,7 @@ import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNotFoundException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;

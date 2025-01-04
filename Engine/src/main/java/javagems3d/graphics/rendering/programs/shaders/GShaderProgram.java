@@ -13,7 +13,7 @@ package javagems3d.graphics.rendering.programs.shaders;
 
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.base.Shader;
+import javagems3d.system.resources.assets.shaders.base.ShaderObject;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 public class GShaderProgram implements IShaderProgram {
@@ -31,22 +31,22 @@ public class GShaderProgram implements IShaderProgram {
         }
     }
 
-    public boolean createShader(Shader fragShader, Shader vertShader, Shader geomShader, Shader tessControlShader, Shader tessEvaluationShader) {
+    public boolean createShader(ShaderObject fragShaderObject, ShaderObject vertShaderObject, ShaderObject geomShaderObject, ShaderObject tessControlShaderObject, ShaderObject tessEvaluationShaderObject) {
         boolean flag = false;
-        if (fragShader != null) {
-            this.createFragmentShader(fragShader.getShaderText());
+        if (fragShaderObject != null) {
+            this.createFragmentShader(fragShaderObject.getShaderText());
             flag = true;
         }
-        if (vertShader != null) {
-            this.createVertexShader(vertShader.getShaderText());
+        if (vertShaderObject != null) {
+            this.createVertexShader(vertShaderObject.getShaderText());
             flag = true;
         }
-        if (geomShader != null) {
-            this.createGeometricShader(geomShader.getShaderText());
+        if (geomShaderObject != null) {
+            this.createGeometricShader(geomShaderObject.getShaderText());
             flag = true;
         }
-        if (tessControlShader != null && tessEvaluationShader != null) {
-            this.createTessellationShaders(tessControlShader.getShaderText(), tessEvaluationShader.getShaderText());
+        if (tessControlShaderObject != null && tessEvaluationShaderObject != null) {
+            this.createTessellationShaders(tessControlShaderObject.getShaderText(), tessEvaluationShaderObject.getShaderText());
             flag = true;
         }
         return flag;

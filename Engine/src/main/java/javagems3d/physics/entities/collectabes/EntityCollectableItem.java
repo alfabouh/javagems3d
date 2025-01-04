@@ -24,7 +24,7 @@ import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
 import javagems3d.system.inventory.IInventoryOwner;
 import javagems3d.system.inventory.items.InventoryItem;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class EntityCollectableItem extends WorldItem {
     private final SimpleTriggerZone pickUpItemTriggerZone;

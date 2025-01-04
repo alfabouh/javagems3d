@@ -18,7 +18,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;

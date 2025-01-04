@@ -13,7 +13,7 @@ package javagems3d.graphics.particles.attributes;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 @SuppressWarnings("all")
 public class ParticleAttributes {

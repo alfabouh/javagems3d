@@ -20,7 +20,7 @@ import org.lwjgl.system.MemoryStack;
 import api.bridge.events.APIEventsLauncher;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
 import api.app.events.bus.Events;

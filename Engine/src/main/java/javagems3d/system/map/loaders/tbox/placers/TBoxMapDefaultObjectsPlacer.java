@@ -40,7 +40,7 @@ import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 import api.app.main.tbox.containers.TUserData;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributesContainer;

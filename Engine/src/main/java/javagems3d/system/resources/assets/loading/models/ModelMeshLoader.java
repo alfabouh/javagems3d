@@ -19,8 +19,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.manager.GameResources;
-import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
+import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
@@ -156,16 +155,18 @@ public class ModelMeshLoader implements ILoadingHelper {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIScene aiScene = this.loadAIScene(stack, this.getPath(), isAnimated);
             int totalMaterials = aiScene.mNumMaterials();
-            List<Material> materialList = new ArrayList<>();
 
+            List<Material> materialList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
-                material.setId(gameResources.getMeshBuffersArray().getMaterials().size());
-                materialList.add(material);
                 if (loadInIndirectBuffer) {
-                    gameResources.getMeshBuffersArray().putMaterial(material);
+                    material.setId(gameResources.getResourceArrays().getMeshBuffersDataArray().getTotalMaterials());
+                    gameResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
+                } else {
+                    material.setId(materialList.size());
                 }
+                materialList.add(material);
             }
 
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building MeshBuffer...");
@@ -177,14 +178,12 @@ public class ModelMeshLoader implements ILoadingHelper {
                 if (isAnimated) {
                     skeletonData = this.readSkeleton(meshStructure, aiScene, aiMesh);
                 }
-                DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
-
                 int matIdx = aiMesh.mMaterialIndex();
-                int matId = MeshBuffersDrawCache.MAT_START_IDX;
+                int matId = 0;
                 if (matIdx >= 0 && matIdx < materialList.size()) {
                     matId = materialList.get(matIdx).getId();
                 }
-
+                DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
                 meshStructure.putMeshNode(new MeshBuffer.MeshBufferNode(meshData, matId));
             }
             Assimp.aiReleaseImport(aiScene);
@@ -195,7 +194,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         }
 
         if (loadInIndirectBuffer) {
-            gameResources.getMeshBuffersArray().putMeshBuffer(meshStructure);
+            gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshStructure);
         }
 
         return meshStructure;

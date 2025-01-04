@@ -6,7 +6,7 @@ import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +49,7 @@ public class TexturesLoader implements ILoadingHelper {
             } else {
                 this.getResourceCache().addObjectInBuffer(name, imageTexture);
             }
-            this.getGameResources().getBindlessTexturesArray().add(imageTexture);
+            this.getGameResources().getResourceArrays().getBindlessTexturesArray().add(imageTexture);
         }
         return imageTexture;
     }
@@ -87,7 +87,7 @@ public class TexturesLoader implements ILoadingHelper {
     }
 
     public ResourceCache getResourceCache() {
-        return this.getGameResources().getResourceCache();
+        return this.getGameResources() == null ? null : this.getGameResources().getResourceCache();
     }
 
     public String getName() {

@@ -37,7 +37,7 @@ import javagems3d.graphics.transformation.Transformation;
 import javagems3d.physics.world.thread.timer.PhysicsProcessor;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.JGemsCore;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;

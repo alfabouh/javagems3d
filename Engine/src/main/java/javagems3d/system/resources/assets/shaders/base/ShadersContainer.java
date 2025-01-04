@@ -24,13 +24,13 @@ public final class ShadersContainer {
     private final Set<Uniform> gUniformsFullSet;
     private final Set<Uniform> cUniformsFullSet;
 
-    private final Shader vertexShader;
-    private final Shader fragmentShader;
-    private final Shader geometricShader;
-    private final Shader tesselationControlShader;
-    private final Shader tesselationEvaluationShader;
+    private final ShaderObject vertexShaderObject;
+    private final ShaderObject fragmentShaderObject;
+    private final ShaderObject geometricShaderObject;
+    private final ShaderObject tesselationControlShaderObject;
+    private final ShaderObject tesselationEvaluationShaderObject;
 
-    private final Shader computeShader;
+    private final ShaderObject computeShaderObject;
     private final String id;
 
     public ShadersContainer(JGemsPath shaderPath) {
@@ -41,40 +41,40 @@ public final class ShadersContainer {
         this.id = shaderPath.getFullPath();
         this.gUniformsFullSet = new HashSet<>();
         this.cUniformsFullSet = new HashSet<>();
-        Shader geometricShader1 = null;
-        Shader vertexShader1 = null;
-        Shader fragmentShader1 = null;
-        Shader computeShader1 = null;
-        Shader tesselationControlShader1 = null;
-        Shader tesselationEvaluationShader1 = null;
+        ShaderObject geometricShaderObject1 = null;
+        ShaderObject vertexShaderObject1 = null;
+        ShaderObject fragmentShaderObject1 = null;
+        ShaderObject computeShaderObject1 = null;
+        ShaderObject tesselationControlShaderObject1 = null;
+        ShaderObject tesselationEvaluationShaderObject1 = null;
 
-        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
-            fragmentShader1 = new Shader(shaderLibrary, ShaderType.FRAGMENT, shaderPath);
+        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
+            fragmentShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.FRAGMENT, shaderPath);
         }
-        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.VERTEX)) {
-            vertexShader1 = new Shader(shaderLibrary, ShaderType.VERTEX, shaderPath);
+        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.VERTEX)) {
+            vertexShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.VERTEX, shaderPath);
         }
-        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
-            geometricShader1 = new Shader(shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
+        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
+            geometricShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
         }
-        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_CONTROL)) {
-            tesselationControlShader1 = new Shader(shaderLibrary, ShaderType.TESS_CONTROL, shaderPath);
+        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_CONTROL)) {
+            tesselationControlShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.TESS_CONTROL, shaderPath);
         }
-        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_EVALUATION)) {
-            tesselationEvaluationShader1 = new Shader(shaderLibrary, ShaderType.TESS_EVALUATION, shaderPath);
-        }
-
-        if (Shader.checkIfShaderExistsInJar(shaderPath, ShaderType.COMPUTE)) {
-            computeShader1 = new Shader(shaderLibrary, ShaderType.COMPUTE, shaderPath);
+        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_EVALUATION)) {
+            tesselationEvaluationShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.TESS_EVALUATION, shaderPath);
         }
 
-        this.vertexShader = vertexShader1;
-        this.tesselationControlShader = tesselationControlShader1;
-        this.tesselationEvaluationShader = tesselationEvaluationShader1;
-        this.fragmentShader = fragmentShader1;
-        this.geometricShader = geometricShader1;
+        if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.COMPUTE)) {
+            computeShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.COMPUTE, shaderPath);
+        }
 
-        this.computeShader = computeShader1;
+        this.vertexShaderObject = vertexShaderObject1;
+        this.tesselationControlShaderObject = tesselationControlShaderObject1;
+        this.tesselationEvaluationShaderObject = tesselationEvaluationShaderObject1;
+        this.fragmentShaderObject = fragmentShaderObject1;
+        this.geometricShaderObject = geometricShaderObject1;
+
+        this.computeShaderObject = computeShaderObject1;
     }
 
     public void initAll() {
@@ -153,27 +153,27 @@ public final class ShadersContainer {
         return this.id;
     }
 
-    public Shader getTesselationEvaluationShader() {
-        return this.tesselationEvaluationShader;
+    public ShaderObject getTesselationEvaluationShader() {
+        return this.tesselationEvaluationShaderObject;
     }
 
-    public Shader getTesselationControlShader() {
-        return this.tesselationControlShader;
+    public ShaderObject getTesselationControlShader() {
+        return this.tesselationControlShaderObject;
     }
 
-    public Shader getComputeShader() {
-        return this.computeShader;
+    public ShaderObject getComputeShader() {
+        return this.computeShaderObject;
     }
 
-    public Shader getFragmentShader() {
-        return this.fragmentShader;
+    public ShaderObject getFragmentShader() {
+        return this.fragmentShaderObject;
     }
 
-    public Shader getGeometricShader() {
-        return this.geometricShader;
+    public ShaderObject getGeometricShader() {
+        return this.geometricShaderObject;
     }
 
-    public Shader getVertexShader() {
-        return this.vertexShader;
+    public ShaderObject getVertexShader() {
+        return this.vertexShaderObject;
     }
 }

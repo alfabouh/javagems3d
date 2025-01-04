@@ -26,7 +26,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import api.app.configuration.AppConfiguration;
 import api.app.manager.AppManager;

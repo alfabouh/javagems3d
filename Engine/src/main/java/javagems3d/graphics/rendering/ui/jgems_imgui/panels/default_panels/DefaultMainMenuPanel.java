@@ -31,7 +31,7 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class DefaultMainMenuPanel extends AbstractPanelUI {
     private final FBOTexture2DProgram postFbo;

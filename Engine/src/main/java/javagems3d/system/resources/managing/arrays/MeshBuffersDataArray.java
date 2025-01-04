@@ -1,18 +1,15 @@
-package javagems3d.system.resources.manager.mesh;
+package javagems3d.system.resources.managing.arrays;
 
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public final class MeshBuffersArray {
+public final class MeshBuffersDataArray {
     private final List<Material> materials;
     private final Set<MeshBuffer> meshBuffers;
 
-    public MeshBuffersArray() {
+    public MeshBuffersDataArray() {
         this.materials = new ArrayList<>();
         this.meshBuffers = new HashSet<>();
     }
@@ -22,12 +19,20 @@ public final class MeshBuffersArray {
         this.getMaterials().clear();
     }
     
-    public void putMeshBuffer(MeshBuffer meshBuffer) {
+    public void addMeshBuffer(MeshBuffer meshBuffer) {
         this.getMeshBuffers().add(meshBuffer);
     }
 
-    public void putMaterial(Material material) {
+    public void addMaterial(Material material) {
         this.getMaterials().add(material);
+    }
+
+    public int getTotalMaterials() {
+        return this.getMaterials().size();
+    }
+
+    public int getTotalMeshBuffers() {
+        return this.getMeshBuffers().size();
     }
 
     public Set<MeshBuffer> getMeshBuffers() {

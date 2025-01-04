@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Shader {
+public class ShaderObject {
     public static final String VERSION = "#version 460 core\n\n";
     private final Map<String, Set<String>> structs;
     private final List<Uniform> uniforms;
@@ -35,7 +35,7 @@ public class Shader {
     private final ShaderLibrariesManager shaderLibrariesManager;
     private String shaderText;
 
-    public Shader(ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
+    public ShaderObject(ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
         this.shaderType = shaderType;
         this.pathToShader = pathToShader;
         this.uniforms = new ArrayList<>();
@@ -181,7 +181,7 @@ public class Shader {
     }
 
     private String fillShader(String shaderStream) {
-        String shader = Shader.VERSION + shaderStream;
+        String shader = ShaderObject.VERSION + shaderStream;
         return this.processIncludes(shader);
     }
 

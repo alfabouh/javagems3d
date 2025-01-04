@@ -7,7 +7,7 @@ import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
@@ -110,7 +110,7 @@ public class CubeMapsLoader implements ILoadingHelper {
     }
 
     public ResourceCache getResourceCache() {
-        return this.getGameResources().getResourceCache();
+        return this.getGameResources() == null ? null : this.getGameResources().getResourceCache();
     }
 
     public String getName() {

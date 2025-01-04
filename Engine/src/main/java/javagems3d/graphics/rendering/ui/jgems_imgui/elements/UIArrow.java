@@ -17,7 +17,7 @@ import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.settings.objects.SettingSlot;
 
 public class UIArrow extends UIInteractiveElement {

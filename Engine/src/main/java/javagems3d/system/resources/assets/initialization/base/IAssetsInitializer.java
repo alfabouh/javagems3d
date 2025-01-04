@@ -11,7 +11,7 @@
 
 package javagems3d.system.resources.assets.initialization.base;
 
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 
 public interface IAssetsInitializer {
     void load(GameResources gameResources);

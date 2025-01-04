@@ -15,7 +15,7 @@ import org.lwjgl.openal.AL10;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.SoundBuffer;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 
 public class SoundAssetsInitializer implements IAssetsInitializer {

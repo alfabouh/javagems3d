@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.map.MapInfo;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 
 public interface IMapLoader {
     void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld);

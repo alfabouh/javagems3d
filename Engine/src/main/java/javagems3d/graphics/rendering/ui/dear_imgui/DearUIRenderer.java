@@ -17,7 +17,7 @@ import imgui.type.ImInt;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -31,7 +31,7 @@ import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import api.app.events.bus.Events;
 
 import java.nio.ByteBuffer;

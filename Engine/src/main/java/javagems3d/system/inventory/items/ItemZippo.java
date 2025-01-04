@@ -19,7 +19,7 @@ import javagems3d.graphics.environment.lighting.PointLight;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.inventory.IInventoryOwner;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class ItemZippo extends InventoryItem {
     private int openCd;

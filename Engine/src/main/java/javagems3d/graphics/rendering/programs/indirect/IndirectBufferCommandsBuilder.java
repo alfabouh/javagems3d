@@ -29,7 +29,7 @@ public class IndirectBufferCommandsBuilder {
         GL46.glDeleteBuffers(this.getRenderBufferHandle());
     }
 
-    public void buildCommands(IntBuffer intBuffer, Set<SceneObject> sceneObjects) {
+    public void buildCommands(IntBuffer indexes, IntBuffer materialIds, Set<SceneObject> sceneObjects) {
         final int COM_SIZE = 5 * Float.BYTES;
 
         Map<SceneObject, Integer> idMap = new HashMap<>();
@@ -64,12 +64,14 @@ public class IndirectBufferCommandsBuilder {
                 baseInstance += entitiesCount;
 
                 for (SceneObject modeled : meshBuffer.getValue()) {
-                    intBuffer.put(idMap.get(modeled));
+                    materialIds.put(data.getMaterialId());
+                    indexes.put(idMap.get(modeled));
                 }
             }
         }
         commandBuffer.flip();
-        intBuffer.flip();
+        indexes.flip();
+        materialIds.flip();
 
         this.staticDrawCount = commandBuffer.remaining() / COM_SIZE;
 

@@ -6,7 +6,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
-import javagems3d.system.resources.manager.mesh.MeshBuffersDrawCache;
+import javagems3d.system.resources.managing.arrays.MeshBuffersDataArray;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -34,8 +34,8 @@ public final class IndirectRenderBuffer {
         this.layout = layout;
     }
 
-    public void init(MeshBuffersDrawCache meshBuffersDrawCache) {
-        Map<Boolean, List<MeshBuffer>> partitionedModels = meshBuffersDrawCache.getMeshBuffers().stream().collect(Collectors.partitioningBy(MeshStructure::isAnimationsNotEmpty));
+    public void init(MeshBuffersDataArray meshBuffersDataArray) {
+        Map<Boolean, List<MeshBuffer>> partitionedModels = meshBuffersDataArray.getMeshBuffers().stream().collect(Collectors.partitioningBy(MeshStructure::isAnimationsNotEmpty));
 
         this.allStaticMeshBuffers = partitionedModels.get(false);
         this.allAnimatedMeshBuffers = partitionedModels.get(true);

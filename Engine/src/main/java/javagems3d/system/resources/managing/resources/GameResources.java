@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.resources.manager;
+package javagems3d.system.resources.managing.resources;
 
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
@@ -18,8 +18,8 @@ import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
-import javagems3d.system.resources.manager.mesh.MeshBuffersArray;
-import javagems3d.system.resources.manager.texturing.BindlessTexturesArray;
+import javagems3d.system.resources.managing.arrays.MeshBuffersDataArray;
+import javagems3d.system.resources.managing.arrays.BindlessTexturesArray;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
@@ -45,13 +45,11 @@ import java.util.stream.Collectors;
 public final class GameResources implements IGameResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsInitializer> assetsLoaderSet;
-    private final MeshBuffersArray meshBuffersArray;
-    private final BindlessTexturesArray bindlessTexturesArray;
+    private final ResourceArrays resourceArrays;
 
-    public GameResources(@NotNull ResourceCache resourceCache) {
-        this.meshBuffersArray = new MeshBuffersArray();
-        this.bindlessTexturesArray = new BindlessTexturesArray();
+    public GameResources(@NotNull ResourceCache resourceCache, @NotNull ResourceArrays resourceArrays) {
         this.resourceCache = resourceCache;
+        this.resourceArrays = resourceArrays;
         this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsInitializer) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
     }
 
@@ -139,8 +137,6 @@ public final class GameResources implements IGameResources {
 
     public void destroy() {
         this.clearCache();
-        this.getBindlessTexturesArray().clear();
-        this.getMeshBuffersArray().clear();
         this.getAssetsLoaderSet().clear();
     }
 
@@ -208,15 +204,12 @@ public final class GameResources implements IGameResources {
         return this.assetsLoaderSet;
     }
 
-    public BindlessTexturesArray getBindlessTexturesArray() {
-        return this.bindlessTexturesArray;
-    }
-
-    public MeshBuffersArray getMeshBuffersArray() {
-        return this.meshBuffersArray;
-    }
-
     public ResourceCache getResourceCache() {
         return this.resourceCache;
+    }
+
+    @Override
+    public ResourceArrays getResourceArrays() {
+        return this.resourceArrays;
     }
 }

@@ -15,7 +15,7 @@ import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 
 public final class ParticleTexturesPack {

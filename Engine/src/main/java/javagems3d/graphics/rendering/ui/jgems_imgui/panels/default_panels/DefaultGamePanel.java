@@ -18,7 +18,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class DefaultGamePanel extends AbstractPanelUI {
     public DefaultGamePanel(PanelUI prevPanel) {

@@ -14,41 +14,43 @@ out mat3 TBN;
 out mat4 view;
 out mat4 model;
 
-out flat uint ent_id;
+out flat uint matertial_id;
 
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
 layout(std430, binding = 1) buffer IndirectBufferData {
     mat4 modelMatrices[1024];
-    int entityId[1024];
+    int entityIds[1024];
+    int materialIds[1024];
 };
 
 void main()
 {
-    vec4 startPos = vec4(aPosition, 1.0);
-    vec4 startNormal = vec4(aNormal, 0.0);
-    vec4 startTangent = vec4(aTangent, 0.0);
-    vec4 startBiTangent = vec4(aBitangent, 0.0);
-    uint idx = gl_BaseInstance + gl_InstanceID;
-    ent_id = entityId[idx];
+    vec4 position = vec4(aPosition, 1.0);
+    vec4 normal = vec4(aNormal, 0.0);
+    vec4 tangent = vec4(aTangent, 0.0);
+    vec4 bitanget = vec4(aBitangent, 0.0);
 
-    view = view_matrix;
+    uint idx = gl_BaseInstance + gl_InstanceID;
+    matertial_id = materialIds[idx];
+    int ent_id = entityIds[idx];
     model = modelMatrices[ent_id];
 
+    view = view_matrix;
     mat4 model_view_matrix = view_matrix * model;
-    vec4 mv_pos = model_view_matrix * startPos;
+    vec4 mv_pos = model_view_matrix * position;
     gl_Position = projection_matrix * mv_pos;
 
-    vec3 T = normalize(vec3(model_view_matrix * startTangent));
-    vec3 B = normalize(vec3(model_view_matrix * startBiTangent));
-    vec3 N = normalize(vec3(model_view_matrix * startNormal));
+    vec3 T = normalize(vec3(model_view_matrix * tangent));
+    vec3 B = normalize(vec3(model_view_matrix * bitanget));
+    vec3 N = normalize(vec3(model_view_matrix * normal));
     TBN = mat3(T, B, N);
 
     texture_coordinates = aTexture;
-    mv_vertex_normal = normalize(model_view_matrix * startNormal).xyz;
-    m_vertex_normal = normalize(model * startNormal).xyz;
+    mv_vertex_normal = normalize(model_view_matrix * normal).xyz;
+    m_vertex_normal = normalize(model * normal).xyz;
     mv_vertex_pos = mv_pos.xyz;
 
-    out_model_position = model * startPos;
+    out_model_position = model * position;
 }

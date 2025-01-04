@@ -13,7 +13,7 @@ package javagems3d.graphics.rendering.programs.shaders;
 
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.base.Shader;
+import javagems3d.system.resources.assets.shaders.base.ShaderObject;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 public class CShaderProgram implements IShaderProgram {
@@ -27,11 +27,11 @@ public class CShaderProgram implements IShaderProgram {
         }
     }
 
-    public boolean createShader(Shader compShader) {
-        if (compShader == null) {
+    public boolean createShader(ShaderObject compShaderObject) {
+        if (compShaderObject == null) {
             return false;
         }
-        this.createComputeShader(compShader.getShaderText());
+        this.createComputeShader(compShaderObject.getShaderText());
         return true;
     }
 

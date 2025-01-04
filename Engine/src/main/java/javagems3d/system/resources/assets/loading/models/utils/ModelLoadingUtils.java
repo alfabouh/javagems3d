@@ -6,7 +6,7 @@ import javagems3d.system.resources.assets.initialization.TextureAssetsInitialize
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
-import javagems3d.system.resources.manager.GameResources;
+import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
@@ -183,7 +183,7 @@ public abstract class ModelLoadingUtils {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4Dd = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
-                material.setDiffuse(new RGBAColor(new Vector4f(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a())));
+                material.setDiffuse(new RGBAColor(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a()));
             }
 
             PointerBuffer properties = aiMaterial.mProperties();

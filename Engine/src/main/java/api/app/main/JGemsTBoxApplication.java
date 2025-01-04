@@ -13,7 +13,7 @@ package api.app.main;
 
 import api.app.main.tbox.ITBoxEntitiesObjectData;
 import api.app.main.tbox.TBoxEntitiesUserData;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import toolbox.resources.TBoxResourceManager;
 
 /**

@@ -33,8 +33,8 @@ import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.player.LocalPlayer;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.manager.GameResources;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.stat.PerformanceStat;
 import api.app.events.bus.Events;
@@ -236,7 +236,7 @@ public class JGemsCore implements ICore {
         this.endWorlds();
         this.getScreen().getScene().getSceneRenderer().onMapDestroyed(this.getMapLoader(), this.getResourceManager());
         this.getResourceManager().getLocalResources().destroy();
-        this.getResourceManager().getMeshBuffersDrawCache().clear();
+        this.getResourceManager().getResourceArrays().clearAll();
         this.localPlayer = null;
         System.gc();
     }

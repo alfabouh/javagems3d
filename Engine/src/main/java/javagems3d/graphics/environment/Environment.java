@@ -21,7 +21,7 @@ import javagems3d.graphics.environment.shadows.ShadowScene;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 
 import java.nio.FloatBuffer;
 

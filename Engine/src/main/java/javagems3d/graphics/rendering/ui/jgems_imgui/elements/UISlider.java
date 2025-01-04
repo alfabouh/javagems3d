@@ -18,7 +18,7 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIScalable;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
-import javagems3d.system.resources.manager.JGemsResourceManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.settings.objects.SettingFloatBar;
 
 public class UISlider extends UIInteractiveElement implements UIScalable {
