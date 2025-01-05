@@ -42,7 +42,7 @@ public class SoundAssetsInitializer implements IAssetsInitializer {
 
     @Override
     public LaunchMode loadMode() {
-        return LaunchMode.PARALLEL;
+        return LaunchMode.ASYNC;
     }
 
     @Override

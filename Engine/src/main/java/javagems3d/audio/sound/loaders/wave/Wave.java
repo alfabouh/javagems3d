@@ -13,7 +13,7 @@ package javagems3d.audio.sound.loaders.wave;
 
 import org.lwjgl.openal.AL10;
 import javagems3d.JGemsHelper;
-import javagems3d.audio.sound.loaders.ISoundLoader;
+import javagems3d.audio.sound.loaders.ISoundCodec;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
-public class Wave implements ISoundLoader {
+public class Wave implements ISoundCodec {
     public final ByteBuffer data;
     public final int format;
     public final int samplerate;
@@ -48,7 +48,7 @@ public class Wave implements ISoundLoader {
         this.samplerate = (int) audioFormat.getSampleRate();
     }
 
-    public static ISoundLoader create(InputStream is) {
+    public static ISoundCodec create(InputStream is) {
         try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(is)) {
             return new Wave(inputStream);
         } catch (Exception e) {

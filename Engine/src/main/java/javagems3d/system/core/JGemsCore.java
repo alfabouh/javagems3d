@@ -188,6 +188,7 @@ public class JGemsCore implements ICore {
 
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
         APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
+        this.getResourceManager().writeResourcesDataCache();
         this.getScreen().getScene().getSceneRenderer().onMapLoaded(this.getMapLoader(), this.getResourceManager());
 
         JGemsHelper.WINDOW.setWindowFocus(true);
@@ -235,8 +236,8 @@ public class JGemsCore implements ICore {
         this.getSoundManager().stopAllSounds();
         this.endWorlds();
         this.getScreen().getScene().getSceneRenderer().onMapDestroyed(this.getMapLoader(), this.getResourceManager());
+        this.getResourceManager().destroyResourcesDataCache();
         this.getResourceManager().getLocalResources().destroy();
-        this.getResourceManager().getResourceArrays().clearAll();
         this.localPlayer = null;
         System.gc();
     }

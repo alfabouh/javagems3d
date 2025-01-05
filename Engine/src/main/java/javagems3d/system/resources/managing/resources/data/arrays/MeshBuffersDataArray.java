@@ -1,11 +1,11 @@
-package javagems3d.system.resources.managing.arrays;
+package javagems3d.system.resources.managing.resources.data.arrays;
 
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 
 import java.util.*;
 
-public final class MeshBuffersDataArray {
+public final class MeshBuffersDataArray implements IDataArray {
     private final List<Material> materials;
     private final Set<MeshBuffer> meshBuffers;
 
@@ -18,21 +18,17 @@ public final class MeshBuffersDataArray {
         this.getMeshBuffers().clear();
         this.getMaterials().clear();
     }
-    
+
+    public int getTotalMaterials() {
+        return this.getMaterials().size();
+    }
+
     public void addMeshBuffer(MeshBuffer meshBuffer) {
         this.getMeshBuffers().add(meshBuffer);
     }
 
     public void addMaterial(Material material) {
         this.getMaterials().add(material);
-    }
-
-    public int getTotalMaterials() {
-        return this.getMaterials().size();
-    }
-
-    public int getTotalMeshBuffers() {
-        return this.getMeshBuffers().size();
     }
 
     public Set<MeshBuffer> getMeshBuffers() {

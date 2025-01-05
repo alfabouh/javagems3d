@@ -17,7 +17,7 @@ import org.lwjgl.stb.STBVorbis;
 import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import javagems3d.audio.sound.loaders.ISoundLoader;
+import javagems3d.audio.sound.loaders.ISoundCodec;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import sun.misc.IOUtils;
@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-public class Ogg implements ISoundLoader {
+public class Ogg implements ISoundCodec {
     private final ShortBuffer pcm;
     private final int sampleRate;
     private int format;
@@ -44,7 +44,7 @@ public class Ogg implements ISoundLoader {
         }
     }
 
-    public static ISoundLoader create(InputStream is) {
+    public static ISoundCodec create(InputStream is) {
         return is == null ? null : new Ogg(is);
     }
 

@@ -21,7 +21,7 @@ public interface IAssetsInitializer {
     LoadPriority loadPriority();
 
     enum LaunchMode {
-        PARALLEL,
+        ASYNC,
         REGULAR
     }
 

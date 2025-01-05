@@ -18,8 +18,9 @@ import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
-import javagems3d.system.resources.managing.arrays.MeshBuffersDataArray;
-import javagems3d.system.resources.managing.arrays.BindlessTexturesArray;
+import javagems3d.system.resources.managing.resources.data.ResourcesDataArrays;
+import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
+import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
@@ -45,11 +46,11 @@ import java.util.stream.Collectors;
 public final class GameResources implements IGameResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsInitializer> assetsLoaderSet;
-    private final ResourceArrays resourceArrays;
+    private final ResourcesDataArrays resourcesDataArrays;
 
-    public GameResources(@NotNull ResourceCache resourceCache, @NotNull ResourceArrays resourceArrays) {
+    public GameResources(@NotNull ResourceCache resourceCache) {
         this.resourceCache = resourceCache;
-        this.resourceArrays = resourceArrays;
+        this.resourcesDataArrays = new ResourcesDataArrays(new MeshBuffersDataArray(), new BindlessTexturesDataArray());
         this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsInitializer) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
     }
 
@@ -138,6 +139,7 @@ public final class GameResources implements IGameResources {
     public void destroy() {
         this.clearCache();
         this.getAssetsLoaderSet().clear();
+        this.getResourceArrays().clearAll();
     }
 
     public void clearCache() {
@@ -153,7 +155,7 @@ public final class GameResources implements IGameResources {
     private Set<Thread> initAssets() {
         Set<Thread> set = new HashSet<>();
         for (IAssetsInitializer assets : this.getAssetsLoaderSet()) {
-            if (assets.loadMode() == IAssetsInitializer.LaunchMode.PARALLEL) {
+            if (assets.loadMode() == IAssetsInitializer.LaunchMode.ASYNC) {
                 Thread thread = new Thread(() -> {
                     try {
                         assets.load(this);
@@ -209,7 +211,7 @@ public final class GameResources implements IGameResources {
     }
 
     @Override
-    public ResourceArrays getResourceArrays() {
-        return this.resourceArrays;
+    public ResourcesDataArrays getResourceArrays() {
+        return this.resourcesDataArrays;
     }
 }

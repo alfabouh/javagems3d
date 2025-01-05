@@ -19,18 +19,16 @@ import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.managing.arrays.MeshBuffersDataArray;
-import javagems3d.system.resources.managing.arrays.BindlessTexturesArray;
+import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.GameResources;
-import javagems3d.system.resources.managing.resources.ResourceArrays;
+import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
+import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
 
 public final class JGemsResourceManager {
     public static ShadersAssetsInitializer globalShaderAssets = null;
@@ -42,13 +40,14 @@ public final class JGemsResourceManager {
     private final GameResources globalResources;
     private final GameResources localResources;
 
-    private final ResourceArrays resourceArrays;
+    private final ResourcesDataCache resourcesDataCache;
 
     public JGemsResourceManager() {
         JGemsResourceManager.globalShaderAssets = new ShadersAssetsInitializer();
-        this.resourceArrays = new ResourceArrays(new MeshBuffersDataArray(), new BindlessTexturesArray());
-        this.globalResources = new GameResources(new ResourceCache("Global"), this.getResourceArrays());
-        this.localResources = new GameResources(new ResourceCache("Local"), this.getResourceArrays());
+        this.globalResources = new GameResources(new ResourceCache("Global"));
+        this.localResources = new GameResources(new ResourceCache("Local"));
+
+        this.resourcesDataCache = new ResourcesDataCache(new MeshBuffersDataCache(), new BindlessTexturesDataCache());
     }
 
     public static void createShaders() {
@@ -79,6 +78,14 @@ public final class JGemsResourceManager {
         return font1;
     }
 
+    public void writeResourcesDataCache() {
+        this.getResourceDataCache().writeAll(this.getGlobalResources().getResourceArrays(), this.getLocalResources().getResourceArrays());
+    }
+
+    public void destroyResourcesDataCache() {
+        this.getResourceDataCache().clearAll();
+    }
+
     public static GameResources getLocalGameResources() {
         return JGems3D.get().getResourceManager().getLocalResources();
     }
@@ -90,7 +97,7 @@ public final class JGemsResourceManager {
     public void destroy() {
         ShaderStorageBufferProgram.clearAllSSBOs();
         GuiFont.allCreatedFonts.forEach(GuiFont::clear);
-        this.getResourceArrays().clearAll();
+        this.getResourceDataCache().clearAll();
         this.clearAllCaches();
     }
 
@@ -144,8 +151,8 @@ public final class JGemsResourceManager {
         this.reloadTexturesInLocalCache();
     }
 
-    public ResourceArrays getResourceArrays() {
-        return this.resourceArrays;
+    public ResourcesDataCache getResourceDataCache() {
+        return this.resourcesDataCache;
     }
 
     public GameResources getLocalResources() {
