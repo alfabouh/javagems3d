@@ -310,7 +310,7 @@ public abstract class JGemsKinematicItem2 extends WorldItem implements IWorldTic
         this.tryToJump(this.getGravity(), motion, jumpSpeed);
         this.gravityVelocity(this.getGravity());
 
-        JGemsHelper.UTILS.clampVectorToZeroThreshold(this.bodyVelocity, 0.001f);
+        JGemsHelper.MATH.clampVectorToZeroThreshold(this.bodyVelocity, 0.001f);
 
         this.move(this.getBodyVelocity());
         //this.move(new Vector3f(this.getMoveVector()).mul(0.25f));
@@ -660,7 +660,7 @@ public abstract class JGemsKinematicItem2 extends WorldItem implements IWorldTic
                 physicsSweepTestResult1.getHitNormalLocal(normal0);
                 Vector3f normal = DynamicsUtils.convertV3F_JOML(normal0);
                 Vector3f inNormal = new Vector3f(normal);
-                JGemsHelper.UTILS.clampVectorToZeroThreshold(inNormal, 0.001f);
+                JGemsHelper.MATH.clampVectorToZeroThreshold(inNormal, 0.001f);
                 if (inNormal.length() > 0f) {
                     inNormal.normalize();
                 }
@@ -734,7 +734,7 @@ public abstract class JGemsKinematicItem2 extends WorldItem implements IWorldTic
                     normal.mul(slideNormalCorrection);
                 }
 
-                JGemsHelper.UTILS.clampVectorToZeroThreshold(normal, 0.001f);
+                JGemsHelper.MATH.clampVectorToZeroThreshold(normal, 0.001f);
                 if (normal.length() > 0f) {
                     normal.normalize();
                 }

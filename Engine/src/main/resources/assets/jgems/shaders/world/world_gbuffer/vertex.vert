@@ -8,11 +8,11 @@ layout (location=6) in vec4 aBoneWeights;
 
 const int MAX_WEIGHTS = 4;
 
-out vec2 texture_coordinates;
-out vec3 m_vertex_normal;
-out vec3 mv_vertex_normal;
-out vec3 mv_vertex_pos;
-out vec4 out_model_position;
+out vec2 uv_coordinates;
+out vec3 model_vertex_normal;
+out vec3 modelview_vertex_normal;
+out vec3 modelview_vertex_pos;
+out vec4 model_vertex_pos;
 out mat3 TBN;
 
 out mat4 view;
@@ -75,10 +75,10 @@ void main()
     vec3 N = normalize(vec3(model_view_matrix * startNormal));
     TBN = mat3(T, B, N);
 
-    texture_coordinates = aTexture;
-    mv_vertex_normal = normalize(model_view_matrix * startNormal).xyz;
-    m_vertex_normal = normalize(model_matrix * startNormal).xyz;
-    mv_vertex_pos = mv_pos.xyz;
+    uv_coordinates = aTexture;
+    modelview_vertex_normal = normalize(model_view_matrix * startNormal).xyz;
+    model_vertex_normal = normalize(model_matrix * startNormal).xyz;
+    modelview_vertex_pos = mv_pos.xyz;
 
-    out_model_position = model_matrix * startPos;
+    model_vertex_pos = model_matrix * startPos;
 }

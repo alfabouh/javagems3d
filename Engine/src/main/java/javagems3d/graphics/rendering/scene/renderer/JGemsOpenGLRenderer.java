@@ -12,11 +12,11 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
+import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
@@ -46,8 +46,6 @@ import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.assets.texturing.ext.IBindlessTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
-import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
@@ -190,7 +188,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         imgShader.beginShading();
         imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
         imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
-        JGemsSceneUtils.renderModel(this.getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
     }
 
@@ -246,6 +244,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     public void loadMeshMaterialsIsSSBO(BindlessTexturesDataCache bindlessTexturesDataCache, MeshBuffersDataCache meshBuffersDataCache) {
+        int texturing_code = 0;
         ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
         for (Material material : meshBuffersDataCache.getMaterials()) {
             ISample diffuse = material.getDiffuse();
@@ -267,7 +266,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
             byteBuffer.putInt(emission instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) emission) : 0);
             byteBuffer.putInt(specular instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) specular) : 0);
             byteBuffer.putInt(metallic instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) metallic) : 0);
-            byteBuffer.putInt(0);
+            byteBuffer.putInt(JGemsHelper.RENDERING.getTexturingCodeForShader(material));
             byteBuffer.putInt(0);
             byteBuffer.putInt(0);
         }

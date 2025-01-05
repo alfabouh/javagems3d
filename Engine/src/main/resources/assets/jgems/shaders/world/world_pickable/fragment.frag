@@ -6,8 +6,8 @@ layout (std140, binding = 3) uniform Fog {
     float fogDensity;
 };
 
-in vec3 mv_vertex_pos;
-in vec2 texture_coordinates;
+in vec3 modelview_vertex_pos;
+in vec2 uv_coordinates;
 uniform sampler2D diffuse_map;
 uniform float alpha_discard;
 
@@ -26,10 +26,10 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
 
 void main()
 {
-    frag_color = texture(diffuse_map, vec2(texture_coordinates.x, texture_coordinates.y));
+    frag_color = texture(diffuse_map, vec2(uv_coordinates.x, uv_coordinates.y));
     if (frag_color.a < alpha_discard) {
         discard;
     }
-    frag_color = calc_fog(mv_vertex_pos, frag_color);
+    frag_color = calc_fog(modelview_vertex_pos, frag_color);
     frag_color2 = vec4(0.0);
 }

@@ -29,9 +29,9 @@ layout (std140, binding = 3) uniform Fog {
     float fogDensity;
 };
 
-out vec2 texture_coordinates;
+out vec2 uv_coordinates;
 
-out vec3 mv_vertex_pos;
+out vec3 modelview_vertex_pos;
 out vec4 m_vertex_pos;
 out mat4 out_view_matrix;
 
@@ -45,8 +45,8 @@ void main()
     vec4 mv_pos = model_view_matrix * vec4(aPosition, 1.0f);
     gl_Position = projection_matrix * mv_pos;
 
-    texture_coordinates = aTexture;
-    mv_vertex_pos = mv_pos.xyz;
+    uv_coordinates = aTexture;
+    modelview_vertex_pos = mv_pos.xyz;
     m_vertex_pos = model_matrix * vec4(aPosition, 1.0f);
 
     out_view_matrix = view_matrix;

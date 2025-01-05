@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -19,7 +20,6 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.data.SoundType;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIAction;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
@@ -68,7 +68,7 @@ public class UIButton extends UIInteractiveElement {
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
         shaderManager.performUniform(new UniformString("background_color"), UniformFunctions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
         shaderManager.performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
-        JGemsSceneUtils.renderModel(this.buttonModel, GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel(this.buttonModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
         this.uiText.render(frameDeltaTicks);
     }

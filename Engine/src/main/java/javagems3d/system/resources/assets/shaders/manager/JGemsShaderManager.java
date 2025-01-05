@@ -26,7 +26,6 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.shadows.CascadeShadow;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.global.JGemsRenderingGlobalConstants;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
@@ -113,8 +112,8 @@ public final class JGemsShaderManager extends ShaderManager {
             int texturing_code = 0;
 
             this.performCameraData();
-            if (JGemsShaderManager.this.isUniformExist(new UniformString("ambient_cubemap"))) {
-                this.performCubeMapProgram(new UniformString("ambient_cubemap"), cubeMapProgram.getTextureId());
+            if (JGemsShaderManager.this.isUniformExist(new UniformString("ambient_cube_map"))) {
+                this.performCubeMapProgram(new UniformString("ambient_cube_map"), cubeMapProgram.getTextureId());
             }
 
             if (diffuse != null) {
@@ -221,11 +220,11 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performViewAndModelMatricesSeparately(Model<Format3D> model) {
-            this.performViewAndModelMatricesSeparately(JGemsSceneUtils.getMainCameraViewMatrix(), model);
+            this.performViewAndModelMatricesSeparately(JGemsHelper.RENDERING.getMainCameraViewMatrix(), model);
         }
 
         public void performPerspectiveMatrix() {
-            this.performPerspectiveMatrix(JGemsSceneUtils.getMainPerspectiveMatrix());
+            this.performPerspectiveMatrix(JGemsHelper.RENDERING.getMainPerspectiveMatrix());
         }
 
         public void performPerspectiveMatrix(Matrix4f matrix4f) {
@@ -233,7 +232,7 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public void performOrthographicMatrix(Model<Format2D> model) {
-            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(model.getFormat(), JGemsSceneUtils.getMainOrthographicMatrix())));
+            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(model.getFormat(), JGemsHelper.RENDERING.getMainOrthographicMatrix())));
         }
 
         public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {

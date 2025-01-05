@@ -18,7 +18,6 @@ import org.joml.*;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.screen.window.IWindow;
@@ -214,7 +213,7 @@ public class TBoxScene {
                 gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0).getTextureId(), GL46.GL_TEXTURE_2D);
                 gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1).getTextureId(), GL46.GL_TEXTURE_2D);
                 gluing.getUtils().performOrthographicMatrix(model);
-                JGemsSceneUtils.renderModel(model, GL46.GL_TRIANGLES);
+                JGemsHelper.RENDERING.renderModel(model, GL46.GL_TRIANGLES);
                 gluing.endShading();
             }
 

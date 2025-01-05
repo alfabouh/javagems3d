@@ -11,12 +11,12 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.models.Model;
@@ -49,7 +49,7 @@ public class UIPictureSizable extends UIElement {
         GL46.glActiveTexture(GL46.GL_TEXTURE0);
         this.iImageSample.bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
-        JGemsSceneUtils.renderModel(this.imageModel, GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 

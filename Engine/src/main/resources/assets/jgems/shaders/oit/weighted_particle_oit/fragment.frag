@@ -3,13 +3,13 @@
 //layout (location = 0) out vec4 accumulated;
 //layout (location = 1) out float reveal;
 //
-//in vec2 texture_coordinates;
+//in vec2 uv_coordinates;
 //
 //uniform float alpha_factor;
 //
 //void main()
 //{
-//    //vec4 color = texture(diffuse_map, texture_coordinates);
+//    //vec4 color = texture(diffuse_map, uv_coordinates);
 //    //if (color.a >= 1.) {
 //    //    discard;
 //    //}
@@ -22,10 +22,10 @@
 
 /////////////////////////////////
 
-in vec2 texture_coordinates;
+in vec2 uv_coordinates;
 
 in vec4 m_vertex_pos;
-in vec3 mv_vertex_pos;
+in vec3 modelview_vertex_pos;
 in mat4 out_view_matrix;
 
 layout (location = 0) out vec4 accumulated;
@@ -89,8 +89,8 @@ bool checkCode(int i1, int i2) {
 
 void main()
 {
-    vec3 frag_pos = mv_vertex_pos;
-    vec4 g_texture = use_texture ? texture(diffuse_map, texture_coordinates) : vec4(1.);
+    vec3 frag_pos = modelview_vertex_pos;
+    vec4 g_texture = use_texture ? texture(diffuse_map, uv_coordinates) : vec4(1.);
 
     vec4 lights = calc_light(frag_pos);
 

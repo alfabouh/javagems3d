@@ -4,17 +4,18 @@ layout (location=2) in vec3 aNormal;
 layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
 
-out vec2 texture_coordinates;
-out vec3 m_vertex_normal;
-out vec3 mv_vertex_normal;
-out vec3 mv_vertex_pos;
-out vec4 out_model_position;
+out vec2 uv_coordinates;
+out vec3 model_vertex_normal;
+out vec4 model_vertex_pos;
+out vec3 modelview_vertex_normal;
+out vec3 modelview_vertex_pos;
 out mat3 TBN;
 
 out mat4 view;
 out mat4 model;
 
 out flat uint matertial_id;
+out flat uint ent_id;
 
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
@@ -34,7 +35,7 @@ void main()
 
     uint idx = gl_BaseInstance + gl_InstanceID;
     matertial_id = materialIds[idx];
-    int ent_id = entityIds[idx];
+    ent_id = entityIds[idx];
     model = modelMatrices[ent_id];
 
     view = view_matrix;
@@ -47,10 +48,10 @@ void main()
     vec3 N = normalize(vec3(model_view_matrix * normal));
     TBN = mat3(T, B, N);
 
-    texture_coordinates = aTexture;
-    mv_vertex_normal = normalize(model_view_matrix * normal).xyz;
-    m_vertex_normal = normalize(model * normal).xyz;
-    mv_vertex_pos = mv_pos.xyz;
+    uv_coordinates = aTexture;
+    modelview_vertex_normal = normalize(model_view_matrix * normal).xyz;
+    model_vertex_normal = normalize(model * normal).xyz;
+    modelview_vertex_pos = mv_pos.xyz;
 
-    out_model_position = model * position;
+    model_vertex_pos = model * position;
 }

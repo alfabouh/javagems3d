@@ -18,7 +18,6 @@ import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.programs.shaders.CShaderProgram;
 import javagems3d.graphics.rendering.programs.shaders.GShaderProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
@@ -175,7 +174,7 @@ public abstract class ShaderManager implements ICached {
             JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
-        if (textureUnit < 0 || this.usedTextureUnits >= JGemsSceneUtils.getMaxTextureUnits()) {
+        if (textureUnit < 0 || this.usedTextureUnits >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
             JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow!");
             return;
         }

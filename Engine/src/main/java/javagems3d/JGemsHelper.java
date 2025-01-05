@@ -13,11 +13,19 @@ package javagems3d;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
+import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
+import javagems3d.system.resources.assets.texturing.ext.IBindlessTexture;
 import org.joml.*;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.camera.ControlledCamera;
@@ -63,6 +71,7 @@ import javagems3d.system.settings.JGemsSettings;
 import logger.SystemLogging;
 import logger.managers.LoggingManager;
 import org.joml.Math;
+import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,35 +92,104 @@ public abstract class JGemsHelper {
     }
 
     public static IPlayer getCurrentPlayer() {
-        return JGems3D.get().getPlayer();
+        return JGemsHelper.getMainObject().getPlayer();
     }
 
     public static JGemsScreen getScreen() {
-        return JGems3D.get().getScreen();
+        return JGemsHelper.getMainObject().getScreen();
     }
 
     public static SceneWorld getSceneWorld() {
-        return JGems3D.get().getCore().getScreen().getSceneWorld();
+        return JGemsHelper.getMainObject().getCore().getScreen().getSceneWorld();
     }
 
     public static PhysicsWorld getPhysicsWorld() {
-        return JGems3D.get().getCore().getPhysics().getPhysicsProcessor().getPhysicsWorld();
+        return JGemsHelper.getMainObject().getPhysics().getPhysicsProcessor().getPhysicsWorld();
     }
 
-    public static JGems3D getCoreObject() {
+    public static JGems3D getMainObject() {
         return JGems3D.get();
     }
 
     public static JGemsSoundManager getSoundManager() {
-        return JGems3D.get().getSoundManager();
+        return JGemsHelper.getMainObject().getSoundManager();
     }
 
     public static LoggingManager getLogger() {
         return SystemLogging.get().getLogManager();
     }
 
+    public static abstract class RENDERING {
+        public static Matrix4f getMainCameraViewMatrix() {
+            return getScreen().getTransformation().getMainCameraViewMatrix();
+        }
+
+        public static Matrix4f getMainPerspectiveMatrix() {
+            return getScreen().getTransformation().getPerspectiveMatrix();
+        }
+
+        public static Matrix4f getMainOrthographicMatrix() {
+            return getScreen().getTransformation().getOrthographicMatrix();
+        }
+
+        public static void renderModelNode(MeshGroup.MeshGroupNode meshNode) {
+            GL46.glBindVertexArray(meshNode.getMesh().getVao());
+            meshNode.getMesh().enableAllMeshAttributes();
+            GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+            meshNode.getMesh().disableAllMeshAttributes();
+            GL46.glBindVertexArray(0);
+        }
+
+        public static int getMaxTextureUnits() {
+            return GL46.glGetInteger(GL46.GL_MAX_TEXTURE_IMAGE_UNITS);
+        }
+
+        public static Model<Format2D> createScreenModel() {
+            return MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(getScreen().getWindowDimensions()), 0);
+        }
+
+        @SuppressWarnings("all")
+        public static void renderModel(Model<?> model, int code) {
+            for (MeshGroup.MeshGroupNode meshNode : model.<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
+                GL46.glBindVertexArray(meshNode.getMesh().getVao());
+                meshNode.getMesh().enableAllMeshAttributes();
+                GL46.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+                meshNode.getMesh().disableAllMeshAttributes();
+                GL46.glBindVertexArray(0);
+            }
+        }
+
+        public static int getLightingCodeForShader(ObjectRenderConfiguration configuration) {
+            int code = 0;
+            if (configuration.isDefaultBrightLighted()) {
+                code |= 1 << 2;
+            }
+            return code;
+        }
+
+        public static int getTexturingCodeForShader(Material material) {
+            int code = 0;
+            if (material.getDiffuse() instanceof ImageBasedTexture) {
+                code |= 1 << 2;
+            }
+            if (material.getNormalsMap() instanceof ImageBasedTexture) {
+                code |= 1 << 3;
+            }
+            if (material.getEmissionMap() instanceof ImageBasedTexture) {
+                code |= 1 << 4;
+            }
+            if (material.getSpecularMap() instanceof ImageBasedTexture) {
+                code |= 1 << 5;
+            }
+            if (material.getMetallicMap() instanceof ImageBasedTexture) {
+                code |= 1 << 6;
+            }
+            return code;
+        }
+    }
+
     public static abstract class ANIMATION {
-        public static boolean ifObjectHasAnimations(WorldItem worldItem) {
+        public static boolean objectHasAnimations(WorldItem worldItem) {
             return JGemsHelper.getSceneWorld().ifObjectHasAnimations(worldItem);
         }
 
@@ -120,7 +198,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Resources
     public static abstract class RESOURCES {
         public static GameResources getGlobalResources() {
             return JGemsResourceManager.getGlobalGameResources();
@@ -139,7 +216,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Camera
     public static abstract class CAMERA {
         public static ICamera getCurrentCamera() {
             return JGemsHelper.getScreen().getCamera();
@@ -162,7 +238,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Localisation
     public static abstract class LOCALISATION {
         public static Lang createLocalisation(String langName, JGemsPath path) {
             return JGemsLocalisation.createLocalisation(langName, path);
@@ -177,7 +252,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Particles
     public static abstract class PARTICLES {
         public static SimpleTexturedParticle createSimpleTexturedParticle(ParticleAttributes particleAttributes, ParticleTexturesPack particleTexturesPack, Vector3f pos, Vector2f scaling) {
             return ParticlesEmitter.createSimpleTexturedParticle(JGemsHelper.getSceneWorld(), particleAttributes, particleTexturesPack, pos, scaling);
@@ -197,7 +271,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Controller
     public static abstract class ENVIRONMENT {
         public static SkyBox getSky() {
             return JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox();
@@ -212,7 +285,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Controller
     public static abstract class CONTROLLER {
         public static boolean setCursorInCenter() {
             IController controller = getCurrentController();
@@ -246,7 +318,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Game
     public static abstract class GAME {
         public static void killItems() {
             JGemsHelper.getPhysicsWorld().killItems();
@@ -301,7 +372,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section Window
     public static abstract class WINDOW {
         public static void setWindowFocus(boolean focus) {
             JGemsHelper.getScreen().getWindow().setInFocus(focus);
@@ -312,7 +382,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section UI
     public static abstract class UI {
         public static void closeUIPanel() {
             JGems3D.get().closeUIPanel();
@@ -323,7 +392,6 @@ public abstract class JGemsHelper {
         }
     }
 
-    // section World
     public static abstract class WORLD {
         public static Graph genSimpleMapGraphFromStartPoint(Vector3f start) {
             return MapNavGraphGenerator.createGraphWithStartPoint(JGems3D.get().getPhysics().getPhysicsProcessor().getDynamicsSystem(), DynamicsUtils.convertV3F_JME(start));
@@ -392,10 +460,7 @@ public abstract class JGemsHelper {
         public static double clamp(double d1, double d2, double d3) {
             return d1 < d2 ? d2 : Math.min(d1, d3);
         }
-    }
 
-    //section Utils
-    public static abstract class UTILS {
         public static void clampVectorToZeroThreshold(Vector3f in, float threshold) {
             if (in.x > -threshold && in.x < threshold) {
                 in.x = 0.0f;
@@ -407,6 +472,9 @@ public abstract class JGemsHelper {
                 in.z = 0.0f;
             }
         }
+    }
+
+    public static abstract class UTILS {
 
         public static int[] convertIntsArray(List<Integer> list) {
             if (list == null || list.isEmpty()) {

@@ -7,7 +7,7 @@ uniform mat4 projection_matrix;
 
 out vec3 outSunPos;
 out vec2 out_texture;
-out vec3 mv_vertex_pos;
+out vec3 modelview_vertex_pos;
 
 void main()
 {
@@ -15,7 +15,7 @@ void main()
     vec4 mv_pos = model_view_matrix * vec4(aPosition, 1.0f);
     gl_Position = projection_matrix * mv_pos;
 
-    mv_vertex_pos = mv_pos.xyz;
+    modelview_vertex_pos = mv_pos.xyz;
 
     out_texture = aTexture;
 }

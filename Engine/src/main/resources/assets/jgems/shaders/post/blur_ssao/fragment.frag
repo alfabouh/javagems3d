@@ -1,7 +1,7 @@
 layout (location = 0) out float frag_color;
 
 uniform sampler2D texture_sampler;
-in vec2 texture_coordinates;
+in vec2 uv_coordinates;
 
 void main()
 {
@@ -12,7 +12,7 @@ void main()
         for (int y = -2; y < 2; ++y)
         {
             vec2 offset = vec2(float(x), float(y)) * texelSize;
-            result += texture(texture_sampler, texture_coordinates + offset).r;
+            result += texture(texture_sampler, uv_coordinates + offset).r;
         }
     }
     frag_color = result / (4.0 * 4.0);

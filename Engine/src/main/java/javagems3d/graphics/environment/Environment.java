@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.environment;
 
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
@@ -19,7 +20,6 @@ import javagems3d.graphics.environment.fog.FogManager;
 import javagems3d.graphics.environment.lighting.LightManager;
 import javagems3d.graphics.environment.shadows.ShadowScene;
 import javagems3d.global.JGemsDebugGlobalConstants;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
@@ -64,7 +64,7 @@ public class Environment implements IEnvironment {
     }
 
     private void updateLightsUBO(SceneWorld world, MemoryStack stack) {
-        this.getLightManager().updateBuffers(stack, world, JGemsSceneUtils.getMainCameraViewMatrix());
+        this.getLightManager().updateBuffers(stack, world, JGemsHelper.RENDERING.getMainCameraViewMatrix());
     }
 
     private void updateFogUBO(MemoryStack stack) {

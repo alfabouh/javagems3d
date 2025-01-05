@@ -17,6 +17,7 @@ import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -34,6 +35,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private static final int SSBO_DATASETS_MATRICES_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
     private static final int SSBO_DATASETS_ENT_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
     private static final int SSBO_DATASETS_MATERIAL_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
+    private static final int SSBO_DATASETS_PROPERTIES_SIZE = JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_PROPERTIES;
 
     public IndirectGeometryRenderProcessor(@NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
@@ -72,8 +74,13 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         }
     }
 
-    private void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBuffer renderBuffer) {
+    protected void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBuffer renderBuffer) {
         shaderManager.beginShading();
+        CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
+        shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
+        if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
+            shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram.getTextureId(), GL46.GL_TEXTURE_CUBE_MAP);
+        }
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getPerspectiveMatrix()));
         shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getMainCameraViewMatrix()));
         GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
@@ -84,17 +91,16 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         shaderManager.endShading();
     }
 
-    private void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Set<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
-        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS);
+    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Set<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(4 * IndirectGeometryRenderProcessor.SSBO_DATASETS_PROPERTIES_SIZE);
         FloatBuffer matrices = MemoryUtil.memAllocFloat(IndirectGeometryRenderProcessor.SSBO_DATASETS_MATRICES_SIZE);
         for (SceneObject sceneObject : sceneObjects) {
             Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
             matrices.put(matrix.get(new float[16]));
 
             ObjectRenderConfiguration configuration = sceneObject.getObjectRenderConfiguration();
-           byteBuffer.putFloat(configuration.getAlphaDiscardValue());
-           byteBuffer.putInt(1);
-           byteBuffer.putInt(1);
+            byteBuffer.putFloat(configuration.getAlphaDiscardValue());
+            byteBuffer.putInt(JGemsHelper.RENDERING.getLightingCodeForShader(configuration));
         }
         matrices.flip();
         byteBuffer.flip();
@@ -111,7 +117,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         MemoryUtil.memFree(materialIds);
     }
 
-    private Map<JGemsShaderManager, Set<SceneObject>> splitObjectsByShaderGroups(Set<SceneObject> sceneObjects) {
+    protected Map<JGemsShaderManager, Set<SceneObject>> splitObjectsByShaderGroups(Set<SceneObject> sceneObjects) {
         Map<JGemsShaderManager, Set<SceneObject>> map = new HashMap<>();
         for (SceneObject sceneObject : sceneObjects) {
             JGemsShaderManager shaderManager = sceneObject.getObjectRenderConfiguration().getModelRenderShader();

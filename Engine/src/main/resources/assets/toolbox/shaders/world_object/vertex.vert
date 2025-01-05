@@ -10,8 +10,8 @@ out vec3 mv_out_pos;
 
 out vec3 outSunPos;
 out vec2 out_texture;
-out vec3 mv_vertex_normal;
-out vec3 mv_vertex_pos;
+out vec3 modelview_vertex_normal;
+out vec3 modelview_vertex_pos;
 
 void main()
 {
@@ -19,8 +19,8 @@ void main()
     vec4 mv_pos = model_view_matrix * vec4(aPosition, 1.0f);
     gl_Position = projection_matrix * mv_pos;
 
-    mv_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;
-    mv_vertex_pos = mv_pos.xyz;
+    modelview_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;
+    modelview_vertex_pos = mv_pos.xyz;
 
     mv_out_pos = gl_Position.xyz;
     out_texture = aTexture;

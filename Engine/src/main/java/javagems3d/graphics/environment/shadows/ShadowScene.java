@@ -24,7 +24,6 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.lighting.PointLight;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.global.JGemsRenderingGlobalConstants;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -298,7 +297,7 @@ public class ShadowScene implements IShadowScene {
             this.getShadowPostFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             shaderManager.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
             shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.getShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
-            JGemsSceneUtils.renderModel(this.sunPostModel, GL46.GL_TRIANGLES);
+            JGemsHelper.RENDERING.renderModel(this.sunPostModel, GL46.GL_TRIANGLES);
         }
         shaderManager.endShading();
         this.getShadowPostFBO().unBindFBO();

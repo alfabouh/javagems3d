@@ -2,8 +2,8 @@ layout (location = 0) out vec4 frag_color;
 
 in vec3 mv_out_pos;
 in vec2 out_texture;
-in vec3 mv_vertex_normal;
-in vec3 mv_vertex_pos;
+in vec3 modelview_vertex_normal;
+in vec3 modelview_vertex_pos;
 
 uniform bool use_texturing;
 uniform int texturing_code;
@@ -51,10 +51,10 @@ void main()
         frag_color *= vec4(1.25, 0.25, 0.25, 1.0);
     }
     if (showLight) {
-        frag_color *= calc_sun_light(mv_vertex_pos, mv_vertex_normal);
+        frag_color *= calc_sun_light(modelview_vertex_pos, modelview_vertex_normal);
     }
     if (showFog) {
-        frag_color = calc_fog(mv_vertex_pos, frag_color);
+        frag_color = calc_fog(modelview_vertex_pos, frag_color);
     }
     frag_color.a = 1.0;
 }

@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
@@ -21,7 +22,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
@@ -57,7 +57,7 @@ public class UIText extends UIElement {
         this.getFontTexture().getTexture().bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
         shaderManager.performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
-        JGemsSceneUtils.renderModel(this.textModel.getModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 

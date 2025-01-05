@@ -2,8 +2,8 @@ layout (location = 0) out vec4 frag_color;
 
 in vec3 mv_out_pos;
 in vec2 out_texture;
-in vec3 mv_vertex_normal;
-in vec3 mv_vertex_pos;
+in vec3 modelview_vertex_normal;
+in vec3 modelview_vertex_pos;
 
 uniform bool use_texturing;
 uniform int texturing_code;

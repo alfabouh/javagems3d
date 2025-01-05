@@ -12,6 +12,7 @@
 package toolbox.render.screen;
 
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.JGemsScreen;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
@@ -21,7 +22,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.screen.IScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
@@ -160,7 +160,7 @@ public class TBoxScreen implements IScreen {
         GL46.glDepthFunc(GL46.GL_LESS);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.getScene().render(delta);
-        JGemsSceneUtils.checkGLErrors();
+        OpenGLRenderer.catchGLContextExceptions();
     }
 
     private void resizeWindow(IWindow window) {

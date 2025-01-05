@@ -12,6 +12,7 @@
 package javagems3d.graphics.screen;
 
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
 import org.joml.Vector2i;
@@ -24,7 +25,6 @@ import api.bridge.APIContainer;
 import javagems3d.audio.sound.SoundListener;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.global.JGemsRenderingGlobalConstants;
-import javagems3d.graphics.rendering.JGemsSceneUtils;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIText;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
@@ -317,7 +317,7 @@ public class JGemsScreen implements IScreen {
 
     public void startScreenRenderProcess() {
         JGemsHelper.getLogger().log("Starting screen...");
-        SoundListener.updateListenerGain(JGemsHelper.getCoreObject().getGameSettings());
+        SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
@@ -376,15 +376,15 @@ public class JGemsScreen implements IScreen {
         GL46.glDepthFunc(GL46.GL_LESS);
         this.getScene().renderScene(delta);
         this.updateSound();
-        JGemsSceneUtils.checkGLErrors();
+        OpenGLRenderer.catchGLContextExceptions();
     }
 
     private void updateSound() {
         JGems3D.get().getSoundManager().update();
         if (JGems3D.get().isValidPlayer()) {
-            SoundListener.updateOrientationAndPosition(JGemsSceneUtils.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
+            SoundListener.updateOrientationAndPosition(JGemsHelper.RENDERING.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
         }
-        SoundListener.updateListenerGain(JGemsHelper.getCoreObject().getGameSettings());
+        SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
     }
 
     public SceneWorld getSceneWorld() {

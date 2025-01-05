@@ -3,13 +3,13 @@
 //layout (location = 0) out vec4 accumulated;
 //layout (location = 1) out float reveal;
 //
-//in vec2 texture_coordinates;
+//in vec2 uv_coordinates;
 //
 //uniform float alpha_factor;
 //
 //void main()
 //{
-//    //vec4 color = texture(diffuse_map, texture_coordinates);
+//    //vec4 color = texture(diffuse_map, uv_coordinates);
 //    //if (color.a >= 1.) {
 //    //    discard;
 //    //}
@@ -22,12 +22,12 @@
 
 /////////////////////////////////
 
-in vec2 texture_coordinates;
+in vec2 uv_coordinates;
 
 in vec3 m_vertex_normal;
 in vec4 m_vertex_pos;
-in vec3 mv_vertex_normal;
-in vec3 mv_vertex_pos;
+in vec3 modelview_vertex_normal;
+in vec3 modelview_vertex_pos;
 
 in mat3 TBN;
 in mat4 out_view_matrix;
@@ -77,7 +77,7 @@ const int emission_code = 1 << 3;
 const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
 
-uniform samplerCube ambient_cubemap;
+uniform samplerCube ambient_cube_map;
 uniform vec4 diffuse_color;
 uniform sampler2D diffuse_map;
 uniform sampler2D normals_map;
@@ -109,17 +109,17 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(m_vertex_pos.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return f * vec4(texture(ambient_cubemap, R).rgb, 1.0);
+    return f * vec4(texture(ambient_cube_map, R).rgb, 1.0);
 }
 
 vec2 getScaledTexture() {
     const float speed = 5.;
 
-    float wave1 = sin(texture_coordinates.x * 20.0 + (w_tick * speed)) * 0.01;
-    float wave2 = cos(texture_coordinates.y * 25.0 + (w_tick * speed) * 0.5) * 0.01;
+    float wave1 = sin(uv_coordinates.x * 20.0 + (w_tick * speed)) * 0.01;
+    float wave2 = cos(uv_coordinates.y * 25.0 + (w_tick * speed) * 0.5) * 0.01;
     vec2 sincosFactor = vec2(wave1, wave2);
 
-    return (texture_coordinates) * (texture_scaling) + sincosFactor;
+    return (uv_coordinates) * (texture_scaling) + sincosFactor;
 }
 
 vec3 calc_normal_map() {
@@ -131,8 +131,8 @@ vec3 calc_normal_map() {
 
 void main()
 {
-    vec3 frag_pos = mv_vertex_pos;
-    vec3 normals = normalize(checkCode(texturing_code, normals_code) ? calc_normal_map() : mv_vertex_normal);
+    vec3 frag_pos = modelview_vertex_pos;
+    vec3 normals = normalize(checkCode(texturing_code, normals_code) ? calc_normal_map() : modelview_vertex_normal);
     vec4 g_texture = checkCode(texturing_code, diffuse_code) ? texture(diffuse_map, getScaledTexture()) : diffuse_color;
     vec4 emission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(emissive_map, getScaledTexture()) : vec4(vec3(0.0), 1.0);
 
@@ -202,7 +202,7 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     specularF = pow(specularF, 64.0);
     specularC = brightness * specularF * vec4(colors, 1.) * vec4(4.);
 
-    vec4 specularFactor = checkCode(texturing_code, specular_code) ? vec4(vec3(1.0) - texture(specular_map, texture_coordinates).rgb, 1.0) : vec4(1.);
+    vec4 specularFactor = checkCode(texturing_code, specular_code) ? vec4(vec3(1.0) - texture(specular_map, uv_coordinates).rgb, 1.0) : vec4(1.);
     return diffuseC + (specularC * specularFactor);
 }
 
