@@ -7,8 +7,11 @@ import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.predefined.IndirectGeometryRenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.predefined.RawColorSceneRenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.predefined.SSAORenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
@@ -17,68 +20,66 @@ import java.util.stream.Collectors;
 
 public interface IDeferredRenderNode extends IRenderNode {
     @NotNull FBOTexture2DProgram getOutFboGBuffer();
-    @NotNull FBOTexture2DProgram getOutFboSSAOBuffer();
     @NotNull FBOTexture2DProgram getOutFboColorBuffer();
 
     final class Default extends IRenderNode.Template implements IDeferredRenderNode {
-        private final IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
-        private FBOTexture2DProgram gBuffer;
-        private FBOTexture2DProgram ssao;
-        private FBOTexture2DProgram color;
+        private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
+        private SSAORenderProcessor ssaoRenderProcessor;
+        private RawColorSceneRenderProcessor rawColorSceneRenderProcessor;
 
         public Default(OpenGLRenderer openGLRenderer) {
             super(openGLRenderer);
-            this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(openGLRenderer);
         }
 
         public @NotNull FBOTexture2DProgram getOutFboGBuffer() {
-            return this.gBuffer;
-        }
-
-        @Override
-        public @NotNull FBOTexture2DProgram getOutFboSSAOBuffer() {
-            return this.ssao;
+            return this.getIndirectGeometryRenderProcessor().getGBuffer();
         }
 
         @Override
         public @NotNull FBOTexture2DProgram getOutFboColorBuffer() {
-            return this.color;
+            return this.getRawColorSceneRenderProcessor().getColorBuffer();
         }
 
         @Override
         public void onRender(FrameTicking frameTicking) {
             Set<SceneObject> sceneObjects = JGemsOpenGLRenderer.getFilteredSetToRender(this.getOpenGLRenderer().getSceneWorld().getSceneObjects());
-            this.getOutFboGBuffer().bindFBO();
-            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.localFilter(sceneObjects));
             this.getIndirectGeometryRenderProcessor().onRender(frameTicking);
-            this.getOutFboGBuffer().unBindFBO();
+            this.getSSAORenderProcessor().onRender(frameTicking);
+            this.getRawColorSceneRenderProcessor().onRender(frameTicking);
         }
 
         private Set<SceneObject> localFilter(Set<SceneObject> set) {
             return set.stream().filter(e -> e.getShaderManager().getShaderTarget().equals(ShaderRenderingTarget.INDIRECT_DEFERRED_RENDERING)).collect(Collectors.toSet());
         }
 
+        public void initProcessors() {
+            this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(this.getOpenGLRenderer());
+            this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getIndirectGeometryRenderProcessor(), JGemsResourceManager.globalShaderAssets.world_ssao);
+            this.rawColorSceneRenderProcessor = new RawColorSceneRenderProcessor(this.getOpenGLRenderer(), this.getIndirectGeometryRenderProcessor(), this.getSSAORenderProcessor(), JGemsResourceManager.globalShaderAssets.world_deferred);
+        }
+
         @Override
         public void createResources() {
+            this.initProcessors();
+            this.getSSAORenderProcessor().createResources();
             this.getIndirectGeometryRenderProcessor().createResources();
-            this.gBuffer = new FBOTexture2DProgram(true);
-            T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{
-                add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
-                add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
-                add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
-                add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
-                add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
-            }};
-            this.gBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.getRawColorSceneRenderProcessor().createResources();
         }
 
         @Override
         public void destroyResources() {
+            this.getSSAORenderProcessor().destroyResources();
             this.getIndirectGeometryRenderProcessor().destroyResources();
-            if (this.gBuffer != null) {
-                this.gBuffer.clearFBO();
-            }
+            this.getRawColorSceneRenderProcessor().destroyResources();
+        }
+
+        public RawColorSceneRenderProcessor getRawColorSceneRenderProcessor() {
+            return this.rawColorSceneRenderProcessor;
+        }
+
+        public SSAORenderProcessor getSSAORenderProcessor() {
+            return this.ssaoRenderProcessor;
         }
 
         public IndirectGeometryRenderProcessor getIndirectGeometryRenderProcessor() {

@@ -42,7 +42,7 @@ struct Material {
 };
 
 layout(std430, binding = 2) buffer BindlessTextures {
-    sampler2D textures[1024];
+    uvec2 textures[1024];
 };
 
 layout(std430, binding = 3) buffer MaterialsData {
@@ -54,7 +54,7 @@ layout(std430, binding = 4) buffer RenderPropertiesData {
 };
 
 vec3 calc_normal_map(int normalsMapId) {
-    vec3 normal = texture(textures[normalsMapId], uv_coordinates).rgb;
+    vec3 normal = texture(sampler2D(textures[normalsMapId]), uv_coordinates).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -80,7 +80,7 @@ void main()
     int texturing_code = mat.texturing_code;
     int lighting_code = property.lighting_code;
 
-    vec4 diffuse = checkCode(texturing_code, diffuse_code) ? texture(textures[mat.diffuse_map_id], uv_coordinates) : mat.diffuse_color;
+    vec4 diffuse = checkCode(texturing_code, diffuse_code) ? texture(sampler2D(textures[mat.diffuse_map_id]), uv_coordinates) : mat.diffuse_color;
     if (diffuse.a < alpha_discard) {
         discard;
     }
@@ -91,9 +91,9 @@ void main()
     gNormal = vec4(normals, 1.0);
     gPosition = vec4(modelview_vertex_pos, 1.0);
     gColor = diffuse;
-    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? texture(textures[mat.emissive_map_id], uv_coordinates) : vec4(vec3(0.0), 1.0);
-    gSpecular = checkCode(texturing_code, specular_code) ? texture(textures[mat.specular_map_id], uv_coordinates) : vec4(vec3(0.0), 1.0);
+    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? texture(sampler2D(textures[mat.emissive_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
+    gSpecular = checkCode(texturing_code, specular_code) ? texture(sampler2D(textures[mat.specular_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
 
-    vec4 gMetallic = (checkCode(texturing_code, metallic_code) ? texture(textures[mat.metallic_map_id], uv_coordinates) : vec4(0.)) * refract_cubemap(model_vertex_normal, 1.73);
+    vec4 gMetallic = (checkCode(texturing_code, metallic_code) ? texture(sampler2D(textures[mat.metallic_map_id]), uv_coordinates) : vec4(0.)) * refract_cubemap(model_vertex_normal, 1.73);
     gColor += vec4(gMetallic.xyz, 0.0);
 }

@@ -5,6 +5,8 @@ import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.indirect.IndirectBufferCommandsBuilder;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
@@ -31,6 +33,7 @@ import java.util.*;
 
 public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private Set<SceneObject> indirectMeshObjects;
+    private FBOTexture2DProgram gBuffer;
 
     private static final int SSBO_DATASETS_MATRICES_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
     private static final int SSBO_DATASETS_ENT_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
@@ -44,6 +47,15 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void createResources() {
+        this.gBuffer = new FBOTexture2DProgram(true);
+        T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
+        }};
+        this.gBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
         //JGems3D.get().getResourceManager().getGlobalResources().getResourceCache().clearGroupInCache(MeshBuffer.class);
         //JGemsResourceManager.globalModelAssets.load(JGems3D.get().getResourceManager().getGlobalResources());
         ((JGemsOpenGLRenderer) JGemsHelper.getScreen().getScene().getSceneRenderer()).initSceneIndirectRenderBuffer(JGems3D.get().getResourceManager().getResourceDataCache().getMeshBuffersDataCache()); //DEBUG
@@ -51,14 +63,18 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void destroyResources() {
+        if (this.getGBuffer() != null) {
+            this.getGBuffer().clearFBO();
+        }
     }
 
     @Override
     public void onRender(FrameTicking frameTicking) {
+        this.getGBuffer().bindFBO();
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
        ((JGemsOpenGLRenderer) JGemsHelper.getScreen().getScene().getSceneRenderer()).loadMeshMaterialsIsSSBO(JGems3D.get().getResourceManager().getResourceDataCache().getBindlessTexturesCache(), JGems3D.get().getResourceManager().getResourceDataCache().getMeshBuffersDataCache());
         IndirectRenderBuffer renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
         Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects());
-
         for (Map.Entry<JGemsShaderManager, Set<SceneObject>> sceneObjects : map.entrySet()) {
             IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
             indirectBufferCommandsBuilder1.createBuffer();
@@ -72,6 +88,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
             this.render(sceneObjects.getKey(), indirectBufferCommandsBuilder1, renderBuffer);
             indirectBufferCommandsBuilder1.destroyBuffer();
         }
+        this.getGBuffer().unBindFBO();
     }
 
     protected void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBuffer renderBuffer) {
@@ -132,6 +149,10 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     public void setIndirectMeshObjects(@NotNull Set<SceneObject> sceneObjects) {
         this.indirectMeshObjects = sceneObjects;
+    }
+
+    public FBOTexture2DProgram getGBuffer() {
+        return this.gBuffer;
     }
 
     public Set<SceneObject> getIndirectMeshObjects() {
