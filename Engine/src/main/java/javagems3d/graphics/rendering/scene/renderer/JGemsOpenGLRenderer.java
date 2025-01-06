@@ -244,7 +244,6 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     public void loadMeshMaterialsIsSSBO(BindlessTexturesDataCache bindlessTexturesDataCache, MeshBuffersDataCache meshBuffersDataCache) {
-        int texturing_code = 0;
         ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
         for (Material material : meshBuffersDataCache.getMaterials()) {
             ISample diffuse = material.getDiffuse();

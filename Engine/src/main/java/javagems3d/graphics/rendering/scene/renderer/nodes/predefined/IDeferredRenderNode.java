@@ -17,10 +17,14 @@ import java.util.stream.Collectors;
 
 public interface IDeferredRenderNode extends IRenderNode {
     @NotNull FBOTexture2DProgram getOutFboGBuffer();
+    @NotNull FBOTexture2DProgram getOutFboSSAOBuffer();
+    @NotNull FBOTexture2DProgram getOutFboColorBuffer();
 
     final class Default extends IRenderNode.Template implements IDeferredRenderNode {
         private final IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
         private FBOTexture2DProgram gBuffer;
+        private FBOTexture2DProgram ssao;
+        private FBOTexture2DProgram color;
 
         public Default(OpenGLRenderer openGLRenderer) {
             super(openGLRenderer);
@@ -29,6 +33,16 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         public @NotNull FBOTexture2DProgram getOutFboGBuffer() {
             return this.gBuffer;
+        }
+
+        @Override
+        public @NotNull FBOTexture2DProgram getOutFboSSAOBuffer() {
+            return this.ssao;
+        }
+
+        @Override
+        public @NotNull FBOTexture2DProgram getOutFboColorBuffer() {
+            return this.color;
         }
 
         @Override
