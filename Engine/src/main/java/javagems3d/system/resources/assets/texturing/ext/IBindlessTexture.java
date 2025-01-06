@@ -11,6 +11,7 @@ public interface IBindlessTexture {
     default void createARB64Handling() {
         ARBBindlessTexture.glMakeTextureHandleResidentARB(this.getBindingHandler());
     }
+
     default void removeARB64Handling() {
         ARBBindlessTexture.glMakeTextureHandleNonResidentARB(this.getBindingHandler());
     }

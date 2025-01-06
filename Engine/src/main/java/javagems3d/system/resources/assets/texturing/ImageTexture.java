@@ -27,10 +27,10 @@ import java.nio.ByteBuffer;
 public class ImageTexture extends ImageBasedTexture implements IBindlessTexture {
     private Vector2i size;
     private int textureId;
-    private long bindLessHandler;
+    private long bindlessHandler;
 
     public ImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull Data data) {
-        this.bindLessHandler = 0;
+        this.bindlessHandler = 0;
         this.textureId = 0;
         this.init(textureProperties, data);
     }
@@ -70,7 +70,7 @@ public class ImageTexture extends ImageBasedTexture implements IBindlessTexture 
         data.clear();
         this.setProperties(properties);
 
-        this.bindLessHandler = this.createBindingHandler(this.getTextureId());
+        this.bindlessHandler = this.createBindingHandler(this.getTextureId());
         this.createARB64Handling();
     }
 
@@ -97,6 +97,7 @@ public class ImageTexture extends ImageBasedTexture implements IBindlessTexture 
         this.removeARB64Handling();
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
+        this.bindlessHandler = 0;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class ImageTexture extends ImageBasedTexture implements IBindlessTexture 
 
     @Override
     public long getBindingHandler() {
-        return this.bindLessHandler;
+        return this.bindlessHandler;
     }
 
     public static final class Properties implements IProperties {

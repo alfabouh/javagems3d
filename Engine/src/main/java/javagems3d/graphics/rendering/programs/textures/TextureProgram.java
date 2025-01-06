@@ -11,15 +11,19 @@
 
 package javagems3d.graphics.rendering.programs.textures;
 
+import javagems3d.system.resources.assets.texturing.ext.IBindlessTexture;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 
-public class TextureProgram implements ITextureProgram {
+public class TextureProgram implements ITextureProgram, IBindlessTexture {
     private int textureId;
+    private long bindlessHandler;
 
     public TextureProgram() {
+        this.bindlessHandler = 0;
+        this.textureId = 0;
     }
 
     public void createTexture(Vector2i size, int textureFormat, int internalFormat, int filtering_mag, int filtering_min, int compareMode, int compareFunc, int clamp_s, int clamp_t, float[] borderColor) {
@@ -38,16 +42,24 @@ public class TextureProgram implements ITextureProgram {
             GL46.glTexParameterfv(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_BORDER_COLOR, borderColor);
         }
         this.unBindTexture();
+
+        this.bindlessHandler = this.createBindingHandler(this.getTextureId());
+        this.createARB64Handling();
     }
 
     @Override
     public void clear() {
-        this.unBindTexture();
+        this.removeARB64Handling();
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
     }
 
     public int getTextureId() {
         return this.textureId;
+    }
+
+    @Override
+    public long getBindingHandler() {
+        return this.bindlessHandler;
     }
 }
