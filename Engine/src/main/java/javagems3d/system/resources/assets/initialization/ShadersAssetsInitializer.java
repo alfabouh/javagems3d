@@ -14,7 +14,7 @@ package javagems3d.system.resources.assets.initialization;
 import javagems3d.JGems3D;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.Environment;
-import javagems3d.graphics.environment.lighting.LightManager;
+import javagems3d.graphics.environment.lights.LightManager;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;

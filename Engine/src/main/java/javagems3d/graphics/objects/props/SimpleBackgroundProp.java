@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.objects.props;
 
-import javagems3d.graphics.environment.lighting.Light;
+import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;

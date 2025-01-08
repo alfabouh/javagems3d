@@ -17,7 +17,7 @@ import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.environment.fog.FogManager;
-import javagems3d.graphics.environment.lighting.LightManager;
+import javagems3d.graphics.environment.lights.LightManager;
 import javagems3d.graphics.environment.shadows.ShadowScene;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.world.SceneWorld;

@@ -13,7 +13,7 @@ package api.app.events.bus;
 
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
-import javagems3d.graphics.environment.lighting.Light;
+import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.entities.AbstractSceneEntity;
 import javagems3d.graphics.OLD.JGemsOpenGLRendererOLD;
 import javagems3d.graphics.screen.ticking.FrameTicking;

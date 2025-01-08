@@ -17,7 +17,7 @@ import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.environment.lighting.Light;
+import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;

@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.graphics.environment.lighting;
+package javagems3d.graphics.environment.lights;
 
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;

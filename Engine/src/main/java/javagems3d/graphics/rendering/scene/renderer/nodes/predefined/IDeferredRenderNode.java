@@ -41,13 +41,13 @@ public interface IDeferredRenderNode extends IRenderNode {
         @Override
         public void onRender(FrameTicking frameTicking) {
             Set<SceneObject> sceneObjects = JGemsOpenGLRenderer.getFilteredSetToRender(this.getOpenGLRenderer().getSceneWorld().getSceneObjects());
-            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.canBeRenderedInIndirectStage(sceneObjects));
+            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.indirectObjectsFilter(sceneObjects));
             this.getIndirectGeometryRenderProcessor().onRender(frameTicking);
             this.getSSAORenderProcessor().onRender(frameTicking);
             this.getRawColorSceneRenderProcessor().onRender(frameTicking);
         }
 
-        private Set<SceneObject> canBeRenderedInIndirectStage(Set<SceneObject> set) {
+        private Set<SceneObject> indirectObjectsFilter(Set<SceneObject> set) {
             return set.stream().filter(e -> e.getObjectRenderConfiguration().getShadingTable().getRenderingSceneShaderTarget() == ShadingTable.Stage.DEFERRED_INDIRECT).collect(Collectors.toSet());
         }
 

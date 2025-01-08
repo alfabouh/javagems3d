@@ -422,7 +422,7 @@ public class JGemsOpenGLRendererOLD {
             }
         }
 
-        try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("lighting")) {
+        try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("lights")) {
             this.getForwardAndDeferredScenesBuffer().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.deferredLighting(model);

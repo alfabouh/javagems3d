@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.graphics.environment.lighting;
+package javagems3d.graphics.environment.lights;
 
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;

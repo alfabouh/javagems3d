@@ -34,6 +34,7 @@ public class MeshGroup extends MeshStructure<MeshGroup.MeshGroupNode> {
         return false;
     }
 
+    @SuppressWarnings("all")
     public MeshGroup setLinkedMeshBuffer(MeshBuffer linkedMeshBuffer) {
         this.linkedMeshBuffer = linkedMeshBuffer;
         return this;

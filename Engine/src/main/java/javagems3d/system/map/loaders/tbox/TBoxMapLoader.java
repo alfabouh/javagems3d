@@ -19,7 +19,7 @@ import javagems3d.JGemsHelper;
 import api.bridge.APIContainer;
 import javagems3d.audio.sound.SoundBuffer;
 import javagems3d.audio.sound.data.SoundType;
-import javagems3d.graphics.environment.lighting.PointLight;
+import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.Zone;

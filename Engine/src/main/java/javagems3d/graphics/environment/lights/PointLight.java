@@ -9,11 +9,10 @@
  *
  */
 
-package javagems3d.graphics.environment.lighting;
+package javagems3d.graphics.environment.lights;
 
 import javagems3d.JGemsHelper;
 import org.joml.Vector3f;
-import javagems3d.JGems3D;
 import javagems3d.graphics.objects.entities.AbstractSceneEntity;
 import javagems3d.physics.world.IWorld;
 

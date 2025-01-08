@@ -19,7 +19,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import api.bridge.events.APIEventsLauncher;
-import javagems3d.graphics.environment.lighting.Light;
+import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.world.SceneWorld;

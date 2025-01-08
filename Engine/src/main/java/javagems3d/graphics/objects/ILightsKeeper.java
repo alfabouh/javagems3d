@@ -12,7 +12,7 @@
 package javagems3d.graphics.objects;
 
 import org.joml.Vector3f;
-import javagems3d.graphics.environment.lighting.Light;
+import javagems3d.graphics.environment.lights.Light;
 
 import java.util.List;
 

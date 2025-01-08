@@ -179,7 +179,7 @@ public final class JGemsShaderManager extends ShaderManager {
             for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
                 CascadeShadow cascadeShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getCascadeShadows().get(i);
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getSunPostShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascadeShadow.getSplitDistance()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascadeShadow.getLightProjectionViewMatrix()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));

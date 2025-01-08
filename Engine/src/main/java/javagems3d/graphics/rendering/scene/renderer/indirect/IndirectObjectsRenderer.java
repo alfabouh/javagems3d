@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class IndirectObjectsRenderer {
     private static final int SSBO_DATASETS_MATRICES_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
@@ -137,16 +138,7 @@ public class IndirectObjectsRenderer {
     }
 
     protected Map<JGemsShaderManager, Set<SceneObject>> splitObjectsByShaderGroups(Set<SceneObject> sceneObjects, ShaderSplittingPicker shaderSplittingPicker) {
-        Map<JGemsShaderManager, Set<SceneObject>> map = new HashMap<>();
-        for (SceneObject sceneObject : sceneObjects) {
-            JGemsShaderManager shaderManager = shaderSplittingPicker.pickShaderGroup(sceneObject);
-            JGemsHelper.UTILS.putObjectInMapOrUpdate(map, shaderManager, new HashSet<SceneObject>() {{ add(sceneObject); }}, (ex, nw) ->
-            {
-                ex.add(nw);
-                return ex;
-            }, sceneObject);
-        }
-        return map;
+        return sceneObjects.stream().collect(Collectors.groupingBy(shaderSplittingPicker::pickShaderGroup, HashMap::new, Collectors.toSet()));
     }
 
     public ShaderSplittingPicker getShaderSplitting() {
