@@ -19,7 +19,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
-import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
+import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.predefined.*;
@@ -66,7 +66,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
 
-    protected IndirectRenderBuffer sceneIndirectRenderBuffer;
+    protected IndirectRenderBufferProgram sceneIndirectRenderBufferProgram;
 
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
@@ -81,7 +81,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         JGemsOpenGLRenderer.inGameInterface = new DearUIGameInterface();
         JGemsOpenGLRenderer.inMenuInterface = new DearUIMenuInterface();
 
-        this.sceneIndirectRenderBuffer = new IndirectRenderBuffer(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
+        this.sceneIndirectRenderBufferProgram = new IndirectRenderBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
         this.sceenModel = null;
     }
 
@@ -155,23 +155,21 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(Nodes.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
-        //this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld(), this.getSceneWorld().getCamera());
         JGems3D.get().getScreen().normalizeViewPort();
-
         if (this.getSceneWorld().getCamera() == null) {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             uiRenderNode.onRender(frameTicking);
             this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
             return;
         }
-
         if (JGems3D.get().isPaused()) {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             uiRenderNode.onRender(frameTicking);
             this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
             return;
         }
-
+        this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld(), this.getSceneWorld().getCamera());
+        JGems3D.get().getScreen().normalizeViewPort();
         deferredRenderNode.onRender(frameTicking);
         //forwardRenderNode.onRender(frameTicking);
         //transparencyRenderNode.onRender(frameTicking);
@@ -299,8 +297,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         this.getConveyorNodes().values().stream().filter(Objects::nonNull).forEach(e -> e.onWindowResize(window));
     }
 
-    public IndirectRenderBuffer getSceneIndirectBuffer() {
-        return this.sceneIndirectRenderBuffer;
+    public IndirectRenderBufferProgram getSceneIndirectBuffer() {
+        return this.sceneIndirectRenderBufferProgram;
     }
 
     public JGemsUI getJGemsUI() {

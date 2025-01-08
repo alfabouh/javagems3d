@@ -2,7 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
-import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
+import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.Nodes;
 import javagems3d.graphics.screen.window.IWindow;
@@ -32,7 +32,7 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
 
     public abstract @NotNull Vector2i getRenderingResolution();
 
-    public abstract IndirectRenderBuffer getSceneIndirectBuffer();
+    public abstract IndirectRenderBufferProgram getSceneIndirectBuffer();
     public abstract Map<Nodes, IRenderNode> getConveyorNodes();
 
     @Override

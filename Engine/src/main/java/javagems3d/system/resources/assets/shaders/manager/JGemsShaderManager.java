@@ -45,8 +45,8 @@ import java.nio.FloatBuffer;
 public final class JGemsShaderManager extends ShaderManager {
     private final JGemsShaderUtils shaderUtils;
 
-    public JGemsShaderManager(ShaderRenderingTarget shaderRenderingTarget, ShadersContainer shadersContainer) {
-        super(shaderRenderingTarget, shadersContainer);
+    public JGemsShaderManager(ShadersContainer shadersContainer) {
+        super(shadersContainer);
         this.shaderUtils = new JGemsShaderUtils();
     }
 
@@ -56,7 +56,7 @@ public final class JGemsShaderManager extends ShaderManager {
     }
 
     public JGemsShaderManager copy() {
-        return new JGemsShaderManager(this.getShaderTarget(), this.getShaderContainer());
+        return new JGemsShaderManager(this.getShaderContainer());
     }
 
     public JGemsShaderUtils getUtils() {

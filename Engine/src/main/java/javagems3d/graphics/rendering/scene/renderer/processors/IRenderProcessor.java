@@ -9,8 +9,8 @@ import org.joml.Vector2i;
 public interface IRenderProcessor extends IResourceInit {
     void onRender(FrameTicking frameTicking);
 
-    default Vector2i getWindowSize() {
-        return this.getOpenGLRenderer().getWindowSize();
+    default Vector2i getRenderingResolution() {
+        return this.getOpenGLRenderer().getRenderingResolution();
     }
 
     @NotNull OpenGLRenderer getOpenGLRenderer();

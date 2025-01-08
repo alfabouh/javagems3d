@@ -13,7 +13,6 @@ package toolbox.resources.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.materials.Material;
-import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.transformation.TransformationUtils;

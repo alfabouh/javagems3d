@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.buffers;
+package javagems3d.graphics.rendering.programs.indirect;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
@@ -6,7 +6,6 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
-import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -17,7 +16,7 @@ import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class IndirectRenderBuffer {
+public final class IndirectRenderBufferProgram {
     private int staticVao;
     private final List<Integer> vboList;
 
@@ -26,11 +25,11 @@ public final class IndirectRenderBuffer {
 
     private final Layout layout;
 
-    public IndirectRenderBuffer(RenderAttributePointer... attributePointers) {
+    public IndirectRenderBufferProgram(RenderAttributePointer... attributePointers) {
         this(new Layout(attributePointers));
     }
 
-    public IndirectRenderBuffer(@NotNull Layout layout) {
+    public IndirectRenderBufferProgram(@NotNull Layout layout) {
         this.vboList = new ArrayList<>();
         this.layout = layout;
     }

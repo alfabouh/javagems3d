@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("all")
 public class ObjectRenderConfiguration implements IRenderConfiguration {
-    private JGemsShaderManager modelRenderShader;
+    private ShadingTable shadingTable;
 
     private float renderDistance;
     private float alphaDiscardValue;
@@ -20,8 +20,8 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
     private boolean allowMovementInterpolation;
     private boolean disableFaceCulling;
 
-    public ObjectRenderConfiguration(@NotNull JGemsShaderManager modelRenderShader) {
-        this.modelRenderShader = modelRenderShader;
+    public ObjectRenderConfiguration(@NotNull ShadingTable shadingTable) {
+        this.shadingTable = shadingTable;
 
         this.alphaDiscardValue = JGemsRenderingGlobalConstants.DEFAULT_ALPHA_DISCARD;
         this.renderDistance = -1.0f;
@@ -35,12 +35,20 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         this.disableFaceCulling = false;
     }
 
-    public @NotNull JGemsShaderManager getModelRenderShader() {
-        return this.modelRenderShader;
+    public ObjectRenderConfiguration(@NotNull JGemsShaderManager sceneShader, @NotNull ShadingTable.Stage renderingSceneShaderTarget) {
+        this(new ShadingTable(sceneShader, renderingSceneShaderTarget));
     }
 
-    public ObjectRenderConfiguration setModelRenderShader(JGemsShaderManager modelRenderShader) {
-        this.modelRenderShader = modelRenderShader;
+    public ObjectRenderConfiguration(@NotNull JGemsShaderManager sceneShader) {
+        this(new ShadingTable(sceneShader, ShadingTable.Stage.DEFERRED_INDIRECT));
+    }
+
+    public ShadingTable getShadingTable() {
+        return this.shadingTable;
+    }
+
+    public ObjectRenderConfiguration setShadingTable(ShadingTable shadingTable) {
+        this.shadingTable = shadingTable;
         return this;
     }
 
@@ -127,7 +135,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
 
     @Override
     public @NotNull ObjectRenderConfiguration copy() {
-        ObjectRenderConfiguration objectRenderingConfiguration = new ObjectRenderConfiguration(this.getModelRenderShader());
+        ObjectRenderConfiguration objectRenderingConfiguration = new ObjectRenderConfiguration(this.getShadingTable());
         objectRenderingConfiguration.setAllowMovementInterpolation(this.isAllowedMovementInterpolation());
         this.setDisableFaceCulling(this.isDisabledFaceCulling());
         this.setLightsAffected(this.isLightsAffected());

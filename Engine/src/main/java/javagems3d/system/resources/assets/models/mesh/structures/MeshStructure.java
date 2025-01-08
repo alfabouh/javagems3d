@@ -32,7 +32,7 @@ public abstract class MeshStructure <T extends MeshStructure.Node<? extends IMes
         this.getMeshNodes().addAll(Arrays.asList(t));
     }
 
-    public abstract MeshDataType getMeshDataType();
+    public abstract boolean canBeUsedInIndirectRendering();
 
     public boolean hasNodes() {
         return !this.getMeshNodes().isEmpty();

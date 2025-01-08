@@ -11,7 +11,6 @@
 
 package javagems3d.system.resources.assets.models;
 
-import javagems3d.system.resources.assets.models.mesh.structures.MeshDataType;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
@@ -60,10 +59,6 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
 
     public boolean isValid() {
         return this.getMeshStructure() != null;
-    }
-
-    public MeshDataType getMeshDataType() {
-        return this.getMeshStructure().getMeshDataType();
     }
 
     @SuppressWarnings("all")

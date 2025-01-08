@@ -2,7 +2,6 @@ package javagems3d.graphics.rendering.programs.indirect;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.rendering.scene.buffers.IndirectRenderBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -12,13 +11,13 @@ import java.nio.IntBuffer;
 import java.util.*;
 
 public class IndirectBufferCommandsBuilder {
-    private final IndirectRenderBuffer indirectRenderBuffer;
+    private final IndirectRenderBufferProgram indirectRenderBufferProgram;
 
     private int staticDrawCount;
     private int staticRenderBufferHandle;
 
-    public IndirectBufferCommandsBuilder(IndirectRenderBuffer indirectRenderBuffer) {
-        this.indirectRenderBuffer = indirectRenderBuffer;
+    public IndirectBufferCommandsBuilder(IndirectRenderBufferProgram indirectRenderBufferProgram) {
+        this.indirectRenderBufferProgram = indirectRenderBufferProgram;
     }
 
     public void createBuffer() {
@@ -64,14 +63,14 @@ public class IndirectBufferCommandsBuilder {
                 baseInstance += entitiesCount;
 
                 for (SceneObject modeled : meshBuffer.getValue()) {
-                    materialIds.put(data.getMaterialId());
+                    if (materialIds != null) {
+                        materialIds.put(data.getMaterialId());
+                    }
                     indexes.put(idMap.get(modeled));
                 }
             }
         }
         commandBuffer.flip();
-        indexes.flip();
-        materialIds.flip();
 
         this.staticDrawCount = commandBuffer.remaining() / COM_SIZE;
 
@@ -82,8 +81,8 @@ public class IndirectBufferCommandsBuilder {
         MemoryUtil.memFree(commandBuffer);
     }
 
-    protected IndirectRenderBuffer getIndirectRenderBuffer() {
-        return this.indirectRenderBuffer;
+    protected IndirectRenderBufferProgram getIndirectRenderBuffer() {
+        return this.indirectRenderBufferProgram;
     }
 
     public int getRenderBufferHandle() {

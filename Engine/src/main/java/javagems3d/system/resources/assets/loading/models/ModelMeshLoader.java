@@ -11,7 +11,6 @@ import javagems3d.system.resources.assets.models.animation.components.SkeletonDa
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshDataType;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -46,8 +45,8 @@ public class ModelMeshLoader implements ILoadingHelper {
         boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
         boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
         MeshGroup meshGroup = null;
-        String grString = this.getStr(MeshDataType.GROUP);
-        String bffString = this.getStr(MeshDataType.BUFFER);
+        String grString = this.getStr(MeshGroup.POSTFIX);
+        String bffString = this.getStr(MeshBuffer.POSTFIX);
         if (this.getResourceCache().checkObjectInCache(grString)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
         } else {
@@ -64,6 +63,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                     throw new JGemsNullException("There was an error, while loading the model!");
                 }
                 this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
+                meshGroup.setLinkedMeshBuffer(meshBuffer);
             }
         }
         if (createCollision) {
@@ -76,7 +76,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
         boolean loadInIndirectBuffer = (Flags & ~FLAGS.LOAD_IN_INDIRECT_BUFFER) == 0;
-        String bffString = this.getStr(MeshDataType.BUFFER);
+        String bffString = this.getStr(MeshBuffer.POSTFIX);
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
@@ -93,12 +93,12 @@ public class ModelMeshLoader implements ILoadingHelper {
         return meshBuffer;
     }
 
-    public String getStr(MeshDataType dataType) {
-        return ModelMeshLoader.getModelStr(this.getPath(), dataType);
+    public String getStr(String postfix) {
+        return ModelMeshLoader.getModelStr(this.getPath(), postfix);
     }
 
-    public static String getModelStr(JGemsPath path, MeshDataType dataType) {
-        return path + dataType.getSuffix();
+    public static String getModelStr(JGemsPath path, String postfix) {
+        return path + postfix;
     }
 
     //++++++++++++++++++++++++++

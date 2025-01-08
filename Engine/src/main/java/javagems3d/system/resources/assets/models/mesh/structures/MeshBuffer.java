@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
+    public static final String POSTFIX = "_buffer";
     private final List<PassData> passData;
 
     public MeshBuffer() {
@@ -34,6 +35,11 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
         this.passData = new ArrayList<>();
     }
 
+    @Override
+    public boolean canBeUsedInIndirectRendering() {
+        return true;
+    }
+
     public List<PassData> getPassData() {
         return this.passData;
     }
@@ -41,11 +47,6 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
     @Override
     public List<MeshBufferNode> getMeshNodes() {
         return super.getMeshNodes();
-    }
-
-    @Override
-    public MeshDataType getMeshDataType() {
-        return MeshDataType.BUFFER;
     }
 
     public static final class MeshBufferNode extends MeshStructure.Node<DataMesh> {

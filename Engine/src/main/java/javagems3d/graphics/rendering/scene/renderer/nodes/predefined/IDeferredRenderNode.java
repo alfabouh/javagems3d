@@ -1,8 +1,8 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes.predefined;
 
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
@@ -10,10 +10,8 @@ import javagems3d.graphics.rendering.scene.renderer.processors.predefined.Indire
 import javagems3d.graphics.rendering.scene.renderer.processors.predefined.RawColorSceneRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.predefined.SSAORenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.system.resources.assets.shaders.manager.ShaderRenderingTarget;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL46;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,14 +41,14 @@ public interface IDeferredRenderNode extends IRenderNode {
         @Override
         public void onRender(FrameTicking frameTicking) {
             Set<SceneObject> sceneObjects = JGemsOpenGLRenderer.getFilteredSetToRender(this.getOpenGLRenderer().getSceneWorld().getSceneObjects());
-            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.localFilter(sceneObjects));
+            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.canBeRenderedInIndirectStage(sceneObjects));
             this.getIndirectGeometryRenderProcessor().onRender(frameTicking);
             this.getSSAORenderProcessor().onRender(frameTicking);
             this.getRawColorSceneRenderProcessor().onRender(frameTicking);
         }
 
-        private Set<SceneObject> localFilter(Set<SceneObject> set) {
-            return set.stream().filter(e -> e.getShaderManager().getShaderTarget().equals(ShaderRenderingTarget.INDIRECT_DEFERRED_RENDERING)).collect(Collectors.toSet());
+        private Set<SceneObject> canBeRenderedInIndirectStage(Set<SceneObject> set) {
+            return set.stream().filter(e -> e.getObjectRenderConfiguration().getShadingTable().getRenderingSceneShaderTarget() == ShadingTable.Stage.DEFERRED_INDIRECT).collect(Collectors.toSet());
         }
 
         public void initProcessors() {

@@ -13,8 +13,6 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -42,12 +40,12 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void createResources() {
-        this.createSSAOResources(this.getSSAOParams(this.getWindowSize()));
+        this.createSSAOResources(this.getSSAOParams(this.getRenderingResolution()));
         this.ssaoBuffer = new FBOTexture2DProgram(true);
         T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
         }};
-        this.ssaoBuffer.createFrameBuffer2DTexture(this.getWindowSize(), ssao, false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.ssaoBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
             return;
         }
         FBOTexture2DProgram gBuffer = this.getIndirectGeometryRenderProcessor().getGBuffer();
-        Vector2i windowSize = this.getWindowSize();
+        Vector2i windowSize = this.getRenderingResolution();
         JGemsShaderManager ssaoComputeShader = this.getSsaoComputing();
         ssaoComputeShader.beginComputing();
 

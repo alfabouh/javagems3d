@@ -36,18 +36,16 @@ import java.util.*;
 public abstract class ShaderManager implements ICached {
     private final Set<UniformBufferObject> uniformBufferObjects;
     private final ShadersContainer shadersContainer;
-    private final ShaderRenderingTarget shaderRenderingTarget;
     private ActiveShader activeShader;
     private ShaderHandler graphicShaderHandler;
     private ShaderHandler computingShaderHandler;
     private int usedTextureUnits;
 
-    public ShaderManager(ShaderRenderingTarget shaderRenderingTarget, ShadersContainer shadersContainer) {
+    public ShaderManager(ShadersContainer shadersContainer) {
         this.uniformBufferObjects = new HashSet<>();
         this.shadersContainer = shadersContainer;
         this.activeShader = ActiveShader.NONE;
         this.usedTextureUnits = 0;
-        this.shaderRenderingTarget = shaderRenderingTarget;
     }
 
     public void clearUsedTextureSlots() {
@@ -285,10 +283,6 @@ public abstract class ShaderManager implements ICached {
         if (uniformBufferObject != null) {
             uniformBufferObject.setUniformBufferData(offset, data);
         }
-    }
-
-    public ShaderRenderingTarget getShaderTarget() {
-        return this.shaderRenderingTarget;
     }
 
     public ShaderHandler getComputingShaderGroup() {
