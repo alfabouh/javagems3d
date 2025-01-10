@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.objects.props;
 
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
@@ -34,10 +34,10 @@ public abstract class AbstractSceneProp extends SceneObject implements IWorldObj
     private AnimationData animationData;
     private final List<Light> lightList;
     private final IRenderFabric renderFabric;
-    private ObjectRenderConfiguration objectRenderingConfiguration;
+    private RenderAttributes objectRenderingConfiguration;
     private boolean isVisible;
 
-    public AbstractSceneProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public AbstractSceneProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull RenderAttributes objectRenderingConfiguration) {
         super(model);
         this.lightList = new ArrayList<>();
 
@@ -48,7 +48,7 @@ public abstract class AbstractSceneProp extends SceneObject implements IWorldObj
     }
 
     public AbstractSceneProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, model, new ObjectRenderConfiguration(shaderManager));
+        this(renderFabric, model, new RenderAttributes(shaderManager));
     }
 
     public void clearLights() {
@@ -103,7 +103,7 @@ public abstract class AbstractSceneProp extends SceneObject implements IWorldObj
         JGemsHelper.getLogger().log("Removed light from: " + this);
     }
 
-    public AbstractSceneProp setModelRenderConstraints(ObjectRenderConfiguration objectRenderingConfiguration) {
+    public AbstractSceneProp setModelRenderConstraints(RenderAttributes objectRenderingConfiguration) {
         this.objectRenderingConfiguration = objectRenderingConfiguration;
         return this;
     }
@@ -117,7 +117,7 @@ public abstract class AbstractSceneProp extends SceneObject implements IWorldObj
         return this.lightList;
     }
 
-    public @NotNull ObjectRenderConfiguration getObjectRenderConfiguration() {
+    public @NotNull RenderAttributes getRenderAttributes() {
         return this.objectRenderingConfiguration;
     }
 

@@ -11,7 +11,7 @@
 package javagems3d.system.map.loaders.tbox.placers;
 
 import javagems3d.graphics.objects.IRendered;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.objects.entities.AbstractSceneEntity;
@@ -21,13 +21,13 @@ import javagems3d.system.service.path.JGemsPath;
  * This class represents the rendering information for an object inside the engine itself
  */
 public final class TDefaultRenderContainer {
-    private final ObjectRenderConfiguration objectRenderingConfiguration;
+    private final RenderAttributes objectRenderingConfiguration;
     private final JGemsPath pathToRenderModel;
     private final JGemsPath pathToRenderShader;
     private final Class<? extends AbstractSceneEntity> sceneEntityClass;
     private final IRenderFabric renderFabric;
 
-    public TDefaultRenderContainer(@NotNull IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public TDefaultRenderContainer(@NotNull IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull RenderAttributes objectRenderingConfiguration) {
         this.renderFabric = renderFabric;
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
@@ -45,7 +45,7 @@ public final class TDefaultRenderContainer {
     /**
      * These are the attributes that affect the rendering of the mesh in the JGems pipeline
      */
-    public @NotNull ObjectRenderConfiguration getObjectRenderSettings() {
+    public @NotNull RenderAttributes getObjectRenderSettings() {
         return this.objectRenderingConfiguration;
     }
 

@@ -22,7 +22,7 @@
 
 package javagems3d.system.map.loaders.tbox.placers;
 
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
@@ -60,7 +60,7 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
 
         if (isProp != null && (isProp)) {
-            ObjectRenderConfiguration modelRenderData = renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager);
+            RenderAttributes modelRenderData = renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager);
             //IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 
             Model<Format3D> model = new Model<>(new Format3D(), meshGroup);

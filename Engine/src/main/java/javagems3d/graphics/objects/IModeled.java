@@ -1,6 +1,5 @@
 package javagems3d.graphics.objects;
 
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 

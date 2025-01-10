@@ -13,7 +13,7 @@ package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -90,7 +90,7 @@ public abstract class SceneObject implements IModeled, IRendered, ICulled, ILigh
         return this.model;
     }
 
-    public abstract @NotNull ObjectRenderConfiguration getObjectRenderConfiguration();
+    public abstract @NotNull RenderAttributes getRenderAttributes();
 
     public boolean hasModel() {
         return this.getModel() != null && this.getModel().isValid();

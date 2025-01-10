@@ -9,12 +9,12 @@
  *
  */
 
-package javagems3d.graphics.environment.lights;
+package javagems3d.graphics.environment.lights.scene;
 
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.world.SceneWorld;
 
-public interface ILightManager {
+public interface ILightsScene {
     void updateBuffers(MemoryStack stack, SceneWorld sceneWorld, Matrix4f viewMatrix);
 }

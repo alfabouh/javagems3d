@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.environment.shadows;
 
+import javagems3d.graphics.environment.Environment;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -21,27 +22,44 @@ import javagems3d.graphics.transformation.TransformationUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PointLightShadow {
+public class PointLightShadow extends AbstractShadow {
     private final FBOCubeMapProgram pointLightCubeMap;
     private final int id;
     private PointLight pointLight;
     private List<Matrix4f> shadowDirections;
 
-    public PointLightShadow(int id) {
+    public PointLightShadow(Environment environment, Vector2i shadowMapResolution, int id) {
+        super(environment, shadowMapResolution);
         this.id = id;
-        this.shadowDirections = new ArrayList<>();
+        this.shadowDirections = new ArrayList<>(6);
         this.pointLight = null;
         this.pointLightCubeMap = new FBOCubeMapProgram();
     }
 
-    public void createFBO(Vector2i dim) {
-        this.pointLightCubeMap.clearFBO();
-        this.pointLightCubeMap.createFrameBufferCubeMapColor(new Vector2i(dim), true, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_LINEAR, GL46.GL_CLAMP_TO_EDGE);
-        //this.pointLightCubeMap.createFrameBufferCubeMapDepth(news Vector2i(dim), GL46.GL_NEAREST, GL46.GL_CLAMP_TO_EDGE);
-    }
-
     public void configureMatrices() {
         this.shadowDirections = TransformationUtils.getAllDirectionViewSpaces(this.getPointLight().getLightPos(), this.nearPlane(), this.farPlane());
+    }
+
+    public void setPointLight(PointLight pointLight) {
+        if (pointLight == null) {
+            if (this.getPointLight() != null) {
+                this.getPointLight().setAttachedShadowSceneId(-1);
+            }
+            this.pointLight = null;
+        } else {
+            this.pointLight = pointLight;
+            this.pointLight.setAttachedShadowSceneId(this.getId());
+        }
+    }
+
+    @Override
+    public void createResources() {
+        this.getPointLightCubeMap().createFrameBufferCubeMapColor(this.getShadowMapResolution(), true, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_LINEAR, GL46.GL_CLAMP_TO_EDGE);
+    }
+
+    @Override
+    public void destroyResources() {
+        this.getPointLightCubeMap().clearFBO();
     }
 
     public int getId() {
@@ -62,18 +80,6 @@ public class PointLightShadow {
 
     public PointLight getPointLight() {
         return this.pointLight;
-    }
-
-    public void setPointLight(PointLight pointLight) {
-        if (pointLight == null) {
-            if (this.getPointLight() != null) {
-                this.getPointLight().setAttachedShadowSceneId(-1);
-            }
-            this.pointLight = null;
-        } else {
-            this.pointLight = pointLight;
-            this.pointLight.setAttachedShadowSceneId(this.getId());
-        }
     }
 
     public List<Matrix4f> getShadowDirections() {

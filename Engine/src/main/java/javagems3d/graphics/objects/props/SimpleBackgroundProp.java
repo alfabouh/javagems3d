@@ -13,7 +13,7 @@ package javagems3d.graphics.objects.props;
 
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
@@ -26,9 +26,9 @@ import java.util.List;
 public class SimpleBackgroundProp extends SceneObject {
     private AnimationData animationData;
     private final IRenderFabric renderFabric;
-    private ObjectRenderConfiguration objectRenderingConfiguration;
+    private RenderAttributes objectRenderingConfiguration;
 
-    public SimpleBackgroundProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull ObjectRenderConfiguration objectRenderingConfiguration) {
+    public SimpleBackgroundProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull RenderAttributes objectRenderingConfiguration) {
         super(model);
         this.renderFabric = renderFabric;
         this.objectRenderingConfiguration = objectRenderingConfiguration;
@@ -36,7 +36,7 @@ public class SimpleBackgroundProp extends SceneObject {
     }
 
     public SimpleBackgroundProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, model, new ObjectRenderConfiguration(shaderManager));
+        this(renderFabric, model, new RenderAttributes(shaderManager));
     }
 
     public void clearLights() {
@@ -48,7 +48,7 @@ public class SimpleBackgroundProp extends SceneObject {
     public void removeLight(Light light) {
     }
 
-    public SimpleBackgroundProp setModelRenderConstraints(ObjectRenderConfiguration objectRenderingConfiguration) {
+    public SimpleBackgroundProp setModelRenderConstraints(RenderAttributes objectRenderingConfiguration) {
         this.objectRenderingConfiguration = objectRenderingConfiguration;
         return this;
     }
@@ -68,7 +68,7 @@ public class SimpleBackgroundProp extends SceneObject {
         return this;
     }
 
-    public @NotNull ObjectRenderConfiguration getObjectRenderConfiguration() {
+    public @NotNull RenderAttributes getRenderAttributes() {
         return this.objectRenderingConfiguration;
     }
 

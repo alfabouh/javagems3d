@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 @SuppressWarnings("all")
-public class ObjectRenderConfiguration implements IRenderConfiguration {
+public class RenderAttributes implements IRenderConfiguration {
     private ShadingTable shadingTable;
 
     private float renderDistance;
@@ -20,7 +20,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
     private boolean allowMovementInterpolation;
     private boolean disableFaceCulling;
 
-    public ObjectRenderConfiguration(@NotNull ShadingTable shadingTable) {
+    public RenderAttributes(@NotNull ShadingTable shadingTable) {
         this.shadingTable = shadingTable;
 
         this.alphaDiscardValue = JGemsRenderingGlobalConstants.DEFAULT_ALPHA_DISCARD;
@@ -35,11 +35,11 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         this.disableFaceCulling = false;
     }
 
-    public ObjectRenderConfiguration(@NotNull JGemsShaderManager sceneShader, @NotNull ShadingTable.Stage renderingSceneShaderTarget) {
+    public RenderAttributes(@NotNull JGemsShaderManager sceneShader, @NotNull ShadingTable.Stage renderingSceneShaderTarget) {
         this(new ShadingTable(sceneShader, renderingSceneShaderTarget));
     }
 
-    public ObjectRenderConfiguration(@NotNull JGemsShaderManager sceneShader) {
+    public RenderAttributes(@NotNull JGemsShaderManager sceneShader) {
         this(new ShadingTable(sceneShader, ShadingTable.Stage.DEFERRED_INDIRECT));
     }
 
@@ -47,7 +47,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.shadingTable;
     }
 
-    public ObjectRenderConfiguration setShadingTable(ShadingTable shadingTable) {
+    public RenderAttributes setShadingTable(ShadingTable shadingTable) {
         this.shadingTable = shadingTable;
         return this;
     }
@@ -56,7 +56,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.renderDistance;
     }
 
-    public ObjectRenderConfiguration setRenderDistance(float renderDistance) {
+    public RenderAttributes setRenderDistance(float renderDistance) {
         this.renderDistance = renderDistance;
         return this;
     }
@@ -65,7 +65,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.alphaDiscardValue;
     }
 
-    public ObjectRenderConfiguration setAlphaDiscardValue(float alphaDiscardValue) {
+    public RenderAttributes setAlphaDiscardValue(float alphaDiscardValue) {
         this.alphaDiscardValue = alphaDiscardValue;
         return this;
     }
@@ -74,7 +74,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.allowMoveMeshesIntoTransparencyPass;
     }
 
-    public ObjectRenderConfiguration setAllowMoveMeshesIntoTransparencyPass(boolean allowMoveMeshesIntoTransparencyPass) {
+    public RenderAttributes setAllowMoveMeshesIntoTransparencyPass(boolean allowMoveMeshesIntoTransparencyPass) {
         this.allowMoveMeshesIntoTransparencyPass = allowMoveMeshesIntoTransparencyPass;
         return this;
     }
@@ -83,7 +83,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.lightsAffected;
     }
 
-    public ObjectRenderConfiguration setLightsAffected(boolean lightsAffected) {
+    public RenderAttributes setLightsAffected(boolean lightsAffected) {
         this.lightsAffected = lightsAffected;
         return this;
     }
@@ -92,7 +92,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.shadowCaster;
     }
 
-    public ObjectRenderConfiguration setShadowCaster(boolean shadowCaster) {
+    public RenderAttributes setShadowCaster(boolean shadowCaster) {
         this.shadowCaster = shadowCaster;
         return this;
     }
@@ -101,7 +101,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.shadowReceiver;
     }
 
-    public ObjectRenderConfiguration setShadowReceiver(boolean shadowReceiver) {
+    public RenderAttributes setShadowReceiver(boolean shadowReceiver) {
         this.shadowReceiver = shadowReceiver;
         return this;
     }
@@ -110,7 +110,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.defaultBrightLighted;
     }
 
-    public ObjectRenderConfiguration setDefaultBrightLighted(boolean defaultBrightLighted) {
+    public RenderAttributes setDefaultBrightLighted(boolean defaultBrightLighted) {
         this.defaultBrightLighted = defaultBrightLighted;
         return this;
     }
@@ -119,7 +119,7 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.allowMovementInterpolation;
     }
 
-    public ObjectRenderConfiguration setAllowMovementInterpolation(boolean allowMovementInterpolation) {
+    public RenderAttributes setAllowMovementInterpolation(boolean allowMovementInterpolation) {
         this.allowMovementInterpolation = allowMovementInterpolation;
         return this;
     }
@@ -128,14 +128,14 @@ public class ObjectRenderConfiguration implements IRenderConfiguration {
         return this.disableFaceCulling;
     }
 
-    public ObjectRenderConfiguration setDisableFaceCulling(boolean disableFaceCulling) {
+    public RenderAttributes setDisableFaceCulling(boolean disableFaceCulling) {
         this.disableFaceCulling = disableFaceCulling;
         return this;
     }
 
     @Override
-    public @NotNull ObjectRenderConfiguration copy() {
-        ObjectRenderConfiguration objectRenderingConfiguration = new ObjectRenderConfiguration(this.getShadingTable());
+    public @NotNull RenderAttributes copy() {
+        RenderAttributes objectRenderingConfiguration = new RenderAttributes(this.getShadingTable());
         objectRenderingConfiguration.setAllowMovementInterpolation(this.isAllowedMovementInterpolation());
         this.setDisableFaceCulling(this.isDisabledFaceCulling());
         this.setLightsAffected(this.isLightsAffected());

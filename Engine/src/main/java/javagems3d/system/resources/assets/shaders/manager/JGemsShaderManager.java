@@ -12,8 +12,9 @@
 package javagems3d.system.resources.assets.shaders.manager;
 
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.materials.Material;
@@ -23,7 +24,6 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.environment.shadows.CascadeShadow;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.scene.JGemsScene;
@@ -76,8 +76,8 @@ public final class JGemsShaderManager extends ShaderManager {
 
         public void performUniformSample(UniformString uniform, ISample sample) {
             if (sample instanceof RGBAColor) {
-                RGBAColor RGBAColor = (RGBAColor) sample;
-                JGemsShaderManager.this.performUniform(uniform, UniformFunctions.VEC4F(RGBAColor.getColor()));
+                RGBAColor color = (RGBAColor) sample;
+                JGemsShaderManager.this.performUniform(uniform, UniformFunctions.VEC4F(color.getColor()));
             } else {
                 if (sample instanceof ImageTexture) {
                     ImageTexture textureSample = (ImageTexture) sample;
@@ -86,7 +86,7 @@ public final class JGemsShaderManager extends ShaderManager {
             }
         }
 
-        public void performRenderDataOnShader(ObjectRenderConfiguration objectRenderingConfiguration) {
+        public void performRenderDataOnShader(RenderAttributes objectRenderingConfiguration) {
             if (!JGemsShaderManager.this.isUniformExist(new UniformString("lighting_code"))) {
                 return;
             }
@@ -177,11 +177,11 @@ public final class JGemsShaderManager extends ShaderManager {
         public void performShadowsInfo() {
             JGemsScene scene = JGems3D.get().getScreen().getScene();
             for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
-                CascadeShadow cascadeShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getCascadeShadows().get(i);
+                SunLightShadow.Cascade cascade = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getCascadeShadows().get(i);
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getSunPostShadowPostFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascadeShadow.getSplitDistance()));
-                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascadeShadow.getLightProjectionViewMatrix()));
+                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
+                    JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
                 }

@@ -11,20 +11,19 @@
 
 package javagems3d.graphics.objects;
 
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import org.jetbrains.annotations.Nullable;
 
 public interface IRendered {
     IRenderFabric getRenderFabric();
-    ObjectRenderConfiguration getObjectRenderConfiguration();
+    RenderAttributes getRenderAttributes();
     
     default boolean hasRender() {
         return this.getRenderFabric() != null;
     }
 
     default JGemsShaderManager getShaderManager() {
-        return this.getObjectRenderConfiguration().getModelRenderShader();
+        return this.getRenderAttributes().getModelRenderShader();
     }
 }

@@ -13,12 +13,12 @@ package javagems3d.graphics.environment;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.lights.scene.LightsScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.environment.fog.FogManager;
-import javagems3d.graphics.environment.lights.LightManager;
-import javagems3d.graphics.environment.shadows.ShadowScene;
+import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -29,14 +29,14 @@ public class Environment implements IEnvironment {
     public static final int FOG_STRUCT_SIZE = 5;
 
     private final ShadowScene shadowScene;
-    private final LightManager lightManager;
+    private final LightsScene lightManager;
     private final SkyBox skyBox;
     private final FogManager fogManager;
 
     public Environment() {
         this.skyBox = new SkyBox(JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
         this.fogManager = new FogManager(this);
-        this.lightManager = new LightManager(this);
+        this.lightManager = new LightsScene(this);
         this.shadowScene = new ShadowScene(this);
     }
 
@@ -82,7 +82,7 @@ public class Environment implements IEnvironment {
         return this.shadowScene;
     }
 
-    public LightManager getLightManager() {
+    public LightsScene getLightManager() {
         return this.lightManager;
     }
 

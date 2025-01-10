@@ -9,14 +9,10 @@
  *
  */
 
-package javagems3d.graphics.environment.shadows;
+package javagems3d.graphics.environment.shadows.scene;
 
+import javagems3d.graphics.rendering.scene.renderer.IResourceInit;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
-public interface IShadowScene {
-    JGemsShaderManager getPointLightShadowShader();
-
-    void createResources();
-
-    void destroyResources();
+public interface IShadowScene extends IResourceInit {
 }

@@ -9,17 +9,18 @@
  *
  */
 
-package javagems3d.graphics.environment.shadows;
+package javagems3d.graphics.environment.shadows.scene;
 
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.shadows.PointLightShadow;
+import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
@@ -31,19 +32,15 @@ import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
-import javagems3d.graphics.rendering.scene.JGemsScene;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,173 +48,46 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ShadowScene implements IShadowScene {
+    private final IndirectObjectsRenderer indirectObjectsRenderer;
     private final Environment environment;
-    private final FBOTexture2DProgram sunShadowFBO;
-    private Vector2i shadowDimensions;
-    private List<CascadeShadow> cascadeShadows;
     private List<PointLightShadow> pointLightShadows;
-    private Model<Format2D> sunPostModel;
+    private SunLightShadow sunLightShadow;
 
     public ShadowScene(Environment environment) {
         this.environment = environment;
         this.sunShadowFBO = new FBOTexture2DProgram(true);
-        this.initCascades();
+        this.indirectObjectsRenderer = new IndirectObjectsRenderer(JGemsHelper.getScreen().getScene().getSceneRenderer(), null, null, false, true);
         this.initPointLightShadows();
+        this.initSunLightShadow();
     }
 
-    private static float qualityMultiplier() {
+    public static float qualityMultiplier() {
         int i = (int) JGemsHelper.MATH.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 
     public void createResources() {
-        this.shadowDimensions = new Vector2i((int) (JGemsRenderingGlobalConstants.MAX_SHADOW_RES * ShadowScene.qualityMultiplier()));
-
-        this.sunPostModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getShadowDim()), 0);
-        this.getPointLightShadows().forEach(e -> e.createFBO(new Vector2i(this.getShadowDim())));
-
-        T2DAttachmentContainer shadow = new T2DAttachmentContainer() {{
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA32F, GL46.GL_RGBA);
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA32F, GL46.GL_RGBA);
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA32F, GL46.GL_RGBA);
-        }};
-        this.sunShadowFBO.createFrameBuffer2DTexture(this.getShadowDim(), shadow, true, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.getPointLightShadows().forEach(PointLightShadow::createResources);
+        this.ge
     }
 
     public void destroyResources() {
-        this.sunPostModel.clear();
-        this.sunShadowFBO.clearFBO();
+        this.getPointLightShadows().forEach(PointLightShadow::destroyResources);
     }
 
-    private Vector2i getShadowDim() {
-        return this.shadowDimensions;
+    private Vector2i getShadowResolution() {
+        return new Vector2i((int) (JGemsRenderingGlobalConstants.MAX_SHADOW_RES * ShadowScene.qualityMultiplier()));
+    }
+
+    private void initSunLightShadow() {
+        this.sunLightShadow = new SunLightShadow(this.getEnvironment(), this.getShadowResolution());
     }
 
     private void initPointLightShadows() {
         this.pointLightShadows = new ArrayList<>(JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS);
         for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
-            this.pointLightShadows.add(new PointLightShadow(i));
+            this.pointLightShadows.add(new PointLightShadow(this.getEnvironment(), this.getShadowResolution(), i));
         }
-    }
-
-    private void initCascades() {
-        this.cascadeShadows = new ArrayList<>();
-        for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
-            this.cascadeShadows.add(new CascadeShadow());
-        }
-    }
-
-    private void updateCascadeShadows(List<CascadeShadow> cascadeShadows) {
-        final int dimensions = this.getShadowDim().x;
-        JGemsScene scene = JGems3D.get().getScreen().getScene();
-
-        Matrix4f view = scene.getTransformation().getMainCameraViewMatrix();
-        Matrix4f projection = scene.getTransformation().getPerspectiveMatrix();
-
-        Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getSunPosition(), 0.0f);
-
-        float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
-        float[] cascadeSplits = new float[JGemsRenderingGlobalConstants.CASCADE_SPLITS];
-
-        float nearClip = this.nearCascadeClip();
-        float farClip = this.farCascadeClip();
-        float clipRange = farClip - nearClip;
-
-        float minZ = nearClip;
-        float maxZ = nearClip + clipRange;
-
-        float range = maxZ - minZ;
-        float ratio = maxZ / minZ;
-
-        for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
-            float p = (i + 1) / (float) JGemsRenderingGlobalConstants.CASCADE_SPLITS;
-            float log = (float) (minZ * Math.pow(ratio, p));
-            float uniform = minZ + range * p;
-            float d = cascadeSplitLambda[i] * (log - uniform) + uniform;
-            cascadeSplits[i] = (d - nearClip) / clipRange;
-        }
-
-        float lastSplitDist = 0.0f;
-        for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
-            float splitDist = cascadeSplits[i];
-
-            Vector3f[] frustumCorners = new Vector3f[]{
-                    new Vector3f(-1.0f, 1.0f, -1.0f),
-                    new Vector3f(1.0f, 1.0f, -1.0f),
-                    new Vector3f(1.0f, -1.0f, -1.0f),
-                    new Vector3f(-1.0f, -1.0f, -1.0f),
-                    new Vector3f(-1.0f, 1.0f, 1.0f),
-                    new Vector3f(1.0f, 1.0f, 1.0f),
-                    new Vector3f(1.0f, -1.0f, 1.0f),
-                    new Vector3f(-1.0f, -1.0f, 1.0f),
-            };
-
-            Matrix4f invCam = (new Matrix4f(projection).mul(view)).invert();
-            for (int j = 0; j < 8; j++) {
-                Vector4f invCorner = new Vector4f(frustumCorners[j], 1.0f).mul(invCam);
-                frustumCorners[j] = new Vector3f(invCorner.x, invCorner.y, invCorner.z).div(new Vector3f(invCorner.w));
-            }
-
-            for (int j = 0; j < 4; j++) {
-                Vector3f dist = new Vector3f(frustumCorners[j + 4]).sub(frustumCorners[j]);
-                frustumCorners[j + 4] = new Vector3f(frustumCorners[j]).add(new Vector3f(dist).mul(splitDist));
-                frustumCorners[j] = new Vector3f(frustumCorners[j]).add(new Vector3f(dist).mul(lastSplitDist));
-            }
-
-            Vector3f frustumCenter = new Vector3f(0.0f);
-            for (int j = 0; j < 8; j++) {
-                frustumCenter.add(frustumCorners[j]);
-            }
-            frustumCenter.div(8.0f);
-            float radius = 0.0f;
-            for (int j = 0; j < 8; j++) {
-                double distance = (new Vector3f(frustumCorners[j]).sub(frustumCenter)).length();
-                radius = (float) Math.max(radius, distance);
-            }
-            radius = (float) (Math.ceil(radius * 16.0d) / 16.0d);
-
-            Vector3f maxExtents = new Vector3f(radius);
-            Vector3f minExtents = new Vector3f(maxExtents).mul(-1.0f);
-
-            Vector3f lightDir = (new Vector3f(sunPos.x, sunPos.y, sunPos.z).mul(-1.0f)).normalize();
-            Vector3f eye = new Vector3f(frustumCenter).sub(new Vector3f(lightDir).mul(-minExtents.z));
-            Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-            Matrix4f lightViewMatrix = TransformationUtils.getLookAtMatrix(eye, up, frustumCenter);
-            Matrix4f lightOrthoMatrix = TransformationUtils.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
-
-            CascadeShadow cascadeShadow = cascadeShadows.get(i);
-            cascadeShadow.setSplitDistance((nearClip + splitDist * clipRange) * -1.0f);
-
-            Matrix4f shadowMatrix = new Matrix4f(lightOrthoMatrix.mul(lightViewMatrix));
-            Vector4f shadowOrigin = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-            shadowOrigin.mul(shadowMatrix, shadowOrigin);
-            shadowOrigin.mul(dimensions).div(2.0f);
-
-            Vector4f roundedOrigin = new Vector4f();
-            shadowOrigin.round(roundedOrigin);
-            Vector4f roundOffset = new Vector4f(roundedOrigin).sub(shadowOrigin);
-            roundOffset.mul(2.0f).div(dimensions);
-            roundOffset.z = 0.0f;
-            roundOffset.w = 0.0f;
-
-            Matrix4f shadowProj = new Matrix4f(lightOrthoMatrix);
-            shadowProj.m30(shadowProj.m30() + roundOffset.x);
-            shadowProj.m31(shadowProj.m31() + roundOffset.y);
-            shadowProj.m32(shadowProj.m32() + roundOffset.z);
-            shadowProj.m33(shadowProj.m33() + roundOffset.w);
-
-            cascadeShadow.setLightProjectionViewMatrix(shadowProj);
-
-            lastSplitDist = cascadeSplits[i];
-        }
-    }
-
-    public float nearCascadeClip() {
-        return 1.0f;
-    }
-
-    public float farCascadeClip() {
-        return JGemsRenderingGlobalConstants.Z_FAR;
     }
 
     public void renderAllModelsInShadowMap(Set<SceneObject> modeledSceneObjectSet) {
@@ -231,7 +101,7 @@ public class ShadowScene implements IShadowScene {
         }
 
         this.updateCascadeShadows(this.getCascadeShadows());
-        Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.getObjectRenderConfiguration().isShadowCaster()).collect(Collectors.toSet());
+        Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.getRenderAttributes().isShadowCaster()).collect(Collectors.toSet());
         boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
         if (JGemsRenderingGlobalConstants.DRAW_BACK_FACES_FOR_SHADOWS) {
             GL46.glDisable(GL46.GL_CULL_FACE);
@@ -251,12 +121,12 @@ public class ShadowScene implements IShadowScene {
         this.getSunShadowFBO().bindFBO();
         GL46.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
         for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
-            CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
+            SunLightShadow.Cascade cascade = this.getCascadeShadows().get(i);
             this.getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             GL46.glClearColor(JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y);
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
-            this.renderModelsIndirect(ShadingTable.Category.SUN_L_SHADOW_MAP, cascadeShadow.getLightProjectionViewMatrix(), indirectRenderObjects);
-            this.renderModelsDirect(ShadingTable.Category.SUN_L_SHADOW_MAP, cascadeShadow.getLightProjectionViewMatrix(), directRenderObjects);
+            this.renderModelsIndirect(ShadingTable.Category.SUN_L_SHADOW_MAP, cascade.getLightProjectionViewMatrix(), indirectRenderObjects);
+            this.renderModelsDirect(ShadingTable.Category.SUN_L_SHADOW_MAP, cascade.getLightProjectionViewMatrix(), directRenderObjects);
             GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
         this.getSunShadowFBO().unBindFBO();
@@ -267,7 +137,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     private void renderModelsDirect(ShadingTable.Category category, Matrix4f lightProjection, List<SceneObject> filteredObjectsSet) {
-        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getObjectRenderConfiguration().getShadingTable().getShader(category)));
+        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getRenderAttributes().getShadingTable().getShader(category)));
 
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
@@ -281,7 +151,7 @@ public class ShadowScene implements IShadowScene {
                     continue;
                 }
                 shaderManager.getUtils().performModel3DMatrix(model);
-                this.renderModelForShadow(modeledSceneObject, shaderManager, modeledSceneObject.getObjectRenderConfiguration(), model);
+                this.renderModelForShadow(modeledSceneObject, shaderManager, modeledSceneObject.getRenderAttributes(), model);
             }
             shaderManager.endShading();
         }
@@ -317,18 +187,18 @@ public class ShadowScene implements IShadowScene {
         GL46.glViewport(0, 0, this.getShadowDim().x, this.getShadowDim().y);
 
         for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
-            CascadeShadow cascadeShadow = this.getCascadeShadows().get(i);
+            SunLightShadow.Cascade cascade = this.getCascadeShadows().get(i);
             this.getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             GL46.glClearColor(JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y);
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
-            this.getSunShadowShader().performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(cascadeShadow.getLightProjectionViewMatrix())));
+            this.getSunShadowShader().performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(cascade.getLightProjectionViewMatrix())));
             for (SceneObject modeledSceneObject : modeledSceneObjectSet) {
                 Model<Format3D> model = modeledSceneObject.getModel();
                 if (model == null || model.getMeshStructure() == null) {
                     continue;
                 }
                 this.getSunShadowShader().getUtils().performModel3DMatrix(model);
-                this.renderModelForShadow(modeledSceneObject, this.getSunShadowShader(), modeledSceneObject.getObjectRenderConfiguration(), model);
+                this.renderModelForShadow(modeledSceneObject, this.getSunShadowShader(), modeledSceneObject.getRenderAttributes(), model);
             }
             GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
@@ -374,7 +244,7 @@ public class ShadowScene implements IShadowScene {
                             continue;
                         }
                         this.getPointLightShadowShader().getUtils().performModel3DMatrix(model);
-                        this.renderModelForShadow(modeledSceneObject, this.getPointLightShadowShader(), modeledSceneObject.getObjectRenderConfiguration(), model);
+                        this.renderModelForShadow(modeledSceneObject, this.getPointLightShadowShader(), modeledSceneObject.getRenderAttributes(), model);
                     }
                     GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 }
@@ -384,7 +254,7 @@ public class ShadowScene implements IShadowScene {
         this.getPointLightShadowShader().endShading();
     }
 
-    private void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, ObjectRenderConfiguration modelRenderProperties, Model<?> model) {
+    private void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, RenderAttributes modelRenderProperties, Model<?> model) {
         shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
         shaderManager.getUtils().performAnimationsInfo(animated);
         float alphaValue = 1.0f;
@@ -434,16 +304,12 @@ public class ShadowScene implements IShadowScene {
         this.getPointLightShadows().get(pointLight.getAttachedShadowSceneId()).setPointLight(null);
     }
 
+    public SunLightShadow getSunLightShadow() {
+        return this.sunLightShadow;
+    }
+
     public List<PointLightShadow> getPointLightShadows() {
         return this.pointLightShadows;
-    }
-
-    public List<CascadeShadow> getCascadeShadows() {
-        return this.cascadeShadows;
-    }
-
-    public FBOTexture2DProgram getSunShadowFBO() {
-        return this.sunShadowFBO;
     }
 
     public Environment getEnvironment() {

@@ -48,7 +48,7 @@ public interface IDeferredRenderNode extends IRenderNode {
         }
 
         private Set<SceneObject> indirectObjectsFilter(Set<SceneObject> set) {
-            return set.stream().filter(e -> e.getObjectRenderConfiguration().getShadingTable().getRenderingSceneShaderTarget() == ShadingTable.Stage.DEFERRED_INDIRECT).collect(Collectors.toSet());
+            return set.stream().filter(e -> e.getRenderAttributes().getShadingTable().getRenderingSceneShaderTarget() == ShadingTable.Stage.DEFERRED_INDIRECT).collect(Collectors.toSet());
         }
 
         public void initProcessors() {

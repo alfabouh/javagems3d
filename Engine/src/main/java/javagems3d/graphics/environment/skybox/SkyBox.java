@@ -2,10 +2,10 @@ package javagems3d.graphics.environment.skybox;
 
 import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.HashSet;
@@ -14,12 +14,12 @@ import java.util.Set;
 public class SkyBox implements ISkyBox {
     private final Background background;
     private CubeMapTexture sky2DTexture;
-    private final Sun sun;
+    private final SunLight sunLight;
     private boolean isSkyCoveredByFog;
 
     public SkyBox(CubeMapTexture sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
-        this.sun = new Sun(new Vector3f(1.0f), null, 1.0f);
+        this.sunLight = new SunLight(new Vector3f(1.0f), null, 1.0f);
         this.isSkyCoveredByFog = false;
         this.background = new Background();
     }
@@ -40,8 +40,8 @@ public class SkyBox implements ISkyBox {
         return this.background;
     }
 
-    public Sun getSun() {
-        return this.sun;
+    public SunLight getSun() {
+        return this.sunLight;
     }
 
     public CubeMapTexture getSky2DTexture() {
@@ -56,42 +56,6 @@ public class SkyBox implements ISkyBox {
     @Override
     public void destroySkyBox(SceneWorld sceneWorld) {
         this.getBackground().clearBackGround();
-    }
-
-    public static class Sun {
-        private Vector3f sunPos;
-        private Vector3f sunColor;
-        private float sunBrightness;
-
-        public Sun(@NotNull Vector3f sunPos, Vector3f sunColor, float sunBrightness) {
-            this.sunPos = sunPos;
-            this.sunColor = sunColor == null ? new Vector3f(1.0f) : sunColor;
-            this.sunBrightness = sunBrightness;
-        }
-
-        public void setSunColor(Vector3f sunColor) {
-            this.sunColor = sunColor;
-        }
-
-        public void setSunBrightness(float sunBrightness) {
-            this.sunBrightness = sunBrightness;
-        }
-
-        public void setSunPosition(@NotNull Vector3f sunPos) {
-            this.sunPos = sunPos;
-        }
-
-        public Vector3f getSunPosition() {
-            return this.sunPos;
-        }
-
-        public Vector3f getSunColor() {
-            return this.sunColor;
-        }
-
-        public float getSunBrightness() {
-            return this.sunBrightness;
-        }
     }
 
     public static class Background {

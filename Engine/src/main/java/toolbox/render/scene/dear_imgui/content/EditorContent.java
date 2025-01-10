@@ -535,24 +535,24 @@ public class EditorContent implements ImGuiContent {
                 }
 
                 float[] f1 = new float[]{mapProperties.getSkyProp().getSunBrightness()};
-                if (ImGui.dragFloat("Sun Brightness", f1, 0.01f, 0.0f, 1.0f)) {
+                if (ImGui.dragFloat("SunLight Brightness", f1, 0.01f, 0.0f, 1.0f)) {
                     mapProperties.getSkyProp().setSunBrightness(f1[0]);
                 }
                 float[] c1 = new float[]{mapProperties.getSkyProp().getSunColor().x, mapProperties.getSkyProp().getSunColor().y, mapProperties.getSkyProp().getSunColor().z};
-                if (ImGui.colorEdit3("Sun Color", c1)) {
+                if (ImGui.colorEdit3("SunLight Color", c1)) {
                     mapProperties.getSkyProp().setSunColor(new Vector3f(c1));
                 }
                 boolean flag = false;
                 float[] a1 = new float[]{mapProperties.getSkyProp().getSunPos().x};
                 float[] a2 = new float[]{mapProperties.getSkyProp().getSunPos().y};
                 float[] a3 = new float[]{mapProperties.getSkyProp().getSunPos().z};
-                if (ImGui.dragFloat("Sun Position X", a1, 0.01f, -1.0f, 1.0f)) {
+                if (ImGui.dragFloat("SunLight Position X", a1, 0.01f, -1.0f, 1.0f)) {
                     flag = true;
                 }
-                if (ImGui.dragFloat("Sun Position Y", a2, 0.01f, -1.0f, 1.0f)) {
+                if (ImGui.dragFloat("SunLight Position Y", a2, 0.01f, -1.0f, 1.0f)) {
                     flag = true;
                 }
-                if (ImGui.dragFloat("Sun Position Z", a3, 0.01f, -1.0f, 1.0f)) {
+                if (ImGui.dragFloat("SunLight Position Z", a3, 0.01f, -1.0f, 1.0f)) {
                     flag = true;
                 }
                 if (flag) {

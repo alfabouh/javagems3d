@@ -679,7 +679,7 @@ public class JGemsOpenGLRendererOLD {
         return this.indirectRenderBuffer;
     }
 
-    public LightManager getLightManager() {
+    public LightsScene getLightManager() {
         return this.getSceneData().getSceneWorld().getEnvironment().getLightManager();
     }
 

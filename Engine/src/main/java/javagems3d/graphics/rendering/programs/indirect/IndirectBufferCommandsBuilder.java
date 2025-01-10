@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.programs.indirect;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -38,9 +39,13 @@ public class IndirectBufferCommandsBuilder {
         int allMeshes = 0;
 
         for (SceneObject sceneObject : sceneObjects) {
-            allMeshes += sceneObject.getModel().<MeshBuffer>getMeshStructureWithUnSafeCast().getPassData().size();
+            MeshBuffer meshBuffer = sceneObject.getModel().getMeshBufferForIndirectRendering();
+            if (meshBuffer == null) {
+                throw new JGemsRuntimeException("Model should have MeshBuffer, to implement indirect rendering!");
+            }
+            allMeshes += meshBuffer.getPassData().size();
             idMap.put(sceneObject, i++);
-            JGemsHelper.UTILS.putObjectInMapOrUpdate(objectsMap, sceneObject.getModel().getMeshStructureWithUnSafeCast(), new HashSet<SceneObject>() {{ add(sceneObject); }}, (ex, nw) ->
+            JGemsHelper.UTILS.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{ add(sceneObject); }}, (ex, nw) ->
             {
                 ex.add(nw);
                 return ex;

@@ -257,28 +257,28 @@ public abstract class ShaderManager implements ICached {
         this.performUniformBuffer(uniform, 0, data);
     }
 
-    public void performUniformBuffer(UniformBufferObject uniform, int offset, ByteBuffer data) {
+    public void performUniformBuffer(UniformBufferObject uniform, long offset, ByteBuffer data) {
         UniformBufferProgram uniformBufferProgram = this.getUniformBufferProgram(uniform);
         if (uniformBufferProgram != null) {
             uniformBufferProgram.setUniformBufferData(offset, data);
         }
     }
 
-    public void performUniformBuffer(UniformBufferObject uniform, int offset, IntBuffer data) {
+    public void performUniformBuffer(UniformBufferObject uniform, long offset, IntBuffer data) {
         UniformBufferProgram uniformBufferObject = this.getUniformBufferProgram(uniform);
         if (uniformBufferObject != null) {
             uniformBufferObject.setUniformBufferData(offset, data);
         }
     }
 
-    public void performUniformBuffer(UniformBufferObject uniform, int offset, FloatBuffer data) {
+    public void performUniformBuffer(UniformBufferObject uniform, long offset, FloatBuffer data) {
         UniformBufferProgram uniformBufferObject = this.getUniformBufferProgram(uniform);
         if (uniformBufferObject != null) {
             uniformBufferObject.setUniformBufferData(offset, data);
         }
     }
 
-    public void performUniformBuffer(UniformBufferObject uniform, int offset, float[] data) {
+    public void performUniformBuffer(UniformBufferObject uniform, long offset, float[] data) {
         UniformBufferProgram uniformBufferObject = this.getUniformBufferProgram(uniform);
         if (uniformBufferObject != null) {
             uniformBufferObject.setUniformBufferData(offset, data);

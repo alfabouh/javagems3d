@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.objects.entities;
 
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
@@ -158,7 +158,7 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
-        if (this.getObjectRenderConfiguration().isAllowedMovementInterpolation()) {
+        if (this.getRenderAttributes().isAllowedMovementInterpolation()) {
             this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);
@@ -209,7 +209,7 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     }
 
     public JGemsShaderManager getShaderManager() {
-        return this.getObjectRenderConfiguration().getModelRenderShader();
+        return this.getRenderAttributes().getModelRenderShader();
     }
 
     public Vector3f getScale() {
@@ -249,7 +249,7 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     }
 
     @Override
-    public @NotNull ObjectRenderConfiguration getObjectRenderConfiguration() {
+    public @NotNull RenderAttributes getRenderAttributes() {
         return this.getRenderData().getObjectRenderSettings();
     }
 

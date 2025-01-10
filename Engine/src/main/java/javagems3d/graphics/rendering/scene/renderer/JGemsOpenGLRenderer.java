@@ -16,7 +16,7 @@ import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
@@ -332,7 +332,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     public static boolean checkReachedRenderDistance(SceneObject renderObject) {
         ICamera camera = JGems3D.get().getScreen().getCamera();
-        ObjectRenderConfiguration objectRenderConfiguration = renderObject.getObjectRenderConfiguration();
-        return objectRenderConfiguration.getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > objectRenderConfiguration.getRenderDistance();
+        RenderAttributes renderAttributes = renderObject.getRenderAttributes();
+        return renderAttributes.getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderAttributes.getRenderDistance();
     }
 }

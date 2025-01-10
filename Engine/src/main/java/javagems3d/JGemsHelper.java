@@ -13,7 +13,7 @@ package javagems3d;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model;
@@ -158,7 +158,7 @@ public abstract class JGemsHelper {
             }
         }
 
-        public static int getLightingCodeForShader(ObjectRenderConfiguration configuration) {
+        public static int getLightingCodeForShader(RenderAttributes configuration) {
             int code = 0;
             if (configuration.isDefaultBrightLighted()) {
                 code |= 1 << 2;

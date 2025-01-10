@@ -3,7 +3,7 @@ package javagems3d.graphics.rendering.scene.renderer.indirect;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.configuration.ObjectRenderConfiguration;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.rendering.programs.indirect.IndirectBufferCommandsBuilder;
 import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
@@ -26,7 +26,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,17 +42,21 @@ public class IndirectObjectsRenderer {
     private final boolean usePropertiesSSBO;
     private final boolean useMaterialsSSBO;
     private final JGemsShaderManager overIndirectShader;
-    private final ShaderSplittingPicker shaderSplittingPicker;
+    private final ShaderSplittingPicker defaultShaderSplittingPicker;
 
-    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @Nullable IndirectObjectsRenderer.ShaderSplittingPicker shaderSplittingPicker, @Nullable JGemsShaderManager overIndirectShader, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
+    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @Nullable IndirectObjectsRenderer.ShaderSplittingPicker defaultShaderSplittingPicker, @Nullable JGemsShaderManager overIndirectShader, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
         this.openGLRenderer = openGLRenderer;
         this.usePropertiesSSBO = usePropertiesSSBO;
         this.useMaterialsSSBO = useMaterialsSSBO;
         this.overIndirectShader = overIndirectShader;
-        this.shaderSplittingPicker = shaderSplittingPicker == null ? (e) -> e.getObjectRenderConfiguration().getShadingTable().getShader(ShadingTable.Category.SCENE) : shaderSplittingPicker;
+        this.defaultShaderSplittingPicker = defaultShaderSplittingPicker == null ? (e) -> e.getRenderAttributes().getShadingTable().getShader(ShadingTable.Category.SCENE) : defaultShaderSplittingPicker;
     }
 
     public void processAndRender() {
+        this.processAndRender(null);
+    }
+
+    public void processAndRender(@Nullable IndirectObjectsRenderer.ShaderSplittingPicker shaderSplittingPicker) {
         IndirectRenderBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
         if (this.getOverIndirectShader() != null) {
             IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
@@ -68,7 +71,7 @@ public class IndirectObjectsRenderer {
 
             indirectBufferCommandsBuilder1.destroyBuffer();
         } else {
-            Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects(), this.getShaderSplitting());
+            Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects(), shaderSplittingPicker != null ? shaderSplittingPicker : this.getDefaultShaderSplitting());
             for (Map.Entry<JGemsShaderManager, Set<SceneObject>> sceneObjects : map.entrySet()) {
                 IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
                 indirectBufferCommandsBuilder1.createBuffer();
@@ -110,7 +113,7 @@ public class IndirectObjectsRenderer {
             Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
             matrices.put(matrix.get(new float[16]));
             if (byteBuffer != null) {
-                ObjectRenderConfiguration configuration = sceneObject.getObjectRenderConfiguration();
+                RenderAttributes configuration = sceneObject.getRenderAttributes();
                 byteBuffer.putFloat(configuration.getAlphaDiscardValue());
                 byteBuffer.putInt(JGemsHelper.RENDERING.getLightingCodeForShader(configuration));
             }
@@ -141,8 +144,8 @@ public class IndirectObjectsRenderer {
         return sceneObjects.stream().collect(Collectors.groupingBy(shaderSplittingPicker::pickShaderGroup, HashMap::new, Collectors.toSet()));
     }
 
-    public ShaderSplittingPicker getShaderSplitting() {
-        return this.shaderSplittingPicker;
+    public ShaderSplittingPicker getDefaultShaderSplitting() {
+        return this.defaultShaderSplittingPicker;
     }
 
     public JGemsShaderManager getOverIndirectShader() {

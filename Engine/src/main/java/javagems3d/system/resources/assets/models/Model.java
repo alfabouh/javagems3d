@@ -11,10 +11,13 @@
 
 package javagems3d.system.resources.assets.models;
 
+import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.system.resources.assets.models.formats.IFormat;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 
@@ -59,6 +62,14 @@ public final class Model<T extends IFormat> implements Serializable, AutoCloseab
 
     public boolean isValid() {
         return this.getMeshStructure() != null;
+    }
+
+    @Nullable
+    public MeshBuffer getMeshBufferForIndirectRendering() {
+        if (this.getMeshStructure() instanceof MeshBuffer) {
+            return (MeshBuffer) this.getMeshStructure();
+        }
+        return ((MeshGroup) this.getMeshStructure()).getLinkedMeshBuffer();
     }
 
     @SuppressWarnings("all")

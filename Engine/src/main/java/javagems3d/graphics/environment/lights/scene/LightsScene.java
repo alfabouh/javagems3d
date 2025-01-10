@@ -9,9 +9,11 @@
  *
  */
 
-package javagems3d.graphics.environment.lights;
+package javagems3d.graphics.environment.lights.scene;
 
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.graphics.environment.lights.Light;
+import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -32,13 +34,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LightManager implements ILightManager {
+public class LightsScene implements ILightsScene {
     public static final int PL_STRUCT_SIZE = 16;
     public static final int SN_STRUCT_SIZE = 12;
     private final Environment environment;
     private List<PointLight> pointLightList;
 
-    public LightManager(Environment environment) {
+    public LightsScene(Environment environment) {
         this.environment = environment;
         this.initCollections();
     }
@@ -83,8 +85,8 @@ public class LightManager implements ILightManager {
     }
 
     private void updateSunUbo(MemoryStack stack, Matrix4f viewMatrix) {
-        Vector3f angle = LightManager.passVectorInViewSpace(this.environment.getSkyBox().getSun().getSunPosition(), viewMatrix, 0.0f);
-        FloatBuffer value1Buffer = stack.mallocFloat(LightManager.SN_STRUCT_SIZE * Float.BYTES);
+        Vector3f angle = LightsScene.passVectorInViewSpace(this.environment.getSkyBox().getSun().getSunPosition(), viewMatrix, 0.0f);
+        FloatBuffer value1Buffer = stack.mallocFloat(LightsScene.SN_STRUCT_SIZE * Float.BYTES);
 
         value1Buffer.put(angle.x);
         value1Buffer.put(angle.y);
@@ -108,7 +110,7 @@ public class LightManager implements ILightManager {
     private void updatePointLightsUbo(MemoryStack stack, Matrix4f viewMatrix) {
         List<PointLight> pointLights = this.getPointLightList().stream().filter(PointLight::isEnabled).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1)).collect(Collectors.toList());
 
-        FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = stack.mallocFloat(LightsScene.PL_STRUCT_SIZE * JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
         int total = pointLights.size();
         for (int i = 0; i < total; i++) {
             PointLight pointLight = pointLights.get(i);
@@ -117,7 +119,7 @@ public class LightManager implements ILightManager {
             value1Buffer.put(pointLight.getLightPos().z);
             value1Buffer.put(0.0f);
 
-            Vector3f lightViewPos = LightManager.passVectorInViewSpace(pointLight.getLightPos(), viewMatrix, 1.0f);
+            Vector3f lightViewPos = LightsScene.passVectorInViewSpace(pointLight.getLightPos(), viewMatrix, 1.0f);
             value1Buffer.put(lightViewPos.x);
             value1Buffer.put(lightViewPos.y);
             value1Buffer.put(lightViewPos.z);
@@ -133,18 +135,18 @@ public class LightManager implements ILightManager {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
             value1Buffer.flip();
-            JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightManager.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
+            JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightsScene.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
         }
 
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(total);
         intBuffer.flip();
-        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsGlobalConfiguration.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsGlobalConfiguration.MAX_POINT_LIGHTS * LightsScene.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
     }
 
     public void removeAllLights(MemoryStack stack) {
         boolean flag = JGemsOpenGLRenderer.UBOShader().beginShading();
-        FloatBuffer value1Buffer = stack.mallocFloat(LightManager.PL_STRUCT_SIZE * JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = stack.mallocFloat(LightsScene.PL_STRUCT_SIZE * JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
         for (int i = 0; i < this.getPointLightList().size(); i++) {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
@@ -167,13 +169,13 @@ public class LightManager implements ILightManager {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
             value1Buffer.flip();
-            JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightManager.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
+            JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, i * (LightsScene.PL_STRUCT_SIZE * Float.BYTES), value1Buffer);
         }
 
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(0);
         intBuffer.flip();
-        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsGlobalConfiguration.MAX_POINT_LIGHTS * LightManager.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsGlobalConfiguration.MAX_POINT_LIGHTS * LightsScene.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
         this.getPointLightList().clear();
         if (flag) {
             JGemsOpenGLRenderer.UBOShader().endShading();
