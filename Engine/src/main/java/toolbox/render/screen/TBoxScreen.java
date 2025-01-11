@@ -27,7 +27,7 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
@@ -49,7 +49,7 @@ public class TBoxScreen implements IScreen {
     private TBoxControllerDispatcher controllerDispatcher;
     private TBoxScene scene;
     private TBoxResourceManager resourceManager;
-    private Transformation transformation;
+    private JGemsTransformation JGemsTransformation;
 
     public TBoxScreen() {
         this.timerPool = new TimerPool();
@@ -138,7 +138,6 @@ public class TBoxScreen implements IScreen {
             }
 
             this.getTimerPool().update();
-            this.getTransformationUtils().updateMatrices();
             this.getControllerDispatcher().updateController(this.getWindow());
             this.getTransformationUtils().updateCamera(this.getScene().getCamera());
             this.renderGameScene(deltaTimer.getDeltaTime());
@@ -187,10 +186,6 @@ public class TBoxScreen implements IScreen {
         this.resourceManager = new TBoxResourceManager();
     }
 
-    private void createTransformation() {
-        this.transformation = new Transformation(this.getWindow(), TBoxSceneUtils.FOV, TBoxSceneUtils.Z_NEAR, TBoxSceneUtils.Z_FAR);
-    }
-
     private void createObjects(IWindow window) {
         this.controllerDispatcher = new TBoxControllerDispatcher(window);
         this.scene = new TBoxScene(this.getTransformationUtils(), window);
@@ -203,7 +198,6 @@ public class TBoxScreen implements IScreen {
             if (this.tryToBuildScreen()) {
                 GL.createCapabilities();
 
-                this.createTransformation();
                 this.createResourceManager();
                 TBoxResourceManager.createShaders();
 
@@ -225,8 +219,8 @@ public class TBoxScreen implements IScreen {
         return this.resourceManager;
     }
 
-    public Transformation getTransformationUtils() {
-        return transformation;
+    public JGemsTransformation getTransformationUtils() {
+        return JGemsTransformation;
     }
 
     public TBoxControllerDispatcher getControllerDispatcher() {

@@ -33,7 +33,7 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.physics.world.thread.timer.PhysicsProcessor;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.JGemsCore;
@@ -49,7 +49,6 @@ public class JGemsScreen implements IScreen {
     public static int RENDER_FPS;
     public static int PHYS_TPS;
     private final TimerPool timerPool;
-    private Transformation transformation;
     private JGemsControllerDispatcher controllerDispatcher;
     private JGemsScene scene;
     private Window window;
@@ -77,7 +76,8 @@ public class JGemsScreen implements IScreen {
     public void buildScreen() {
         JGemsHelper.getLogger().log("Init Graphics!");
         if (this.tryToBuildScreen()) {
-            this.createTransformationUtils();
+            JGemsTransformation.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
+            JGemsTransformation.INSTANCE.updateOrthographicMatrix(this.getWindow());
 
             this.checkScreenMode();
             this.checkVSync();
@@ -116,17 +116,14 @@ public class JGemsScreen implements IScreen {
         }
     }
 
-    private void createTransformationUtils() {
-        this.transformation = new Transformation(this.window, JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
-    }
-
     private void createObjects(Window window) {
         this.controllerDispatcher = new JGemsControllerDispatcher(window);
-        this.scene = new JGemsScene(window, this.getTransformation(), new SceneWorld());
+        this.scene = new JGemsScene(window, new SceneWorld());
     }
 
     private void resizeWindow(IWindow window) {
         this.getScene().onWindowResize(window);
+        JGemsTransformation.INSTANCE.updateOrthographicMatrix(window);
     }
 
     public void normalizeViewPort() {
@@ -350,7 +347,6 @@ public class JGemsScreen implements IScreen {
             this.updateController();
             this.getWindow().refreshFocusState();
             this.getTimerPool().update();
-            this.getTransformation().updateMatrices();
             this.renderGameScene(deltaTimer.getDeltaTime());
             if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsGlobalConfiguration.RENDER_TICKS_UPD_RATE)) {
                 this.renderTicks += 0.01f;
@@ -382,7 +378,7 @@ public class JGemsScreen implements IScreen {
     private void updateSound() {
         JGems3D.get().getSoundManager().update();
         if (JGems3D.get().isValidPlayer()) {
-            SoundListener.updateOrientationAndPosition(JGemsHelper.RENDERING.getMainCameraViewMatrix(), this.getCamera().getCamPosition());
+            SoundListener.updateOrientationAndPosition(JGemsTransformation.INSTANCE.getCameraViewMatrix(), this.getCamera().getCamPosition());
         }
         SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
     }
@@ -419,12 +415,6 @@ public class JGemsScreen implements IScreen {
 
     public Window getWindow() {
         return this.window;
-    }
-
-    public Transformation getTransformation() {
-        synchronized (this) {
-            return this.transformation;
-        }
     }
 
     public TimerPool getTimerPool() {

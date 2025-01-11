@@ -1,12 +1,19 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
 
+import javagems3d.JGems3D;
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
+import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
@@ -16,9 +23,26 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private FBOTexture2DProgram gBuffer;
     private final IndirectObjectsRenderer indirectMeshObjects;
 
+    private static final IndirectObjectsRenderer.RenderingFunction func = (shaderManager, indirectBufferCommandsBuilder, renderBuffer, metaData) -> {
+        shaderManager.beginShading();
+        CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
+        shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
+        if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
+            shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram.getTextureId(), GL46.GL_TEXTURE_CUBE_MAP);
+        }
+        shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getPerspectiveMatrix()));
+        shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
+        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
+        GL46.glBindVertexArray(renderBuffer.getStaticVao());
+        GL46.glMultiDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, 0, indirectBufferCommandsBuilder.getDrawCount(), 0);
+        GL46.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, 0);
+        shaderManager.endShading();
+    };
+
     public IndirectGeometryRenderProcessor(@NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
-        this.indirectMeshObjects = new IndirectObjectsRenderer(openGLRenderer, null, null, true, true);
+        this.indirectMeshObjects = new IndirectObjectsRenderer(openGLRenderer, IndirectGeometryRenderProcessor.func, null, true, true);
     }
 
     @Override

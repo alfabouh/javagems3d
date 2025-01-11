@@ -6,7 +6,6 @@ import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgr
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.Nodes;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.Transformation;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.IMapActionsCallback;
 import org.jetbrains.annotations.NotNull;
@@ -17,12 +16,10 @@ import java.util.Map;
 
 public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, IMapActionsCallback {
     private final IWindow window;
-    private final Transformation transformation;
     private final SceneWorld sceneWorld;
 
-    public OpenGLRenderer(IWindow window, SceneWorld sceneWorld, Transformation transformation) {
+    public OpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
         this.window = window;
-        this.transformation = transformation;
         this.sceneWorld = sceneWorld;
     }
 
@@ -38,11 +35,6 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
     @Override
     public @NotNull SceneWorld getSceneWorld() {
         return this.sceneWorld;
-    }
-
-    @Override
-    public @NotNull Transformation getTransformationManager() {
-        return this.transformation;
     }
 
     @Override

@@ -50,7 +50,7 @@ public class TBoxResourceManager {
             return (TBoxShaderManager) this.getCache().getCachedObject(shaderPath);
         }
         JGemsHelper.getLogger().log("Creating shader " + shaderPath + "...");
-        TBoxShaderManager shaderManager = new TBoxShaderManager(ShaderRenderingTarget.UNDEFINED, new ShadersContainer(shaderPath));
+        TBoxShaderManager shaderManager = new TBoxShaderManager(new ShadersContainer(shaderPath));
         this.getCache().addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }

@@ -7,6 +7,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +52,7 @@ public class RawColorSceneRenderProcessor extends IRenderProcessor.Template {
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         JGemsShaderManager deferredShader = this.getLightPassShader();
         deferredShader.beginShading();
-        deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsHelper.RENDERING.getMainCameraViewMatrix()));
+        deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
         deferredShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureIDByIndex(1), GL46.GL_TEXTURE_2D);
         deferredShader.performUniformTexture(new UniformString("gTexture"), gBuffer.getTextureIDByIndex(2), GL46.GL_TEXTURE_2D);

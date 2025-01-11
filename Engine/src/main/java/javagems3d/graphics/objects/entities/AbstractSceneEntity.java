@@ -12,6 +12,7 @@
 package javagems3d.graphics.objects.entities;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
@@ -208,8 +209,8 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
         return this.lightList;
     }
 
-    public JGemsShaderManager getShaderManager() {
-        return this.getRenderAttributes().getModelRenderShader();
+    public ShadingTable getShadingTable() {
+        return this.getRenderAttributes().getShadingTable();
     }
 
     public Vector3f getScale() {

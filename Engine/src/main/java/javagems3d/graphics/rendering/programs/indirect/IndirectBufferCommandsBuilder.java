@@ -29,7 +29,7 @@ public class IndirectBufferCommandsBuilder {
         GL46.glDeleteBuffers(this.getRenderBufferHandle());
     }
 
-    public void buildCommands(IntBuffer indexes, IntBuffer materialIds, Set<SceneObject> sceneObjects) {
+    public void buildCommands(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects) {
         final int COM_SIZE = 5 * Float.BYTES;
 
         Map<SceneObject, Integer> idMap = new HashMap<>();

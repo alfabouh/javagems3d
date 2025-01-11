@@ -31,7 +31,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.materials.Material;
@@ -73,8 +73,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     protected Model<Format2D> sceenModel;
 
-    public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld, Transformation transformation) {
-        super(window, sceneWorld, transformation);
+    public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
+        super(window, sceneWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(Nodes::getId));
         this.initNodes();
 

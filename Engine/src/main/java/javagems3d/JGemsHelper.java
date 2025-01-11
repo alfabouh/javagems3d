@@ -119,18 +119,6 @@ public abstract class JGemsHelper {
     }
 
     public static abstract class RENDERING {
-        public static Matrix4f getMainCameraViewMatrix() {
-            return getScreen().getTransformation().getMainCameraViewMatrix();
-        }
-
-        public static Matrix4f getMainPerspectiveMatrix() {
-            return getScreen().getTransformation().getPerspectiveMatrix();
-        }
-
-        public static Matrix4f getMainOrthographicMatrix() {
-            return getScreen().getTransformation().getOrthographicMatrix();
-        }
-
         public static void renderModelNode(MeshGroup.MeshGroupNode meshNode) {
             GL46.glBindVertexArray(meshNode.getMesh().getVao());
             meshNode.getMesh().enableAllMeshAttributes();
@@ -144,7 +132,7 @@ public abstract class JGemsHelper {
         }
 
         public static Model<Format2D> createScreenModel() {
-            return MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(getScreen().getWindowDimensions()), 0);
+            return MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(JGemsHelper.getScreen().getWindowDimensions()), 0);
         }
 
         @SuppressWarnings("all")

@@ -28,18 +28,18 @@ public final class ShaderResources extends ShadersInitializer<TBoxShaderManager>
     public TBoxShaderManager scene_gluing;
 
     protected void initObjects(ResourceCache resourceCache) {
-        this.world_transparent_color = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/world_transparent_color"));
-        this.world_isometric_object = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/world_isometric_object"));
-        this.world_object = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/world_object"));
-        this.world_object_nolight = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/world_object_nolight"));
-        this.world_lines = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/world_lines"));
-        this.world_xyz = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/world_xyz"));
-        this.imgui = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/imgui"));
-        this.scene_gluing = this.createShaderManager(resourceCache, ShaderRenderingTarget.UNDEFINED, new JGemsPath("/assets/toolbox/shaders/scene_gluing"));
+        this.world_transparent_color = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_transparent_color"));
+        this.world_isometric_object = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_isometric_object"));
+        this.world_object = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_object"));
+        this.world_object_nolight = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_object_nolight"));
+        this.world_lines = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_lines"));
+        this.world_xyz = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/world_xyz"));
+        this.imgui = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/imgui"));
+        this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPath("/assets/toolbox/shaders/scene_gluing"));
     }
 
     @Override
-    public TBoxShaderManager createShaderObject(ShaderRenderingTarget shaderRenderingTarget, JGemsPath shaderPath) {
-        return new TBoxShaderManager(shaderRenderingTarget, new ShadersContainer(shaderPath));
+    public TBoxShaderManager createShaderObject(JGemsPath shaderPath) {
+        return new TBoxShaderManager(new ShadersContainer(shaderPath));
     }
 }

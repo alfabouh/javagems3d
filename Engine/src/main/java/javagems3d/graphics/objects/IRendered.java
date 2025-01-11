@@ -12,6 +12,7 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
@@ -23,7 +24,7 @@ public interface IRendered {
         return this.getRenderFabric() != null;
     }
 
-    default JGemsShaderManager getShaderManager() {
-        return this.getRenderAttributes().getModelRenderShader();
+    default ShadingTable getShadingTable() {
+        return this.getRenderAttributes().getShadingTable();
     }
 }

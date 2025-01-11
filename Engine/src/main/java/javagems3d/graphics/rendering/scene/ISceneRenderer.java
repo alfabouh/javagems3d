@@ -14,7 +14,6 @@ package javagems3d.graphics.rendering.scene;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.transformation.Transformation;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
@@ -32,5 +31,4 @@ public interface ISceneRenderer extends IWindow.ResizeEvent {
 
     @NotNull SceneWorld getSceneWorld();
     @NotNull IWindow getWindow();
-    @NotNull Transformation getTransformationManager();
 }

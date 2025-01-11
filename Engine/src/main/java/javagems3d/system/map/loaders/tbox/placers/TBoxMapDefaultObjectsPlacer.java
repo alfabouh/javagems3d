@@ -60,7 +60,7 @@ public abstract class TBoxMapDefaultObjectsPlacer {
         JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
 
         if (isProp != null && (isProp)) {
-            RenderAttributes modelRenderData = renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager);
+            RenderAttributes modelRenderData = renderContainer.getObjectRenderSettings().copy();
             //IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 
             Model<Format3D> model = new Model<>(new Format3D(), meshGroup);
@@ -69,7 +69,7 @@ public abstract class TBoxMapDefaultObjectsPlacer {
             model.getFormat().setScaling(scale);
             JGemsHelper.WORLD.addPropInScene(new SceneProp(null, model, modelRenderData));
         } else {
-            EntityRenderData entityRenderData = new EntityRenderData(null, renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy().setModelRenderShader(shaderManager));
+            EntityRenderData entityRenderData = new EntityRenderData(null, renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy());
 
             Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
             if (isStatic == null || isStatic) {

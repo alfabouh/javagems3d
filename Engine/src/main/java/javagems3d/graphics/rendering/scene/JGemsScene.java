@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.rendering.scene;
 
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
@@ -19,28 +20,26 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.synchronizing.SyncManager;
 
 public class JGemsScene implements IScene {
     private final IWindow window;
-    private final Transformation transformation;
     private final SceneWorld sceneWorld;
     protected OpenGLRenderer sceneRenderer;
 
     private float elapsedTime;
     private boolean refresh;
 
-    public JGemsScene(IWindow window, Transformation transformation, SceneWorld sceneWorld) {
-        this.transformation = transformation;
+    public JGemsScene(IWindow window, SceneWorld sceneWorld) {
         this.sceneWorld = sceneWorld;
         this.window = window;
         this.setDefaultRenderer();
     }
 
     protected void setDefaultRenderer() {
-        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getWindow(), this.getSceneWorld(), this.getTransformation()));
+        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getWindow(), this.getSceneWorld()));
     }
 
     public void preRender() {
@@ -75,7 +74,7 @@ public class JGemsScene implements IScene {
         this.refresh = false;
         this.getSceneWorld().onWorldUpdate();
         this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
-        this.getTransformation().updateCamera(this.getCamera());
+        JGemsTransformation.INSTANCE.updateCamera(this.getCamera());
     }
 
     public void postRender() {
@@ -107,11 +106,6 @@ public class JGemsScene implements IScene {
     @Override
     public SceneWorld getSceneWorld() {
         return this.sceneWorld;
-    }
-
-    @Override
-    public Transformation getTransformation() {
-        return this.transformation;
     }
 
     @Override

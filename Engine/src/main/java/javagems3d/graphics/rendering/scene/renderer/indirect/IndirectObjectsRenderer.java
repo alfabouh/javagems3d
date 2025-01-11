@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgr
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -25,9 +26,11 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class IndirectObjectsRenderer {
@@ -36,29 +39,33 @@ public class IndirectObjectsRenderer {
     private static final int SSBO_DATASETS_MATERIAL_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
     private static final int SSBO_DATASETS_PROPERTIES_SIZE = JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_PROPERTIES;
 
-    private Set<SceneObject> indirectMeshObjects;
+    private Collection<SceneObject> indirectMeshObjects;
     private final OpenGLRenderer openGLRenderer;
 
     private final boolean usePropertiesSSBO;
     private final boolean useMaterialsSSBO;
     private final JGemsShaderManager overIndirectShader;
-    private final ShaderSplittingPicker defaultShaderSplittingPicker;
+    private final RenderingFunction renderingFunction;
 
-    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @Nullable IndirectObjectsRenderer.ShaderSplittingPicker defaultShaderSplittingPicker, @Nullable JGemsShaderManager overIndirectShader, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
+    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull RenderingFunction renderingFunction, @Nullable JGemsShaderManager overIndirectShader, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
         this.openGLRenderer = openGLRenderer;
         this.usePropertiesSSBO = usePropertiesSSBO;
         this.useMaterialsSSBO = useMaterialsSSBO;
         this.overIndirectShader = overIndirectShader;
-        this.defaultShaderSplittingPicker = defaultShaderSplittingPicker == null ? (e) -> e.getRenderAttributes().getShadingTable().getShader(ShadingTable.Category.SCENE) : defaultShaderSplittingPicker;
+        this.renderingFunction = renderingFunction;
     }
 
-    public void processAndRender() {
-        this.processAndRender(null);
+    public void processAndRender(@Nullable Object... metaData) {
+        this.processAndRender(null, metaData);
     }
 
-    public void processAndRender(@Nullable IndirectObjectsRenderer.ShaderSplittingPicker shaderSplittingPicker) {
+    public void processAndRender(@Nullable ShaderSplittingPicker newShaderSplittingPicker, @Nullable Object... metaData) {
+        ShaderSplittingPicker shaderSplittingPicker = (e) -> e.getRenderAttributes().getShadingTable().getShader(ShadingTable.Category.SCENE);
+        if (newShaderSplittingPicker != null) {
+            shaderSplittingPicker = newShaderSplittingPicker;
+        }
         IndirectRenderBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
-        if (this.getOverIndirectShader() != null) {
+        if (false && this.getOverIndirectShader() != null) {
             IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
             indirectBufferCommandsBuilder1.createBuffer();
 
@@ -67,11 +74,11 @@ public class IndirectObjectsRenderer {
             indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, this.getIndirectMeshObjects());
 
             this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData);
-            this.render(this.getOverIndirectShader(), indirectBufferCommandsBuilder1, renderBuffer);
+            this.render(this.getOverIndirectShader(), indirectBufferCommandsBuilder1, renderBuffer, metaData);
 
             indirectBufferCommandsBuilder1.destroyBuffer();
         } else {
-            Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects(), shaderSplittingPicker != null ? shaderSplittingPicker : this.getDefaultShaderSplitting());
+            Map<JGemsShaderManager, Set<SceneObject>> map = this.splitObjectsByShaderGroups(this.getIndirectMeshObjects(), shaderSplittingPicker);
             for (Map.Entry<JGemsShaderManager, Set<SceneObject>> sceneObjects : map.entrySet()) {
                 IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
                 indirectBufferCommandsBuilder1.createBuffer();
@@ -81,22 +88,23 @@ public class IndirectObjectsRenderer {
                 indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, sceneObjects.getValue());
 
                 this.fillSSBOWithInformation(indexes, materialIds, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData);
-                this.render(sceneObjects.getKey(), indirectBufferCommandsBuilder1, renderBuffer);
+                this.render(sceneObjects.getKey(), indirectBufferCommandsBuilder1, renderBuffer, metaData);
 
                 indirectBufferCommandsBuilder1.destroyBuffer();
             }
         }
     }
 
-    protected void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer) {
+    protected void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @Nullable Object... metaData) {
+        //this.getRenderingFunction().func(shaderManager, indirectBufferCommandsBuilder, renderBuffer, metaData);
         shaderManager.beginShading();
         CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
         shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
         if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
             shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram.getTextureId(), GL46.GL_TEXTURE_CUBE_MAP);
         }
-        shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getPerspectiveMatrix()));
-        shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(this.getOpenGLRenderer().getTransformationManager().getMainCameraViewMatrix()));
+        shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getPerspectiveMatrix()));
+        shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
         GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
         GL46.glBindVertexArray(renderBuffer.getStaticVao());
         GL46.glMultiDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, 0, indirectBufferCommandsBuilder.getDrawCount(), 0);
@@ -105,7 +113,7 @@ public class IndirectObjectsRenderer {
         shaderManager.endShading();
     }
 
-    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Set<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
+    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
         ByteBuffer byteBuffer = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
         FloatBuffer matrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
 
@@ -140,12 +148,12 @@ public class IndirectObjectsRenderer {
         }
     }
 
-    protected Map<JGemsShaderManager, Set<SceneObject>> splitObjectsByShaderGroups(Set<SceneObject> sceneObjects, ShaderSplittingPicker shaderSplittingPicker) {
+    protected Map<JGemsShaderManager, Set<SceneObject>> splitObjectsByShaderGroups(Collection<SceneObject> sceneObjects, ShaderSplittingPicker shaderSplittingPicker) {
         return sceneObjects.stream().collect(Collectors.groupingBy(shaderSplittingPicker::pickShaderGroup, HashMap::new, Collectors.toSet()));
     }
 
-    public ShaderSplittingPicker getDefaultShaderSplitting() {
-        return this.defaultShaderSplittingPicker;
+    public RenderingFunction getRenderingFunction() {
+        return this.renderingFunction;
     }
 
     public JGemsShaderManager getOverIndirectShader() {
@@ -160,11 +168,11 @@ public class IndirectObjectsRenderer {
         return this.useMaterialsSSBO;
     }
 
-    public void setIndirectMeshObjects(@NotNull Set<SceneObject> sceneObjects) {
+    public void setIndirectMeshObjects(@NotNull Collection<SceneObject> sceneObjects) {
         this.indirectMeshObjects = sceneObjects;
     }
 
-    public Set<SceneObject> getIndirectMeshObjects() {
+    public Collection<SceneObject> getIndirectMeshObjects() {
         return this.indirectMeshObjects;
     }
 
@@ -175,5 +183,10 @@ public class IndirectObjectsRenderer {
     @FunctionalInterface
     public interface ShaderSplittingPicker {
         @NotNull JGemsShaderManager pickShaderGroup(SceneObject sceneObject);
+    }
+
+    @FunctionalInterface
+    public interface RenderingFunction {
+        void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @Nullable Object... metaData);
     }
 }

@@ -28,16 +28,16 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
 
     protected abstract void initObjects(ResourceCache resourceCache);
 
-    protected abstract T createShaderObject(ShaderRenderingTarget shaderRenderingTarget, JGemsPath shaderPath);
+    protected abstract T createShaderObject(JGemsPath shaderPath);
 
     @SuppressWarnings("unchecked")
-    public T createShaderManager(ResourceCache resourceCache, ShaderRenderingTarget shaderRenderingTarget, JGemsPath shaderPath) {
+    public T createShaderManager(ResourceCache resourceCache, JGemsPath shaderPath) {
         if (resourceCache.checkObjectInCache(shaderPath)) {
             JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists!");
             return (T) resourceCache.getCachedObject(shaderPath);
         }
         JGemsHelper.getLogger().log("Creating shader " + shaderPath + "...");
-        T shaderManager = this.createShaderObject(shaderRenderingTarget, shaderPath);
+        T shaderManager = this.createShaderObject(shaderPath);
         resourceCache.addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }

@@ -14,7 +14,7 @@ package javagems3d.graphics.transformation;
 import org.joml.Matrix4f;
 import javagems3d.graphics.camera.base.ICamera;
 
-public class CameraMatrix {
+public final class CameraMatrix {
     private final Matrix4f viewMatrix;
 
     public CameraMatrix() {
@@ -22,7 +22,7 @@ public class CameraMatrix {
     }
 
     public void update(ICamera camera) {
-        this.viewMatrix.set(Transformation.getAbstractCameraViewMatrix(camera));
+        this.viewMatrix.set(JGemsTransformation.getAbstractCameraViewMatrix(camera));
     }
 
     public Matrix4f getViewMatrix() {

@@ -33,8 +33,8 @@ import toolbox.render.scene.utils.TBoxSceneUtils;
 public final class TBoxShaderManager extends ShaderManager {
     private final TBoxShaderUtils shaderUtils;
 
-    public TBoxShaderManager(ShaderRenderingTarget shaderRenderingTarget, ShadersContainer shadersContainer) {
-        super(shaderRenderingTarget, shadersContainer);
+    public TBoxShaderManager(ShadersContainer shadersContainer) {
+        super(shadersContainer);
         this.shaderUtils = new TBoxShaderUtils();
     }
 
@@ -44,7 +44,7 @@ public final class TBoxShaderManager extends ShaderManager {
     }
 
     public TBoxShaderManager copy() {
-        return new TBoxShaderManager(this.getShaderTarget(), this.getShaderContainer());
+        return new TBoxShaderManager(this.getShaderContainer());
     }
 
     public TBoxShaderUtils getUtils() {

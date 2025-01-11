@@ -21,7 +21,7 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.Transformation;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
@@ -70,13 +70,13 @@ public class TBoxScene {
     public static FBOTexture2DProgram previewItemFbo;
     private final SceneContainer sceneObjects;
     private final IWindow window;
-    private final Transformation transformation;
+    private final JGemsTransformation JGemsTransformation;
     private DIMGuiRenderTBox dimGuiRenderTBox;
     private ICamera camera;
 
-    public TBoxScene(Transformation transformation, IWindow window) {
+    public TBoxScene(JGemsTransformation JGemsTransformation, IWindow window) {
         this.sceneObjects = new SceneContainer();
-        this.transformation = transformation;
+        this.JGemsTransformation = JGemsTransformation;
         this.window = window;
     }
 
@@ -536,8 +536,8 @@ public class TBoxScene {
         this.camera = camera;
     }
 
-    public Transformation getTransformationUtils() {
-        return this.transformation;
+    public JGemsTransformation getTransformationUtils() {
+        return this.JGemsTransformation;
     }
 
     public IWindow getWindow() {

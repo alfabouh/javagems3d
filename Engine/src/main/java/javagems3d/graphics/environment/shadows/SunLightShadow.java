@@ -6,6 +6,7 @@ import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.JGemsScene;
+import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.graphics.transformation.TransformationUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
@@ -33,11 +34,11 @@ public class SunLightShadow extends AbstractShadow {
         }
     }
 
-    private void updateCascadeShadows() {
+    public void refreshCascades() {
         JGemsScene scene = JGems3D.get().getScreen().getScene();
 
-        Matrix4f view = scene.getTransformation().getMainCameraViewMatrix();
-        Matrix4f projection = scene.getTransformation().getPerspectiveMatrix();
+        Matrix4f view = JGemsTransformation.INSTANCE.getCameraViewMatrix();
+        Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
 
         Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getSunPosition(), 0.0f);
 

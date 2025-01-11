@@ -25,7 +25,7 @@ public class TBoxSceneUtils {
     public static final float Z_FAR = 300.0f;
 
     public static Matrix4f getMainCameraViewMatrix() {
-        return ToolBox.get().getScreen().getTransformationUtils().getMainCameraViewMatrix();
+        return ToolBox.get().getScreen().getTransformationUtils().getCameraViewMatrix();
     }
 
     public static Matrix4f getMainPerspectiveMatrix() {
