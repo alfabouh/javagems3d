@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.indirect;
 
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
@@ -65,7 +66,7 @@ public class IndirectObjectsRenderer {
             shaderSplittingPicker = newShaderSplittingPicker;
         }
         IndirectRenderBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
-        if (false && this.getOverIndirectShader() != null) {
+        if (this.getOverIndirectShader() != null) {
             IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
             indirectBufferCommandsBuilder1.createBuffer();
 
@@ -96,21 +97,7 @@ public class IndirectObjectsRenderer {
     }
 
     protected void render(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @Nullable Object... metaData) {
-        //this.getRenderingFunction().func(shaderManager, indirectBufferCommandsBuilder, renderBuffer, metaData);
-        shaderManager.beginShading();
-        CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
-        shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
-        if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
-            shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram.getTextureId(), GL46.GL_TEXTURE_CUBE_MAP);
-        }
-        shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getPerspectiveMatrix()));
-        shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
-        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
-        GL46.glBindVertexArray(renderBuffer.getStaticVao());
-        GL46.glMultiDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, 0, indirectBufferCommandsBuilder.getDrawCount(), 0);
-        GL46.glBindVertexArray(0);
-        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, 0);
-        shaderManager.endShading();
+        this.getRenderingFunction().func(shaderManager, indirectBufferCommandsBuilder, renderBuffer, metaData);
     }
 
     protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {

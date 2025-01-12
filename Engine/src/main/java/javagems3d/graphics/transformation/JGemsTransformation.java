@@ -36,6 +36,11 @@ public class JGemsTransformation {
         this.getCameraTransformation().update(camera);
     }
 
+    public void updateSetOfMatrices(IWindow window) {
+        this.updateOrthographicMatrix(window);
+        this.updatePerspectiveMatrix(window);
+    }
+
     public void updateOrthographicMatrix(IWindow window) {
         this.orthographicMatrix.set(TransformationUtils.getOrthographic2DMatrix(0, window.getWindowSize().x, window.getWindowSize().y, 0));
     }
@@ -45,8 +50,7 @@ public class JGemsTransformation {
     }
 
     public void setProjectionData(IWindow window, float fov, float zNear, float zFar) {
-        this.getProjectionData().set(fov, zNear, zFar);
-        this.updatePerspectiveMatrix(window);
+        this.projectionData.set(fov, zNear, zFar);
     }
 
     public static Matrix4f getAbstractCameraViewMatrix(ICamera camera) {

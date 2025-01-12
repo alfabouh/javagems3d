@@ -77,7 +77,7 @@ public class JGemsScreen implements IScreen {
         JGemsHelper.getLogger().log("Init Graphics!");
         if (this.tryToBuildScreen()) {
             JGemsTransformation.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
-            JGemsTransformation.INSTANCE.updateOrthographicMatrix(this.getWindow());
+            JGemsTransformation.INSTANCE.updateSetOfMatrices(this.getWindow());
 
             this.checkScreenMode();
             this.checkVSync();
@@ -123,7 +123,7 @@ public class JGemsScreen implements IScreen {
 
     private void resizeWindow(IWindow window) {
         this.getScene().onWindowResize(window);
-        JGemsTransformation.INSTANCE.updateOrthographicMatrix(window);
+        JGemsTransformation.INSTANCE.updateSetOfMatrices(this.getWindow());
     }
 
     public void normalizeViewPort() {
