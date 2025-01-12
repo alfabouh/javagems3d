@@ -5,12 +5,12 @@ uniform mat4 model_matrix;
 uniform mat4 projection_view_matrix;
 
 out vec4 frag_pos;
-out vec2 out_texture;
+out vec2 uv_coordinates;
 
 void main()
 {
     gl_Position = projection_view_matrix * model_matrix * vec4(aPosition, 1.0f);
     frag_pos = (model_matrix * vec4(aPosition, 1.0f));
 
-    out_texture = texture;
+    uv_coordinates = texture;
 }

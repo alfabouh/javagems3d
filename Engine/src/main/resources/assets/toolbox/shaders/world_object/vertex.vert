@@ -9,7 +9,7 @@ uniform vec3 sunPos;
 out vec3 mv_out_pos;
 
 out vec3 outSunPos;
-out vec2 out_texture;
+out vec2 uv_coordinates;
 out vec3 modelview_vertex_normal;
 out vec3 modelview_vertex_pos;
 
@@ -23,7 +23,7 @@ void main()
     modelview_vertex_pos = mv_pos.xyz;
 
     mv_out_pos = gl_Position.xyz;
-    out_texture = aTexture;
+    uv_coordinates = aTexture;
 
     outSunPos = normalize(view_matrix * vec4(sunPos, 0.0)).xyz;
 }

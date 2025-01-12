@@ -6,7 +6,7 @@ uniform mat4 projection_matrix;
 
 out vec3 mv_out_pos;
 
-out vec2 out_texture;
+out vec2 uv_coordinates;
 
 void main()
 {
@@ -14,5 +14,5 @@ void main()
     gl_Position = projection_matrix * mv_pos;
 
     mv_out_pos = gl_Position.xyz;
-    out_texture = aTexture;
+    uv_coordinates = aTexture;
 }

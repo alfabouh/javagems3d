@@ -1,6 +1,6 @@
 layout (location = 0) out vec4 frag_color;
 
-in vec2 out_texture;
+in vec2 uv_coordinates;
 uniform sampler2D texture_sampler;
 uniform float blur;
 
@@ -18,7 +18,7 @@ void main()
         for (int x = -radius; x <= radius; ++x)
         {
             vec2 offset = vec2(float(x), float(y)) * texel_size;
-            color += texture(texture_sampler, out_texture + offset);
+            color += texture(texture_sampler, uv_coordinates + offset);
         }
     }
 

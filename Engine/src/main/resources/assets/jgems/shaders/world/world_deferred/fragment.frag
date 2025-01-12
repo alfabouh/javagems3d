@@ -1,4 +1,4 @@
-in vec2 out_texture;
+in vec2 uv_coordinates;
 in mat4 out_view_matrix;
 in mat4 out_inversed_view_matrix;
 
@@ -48,13 +48,13 @@ vec4 calc_fog(vec3, vec4);
 
 void main()
 {
-    vec3 frag_pos = texture(gPositions, out_texture).xyz;
-    vec3 normals = texture(gNormals, out_texture).xyz;
-    vec4 g_texture = texture(gTexture, out_texture);
-    vec4 emission = vec4(texture(gEmission, out_texture).rgb, 0.0) * vec4(5.);
+    vec3 frag_pos = texture(gPositions, uv_coordinates).xyz;
+    vec3 normals = texture(gNormals, uv_coordinates).xyz;
+    vec4 g_texture = texture(gTexture, uv_coordinates);
+    vec4 emission = vec4(texture(gEmission, uv_coordinates).rgb, 0.0) * vec4(5.);
 
     float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
-    float AO = isSsaoValid ? texture(ssaoSampler, out_texture).r : 1.;
+    float AO = isSsaoValid ? texture(ssaoSampler, uv_coordinates).r : 1.;
     float f1 = pow(AO, (1.0 - gray) * 3.);
 
     vec4 lights = calc_light(frag_pos, normals) * vec4(f1);
@@ -116,7 +116,7 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     specularF = pow(specularF, 8.0);
     specularC = brightness * specularF * vec4(colors, 1.);
 
-    vec4 specularFactor = vec4(vec3(1.0) - texture(gSpecular, out_texture).rgb, 1.0);
+    vec4 specularFactor = vec4(vec3(1.0) - texture(gSpecular, uv_coordinates).rgb, 1.0);
     return diffuseC + (specularC * specularFactor);
 }
 

@@ -1,4 +1,4 @@
-in vec2 out_texture;
+in vec2 uv_coordinates;
 layout (location = 0) out vec4 frag_color;
 
 uniform float w_tick;
@@ -11,7 +11,7 @@ float rand(vec2 co)
 
 vec4 random_noise(vec4 txtr) {
     float pixelSize = 0.0035;
-    vec2 tex = out_texture;
+    vec2 tex = uv_coordinates;
     vec2 pixelCoords = floor(tex / pixelSize) * pixelSize;
     vec4 colors = txtr;
     float grain = clamp(rand(pixelCoords) * (0.05), 0.0, 1.0);

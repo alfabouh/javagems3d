@@ -13,7 +13,7 @@ layout(std430, binding = 0) buffer BoneMatrices {
 };
 uniform bool hasAnimations;
 
-out vec2 out_texture;
+out vec2 uv_coordinates;
 
 void main()
 {
@@ -36,5 +36,5 @@ void main()
     }
 
     gl_Position = projection_view_matrix * model_matrix * startPos;
-    out_texture = texture;
+    uv_coordinates = texture;
 }

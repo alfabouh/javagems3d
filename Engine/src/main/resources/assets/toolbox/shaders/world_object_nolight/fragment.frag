@@ -1,7 +1,7 @@
 layout (location = 0) out vec4 frag_color;
 
 in vec3 mv_out_pos;
-in vec2 out_texture;
+in vec2 uv_coordinates;
 in vec3 modelview_vertex_normal;
 in vec3 modelview_vertex_pos;
 
@@ -15,7 +15,7 @@ uniform float alpha_discard;
 
 void main()
 {
-    frag_color = (use_texturing && (texturing_code & (1 << 2)) != 0) ? texture(diffuse_map, out_texture) : diffuse_color;
+    frag_color = (use_texturing && (texturing_code & (1 << 2)) != 0) ? texture(diffuse_map, uv_coordinates) : diffuse_color;
     if (frag_color.a < alpha_discard) {
         discard;
     }

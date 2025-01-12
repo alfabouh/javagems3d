@@ -6,7 +6,7 @@ uniform mat4 model_matrix;
 uniform mat4 projection_matrix;
 
 out vec3 outSunPos;
-out vec2 out_texture;
+out vec2 uv_coordinates;
 out vec3 modelview_vertex_pos;
 
 void main()
@@ -17,5 +17,5 @@ void main()
 
     modelview_vertex_pos = mv_pos.xyz;
 
-    out_texture = aTexture;
+    uv_coordinates = aTexture;
 }

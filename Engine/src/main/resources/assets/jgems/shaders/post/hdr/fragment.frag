@@ -1,4 +1,4 @@
-in vec2 out_texture;
+in vec2 uv_coordinates;
 layout (location = 0) out vec4 frag_color;
 
 uniform sampler2D texture_sampler;
@@ -10,7 +10,7 @@ uniform float gamma;
 
 vec4 hdr(vec4 in_col, float exposure, float gamma) {
     vec3 rgb = in_col.rgb;
-    vec3 bl_c = texture(bloom_sampler, out_texture).rgb;
+    vec3 bl_c = texture(bloom_sampler, uv_coordinates).rgb;
     rgb += bl_c;
     vec3 mapped = vec3(1.) - exp(-rgb * exposure);
     mapped = pow(mapped, vec3(1. / gamma));
@@ -19,11 +19,11 @@ vec4 hdr(vec4 in_col, float exposure, float gamma) {
 
 vec4 no_hdr(vec4 in_col) {
     vec3 rgb = in_col.rgb;
-    vec3 bl_c = texture(bloom_sampler, out_texture).rgb;
+    vec3 bl_c = texture(bloom_sampler, uv_coordinates).rgb;
     rgb += bl_c;
     return vec4(rgb, in_col.a);
 }
 
 void main() {
-    frag_color = use_hdr ? hdr(texture(texture_sampler, out_texture), exposure, gamma) : no_hdr(texture(texture_sampler, out_texture));
+    frag_color = use_hdr ? hdr(texture(texture_sampler, uv_coordinates), exposure, gamma) : no_hdr(texture(texture_sampler, uv_coordinates));
 }

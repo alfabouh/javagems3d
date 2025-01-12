@@ -12,6 +12,7 @@
 package javagems3d.graphics.objects.rendering.data;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
@@ -34,12 +35,12 @@ public class EntityRenderData {
     private MeshStructure<?> meshStructure;
     private RenderAttributes objectRenderingConfiguration;
 
-    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager, @Nullable MeshStructure<?> meshStructure) {
+    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ShadingTable shadingTable, @Nullable MeshStructure<?> meshStructure) {
         this.abstractEntityClass = abstractEntityClass;
         this.renderFabric = renderFabric;
         this.entityModelConstructor = null;
         this.meshStructure = meshStructure;
-        this.objectRenderingConfiguration = new RenderAttributes(shaderManager);
+        this.objectRenderingConfiguration = new RenderAttributes(shadingTable);
     }
 
     public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull RenderAttributes objectRenderingConfiguration, @Nullable MeshStructure<?> meshStructure) {
@@ -50,8 +51,8 @@ public class EntityRenderData {
         this.objectRenderingConfiguration = objectRenderingConfiguration;
     }
 
-    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, abstractEntityClass, shaderManager, null);
+    public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull ShadingTable shadingTable) {
+        this(renderFabric, abstractEntityClass, shadingTable, null);
     }
 
     public EntityRenderData(@Nullable IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> abstractEntityClass, @NotNull RenderAttributes objectRenderingConfiguration) {

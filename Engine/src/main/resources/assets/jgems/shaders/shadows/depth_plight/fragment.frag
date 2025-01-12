@@ -1,6 +1,6 @@
 layout (location = 0) out vec4 frag_color0;
 
-in vec2 out_texture;
+in vec2 uv_coordinates;
 uniform float alpha_discard;
 uniform sampler2D texture_sampler;
 uniform bool use_texture;
@@ -11,7 +11,7 @@ uniform float far_plane;
 
 void main()
 {
-    vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, out_texture);
+    vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, uv_coordinates);
     if (v.a < alpha_discard) {
         discard;
     }

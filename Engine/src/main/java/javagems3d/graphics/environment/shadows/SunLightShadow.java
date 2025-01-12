@@ -150,7 +150,7 @@ public class SunLightShadow extends AbstractShadow {
 
     @Override
     public void destroyResources() {
-
+        this.getSunShadowFBO().clearFBO();
     }
 
     public List<Cascade> getCascades() {

@@ -1,4 +1,4 @@
-//in vec2 out_texture;
+//in vec2 uv_coordinates;
 //
 //layout (location = 0) out vec4 accumulated;
 //layout (location = 1) out float reveal;

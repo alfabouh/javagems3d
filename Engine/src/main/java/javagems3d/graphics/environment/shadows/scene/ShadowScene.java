@@ -20,6 +20,8 @@ import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.system.resources.assets.models.formats.Format2D;
+import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.service.collections.Pair;
@@ -55,15 +57,21 @@ public class ShadowScene implements IShadowScene {
     private List<PointLightShadow> pointLightShadows;
     private SunLightShadow sunLightShadow;
 
+    @SuppressWarnings("unchecked")
     private static final IndirectObjectsRenderer.RenderingFunction func = (shaderManager, indirectBufferCommandsBuilder, renderBuffer, metaData) -> {
-        Matrix4f lightProjection = null;
-        try {
-            lightProjection = (Matrix4f) metaData[0];
-        } catch (Exception e) {
-            throw new JGemsRuntimeException("ShadowScene caught an error!\n", e);
+        Consumer<JGemsShaderManager> functionToHandleUniforms = null;
+        Object o1 = metaData[0];
+        if (o1 instanceof Consumer<?>) {
+            try {
+                functionToHandleUniforms = (Consumer<JGemsShaderManager>) metaData[0];
+            } catch (Exception e) {
+                throw new JGemsRuntimeException("Wrong consumer!\n", e);
+            }
         }
         shaderManager.beginShading();
-        shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
+        if (functionToHandleUniforms != null) {
+            functionToHandleUniforms.accept(shaderManager);
+        }
         GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
         GL46.glBindVertexArray(renderBuffer.getStaticVao());
         GL46.glMultiDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, 0, indirectBufferCommandsBuilder.getDrawCount(), 0);
@@ -110,7 +118,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void renderAllModelsInShadowMap(Set<SceneObject> modeledSceneObjectSet) {
-      //  this.renderSceneInShadowMap(modeledSceneObjectSet);
+        this.renderSceneInShadowMap(modeledSceneObjectSet);
     }
 
     public void renderSceneInShadowMap(Set<SceneObject> modeledSceneObjectSet) {
@@ -128,6 +136,24 @@ public class ShadowScene implements IShadowScene {
         this.pointLightShadows(filtered);
         if (oldV) {
             GL46.glEnable(GL46.GL_CULL_FACE);
+        }
+
+        try (Model<Format2D> screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
+            final JGemsShaderManager bluring = JGemsResourceManager.globalShaderAssets.blur_box;
+            this.getSunLightShadow().getSunShadowFBO().bindFBO();
+            Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
+            GL46.glViewport(0, 0, resolution.x, resolution.y);
+            bluring.beginShading();
+            bluring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(screenModel.getFormat(), TransformationUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
+            for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
+                GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+                this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
+                bluring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
+                bluring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+                JGemsHelper.RENDERING.renderModel(screenModel, GL46.GL_TRIANGLES);
+            }
+            bluring.endShading();
+            this.getSunLightShadow().getSunShadowFBO().unBindFBO();
         }
     }
 
@@ -152,7 +178,9 @@ public class ShadowScene implements IShadowScene {
                     GL46.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
                     GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
                     Matrix4f lightProjection = pointLightShadow.getShadowDirections().get(j);
-                    this.renderModelsIndirect(ShadingTable.Category.POINT_L_SHADOW_MAP, lightProjection, indirectRenderObjects);
+                    this.renderModelsIndirect((shaderManager) -> {
+                        shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
+                    }, ShadingTable.Category.POINT_L_SHADOW_MAP, indirectRenderObjects);
                     this.renderModelsDirect((shaderManager) -> {
                         shaderManager.performUniform(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                         shaderManager.performUniform(new UniformString("lightPos"), UniformFunctions.VEC3F(pointLightShadow.getPointLight().getLightPos()));
@@ -176,8 +204,12 @@ public class ShadowScene implements IShadowScene {
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             GL46.glClearColor(JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y);
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
-            Matrix4f lightProjection = cascade.getLightProjectionViewMatrix();
-            this.renderModelsIndirect(ShadingTable.Category.SUN_L_SHADOW_MAP, lightProjection, indirectRenderObjects);
+            final Matrix4f lightProjection = cascade.getLightProjectionViewMatrix();
+            this.renderModelsIndirect((shaderManager) -> {
+                shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
+                shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
+                shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
+            }, ShadingTable.Category.SUN_L_SHADOW_MAP, indirectRenderObjects);
             this.renderModelsDirect((shaderManager) -> {
                 shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
                 shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
@@ -187,9 +219,9 @@ public class ShadowScene implements IShadowScene {
         this.getSunLightShadow().getSunShadowFBO().unBindFBO();
     }
 
-    protected void renderModelsIndirect(ShadingTable.Category category, Matrix4f lightProjection, List<SceneObject> filteredObjectsSet) {
+    protected void renderModelsIndirect(Consumer<JGemsShaderManager> functionToHandleUniforms, ShadingTable.Category category, List<SceneObject> filteredObjectsSet) {
         this.getIndirectObjectsRenderer().setIndirectMeshObjects(filteredObjectsSet);
-        this.getIndirectObjectsRenderer().processAndRender(e -> e.getRenderAttributes().getShadingTable().getShader(category), lightProjection);
+        this.getIndirectObjectsRenderer().processAndRender(e -> e.getRenderAttributes().getShadingTable().getShader(category), functionToHandleUniforms);
     }
 
     protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, ShadingTable.Category category, Matrix4f lightProjection, List<SceneObject> filteredObjectsSet) {

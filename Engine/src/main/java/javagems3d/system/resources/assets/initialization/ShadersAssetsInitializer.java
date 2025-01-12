@@ -56,16 +56,22 @@ public final class ShadersAssetsInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager fxaa;
     public JGemsShaderManager skybox;
     public JGemsShaderManager skybox_background;
+
     public JGemsShaderManager world_gbuffer;
     public JGemsShaderManager world_gbuffer_indirect;
+
     public JGemsShaderManager world_ssao;
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager weighted_oit;
     public JGemsShaderManager weighted_particle_oit;
     public JGemsShaderManager weighted_liquid_oit;
     public JGemsShaderManager simple;
+
     public JGemsShaderManager depth_sun;
+    public JGemsShaderManager depth_sun_indirect;
+
     public JGemsShaderManager depth_plight;
+
     public JGemsShaderManager debug;
     public JGemsShaderManager world_selected_gbuffer;
     public JGemsShaderManager inventory_common_item;
@@ -135,6 +141,7 @@ public final class ShadersAssetsInitializer extends ShadersInitializer<JGemsShad
 
         this.simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/simple"));
         this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "shadows/depth_sun"));
+        this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "shadows/depth_sun_indirect"));
 
         this.world_selected_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "world/world_selected_gbuffer"));
         this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.Paths.SHADERS, "shadows/depth_plight"));

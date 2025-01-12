@@ -1,4 +1,4 @@
-in vec2 out_texture;
+in vec2 uv_coordinates;
 
 layout (location = 0) out vec4 frag_color;
 
@@ -16,8 +16,8 @@ float max3(vec3 v) {
 }
 
 void main() {
-    vec4 accum = texture(accumulated_alpha, out_texture);
-    float reveal = texture(reveal_alpha, out_texture).r;
+    vec4 accum = texture(accumulated_alpha, uv_coordinates);
+    float reveal = texture(reveal_alpha, uv_coordinates).r;
 
     accum.rgb = isinf(max3(abs(accum.rgb))) ? vec3(accum.a) : accum.rgb;
 
@@ -26,7 +26,7 @@ void main() {
 
     mixedTransparency = isApproximatelyEqual(reveal, 1.0f) ? vec4(0.) : mixedTransparency;
 
-    vec4 sceneColor = texture(texture_sampler, out_texture) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
+    vec4 sceneColor = texture(texture_sampler, uv_coordinates) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
 
     frag_color = sceneColor;
 }

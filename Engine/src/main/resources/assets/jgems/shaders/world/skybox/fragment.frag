@@ -1,4 +1,4 @@
-in vec3 out_texture_cube;
+in vec3 uv_coordinates_cube;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
@@ -22,11 +22,11 @@ layout (std140, binding = 3) uniform Fog {
 
 void main()
 {
-    vec4 diffuse = texture(skybox, out_texture_cube);
+    vec4 diffuse = texture(skybox, uv_coordinates_cube);
 
     vec3 sunDirection = (view_mat_inverted * vec4(normalize(sunPos.xyz), 0.0)).rgb;
 
-    float scos = dot(normalize(out_texture_cube), sunDirection);
+    float scos = dot(normalize(uv_coordinates_cube), sunDirection);
     float sunFactor = pow(smoothstep(0.98, 1.0, scos), 32.);
 
     vec4 color = vec4(fogColor.xyz, 1.0);
