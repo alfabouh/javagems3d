@@ -139,20 +139,20 @@ public class ShadowScene implements IShadowScene {
         }
 
         try (Model<Format2D> screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
-            final JGemsShaderManager bluring = JGemsResourceManager.globalShaderAssets.blur_box;
+            final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
             this.getSunLightShadow().getSunShadowFBO().bindFBO();
             Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
             GL46.glViewport(0, 0, resolution.x, resolution.y);
-            bluring.beginShading();
-            bluring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(screenModel.getFormat(), TransformationUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
+            blurring.beginShading();
+            blurring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(screenModel.getFormat(), TransformationUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
             for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
                 GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
                 this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
-                bluring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
-                bluring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+                blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
+                blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
                 JGemsHelper.RENDERING.renderModel(screenModel, GL46.GL_TRIANGLES);
             }
-            bluring.endShading();
+            blurring.endShading();
             this.getSunLightShadow().getSunShadowFBO().unBindFBO();
         }
     }
@@ -162,6 +162,7 @@ public class ShadowScene implements IShadowScene {
         return new Pair<>(partitionedModels.get(false), partitionedModels.get(true));
     }
 
+    @SuppressWarnings("all")
     protected void pointLightShadows(Set<SceneObject> filteredObjectsSet) {
         Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(filteredObjectsSet);
         List<SceneObject> directRenderObjects = groups.getFirst();
@@ -178,13 +179,13 @@ public class ShadowScene implements IShadowScene {
                     GL46.glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
                     GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
                     Matrix4f lightProjection = pointLightShadow.getShadowDirections().get(j);
-                    this.renderModelsIndirect((shaderManager) -> {
+                    Consumer<JGemsShaderManager> consumer = (shaderManager) -> {
                         shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
-                    }, ShadingTable.Category.POINT_L_SHADOW_MAP, indirectRenderObjects);
-                    this.renderModelsDirect((shaderManager) -> {
                         shaderManager.performUniform(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                         shaderManager.performUniform(new UniformString("lightPos"), UniformFunctions.VEC3F(pointLightShadow.getPointLight().getLightPos()));
-                    }, ShadingTable.Category.POINT_L_SHADOW_MAP, lightProjection, directRenderObjects);
+                    };
+                    this.renderModelsIndirect(consumer, ShadingTable.Category.POINT_L_SHADOW_MAP, indirectRenderObjects);
+                    this.renderModelsDirect(consumer, ShadingTable.Category.POINT_L_SHADOW_MAP, directRenderObjects);
                     GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 }
                 pointLightShadow.getPointLightCubeMap().unBindFBO();
@@ -192,6 +193,7 @@ public class ShadowScene implements IShadowScene {
         }
     }
 
+    @SuppressWarnings("all")
     protected void sunShadows(Set<SceneObject> filteredObjectsSet) {
         Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(filteredObjectsSet);
         List<SceneObject> directRenderObjects = groups.getFirst();
@@ -205,15 +207,13 @@ public class ShadowScene implements IShadowScene {
             GL46.glClearColor(JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y);
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
             final Matrix4f lightProjection = cascade.getLightProjectionViewMatrix();
-            this.renderModelsIndirect((shaderManager) -> {
+            Consumer<JGemsShaderManager> consumer = (shaderManager) -> {
                 shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
                 shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
                 shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
-            }, ShadingTable.Category.SUN_L_SHADOW_MAP, indirectRenderObjects);
-            this.renderModelsDirect((shaderManager) -> {
-                shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
-                shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
-            }, ShadingTable.Category.SUN_L_SHADOW_MAP, lightProjection, directRenderObjects);
+            };
+            this.renderModelsIndirect(consumer, ShadingTable.Category.SUN_L_SHADOW_MAP, indirectRenderObjects);
+            this.renderModelsDirect(consumer, ShadingTable.Category.SUN_L_SHADOW_MAP, directRenderObjects);
             GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
         this.getSunLightShadow().getSunShadowFBO().unBindFBO();
@@ -224,13 +224,12 @@ public class ShadowScene implements IShadowScene {
         this.getIndirectObjectsRenderer().processAndRender(e -> e.getRenderAttributes().getShadingTable().getShader(category), functionToHandleUniforms);
     }
 
-    protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, ShadingTable.Category category, Matrix4f lightProjection, List<SceneObject> filteredObjectsSet) {
+    protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, ShadingTable.Category category, List<SceneObject> filteredObjectsSet) {
         Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getRenderAttributes().getShadingTable().getShader(category)));
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
             functionToHandleUniforms.accept(shaderManager);
-            shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
             for (SceneObject modeledSceneObject : filteredObjectsSet) {
                 Model<Format3D> model = modeledSceneObject.getModel();
                 if (model == null || model.getMeshStructure() == null) {
