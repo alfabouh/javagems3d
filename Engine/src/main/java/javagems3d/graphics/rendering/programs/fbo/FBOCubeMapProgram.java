@@ -13,16 +13,16 @@ package javagems3d.graphics.rendering.programs.fbo;
 
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.rendering.programs.textures.CubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.CubeMapTextureProgram;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 public class FBOCubeMapProgram {
-    private final CubeMapProgram cubeMapProgram;
+    private final CubeMapTextureProgram cubeMapTextureProgram;
     private int frameBufferId;
     private int renderBufferId;
 
     public FBOCubeMapProgram() {
-        this.cubeMapProgram = new CubeMapProgram();
+        this.cubeMapTextureProgram = new CubeMapTextureProgram();
     }
 
     public void createFrameBufferCubeMapDepth(Vector2i size, int filtering, int clamp) {
@@ -72,8 +72,8 @@ public class FBOCubeMapProgram {
         GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
     }
 
-    public CubeMapProgram getCubeMapProgram() {
-        return this.cubeMapProgram;
+    public CubeMapTextureProgram getCubeMapProgram() {
+        return this.cubeMapTextureProgram;
     }
 
     public int getRenderBufferId() {

@@ -78,7 +78,6 @@ public final class SceneWorld implements IWorld {
         JGemsDebugGlobalConstants.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
-        this.getEnvironment().createEnvironment(this);
         this.ticks = 0;
         APIEventsLauncher.pushEvent(new Events.RenderWorldStart(Events.Stage.POST, this));
     }
@@ -103,7 +102,6 @@ public final class SceneWorld implements IWorld {
     public void onWorldEnd() {
         APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.PRE, this));
         this.getParticlesEmitter().destroy(this);
-        this.getEnvironment().destroyEnvironment(this);
         this.clearAll();
         APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.POST, this));
     }

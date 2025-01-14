@@ -163,11 +163,11 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
-    public void performUniformTexture(UniformString uniform, int textureID, int textureAttachment) {
-        this.performUniformTexture(uniform, textureID, textureAttachment, this.usedTextureUnits++);
+    public void performUniformTexture(UniformString uniform, int samplerId, int textureID, int textureAttachment) {
+        this.performUniformTexture(uniform, samplerId, textureID, textureAttachment, this.usedTextureUnits++);
     }
 
-    public void performUniformTexture(UniformString uniform, int textureID, int textureAttachment, int textureUnit) {
+    public void performUniformTexture(UniformString uniform, int samplerId, int textureID, int textureAttachment, int textureUnit) {
         if (!this.isUniformExist(uniform)) {
             JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
             return;
@@ -182,10 +182,7 @@ public abstract class ShaderManager implements ICached {
         }
 
         GL46.glActiveTexture(GL46.GL_TEXTURE0 + textureUnit);
-
-        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
-        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
-
+        GL46.glBindSampler(textureUnit, samplerId);
         GL46.glBindTexture(textureAttachment, textureID);
         this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));
     }

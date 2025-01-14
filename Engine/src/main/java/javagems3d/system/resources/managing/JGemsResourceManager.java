@@ -14,6 +14,7 @@ package javagems3d.system.resources.managing;
 import javagems3d.JGems3D;
 import api.bridge.APIContainer;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.graphics.rendering.programs.textures.cache.TexturesSamplersCachingProgram;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
@@ -95,7 +96,8 @@ public final class JGemsResourceManager {
     }
 
     public void destroy() {
-        ShaderStorageBufferProgram.clearAllSSBOs();
+        TexturesSamplersCachingProgram.clearAll();
+        ShaderStorageBufferProgram.clearAll();
         GuiFont.allCreatedFonts.forEach(GuiFont::clear);
         this.getResourceDataCache().clearAll();
         this.clearAllCaches();

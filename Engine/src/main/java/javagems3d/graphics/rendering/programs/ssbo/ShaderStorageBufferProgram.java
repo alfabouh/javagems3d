@@ -2,8 +2,6 @@ package javagems3d.graphics.rendering.programs.ssbo;
 
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.*;
@@ -48,7 +46,7 @@ public abstract class ShaderStorageBufferProgram {
         return shaderStorageBuffers.get(shaderStorageBufferObject);
     }
 
-    public static void clearAllSSBOs() {
+    public static void clearAll() {
         ShaderStorageBufferProgram.shaderStorageBuffers.values().forEach(GL46::glDeleteBuffers);
         ShaderStorageBufferProgram.shaderStorageBuffers.clear();
     }

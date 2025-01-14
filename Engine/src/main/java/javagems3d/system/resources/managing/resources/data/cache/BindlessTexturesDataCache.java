@@ -1,16 +1,15 @@
 package javagems3d.system.resources.managing.resources.data.cache;
 
-import javagems3d.system.resources.assets.texturing.ext.IBindlessTexture;
+import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public final class BindlessTexturesDataCache implements IDataCache {
-    private final Map<IBindlessTexture, Integer> bindlessTexturesIdMap;
+    private final Map<ITextureBindless, Integer> bindlessTexturesIdMap;
 
     public BindlessTexturesDataCache() {
         this.bindlessTexturesIdMap = new LinkedHashMap<>();
@@ -18,7 +17,7 @@ public final class BindlessTexturesDataCache implements IDataCache {
 
     public void writeData(Set<BindlessTexturesDataArray> arraySet) {
         for (BindlessTexturesDataArray bindlessTexturesDataArray : arraySet) {
-            for (IBindlessTexture bindlessTexture : bindlessTexturesDataArray.getBindlessTextureList()) {
+            for (ITextureBindless bindlessTexture : bindlessTexturesDataArray.getBindlessTextureList()) {
                 this.add(bindlessTexture);
             }
         }
@@ -32,18 +31,18 @@ public final class BindlessTexturesDataCache implements IDataCache {
         return this.getBindlessTexturesIdMap().size();
     }
 
-    public int getTextureId(IBindlessTexture bindlessTexture) {
+    public int getTextureId(ITextureBindless bindlessTexture) {
         if (!this.getBindlessTexturesIdMap().containsKey(bindlessTexture)) {
             throw new JGemsRuntimeException("BindlessTextureArray doesn't contain bindless texture: " + bindlessTexture.getBindingHandler());
         }
         return this.getBindlessTexturesIdMap().get(bindlessTexture);
     }
 
-    private void add(IBindlessTexture bindlessTexture) {
+    private void add(ITextureBindless bindlessTexture) {
         this.bindlessTexturesIdMap.put(bindlessTexture, this.totalTextures());
     }
 
-    public Map<IBindlessTexture, Integer> getBindlessTexturesIdMap() {
+    public Map<ITextureBindless, Integer> getBindlessTexturesIdMap() {
         return new LinkedHashMap<>(this.bindlessTexturesIdMap);
     }
 }

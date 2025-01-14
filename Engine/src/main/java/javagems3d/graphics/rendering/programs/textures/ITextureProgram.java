@@ -14,15 +14,29 @@ package javagems3d.graphics.rendering.programs.textures;
 import org.lwjgl.opengl.GL46;
 
 public interface ITextureProgram {
-    int getTextureId();
+    default void bindSampler(int unit) {
+        GL46.glBindSampler(unit, this.getSamplerId());
+    }
 
-    void clear();
+    default void unBindSampler(int unit) {
+        GL46.glBindSampler(unit, 0);
+    }
 
-    default void bindTexture(int code) {
-        GL46.glBindTexture(code, this.getTextureId());
+    default void bindTexture() {
+        GL46.glBindTexture(this.getTextureAttachment(), this.getTextureId());
     }
 
     default void unBindTexture() {
-        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+        GL46.glBindTexture(this.getTextureAttachment(), 0);
     }
+
+    int getSamplerId();
+    int getTextureId();
+    int getTextureAttachment();
+
+    default boolean isValid() {
+        return this.getTextureId() > 0;
+    }
+
+    void clear();
 }

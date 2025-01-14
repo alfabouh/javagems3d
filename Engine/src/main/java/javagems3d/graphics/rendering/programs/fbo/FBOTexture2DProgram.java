@@ -17,8 +17,8 @@ import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachment;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
-import javagems3d.graphics.rendering.programs.textures.MSAATextureProgram;
-import javagems3d.graphics.rendering.programs.textures.TextureProgram;
+import javagems3d.graphics.rendering.programs.textures.Texture2DMSAAProgram;
+import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 import java.util.ArrayList;
@@ -42,10 +42,10 @@ public class FBOTexture2DProgram {
         this.bindFBO();
 
         for (int attachment : attachments) {
-            MSAATextureProgram msaaTextureProgram = new MSAATextureProgram(msaa);
-            msaaTextureProgram.createTexture(size, internalFormat);
-            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_2D_MULTISAMPLE, ((ITextureProgram) msaaTextureProgram).getTextureId(), 0);
-            this.getTexturePrograms().add(msaaTextureProgram);
+            Texture2DMSAAProgram texture2DMSAAProgram = new Texture2DMSAAProgram(msaa);
+            texture2DMSAAProgram.createTexture(size, internalFormat);
+            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_2D_MULTISAMPLE, ((ITextureProgram) texture2DMSAAProgram).getTextureId(), 0);
+            this.getTexturePrograms().add(texture2DMSAAProgram);
         }
 
         if (!this.drawColor) {
@@ -77,10 +77,10 @@ public class FBOTexture2DProgram {
         this.bindFBO();
 
         for (T2DAttachment t2DAttachment1 : t2DAttachmentContainer.getT2DAttachmentSet()) {
-            TextureProgram textureProgram1 = new TextureProgram();
-            textureProgram1.createTexture(size, t2DAttachment1.getTextureFormat(), t2DAttachment1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor);
-            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, t2DAttachment1.getAttachment(), GL46.GL_TEXTURE_2D, ((ITextureProgram) textureProgram1).getTextureId(), 0);
-            this.getTexturePrograms().add(textureProgram1);
+            Texture2DProgram texture2DProgram1 = new Texture2DProgram();
+            texture2DProgram1.createTexture(size, t2DAttachment1.getTextureFormat(), t2DAttachment1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor);
+            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, t2DAttachment1.getAttachment(), GL46.GL_TEXTURE_2D, ((ITextureProgram) texture2DProgram1).getTextureId(), 0);
+            this.getTexturePrograms().add(texture2DProgram1);
         }
 
         if (!this.drawColor) {

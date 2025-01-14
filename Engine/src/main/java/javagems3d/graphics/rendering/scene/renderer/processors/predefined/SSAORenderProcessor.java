@@ -6,7 +6,7 @@ import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.programs.textures.TextureProgram;
+import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -29,9 +29,9 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     private final JGemsShaderManager ssaoComputing;
     private FBOTexture2DProgram ssaoBuffer;
 
-    private TextureProgram ssaoNoiseTexture;
-    private TextureProgram ssaoKernelTexture;
-    private TextureProgram ssaoBufferTexture;
+    private Texture2DProgram ssaoNoiseTexture;
+    private Texture2DProgram ssaoKernelTexture;
+    private Texture2DProgram ssaoBufferTexture;
 
     public SSAORenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull IndirectGeometryRenderProcessor indirectGeometryRenderProcessor, @NotNull JGemsShaderManager ssaoComputing) {
         super(openGLRenderer);
@@ -119,8 +119,8 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         this.getSSAOBuffer().unBindFBO();
     }
 
-    protected TextureProgram calcSSAOKernel(int size) {
-        TextureProgram textureProgram = new TextureProgram();
+    protected Texture2DProgram calcSSAOKernel(int size) {
+        Texture2DProgram texture2DProgram = new Texture2DProgram();
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
             float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;
@@ -141,13 +141,13 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         }
         floatBuffer.flip();
         int s = (int) Math.sqrt(size);
-        textureProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
+        texture2DProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
         MemoryUtil.memFree(floatBuffer);
-        return textureProgram;
+        return texture2DProgram;
     }
 
-    protected TextureProgram calcSSAONoise(int size) {
-        TextureProgram textureProgram = new TextureProgram();
+    protected Texture2DProgram calcSSAONoise(int size) {
+        Texture2DProgram texture2DProgram = new Texture2DProgram();
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
             float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;
@@ -158,15 +158,15 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         }
         floatBuffer.flip();
         int s = (int) Math.sqrt(size);
-        textureProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
+        texture2DProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
         MemoryUtil.memFree(floatBuffer);
-        return textureProgram;
+        return texture2DProgram;
     }
 
-    protected TextureProgram createSSAOBuffer(Vector2i windowSize) {
-        TextureProgram textureProgram = new TextureProgram();
-        textureProgram.createTexture(windowSize, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null);
-        return textureProgram;
+    protected Texture2DProgram createSSAOBuffer(Vector2i windowSize) {
+        Texture2DProgram texture2DProgram = new Texture2DProgram();
+        texture2DProgram.createTexture(windowSize, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null);
+        return texture2DProgram;
     }
 
     protected Vector3i getSSAOParams(Vector2i windowSize) {
@@ -199,15 +199,15 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         return this.indirectGeometryRenderProcessor;
     }
 
-    public TextureProgram getSsaoNoiseTexture() {
+    public Texture2DProgram getSsaoNoiseTexture() {
         return this.ssaoNoiseTexture;
     }
 
-    public TextureProgram getSsaoKernelTexture() {
+    public Texture2DProgram getSsaoKernelTexture() {
         return this.ssaoKernelTexture;
     }
 
-    public TextureProgram getSsaoBufferTexture() {
+    public Texture2DProgram getSsaoBufferTexture() {
         return this.ssaoBufferTexture;
     }
 }

@@ -140,21 +140,25 @@ public class ShadowScene implements IShadowScene {
 
         try (Model<Format2D> screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
             final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
-            this.getSunLightShadow().getSunShadowFBO().bindFBO();
-            Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
-            GL46.glViewport(0, 0, resolution.x, resolution.y);
-            blurring.beginShading();
-            blurring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(screenModel.getFormat(), TransformationUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
-            for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
-                GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
-                this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
-                blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
-                blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
-                JGemsHelper.RENDERING.renderModel(screenModel, GL46.GL_TRIANGLES);
-            }
-            blurring.endShading();
-            this.getSunLightShadow().getSunShadowFBO().unBindFBO();
+            this.blurSunShadow(screenModel, blurring);
         }
+    }
+
+    private void blurSunShadow(Model<Format2D> screenModel, final JGemsShaderManager blurring) {
+        this.getSunLightShadow().getSunShadowFBO().bindFBO();
+        Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
+        GL46.glViewport(0, 0, resolution.x, resolution.y);
+        blurring.beginShading();
+        blurring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(screenModel.getFormat(), TransformationUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
+        for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
+            GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
+            this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
+            blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(0.0f));
+            blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+            JGemsHelper.RENDERING.renderModel(screenModel, GL46.GL_TRIANGLES);
+        }
+        blurring.endShading();
+        this.getSunLightShadow().getSunShadowFBO().unBindFBO();
     }
 
     protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<SceneObject> filteredObjectsSet) {
@@ -210,12 +214,12 @@ public class ShadowScene implements IShadowScene {
             Consumer<JGemsShaderManager> consumer = (shaderManager) -> {
                 shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
                 shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
-                shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT));
+                shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
             };
             this.renderModelsIndirect(consumer, ShadingTable.Category.SUN_L_SHADOW_MAP, indirectRenderObjects);
             this.renderModelsDirect(consumer, ShadingTable.Category.SUN_L_SHADOW_MAP, directRenderObjects);
-            GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         }
+        GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getSunLightShadow().getSunShadowFBO().unBindFBO();
     }
 

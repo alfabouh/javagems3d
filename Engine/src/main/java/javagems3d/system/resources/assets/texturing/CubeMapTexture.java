@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.texturing;
 
+import javagems3d.graphics.rendering.programs.textures.cache.TexturesSamplersCachingProgram;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -8,11 +9,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
-public class CubeMapTexture extends ImageBasedTexture {
+public class CubeMapTexture implements ImageBasedTexture {
     private Vector2i[] size6;
     private int textureId;
+    private int samplerId;
 
     public CubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
+        this.textureId = 0;
+        this.samplerId = 0;
         this.init(textureProperties, data);
     }
 
@@ -36,15 +40,15 @@ public class CubeMapTexture extends ImageBasedTexture {
             properties = new CubeMapTexture.Properties(true);
         }
         CubeMapTexture.Properties properties1 = (CubeMapTexture.Properties) properties;
+        this.samplerId = TexturesSamplersCachingProgram.createSamplerId(CubeMapTexture.class, properties.getHash());
         boolean linear = properties1.isLinearFiltration();
-        this.bindTexture();
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
-        this.unBindTexture();
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
     }
+
     @Override
     public void reload(@Nullable IProperties properties) {
         this.setProperties(properties);
@@ -63,6 +67,11 @@ public class CubeMapTexture extends ImageBasedTexture {
 
     public Vector2i[] getSize() {
         return this.size6;
+    }
+
+    @Override
+    public int getSamplerId() {
+        return this.samplerId;
     }
 
     public int getTextureId() {
@@ -101,6 +110,11 @@ public class CubeMapTexture extends ImageBasedTexture {
 
         public boolean isLinearFiltration() {
             return this.linearFiltration;
+        }
+
+        @Override
+        public int getHash() {
+            return this.linearFiltration ? 1 : 0;
         }
     }
 }

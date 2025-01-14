@@ -142,6 +142,11 @@ public class ImageTexture extends ImageBasedTexture {
     }
 
     @Override
+    public int getSamplerId() {
+        return 0;
+    }
+
+    @Override
     public void init(@Nullable IProperties properties, @NotNull IData data) {
 
     }

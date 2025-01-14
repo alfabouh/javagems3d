@@ -2,8 +2,6 @@ package javagems3d.system.resources.managing.resources.data.cache;
 
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
-import javagems3d.system.resources.assets.texturing.ext.IBindlessTexture;
-import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 
 import java.util.ArrayList;

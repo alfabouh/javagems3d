@@ -82,7 +82,7 @@ public final class JGemsShaderManager extends ShaderManager {
             } else {
                 if (sample instanceof ImageTexture) {
                     ImageTexture textureSample = (ImageTexture) sample;
-                    JGemsShaderManager.this.performUniformTexture(uniform, textureSample.getTextureId(), textureSample.getTextureAttachment());
+                    JGemsShaderManager.this.performUniformTexture(uniform, textureSample.getSamplerId(), textureSample.getTextureId(), textureSample.getTextureAttachment());
                 }
             }
         }

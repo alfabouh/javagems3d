@@ -31,7 +31,6 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.materials.Material;
@@ -44,7 +43,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.ext.IBindlessTexture;
+import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
@@ -233,7 +232,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     public void loadBindlessHandlersInSSBO(BindlessTexturesDataCache bindlessTexturesDataCache, ShaderStorageBufferObject shaderStorageBufferObject) {
         LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
-        for (IBindlessTexture l : bindlessTexturesDataCache.getBindlessTexturesIdMap().keySet()) {
+        for (ITextureBindless l : bindlessTexturesDataCache.getBindlessTexturesIdMap().keySet()) {
             longBuffer.put(l.getBindingHandler());
         }
         longBuffer.flip();
@@ -258,11 +257,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
             } else {
                 byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
             }
-            byteBuffer.putInt(diffuse instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) diffuse) : 0);
-            byteBuffer.putInt(normals instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) normals) : 0);
-            byteBuffer.putInt(emission instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) emission) : 0);
-            byteBuffer.putInt(specular instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) specular) : 0);
-            byteBuffer.putInt(metallic instanceof IBindlessTexture ? bindlessTexturesDataCache.getTextureId((IBindlessTexture) metallic) : 0);
+            byteBuffer.putInt(diffuse instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuse) : 0);
+            byteBuffer.putInt(normals instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normals) : 0);
+            byteBuffer.putInt(emission instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emission) : 0);
+            byteBuffer.putInt(specular instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) specular) : 0);
+            byteBuffer.putInt(metallic instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallic) : 0);
             byteBuffer.putInt(JGemsHelper.RENDERING.getTexturingCodeForShader(material));
             byteBuffer.putInt(0);
             byteBuffer.putInt(0);
@@ -278,11 +277,13 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     public void createResources() {
+        this.getSceneWorld().getEnvironment().createEnvironment(this.getSceneWorld());
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
     }
 
     public void destroyResources() {
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
+        this.getSceneWorld().getEnvironment().destroyEnvironment(this.getSceneWorld());
     }
 
     @Override
