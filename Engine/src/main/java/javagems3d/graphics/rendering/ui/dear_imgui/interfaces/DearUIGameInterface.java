@@ -230,11 +230,13 @@ public class DearUIGameInterface implements DearUIInterface {
             }
 
             if (ImGui.collapsingHeader("SSAO")) {
-               //ImGui.beginChild("Images4", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);
+                IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(Nodes.DEFERRED_RENDER_PASS);
 
-               //ImGui.image(sceneRender.getSsaoBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.beginChild("Images4", JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
 
-               //ImGui.endChild();
+                ImGui.image(iDeferredRenderNode.getOutSSAOBuffer().getTextureIDByIndex(0), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+
+                ImGui.endChild();
             }
             ImGui.endChild();
         }

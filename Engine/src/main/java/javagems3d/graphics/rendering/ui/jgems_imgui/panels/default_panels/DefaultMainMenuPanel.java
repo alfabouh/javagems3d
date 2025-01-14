@@ -55,7 +55,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
 
     public void createFBOs(IWindow window) {
         this.postFbo.clearFBO();
-        this.postFbo.createFrameBuffer2DTexture(window.getWindowSize(), new T2DAttachmentContainer(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB), false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_BORDER, null);
+        this.postFbo.createFrameBuffer2DTexture(window.getWindowSize(), new T2DAttachmentContainer(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB), false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
     }
 
     public void onWindowResize(IWindow window) {

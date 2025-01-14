@@ -11,7 +11,6 @@
 
 package javagems3d.graphics.rendering.programs.textures;
 
-import javagems3d.graphics.rendering.programs.textures.cache.TexturesSamplersCachingProgram;
 import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import org.jetbrains.annotations.NotNull;
@@ -40,15 +39,17 @@ public class CubeMapTextureProgram implements ITextureProgram, ITextureBindless 
         for (int i = 0; i < 6; i++) {
             GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, properties.getInternalFormat(), size.x, size.y, 0, properties.getTextureFormat(), GL46.GL_FLOAT, (ByteBuffer) null);
         }
-        this.samplerId = this.createSampler(properties);
+        this.createSampler(properties);
         this.unBindTexture();
 
-        this.bindlessHandler = this.createBindingHandler(this.getTextureId(), this.getSamplerId());
-        this.createARB64Handling();
+        this.createBindlessHandling();
     }
 
-    protected int createSampler(@NotNull CubeMapTextureProgram.Properties properties) {
-        int sampler = TexturesSamplersCachingProgram.createSamplerId(CubeMapTextureProgram.class, properties.getHash());
+    protected void createSampler(@NotNull CubeMapTextureProgram.Properties properties) {
+        if (this.getSamplerId() != 0) {
+            GL46.glDeleteSamplers(this.getSamplerId());
+        }
+        this.samplerId = GL46.glGenSamplers();
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, properties.getFilteringMag());
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, properties.getFilteringMin());
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_COMPARE_MODE, properties.getCompareMode());
@@ -59,14 +60,25 @@ public class CubeMapTextureProgram implements ITextureProgram, ITextureBindless 
         if (properties.getBorderColor() != null) {
             GL46.glSamplerParameterfv(this.getSamplerId(), GL46.GL_TEXTURE_BORDER_COLOR, properties.getBorderColor());
         }
-        return sampler;
+        if (this.isHandlerExists()) {
+            this.removeARB64Handling();
+            this.createBindlessHandling();
+        }
+    }
+
+    public void createBindlessHandling() {
+        this.bindlessHandler = this.createBindlessHandler(this.getTextureId(), this.getSamplerId());
+        this.createARB64Handling();
     }
 
     @Override
     public void clear() {
         this.removeARB64Handling();
         GL46.glDeleteTextures(this.getTextureId());
+        GL46.glDeleteSamplers(this.getSamplerId());
+        this.bindlessHandler = 0;
         this.textureId = 0;
+        this.samplerId = 0;
     }
 
     public int getTextureId() {
@@ -113,11 +125,6 @@ public class CubeMapTextureProgram implements ITextureProgram, ITextureBindless 
             this.borderColor = borderColor;
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(textureFormat, internalFormat, filteringMag, filteringMin, compareMode, compareFunc, clampS, clampT, clampR, Arrays.hashCode(borderColor));
-        }
-
         public int getTextureFormat() {
             return this.textureFormat;
         }
@@ -156,11 +163,6 @@ public class CubeMapTextureProgram implements ITextureProgram, ITextureBindless 
 
         public float[] getBorderColor() {
             return this.borderColor;
-        }
-
-        @Override
-        public int getHash() {
-            return this.hashCode();
         }
     }
 }

@@ -34,6 +34,10 @@ public interface ITextureProgram {
     int getTextureId();
     int getTextureAttachment();
 
+    default boolean isSamplerValid() {
+        return this.getSamplerId() > 0;
+    }
+
     default boolean isValid() {
         return this.getTextureId() > 0;
     }

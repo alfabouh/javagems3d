@@ -43,8 +43,8 @@ public class FBOTexture2DProgram {
 
         for (int attachment : attachments) {
             Texture2DMSAAProgram texture2DMSAAProgram = new Texture2DMSAAProgram(msaa);
-            texture2DMSAAProgram.createTexture(size, new Texture2DMSAAProgram.Properties(internalFormat, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), null);
-            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_2D_MULTISAMPLE, ((ITextureProgram) texture2DMSAAProgram).getTextureId(), 0);
+            texture2DMSAAProgram.createTexture(size, new Texture2DMSAAProgram.Properties(internalFormat, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), null);
+            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_2D_MULTISAMPLE, texture2DMSAAProgram.getTextureId(), 0);
             this.getTexturePrograms().add(texture2DMSAAProgram);
         }
 
@@ -79,7 +79,7 @@ public class FBOTexture2DProgram {
         for (T2DAttachment t2DAttachment1 : t2DAttachmentContainer.getT2DAttachmentSet()) {
             Texture2DProgram texture2DProgram1 = new Texture2DProgram();
             texture2DProgram1.createTexture(size, new Texture2DProgram.Properties(t2DAttachment1.getTextureFormat(), t2DAttachment1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor),null);
-            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, t2DAttachment1.getAttachment(), GL46.GL_TEXTURE_2D, ((ITextureProgram) texture2DProgram1).getTextureId(), 0);
+            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, t2DAttachment1.getAttachment(), GL46.GL_TEXTURE_2D, texture2DProgram1.getTextureId(), 0);
             this.getTexturePrograms().add(texture2DProgram1);
         }
 

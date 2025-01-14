@@ -153,7 +153,7 @@ public class ShadowScene implements IShadowScene {
         for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
-            blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(0.0f));
+            blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
             blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
             JGemsHelper.RENDERING.renderModel(screenModel, GL46.GL_TRIANGLES);
         }

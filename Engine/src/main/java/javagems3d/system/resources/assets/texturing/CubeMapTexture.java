@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.texturing;
 
-import javagems3d.graphics.rendering.programs.textures.cache.TexturesSamplersCachingProgram;
+import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -9,12 +9,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
-public class CubeMapTexture implements ImageBasedTexture {
+public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
     private Vector2i[] size6;
     private int textureId;
     private int samplerId;
+    private long bindlessHandler;
 
     public CubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
+        this.bindlessHandler = 0;
         this.textureId = 0;
         this.samplerId = 0;
         this.init(textureProperties, data);
@@ -33,6 +35,8 @@ public class CubeMapTexture implements ImageBasedTexture {
         data.clear();
         this.unBindTexture();
         this.setProperties(properties);
+
+        this.createBindlessHandling();
     }
 
     public void setProperties(IProperties properties) {
@@ -40,13 +44,25 @@ public class CubeMapTexture implements ImageBasedTexture {
             properties = new CubeMapTexture.Properties(true);
         }
         CubeMapTexture.Properties properties1 = (CubeMapTexture.Properties) properties;
-        this.samplerId = TexturesSamplersCachingProgram.createSamplerId(CubeMapTexture.class, properties.getHash());
+        if (this.getSamplerId() != 0) {
+            GL46.glDeleteSamplers(this.getSamplerId());
+        }
+        this.samplerId = GL46.glGenSamplers();
         boolean linear = properties1.isLinearFiltration();
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
+        if (this.isHandlerExists()) {
+            this.removeARB64Handling();
+            this.createBindlessHandling();
+        }
+    }
+
+    public void createBindlessHandling() {
+        this.bindlessHandler = this.createBindlessHandler(this.getTextureId(), this.getSamplerId());
+        this.createARB64Handling();
     }
 
     @Override
@@ -55,9 +71,12 @@ public class CubeMapTexture implements ImageBasedTexture {
     }
 
     public void clear() {
-        GL46.glBindTexture(this.getTextureAttachment(), 0);
+        this.removeARB64Handling();
+        GL46.glDeleteSamplers(this.getSamplerId());
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
+        this.samplerId = 0;
+        this.bindlessHandler = 0;
     }
 
     @Override
@@ -81,6 +100,11 @@ public class CubeMapTexture implements ImageBasedTexture {
     @Override
     public int getTextureAttachment() {
         return GL46.GL_TEXTURE_CUBE_MAP;
+    }
+
+    @Override
+    public long getBindingHandler() {
+        return this.bindlessHandler;
     }
 
     public static final class Data implements IData {
@@ -110,11 +134,6 @@ public class CubeMapTexture implements ImageBasedTexture {
 
         public boolean isLinearFiltration() {
             return this.linearFiltration;
-        }
-
-        @Override
-        public int getHash() {
-            return this.linearFiltration ? 1 : 0;
         }
     }
 }

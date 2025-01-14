@@ -11,7 +11,6 @@
 
 package javagems3d.graphics.rendering.programs.textures;
 
-import javagems3d.graphics.rendering.programs.textures.cache.TexturesSamplersCachingProgram;
 import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import org.jetbrains.annotations.NotNull;
@@ -39,15 +38,17 @@ public class Texture2DMSAAProgram implements ITextureProgram, ITextureBindless {
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
         GL46.glTexImage2DMultisample(this.getTextureAttachment(), this.msaa, properties.getInternalFormat(), size.x, size.y, true);
-        this.samplerId = this.createSampler(properties);
+        this.createSampler(properties);
         this.unBindTexture();
 
-        this.bindlessHandler = this.createBindingHandler(this.getTextureId(), this.getSamplerId());
-        this.createARB64Handling();
+        this.createBindlessHandling();
     }
 
-    protected int createSampler(@NotNull Texture2DMSAAProgram.Properties properties) {
-        int sampler = TexturesSamplersCachingProgram.createSamplerId(Texture2DMSAAProgram.class, properties.getHash());
+    protected void createSampler(@NotNull Texture2DMSAAProgram.Properties properties) {
+        if (this.getSamplerId() != 0) {
+            GL46.glDeleteSamplers(this.getSamplerId());
+        }
+        this.samplerId = GL46.glGenSamplers();
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, properties.getFilteringMag());
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, properties.getFilteringMin());
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_COMPARE_MODE, properties.getCompareMode());
@@ -57,14 +58,25 @@ public class Texture2DMSAAProgram implements ITextureProgram, ITextureBindless {
         if (properties.getBorderColor() != null) {
             GL46.glSamplerParameterfv(this.getSamplerId(), GL46.GL_TEXTURE_BORDER_COLOR, properties.getBorderColor());
         }
-        return sampler;
+        if (this.isHandlerExists()) {
+            this.removeARB64Handling();
+            this.createBindlessHandling();
+        }
+    }
+
+    public void createBindlessHandling() {
+        this.bindlessHandler = this.createBindlessHandler(this.getTextureId(), this.getSamplerId());
+        this.createARB64Handling();
     }
 
     @Override
     public void clear() {
         this.removeARB64Handling();
+        GL46.glDeleteSamplers(this.getSamplerId());
         GL46.glDeleteTextures(this.getTextureId());
+        this.bindlessHandler = 0;
         this.textureId = 0;
+        this.samplerId = 0;
     }
 
     public int getTextureId() {
@@ -107,11 +119,6 @@ public class Texture2DMSAAProgram implements ITextureProgram, ITextureBindless {
             this.borderColor = borderColor;
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(internalFormat, filteringMag, filteringMin, compareMode, compareFunc, clampS, clampT, Arrays.hashCode(borderColor));
-        }
-
         public int getInternalFormat() {
             return this.internalFormat;
         }
@@ -142,11 +149,6 @@ public class Texture2DMSAAProgram implements ITextureProgram, ITextureBindless {
 
         public float[] getBorderColor() {
             return this.borderColor;
-        }
-
-        @Override
-        public int getHash() {
-            return this.hashCode();
         }
     }
 }

@@ -48,7 +48,7 @@ public class FBOCubeMapProgram {
         this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
-        this.getCubeMapProgram().createTexture(size, new CubeMapTextureProgram.Properties(textureFormat, internalFormat, filtering, filtering, GL46.GL_NONE, GL46.GL_NONE, clamp, clamp, clamp, null), null);
+        this.getCubeMapProgram().createTexture(size, new CubeMapTextureProgram.Properties(textureFormat, internalFormat, filtering, filtering, GL46.GL_NONE, GL46.GL_LESS, clamp, clamp, clamp, null), null);
         for (int i = 0; i < 6; i++) {
             GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, this.getCubeMapProgram().getTextureId(), 0);
         }

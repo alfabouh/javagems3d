@@ -19,10 +19,11 @@ import java.util.stream.Collectors;
 public interface IDeferredRenderNode extends IRenderNode {
     @NotNull FBOTexture2DProgram getOutFboGBuffer();
     @NotNull FBOTexture2DProgram getOutFboColorBuffer();
+    @NotNull FBOTexture2DProgram getOutSSAOBuffer();
 
     final class Default extends IRenderNode.Template implements IDeferredRenderNode {
         private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
-        private SSAORenderProcessor ssaoRenderProcessor;
+        public SSAORenderProcessor ssaoRenderProcessor;
         private RawColorSceneRenderProcessor rawColorSceneRenderProcessor;
 
         public Default(OpenGLRenderer openGLRenderer) {
@@ -36,6 +37,11 @@ public interface IDeferredRenderNode extends IRenderNode {
         @Override
         public @NotNull FBOTexture2DProgram getOutFboColorBuffer() {
             return this.getRawColorSceneRenderProcessor().getColorBuffer();
+        }
+
+        @Override
+        public @NotNull FBOTexture2DProgram getOutSSAOBuffer() {
+            return this.getSSAORenderProcessor().getSSAOBuffer();
         }
 
         @Override

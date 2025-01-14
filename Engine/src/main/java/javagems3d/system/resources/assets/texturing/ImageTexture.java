@@ -12,7 +12,6 @@
 package javagems3d.system.resources.assets.texturing;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.programs.textures.cache.TexturesSamplersCachingProgram;
 import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,27 +38,6 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         this.init(textureProperties, data);
     }
 
-    public void setProperties(IProperties properties) {
-        if (properties == null) {
-            properties = new Properties();
-        }
-        Properties properties1 = (Properties) properties;
-        int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
-        boolean linear = properties1.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
-        boolean anisotropic = properties1.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
-
-        this.samplerId = TexturesSamplersCachingProgram.createSamplerId(ImageTexture.class, properties.getHash());
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST);
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
-        if (anisotropic) {
-            GL46.glSamplerParameterf(this.getSamplerId(), EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL46.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-        }
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_BASE_LEVEL, quality);
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAX_LEVEL, 11);
-    }
-
     @Override
     public void init(IProperties properties, @NotNull IData iData) {
         Data data = (Data) iData;
@@ -73,7 +51,39 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         data.clear();
         this.setProperties(properties);
 
-        this.bindlessHandler = this.createBindingHandler(this.getTextureId(), this.getSamplerId());
+        this.createBindlessHandling();
+    }
+
+    public void setProperties(IProperties properties) {
+        if (properties == null) {
+            properties = new Properties();
+        }
+        Properties properties1 = (Properties) properties;
+        int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
+        boolean linear = properties1.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
+        boolean anisotropic = properties1.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
+
+        if (this.getSamplerId() != 0) {
+            GL46.glDeleteSamplers(this.getSamplerId());
+        }
+        this.samplerId = GL46.glGenSamplers();
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        if (anisotropic) {
+            GL46.glSamplerParameterf(this.getSamplerId(), EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL46.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+        }
+        if (this.isHandlerExists()) {
+            this.removeARB64Handling();
+            this.createBindlessHandling();
+        }
+        //  GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_BASE_LEVEL, quality);
+        //  GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAX_LEVEL, 11);
+    }
+
+    public void createBindlessHandling() {
+        this.bindlessHandler = this.createBindlessHandler(this.getTextureId(), this.getSamplerId());
         this.createARB64Handling();
     }
 
@@ -103,8 +113,10 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
 
     public void clear() {
         this.removeARB64Handling();
+        GL46.glDeleteSamplers(this.getSamplerId());
         GL46.glDeleteTextures(this.getTextureId());
         this.textureId = 0;
+        this.samplerId = 0;
         this.bindlessHandler = 0;
     }
 
@@ -153,16 +165,6 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
 
         public boolean isQualityAffected() {
             return this.qualityAffected;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(linearFiltration, shouldBeRepeated, anisotropicFiltration, qualityAffected);
-        }
-
-        @Override
-        public int getHash() {
-            return this.hashCode();
         }
     }
 

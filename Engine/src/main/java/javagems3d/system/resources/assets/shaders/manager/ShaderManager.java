@@ -169,11 +169,29 @@ public abstract class ShaderManager implements ICached {
     }
 
     public void performUniformTexture(UniformString uniform, ITextureProgram program, int textureUnit) {
-        this.performUniformTexture(uniform, program.getTextureId(), program.getSamplerId(), program.getTextureAttachment(), textureUnit);
+        if (!this.isUniformExist(uniform)) {
+            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
+            return;
+        }
+        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
+            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow!");
+            return;
+        }
+        if (!program.isValid()) {
+            JGemsHelper.getLogger().warn("[" + this + "] Wrong textureID: " + program.getTextureId() + " - (" + program + ")");
+            return;
+        }
+
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + textureUnit);
+        if (program.isSamplerValid()) {
+            program.bindSampler(textureUnit);
+        }
+        program.bindTexture();
+        this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));
     }
 
     public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment) {
-        this.performUniformTexture(uniform, samplerId, textureID, textureAttachment, this.usedTextureUnits++);
+        this.performUniformTexture(uniform, textureID, samplerId, textureAttachment, this.usedTextureUnits++);
     }
 
     public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment, int textureUnit) {
@@ -191,7 +209,9 @@ public abstract class ShaderManager implements ICached {
         }
 
         GL46.glActiveTexture(GL46.GL_TEXTURE0 + textureUnit);
-        GL46.glBindSampler(textureUnit, samplerId);
+        if (samplerId > 0) {
+            GL46.glBindSampler(textureUnit, samplerId);
+        }
         GL46.glBindTexture(textureAttachment, textureID);
         this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));
     }
