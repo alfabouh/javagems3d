@@ -116,18 +116,18 @@ public class TBoxScene {
         T2DAttachmentContainer fbo = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        TBoxScene.sceneFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
-        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.previewItemFbo.createFrameBuffer2DTexture(new Vector2i(400, 400), fbo, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_BORDER, null);
 
         T2DAttachmentContainer fbo2 = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        TBoxScene.sceneForwardFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo2, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneForwardFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo2, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_BORDER, null);
         T2DAttachmentContainer fbo3 = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_R8, GL46.GL_RED);
         }};
-        TBoxScene.sceneTransparentFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo3, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_BORDER, null);
+        TBoxScene.sceneTransparentFbo.createFrameBuffer2DTexture(window.getWindowSize(), fbo3, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_BORDER, null);
     }
 
     private void destroyFBOs() {
@@ -208,10 +208,10 @@ public class TBoxScene {
             try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowSize()), 0.5f)) {
                 TBoxShaderManager gluing = TBoxResourceManager.shaderResources().scene_gluing;
                 gluing.beginShading();
-                gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0).getTextureId(), GL46.GL_TEXTURE_2D);
+                gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0));
 
-                gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0).getTextureId(), GL46.GL_TEXTURE_2D);
-                gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1).getTextureId(), GL46.GL_TEXTURE_2D);
+                gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0));
+                gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1));
                 gluing.getUtils().performOrthographicMatrix(model);
                 JGemsHelper.RENDERING.renderModel(model, GL46.GL_TRIANGLES);
                 gluing.endShading();

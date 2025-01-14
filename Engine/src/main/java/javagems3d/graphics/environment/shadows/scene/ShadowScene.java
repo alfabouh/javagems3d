@@ -65,7 +65,7 @@ public class ShadowScene implements IShadowScene {
             try {
                 functionToHandleUniforms = (Consumer<JGemsShaderManager>) metaData[0];
             } catch (Exception e) {
-                throw new JGemsRuntimeException("Wrong consumer!\n", e);
+                throw new JGemsRuntimeException("Invalid consumer!\n", e);
             }
         }
         shaderManager.beginShading();
@@ -154,7 +154,7 @@ public class ShadowScene implements IShadowScene {
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(0.0f));
-            blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+            blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
             JGemsHelper.RENDERING.renderModel(screenModel, GL46.GL_TRIANGLES);
         }
         blurring.endShading();

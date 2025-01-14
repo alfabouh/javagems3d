@@ -30,7 +30,7 @@ public class FBOCubeMapProgram {
         this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
-        this.getCubeMapProgram().createCubeMap(size, GL46.GL_DEPTH_COMPONENT, GL46.GL_DEPTH_COMPONENT, filtering, clamp);
+        this.getCubeMapProgram().createTexture(size, new CubeMapTextureProgram.Properties(GL46.GL_DEPTH_COMPONENT, GL46.GL_DEPTH_COMPONENT, filtering, filtering, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, clamp, clamp, clamp, null), null);
         GL46.glFramebufferTexture(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_ATTACHMENT, this.getCubeMapProgram().getTextureId(), 0);
 
         GL46.glDrawBuffer(GL46.GL_NONE);
@@ -48,7 +48,7 @@ public class FBOCubeMapProgram {
         this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
-        this.getCubeMapProgram().createCubeMap(size, internalFormat, textureFormat, filtering, clamp);
+        this.getCubeMapProgram().createTexture(size, new CubeMapTextureProgram.Properties(textureFormat, internalFormat, filtering, filtering, GL46.GL_NONE, GL46.GL_NONE, clamp, clamp, clamp, null), null);
         for (int i = 0; i < 6; i++) {
             GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, this.getCubeMapProgram().getTextureId(), 0);
         }
@@ -101,17 +101,17 @@ public class FBOCubeMapProgram {
     }
 
     public void bindCubeMap() {
-        this.getCubeMapProgram().bindCubeMap();
+        this.getCubeMapProgram().bindTexture();
     }
 
     public void unBindCubeMap() {
-        this.getCubeMapProgram().unBindCubeMap();
+        this.getCubeMapProgram().bindTexture();
     }
 
     public void clearFBO() {
         this.unBindFBO();
         this.unBindRenderDepthFBO();
-        this.getCubeMapProgram().clearCubeMap();
+        this.getCubeMapProgram().clear();
         GL46.glDeleteRenderbuffers(this.renderBufferId);
         GL46.glDeleteFramebuffers(this.frameBufferId);
     }

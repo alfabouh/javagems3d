@@ -46,7 +46,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
         }};
-        this.ssaoBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.ssaoBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
@@ -101,10 +101,10 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
         ssaoComputeShader.performUniform(new UniformString("noiseScale"), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsRenderingGlobalConstants.SSAO_NOISE_SIZE)));
         ssaoComputeShader.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getPerspectiveMatrix()));
-        ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
-        ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureIDByIndex(1), GL46.GL_TEXTURE_2D);
-        ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture().getTextureId(), GL46.GL_TEXTURE_2D);
-        ssaoComputeShader.performUniformTexture(new UniformString("ssaoKernel"), this.getSsaoKernelTexture().getTextureId(), GL46.GL_TEXTURE_2D);
+        ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
+        ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
+        ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture());
+        ssaoComputeShader.performUniformTexture(new UniformString("ssaoKernel"), this.getSsaoKernelTexture());
         GL46.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16F);
         ssaoComputeShader.dispatchComputeShader(windowSize.x / 8, windowSize.y / 8, 1, GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         ssaoComputeShader.endComputing();
@@ -112,7 +112,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;
         this.getSSAOBuffer().bindFBO();
         ssaoBlur.beginShading();
-        ssaoBlur.performUniformTexture(new UniformString("texture_sampler"), this.getSsaoBufferTexture().getTextureId(), GL46.GL_TEXTURE_2D);
+        ssaoBlur.performUniformTexture(new UniformString("texture_sampler"), this.getSsaoBufferTexture());
         ssaoBlur.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
         JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         ssaoBlur.endShading();
@@ -141,7 +141,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         }
         floatBuffer.flip();
         int s = (int) Math.sqrt(size);
-        texture2DProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
+        texture2DProgram.createTexture(new Vector2i(s), new Texture2DProgram.Properties(GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_REPEAT, GL46.GL_REPEAT, null), floatBuffer);
         MemoryUtil.memFree(floatBuffer);
         return texture2DProgram;
     }
@@ -158,14 +158,14 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         }
         floatBuffer.flip();
         int s = (int) Math.sqrt(size);
-        texture2DProgram.createTexture(new Vector2i(s), GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_REPEAT, GL46.GL_REPEAT, null, floatBuffer);
+        texture2DProgram.createTexture(new Vector2i(s), new Texture2DProgram.Properties(GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_REPEAT, GL46.GL_REPEAT, null), floatBuffer);
         MemoryUtil.memFree(floatBuffer);
         return texture2DProgram;
     }
 
     protected Texture2DProgram createSSAOBuffer(Vector2i windowSize) {
         Texture2DProgram texture2DProgram = new Texture2DProgram();
-        texture2DProgram.createTexture(windowSize, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null);
+        texture2DProgram.createTexture(windowSize, new Texture2DProgram.Properties(GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), null);
         return texture2DProgram;
     }
 

@@ -183,7 +183,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
-        imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
         imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
         JGemsHelper.RENDERING.renderModel(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();

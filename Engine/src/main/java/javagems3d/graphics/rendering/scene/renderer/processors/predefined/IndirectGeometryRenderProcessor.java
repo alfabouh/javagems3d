@@ -28,7 +28,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
         shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
         if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
-            shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram.getTextureId(), GL46.GL_TEXTURE_CUBE_MAP);
+            shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
         }
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getPerspectiveMatrix()));
         shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
@@ -55,7 +55,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
             add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.gBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.gBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
         //JGems3D.get().getResourceManager().getGlobalResources().getResourceCache().clearGroupInCache(MeshBuffer.class);
         //JGemsResourceManager.globalModelAssets.load(JGems3D.get().getResourceManager().getGlobalResources());
         //((JGemsOpenGLRenderer) JGemsHelper.getScreen().getScene().getSceneRenderer()).initSceneIndirectRenderBuffer(JGems3D.get().getResourceManager().getResourceDataCache().getMeshBuffersDataCache()); //DEBUG

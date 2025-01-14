@@ -114,7 +114,7 @@ public final class JGemsShaderManager extends ShaderManager {
 
             this.performCameraData();
             if (JGemsShaderManager.this.isUniformExist(new UniformString("ambient_cube_map"))) {
-                this.performCubeMapProgram(new UniformString("ambient_cube_map"), cubeMapProgram.getTextureId());
+                JGemsShaderManager.this.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
             }
 
             if (diffuse != null) {
@@ -180,7 +180,7 @@ public final class JGemsShaderManager extends ShaderManager {
             for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
                 SunLightShadow.Cascade cascade = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getSunLightShadow().getCascades().get(i);
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTextureIDByIndex(i), GL46.GL_TEXTURE_2D);
+                    JGemsShaderManager.this.performUniformTexture(new UniformString("sun_shadow_map", i), scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
@@ -191,13 +191,9 @@ public final class JGemsShaderManager extends ShaderManager {
                 PointLightShadow pointLightShadow = scene.getSceneRenderer().getSceneWorld().getEnvironment().getShadowScene().getPointLightShadows().get(i);
                 JGemsShaderManager.this.performUniformNoWarn(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                 if (JGemsShaderManager.this.isUniformExist(new UniformString("point_light_cubemap", i))) {
-                    this.performCubeMapProgram(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram().getTextureId());
+                    JGemsShaderManager.this.performUniformTexture(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
                 }
             }
-        }
-
-        public void performCubeMapProgram(UniformString uniform, int cubeMapTextureId) {
-            JGemsShaderManager.this.performUniformTexture(uniform, cubeMapTextureId, GL46.GL_TEXTURE_CUBE_MAP);
         }
 
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Format3D format3D) {

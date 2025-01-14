@@ -169,7 +169,7 @@ public class JGemsOpenGLRendererOLD {
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
         }};
-        this.forwardAndDeferredScenesBuffer.createFrameBuffer2DTexture(windowSize, allScene, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.forwardAndDeferredScenesBuffer.createFrameBuffer2DTexture(windowSize, allScene, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
@@ -178,7 +178,7 @@ public class JGemsOpenGLRendererOLD {
             add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.gBuffer.createFrameBuffer2DTexture(new Vector2i(windowSize), gBuffer, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.gBuffer.createFrameBuffer2DTexture(new Vector2i(windowSize), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer hdr = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
@@ -188,7 +188,7 @@ public class JGemsOpenGLRendererOLD {
         T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
         }};
-        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, false, GL46.GL_LINEAR, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.ssaoBuffer.createFrameBuffer2DTexture(windowSize, ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer fxaa = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
@@ -204,12 +204,12 @@ public class JGemsOpenGLRendererOLD {
         T2DAttachmentContainer finalB = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.finalizingBuffer.createFrameBuffer2DTexture(windowSize, finalB, false, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.finalizingBuffer.createFrameBuffer2DTexture(windowSize, finalB, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
 
         T2DAttachmentContainer skybox = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA, GL46.GL_RGBA);
         }};
-        this.skyBoxBackGroundBuffer.createFrameBuffer2DTexture(windowSize, skybox, true, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.skyBoxBackGroundBuffer.createFrameBuffer2DTexture(windowSize, skybox, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     private void createSSAOResources(Vector3i ssaoParams) {

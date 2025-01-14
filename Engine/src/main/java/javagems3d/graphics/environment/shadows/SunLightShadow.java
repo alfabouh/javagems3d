@@ -145,7 +145,7 @@ public class SunLightShadow extends AbstractShadow {
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA32F, GL46.GL_RGBA);
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA32F, GL46.GL_RGBA);
         }};
-        this.getSunShadowFBO().createFrameBuffer2DTexture(this.getShadowMapResolution(), shadow, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.getSunShadowFBO().createFrameBuffer2DTexture(this.getShadowMapResolution(), shadow, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override

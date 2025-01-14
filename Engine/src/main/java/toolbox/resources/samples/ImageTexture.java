@@ -32,7 +32,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public class ImageTexture extends ImageBasedTexture {
+public class ImageTexture implements ImageBasedTexture {
     private final String name;
     private int width;
     private int height;

@@ -33,7 +33,7 @@ public class RawColorSceneRenderProcessor extends IRenderProcessor.Template {
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
         }};
-        this.colorBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), clr, false, GL46.GL_NEAREST, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.colorBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), clr, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_NONE, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override

@@ -13,6 +13,7 @@ package javagems3d.system.resources.assets.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -163,16 +164,24 @@ public abstract class ShaderManager implements ICached {
         return false;
     }
 
-    public void performUniformTexture(UniformString uniform, int samplerId, int textureID, int textureAttachment) {
+    public void performUniformTexture(UniformString uniform, ITextureProgram program) {
+        this.performUniformTexture(uniform, program, this.usedTextureUnits++);
+    }
+
+    public void performUniformTexture(UniformString uniform, ITextureProgram program, int textureUnit) {
+        this.performUniformTexture(uniform, program.getTextureId(), program.getSamplerId(), program.getTextureAttachment(), textureUnit);
+    }
+
+    public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment) {
         this.performUniformTexture(uniform, samplerId, textureID, textureAttachment, this.usedTextureUnits++);
     }
 
-    public void performUniformTexture(UniformString uniform, int samplerId, int textureID, int textureAttachment, int textureUnit) {
+    public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment, int textureUnit) {
         if (!this.isUniformExist(uniform)) {
             JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
-        if (textureUnit < 0 || this.usedTextureUnits >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
+        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
             JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow!");
             return;
         }
@@ -280,6 +289,10 @@ public abstract class ShaderManager implements ICached {
         if (uniformBufferObject != null) {
             uniformBufferObject.setUniformBufferData(offset, data);
         }
+    }
+
+    public int getUsedTextureUnits() {
+        return this.usedTextureUnits;
     }
 
     public ShaderHandler getComputingShaderGroup() {
