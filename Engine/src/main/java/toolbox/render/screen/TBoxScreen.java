@@ -105,7 +105,7 @@ public class TBoxScreen implements IScreen {
         }
     }
 
-    public void startScreenRenderProcess() {
+    public void runRenderThread() {
         SystemLogging.get().getLogManager().log("Starting screen...");
         GL46.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
         this.getScene().createGUI();
@@ -163,12 +163,8 @@ public class TBoxScreen implements IScreen {
     }
 
     private void resizeWindow(IWindow window) {
-        this.normalizeViewPort();
+        OpenGLRenderer.setViewPort(window.getWindowSize());
         this.getScene().onWindowResize(window);
-    }
-
-    public void normalizeViewPort() {
-        GL46.glViewport(0, 0, this.getDimensions().x, this.getDimensions().y);
     }
 
     private void setScreenCallbacks() {
@@ -186,13 +182,13 @@ public class TBoxScreen implements IScreen {
         this.resourceManager = new TBoxResourceManager();
     }
 
-    private void createObjects(IWindow window) {
+    public void createObjects(IWindow window) {
         this.controllerDispatcher = new TBoxControllerDispatcher(window);
         this.scene = new TBoxScene(this.getTransformationUtils(), window);
     }
 
     @Override
-    public void buildScreen() {
+    public void createScreenAndContext() {
         SystemLogging.get().getLogManager().log("Building screen...");
         try {
             if (this.tryToBuildScreen()) {
@@ -203,7 +199,7 @@ public class TBoxScreen implements IScreen {
 
                 this.setScreenCallbacks();
                 this.createObjects(this.getWindow());
-                this.normalizeViewPort();
+                OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
 
                 SystemLogging.get().getLogManager().log("TBoxScreen built successful");
             } else {

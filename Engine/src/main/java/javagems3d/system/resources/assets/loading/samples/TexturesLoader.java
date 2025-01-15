@@ -22,27 +22,27 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class TexturesLoader implements ILoadingHelper {
-    private String name;
+    private String hashId;
     private final GameResources gameResources;
 
-    public TexturesLoader(@Nullable GameResources gameResources, @Nullable String name) {
-        this.name = name == null ? ILoadingHelper.DEFAULT_NAME : name;
+    public TexturesLoader(@Nullable GameResources gameResources, @Nullable String hashId) {
+        this.hashId = hashId == null ? ILoadingHelper.DEFAULT_NAME : hashId;
         this.gameResources = gameResources;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data) {
-        return this.createImageTexture(textureProperties, data, this.getName());
+        return this.createImageTexture(textureProperties, data, this.getHashId());
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                JGemsHelper.getLogger().log("Texture " + this.getName() + " picked from cache!");
+                JGemsHelper.getLogger().log("Texture " + this.getHashId() + " picked from cache!");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
         ImageTexture imageTexture = new ImageTexture(textureProperties, data);
-        JGemsHelper.getLogger().log("CubeMap " + this.getName() + " successfully created!");
+        JGemsHelper.getLogger().log("CubeMap " + this.getHashId() + " successfully created!");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
                 this.getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);
@@ -55,7 +55,7 @@ public class TexturesLoader implements ILoadingHelper {
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPath pathToTexture) {
-        this.name = pathToTexture.toString();
+        this.hashId = pathToTexture.toString();
         return this.createImageTexture(textureProperties, JGems3D.loadFileFromJar(pathToTexture));
     }
 
@@ -73,10 +73,10 @@ public class TexturesLoader implements ILoadingHelper {
             ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
             MemoryUtil.memFree(buffer);
             if (imageBuffer == null) {
-                throw new JGemsIOException("Couldn't create texture " + this.getName() + ". \n" + STBImage.stbi_failure_reason());
+                throw new JGemsIOException("Couldn't create texture " + this.getHashId() + ". \n" + STBImage.stbi_failure_reason());
             }
             Vector2i size = new Vector2i(width.get(), height.get());
-            return this.createImageTexture(textureProperties, new ImageTexture.Data(imageBuffer, size), this.getName());
+            return this.createImageTexture(textureProperties, new ImageTexture.Data(imageBuffer, size), this.getHashId());
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
@@ -90,7 +90,7 @@ public class TexturesLoader implements ILoadingHelper {
         return this.getGameResources() == null ? null : this.getGameResources().getResourceCache();
     }
 
-    public String getName() {
-        return this.name;
+    public String getHashId() {
+        return this.hashId;
     }
 }

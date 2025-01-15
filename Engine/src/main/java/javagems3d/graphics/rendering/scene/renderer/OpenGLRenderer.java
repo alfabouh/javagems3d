@@ -42,6 +42,10 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
         return this.window;
     }
 
+    public static void setViewPort(Vector2i resolution) {
+        GL46.glViewport(0, 0, resolution.x, resolution.y);
+    }
+
     public static void catchGLContextExceptions() {
         int errorCode;
         while ((errorCode = GL46.glGetError()) != GL46.GL_NO_ERROR) {

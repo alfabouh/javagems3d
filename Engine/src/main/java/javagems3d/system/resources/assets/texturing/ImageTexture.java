@@ -46,6 +46,7 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         this.bindTexture();
         GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
         GL46.glTexImage2D(this.getTextureAttachment(), 0, GL46.GL_RGBA, this.getSize().x, this.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getBuffer());
+        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAX_LEVEL, 11);
         GL46.glGenerateMipmap(this.getTextureAttachment());
         this.unBindTexture();
         data.clear();
@@ -59,7 +60,7 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
             properties = new Properties();
         }
         Properties properties1 = (Properties) properties;
-        int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
+        //int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
         boolean linear = properties1.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
         boolean anisotropic = properties1.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
 
@@ -78,8 +79,6 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
             this.removeARB64Handling();
             this.createBindlessHandling();
         }
-        //  GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_BASE_LEVEL, quality);
-        //  GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAX_LEVEL, 11);
     }
 
     public void createBindlessHandling() {

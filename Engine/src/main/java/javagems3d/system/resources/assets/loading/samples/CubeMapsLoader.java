@@ -25,27 +25,27 @@ import java.nio.IntBuffer;
 
 public class CubeMapsLoader implements ILoadingHelper {
     public static final String DEFAULT_NAME = "unknown";
-    private String name;
+    private String hashId;
     private final GameResources gameResources;
 
-    public CubeMapsLoader(@Nullable GameResources gameResources, @Nullable String name) {
-        this.name = name == null ? ILoadingHelper.DEFAULT_NAME : name;
+    public CubeMapsLoader(@Nullable GameResources gameResources, @Nullable String hashId) {
+        this.hashId = hashId == null ? ILoadingHelper.DEFAULT_NAME : hashId;
         this.gameResources = gameResources;
     }
 
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
-        return this.createCubeMapTexture(textureProperties, data, this.getName());
+        return this.createCubeMapTexture(textureProperties, data, this.getHashId());
     }
 
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                JGemsHelper.getLogger().log("CubeMap " + this.getName() + " picked from cache!");
+                JGemsHelper.getLogger().log("CubeMap " + this.getHashId() + " picked from cache!");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
         CubeMapTexture cubeMapTexture = new CubeMapTexture(textureProperties, data);
-        JGemsHelper.getLogger().log("CubeMap " + this.getName() + " successfully created!");
+        JGemsHelper.getLogger().log("CubeMap " + this.getHashId() + " successfully created!");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
                 this.getResourceCache().addObjectInBuffer(cubeMapTexture.toString(), cubeMapTexture);
@@ -69,18 +69,18 @@ public class CubeMapsLoader implements ILoadingHelper {
                 builder.append(".");
             }
             builder.append(textureDescriptor);
-            this.name = builder.toString();
+            this.hashId = builder.toString();
             try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(builder.toString()))) {
                 Pair<ByteBuffer, Vector2i> pair = this.readTextureFromMemory(inputStream);
                 if (pair == null || pair.getFirst() == null) {
-                    throw new JGemsIOException("Couldn't create texture " + this.getName() + ". \n" + STBImage.stbi_failure_reason());
+                    throw new JGemsIOException("Couldn't create texture " + this.getHashId() + ". \n" + STBImage.stbi_failure_reason());
                 }
                 dataSet[i] = new ImageTexture.Data(pair.getFirst(), pair.getSecond());
             } catch (IOException e) {
                 throw new JGemsIOException(e);
             }
         }
-        return new CubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet));
+        return this.createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet));
     }
 
     private Pair<ByteBuffer, Vector2i> readTextureFromMemory(InputStream inputStream) throws JGemsIOException {
@@ -113,7 +113,7 @@ public class CubeMapsLoader implements ILoadingHelper {
         return this.getGameResources() == null ? null : this.getGameResources().getResourceCache();
     }
 
-    public String getName() {
-        return this.name;
+    public String getHashId() {
+        return this.hashId;
     }
 }

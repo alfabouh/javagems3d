@@ -102,8 +102,8 @@ public final class GameResources implements IGameResources {
             return textureLoader.get();
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
+            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned!");
             if (returnDefault != null) {
-                JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned!");
                 return returnDefault;
             } else {
                 throw new JGemsRuntimeException(e);
@@ -117,8 +117,8 @@ public final class GameResources implements IGameResources {
             return textureLoader.get();
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
+            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned!");
             if (returnDefault != null) {
-                JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned!");
                 return returnDefault;
             } else {
                 throw new JGemsRuntimeException(e);

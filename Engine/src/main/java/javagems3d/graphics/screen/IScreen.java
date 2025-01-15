@@ -11,8 +11,10 @@
 
 package javagems3d.graphics.screen;
 
-public interface IScreen {
-    void buildScreen();
+import javagems3d.graphics.screen.window.IWindow;
 
-    void startScreenRenderProcess();
+public interface IScreen {
+    void createObjects(IWindow window);
+    void createScreenAndContext();
+    void runRenderThread();
 }

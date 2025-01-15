@@ -154,7 +154,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(Nodes.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
-        JGems3D.get().getScreen().normalizeViewPort();
+        OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
         if (this.getSceneWorld().getCamera() == null) {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             uiRenderNode.onRender(frameTicking);
@@ -168,7 +168,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
             return;
         }
         this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld(), this.getSceneWorld().getCamera());
-        JGems3D.get().getScreen().normalizeViewPort();
+        OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
         deferredRenderNode.onRender(frameTicking);
         //forwardRenderNode.onRender(frameTicking);
         //transparencyRenderNode.onRender(frameTicking);
@@ -220,55 +220,15 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     @Override
     public void onMapLoaded(IMapLoader loader, JGemsResourceManager resourceManager) {
-        this.loadMeshMaterialsIsSSBO(resourceManager.getResourceDataCache().getBindlessTexturesCache(), resourceManager.getResourceDataCache().getMeshBuffersDataCache());
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
-        this.loadBindlessHandlersInSSBO(resourceManager.getResourceDataCache().getBindlessTexturesCache(), JGemsResourceManager.globalShaderAssets.BindlessTextures);
+
+        resourceManager.loadMeshMaterialsIsSSBO(JGemsResourceManager.globalShaderAssets.MaterialsData);
+        resourceManager.loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
     }
 
     @Override
     public void onMapDestroyed(IMapLoader loader, JGemsResourceManager resourceManager) {
         this.getSceneIndirectBuffer().clear();
-    }
-
-    public void loadBindlessHandlersInSSBO(BindlessTexturesDataCache bindlessTexturesDataCache, ShaderStorageBufferObject shaderStorageBufferObject) {
-        LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
-        for (ITextureBindless l : bindlessTexturesDataCache.getBindlessTexturesIdMap().keySet()) {
-            longBuffer.put(l.getBindingHandler());
-        }
-        longBuffer.flip();
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, longBuffer);
-        MemoryUtil.memFree(longBuffer);
-    }
-
-    public void loadMeshMaterialsIsSSBO(BindlessTexturesDataCache bindlessTexturesDataCache, MeshBuffersDataCache meshBuffersDataCache) {
-        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
-        for (Material material : meshBuffersDataCache.getMaterials()) {
-            ISample diffuse = material.getDiffuse();
-            ISample normals = material.getNormalsMap();
-            ISample emission = material.getEmissionMap();
-            ISample specular = material.getSpecularMap();
-            ISample metallic = material.getMetallicMap();
-            if (diffuse instanceof RGBAColor) {
-                RGBAColor rgbaColor = (RGBAColor) diffuse;
-                byteBuffer.putFloat(rgbaColor.getColor().x);
-                byteBuffer.putFloat(rgbaColor.getColor().y);
-                byteBuffer.putFloat(rgbaColor.getColor().z);
-                byteBuffer.putFloat(rgbaColor.getColor().w);
-            } else {
-                byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
-            }
-            byteBuffer.putInt(diffuse instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuse) : 0);
-            byteBuffer.putInt(normals instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normals) : 0);
-            byteBuffer.putInt(emission instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emission) : 0);
-            byteBuffer.putInt(specular instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) specular) : 0);
-            byteBuffer.putInt(metallic instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallic) : 0);
-            byteBuffer.putInt(JGemsHelper.RENDERING.getTexturingCodeForShader(material));
-            byteBuffer.putInt(0);
-            byteBuffer.putInt(0);
-        }
-        byteBuffer.flip();
-        ShaderStorageBufferProgram.fillSSBOWithData(JGemsResourceManager.globalShaderAssets.MaterialsData, 0L, byteBuffer);
-        MemoryUtil.memFree(byteBuffer);
     }
 
     public void initSceneIndirectRenderBuffer(MeshBuffersDataCache meshBuffersDataCache) {

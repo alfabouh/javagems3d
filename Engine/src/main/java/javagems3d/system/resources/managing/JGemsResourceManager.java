@@ -13,11 +13,18 @@ package javagems3d.system.resources.managing;
 
 import javagems3d.JGems3D;
 import api.bridge.APIContainer;
+import javagems3d.JGemsHelper;
+import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.*;
-import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
+import javagems3d.system.resources.assets.initialization.base.AbstractShadersInitializer;
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.GameResources;
@@ -25,13 +32,16 @@ import javagems3d.system.resources.managing.resources.data.cache.BindlessTexture
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
+import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 
 public final class JGemsResourceManager {
-    public static ShadersAssetsInitializer globalShaderAssets = null;
+    public static ShadersInitializer globalShaderAssets = null;
     public static TextureAssetsInitializer globalTextureAssets = null;
     public static ModelAssetsInitializer globalModelAssets = null;
     public static RenderDataInitializer globalRenderDataAssets = null;
@@ -43,7 +53,7 @@ public final class JGemsResourceManager {
     private final ResourcesDataCache resourcesDataCache;
 
     public JGemsResourceManager() {
-        JGemsResourceManager.globalShaderAssets = new ShadersAssetsInitializer();
+        JGemsResourceManager.globalShaderAssets = new ShadersInitializer();
         this.globalResources = new GameResources(new ResourceCache("Global"));
         this.localResources = new GameResources(new ResourceCache("Local"));
 
@@ -52,16 +62,58 @@ public final class JGemsResourceManager {
 
     public static void createShaders() {
         JGemsResourceManager.globalShaderAssets.createShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
-        for (ShadersInitializer<JGemsShaderManager> shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
+        for (AbstractShadersInitializer<JGemsShaderManager> shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
             shadersLoader.createShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
         }
     }
 
     public static void reloadShaders() {
         JGemsResourceManager.globalShaderAssets.reloadShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
-        for (ShadersInitializer<JGemsShaderManager> shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
+        for (AbstractShadersInitializer<JGemsShaderManager> shadersLoader : APIContainer.get().getAppResourceLoader().getShadersLoaders()) {
             shadersLoader.reloadShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
         }
+    }
+
+    public void loadBindlessHandlersInSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
+        LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
+        for (ITextureBindless l : this.getResourceDataCache().getBindlessTexturesCache().getBindlessTexturesIdMap().keySet()) {
+            longBuffer.put(l.getBindingHandler());
+        }
+        longBuffer.flip();
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, longBuffer);
+        MemoryUtil.memFree(longBuffer);
+    }
+
+    public void loadMeshMaterialsIsSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
+        for (Material material : this.getResourceDataCache().getMeshBuffersDataCache().getMaterials()) {
+            ISample diffuse = material.getDiffuse();
+            ISample normals = material.getNormalsMap();
+            ISample emission = material.getEmissionMap();
+            ISample specular = material.getSpecularMap();
+            ISample metallic = material.getMetallicMap();
+            if (diffuse instanceof RGBAColor) {
+                RGBAColor rgbaColor = (RGBAColor) diffuse;
+                byteBuffer.putFloat(rgbaColor.getColor().x);
+                byteBuffer.putFloat(rgbaColor.getColor().y);
+                byteBuffer.putFloat(rgbaColor.getColor().z);
+                byteBuffer.putFloat(rgbaColor.getColor().w);
+            } else {
+                byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
+            }
+            BindlessTexturesDataCache bindlessTexturesDataCache = this.getResourceDataCache().getBindlessTexturesCache();
+            byteBuffer.putInt(diffuse instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuse) : 0);
+            byteBuffer.putInt(normals instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normals) : 0);
+            byteBuffer.putInt(emission instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emission) : 0);
+            byteBuffer.putInt(specular instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) specular) : 0);
+            byteBuffer.putInt(metallic instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallic) : 0);
+            byteBuffer.putInt(JGemsHelper.RENDERING.getTexturingCodeForShader(material));
+            byteBuffer.putInt(0);
+            byteBuffer.putInt(0);
+        }
+        byteBuffer.flip();
+        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, byteBuffer);
+        MemoryUtil.memFree(byteBuffer);
     }
 
     public static Font createFontFromJAR(JGemsPath path) {

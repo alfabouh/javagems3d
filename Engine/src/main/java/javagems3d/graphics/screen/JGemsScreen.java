@@ -73,15 +73,19 @@ public class JGemsScreen implements IScreen {
         return true;
     }
 
-    public void buildScreen() {
+    public void createObjects(IWindow window) {
+        this.controllerDispatcher = new JGemsControllerDispatcher(window);
+        this.scene = new JGemsScene(window, new SceneWorld());
+    }
+
+    public void createScreenAndContext() {
         JGemsHelper.getLogger().log("Init Graphics!");
         if (this.tryToBuildScreen()) {
             JGemsTransformation.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
             JGemsTransformation.INSTANCE.updateSetOfMatrices(this.getWindow());
 
-            this.checkScreenMode();
-            this.checkVSync();
-
+            this.adjustScreenMode();
+            this.adjustVSync();
             GL.createCapabilities();
             if (JGems3D.DEBUG_MODE) {
                 JGemsScreen.registerOGLDebugOutput();
@@ -90,9 +94,8 @@ public class JGemsScreen implements IScreen {
 
             this.showGameLoadingScreen("System01");
             this.setScreenCallbacks();
-            this.createObjects(this.getWindow());
 
-            this.normalizeViewPort();
+            OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
             this.getWindow().showWindow();
 
             JGemsHelper.getLogger().log("JGemsScreen built successful");
@@ -116,18 +119,9 @@ public class JGemsScreen implements IScreen {
         }
     }
 
-    private void createObjects(Window window) {
-        this.controllerDispatcher = new JGemsControllerDispatcher(window);
-        this.scene = new JGemsScene(window, new SceneWorld());
-    }
-
     private void resizeWindow(IWindow window) {
         this.getScene().onWindowResize(window);
         JGemsTransformation.INSTANCE.updateSetOfMatrices(this.getWindow());
-    }
-
-    public void normalizeViewPort() {
-        GL46.glViewport(0, 0, this.getWindowDimensions().x, this.getWindowDimensions().y);
     }
 
     public boolean tryToBuildScreen() {
@@ -258,7 +252,7 @@ public class JGemsScreen implements IScreen {
         //GL46.glDebugMessageControl(GL46.GL_DONT_CARE, GL46.GL_DONT_CARE, GL46.GL_DEBUG_SEVERITY_LOW, (IntBuffer) null, true); DOES NOT WORK!!
     }
 
-    public void checkVSync() {
+    public void adjustVSync() {
         if (JGems3D.get().getGameSettings().vSync.getValue() == 1) {
             this.getWindow().enableVSync();
         } else {
@@ -266,7 +260,7 @@ public class JGemsScreen implements IScreen {
         }
     }
 
-    public void checkScreenMode() {
+    public void adjustScreenMode() {
         if (JGems3D.get().getGameSettings().windowMode.getValue() == 0) {
             if (!this.getWindow().isFullScreen()) {
                 this.getWindow().makeFullScreen();
@@ -286,7 +280,9 @@ public class JGemsScreen implements IScreen {
         }
     }
 
-    public void recreateSceneResources() {
+    public void refreshSceneResources() {
+        JGems3D.get().getScreen().adjustScreenMode();
+        JGems3D.get().getScreen().adjustVSync();
         this.getScene().getSceneRenderer().recreateResources();
     }
 
@@ -312,7 +308,7 @@ public class JGemsScreen implements IScreen {
         }
     }
 
-    public void startScreenRenderProcess() {
+    public void runRenderThread() {
         JGemsHelper.getLogger().log("Starting screen...");
         SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

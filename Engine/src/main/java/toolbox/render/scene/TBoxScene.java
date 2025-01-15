@@ -13,6 +13,7 @@ package toolbox.render.scene;
 
 import javafx.util.Pair;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
@@ -272,14 +273,14 @@ public class TBoxScene {
     }
 
     private void renderIsometricEditorItem(AbstractObjectData mapObject, float borders) {
-        GL46.glViewport(0, 0, 400, 400);
+        OpenGLRenderer.setViewPort(new Vector2i(400));
         TBoxShaderManager shaderManager = TBoxResourceManager.shaderResources().world_isometric_object;
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(1.0f, borders);
         shaderManager.getUtils().performModel3DMatrix(new Matrix4f().identity().lookAt(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
         TBoxScene.renderIsometricModel(shaderManager, mapObject.meshDataGroup(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
-        ToolBox.get().getScreen().normalizeViewPort();
+        OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
     }
 
     public boolean tryGrabObject(EditorContent editorContent) {

@@ -32,7 +32,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     private IControllable currentControlledItem;
     private boolean lockController;
 
-    public JGemsControllerDispatcher(Window window) {
+    public JGemsControllerDispatcher(IWindow window) {
         JGemsControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window, APIContainer.get().getApiGameInfo().getAppManager().createBindingManager());
         this.setController(JGemsControllerDispatcher.defaultController());
         JGemsHelper.getLogger().log("Created controller dispatcher!");

@@ -18,6 +18,7 @@ import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.system.resources.assets.models.formats.Format2D;
@@ -147,7 +148,7 @@ public class ShadowScene implements IShadowScene {
     private void blurSunShadow(Model<Format2D> screenModel, final JGemsShaderManager blurring) {
         this.getSunLightShadow().getSunShadowFBO().bindFBO();
         Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
-        GL46.glViewport(0, 0, resolution.x, resolution.y);
+        OpenGLRenderer.setViewPort(resolution);
         blurring.beginShading();
         blurring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(screenModel.getFormat(), TransformationUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
         for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
@@ -176,7 +177,7 @@ public class ShadowScene implements IShadowScene {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {
                 pointLightShadow.getPointLightCubeMap().bindFBO();
-                GL46.glViewport(0, 0, pointLightShadow.getShadowMapResolution().x, pointLightShadow.getShadowMapResolution().y);
+                OpenGLRenderer.setViewPort(pointLightShadow.getShadowMapResolution());
                 pointLightShadow.configureMatrices();
                 for (int j = 0; j < 6; j++) {
                     pointLightShadow.getPointLightCubeMap().connectCubeMapToBuffer(GL46.GL_COLOR_ATTACHMENT0, j);
@@ -204,7 +205,7 @@ public class ShadowScene implements IShadowScene {
         List<SceneObject> indirectRenderObjects = groups.getSecond();
 
         this.getSunLightShadow().getSunShadowFBO().bindFBO();
-        GL46.glViewport(0, 0, this.getSunLightShadow().getShadowMapResolution().x, this.getSunLightShadow().getShadowMapResolution().y);
+        OpenGLRenderer.setViewPort(this.getSunLightShadow().getShadowMapResolution());
         for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
             SunLightShadow.Cascade cascade = this.getSunLightShadow().getCascades().get(i);
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);

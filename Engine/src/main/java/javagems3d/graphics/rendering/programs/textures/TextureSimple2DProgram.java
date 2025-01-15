@@ -40,6 +40,7 @@ public class TextureSimple2DProgram implements ITextureProgram {
         GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_WRAP_T, properties.getClampT());
         this.unBindTexture();
     }
+
     @Override
     public void clear() {
         GL46.glDeleteTextures(this.getTextureId());

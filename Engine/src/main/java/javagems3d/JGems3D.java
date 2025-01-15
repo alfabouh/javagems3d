@@ -211,10 +211,9 @@ public final class JGems3D {
         JGems3D.get().getScreen().showGameLoadingScreen("System01");
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
         JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
-        JGems3D.get().getScreen().recreateSceneResources();
-        JGems3D.get().getScreen().checkScreenMode();
-        JGems3D.get().getScreen().checkVSync();
+        JGems3D.get().getScreen().refreshSceneResources();
         JGems3D.get().getLocalisation().setLanguage(JGemsHelper.GAME.getGameSettings().language.getCurrentLanguage());
+        this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
         JGems3D.get().getScreen().removeLoadingScreen();
     }
 

@@ -120,6 +120,7 @@ public class JGemsSettings extends Settings {
                 this.texturesQuality.setValue(1);
                 this.bloom.setValue(0);
                 this.texturesFiltering.setValue(0);
+                break;
             }
             case MEDIUM: {
                 this.ssao.setValue(1);
@@ -129,6 +130,7 @@ public class JGemsSettings extends Settings {
                 this.texturesQuality.setValue(2);
                 this.bloom.setValue(0);
                 this.texturesFiltering.setValue(1);
+                break;
             }
             case HIGH: {
                 this.ssao.setValue(2);
@@ -138,6 +140,7 @@ public class JGemsSettings extends Settings {
                 this.texturesQuality.setValue(2);
                 this.bloom.setValue(1);
                 this.texturesFiltering.setValue(1);
+                break;
             }
             case GREAT: {
                 this.ssao.setValue(3);
@@ -147,6 +150,7 @@ public class JGemsSettings extends Settings {
                 this.texturesQuality.setValue(2);
                 this.bloom.setValue(1);
                 this.texturesFiltering.setValue(1);
+                break;
             }
         }
     }

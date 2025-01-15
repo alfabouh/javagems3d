@@ -77,8 +77,8 @@ public final class ToolBox {
         try {
             ToolBox.get().getTBoxSettings().makeSettingDirs();
             ToolBox.get().getTBoxSettings().loadOptions();
-            ToolBox.get().getScreen().buildScreen();
-            ToolBox.get().getScreen().startScreenRenderProcess();
+            ToolBox.get().getScreen().createScreenAndContext();
+            ToolBox.get().getScreen().runRenderThread();
         } catch (Exception e) {
             SystemLogging.get().getLogManager().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.");

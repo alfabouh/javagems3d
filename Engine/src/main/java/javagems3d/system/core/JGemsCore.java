@@ -273,7 +273,7 @@ public class JGemsCore implements ICore {
                 APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent(this);
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
-                this.getScreen().startScreenRenderProcess();
+                this.getScreen().runRenderThread();
                 badExit = false;
             } catch (Exception e) {
                 JGemsHelper.getLogger().exception(e);
@@ -414,13 +414,14 @@ public class JGemsCore implements ICore {
     }
 
     private void createGraphics() {
-        this.getScreen().buildScreen();
+        this.getScreen().createScreenAndContext();
         if (JGems3D.FIRST_LAUNCH) {
             JGems3D.get().getGameSettings().setDefaultByPerfStat(PerformanceStat.getSystemStat());
             JGems3D.get().getGameSettings().saveOptions();
         }
         this.printGraphicsInfo();
         this.getResourceManager().loadGlobalResources();
+        this.getScreen().createObjects(this.getScreen().getWindow());
     }
 
     private class RequestsFromThreads {
