@@ -44,7 +44,7 @@ public final class TBoxShaderManager extends ShaderManager {
     }
 
     public TBoxShaderManager copy() {
-        return new TBoxShaderManager(this.getShaderContainer());
+        return new TBoxShaderManager(this.getShadersContainer());
     }
 
     public TBoxShaderUtils getUtils() {

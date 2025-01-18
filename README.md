@@ -12,7 +12,7 @@
 
 The engine uses **OpenGL 4.3** for graphics, and the **Bullet Physics([Libbulletjme](https://github.com/stephengold/Libbulletjme))** as the physics engine.
 
-***The project is at the initial stage of development, many features have not yet been implemented, and those that have been implemented have not been properly implemented. Use the best practices at your own risk!***
+***The project is at the initial pipeline of development, many features have not yet been implemented, and those that have been implemented have not been properly implemented. Use the best practices at your own risk!***
 
 ![screen_1725096928350](https://github.com/user-attachments/assets/48d10d31-2aa7-4e16-93a7-27d3720ec7f8)
 

@@ -10,21 +10,22 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
-public class RawColorSceneRenderProcessor extends IRenderProcessor.Template {
+public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template {
     private FBOTexture2DProgram colorBuffer;
     private final JGemsShaderManager lightPassShader;
-    private final IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
-    private final SSAORenderProcessor ssaoRenderProcessor;
+    private final FBOTexture2DProgram gBuffer;
+    private final FBOTexture2DProgram ssaoBuffer;
+    private boolean isSsaoValid;
 
-    public RawColorSceneRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull IndirectGeometryRenderProcessor indirectGeometryRenderProcessor, @NotNull SSAORenderProcessor ssaoRenderProcessor, @NotNull JGemsShaderManager lightPassShader) {
+    public DeferredSceneColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
         super(openGLRenderer);
         this.lightPassShader = lightPassShader;
-        this.indirectGeometryRenderProcessor = indirectGeometryRenderProcessor;
-        this.ssaoRenderProcessor = ssaoRenderProcessor;
+        this.gBuffer = gBuffer;
+        this.ssaoBuffer = ssaoBuffer;
+        this.isSsaoValid = false;
     }
 
     @Override
@@ -46,8 +47,8 @@ public class RawColorSceneRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        FBOTexture2DProgram gBuffer = this.getIndirectGeometryRenderProcessor().getGBuffer();
-        FBOTexture2DProgram ssaoBuffer = this.getSsaoRenderProcessor().getSSAOBuffer();
+        FBOTexture2DProgram gBuffer = this.getGBuffer();
+        FBOTexture2DProgram ssaoBuffer = this.getSsaoBuffer();
         //this.getIndirectGeometryRenderProcessor().getGBuffer().copyFBOtoFBOColor(this.getColorBuffer().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_COLOR_ATTACHMENT0)}, this.getRenderingResolution());
         this.getColorBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
@@ -60,7 +61,7 @@ public class RawColorSceneRenderProcessor extends IRenderProcessor.Template {
         deferredShader.performUniformTexture(new UniformString("gEmission"), gBuffer.getTextureByIndex(3));
         deferredShader.performUniformTexture(new UniformString("gSpecular"), gBuffer.getTextureByIndex(4));
         deferredShader.performUniformTexture(new UniformString("ssaoSampler"), ssaoBuffer.getTextureByIndex(0));
-        deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(this.getSsaoRenderProcessor().getSsaoBufferTexture() != null));
+        deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(this.isSsaoValid()));
         deferredShader.getUtils().performShadowsInfo();
         deferredShader.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
         JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
@@ -68,12 +69,20 @@ public class RawColorSceneRenderProcessor extends IRenderProcessor.Template {
         this.getColorBuffer().unBindFBO();
     }
 
-    protected IndirectGeometryRenderProcessor getIndirectGeometryRenderProcessor() {
-        return this.indirectGeometryRenderProcessor;
+    public boolean isSsaoValid() {
+        return this.isSsaoValid;
     }
 
-    protected SSAORenderProcessor getSsaoRenderProcessor() {
-        return this.ssaoRenderProcessor;
+    public void setSsaoValid(boolean ssaoValid) {
+        isSsaoValid = ssaoValid;
+    }
+
+    protected FBOTexture2DProgram getGBuffer() {
+        return this.gBuffer;
+    }
+
+    protected FBOTexture2DProgram getSsaoBuffer() {
+        return this.ssaoBuffer;
     }
 
     public JGemsShaderManager getLightPassShader() {

@@ -10,6 +10,4 @@ public interface IModeled extends IAnimated {
     default boolean hasModel() {
         return this.getModel() != null && this.getModel().isValid();
     }
-
-    boolean isVisible();
 }

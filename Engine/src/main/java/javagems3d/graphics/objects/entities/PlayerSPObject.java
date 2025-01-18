@@ -15,7 +15,7 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.basic.WorldItem;
 
-public class PlayerSPObject extends AbstractSceneEntity {
+public class PlayerSPObject extends SceneEntity {
     public PlayerSPObject(SceneWorld sceneWorld, WorldItem worldItem, EntityRenderData renderData) {
         super(sceneWorld, worldItem, renderData);
     }

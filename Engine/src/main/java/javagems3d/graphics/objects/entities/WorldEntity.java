@@ -15,7 +15,7 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.basic.WorldItem;
 
-public class WorldEntity extends AbstractSceneEntity {
+public class WorldEntity extends SceneEntity {
     public WorldEntity(SceneWorld sceneWorld, WorldItem worldItem, EntityRenderData renderData) {
         super(sceneWorld, worldItem, renderData);
     }

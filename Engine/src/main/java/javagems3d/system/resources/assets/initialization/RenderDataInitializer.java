@@ -11,8 +11,7 @@
 
 package javagems3d.system.resources.assets.initialization;
 
-import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
-import javagems3d.graphics.objects.rendering.fabric.IndirectGBufferRenderFabric;
+import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
@@ -50,10 +49,10 @@ public class RenderDataInitializer implements IAssetsInitializer {
         //this.zippo_world.getObjectRenderSettings().setOverlappingMaterial(zwMat);
 
         this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
-        this.entityCube = new EntityRenderData(new IndirectGBufferRenderFabric(), WorldEntity.class, ShadingTable.DEFAULT_SHADING_TABLE_INDIRECT).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
-        this.player = new EntityRenderData(null, PlayerSPObject.class, ShadingTable.DEFAULT_SHADING_TABLE);
-        this.ground = new EntityRenderData(new IndirectGBufferRenderFabric(), EntityObject.class, ShadingTable.DEFAULT_SHADING_TABLE_INDIRECT);
-        this.ground.getObjectRenderSettings().setAlphaDiscardValue(0.25f);
+        this.entityCube = new EntityRenderData(WorldEntity.class, new RenderTable()).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
+        this.player = new EntityRenderData(PlayerSPObject.class, (RenderTable) null);
+        this.ground = new EntityRenderData(EntityObject.class, new RenderTable());
+        this.ground.getObjectRenderAttributes().setAlphaDiscardValue(0.25f);
     }
 
     @Override

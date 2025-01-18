@@ -13,7 +13,10 @@ package javagems3d;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model;
@@ -25,6 +28,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.camera.ControlledCamera;
@@ -41,7 +45,7 @@ import javagems3d.graphics.particles.objects.base.ParticleFX;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
-import javagems3d.graphics.objects.entities.AbstractSceneEntity;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.props.SceneProp;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
@@ -75,7 +79,9 @@ import org.lwjgl.opengl.GL46;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 /**
  * Using the JGemsHelper class, you can conveniently access most of the most important functions for managing the state of the engine. This utility class is divided into sections for easier navigation.
@@ -119,6 +125,28 @@ public abstract class JGemsHelper {
     }
 
     public static abstract class RENDERING {
+        @SuppressWarnings("all")
+        public static Set<SceneObject> getFilteredSetToRender(Set<SceneObject> sceneObjects, @Nullable Pipeline pipeline, boolean checkDistanceFromCamera) {
+            return sceneObjects.stream().filter(e -> {
+                if (!e.canBeRendered() || !e.hasModel()) {
+                    return false;
+                }
+                if (pipeline != null && !e.canBeRendered(pipeline)) {
+                    return false;
+                }
+                if (checkDistanceFromCamera && RENDERING.checkReachedRenderDistance(e)) {
+                    return false;
+                }
+                return true;
+            }).collect(Collectors.toSet());
+        }
+
+        public static boolean checkReachedRenderDistance(SceneObject renderObject) {
+            ICamera camera = JGems3D.get().getScreen().getCamera();
+            RenderAttributes renderAttributes = renderObject.getRenderAttributes();
+            return renderAttributes.getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderAttributes.getRenderDistance();
+        }
+
         public static void renderModelNode(MeshGroup.MeshGroupNode meshNode) {
             GL46.glBindVertexArray(meshNode.getMesh().getVao());
             meshNode.getMesh().enableAllMeshAttributes();
@@ -220,7 +248,7 @@ public abstract class JGemsHelper {
             JGemsHelper.getScreen().getScene().setCamera(JGemsHelper.getSceneWorld().createAttachedCamera(worldItem));
         }
 
-        public static void enableAttachedCamera(AbstractSceneEntity abstractSceneEntity) {
+        public static void enableAttachedCamera(SceneEntity abstractSceneEntity) {
             JGemsHelper.getScreen().getScene().setCamera(JGemsHelper.getSceneWorld().createAttachedCamera(abstractSceneEntity));
         }
     }

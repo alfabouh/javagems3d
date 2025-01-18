@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL46;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SunLightShadow extends AbstractShadow {
+public class SunLightShadow extends Shadow {
     private final FBOTexture2DProgram sunShadowFBO;
     private List<Cascade> cascades;
 
@@ -35,8 +35,6 @@ public class SunLightShadow extends AbstractShadow {
     }
 
     public void refreshCascades() {
-        JGemsScene scene = JGems3D.get().getScreen().getScene();
-
         Matrix4f view = JGemsTransformation.INSTANCE.getCameraViewMatrix();
         Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
 

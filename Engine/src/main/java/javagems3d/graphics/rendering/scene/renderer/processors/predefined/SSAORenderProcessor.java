@@ -27,36 +27,27 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 
 public class SSAORenderProcessor extends IRenderProcessor.Template {
-    private final IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
+    private final FBOTexture2DProgram gBuffer;
     private final JGemsShaderManager ssaoComputing;
-    private FBOTexture2DProgram ssaoBuffer;
 
     private ITextureProgram ssaoNoiseTexture;
     private ITextureProgram ssaoKernelTexture;
     private ITextureProgram ssaoBufferTexture;
 
-    public SSAORenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull IndirectGeometryRenderProcessor indirectGeometryRenderProcessor, @NotNull JGemsShaderManager ssaoComputing) {
+    public SSAORenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull JGemsShaderManager ssaoComputing) {
         super(openGLRenderer);
-        this.indirectGeometryRenderProcessor = indirectGeometryRenderProcessor;
+        this.gBuffer = gBuffer;
         this.ssaoComputing = ssaoComputing;
     }
 
     @Override
     public void createResources() {
         this.createSSAOResources(this.getSSAOParams(this.getRenderingResolution()));
-        this.ssaoBuffer = new FBOTexture2DProgram(true);
-        T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
-        }};
-        this.ssaoBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
     public void destroyResources() {
         this.destroySsaoTextures();
-        if (this.getSSAOBuffer() != null) {
-            this.getSSAOBuffer().clearFBO();
-        }
     }
 
     protected void createSSAOResources(@Nullable Vector3i ssaoParams) {
@@ -85,14 +76,12 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     @Override
     public void onRender(FrameTicking frameTicking) {
         if (this.getSsaoBufferTexture() == null || !JGemsRenderingGlobalConstants.USE_SSAO) {
-            this.getSSAOBuffer().bindFBO();
             GL46.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            this.getSSAOBuffer().unBindFBO();
             return;
         }
-        FBOTexture2DProgram gBuffer = this.getIndirectGeometryRenderProcessor().getGBuffer();
+        FBOTexture2DProgram gBuffer = this.getGBuffer();
         Vector2i windowSize = this.getRenderingResolution();
         JGemsShaderManager ssaoComputeShader = this.getSsaoComputing();
         ssaoComputeShader.beginComputing();
@@ -112,13 +101,11 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         ssaoComputeShader.endComputing();
 
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;
-        this.getSSAOBuffer().bindFBO();
         ssaoBlur.beginShading();
         ssaoBlur.performUniformTexture(new UniformString("texture_sampler"), this.getSsaoBufferTexture());
         ssaoBlur.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
         JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         ssaoBlur.endShading();
-        this.getSSAOBuffer().unBindFBO();
     }
 
     protected Texture2DProgram calcSSAOKernel(int size) {
@@ -193,12 +180,8 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         return this.ssaoComputing;
     }
 
-    public FBOTexture2DProgram getSSAOBuffer() {
-        return this.ssaoBuffer;
-    }
-
-    protected IndirectGeometryRenderProcessor getIndirectGeometryRenderProcessor() {
-        return this.indirectGeometryRenderProcessor;
+    public FBOTexture2DProgram getGBuffer() {
+        return this.gBuffer;
     }
 
     public ITextureProgram getSsaoNoiseTexture() {
@@ -211,5 +194,9 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
     public ITextureProgram getSsaoBufferTexture() {
         return this.ssaoBufferTexture;
+    }
+
+    public boolean isValid() {
+        return this.getSsaoBufferTexture() != null;
     }
 }

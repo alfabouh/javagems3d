@@ -39,7 +39,7 @@ public class SceneGluingRenderProcessor extends IRenderProcessor.Template {
     public void onRender(FrameTicking frameTicking) {
         this.getGluedScene().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-        this.getDeferredRenderNode().getOutFboColorBuffer().copyFBOtoFBOColor(this.getGluedScene().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)}, this.getOpenGLRenderer().getRenderingResolution());
+        this.getDeferredRenderNode().getOutColorBuffer().copyFBOtoFBOColor(this.getGluedScene().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)}, this.getOpenGLRenderer().getRenderingResolution());
         this.getGluedScene().unBindFBO();
     }
 

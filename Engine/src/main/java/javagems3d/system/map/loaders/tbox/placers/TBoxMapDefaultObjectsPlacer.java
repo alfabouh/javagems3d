@@ -47,45 +47,45 @@ import javagems3d.temp.map_sys.save.objects.object_attributes.AttributesContaine
 
 public abstract class TBoxMapDefaultObjectsPlacer {
     public static void placeTBoxEntityOnMap(SceneWorld sceneWorld, PhysicsWorld physicsWorld, GameResources globalGameResources, GameResources localGameResources, String id, AttributesContainer attributesContainer, TUserData userData) {
-        TDefaultRenderContainer renderContainer = userData.tryCastObject(TDefaultRenderContainer.class);
-        if (renderContainer == null) {
-            return;
-        }
-        Vector3f pos = attributesContainer.getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
-        Vector3f rot = attributesContainer.getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
-        Vector3f scale = attributesContainer.getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
-        Boolean isProp = attributesContainer.getValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
-
-        MeshGroup meshGroup = localGameResources.createMeshGroup(renderContainer.getPathToRenderModel(), ModelMeshLoader.FLAGS.DEFAULT);
-        JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
-
-        if (isProp != null && (isProp)) {
-            RenderAttributes modelRenderData = renderContainer.getObjectRenderSettings().copy();
-            //IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
-
-            Model<Format3D> model = new Model<>(new Format3D(), meshGroup);
-            model.getFormat().setPosition(pos);
-            model.getFormat().setRotation(rot);
-            model.getFormat().setScaling(scale);
-            JGemsHelper.WORLD.addPropInScene(new SceneProp(null, model, modelRenderData));
-        } else {
-            EntityRenderData entityRenderData = new EntityRenderData(null, renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy());
-
-            Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
-            if (isStatic == null || isStatic) {
-                JGemsStaticBody worldModeledBrush = new JGemsStaticBody(MeshCollider.getStatic(meshGroup), physicsWorld, pos, id);
-                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new EntityRenderData(entityRenderData, meshGroup));
-                worldModeledBrush.setCanBeDestroyed(false);
-                worldModeledBrush.setRotation(new Vector3f(rot).negate());
-                worldModeledBrush.setScaling(scale);
-            } else {
-                JGemsDynamicBody worldModeledBrush = new JGemsDynamicBody(MeshCollider.getDynamic(meshGroup), physicsWorld, pos, id);
-                JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new EntityRenderData(entityRenderData, meshGroup));
-                worldModeledBrush.setCanBeDestroyed(false);
-                worldModeledBrush.setRotation(new Vector3f(rot).negate());
-                worldModeledBrush.setScaling(scale);
-            }
-        }
+       // TDefaultRenderContainer renderContainer = userData.tryCastObject(TDefaultRenderContainer.class);
+       // if (renderContainer == null) {
+       //     return;
+       // }
+       // Vector3f pos = attributesContainer.getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
+       // Vector3f rot = attributesContainer.getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
+       // Vector3f scale = attributesContainer.getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
+       // Boolean isProp = attributesContainer.getValueFromAttributeByID(AttributeID.IS_PROP, Boolean.class);
+//
+       // MeshGroup meshGroup = localGameResources.createMeshGroup(renderContainer.getPathToRenderModel(), ModelMeshLoader.FLAGS.DEFAULT);
+       // JGemsShaderManager shaderManager = globalGameResources.getResource(renderContainer.getPathToJGemsShader());
+//
+       // if (isProp != null && (isProp)) {
+       //     RenderAttributes modelRenderData = renderContainer.getObjectRenderSettings().copy();
+       //     //IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
+//
+       //     Model<Format3D> model = new Model<>(new Format3D(), meshGroup);
+       //     model.getFormat().setPosition(pos);
+       //     model.getFormat().setRotation(rot);
+       //     model.getFormat().setScaling(scale);
+       //     JGemsHelper.WORLD.addPropInScene(new SceneProp(null, model, modelRenderData));
+       // } else {
+       //     EntityRenderData entityRenderData = new EntityRenderData(null, renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy());
+//
+       //     Boolean isStatic = attributesContainer.getValueFromAttributeByID(AttributeID.IS_STATIC, Boolean.class);
+       //     if (isStatic == null || isStatic) {
+       //         JGemsStaticBody worldModeledBrush = new JGemsStaticBody(MeshCollider.getStatic(meshGroup), physicsWorld, pos, id);
+       //         JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new EntityRenderData(entityRenderData, meshGroup));
+       //         worldModeledBrush.setCanBeDestroyed(false);
+       //         worldModeledBrush.setRotation(new Vector3f(rot).negate());
+       //         worldModeledBrush.setScaling(scale);
+       //     } else {
+       //         JGemsDynamicBody worldModeledBrush = new JGemsDynamicBody(MeshCollider.getDynamic(meshGroup), physicsWorld, pos, id);
+       //         JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new EntityRenderData(entityRenderData, meshGroup));
+       //         worldModeledBrush.setCanBeDestroyed(false);
+       //         worldModeledBrush.setRotation(new Vector3f(rot).negate());
+       //         worldModeledBrush.setScaling(scale);
+       //     }
+       // }
     }
 
     public static AbstractTriggerZone placeTBoxTriggerZoneOnMap(PhysicsWorld physicsWorld, Vector3f position, Vector3f size, String id, AttributesContainer attributesContainer, TUserData renderContainer) {

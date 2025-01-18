@@ -18,6 +18,7 @@ import javagems3d.system.service.path.JGemsPath;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public final class ShadersContainer {
@@ -139,6 +140,23 @@ public final class ShadersContainer {
         if (this.getComputeShader() != null) {
             this.getComputeShader().clear();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        ShadersContainer that = (ShadersContainer) o;
+        return Objects.equals(this.id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.id);
     }
 
     public Set<Uniform> getCUniformsFullSet() {

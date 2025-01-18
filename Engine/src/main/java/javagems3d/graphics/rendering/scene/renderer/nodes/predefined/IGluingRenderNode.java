@@ -8,7 +8,7 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import org.jetbrains.annotations.NotNull;
 
 public interface IGluingRenderNode extends IRenderNode {
-    @NotNull FBOTexture2DProgram getOutGluedScene();
+    FBOTexture2DProgram getOutGluedScene();
 
     final class Default extends IRenderNode.Template implements IGluingRenderNode {
         private final SceneGluingRenderProcessor sceneGluingRenderProcessor;
@@ -38,7 +38,7 @@ public interface IGluingRenderNode extends IRenderNode {
         }
 
         @Override
-        public @NotNull FBOTexture2DProgram getOutGluedScene() {
+        public FBOTexture2DProgram getOutGluedScene() {
             return this.getSceneGluingRenderProcessor().getGluedScene();
         }
     }

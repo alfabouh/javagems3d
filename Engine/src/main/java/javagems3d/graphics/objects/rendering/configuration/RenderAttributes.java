@@ -1,13 +1,14 @@
 package javagems3d.graphics.objects.rendering.configuration;
 
 import javagems3d.global.JGemsRenderingGlobalConstants;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 @SuppressWarnings("all")
 public class RenderAttributes implements IRenderConfiguration {
-    private ShadingTable shadingTable;
+    private RenderTable renderTable;
 
     private float renderDistance;
     private float alphaDiscardValue;
@@ -20,8 +21,8 @@ public class RenderAttributes implements IRenderConfiguration {
     private boolean allowMovementInterpolation;
     private boolean disableFaceCulling;
 
-    public RenderAttributes(@NotNull ShadingTable shadingTable) {
-        this.shadingTable = shadingTable;
+    public RenderAttributes(@NotNull RenderTable renderTable) {
+        this.renderTable = renderTable;
 
         this.alphaDiscardValue = JGemsRenderingGlobalConstants.DEFAULT_ALPHA_DISCARD;
         this.renderDistance = -1.0f;
@@ -35,20 +36,12 @@ public class RenderAttributes implements IRenderConfiguration {
         this.disableFaceCulling = false;
     }
 
-    public RenderAttributes(@NotNull JGemsShaderManager sceneShader, @NotNull ShadingTable.Stage renderingSceneShaderTarget) {
-        this(new ShadingTable(sceneShader, renderingSceneShaderTarget));
+    public @NotNull RenderTable getRenderingTable() {
+        return this.renderTable;
     }
 
-    public RenderAttributes(@NotNull JGemsShaderManager sceneShader) {
-        this(new ShadingTable(sceneShader, ShadingTable.Stage.DEFERRED_INDIRECT));
-    }
-
-    public ShadingTable getShadingTable() {
-        return this.shadingTable;
-    }
-
-    public RenderAttributes setShadingTable(ShadingTable shadingTable) {
-        this.shadingTable = shadingTable;
+    public RenderAttributes setRenderingTable(RenderTable renderTable) {
+        this.renderTable = renderTable;
         return this;
     }
 
@@ -135,7 +128,7 @@ public class RenderAttributes implements IRenderConfiguration {
 
     @Override
     public @NotNull RenderAttributes copy() {
-        RenderAttributes objectRenderingConfiguration = new RenderAttributes(this.getShadingTable());
+        RenderAttributes objectRenderingConfiguration = new RenderAttributes(this.getRenderingTable());
         objectRenderingConfiguration.setAllowMovementInterpolation(this.isAllowedMovementInterpolation());
         this.setDisableFaceCulling(this.isDisabledFaceCulling());
         this.setLightsAffected(this.isLightsAffected());

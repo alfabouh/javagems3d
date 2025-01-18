@@ -12,19 +12,32 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
-import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;
+
+import java.util.Set;
 
 public interface IRendered {
-    IRenderFabric getRenderFabric();
     RenderAttributes getRenderAttributes();
     
-    default boolean hasRender() {
-        return this.getRenderFabric() != null;
+    default boolean canBeRendered() {
+        return this.getRenderAttributes() != null;
     }
 
-    default ShadingTable getShadingTable() {
-        return this.getRenderAttributes().getShadingTable();
+    default boolean canBeRendered(Pipeline pipeline) {
+        return this.canBeRendered() && this.getRenderingTable().getRenderingData(pipeline).getRenderFabric() != null;
+    }
+
+    default Set<IRenderFabric> getRenderFabricsSet() {
+        return this.getRenderingTable().getRenderFabricsSet();
+    }
+
+    default IRenderFabric getRenderFabric(Pipeline pipeline) {
+        return this.getRenderingTable().getRenderFabric(pipeline);
+    }
+
+    default RenderTable getRenderingTable() {
+        return this.getRenderAttributes().getRenderingTable();
     }
 }

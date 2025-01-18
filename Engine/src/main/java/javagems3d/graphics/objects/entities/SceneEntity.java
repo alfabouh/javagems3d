@@ -12,8 +12,6 @@
 package javagems3d.graphics.objects.entities;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
-import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
@@ -31,7 +29,6 @@ import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import api.app.events.bus.Events;
 
@@ -39,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractSceneEntity extends SceneObject implements IWorldObject, IWorldTicked {
+public abstract class SceneEntity extends SceneObject implements IWorldObject, IWorldTicked {
     private AnimationData animationData;
     private final List<Light> lightList;
     private final SceneWorld sceneWorld;
@@ -54,9 +51,9 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     private boolean isVisible;
     private boolean isDead;
 
-    public AbstractSceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull EntityRenderData renderData) {
+    public SceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull EntityRenderData renderData) {
+        this.setRenderAttributes(renderData.getObjectRenderAttributes());
         this.lightList = new ArrayList<>();
-
         this.animationData = null;
         this.worldItem = worldItem;
         this.renderPosition = new Vector3f(worldItem.getPosition());
@@ -77,13 +74,13 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     @Override
     public void onSpawn(IWorld iWorld) {
         JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
-        if (this.hasRender()) {
+        if (this.canBeRendered()) {
             if (this.getRenderData().getEntityModelConstructor() != null) {
                 this.setModel(new Model<>(new Format3D(), this.getRenderData().getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
             } else {
                 this.initModel();
             }
-            this.getRenderFabric().createResources(this);
+            this.getRenderFabricsSet().forEach(e -> e.createResources(this));
         }
         APIEventsLauncher.pushEvent(new Events.ItemSpawnInRenderWorld(this));
     }
@@ -92,8 +89,8 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     public void onDestroy(IWorld iWorld) {
         APIEventsLauncher.pushEvent(new Events.ItemDestroyInRenderWorld(this));
         JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
-        if (this.hasRender()) {
-            this.getRenderFabric().destroyResources(this);
+        if (this.canBeRendered()) {
+            this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));
         }
         this.clearLights();
     }
@@ -159,7 +156,7 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
-        if (this.getRenderAttributes().isAllowedMovementInterpolation()) {
+        if (!this.canBeRendered() || this.getRenderAttributes().isAllowedMovementInterpolation()) {
             this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);
@@ -209,10 +206,6 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
         return this.lightList;
     }
 
-    public ShadingTable getShadingTable() {
-        return this.getRenderAttributes().getShadingTable();
-    }
-
     public Vector3f getScale() {
         return this.getWorldItem().getScaling();
     }
@@ -250,21 +243,12 @@ public abstract class AbstractSceneEntity extends SceneObject implements IWorldO
     }
 
     @Override
-    public @NotNull RenderAttributes getRenderAttributes() {
-        return this.getRenderData().getObjectRenderSettings();
-    }
-
-    public boolean isVisible() {
-        return this.isVisible;
+    public boolean canBeRendered() {
+        return super.canBeRendered() && this.isVisible;
     }
 
     public void setVisible(boolean visible) {
         this.isVisible = visible;
-    }
-
-    @Override
-    public IRenderFabric getRenderFabric() {
-        return this.getRenderData().getRenderFabric();
     }
 
     public EntityRenderData getRenderData() {

@@ -61,8 +61,8 @@ public abstract class ShaderManager implements ICached {
     }
 
     public void startProgram() {
-        CShaderProgram cShaderProgram = this.getShaderContainer().getComputeShader() != null ? new CShaderProgram() : null;
-        this.initShaders(this.getShaderContainer(), new GShaderProgram(), cShaderProgram);
+        CShaderProgram cShaderProgram = this.getShadersContainer().getComputeShader() != null ? new CShaderProgram() : null;
+        this.initShaders(this.getShadersContainer(), new GShaderProgram(), cShaderProgram);
     }
 
     public void destroyProgram() {
@@ -72,11 +72,11 @@ public abstract class ShaderManager implements ICached {
         if (this.getGraphicShaderGroup() != null) {
             this.getGraphicShaderGroup().clear();
         }
-        this.getShaderContainer().clear();
+        this.getShadersContainer().clear();
     }
 
     public void dispatchComputeShader(int grX, int grY, int grZ, int barrier) {
-        if (this.getShaderContainer().getComputeShader() == null) {
+        if (this.getShadersContainer().getComputeShader() == null) {
             JGemsHelper.getLogger().warn("[" + this + "]" + " doesn't have compute program!");
             return;
         }
@@ -219,8 +219,8 @@ public abstract class ShaderManager implements ICached {
     private void initShaders(ShadersContainer shadersContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {
         boolean flag = false;
         if (gShaderProgram != null) {
-            this.graphicShaderHandler = new ShaderHandler(this.getShaderContainer().getId());
-            if (gShaderProgram.createShader(this.getShaderContainer().getFragmentShader(), this.getShaderContainer().getVertexShader(), this.getShaderContainer().getGeometricShader(), this.getShaderContainer().getTesselationControlShader(), this.getShaderContainer().getTesselationEvaluationShader())) {
+            this.graphicShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
+            if (gShaderProgram.createShader(this.getShadersContainer().getFragmentShader(), this.getShadersContainer().getVertexShader(), this.getShadersContainer().getGeometricShader(), this.getShadersContainer().getTesselationControlShader(), this.getShadersContainer().getTesselationEvaluationShader())) {
                 if (gShaderProgram.link()) {
                     JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked (program id=" + gShaderProgram.getProgramId() + ")");
                 } else {
@@ -231,8 +231,8 @@ public abstract class ShaderManager implements ICached {
             this.getGraphicShaderGroup().initShaderGroup(gShaderProgram, shadersContainer.getGUniformsFullSet(), this.uniformBufferObjects);
         }
         if (cShaderProgram != null) {
-            this.computingShaderHandler = new ShaderHandler(this.getShaderContainer().getId());
-            if (cShaderProgram.createShader(this.getShaderContainer().getComputeShader())) {
+            this.computingShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
+            if (cShaderProgram.createShader(this.getShadersContainer().getComputeShader())) {
                 if (cShaderProgram.link()) {
                     JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked (program id=" + cShaderProgram.getProgramId() + ")");
                 } else {
@@ -323,7 +323,7 @@ public abstract class ShaderManager implements ICached {
         return this.graphicShaderHandler;
     }
 
-    public ShadersContainer getShaderContainer() {
+    public ShadersContainer getShadersContainer() {
         return this.shadersContainer;
     }
 
@@ -332,8 +332,25 @@ public abstract class ShaderManager implements ICached {
         this.destroyProgram();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        ShaderManager that = (ShaderManager) o;
+        return Objects.equals(this.shadersContainer, that.shadersContainer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.shadersContainer);
+    }
+
     public String toString() {
-        return this.getShaderContainer().getId();
+        return this.getShadersContainer().getId();
     }
 
     private enum ActiveShader {

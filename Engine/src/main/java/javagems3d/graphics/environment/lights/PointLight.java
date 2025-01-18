@@ -13,7 +13,7 @@ package javagems3d.graphics.environment.lights;
 
 import javagems3d.JGemsHelper;
 import org.joml.Vector3f;
-import javagems3d.graphics.objects.entities.AbstractSceneEntity;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.world.IWorld;
 
 public class PointLight extends Light {
@@ -36,15 +36,15 @@ public class PointLight extends Light {
         super(lightPos, lightColor, offset);
     }
 
-    public PointLight(AbstractSceneEntity abstractSceneEntity) {
+    public PointLight(SceneEntity abstractSceneEntity) {
         super(abstractSceneEntity);
     }
 
-    public PointLight(AbstractSceneEntity abstractSceneEntity, Vector3f lightColor) {
+    public PointLight(SceneEntity abstractSceneEntity, Vector3f lightColor) {
         super(abstractSceneEntity, lightColor);
     }
 
-    public PointLight(AbstractSceneEntity abstractSceneEntity, Vector3f lightColor, Vector3f offset) {
+    public PointLight(SceneEntity abstractSceneEntity, Vector3f lightColor, Vector3f offset) {
         super(abstractSceneEntity, lightColor, offset);
     }
 

@@ -13,12 +13,12 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
@@ -33,29 +33,20 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.RGBAColor;
-import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -169,8 +160,15 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         }
         this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld(), this.getSceneWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
+
+        Map<Stage, List<SceneObject>> dividedGroups = JGemsHelper.RENDERING.getFilteredSetToRender(this.getSceneWorld().getSceneObjects(), Pipeline.SCENE, true).stream().collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
+
+        deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
+        deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
+        forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
+
         deferredRenderNode.onRender(frameTicking);
-        //forwardRenderNode.onRender(frameTicking);
+        forwardRenderNode.onRender(frameTicking);
         //transparencyRenderNode.onRender(frameTicking);
         gluingRenderNode.onRender(frameTicking);
         uiRenderNode.onRender(frameTicking);
@@ -276,24 +274,5 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     public static JGemsShaderManager UBOShader() {
         return JGemsResourceManager.globalShaderAssets.gameUbo;
-    }
-
-    @SuppressWarnings("all")
-    public static Set<SceneObject> getFilteredSetToRender(Set<SceneObject> sceneObjects) {
-        return sceneObjects.stream().filter(e -> {
-            if (!e.isVisible() || !e.hasRender() || !e.hasModel()) {
-                return false;
-            }
-            if (JGemsOpenGLRenderer.checkReachedRenderDistance(e)) {
-                return false;
-            }
-            return true;
-        }).collect(Collectors.toSet());
-    }
-
-    public static boolean checkReachedRenderDistance(SceneObject renderObject) {
-        ICamera camera = JGems3D.get().getScreen().getCamera();
-        RenderAttributes renderAttributes = renderObject.getRenderAttributes();
-        return renderAttributes.getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderAttributes.getRenderDistance();
     }
 }

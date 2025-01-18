@@ -16,15 +16,14 @@ import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.rendering.configuration.ShadingTable;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
-import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.joml.*;
@@ -49,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ShadowScene implements IShadowScene {
@@ -57,29 +55,6 @@ public class ShadowScene implements IShadowScene {
     private final Environment environment;
     private List<PointLightShadow> pointLightShadows;
     private SunLightShadow sunLightShadow;
-
-    @SuppressWarnings("unchecked")
-    private static final IndirectObjectsRenderer.RenderingFunction func = (shaderManager, indirectBufferCommandsBuilder, renderBuffer, metaData) -> {
-        Consumer<JGemsShaderManager> functionToHandleUniforms = null;
-        Object o1 = metaData[0];
-        if (o1 instanceof Consumer<?>) {
-            try {
-                functionToHandleUniforms = (Consumer<JGemsShaderManager>) metaData[0];
-            } catch (Exception e) {
-                throw new JGemsRuntimeException("Invalid consumer!\n", e);
-            }
-        }
-        shaderManager.beginShading();
-        if (functionToHandleUniforms != null) {
-            functionToHandleUniforms.accept(shaderManager);
-        }
-        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
-        GL46.glBindVertexArray(renderBuffer.getStaticVao());
-        GL46.glMultiDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, 0, indirectBufferCommandsBuilder.getDrawCount(), 0);
-        GL46.glBindVertexArray(0);
-        GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, 0);
-        shaderManager.endShading();
-    };
 
     public ShadowScene(Environment environment) {
         this.environment = environment;
@@ -93,7 +68,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void createResources() {
-        this.indirectObjectsRenderer = new IndirectObjectsRenderer(JGemsHelper.getScreen().getScene().getSceneRenderer(), ShadowScene.func, null, false, true);
+        this.indirectObjectsRenderer = new IndirectObjectsRenderer(JGemsHelper.getScreen().getScene().getSceneRenderer(), null, false, true);
         this.getPointLightShadows().forEach(PointLightShadow::createResources);
         this.getSunLightShadow().createResources();
     }
@@ -189,8 +164,8 @@ public class ShadowScene implements IShadowScene {
                         shaderManager.performUniform(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                         shaderManager.performUniform(new UniformString("lightPos"), UniformFunctions.VEC3F(pointLightShadow.getPointLight().getLightPos()));
                     };
-                    this.renderModelsIndirect(consumer, ShadingTable.Category.POINT_L_SHADOW_MAP, indirectRenderObjects);
-                    this.renderModelsDirect(consumer, ShadingTable.Category.POINT_L_SHADOW_MAP, directRenderObjects);
+                    this.renderModelsIndirect(consumer, Pipeline.POINT_LIGHT_SHADOW_MAP, indirectRenderObjects);
+                    this.renderModelsDirect(consumer, Pipeline.POINT_LIGHT_SHADOW_MAP, directRenderObjects);
                     GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 }
                 pointLightShadow.getPointLightCubeMap().unBindFBO();
@@ -217,20 +192,20 @@ public class ShadowScene implements IShadowScene {
                 shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
                 shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
             };
-            this.renderModelsIndirect(consumer, ShadingTable.Category.SUN_L_SHADOW_MAP, indirectRenderObjects);
-            this.renderModelsDirect(consumer, ShadingTable.Category.SUN_L_SHADOW_MAP, directRenderObjects);
+            this.renderModelsIndirect(consumer, Pipeline.SUN_LIGHT_SHADOW_MAP, indirectRenderObjects);
+            this.renderModelsDirect(consumer, Pipeline.SUN_LIGHT_SHADOW_MAP, directRenderObjects);
         }
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getSunLightShadow().getSunShadowFBO().unBindFBO();
     }
 
-    protected void renderModelsIndirect(Consumer<JGemsShaderManager> functionToHandleUniforms, ShadingTable.Category category, List<SceneObject> filteredObjectsSet) {
+    protected void renderModelsIndirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
         this.getIndirectObjectsRenderer().setIndirectMeshObjects(filteredObjectsSet);
-        this.getIndirectObjectsRenderer().processAndRender(e -> e.getRenderAttributes().getShadingTable().getShader(category), functionToHandleUniforms);
+        this.getIndirectObjectsRenderer().processAndRender(pipeline, ArbitraryArguments.pass(functionToHandleUniforms));
     }
 
-    protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, ShadingTable.Category category, List<SceneObject> filteredObjectsSet) {
-        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getRenderAttributes().getShadingTable().getShader(category)));
+    protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
+        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getRenderingTable().getShaderManager(pipeline)));
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();

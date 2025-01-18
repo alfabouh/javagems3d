@@ -15,13 +15,13 @@ import javagems3d.graphics.camera.base.CameraBase;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.objects.entities.AbstractSceneEntity;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 
 public class AttachedCamera extends CameraBase {
-    private AbstractSceneEntity abstractSceneEntity;
+    private SceneEntity abstractSceneEntity;
 
-    public AttachedCamera(@NotNull AbstractSceneEntity abstractSceneEntity) {
+    public AttachedCamera(@NotNull SceneEntity abstractSceneEntity) {
         this.attachCameraOnItem(abstractSceneEntity);
     }
 
@@ -31,7 +31,7 @@ public class AttachedCamera extends CameraBase {
 
     @Override
     public void updateCamera(float frameDeltaTicks) {
-        AbstractSceneEntity abstractSceneEntity = this.getAttachedObject();
+        SceneEntity abstractSceneEntity = this.getAttachedObject();
         if (abstractSceneEntity != null) {
             Vector3f pos = new Vector3f(this.getAttachedObject().getRenderPosition()).add(this.cameraOffset());
             Vector3f rot = new Vector3f(this.getAttachedObject().getRenderRotation());
@@ -49,14 +49,14 @@ public class AttachedCamera extends CameraBase {
         return vector3f;
     }
 
-    public void attachCameraOnItem(AbstractSceneEntity abstractSceneEntity) {
+    public void attachCameraOnItem(SceneEntity abstractSceneEntity) {
         JGemsHelper.getLogger().log("Attached camera to: " + abstractSceneEntity.getWorldItem().getItemName());
         this.abstractSceneEntity = abstractSceneEntity;
         this.setCameraPosition(abstractSceneEntity.getRenderPosition());
         this.setCameraRotation(abstractSceneEntity.getRenderRotation());
     }
 
-    public AbstractSceneEntity getAttachedObject() {
+    public SceneEntity getAttachedObject() {
         return this.abstractSceneEntity;
     }
 }

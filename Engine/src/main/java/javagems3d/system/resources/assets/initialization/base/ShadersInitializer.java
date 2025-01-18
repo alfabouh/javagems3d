@@ -19,10 +19,10 @@ import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
-public abstract class AbstractShadersInitializer<T extends ShaderManager> {
+public abstract class ShadersInitializer<T extends ShaderManager> {
     private final ShaderLibrariesManager shaderLibrary;
 
-    public AbstractShadersInitializer() {
+    public ShadersInitializer() {
         this.shaderLibrary = new ShaderLibrariesManager();
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractShadersInitializer<T extends ShaderManager> {
 
     public void initShaders(ResourceCache resourceCache) {
         for (ShaderManager shaderManager : resourceCache.getAllCachedObjectsCollection(ShaderManager.class)) {
-            shaderManager.getShaderContainer().initAll();
+            shaderManager.getShadersContainer().initAll();
         }
     }
 

@@ -22,7 +22,7 @@ import javagems3d.graphics.transformation.TransformationUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PointLightShadow extends AbstractShadow {
+public class PointLightShadow extends Shadow {
     private final FBOCubeMapProgram pointLightCubeMap;
     private final int id;
     private PointLight pointLight;

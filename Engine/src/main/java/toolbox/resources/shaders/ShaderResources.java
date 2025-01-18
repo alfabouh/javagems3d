@@ -11,13 +11,13 @@
 
 package toolbox.resources.shaders;
 
-import javagems3d.system.resources.assets.initialization.base.AbstractShadersInitializer;
+import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
-public final class ShaderResources extends AbstractShadersInitializer<TBoxShaderManager> {
+public final class ShaderResources extends ShadersInitializer<TBoxShaderManager> {
     public TBoxShaderManager world_transparent_color;
     public TBoxShaderManager world_isometric_object;
     public TBoxShaderManager world_lines;

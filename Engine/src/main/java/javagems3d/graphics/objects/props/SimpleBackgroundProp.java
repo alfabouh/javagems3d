@@ -14,29 +14,25 @@ package javagems3d.graphics.objects.props;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
+import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class SimpleBackgroundProp extends SceneObject {
     private AnimationData animationData;
-    private final IRenderFabric renderFabric;
-    private RenderAttributes objectRenderingConfiguration;
 
-    public SimpleBackgroundProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull RenderAttributes objectRenderingConfiguration) {
-        super(model);
-        this.renderFabric = renderFabric;
-        this.objectRenderingConfiguration = objectRenderingConfiguration;
+    public SimpleBackgroundProp(Model<Format3D> model, @Nullable RenderAttributes renderAttributes) {
+        super(model, renderAttributes);
         this.animationData = null;
     }
 
-    public SimpleBackgroundProp(IRenderFabric renderFabric, Model<Format3D> model, @NotNull JGemsShaderManager shaderManager) {
-        this(renderFabric, model, new RenderAttributes(shaderManager));
+    public SimpleBackgroundProp(Model<Format3D> model, @Nullable RenderTable renderTable) {
+        this(model, renderTable != null ? new RenderAttributes(renderTable) : null);
     }
 
     public void clearLights() {
@@ -46,11 +42,6 @@ public class SimpleBackgroundProp extends SceneObject {
     }
 
     public void removeLight(Light light) {
-    }
-
-    public SimpleBackgroundProp setModelRenderConstraints(RenderAttributes objectRenderingConfiguration) {
-        this.objectRenderingConfiguration = objectRenderingConfiguration;
-        return this;
     }
 
     public boolean canBeCulled() {
@@ -68,22 +59,8 @@ public class SimpleBackgroundProp extends SceneObject {
         return this;
     }
 
-    public @NotNull RenderAttributes getRenderAttributes() {
-        return this.objectRenderingConfiguration;
-    }
-
     @Override
-    public boolean isVisible() {
-        return true;
-    }
-
-    @Override
-    public IRenderFabric getRenderFabric() {
-        return this.renderFabric;
-    }
-
-    @Override
-    public boolean hasRender() {
+    public boolean canBeRendered() {
         return true;
     }
 

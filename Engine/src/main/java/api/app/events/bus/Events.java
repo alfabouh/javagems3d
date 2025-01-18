@@ -14,7 +14,7 @@ package api.app.events.bus;
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.environment.lights.Light;
-import javagems3d.graphics.objects.entities.AbstractSceneEntity;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.OLD.JGemsOpenGLRendererOLD;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.SceneWorld;
@@ -273,17 +273,17 @@ public abstract class Events {
     }
 
     public static final class ItemSpawnInRenderWorld implements IEvent {
-        public final AbstractSceneEntity abstractSceneEntity;
+        public final SceneEntity abstractSceneEntity;
 
-        public ItemSpawnInRenderWorld(AbstractSceneEntity abstractSceneEntity) {
+        public ItemSpawnInRenderWorld(SceneEntity abstractSceneEntity) {
             this.abstractSceneEntity = abstractSceneEntity;
         }
     }
 
     public static final class ItemDestroyInRenderWorld implements IEvent {
-        public final AbstractSceneEntity abstractSceneEntity;
+        public final SceneEntity abstractSceneEntity;
 
-        public ItemDestroyInRenderWorld(AbstractSceneEntity abstractSceneEntity) {
+        public ItemDestroyInRenderWorld(SceneEntity abstractSceneEntity) {
             this.abstractSceneEntity = abstractSceneEntity;
         }
     }

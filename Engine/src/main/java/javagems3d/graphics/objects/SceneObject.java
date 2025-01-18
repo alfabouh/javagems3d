@@ -19,20 +19,23 @@ import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class SceneObject implements IModeled, IRendered, ICulled, ILightsKeeper {
+    private RenderAttributes renderAttributes;
     private float animationSpeed;
     protected Model<Format3D> model;
     private double lastTick;
 
-    public SceneObject(Model<Format3D> model) {
+    public SceneObject(@Nullable Model<Format3D> model, @Nullable RenderAttributes renderAttributes) {
         this.setModel(model);
+        this.renderAttributes = renderAttributes;
         this.lastTick = JGems3D.glfwTime();
         this.animationSpeed = 1.0f;
     }
 
     public SceneObject() {
-        this(null);
+        this(null, null);
     }
 
     public SceneObject setModel(Model<Format3D> model) {
@@ -66,9 +69,8 @@ public abstract class SceneObject implements IModeled, IRendered, ICulled, ILigh
         }
     }
 
-    @Override
-    public float animationSpeedMultiplier() {
-        return this.animationSpeed;
+    public void setRenderAttributes(RenderAttributes renderAttributes) {
+        this.renderAttributes = renderAttributes;
     }
 
     @Override
@@ -86,11 +88,19 @@ public abstract class SceneObject implements IModeled, IRendered, ICulled, ILigh
         return animationData;
     }
 
+    @Override
+    public RenderAttributes getRenderAttributes() {
+        return this.renderAttributes;
+    }
+
+    @Override
+    public float animationSpeedMultiplier() {
+        return this.animationSpeed;
+    }
+
     public Model<Format3D> getModel() {
         return this.model;
     }
-
-    public abstract @NotNull RenderAttributes getRenderAttributes();
 
     public boolean hasModel() {
         return this.getModel() != null && this.getModel().isValid();

@@ -1,10 +1,16 @@
-package javagems3d.graphics.objects.rendering.fabric.args;
+package javagems3d.system.service.args;
+
+import org.jetbrains.annotations.Nullable;
 
 public final class ArbitraryArguments {
     private final Object[] objects;
 
     private ArbitraryArguments(Object... objects) {
         this.objects = objects;
+    }
+
+    public static ArbitraryArguments empty() {
+        return new ArbitraryArguments();
     }
 
     public static ArbitraryArguments pass(Object... objects) {
@@ -43,11 +49,16 @@ public final class ArbitraryArguments {
         }
 
         @SuppressWarnings("all")
+        @Nullable
         public <T> T getObject(int arrIdx) {
             if (arrIdx < 0 || arrIdx >= ArbitraryArguments.this.getObjects().length) {
                 return null;
             }
-            return (T) ArbitraryArguments.this.getObjects()[arrIdx];
+            try {
+                return (T) ArbitraryArguments.this.getObjects()[arrIdx];
+            } catch (ClassCastException e) {
+                return null;
+            }
         }
     }
 }

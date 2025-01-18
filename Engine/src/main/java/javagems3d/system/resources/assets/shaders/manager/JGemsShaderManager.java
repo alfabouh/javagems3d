@@ -22,7 +22,6 @@ import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
@@ -57,7 +56,7 @@ public final class JGemsShaderManager extends ShaderManager {
     }
 
     public JGemsShaderManager copy() {
-        return new JGemsShaderManager(this.getShaderContainer());
+        return new JGemsShaderManager(this.getShadersContainer());
     }
 
     public JGemsShaderUtils getUtils() {

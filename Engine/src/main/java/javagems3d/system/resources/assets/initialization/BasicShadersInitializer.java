@@ -16,7 +16,7 @@ import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lights.scene.LightsScene;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
-import javagems3d.system.resources.assets.initialization.base.AbstractShadersInitializer;
+import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
@@ -26,7 +26,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
-public final class ShadersInitializer extends AbstractShadersInitializer<JGemsShaderManager> {
+public final class BasicShadersInitializer extends ShadersInitializer<JGemsShaderManager> {
     public ShaderStorageBufferObject Bones;
     public ShaderStorageBufferObject IndirectBufferData;
     public ShaderStorageBufferObject BindlessTextures;

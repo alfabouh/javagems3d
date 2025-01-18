@@ -12,7 +12,7 @@
 package api.app.resources;
 
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.initialization.base.AbstractShadersInitializer;
+import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public interface IAppResourceLoader {
@@ -30,5 +30,5 @@ public interface IAppResourceLoader {
      *
      * @param assetsLoader
      */
-    void addShadersLoader(AbstractShadersInitializer<JGemsShaderManager> shadersLoader);
+    void addShadersLoader(ShadersInitializer<JGemsShaderManager> shadersLoader);
 }

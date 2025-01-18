@@ -16,7 +16,7 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.world.basic.WorldItem;
 
-public class EntityObject extends AbstractSceneEntity {
+public class EntityObject extends SceneEntity {
     private final JGemsBody physEntity;
 
     public EntityObject(SceneWorld sceneWorld, WorldItem worldItem, EntityRenderData renderData) {

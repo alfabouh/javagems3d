@@ -12,9 +12,8 @@ package javagems3d.system.map.loaders.tbox.placers;
 
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.fabric.IRenderFabric;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.graphics.objects.entities.AbstractSceneEntity;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.system.service.path.JGemsPath;
 
 /**
@@ -24,11 +23,9 @@ public final class TDefaultRenderContainer {
     private final RenderAttributes objectRenderingConfiguration;
     private final JGemsPath pathToRenderModel;
     private final JGemsPath pathToRenderShader;
-    private final Class<? extends AbstractSceneEntity> sceneEntityClass;
-    private final IRenderFabric renderFabric;
+    private final Class<? extends SceneEntity> sceneEntityClass;
 
-    public TDefaultRenderContainer(@NotNull IRenderFabric renderFabric, @NotNull Class<? extends AbstractSceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull RenderAttributes objectRenderingConfiguration) {
-        this.renderFabric = renderFabric;
+    public TDefaultRenderContainer(@NotNull Class<? extends SceneEntity> sceneEntityClass, @NotNull JGemsPath pathToRenderShader, @NotNull JGemsPath pathToRenderModel, @NotNull RenderAttributes objectRenderingConfiguration) {
         this.sceneEntityClass = sceneEntityClass;
         this.pathToRenderShader = pathToRenderShader;
         this.pathToRenderModel = pathToRenderModel;
@@ -57,18 +54,9 @@ public final class TDefaultRenderContainer {
     }
 
     /**
-     * A render factory is a special class that is responsible for rendering a specific IRenderObject object
-     *
-     * @see IRendered
-     */
-    public @NotNull IRenderFabric getRenderFabric() {
-        return this.renderFabric;
-    }
-
-    /**
      * This class represents an object in the world of the scene. It is connected to an object from the physical world. It can be null if you don't need this object.
      */
-    public @NotNull Class<? extends AbstractSceneEntity> getSceneEntityClass() {
+    public @NotNull Class<? extends SceneEntity> getSceneEntityClass() {
         return this.sceneEntityClass;
     }
 }
