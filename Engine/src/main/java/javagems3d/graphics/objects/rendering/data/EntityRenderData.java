@@ -31,14 +31,6 @@ public class EntityRenderData {
     private MeshStructure<?> meshStructure;
     private RenderAttributes renderAttributes;
 
-    public EntityRenderData(@NotNull Class<? extends SceneEntity> abstractEntityClass, @Nullable RenderTable renderTable, @Nullable MeshStructure<?> meshStructure) {
-        this(abstractEntityClass, renderTable != null ? new RenderAttributes(renderTable) : null, meshStructure);
-    }
-
-    public EntityRenderData(@NotNull Class<? extends SceneEntity> abstractEntityClass, @Nullable RenderTable shadingTable) {
-        this(abstractEntityClass, shadingTable, null);
-    }
-
     public EntityRenderData(@NotNull Class<? extends SceneEntity> abstractEntityClass, @Nullable RenderAttributes renderAttributes) {
         this(abstractEntityClass, renderAttributes, null);
     }
@@ -87,19 +79,19 @@ public class EntityRenderData {
         return this;
     }
 
-    public @Nullable MeshStructure<?> getMeshDataGroup() {
+    public MeshStructure<?> getMeshDataGroup() {
         return this.meshStructure;
     }
 
-    public @Nullable IEntityModelConstructor<WorldItem> getEntityModelConstructor() {
+    public IEntityModelConstructor<WorldItem> getEntityModelConstructor() {
         return this.entityModelConstructor;
     }
 
-    public @Nullable RenderAttributes getObjectRenderAttributes() {
+    public RenderAttributes getObjectRenderAttributes() {
         return this.renderAttributes;
     }
 
-    public @NotNull Class<? extends SceneEntity> getSceneObjectClass() {
+    public Class<? extends SceneEntity> getSceneObjectClass() {
         return this.abstractEntityClass;
     }
 

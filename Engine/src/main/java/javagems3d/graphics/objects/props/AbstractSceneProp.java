@@ -45,7 +45,7 @@ public abstract class AbstractSceneProp extends SceneObject implements IWorldObj
         this.isVisible = true;
     }
 
-    public AbstractSceneProp(Model<Format3D> model, @Nullable RenderTable renderTable) {
+    public AbstractSceneProp(Model<Format3D> model, @NotNull RenderTable renderTable) {
         this(model, new RenderAttributes(renderTable));
     }
 

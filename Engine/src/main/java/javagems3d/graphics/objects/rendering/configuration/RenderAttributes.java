@@ -36,6 +36,14 @@ public class RenderAttributes implements IRenderConfiguration {
         this.disableFaceCulling = false;
     }
 
+    public static @NotNull RenderAttributes get() {
+        return RenderAttributes.get(new RenderTable());
+    }
+
+    public static @NotNull RenderAttributes get(@Nullable RenderTable renderTable) {
+        return renderTable == null ? null : new RenderAttributes(renderTable);
+    }
+
     public @NotNull RenderTable getRenderingTable() {
         return this.renderTable;
     }
