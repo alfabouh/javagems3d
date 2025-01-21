@@ -12,7 +12,6 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
@@ -21,9 +20,6 @@ import javagems3d.JGems3D;
 
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
-import javagems3d.graphics.objects.entities.EntityObject;
-import javagems3d.graphics.objects.entities.PlayerSPObject;
-import javagems3d.graphics.objects.entities.WorldEntity;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
@@ -50,9 +46,9 @@ public class RenderDataInitializer implements IAssetsInitializer {
         //this.zippo_world.getObjectRenderSettings().setOverlappingMaterial(zwMat);
 
         this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
-        this.entityCube = new EntityRenderData(WorldEntity.class, RenderAttributes.get()).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
-        this.player = new EntityRenderData(PlayerSPObject.class, null);
-        this.ground = new EntityRenderData(EntityObject.class, RenderAttributes.get().setAlphaDiscardValue(0.25f));
+        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get()).setMeshDataGroup(JGemsResourceManager.globalModelAssets.cube); //TODO
+        this.player = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
+        this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get().setAlphaDiscardValue(0.25f));
     }
 
     @Override

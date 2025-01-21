@@ -11,6 +11,7 @@
 
 package api.app.events.bus;
 
+import javagems3d.graphics.objects.entities.SceneEntity;
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.environment.lights.Light;

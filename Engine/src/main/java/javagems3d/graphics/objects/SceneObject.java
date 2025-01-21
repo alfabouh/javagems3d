@@ -14,6 +14,7 @@ package javagems3d.graphics.objects;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
@@ -21,21 +22,19 @@ import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAtt
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class SceneObject implements IModeled, IRendered, ICulled, ILightsKeeper {
+public abstract class SceneObject implements IModeled, IRendered, ILightsKeeper {
+    private final SceneWorld sceneWorld;
     private RenderAttributes renderAttributes;
-    private float animationSpeed;
     protected Model<Format3D> model;
+    private float animationSpeed;
     private double lastTick;
 
-    public SceneObject(@Nullable Model<Format3D> model, @Nullable RenderAttributes renderAttributes) {
+    public SceneObject(SceneWorld sceneWorld, Model<Format3D> model, RenderAttributes renderAttributes) {
         this.setModel(model);
+        this.sceneWorld = sceneWorld;
         this.renderAttributes = renderAttributes;
         this.lastTick = JGems3D.glfwTime();
         this.animationSpeed = 1.0f;
-    }
-
-    public SceneObject() {
-        this(null, null);
     }
 
     public SceneObject setModel(Model<Format3D> model) {
@@ -88,6 +87,10 @@ public abstract class SceneObject implements IModeled, IRendered, ICulled, ILigh
         return animationData;
     }
 
+    public SceneWorld getSceneWorld() {
+        return this.sceneWorld;
+    }
+
     @Override
     public RenderAttributes getRenderAttributes() {
         return this.renderAttributes;
@@ -100,9 +103,5 @@ public abstract class SceneObject implements IModeled, IRendered, ICulled, ILigh
 
     public Model<Format3D> getModel() {
         return this.model;
-    }
-
-    public boolean hasModel() {
-        return this.getModel() != null && this.getModel().isValid();
     }
 }

@@ -5,7 +5,6 @@ import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -15,7 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 public class DefaultIndirectRenderFabric extends IndirectRenderFabric {
-    public DefaultIndirectRenderFabric(Stage stage, IndirectObjectsRenderer.RenderingFunction renderingFunction) {
+    public DefaultIndirectRenderFabric(Stage stage, IndirectObjectsRenderer.IRenderingFunction renderingFunction) {
         super(stage, renderingFunction);
     }
 

@@ -22,27 +22,14 @@
 
 package javagems3d.system.map.loaders.tbox.placers;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.physics.colliders.MeshCollider;
-import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
-import javagems3d.graphics.objects.rendering.data.EntityRenderData;
-import javagems3d.graphics.objects.props.SceneProp;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
-import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
 import javagems3d.physics.world.triggers.zones.base.AbstractTriggerZone;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.resources.GameResources;
 import api.app.main.tbox.containers.TUserData;
-import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributesContainer;
 
 public abstract class TBoxMapDefaultObjectsPlacer {

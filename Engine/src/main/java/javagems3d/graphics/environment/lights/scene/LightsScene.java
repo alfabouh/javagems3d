@@ -66,7 +66,7 @@ public class LightsScene implements ILightsScene {
     }
 
     public void removeLight(Light light) {
-        light.stop();
+        light.off();
     }
 
     public float calcAmbientLight() {

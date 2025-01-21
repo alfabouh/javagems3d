@@ -24,13 +24,13 @@ import java.nio.FloatBuffer;
 import java.util.function.Consumer;
 
 public abstract class IndirectRenderFabric implements IRenderFabric {
-    public static final IndirectObjectsRenderer.RenderingFunction defaultFuncScene = new DefaultIndirectFunctionForScene();
-    public static final IndirectObjectsRenderer.RenderingFunction defaultFuncShadow = new DefaultIndirectFunctionForShadow();
+    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SCENE = new DefaultIndirectFunctionForSceneI();
+    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SHADOW = new DefaultIndirectFunctionForShadowI();
 
-    private final IndirectObjectsRenderer.RenderingFunction renderingFunction;
+    private final IndirectObjectsRenderer.IRenderingFunction renderingFunction;
     private final Stage stage;
 
-    public IndirectRenderFabric(@NotNull Stage stage, @NotNull IndirectObjectsRenderer.RenderingFunction renderingFunction) {
+    public IndirectRenderFabric(@NotNull Stage stage, @NotNull IndirectObjectsRenderer.IRenderingFunction renderingFunction) {
         this.renderingFunction = renderingFunction;
         if (!stage.getType().equals(Type.INDIRECT)) {
             JGemsHelper.getLogger().warn("RenderFabric type doesn't belong to INDIRECT");
@@ -45,11 +45,11 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
         return this.stage;
     }
 
-    public @NotNull IndirectObjectsRenderer.RenderingFunction getRenderingFunction() {
+    public @NotNull IndirectObjectsRenderer.IRenderingFunction getRenderingFunction() {
         return this.renderingFunction;
     }
 
-    public static class DefaultIndirectFunctionForScene implements IndirectObjectsRenderer.RenderingFunction {
+    public static class DefaultIndirectFunctionForSceneI implements IndirectObjectsRenderer.IRenderingFunction {
         @Override
         public void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData) {
             shaderManager.beginShading();
@@ -74,7 +74,7 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
         }
     }
 
-    public static class DefaultIndirectFunctionForShadow implements IndirectObjectsRenderer.RenderingFunction {
+    public static class DefaultIndirectFunctionForShadowI implements IndirectObjectsRenderer.IRenderingFunction {
         @Override
         public void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData) {
             Consumer<JGemsShaderManager> functionToHandleUniforms = metaData.getterFunc().getObject(0);

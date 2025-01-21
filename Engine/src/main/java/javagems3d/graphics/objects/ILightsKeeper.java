@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.objects;
 
+import javagems3d.JGemsHelper;
 import org.joml.Vector3f;
 import javagems3d.graphics.environment.lights.Light;
 

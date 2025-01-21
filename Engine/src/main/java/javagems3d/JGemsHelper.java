@@ -14,9 +14,9 @@ package javagems3d;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model;
@@ -46,7 +46,6 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.objects.entities.SceneEntity;
-import javagems3d.graphics.objects.props.SceneProp;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.world.SceneWorld;
@@ -453,7 +452,7 @@ public abstract class JGemsHelper {
         }
 
         public static void addLight(Light light) {
-            light.start();
+            light.on();
             JGemsHelper.ENVIRONMENT.getWorldEnvironment().getLightManager().addLight(light);
         }
     }

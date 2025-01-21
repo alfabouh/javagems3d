@@ -1,13 +1,11 @@
 package javagems3d.graphics.rendering.scene.renderer.indirect;
 
-import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
-import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.programs.indirect.IndirectBufferCommandsBuilder;
 import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
@@ -89,7 +87,7 @@ public class IndirectObjectsRenderer {
         if (arbitraryArguments == null) {
             arbitraryArguments = ArbitraryArguments.empty();
         }
-        RenderingFunction renderingFunction = this.getOverlappingOperator() != null ? this.getOverlappingOperator().getRenderingFunction() : operator.getRenderingFunction();
+        IRenderingFunction renderingFunction = this.getOverlappingOperator() != null ? this.getOverlappingOperator().getRenderingFunction() : operator.getRenderingFunction();
         renderingFunction.func(operator.getIndirectShader(), indirectBufferCommandsBuilder, renderBuffer, arbitraryArguments);
     }
 
@@ -166,16 +164,16 @@ public class IndirectObjectsRenderer {
         return this.openGLRenderer;
     }
 
-    public interface RenderingFunction {
+    public interface IRenderingFunction {
         void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData);
         int uniqueFunctionID();
     }
 
     public static class Operator {
-        private final RenderingFunction renderingFunction;
+        private final IRenderingFunction renderingFunction;
         private final JGemsShaderManager indirectShader;
 
-        public Operator(@NotNull RenderingFunction overRenderingFunction, @NotNull JGemsShaderManager indirectShader) {
+        public Operator(@NotNull IndirectObjectsRenderer.IRenderingFunction overRenderingFunction, @NotNull JGemsShaderManager indirectShader) {
             this.renderingFunction = overRenderingFunction;
             this.indirectShader = indirectShader;
         }
@@ -197,7 +195,7 @@ public class IndirectObjectsRenderer {
             return Objects.hash(this.renderingFunction, this.indirectShader);
         }
 
-        public RenderingFunction getRenderingFunction() {
+        public IRenderingFunction getRenderingFunction() {
             return this.renderingFunction;
         }
 

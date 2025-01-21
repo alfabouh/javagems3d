@@ -11,8 +11,8 @@
 
 package javagems3d.graphics.environment.lights;
 
-import org.joml.Vector3f;
 import javagems3d.graphics.objects.entities.SceneEntity;
+import org.joml.Vector3f;
 import javagems3d.physics.world.basic.IWorldTicked;
 
 public abstract class Light implements IWorldTicked {
@@ -57,11 +57,11 @@ public abstract class Light implements IWorldTicked {
         this(abstractSceneEntity.getRenderPosition(), lightColor, offset);
     }
 
-    public void start() {
+    public void on() {
         this.isActive = true;
     }
 
-    public void stop() {
+    public void off() {
         this.isActive = false;
     }
 

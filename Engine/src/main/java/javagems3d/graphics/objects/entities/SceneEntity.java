@@ -1,26 +1,11 @@
-/*
- * *
- *  * @author alfabouh
- *  * @since 2024
- *  * @link https://github.com/alfabouh/JavaGems3D
- *  *
- *  * This software is provided 'as-is', without any express or implied warranty.
- *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
- */
-
 package javagems3d.graphics.objects.entities;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.system.resources.assets.models.animation.AnimationData;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
+import api.app.events.bus.Events;
 import api.bridge.events.APIEventsLauncher;
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.lights.Light;
-import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.IWorld;
@@ -28,57 +13,55 @@ import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import api.app.events.bus.Events;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public abstract class SceneEntity extends SceneObject implements IWorldObject, IWorldTicked {
-    private AnimationData animationData;
+    private final IEntityModelConstructor<WorldItem> entityModelConstructor;
     private final List<Light> lightList;
-    private final SceneWorld sceneWorld;
     private final WorldItem worldItem;
-    private final EntityRenderData renderData;
-    protected Vector3f prevRenderPosition;
-    protected Vector3f prevRenderRotation;
-    protected Vector3f renderPosition;
-    protected Vector3f renderRotation;
-    private InterpolationPoints currentPositionInterpolation;
-    private InterpolationPoints currentRotationInterpolation;
+    private AnimationData animationData;
     private boolean isVisible;
     private boolean isDead;
+    protected Vector3f renderPosition;
+    protected Vector3f renderRotation;
+    protected InterpolationPoints currentPositionInterpolation;
+    protected InterpolationPoints currentRotationInterpolation;
 
     public SceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull EntityRenderData renderData) {
-        this.setRenderAttributes(renderData.getObjectRenderAttributes());
+        super(sceneWorld, new Model<>(new Format3D(), renderData.getMeshDataGroup()), renderData.getObjectRenderAttributes());
+        this.entityModelConstructor = renderData.getEntityModelConstructor();
         this.lightList = new ArrayList<>();
-        this.animationData = null;
         this.worldItem = worldItem;
+        this.animationData = null;
         this.renderPosition = new Vector3f(worldItem.getPosition());
         this.renderRotation = new Vector3f(worldItem.getRotation());
-        this.prevRenderPosition = new Vector3f(this.renderPosition);
-        this.prevRenderRotation = new Vector3f(this.renderRotation);
-        this.sceneWorld = sceneWorld;
-        this.renderData = renderData;
+        this.currentPositionInterpolation = new InterpolationPoints(this.getFixedPosition(), this.getFixedPosition());
+        this.currentRotationInterpolation = new InterpolationPoints(this.getFixedRotation(), this.getFixedRotation());
         this.isVisible = true;
-        this.currentPositionInterpolation = new InterpolationPoints(this.getPrevRenderPosition(), this.getFixedPosition());
-        this.currentRotationInterpolation = new InterpolationPoints(this.getPrevRenderRotation(), this.getFixedRotation());
+        this.isDead = false;
     }
 
-    protected void initModel() {
-        this.setModel(new Model<>(new Format3D(), this.getRenderData().getMeshDataGroup()));
+    @Override
+    public void setAnimationData(AnimationData animationData) {
+        this.animationData = animationData;
     }
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PreRender");
+        JGemsHelper.getLogger().log("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
-            if (this.getRenderData().getEntityModelConstructor() != null) {
-                this.setModel(new Model<>(new Format3D(), this.getRenderData().getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
-            } else {
-                this.initModel();
+            if (!this.hasModel() && this.getEntityModelConstructor() != null) {
+                this.setModel(new Model<>(new Format3D(), this.getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
             }
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
         }
@@ -88,48 +71,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     @Override
     public void onDestroy(IWorld iWorld) {
         APIEventsLauncher.pushEvent(new Events.ItemDestroyInRenderWorld(this));
-        JGemsHelper.getLogger().log("[ " + this.getWorldItem().toString() + " ]" + " - PostRender");
+        JGemsHelper.getLogger().log("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));
         }
         this.clearLights();
-    }
-
-    public void clearLights() {
-        Iterator<Light> lightIterator = this.getLightsList().iterator();
-        while (lightIterator.hasNext()) {
-            Light l = lightIterator.next();
-            l.stop();
-            this.onRemoveLight(l);
-            lightIterator.remove();
-        }
-    }
-
-    public void addLight(Light light) {
-        this.getLightsList().add(light);
-        light.start();
-        this.onAddLight(light);
-    }
-
-    public void removeLight(Light light) {
-        if (!this.getLightsList().contains(light)) {
-            throw new JGemsRuntimeException("Couldn't remove light. Entity doesn't keep it. " + this);
-        }
-        this.getLightsList().remove(light);
-        light.stop();
-        this.onRemoveLight(light);
-    }
-
-    protected void onAddLight(Light light) {
-        JGemsHelper.getLogger().log("Add light to: " + this.getWorldItem().getItemName());
-    }
-
-    protected void onRemoveLight(Light light) {
-        JGemsHelper.getLogger().log("Removed light from: " + this.getWorldItem().getItemName());
-    }
-
-    public void setDead() {
-        this.isDead = true;
     }
 
     @Override
@@ -139,15 +85,23 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         }
     }
 
-    @Override
-    public boolean canBeCulled() {
-        return true;
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
+    }
+
+    public void setDead() {
+        this.isDead = true;
+    }
+
+    public void refreshInterpolatingState() {
+        this.currentPositionInterpolation = new InterpolationPoints(this.currentPositionInterpolation.getEndPoint(), this.getWorldItem().getPosition());
+        this.currentRotationInterpolation = new InterpolationPoints(this.currentRotationInterpolation.getEndPoint(), this.getWorldItem().getRotation());
     }
 
     public void updateModelTranslation() {
         if (this.hasModel()) {
             Model<Format3D> model = this.getModel();
-            model.getFormat().setScaling(new Vector3f(this.getScale()));
+            model.getFormat().setScaling(new Vector3f(this.getScaling()));
             model.getFormat().setPosition(this.getRenderPosition());
             model.getFormat().setRotation(this.getRenderRotation());
         }
@@ -176,37 +130,51 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     private Quaternionf getQuaternionInterpolated(float physicsSyncTicks) {
         Quaternionf start = new Quaternionf();
         Quaternionf end = new Quaternionf();
-
         start.rotateXYZ(this.getCurrentRotState().getStartPoint().x, this.getCurrentRotState().getStartPoint().y, this.getCurrentRotState().getStartPoint().z);
         end.rotateXYZ(this.getCurrentRotState().getEndPoint().x, this.getCurrentRotState().getEndPoint().y, this.getCurrentRotState().getEndPoint().z);
-
         Quaternionf res = new Quaternionf();
         end.slerp(start, physicsSyncTicks, res);
         return res;
     }
 
-    public void refreshInterpolatingState() {
-        this.currentPositionInterpolation = new InterpolationPoints(this.getWorldItem().getPosition(), this.currentPositionInterpolation.getStartPoint());
-        this.currentRotationInterpolation = new InterpolationPoints(this.getWorldItem().getRotation(), this.currentRotationInterpolation.getStartPoint());
+    public void clearLights() {
+        Iterator<Light> lightIterator = this.getLightsList().iterator();
+        while (lightIterator.hasNext()) {
+            Light l = lightIterator.next();
+            l.off();
+            this.onRemoveLight(l);
+            lightIterator.remove();
+        }
     }
 
-    public void setPrevPos(Vector3f vector3f) {
-        this.prevRenderPosition.set(new Vector3f(vector3f));
+    public void addLight(Light light) {
+        this.getLightsList().add(light);
+        light.on();
+        this.onAddLight(light);
     }
 
-    public void setPrevRot(Vector3f vector3f) {
-        this.prevRenderRotation.set(new Vector3f(vector3f));
+    public void removeLight(Light light) {
+        if (!this.getLightsList().contains(light)) {
+            throw new JGemsRuntimeException("Couldn't remove light. Entity doesn't keep it. " + this);
+        }
+        this.getLightsList().remove(light);
+        light.off();
+        this.onRemoveLight(light);
     }
 
-    public boolean isEntityUnderUserControl() {
-        return this.getWorldItem() instanceof IControllable && ((IControllable) this.getWorldItem()).isValidController();
+    protected void onAddLight(Light light) {
+        JGemsHelper.getLogger().log("Attached light to: " + this);
     }
 
-    public List<Light> getLightsList() {
-        return this.lightList;
+    protected void onRemoveLight(Light light) {
+        JGemsHelper.getLogger().log("Removed light from: " + this);
     }
 
-    public Vector3f getScale() {
+    protected IEntityModelConstructor<WorldItem> getEntityModelConstructor() {
+        return this.entityModelConstructor;
+    }
+
+    public Vector3f getScaling() {
         return this.getWorldItem().getScaling();
     }
 
@@ -226,14 +194,6 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         return this.getWorldItem().getRotation();
     }
 
-    public Vector3f getPrevRenderRotation() {
-        return new Vector3f(this.prevRenderRotation);
-    }
-
-    public Vector3f getPrevRenderPosition() {
-        return new Vector3f(this.prevRenderPosition);
-    }
-
     public Vector3f getRenderPosition() {
         return new Vector3f(this.renderPosition);
     }
@@ -242,29 +202,17 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         return new Vector3f(this.renderRotation);
     }
 
+    public boolean isEntityUnderUserControl() {
+        return this.getWorldItem() instanceof IControllable && ((IControllable) this.getWorldItem()).isValidController();
+    }
+
     @Override
     public boolean canBeRendered() {
         return super.canBeRendered() && this.isVisible;
     }
 
-    public void setVisible(boolean visible) {
-        this.isVisible = visible;
-    }
-
-    public EntityRenderData getRenderData() {
-        return this.renderData;
-    }
-
     public WorldItem getWorldItem() {
         return this.worldItem;
-    }
-
-    public SceneWorld getSceneWorld() {
-        return this.sceneWorld;
-    }
-
-    public boolean isDead() {
-        return this.isDead;
     }
 
     @Override
@@ -273,18 +221,23 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     }
 
     @Override
-    public void setAnimationData(AnimationData animationData) {
-        this.animationData = animationData;
+    public List<Light> getLightsList() {
+        return this.lightList;
+    }
+
+    @Override
+    public boolean isDead() {
+        return this.isDead;
     }
 
     @Override
     public String toString() {
-        return "SceneObj " + this.getWorldItem().toString();
+        return this.getWorldItem().toString() + " - SceneObject";
     }
 
     public static final class InterpolationPoints {
-        private final Vector3f startPoint;
         private final Vector3f endPoint;
+        private final Vector3f startPoint;
 
         public InterpolationPoints(Vector3f startPoint, Vector3f endPoint) {
             this.startPoint = startPoint;
@@ -292,16 +245,16 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         }
 
         public Vector3f interpolatedPoint(float physicsSyncTicks) {
-            Vector3f newP = new Vector3f(this.getEndPoint());
-            return newP.lerp(this.getStartPoint(), physicsSyncTicks);
-        }
-
-        public Vector3f getStartPoint() {
-            return this.startPoint;
+            Vector3f newP = new Vector3f(this.getStartPoint());
+            return newP.lerp(this.getEndPoint(), physicsSyncTicks);
         }
 
         public Vector3f getEndPoint() {
             return this.endPoint;
+        }
+
+        public Vector3f getStartPoint() {
+            return this.startPoint;
         }
     }
 }

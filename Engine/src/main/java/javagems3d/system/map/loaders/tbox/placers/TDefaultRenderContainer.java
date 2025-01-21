@@ -10,7 +10,6 @@
 
 package javagems3d.system.map.loaders.tbox.placers;
 
-import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.objects.entities.SceneEntity;

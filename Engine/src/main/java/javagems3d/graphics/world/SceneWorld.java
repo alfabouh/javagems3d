@@ -18,6 +18,7 @@ import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lights.Light;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.particles.ParticlesEmitter;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -25,8 +26,7 @@ import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.ILightsKeeper;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.entities.SceneEntity;
-import javagems3d.graphics.objects.entities.LiquidObject;
+import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -54,7 +54,7 @@ public final class SceneWorld implements IWorld {
     private final Map<Integer, SceneEntity> objectMap;
 
     private final Set<SceneObject> toRenderSet;
-    private final Set<LiquidObject> liquids;
+    private final Set<SceneWorldLiquid> liquids;
 
     private int ticks;
 
@@ -134,11 +134,11 @@ public final class SceneWorld implements IWorld {
             }
         }
 
-        Iterator<LiquidObject> iterator2 = this.getLiquids().iterator();
+        Iterator<SceneWorldLiquid> iterator2 = this.getLiquids().iterator();
         while (iterator2.hasNext()) {
-            LiquidObject liquidObject = iterator2.next();
-            if (liquidObject.getLiquid().isDead()) {
-                liquidObject.getModel().clear();
+            SceneWorldLiquid sceneWorldLiquid = iterator2.next();
+            if (sceneWorldLiquid.getLiquid().isDead()) {
+                sceneWorldLiquid.getModel().clear();
                 iterator2.remove();
             }
         }
@@ -156,10 +156,10 @@ public final class SceneWorld implements IWorld {
             iterator.remove();
         }
 
-        Iterator<LiquidObject> iterator1 = this.getLiquids().iterator();
+        Iterator<SceneWorldLiquid> iterator1 = this.getLiquids().iterator();
         while (iterator1.hasNext()) {
-            LiquidObject liquidObject = iterator1.next();
-            liquidObject.getModel().clear();
+            SceneWorldLiquid sceneWorldLiquid = iterator1.next();
+            sceneWorldLiquid.getModel().clear();
             iterator1.remove();
         }
         this.getObjectMap().clear();
@@ -277,10 +277,10 @@ public final class SceneWorld implements IWorld {
     }
 
     public void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {
-        this.getLiquids().add(new LiquidObject(liquid, liquidRenderData));
+        this.getLiquids().add(new SceneWorldLiquid(liquid, liquidRenderData));
     }
 
-    public void removeLiquid(LiquidObject liquid) {
+    public void removeLiquid(SceneWorldLiquid liquid) {
         liquid.getModel().clear();
         this.getLiquids().remove(liquid);
     }
@@ -315,7 +315,7 @@ public final class SceneWorld implements IWorld {
         return this.objectMap;
     }
 
-    public Set<LiquidObject> getLiquids() {
+    public Set<SceneWorldLiquid> getLiquids() {
         return this.liquids;
     }
 

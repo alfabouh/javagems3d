@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.graphics.objects.entities;
+package javagems3d.graphics.objects.entities.world;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -20,13 +20,13 @@ import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 
-public final class LiquidObject implements ICulled {
+public final class SceneWorldLiquid {
     private final LiquidRenderData liquidRenderData;
     private final Liquid liquid;
     private final Model<Format3D> model;
     private final Vector2f textureScaling;
 
-    public LiquidObject(Liquid iLiquid, LiquidRenderData liquidRenderData) {
+    public SceneWorldLiquid(Liquid iLiquid, LiquidRenderData liquidRenderData) {
         this.liquidRenderData = liquidRenderData;
         this.liquid = iLiquid;
         this.textureScaling = new Vector2f(1.0f);
@@ -65,10 +65,5 @@ public final class LiquidObject implements ICulled {
 
     public Liquid getLiquid() {
         return this.liquid;
-    }
-
-    @Override
-    public boolean canBeCulled() {
-        return true;
     }
 }

@@ -65,12 +65,12 @@ public class PointLight extends Light {
         return this;
     }
 
-    public void start() {
-        super.start();
+    public void on() {
+        super.on();
     }
 
-    public void stop() {
-        super.stop();
+    public void off() {
+        super.off();
         if (this.getAttachedShadowSceneId() >= 0) {
             JGemsHelper.ENVIRONMENT.getWorldEnvironment().getShadowScene().unBindPointLightFromShadowScene(this);
         }

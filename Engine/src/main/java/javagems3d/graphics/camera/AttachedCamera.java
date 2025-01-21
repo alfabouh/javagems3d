@@ -12,10 +12,10 @@
 package javagems3d.graphics.camera;
 
 import javagems3d.graphics.camera.base.CameraBase;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 
 public class AttachedCamera extends CameraBase {
