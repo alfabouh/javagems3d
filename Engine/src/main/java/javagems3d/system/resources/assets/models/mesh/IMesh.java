@@ -11,15 +11,9 @@ public interface IMesh {
     @NotNull List<Integer> getVertexIndexes();
     @NotNull List<Float> getVertexPositions();
 
-    default void putIndexesArr(int[] a) {
+    default void putVertexIndexes(int[] a) {
         for (int i : a) {
             this.getVertexIndexes().add(i);
-        }
-    }
-
-    default void putPositionsArr(float... a) {
-        for (float i : a) {
-            this.getVertexPositions().add(i);
         }
     }
 

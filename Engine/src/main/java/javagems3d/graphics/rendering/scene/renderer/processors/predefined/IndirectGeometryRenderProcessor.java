@@ -8,7 +8,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
 
 public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private final IndirectObjectsRenderer indirectMeshObjects;
@@ -31,7 +31,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
     }
 
     @Override
-    public void onRender(FrameTicking frameTicking) {
+    public void runProcessorRendering(FrameTicking frameTicking) {
         this.getIndirectMeshObjects().processAndRender(Pipeline.SCENE, null);
     }
 

@@ -5,6 +5,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.processors.predefined.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.predefined.IndirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.predefined.DeferredSceneColorRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.predefined.SSAORenderProcessor;
@@ -30,6 +31,7 @@ public interface IDeferredRenderNode extends IRenderNode {
         private FBOTexture2DProgram gBuffer;
         private FBOTexture2DProgram ssaoBuffer;
 
+        private DirectGeometryRenderProcessor directGeometryRenderProcessor;
         private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
         private SSAORenderProcessor ssaoRenderProcessor;
         private DeferredSceneColorRenderProcessor rawColorRenderProcessor;
@@ -62,18 +64,22 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.getOutGBuffer().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
-            this.getIndirectGeometryRenderProcessor().onRender(frameTicking);
+            this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+
+            this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
+            this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
             this.getOutGBuffer().unBindFBO();
 
             this.getOutSSAOBuffer().bindFBO();
-            this.getSSAORenderProcessor().onRender(frameTicking);
+            this.getSSAORenderProcessor().runProcessorRendering(frameTicking);
             this.getOutSSAOBuffer().unBindFBO();
 
-            this.getRawColorRenderProcessor().setSsaoValid(this.getSSAORenderProcessor().isValid());
-            this.getRawColorRenderProcessor().onRender(frameTicking);
+            this.getRawColorRenderProcessor().setSsaoValidate(this.getSSAORenderProcessor().isValid());
+            this.getRawColorRenderProcessor().runProcessorRendering(frameTicking);
         }
 
         public void initProcessors() {
+            this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(this.getOpenGLRenderer());
             this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(this.getOpenGLRenderer());
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), JGemsResourceManager.globalShaderAssets.world_ssao);
             this.rawColorRenderProcessor = new DeferredSceneColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), JGemsResourceManager.globalShaderAssets.world_deferred);
@@ -94,8 +100,8 @@ public interface IDeferredRenderNode extends IRenderNode {
                 add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
             }};
 
-            this.getOutGBuffer().createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
-            this.ssaoBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.ssaoBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
         }
 
         @Override
@@ -104,6 +110,7 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.initProcessors();
 
             this.getSSAORenderProcessor().createResources();
+            this.getDirectGeometryRenderProcessor().createResources();
             this.getIndirectGeometryRenderProcessor().createResources();
             this.getRawColorRenderProcessor().createResources();
         }
@@ -111,6 +118,7 @@ public interface IDeferredRenderNode extends IRenderNode {
         @Override
         public void destroyResources() {
             this.getSSAORenderProcessor().destroyResources();
+            this.getDirectGeometryRenderProcessor().destroyResources();
             this.getIndirectGeometryRenderProcessor().destroyResources();
             this.getRawColorRenderProcessor().destroyResources();
 
@@ -148,6 +156,10 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         public IndirectGeometryRenderProcessor getIndirectGeometryRenderProcessor() {
             return this.indirectGeometryRenderProcessor;
+        }
+
+        public DirectGeometryRenderProcessor getDirectGeometryRenderProcessor() {
+            return this.directGeometryRenderProcessor;
         }
     }
 }

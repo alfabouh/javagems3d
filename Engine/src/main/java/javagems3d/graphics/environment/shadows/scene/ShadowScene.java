@@ -17,6 +17,7 @@ import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
@@ -51,6 +52,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ShadowScene implements IShadowScene {
+    private OpenGLRenderer openGLRenderer;
     private IndirectObjectsRenderer indirectObjectsRenderer;
     private final Environment environment;
     private List<PointLightShadow> pointLightShadows;
@@ -67,8 +69,9 @@ public class ShadowScene implements IShadowScene {
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 
-    public void createResources() {
-        this.indirectObjectsRenderer = new IndirectObjectsRenderer(JGemsHelper.getScreen().getScene().getSceneRenderer(), null, false, true);
+    public void createResources(OpenGLRenderer openGLRenderer) {
+        this.openGLRenderer = openGLRenderer;
+        this.indirectObjectsRenderer = new IndirectObjectsRenderer(openGLRenderer, null, false, true);
         this.getPointLightShadows().forEach(PointLightShadow::createResources);
         this.getSunLightShadow().createResources();
     }
@@ -210,48 +213,17 @@ public class ShadowScene implements IShadowScene {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
             functionToHandleUniforms.accept(shaderManager);
-            for (SceneObject modeledSceneObject : filteredObjectsSet) {
+            for (SceneObject modeledSceneObject : entry.getValue()) {
                 Model<Format3D> model = modeledSceneObject.getModel();
                 if (model == null || model.getMeshStructure() == null) {
                     continue;
                 }
-                shaderManager.getUtils().performModel3DMatrix(model);
-                this.renderModelForShadow(modeledSceneObject, shaderManager, model);
+                DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderingTable().getRenderFabric(pipeline);
+                directRenderFabric.onPreRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
+                directRenderFabric.onRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
+                directRenderFabric.onPostRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
             }
             shaderManager.endShading();
-        }
-    }
-
-    protected void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, Model<?> model) {
-        shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
-        shaderManager.getUtils().performAnimationsInfo(animated);
-        float alphaValue = 1.0f;
-        try {
-            for (MeshGroup.MeshGroupNode meshNode : model.<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
-                if (meshNode.getMaterial().getDiffuse() instanceof ImageBasedTexture) {
-                    shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    ((ImageBasedTexture) meshNode.getMaterial().getDiffuse()).bindTexture();
-                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
-                } else {
-                    if (meshNode.getMaterial().getDiffuse() instanceof RGBAColor) {
-                        RGBAColor RGBAColor = (RGBAColor) meshNode.getMaterial().getDiffuse();
-                        alphaValue *= RGBAColor.getColor().w;
-                    }
-                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
-                }
-                if (alphaValue * meshNode.getMaterial().getFullOpacity() <= JGemsRenderingGlobalConstants.MAX_ALPHA_TO_IGNORE_SHADOW) {
-                    continue;
-                }
-                GL46.glBindVertexArray(meshNode.getMesh().getVao());
-                meshNode.getMesh().enableAllMeshAttributes();
-                GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-                meshNode.getMesh().disableAllMeshAttributes();
-                GL46.glBindVertexArray(0);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            throw new JGemsRuntimeException("There was an error, while rendering model for shadows. ");
         }
     }
 

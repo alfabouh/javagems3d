@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
 public interface IRenderProcessor extends IResourceInit {
-    void onRender(FrameTicking frameTicking);
+    void runProcessorRendering(FrameTicking frameTicking);
 
     default Vector2i getRenderingResolution() {
         return this.getOpenGLRenderer().getRenderingResolution();

@@ -113,8 +113,13 @@ public class RenderTable {
         return this.getRenderingData(pipeline).getShaderManager();
     }
 
-    public @Nullable IRenderFabric getRenderFabric(Pipeline pipeline) {
-        return this.getRenderingData(pipeline).getRenderFabric();
+    @SuppressWarnings("all")
+    public <T extends IRenderFabric> T getRenderFabric(Pipeline pipeline) {
+        try {
+            return (T) this.getRenderingData(pipeline).getRenderFabric();
+        } catch (ClassCastException e) {
+            throw new JGemsRuntimeException(e);
+        }
     }
 
     public @NotNull  Data getRenderingData(Pipeline pipeline) {

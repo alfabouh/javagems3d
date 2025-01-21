@@ -11,10 +11,10 @@ public interface IRenderNode extends IWindow.ResizeEvent, IResourceInit {
     void onRender(FrameTicking frameTicking);
     @NotNull OpenGLRenderer getOpenGLRenderer();
 
-    default Vector2i getWindowSize() {
-        return this.getOpenGLRenderer().getWindowSize();
+    default Vector2i getRenderingResolution() {
+        return this.getRenderingResolution();
     }
-
+    
     @Override
     default void onWindowResize(IWindow window) {
         this.recreateResources();

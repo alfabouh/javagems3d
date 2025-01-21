@@ -235,7 +235,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     public void createResources() {
-        this.getSceneWorld().getEnvironment().createEnvironment(this.getSceneWorld());
+        this.getSceneWorld().getEnvironment().createEnvironment(this, this.getSceneWorld());
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
     }
 

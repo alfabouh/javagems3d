@@ -20,7 +20,7 @@ public interface IGluingRenderNode extends IRenderNode {
 
         @Override
         public void onRender(FrameTicking frameTicking) {
-            this.getSceneGluingRenderProcessor().onRender(frameTicking);
+            this.getSceneGluingRenderProcessor().runProcessorRendering(frameTicking);
         }
 
         @Override

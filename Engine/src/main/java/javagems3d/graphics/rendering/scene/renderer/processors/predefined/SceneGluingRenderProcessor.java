@@ -25,7 +25,7 @@ public class SceneGluingRenderProcessor extends IRenderProcessor.Template {
         T2DAttachmentContainer glued1 = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
         }};
-        this.glued.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), glued1, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.glued.createFrameBuffer2DTexture(this.getRenderingResolution(), glued1, false, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
@@ -36,10 +36,10 @@ public class SceneGluingRenderProcessor extends IRenderProcessor.Template {
     }
 
     @Override
-    public void onRender(FrameTicking frameTicking) {
+    public void runProcessorRendering(FrameTicking frameTicking) {
         this.getGluedScene().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-        this.getDeferredRenderNode().getOutColorBuffer().copyFBOtoFBOColor(this.getGluedScene().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)}, this.getOpenGLRenderer().getRenderingResolution());
+        this.getDeferredRenderNode().getOutColorBuffer().copyFBOtoFBOColor(this.getGluedScene().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)}, this.getRenderingResolution());
         this.getGluedScene().unBindFBO();
     }
 

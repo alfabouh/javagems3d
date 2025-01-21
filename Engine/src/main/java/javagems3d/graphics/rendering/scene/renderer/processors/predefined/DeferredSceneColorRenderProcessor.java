@@ -35,7 +35,7 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
         }};
-        this.colorBuffer.createFrameBuffer2DTexture(this.getOpenGLRenderer().getRenderingResolution(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.colorBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
     }
 
     @Override
-    public void onRender(FrameTicking frameTicking) {
+    public void runProcessorRendering(FrameTicking frameTicking) {
         FBOTexture2DProgram gBuffer = this.getGBuffer();
         FBOTexture2DProgram ssaoBuffer = this.getSsaoBuffer();
         //this.getIndirectGeometryRenderProcessor().getGBuffer().copyFBOtoFBOColor(this.getColorBuffer().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_COLOR_ATTACHMENT0)}, this.getRenderingResolution());
@@ -73,7 +73,7 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
         return this.isSsaoValid;
     }
 
-    public void setSsaoValid(boolean ssaoValid) {
+    public void setSsaoValidate(boolean ssaoValid) {
         isSsaoValid = ssaoValid;
     }
 

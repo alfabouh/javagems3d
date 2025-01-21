@@ -21,6 +21,10 @@ public class MeshGroup extends MeshStructure<MeshGroup.MeshGroupNode> {
         this.linkedMeshBuffer = null;
     }
 
+    public MeshGroup(RenderMesh renderMesh) {
+        this(new MeshGroupNode(renderMesh));
+    }
+
     public MeshGroup(MeshGroupNode... t) {
         super(t);
         this.linkedMeshBuffer = null;

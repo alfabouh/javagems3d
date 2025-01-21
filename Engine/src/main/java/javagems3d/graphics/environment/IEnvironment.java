@@ -12,10 +12,11 @@
 package javagems3d.graphics.environment;
 
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.world.SceneWorld;
 
 public interface IEnvironment {
-    void createEnvironment(SceneWorld sceneWorld);
+    void createEnvironment(OpenGLRenderer openGLRenderer, SceneWorld sceneWorld);
     void updateEnvironment(SceneWorld sceneWorld, ICamera camera);
     void destroyEnvironment(SceneWorld sceneWorld);
 }

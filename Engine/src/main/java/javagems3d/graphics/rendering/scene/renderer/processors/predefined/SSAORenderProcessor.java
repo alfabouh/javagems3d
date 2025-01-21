@@ -4,7 +4,6 @@ import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
@@ -74,7 +73,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     }
 
     @Override
-    public void onRender(FrameTicking frameTicking) {
+    public void runProcessorRendering(FrameTicking frameTicking) {
         if (this.getSsaoBufferTexture() == null || !JGemsRenderingGlobalConstants.USE_SSAO) {
             GL46.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);

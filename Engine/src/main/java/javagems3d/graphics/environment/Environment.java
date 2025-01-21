@@ -15,6 +15,7 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.scene.LightsScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.JGemsTransformation;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.environment.fog.FogManager;
@@ -41,8 +42,8 @@ public class Environment implements IEnvironment {
     }
 
     @Override
-    public void createEnvironment(SceneWorld sceneWorld) {
-        this.getShadowScene().createResources();
+    public void createEnvironment(OpenGLRenderer openGLRenderer, SceneWorld sceneWorld) {
+        this.getShadowScene().createResources(openGLRenderer);
     }
 
     public void destroyEnvironment(SceneWorld sceneWorld) {
