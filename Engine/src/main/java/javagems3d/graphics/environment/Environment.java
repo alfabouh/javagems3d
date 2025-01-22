@@ -34,20 +34,23 @@ public class Environment implements IEnvironment {
     private final SkyBox skyBox;
     private final FogManager fogManager;
 
-    public Environment() {
-        this.skyBox = new SkyBox(JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
+    private final SceneWorld sceneWorld;
+
+    public Environment(SceneWorld sceneWorld) {
+        this.skyBox = new SkyBox(4.0f, sceneWorld, JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
         this.fogManager = new FogManager(this);
         this.lightManager = new LightsScene(this);
         this.shadowScene = new ShadowScene(this);
+        this.sceneWorld = sceneWorld;
     }
 
     @Override
-    public void createEnvironment(OpenGLRenderer openGLRenderer, SceneWorld sceneWorld) {
+    public void createEnvironment(OpenGLRenderer openGLRenderer) {
         this.getShadowScene().createResources(openGLRenderer);
     }
 
-    public void destroyEnvironment(SceneWorld sceneWorld) {
-        this.getSkyBox().destroySkyBox(sceneWorld);
+    public void destroyEnvironment() {
+        this.getSkyBox().destroySkyBox(this.getSceneWorld());
         this.getShadowScene().destroyResources();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.getLightManager().removeAllLights(stack);
@@ -55,11 +58,11 @@ public class Environment implements IEnvironment {
     }
 
     @Override
-    public void updateEnvironment(SceneWorld sceneWorld, ICamera camera) {
-        this.getSkyBox().updateSkyBox(sceneWorld, camera);
-        this.getShadowScene().renderAllModelsInShadowMap(sceneWorld.getSceneObjects());
+    public void updateEnvironment(ICamera camera) {
+        this.getSkyBox().updateSkyBox(this.getSceneWorld(), camera);
+        this.getShadowScene().renderAllModelsInShadowMap(this.getSceneWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.updateLightsUBO(sceneWorld, stack);
+            this.updateLightsUBO(this.getSceneWorld(), stack);
             this.updateFogUBO(stack);
         }
     }
@@ -77,6 +80,10 @@ public class Environment implements IEnvironment {
         value1Buffer.put(!JGemsDebugGlobalConstants.FULL_BRIGHT ? this.getFog().getDensity() : 0.0f);
         value1Buffer.flip();
         JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Fog, value1Buffer);
+    }
+
+    public SceneWorld getSceneWorld() {
+        return this.sceneWorld;
     }
 
     public ShadowScene getShadowScene() {

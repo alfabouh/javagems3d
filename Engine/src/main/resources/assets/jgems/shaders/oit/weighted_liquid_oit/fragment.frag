@@ -24,8 +24,8 @@
 
 in vec2 uv_coordinates;
 
-in vec3 m_vertex_normal;
-in vec4 m_vertex_pos;
+in vec3 model_vertex_normal;
+in vec4 model_vertex_pos;
 in vec3 modelview_vertex_normal;
 in vec3 modelview_vertex_pos;
 
@@ -107,7 +107,7 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
     float f = 1.0 - clamp(fogFactor, 0.0, 0.7);
 
     float ratio = 1.0 / cnst;
-    vec3 I = normalize(m_vertex_pos.xyz - camera_pos);
+    vec3 I = normalize(model_vertex_pos.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
     return f * vec4(texture(ambient_cube_map, R).rgb, 1.0);
 }
@@ -160,7 +160,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
 
     vec3 sunPos = normalize(sunPos.xyz);
 
-    float sun_shadow = calc_sun_shadows(m_vertex_pos, frag_pos);
+    float sun_shadow = calc_sun_shadows(model_vertex_pos, frag_pos);
 
     vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal);
 
@@ -172,7 +172,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
         float linear = 0.09 * p_brightness;
         float expo = 0.032 * p_brightness;
         float p_id = p.plMeta.y;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], m_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], model_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
         point_light_factor += calc_point_light(p, frag_pos, normal, at_base, linear, expo, p_brightness) * shadow;
     }
 

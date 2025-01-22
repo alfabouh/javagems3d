@@ -179,7 +179,7 @@ public class TBoxScene {
             TBoxResourceManager.shaderResources().world_lines.beginShading();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-            TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  UniformFunctions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
+            TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("color"),  UniformFunctions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
             TBoxSceneUtils.renderModel(modelSun, GL46.GL_LINES);
             TBoxResourceManager.shaderResources().world_lines.endShading();
             modelSun.clear();
@@ -224,7 +224,7 @@ public class TBoxScene {
                 TBoxResourceManager.shaderResources().world_lines.beginShading();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
-                TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("colour"),  UniformFunctions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
+                TBoxResourceManager.shaderResources().world_lines.performUniform(new UniformString("color"),  UniformFunctions.VEC4F(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)));
                 TBoxSceneUtils.renderModel(model, GL46.GL_LINES);
                 TBoxResourceManager.shaderResources().world_lines.endShading();
                 model.clear();

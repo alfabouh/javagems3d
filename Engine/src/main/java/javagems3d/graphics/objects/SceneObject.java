@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class SceneObject implements IModeled, IRendered, ILightsKeeper {
+    private AnimationData animationData;
     private final SceneWorld sceneWorld;
     private RenderAttributes renderAttributes;
     protected Model<Format3D> model;
@@ -35,12 +36,18 @@ public abstract class SceneObject implements IModeled, IRendered, ILightsKeeper 
         this.renderAttributes = renderAttributes;
         this.lastTick = JGems3D.glfwTime();
         this.animationSpeed = 1.0f;
+        this.animationData = null;
     }
 
     public SceneObject setModel(Model<Format3D> model) {
         this.model = model;
         this.initAnimation();
         return this;
+    }
+
+    @Override
+    public void setAnimationData(AnimationData animationData) {
+        this.animationData = animationData;
     }
 
     public void setAnimationSpeed(float animationSpeed) {
@@ -85,6 +92,11 @@ public abstract class SceneObject implements IModeled, IRendered, ILightsKeeper 
         this.setAnimationData(animationData);
         this.nextAnimationFrame();
         return animationData;
+    }
+
+    @Override
+    public AnimationData getAnimationData() {
+        return this.animationData;
     }
 
     public SceneWorld getSceneWorld() {

@@ -1,7 +1,7 @@
 in vec2 uv_coordinates;
 
-in vec3 m_vertex_normal;
-in vec4 m_vertex_pos;
+in vec3 model_vertex_normal;
+in vec4 model_vertex_pos;
 in vec3 modelview_vertex_normal;
 in vec3 modelview_vertex_pos;
 
@@ -62,7 +62,7 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
     float f = 1.0 - clamp(fogFactor, 0.0, 0.7);
 
     float ratio = 1.0 / cnst;
-    vec3 I = normalize(m_vertex_pos.xyz - camera_pos);
+    vec3 I = normalize(model_vertex_pos.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
     return f * vec4(texture(ambient_cube_map, R).rgb, 1.0);
 }
@@ -80,7 +80,7 @@ void main()
     vec3 normals = normalize(checkCode(texturing_code, normals_code) ? calc_normal_map() : modelview_vertex_normal);
     vec4 g_texture = checkCode(texturing_code, diffuse_code) ? texture(diffuse_map, uv_coordinates) : diffuse_color;
     vec4 emission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(emissive_map, uv_coordinates) : vec4(vec3(0.0), 1.0);
-    vec4 metallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, uv_coordinates) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
+    vec4 metallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, uv_coordinates) : vec4(vec3(0.0), 1.0)) * refract_cubemap(model_vertex_normal, 1.73);
 
     vec4 lights = calc_light(frag_pos, normals);
 
@@ -91,7 +91,8 @@ void main()
     frag_color = (g_texture + vec4(metallic.xyz, 0.)) * (lights + emission);
     frag_color = calc_fog(frag_pos.xyz, frag_color);
 
-    bright_color = vec4(0.);
+    float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
+    bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 }
 
 vec4 calc_light(vec3 frag_pos, vec3 normal) {

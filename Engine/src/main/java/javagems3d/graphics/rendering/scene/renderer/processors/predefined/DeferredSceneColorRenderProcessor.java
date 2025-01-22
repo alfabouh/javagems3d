@@ -35,7 +35,7 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
         }};
-        this.colorBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        this.colorBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
@@ -67,6 +67,7 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
         JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         deferredShader.endShading();
         this.getColorBuffer().unBindFBO();
+        this.getGBuffer().copyFBOtoFBODepth(this.getColorBuffer().getFrameBufferId(), this.getRenderingResolution());
     }
 
     public boolean isSsaoValid() {

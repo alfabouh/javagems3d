@@ -16,7 +16,7 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.world.SceneWorld;
 
 public interface IEnvironment {
-    void createEnvironment(OpenGLRenderer openGLRenderer, SceneWorld sceneWorld);
-    void updateEnvironment(SceneWorld sceneWorld, ICamera camera);
-    void destroyEnvironment(SceneWorld sceneWorld);
+    void createEnvironment(OpenGLRenderer openGLRenderer);
+    void updateEnvironment(ICamera camera);
+    void destroyEnvironment();
 }

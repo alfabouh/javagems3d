@@ -29,7 +29,6 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     private final IEntityModelConstructor<WorldItem> entityModelConstructor;
     private final List<Light> lightList;
     private final WorldItem worldItem;
-    private AnimationData animationData;
     private boolean isVisible;
     private boolean isDead;
     protected Vector3f renderPosition;
@@ -42,18 +41,12 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         this.entityModelConstructor = renderData.getEntityModelConstructor();
         this.lightList = new ArrayList<>();
         this.worldItem = worldItem;
-        this.animationData = null;
         this.renderPosition = new Vector3f(worldItem.getPosition());
         this.renderRotation = new Vector3f(worldItem.getRotation());
         this.currentPositionInterpolation = new InterpolationPoints(this.getFixedPosition(), this.getFixedPosition());
         this.currentRotationInterpolation = new InterpolationPoints(this.getFixedRotation(), this.getFixedRotation());
         this.isVisible = true;
         this.isDead = false;
-    }
-
-    @Override
-    public void setAnimationData(AnimationData animationData) {
-        this.animationData = animationData;
     }
 
     @Override
@@ -94,8 +87,8 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     }
 
     public void refreshInterpolatingState() {
-        this.currentPositionInterpolation = new InterpolationPoints(this.currentPositionInterpolation.getEndPoint(), this.getWorldItem().getPosition());
-        this.currentRotationInterpolation = new InterpolationPoints(this.currentRotationInterpolation.getEndPoint(), this.getWorldItem().getRotation());
+        this.currentPositionInterpolation = new InterpolationPoints(this.getCurrentPosState().getEndPoint(), this.getWorldItem().getPosition());
+        this.currentRotationInterpolation = new InterpolationPoints(this.getCurrentRotState().getEndPoint(), this.getWorldItem().getRotation());
     }
 
     public void updateModelTranslation() {
@@ -116,7 +109,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
                 this.renderRotation.set(rot);
             } else {
                 Vector3f newRotation = new Vector3f();
-                Quaternionf result = this.getQuaternionInterpolated(physicsSyncTicks);
+                Quaternionf result = this.getQuaternionInterpolated(this.getCurrentRotState(), physicsSyncTicks);
                 result.getEulerAnglesXYZ(newRotation);
                 this.renderRotation.set(new Vector3f(newRotation.x, newRotation.y, newRotation.z));
             }
@@ -127,13 +120,13 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         this.adjustLightsTranslation(this.getRenderPosition(), new Vector3f(0.0f));
     }
 
-    private Quaternionf getQuaternionInterpolated(float physicsSyncTicks) {
+    private Quaternionf getQuaternionInterpolated(InterpolationPoints rotation, float physicsSyncTicks) {
         Quaternionf start = new Quaternionf();
         Quaternionf end = new Quaternionf();
-        start.rotateXYZ(this.getCurrentRotState().getStartPoint().x, this.getCurrentRotState().getStartPoint().y, this.getCurrentRotState().getStartPoint().z);
-        end.rotateXYZ(this.getCurrentRotState().getEndPoint().x, this.getCurrentRotState().getEndPoint().y, this.getCurrentRotState().getEndPoint().z);
+        start.rotateXYZ(rotation.getStartPoint().x, rotation.getStartPoint().y, rotation.getStartPoint().z);
+        end.rotateXYZ(rotation.getEndPoint().x, rotation.getEndPoint().y, rotation.getEndPoint().z);
         Quaternionf res = new Quaternionf();
-        end.slerp(start, physicsSyncTicks, res);
+        start.slerp(end, physicsSyncTicks, res);
         return res;
     }
 
@@ -178,11 +171,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         return this.getWorldItem().getScaling();
     }
 
-    private InterpolationPoints getCurrentPosState() {
+    protected InterpolationPoints getCurrentPosState() {
         return this.currentPositionInterpolation;
     }
 
-    private InterpolationPoints getCurrentRotState() {
+    protected InterpolationPoints getCurrentRotState() {
         return this.currentRotationInterpolation;
     }
 
@@ -213,11 +206,6 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
 
     public WorldItem getWorldItem() {
         return this.worldItem;
-    }
-
-    @Override
-    public AnimationData getAnimationData() {
-        return this.animationData;
     }
 
     @Override

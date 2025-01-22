@@ -24,7 +24,7 @@
 
 in vec2 uv_coordinates;
 
-in vec4 m_vertex_pos;
+in vec4 model_vertex_pos;
 in vec3 modelview_vertex_pos;
 in mat4 out_view_matrix;
 
@@ -133,7 +133,7 @@ vec4 calc_light(vec3 frag_pos) {
     vec3 sunPos = normalize(sunPos.xyz);
 
     int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
-    float sun_shadow = calc_sun_shadows(m_vertex_pos, cascadeIndex, frag_pos);
+    float sun_shadow = calc_sun_shadows(model_vertex_pos, cascadeIndex, frag_pos);
 
     vec4 sunFactor = calc_sun_light(sunPos, frag_pos);
 
@@ -145,7 +145,7 @@ vec4 calc_light(vec3 frag_pos) {
         float linear = 0.09 * p_brightness;
         float expo = 0.032 * p_brightness;
         float p_id = p.plMeta.y;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], m_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], model_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
         point_light_factor += calc_point_light(p, frag_pos, at_base, linear, expo, p_brightness) * shadow;
     }
 

@@ -13,7 +13,6 @@ package javagems3d.graphics.objects.entities.world;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.system.resources.assets.models.Model;

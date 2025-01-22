@@ -15,7 +15,6 @@ package javagems3d.graphics.rendering.scene.renderer.debug;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
-import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
@@ -52,13 +51,9 @@ public class LinesDebugDraw {
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
     }
 
-    public void drawAABBLinesRN(JGemsShaderManager debugShaders, List<ICulled> culleds) {
-
-    }
-
     public void drawAABBLinesBT(JGemsShaderManager debugShaders, DynamicsSystem dynamicsSystem) {
         for (PhysicsCollisionObject physicsCollisionObject : dynamicsSystem.getPhysicsSpace().getPcoList()) {
-            debugShaders.performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f)));
+            debugShaders.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(1.0f, 0.0f, 0.0f, 1.0f)));
 
             BoundingBox boundingBox = new BoundingBox();
             physicsCollisionObject.boundingBox(boundingBox);
@@ -100,7 +95,7 @@ public class LinesDebugDraw {
         if (this.navMeshFloatBuffer == null) {
             return;
         }
-        debugShaders.performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(0.0f, 1.0f, 0.0f, 1.0f)));
+        debugShaders.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.0f, 1.0f, 0.0f, 1.0f)));
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vbo);
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, this.navMeshFloatBuffer, GL46.GL_DYNAMIC_DRAW);
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);

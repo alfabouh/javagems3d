@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class SceneProp extends SceneObject implements IWorldObject, IWorldTicked {
-    private AnimationData animationData;
     private final List<Light> lightList;
     private boolean isVisible;
     private boolean isDead;
@@ -28,7 +27,6 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
     public SceneProp(@NotNull SceneWorld sceneWorld, @Nullable Model<Format3D> model, @NotNull RenderAttributes objectRenderingConfiguration) {
         super(sceneWorld, model, objectRenderingConfiguration);
         this.lightList = new ArrayList<>();
-        this.animationData = null;
         this.isVisible = true;
         this.isDead = false;
     }
@@ -89,11 +87,6 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
         this.isDead = true;
     }
 
-    @Override
-    public void setAnimationData(AnimationData animationData) {
-        this.animationData = animationData;
-    }
-
     public void setVisible(boolean visible) {
         isVisible = visible;
     }
@@ -111,11 +104,6 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
     @Override
     public boolean canBeRendered() {
         return super.canBeRendered() && this.isVisible;
-    }
-
-    @Override
-    public AnimationData getAnimationData() {
-        return this.animationData;
     }
 
     @Override

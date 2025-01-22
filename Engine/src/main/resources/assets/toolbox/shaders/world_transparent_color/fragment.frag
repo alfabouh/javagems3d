@@ -1,7 +1,7 @@
 layout (location = 0) out vec4 accumulated;
 layout (location = 1) out float reveal;
 
-uniform vec4 colour;
+uniform vec4 color;
 uniform bool selected;
 
 uniform bool showFog;
@@ -33,7 +33,7 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
 
 void main()
 {
-    vec4 col = colour;
+    vec4 col = color;
     col.a = 0.5;
     if (selected) {
         col = vec4(vec3(1.) - col.xyz, col.a);

@@ -24,8 +24,8 @@ import java.nio.FloatBuffer;
 import java.util.function.Consumer;
 
 public abstract class IndirectRenderFabric implements IRenderFabric {
-    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SCENE = new DefaultIndirectFunctionForSceneI();
-    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SHADOW = new DefaultIndirectFunctionForShadowI();
+    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SCENE = new DefaultIndirectFunctionForScene();
+    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SHADOW = new DefaultIndirectFunctionForShadow();
 
     private final IndirectObjectsRenderer.IRenderingFunction renderingFunction;
     private final Stage stage;
@@ -49,7 +49,7 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
         return this.renderingFunction;
     }
 
-    public static class DefaultIndirectFunctionForSceneI implements IndirectObjectsRenderer.IRenderingFunction {
+    public static class DefaultIndirectFunctionForScene implements IndirectObjectsRenderer.IRenderingFunction {
         @Override
         public void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData) {
             shaderManager.beginShading();
@@ -74,7 +74,7 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
         }
     }
 
-    public static class DefaultIndirectFunctionForShadowI implements IndirectObjectsRenderer.IRenderingFunction {
+    public static class DefaultIndirectFunctionForShadow implements IndirectObjectsRenderer.IRenderingFunction {
         @Override
         public void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData) {
             Consumer<JGemsShaderManager> functionToHandleUniforms = metaData.getterFunc().getObject(0);

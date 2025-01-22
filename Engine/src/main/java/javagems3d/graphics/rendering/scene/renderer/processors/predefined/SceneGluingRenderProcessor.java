@@ -1,11 +1,15 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
 
+import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.predefined.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -39,7 +43,7 @@ public class SceneGluingRenderProcessor extends IRenderProcessor.Template {
     public void runProcessorRendering(FrameTicking frameTicking) {
         this.getGluedScene().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-        this.getDeferredRenderNode().getOutColorBuffer().copyFBOtoFBOColor(this.getGluedScene().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)}, this.getRenderingResolution());
+        this.getDeferredRenderNode().getOutColorBuffer().copyFBOtoFBOColor(this.getGluedScene().getFrameBufferId(), Pair.get(new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)), this.getRenderingResolution());
         this.getGluedScene().unBindFBO();
     }
 

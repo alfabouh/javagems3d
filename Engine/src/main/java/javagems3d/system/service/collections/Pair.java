@@ -21,6 +21,14 @@ public class Pair<K, V> {
         this.second = second;
     }
 
+    @SuppressWarnings("all")
+    @SafeVarargs
+    public static <K, V> Pair<K, V> [] get(Pair<K, V>... pairs) {
+        Pair[] kvPair =  new Pair[pairs.length];
+        System.arraycopy(pairs, 0, kvPair, 0, kvPair.length);
+        return kvPair;
+    }
+
     public K getFirst() {
         return this.first;
     }

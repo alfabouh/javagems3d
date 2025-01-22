@@ -23,8 +23,8 @@
 /////////////////////////////////
 in vec2 uv_coordinates;
 
-in vec3 m_vertex_normal;
-in vec4 m_vertex_pos;
+in vec3 model_vertex_normal;
+in vec4 model_vertex_pos;
 in vec3 modelview_vertex_normal;
 in vec3 modelview_vertex_pos;
 
@@ -102,7 +102,7 @@ vec4 refract_cubemap(vec3 normal, float cnst) {
     float f = 1.0 - clamp(fogFactor, 0.0, 0.7);
 
     float ratio = 1.0 / cnst;
-    vec3 I = normalize(m_vertex_pos.xyz - camera_pos);
+    vec3 I = normalize(model_vertex_pos.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
     return f * vec4(texture(ambient_cube_map, R).rgb, 1.0);
 }
@@ -120,7 +120,7 @@ void main()
     vec3 normals = normalize(checkCode(texturing_code, normals_code) ? calc_normal_map() : modelview_vertex_normal);
     vec4 g_texture = checkCode(texturing_code, diffuse_code) ? texture(diffuse_map, uv_coordinates) : diffuse_color;
     vec4 emission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(emissive_map, uv_coordinates) : vec4(vec3(0.0), 1.0);
-    vec4 metallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, uv_coordinates) : vec4(vec3(0.0), 1.0)) * refract_cubemap(m_vertex_normal, 1.73);
+    vec4 metallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, uv_coordinates) : vec4(vec3(0.0), 1.0)) * refract_cubemap(model_vertex_normal, 1.73);
 
     vec4 lights = calc_light(frag_pos, normals);
 
@@ -146,7 +146,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
 
     vec3 sunPos = normalize(sunPos.xyz);
 
-    float sun_shadow = calc_sun_shadows(m_vertex_pos, frag_pos);
+    float sun_shadow = calc_sun_shadows(model_vertex_pos, frag_pos);
 
     vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal);
 
@@ -158,7 +158,7 @@ vec4 calc_light(vec3 frag_pos, vec3 normal) {
         float linear = 0.09 * p_brightness;
         float expo = 0.032 * p_brightness;
         float p_id = p.plMeta.y;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], m_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], model_vertex_pos.xyz, p.plPos.xyz)) : vec4(1.0);
         point_light_factor += calc_point_light(p, frag_pos, normal, at_base, linear, expo, p_brightness) * shadow;
     }
 

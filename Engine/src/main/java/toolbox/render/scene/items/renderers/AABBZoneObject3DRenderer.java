@@ -39,7 +39,7 @@ public class AABBZoneObject3DRenderer implements ITBoxObjectRenderer {
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogDensity"), UniformFunctions.FLOAT(properties.getFogProp().getFogDensity()));
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("fogColor"), UniformFunctions.VEC3F(properties.getFogProp().getFogColor()));
 
-        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(color, 1.0f)));
+        tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(color, 1.0f)));
         TBoxSceneUtils.renderModel(tBoxAbstractObject.getModel(), GL46.GL_TRIANGLES);
         tBoxAbstractObject.getRenderData().getShaderManager().endShading();
     }

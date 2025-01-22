@@ -35,9 +35,9 @@ layout (std140, binding = 3) uniform Fog {
 out vec2 uv_coordinates;
 
 out vec3 modelview_vertex_normal;
-out vec3 m_vertex_normal;
+out vec3 model_vertex_normal;
 out vec3 modelview_vertex_pos;
-out vec4 m_vertex_pos;
+out vec4 model_vertex_pos;
 
 out mat3 TBN;
 out mat4 out_view_matrix;
@@ -55,9 +55,9 @@ void main()
     uv_coordinates = aTexture;
 
     modelview_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;
-    m_vertex_normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;
+    model_vertex_normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;
     modelview_vertex_pos = mv_pos.xyz;
-    m_vertex_pos = model_matrix * vec4(aPosition, 1.0f);
+    model_vertex_pos = model_matrix * vec4(aPosition, 1.0f);
 
     vec3 T = normalize(vec3(model_view_matrix * (vec4(aTangent, 0.0))));
     vec3 B = normalize(vec3(model_view_matrix * (vec4(aBitangent, 0.0))));

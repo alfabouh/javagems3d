@@ -342,7 +342,7 @@ public final class JGems3D {
         return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " - " + JGems3D.getGameString();
     }
 
-    public static class Paths {
+    public static abstract class PATHS {
         public static final String PARTICLES = "/assets/jgems/textures/particles/";
         public static final String CUBE_MAPS = "/assets/jgems/textures/cubemaps/";
         public static final String TEXTURES = "/assets/jgems/textures/";

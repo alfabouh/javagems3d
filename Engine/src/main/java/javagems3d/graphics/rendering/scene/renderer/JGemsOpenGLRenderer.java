@@ -90,7 +90,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(this);
 
         this.setDeferredRenderNode(defaultDeferredNode);
-        this.setForwardRenderNode(new IForwardRenderNode.Default(this));
+        this.setForwardRenderNode(new IForwardRenderNode.Default(defaultDeferredNode, this));
         this.setGluingRenderNode(new IGluingRenderNode.Default(defaultDeferredNode, this));
         this.setTransparencyRenderNode(new ITransparencyRenderNode.Default(this));
         this.setPostFXRenderNode(new IPostFXRenderNode.Default(this));
@@ -158,7 +158,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
             this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
             return;
         }
-        this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld(), this.getSceneWorld().getCamera());
+        this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
 
         Map<Stage, List<SceneObject>> dividedGroups = JGemsHelper.RENDERING.getFilteredSetToRender(this.getSceneWorld().getSceneObjects(), Pipeline.SCENE, true).stream().collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
@@ -235,13 +235,13 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     public void createResources() {
-        this.getSceneWorld().getEnvironment().createEnvironment(this, this.getSceneWorld());
+        this.getSceneWorld().getEnvironment().createEnvironment(this);
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
     }
 
     public void destroyResources() {
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
-        this.getSceneWorld().getEnvironment().destroyEnvironment(this.getSceneWorld());
+        this.getSceneWorld().getEnvironment().destroyEnvironment();
     }
 
     @Override
@@ -274,5 +274,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     public static JGemsShaderManager UBOShader() {
         return JGemsResourceManager.globalShaderAssets.gameUbo;
+    }
+
+    public static JGemsShaderManager SkyBoxShader() {
+        return JGemsResourceManager.globalShaderAssets.skybox;
     }
 }

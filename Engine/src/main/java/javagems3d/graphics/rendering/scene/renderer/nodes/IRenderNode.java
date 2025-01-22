@@ -12,7 +12,7 @@ public interface IRenderNode extends IWindow.ResizeEvent, IResourceInit {
     @NotNull OpenGLRenderer getOpenGLRenderer();
 
     default Vector2i getRenderingResolution() {
-        return this.getRenderingResolution();
+        return this.getOpenGLRenderer().getRenderingResolution();
     }
     
     @Override

@@ -12,7 +12,7 @@ in flat uint ent_id;
 
 const int diffuse_code = 1 << 2;
 const int normals_code = 1 << 3;
-const int emissive_code = 1 << 4;
+const int emission_code = 1 << 4;
 const int specular_code = 1 << 5;
 const int metallic_code = 1 << 6;
 const int light_bright_code = 1 << 2;
@@ -91,7 +91,7 @@ void main()
     gNormal = vec4(normals, 1.0);
     gPosition = vec4(modelview_vertex_pos, 1.0);
     gColor = diffuse;
-    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? texture(sampler2D(textures[mat.emissive_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
+    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(sampler2D(textures[mat.emissive_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
     gSpecular = checkCode(texturing_code, specular_code) ? texture(sampler2D(textures[mat.specular_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
 
     vec4 gMetallic = (checkCode(texturing_code, metallic_code) ? texture(sampler2D(textures[mat.metallic_map_id]), uv_coordinates) : vec4(0.)) * refract_cubemap(model_vertex_normal, 1.73);

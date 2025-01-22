@@ -66,7 +66,7 @@ public final class SceneWorld implements IWorld {
         this.liquids = SyncManager.createSyncronisedSet();
         this.toRenderSet = SyncManager.createSyncronisedSet();
 
-        this.environment = new Environment();
+        this.environment = new Environment(this);
 
         this.particlesEmitter = new ParticlesEmitter();
     }

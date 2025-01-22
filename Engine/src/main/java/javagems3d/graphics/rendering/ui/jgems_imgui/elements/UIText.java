@@ -56,7 +56,7 @@ public class UIText extends UIElement {
         GL46.glActiveTexture(GL46.GL_TEXTURE0);
         this.getFontTexture().getTexture().bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
-        shaderManager.performUniform(new UniformString("colour"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
+        shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsHelper.RENDERING.renderModel(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }

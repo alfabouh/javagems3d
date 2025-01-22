@@ -11,9 +11,6 @@ out vec3 modelview_vertex_normal;
 out vec3 modelview_vertex_pos;
 out mat3 TBN;
 
-out mat4 view;
-out mat4 model;
-
 out flat uint matertial_id;
 out flat uint ent_id;
 
@@ -36,9 +33,9 @@ void main()
     uint idx = gl_BaseInstance + gl_InstanceID;
     matertial_id = materialIds[idx];
     ent_id = entityIds[idx];
-    model = modelMatrices[ent_id];
+    mat4 model = modelMatrices[ent_id];
 
-    view = view_matrix;
+    mat4 view = view_matrix;
     mat4 model_view_matrix = view_matrix * model;
     vec4 mv_pos = model_view_matrix * position;
     gl_Position = projection_matrix * mv_pos;

@@ -11,6 +11,8 @@
 
 package javagems3d.graphics.transformation;
 
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import javagems3d.graphics.camera.base.ICamera;
@@ -51,6 +53,10 @@ public class JGemsTransformation {
 
     public void setProjectionData(IWindow window, float fov, float zNear, float zFar) {
         this.projectionData.set(fov, zNear, zFar);
+    }
+
+    public static Matrix4f getModelViewMatrix(Model<Format3D> model) {
+        return TransformationUtils.getModelViewMatrix(model.getFormat(), JGemsTransformation.INSTANCE.getCameraViewMatrix());
     }
 
     public static Matrix4f getAbstractCameraViewMatrix(ICamera camera) {

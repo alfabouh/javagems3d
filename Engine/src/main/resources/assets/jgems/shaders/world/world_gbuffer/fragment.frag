@@ -18,7 +18,7 @@ uniform int lighting_code;
 uniform vec3 camera_pos;
 
 const int diffuse_code = 1 << 2;
-const int emissive_code = 1 << 3;
+const int emission_code = 1 << 3;
 const int metallic_code = 1 << 4;
 const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
@@ -67,7 +67,7 @@ void main()
 
     gPosition = vec4(modelview_vertex_pos, 1.0);
     gColor = diffuse;
-    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emissive_code) ? emissive_texture : vec4(vec3(0.0), 1.0);
+    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? emissive_texture : vec4(vec3(0.0), 1.0);
     gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, uv_coordinates) : vec4(vec3(0.0), 1.0);
 
     vec4 gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, uv_coordinates) : vec4(0.)) * refract_cubemap(model_vertex_normal, 1.73);

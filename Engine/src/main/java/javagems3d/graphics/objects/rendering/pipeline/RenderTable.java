@@ -42,19 +42,21 @@ public class RenderTable {
     private final Map<Pipeline, Data> dataMap;
 
     public RenderTable() {
-        this(RenderTable.DEFAULT_SCENE_SHADER_IND, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND);
+        this(RenderTable.DEFAULT_SCENE_SHADER_IND, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND, true);
     }
 
-    public RenderTable(@NotNull JGemsShaderManager sceneStageShaderManager, @NotNull IRenderFabric sceneStageRenderFabric) {
+    public RenderTable(@NotNull JGemsShaderManager sceneStageShaderManager, @NotNull IRenderFabric sceneStageRenderFabric, boolean setDefaults) {
         this.dataMap = new EnumMap<>(Pipeline.class);
-        this.setDefaults(sceneStageShaderManager, sceneStageRenderFabric);
+        this.setSceneRenderMatch(sceneStageShaderManager, sceneStageRenderFabric);
+        if (setDefaults) {
+            this.setDefaults();
+        }
         if (this.dataMap.containsValue(null)) {
             throw new JGemsNullException("Shading table contains NULL value!");
         }
     }
 
-    public void setDefaults(@NotNull JGemsShaderManager sceneStageShaderManager, @NotNull IRenderFabric sceneStageRenderFabric) {
-        this.setSceneRenderMatch(sceneStageShaderManager, sceneStageRenderFabric);
+    protected void setDefaults() {
         this.setPointLightShadowRenderMatch(RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
         this.setSunLightShadowRenderMatch(RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
         this.setTransparencyRenderMatch(RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND);

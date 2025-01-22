@@ -4,6 +4,7 @@ import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import org.joml.Vector3f;
@@ -17,11 +18,11 @@ public class SkyBox implements ISkyBox {
     private final SunLight sunLight;
     private boolean isSkyCoveredByFog;
 
-    public SkyBox(CubeMapTexture sky2DTexture) {
+    public SkyBox(float backGroundViewScaling, SceneWorld sceneWorld, CubeMapTexture sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
         this.sunLight = new SunLight(new Vector3f(1.0f), null, 1.0f);
         this.isSkyCoveredByFog = false;
-        this.background = new Background();
+        this.background = new Background(sceneWorld, backGroundViewScaling);
     }
 
     public void setSkyCoveredByFog(boolean skyCoveredByFog) {
@@ -50,7 +51,7 @@ public class SkyBox implements ISkyBox {
 
     @Override
     public void updateSkyBox(SceneWorld sceneWorld, ICamera camera) {
-        this.getBackground().updateMeta(sceneWorld, camera);
+        this.getBackground().updateMeta(camera);
     }
 
     @Override
@@ -60,16 +61,18 @@ public class SkyBox implements ISkyBox {
 
     public static class Background {
         private final FixedCamera scaledCameraBackground;
-        private final Set<SceneObject> toRenderSet;
+        private final Set<SceneBackgroundProp> toRenderSet;
+        private final SceneWorld sceneWorld;
         private float viewScaling;
 
-        public Background() {
+        public Background(SceneWorld sceneWorld, float viewScaling) {
             this.scaledCameraBackground = new FixedCamera(new Vector3f(), new Vector3f());
             this.toRenderSet = new HashSet<>();
-            this.viewScaling = 4.0f;
+            this.viewScaling = viewScaling;
+            this.sceneWorld = sceneWorld;
         }
 
-        public void updateMeta(SceneWorld sceneWorld, ICamera camera) {
+        public void updateMeta(ICamera camera) {
             this.getScaledCameraBackground().setCameraPosition(camera.getCamPosition().mul(1.0f / this.getViewScaling()));
             this.getScaledCameraBackground().setCameraRotation(camera.getCamRotation());
         }
@@ -79,13 +82,17 @@ public class SkyBox implements ISkyBox {
         }
 
         public void clearBackGround() {
-            //this.getToRenderSet().forEach(e -> e.getRenderFabric().onPostRender(e));
-            //this.getToRenderSet().clear();
+            this.getToRenderSet().forEach(e -> e.onDestroy(this.getSceneWorld()));
+            this.getToRenderSet().clear();
         }
 
-        public void addObjectInBackGround(SceneObject modeledSceneObject) {
-           //this.getToRenderSet().add(modeledSceneObject);
-           //modeledSceneObject.getRenderFabric().onPreRender(modeledSceneObject);
+        public void addObjectInBackGround(SceneBackgroundProp sceneBackgroundProp) {
+            sceneBackgroundProp.onSpawn(this.getSceneWorld());
+            this.getToRenderSet().add(sceneBackgroundProp);
+        }
+
+        public SceneWorld getSceneWorld() {
+            return this.sceneWorld;
         }
 
         public FixedCamera getScaledCameraBackground() {
@@ -96,7 +103,7 @@ public class SkyBox implements ISkyBox {
             return this.viewScaling;
         }
 
-        public Set<SceneObject> getToRenderSet() {
+        public Set<SceneBackgroundProp> getToRenderSet() {
             return this.toRenderSet;
         }
     }

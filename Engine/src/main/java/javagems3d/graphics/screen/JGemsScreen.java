@@ -120,7 +120,9 @@ public class JGemsScreen implements IScreen {
     }
 
     private void resizeWindow(IWindow window) {
-        this.getScene().onWindowResize(window);
+        if (this.getScene() != null) {
+            this.getScene().onWindowResize(window);
+        }
         JGemsTransformation.INSTANCE.updateSetOfMatrices(this.getWindow());
     }
 
