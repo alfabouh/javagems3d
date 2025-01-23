@@ -149,8 +149,14 @@ public class ModelMeshLoader implements ILoadingHelper {
     }
 
     @SuppressWarnings("all")
-    private MeshBuffer processMeshBuffer(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer) {
-        MeshBuffer meshStructure = new MeshBuffer();
+    private <T extends MeshStructure> T processMeshStructure(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer, Class<T> structureType) {
+        T meshStructure;
+        try {
+            meshStructure = structureType.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            JGemsHelper.getLogger().error("Failed to create mesh structure instance: " + e.getMessage());
+            return null;
+        }
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIScene aiScene = this.loadAIScene(stack, this.getPath(), isAnimated);
@@ -166,7 +172,8 @@ public class ModelMeshLoader implements ILoadingHelper {
                 materialList.add(material);
             }
 
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building MeshBuffer...");
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building Mesh Structure...");
+
             int totalMeshes = aiScene.mNumMeshes();
             PointerBuffer aiMeshes = aiScene.mMeshes();
             SkeletonData skeletonData = null;
@@ -177,68 +184,37 @@ public class ModelMeshLoader implements ILoadingHelper {
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
-                Material material = new Material();
-                if (matIdx >= 0 && matIdx < materialList.size()) {
-                    material = materialList.get(matIdx);
+                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
+
+                if (structureType == MeshBuffer.class) {
+                    DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
+                    ((MeshBuffer) meshStructure).putMeshNode(new MeshBuffer.MeshBufferNode(meshData, material));
+                    if (loadInIndirectBuffer) {
+                        gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer((MeshBuffer) meshStructure);
+                    }
+                } else if (structureType == MeshGroup.class) {
+                    RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
+                    ((MeshGroup) meshStructure).putMeshNode(new MeshGroup.MeshGroupNode(meshData, material));
                 }
-                DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
-                meshStructure.putMeshNode(new MeshBuffer.MeshBufferNode(meshData, material));
             }
             Assimp.aiReleaseImport(aiScene);
 
         } catch (Exception e) {
             JGemsHelper.getLogger().error(e.getMessage());
             return null;
-        }
-
-        if (loadInIndirectBuffer) {
-            gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshStructure);
         }
 
         return meshStructure;
     }
 
     @SuppressWarnings("all")
+    private MeshBuffer processMeshBuffer(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer) {
+        return processMeshStructure(gameResources, isAnimated, loadInIndirectBuffer, MeshBuffer.class);
+    }
+
+    @SuppressWarnings("all")
     private MeshGroup processMeshGroup(GameResources gameResources, boolean isAnimated) {
-        MeshGroup meshStructure = new MeshGroup();
-
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            AIScene aiScene = this.loadAIScene(stack, this.getPath(), isAnimated);
-            int totalMaterials = aiScene.mNumMaterials();
-            List<Material> materialList = new ArrayList<>();
-
-            for (int i = 0; i < totalMaterials; i++) {
-                AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
-                Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
-                materialList.add(material);
-            }
-
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building MeshGroup...");
-            int totalMeshes = aiScene.mNumMeshes();
-            PointerBuffer aiMeshes = aiScene.mMeshes();
-            SkeletonData skeletonData = null;
-            for (int i = 0; i < totalMeshes; i++) {
-                AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-                if (isAnimated) {
-                    skeletonData = this.readSkeleton(meshStructure, aiScene, aiMesh);
-                }
-                RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
-
-                int matIdx = aiMesh.mMaterialIndex();
-                Material material = new Material();
-                if (matIdx >= 0 && matIdx < materialList.size()) {
-                    material = materialList.get(matIdx);
-                }
-                meshStructure.putMeshNode(new MeshGroup.MeshGroupNode(meshData, material));
-            }
-            Assimp.aiReleaseImport(aiScene);
-
-        } catch (Exception e) {
-            JGemsHelper.getLogger().error(e.getMessage());
-            return null;
-        }
-
-        return meshStructure;
+        return processMeshStructure(gameResources, isAnimated, false, MeshGroup.class);
     }
 
     private DataMesh createDataMesh(AIMesh aiMesh, SkeletonData skeletonData) {
