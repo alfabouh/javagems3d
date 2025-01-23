@@ -12,7 +12,15 @@
 package javagems3d.system.map.loaders.custom;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.physics.colliders.MeshCollider;
+import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
@@ -66,6 +74,11 @@ public class DefaultMap implements IMapLoader {
         //SceneProp sceneProp3 = new SceneProp(new RenderSimpleBackgroundProp(background), new Model<>(new Format3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), JGemsResourceManager.globalShaderAssets.skybox_background);
         //sceneProp3.getRenderAttributes().setAlphaDiscardValue(0.5f);
         //background.addObjectInBackGround(sceneProp3);
+
+        MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
+        SceneBackgroundProp sceneProp3 = new SceneBackgroundProp(background.getSceneWorld(), new Model<>(new Format3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), RenderAttributes.get(new RenderTable(JGemsResourceManager.globalShaderAssets.background_indirect, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND, false)));
+        sceneProp3.getRenderAttributes().setAlphaDiscardValue(0.5f);
+        background.addObjectInBackGround(sceneProp3);
     }
 
     @Override

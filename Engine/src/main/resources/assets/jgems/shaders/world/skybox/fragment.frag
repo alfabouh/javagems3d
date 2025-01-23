@@ -36,10 +36,8 @@ void main()
     float fogFactor = fogDensity * 100.0;
     float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
 
-   // vec2 texel_size = textureSize(skybox_background_sampler, 0);
-   // vec4 background = texture(skybox_background_sampler, gl_FragCoord.xy / texel_size);
-
-    vec4 background = vec4(0.);
+    vec2 texel_size = textureSize(skybox_background_sampler, 0);
+    vec4 background = texture(skybox_background_sampler, gl_FragCoord.xy / texel_size);
 
     vec3 sunEffect = sunColor.xyz * sunMeta.y * sunFactor;
     vec4 tex2d_colors = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * brightness) + sunEffect, 1.0);

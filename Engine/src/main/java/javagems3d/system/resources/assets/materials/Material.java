@@ -7,8 +7,6 @@ import org.joml.Vector4f;
 
 @SuppressWarnings("all")
 public class Material {
-    private int id;
-
     private float fullOpacity;
     private ISample diffuse;
     private ImageBasedTexture opacityMap;
@@ -24,7 +22,6 @@ public class Material {
 
     public Material() {
         this.setDefaults();
-        this.id = -1;
     }
 
     public static Material createDefault() {
@@ -39,15 +36,6 @@ public class Material {
         this.setDefaultMetallic();
         this.setDefaultOpacity();
         this.setFullOpacity(1.0f);
-        return this;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public Material setId(int id) {
-        this.id = id;
         return this;
     }
 

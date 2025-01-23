@@ -1,17 +1,15 @@
-package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
+package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.skybox.SkyBox;
-import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.predefined.IDeferredRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformation;
-import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
@@ -44,14 +42,13 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
             7, 6, 4, 7, 4, 5
     };
     private Model<Format3D> skyBoxModel;
-
-    private final IDeferredRenderNode deferredRenderNode;
     private final SkyBox skyBox;
+    private ITextureProgram backgroundTexture;
 
-    public SkyboxRenderProcessor(@NotNull SkyBox skyBox, @NotNull IDeferredRenderNode deferredRenderNode, @NotNull OpenGLRenderer openGLRenderer) {
+    public SkyboxRenderProcessor(@NotNull SkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.skyBox = skyBox;
-        this.deferredRenderNode = deferredRenderNode;
+        this.backgroundTexture = null;
     }
 
     @Override
@@ -87,7 +84,9 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         Matrix4f.m30(0);
         Matrix4f.m31(0);
         Matrix4f.m32(0);
-        //skyShaderManager.performUniformTexture(new UniformString("skybox_background_sampler"), this.getSceneRenderer().getSkyBoxBackGroundBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
+        if (this.getBackgroundTexture() != null) {
+            skyShaderManager.performUniformTexture(new UniformString("skybox_background_sampler"), this.getBackgroundTexture());
+        }
         skyShaderManager.performUniform(new UniformString("covered_by_fog"), UniformFunctions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
         skyShaderManager.performUniform(new UniformString("view_mat_inverted"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix().invert()));
         skyShaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
@@ -98,11 +97,15 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         GL46.glEnable(GL46.GL_CULL_FACE);
     }
 
-    public SkyBox getSkyBox() {
-        return this.skyBox;
+    public void setBackgroundTexture(ITextureProgram backgroundTexture) {
+        this.backgroundTexture = backgroundTexture;
     }
 
-    public IDeferredRenderNode getDeferredRenderNode() {
-        return this.deferredRenderNode;
+    protected ITextureProgram getBackgroundTexture() {
+        return this.backgroundTexture;
+    }
+
+    public SkyBox getSkyBox() {
+        return this.skyBox;
     }
 }

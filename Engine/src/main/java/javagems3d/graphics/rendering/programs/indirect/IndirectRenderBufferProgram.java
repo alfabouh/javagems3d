@@ -40,11 +40,11 @@ public final class IndirectRenderBufferProgram {
         this.allStaticMeshBuffers = partitionedModels.get(false);
         this.allAnimatedMeshBuffers = partitionedModels.get(true);
 
-        this.forStatic(this.getAllStaticMeshBuffers());
+        this.forStatic(meshBuffersDataCache, this.getAllStaticMeshBuffers());
         //this.forStatic(this.getAllAnimatedMeshBuffers());
     }
 
-    private void forStatic(List<MeshBuffer> obj) {
+    private void forStatic(MeshBuffersDataCache meshBuffersDataCache, List<MeshBuffer> obj) {
         if (obj.isEmpty()) {
             return;
         }
@@ -78,7 +78,7 @@ public final class IndirectRenderBufferProgram {
                 }
                 meshSizeInBytes *= posLength;
 
-                meshBuffer.getPassData().add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, node.getMaterialId(), offset, dataMesh.numVertices()));
+                meshBuffer.getPassData().add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, meshBuffersDataCache.getMaterialId(node.getMaterial()), offset, dataMesh.numVertices()));
                 offset = positionsSize / 3;
                 collect += node.getMesh().numVertices();
             }

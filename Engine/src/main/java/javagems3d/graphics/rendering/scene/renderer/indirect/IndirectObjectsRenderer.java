@@ -59,7 +59,7 @@ public class IndirectObjectsRenderer {
             IntBuffer materialIds = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
             indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, this.getIndirectMeshObjects());
 
-            this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData);
+            this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, pipeline);
             this.render(this.getOverlappingOperator(), indirectBufferCommandsBuilder1, renderBuffer, metaData);
 
             indirectBufferCommandsBuilder1.destroyBuffer();
@@ -75,7 +75,7 @@ public class IndirectObjectsRenderer {
                 IntBuffer materialIds = this.isUseMaterialsSSBO() ? MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE) : null;
                 indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, sceneObjects.getValue());
 
-                this.fillSSBOWithInformation(indexes, materialIds, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData);
+                this.fillSSBOWithInformation(indexes, materialIds, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, pipeline);
                 this.render(operator, indirectBufferCommandsBuilder1, renderBuffer, metaData);
 
                 indirectBufferCommandsBuilder1.destroyBuffer();
@@ -91,17 +91,17 @@ public class IndirectObjectsRenderer {
         renderingFunction.func(operator.getIndirectShader(), indirectBufferCommandsBuilder, renderBuffer, arbitraryArguments);
     }
 
-    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
+    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties, Pipeline pipeline) {
         ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
         FloatBuffer matrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
 
         for (SceneObject sceneObject : sceneObjects) {
             Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
-            IndirectRenderFabric renderFabric = (IndirectRenderFabric) sceneObject.getRenderFabric(Pipeline.SCENE);
-            renderFabric.onFillBufferWithMatrices(Pipeline.SCENE, sceneObject, matrix, matrices, null);
+            IndirectRenderFabric renderFabric = (IndirectRenderFabric) sceneObject.getRenderFabric(pipeline);
+            renderFabric.onFillBufferWithMatrices(pipeline, sceneObject, matrix, matrices, null);
             if (properties != null) {
                 RenderAttributes attributes = sceneObject.getRenderAttributes();
-                renderFabric.onFillBufferWithProperties(Pipeline.SCENE, sceneObject, attributes, properties, null);
+                renderFabric.onFillBufferWithProperties(pipeline, sceneObject, attributes, properties, null);
             }
         }
 

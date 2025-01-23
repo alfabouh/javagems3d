@@ -1,15 +1,11 @@
-package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
+package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.predefined.IDeferredRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;

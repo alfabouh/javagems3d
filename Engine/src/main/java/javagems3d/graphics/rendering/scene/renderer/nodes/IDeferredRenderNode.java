@@ -1,14 +1,15 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes.predefined;
+package javagems3d.graphics.rendering.scene.renderer.nodes;
 
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.processors.predefined.DirectGeometryRenderProcessor;
-import javagems3d.graphics.rendering.scene.renderer.processors.predefined.IndirectGeometryRenderProcessor;
-import javagems3d.graphics.rendering.scene.renderer.processors.predefined.DeferredSceneColorRenderProcessor;
-import javagems3d.graphics.rendering.scene.renderer.processors.predefined.SSAORenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredSceneColorRenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.post.SSAORenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
@@ -79,8 +80,8 @@ public interface IDeferredRenderNode extends IRenderNode {
         }
 
         public void initProcessors() {
-            this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(this.getOpenGLRenderer());
-            this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(this.getOpenGLRenderer());
+            this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
+            this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), JGemsResourceManager.globalShaderAssets.world_ssao);
             this.rawColorRenderProcessor = new DeferredSceneColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), JGemsResourceManager.globalShaderAssets.world_deferred);
         }

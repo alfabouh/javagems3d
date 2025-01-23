@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
+package javagems3d.graphics.rendering.scene.renderer.processors.geometry;
 
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -12,10 +12,12 @@ import java.util.Collection;
 
 public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private final IndirectObjectsRenderer indirectMeshObjects;
+    public final Pipeline pipeline;
 
-    public IndirectGeometryRenderProcessor(@NotNull OpenGLRenderer openGLRenderer) {
+    public IndirectGeometryRenderProcessor(@NotNull Pipeline pipeline, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.indirectMeshObjects = new IndirectObjectsRenderer(openGLRenderer, null, true, true);
+        this.pipeline = pipeline;
     }
 
     @Override
@@ -32,14 +34,18 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        this.getIndirectMeshObjects().processAndRender(Pipeline.SCENE, null);
-    }
-
-    public IndirectObjectsRenderer getIndirectMeshObjects() {
-        return this.indirectMeshObjects;
+        this.getIndirectMeshObjects().processAndRender(this.getPipeline(), null);
     }
 
     public void setIndirectMeshObjects(@NotNull Collection<SceneObject> sceneObjects) {
         this.getIndirectMeshObjects().setIndirectMeshObjects(sceneObjects);
+    }
+
+    public Pipeline getPipeline() {
+        return this.pipeline;
+    }
+
+    public IndirectObjectsRenderer getIndirectMeshObjects() {
+        return this.indirectMeshObjects;
     }
 }

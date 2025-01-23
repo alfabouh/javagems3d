@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
+package javagems3d.graphics.rendering.scene.renderer.processors.geometry;
 
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 
 public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private Collection<SceneObject> sceneObjects;
+    private final Pipeline pipeline;
 
-    public DirectGeometryRenderProcessor(@NotNull OpenGLRenderer openGLRenderer) {
+    public DirectGeometryRenderProcessor(@NotNull Pipeline pipeline, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
+        this.pipeline = pipeline;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        Pipeline pipeline = Pipeline.SCENE;
+        Pipeline pipeline = this.getPipeline();
         Map<JGemsShaderManager, List<SceneObject>> groupedObjects = this.getSceneObjects().stream().collect(Collectors.groupingBy(e -> e.getRenderingTable().getShaderManager(pipeline)));
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
@@ -54,6 +56,10 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     public void setDirectMeshObjects(@NotNull Collection<SceneObject> sceneObjects) {
         this.sceneObjects = sceneObjects;
+    }
+
+    public Pipeline getPipeline() {
+        return this.pipeline;
     }
 
     public Collection<SceneObject> getSceneObjects() {

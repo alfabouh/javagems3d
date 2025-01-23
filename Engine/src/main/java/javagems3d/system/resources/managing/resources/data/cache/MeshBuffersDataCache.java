@@ -4,31 +4,27 @@ import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public final class MeshBuffersDataCache implements IDataCache {
+    private final Map<Material, Integer> materialsIdMap;
     private final List<Material> materials;
     private final Set<MeshBuffer> meshBuffers;
 
     public MeshBuffersDataCache() {
+        this.materialsIdMap = new HashMap<>();
         this.materials = new ArrayList<>();
         this.meshBuffers = new HashSet<>();
     }
 
     public void writeData(Set<MeshBuffersDataArray> arraySet) {
+        int i = 0;
         for (MeshBuffersDataArray bindlessTexturesDataArray : arraySet) {
-            int totalMaterials = this.getMaterials().size();
             for (MeshBuffer meshBuffer : bindlessTexturesDataArray.getMeshBuffers()) {
-                for (MeshBuffer.PassData data : meshBuffer.getPassData()) {
-                    data.setMaterialId(data.getMaterialId() + totalMaterials);
-                }
                 this.addMeshBuffer(meshBuffer);
             }
             for (Material material : bindlessTexturesDataArray.getMaterials()) {
-                material.setId(material.getId() + totalMaterials);
+                this.materialsIdMap.put(material, i++);
                 this.addMaterial(material);
             }
         }
@@ -37,6 +33,11 @@ public final class MeshBuffersDataCache implements IDataCache {
     public void clear() {
         this.meshBuffers.clear();
         this.materials.clear();
+        this.materialsIdMap.clear();
+    }
+
+    public int getMaterialId(Material material) {
+        return this.materialsIdMap.get(material);
     }
 
     public void addMeshBuffer(MeshBuffer meshBuffer) {

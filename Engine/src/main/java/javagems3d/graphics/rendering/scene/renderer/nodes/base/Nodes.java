@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes;
+package javagems3d.graphics.rendering.scene.renderer.nodes.base;
 
 public enum Nodes {
     DEFERRED_RENDER_PASS("d-pass", 0),

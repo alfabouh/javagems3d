@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
+package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;

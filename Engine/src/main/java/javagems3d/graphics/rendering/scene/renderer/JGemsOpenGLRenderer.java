@@ -13,16 +13,14 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
-import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.predefined.*;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIMenuInterface;
@@ -219,7 +217,6 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     @Override
     public void onMapLoaded(IMapLoader loader, JGemsResourceManager resourceManager) {
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
-
         resourceManager.loadMeshMaterialsIsSSBO(JGemsResourceManager.globalShaderAssets.MaterialsData);
         resourceManager.loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
     }

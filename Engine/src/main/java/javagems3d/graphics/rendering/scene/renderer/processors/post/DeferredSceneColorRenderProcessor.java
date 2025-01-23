@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.processors.predefined;
+package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;

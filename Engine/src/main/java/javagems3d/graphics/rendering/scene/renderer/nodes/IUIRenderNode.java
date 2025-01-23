@@ -1,7 +1,7 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes.predefined;
+package javagems3d.graphics.rendering.scene.renderer.nodes;
 
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import org.jetbrains.annotations.NotNull;

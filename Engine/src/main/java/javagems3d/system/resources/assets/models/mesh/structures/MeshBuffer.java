@@ -11,6 +11,7 @@
 
 package javagems3d.system.resources.assets.models.mesh.structures;
 
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,24 +51,19 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
     }
 
     public static final class MeshBufferNode extends MeshStructure.Node<DataMesh> {
-        private int materialId;
+        private Material material;
 
-        public MeshBufferNode(@NotNull DataMesh meshData, int materialId) {
+        public MeshBufferNode(@NotNull DataMesh meshData, Material material) {
             super(meshData);
-            this.materialId = materialId;
+            this.material = material;
         }
 
         public void clearMesh() {
             this.getMesh().clearMesh();
         }
 
-        public MeshBufferNode setMaterialId(int materialId) {
-            this.materialId = materialId;
-            return this;
-        }
-
-        public int getMaterialId() {
-            return this.materialId;
+        public Material getMaterial() {
+            return this.material;
         }
     }
 
@@ -90,9 +86,8 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
             return this.firstIndexOffset;
         }
 
-        public PassData setMaterialId(int materialId) {
+        public void setMaterialId(int materialId) {
             this.materialId = materialId;
-            return this;
         }
 
         public int getSizeInBytes() {

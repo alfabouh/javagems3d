@@ -161,10 +161,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                 AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
                 if (loadInIndirectBuffer) {
-                    material.setId(gameResources.getResourceArrays().getMeshBuffersDataArray().getTotalMaterials());
                     gameResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
-                } else {
-                    material.setId(materialList.size());
                 }
                 materialList.add(material);
             }
@@ -178,13 +175,14 @@ public class ModelMeshLoader implements ILoadingHelper {
                 if (isAnimated) {
                     skeletonData = this.readSkeleton(meshStructure, aiScene, aiMesh);
                 }
+
                 int matIdx = aiMesh.mMaterialIndex();
-                int matId = 0;
+                Material material = new Material();
                 if (matIdx >= 0 && matIdx < materialList.size()) {
-                    matId = materialList.get(matIdx).getId();
+                    material = materialList.get(matIdx);
                 }
                 DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
-                meshStructure.putMeshNode(new MeshBuffer.MeshBufferNode(meshData, matId));
+                meshStructure.putMeshNode(new MeshBuffer.MeshBufferNode(meshData, material));
             }
             Assimp.aiReleaseImport(aiScene);
 
