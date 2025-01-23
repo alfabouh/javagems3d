@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.skybox.Background
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;
 

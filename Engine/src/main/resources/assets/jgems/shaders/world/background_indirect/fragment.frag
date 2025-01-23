@@ -117,8 +117,7 @@ void main()
     vec4 lights = calc_light(frag_pos, normals, specular);
     frag_color = diffuse * (lights + emission);
     frag_color = calc_fog(frag_pos.xyz, frag_color);
-
-   // frag_color = vec4(1.);
+    frag_color.a = 1.0;
 
     float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);

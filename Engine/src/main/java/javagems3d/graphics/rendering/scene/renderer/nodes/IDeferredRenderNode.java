@@ -1,9 +1,12 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
+import javagems3d.JGemsHelper;
+import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
@@ -11,12 +14,19 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.Indirect
 import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredSceneColorRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.SSAORenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.world.SceneWorld;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Consumer;
 
 public interface IDeferredRenderNode extends IRenderNode {
     FBOTexture2DProgram getOutGBuffer();
@@ -79,9 +89,25 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.getRawColorRenderProcessor().runProcessorRendering(frameTicking);
         }
 
+        @SuppressWarnings("all")
         public void initProcessors() {
+            Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+                final SceneWorld sceneWorld = this.getSceneWorld();
+                final ICamera camera = this.getSceneWorld().getCamera();
+                final Matrix4f cameraMatrix = JGemsTransformation.INSTANCE.getCameraViewMatrix();
+                final Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
+                final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
+
+                shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
+                if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
+                    shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
+                }
+                shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
+                shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
+            };
+
             this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
-            this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
+            this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, Pipeline.SCENE, this.getOpenGLRenderer());
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), JGemsResourceManager.globalShaderAssets.world_ssao);
             this.rawColorRenderProcessor = new DeferredSceneColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), JGemsResourceManager.globalShaderAssets.world_deferred);
         }

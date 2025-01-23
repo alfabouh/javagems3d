@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.scene.renderer.processors;
 import javagems3d.graphics.rendering.scene.renderer.IResourceInit;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.world.SceneWorld;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
@@ -20,6 +21,11 @@ public interface IRenderProcessor extends IResourceInit {
 
         public Template(OpenGLRenderer openGLRenderer) {
             this.openGLRenderer = openGLRenderer;
+        }
+
+        @NotNull
+        public SceneWorld getSceneWorld() {
+            return this.getOpenGLRenderer().getSceneWorld();
         }
 
         @Override

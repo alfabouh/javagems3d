@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
+import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
@@ -7,22 +8,30 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class BackgroundRenderProcessor extends IRenderProcessor.Template {
@@ -38,17 +47,32 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         this.deferredRenderNode = deferredRenderNode;
     }
 
+    @SuppressWarnings("all")
     @Override
     public void createResources() {
+        Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+            final ICamera camera = this.getSkyBox().getBackground().getScaledCameraBackground();
+            final Matrix4f cameraMatrix = TransformationUtils.getViewMatrix(camera);
+            final Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
+            final CubeMapTexture cubeMapProgram = this.getSkyBox().getSky2DTexture();
+
+            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
+            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
+                shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
+            }
+            shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
+            shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
+        };
+
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
-        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
+        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, Pipeline.SCENE, this.getOpenGLRenderer());
 
         this.getDirectGeometryRenderProcessor().createResources();
         this.getIndirectGeometryRenderProcessor().createResources();
 
         this.background = new FBOTexture2DProgram(true);
         T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
         }};
         this.background.createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
@@ -76,9 +100,11 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         List<SceneObject> indirectRenderObjects = groups.getSecond();
 
         this.getBackground().bindFBO();
+        GL46.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.renderIndirectObjects(frameTicking, indirectRenderObjects);
         this.renderDirectObjects(frameTicking, directRenderObjects);
+        GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getBackground().unBindFBO();
     }
 

@@ -24,8 +24,7 @@ import java.nio.FloatBuffer;
 import java.util.function.Consumer;
 
 public abstract class IndirectRenderFabric implements IRenderFabric {
-    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SCENE = new DefaultIndirectFunctionForScene();
-    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC_SHADOW = new DefaultIndirectFunctionForShadow();
+    public static final IndirectObjectsRenderer.IRenderingFunction DEFAULT_FUNC = new DefaultIndirectFunction();
 
     private final IndirectObjectsRenderer.IRenderingFunction renderingFunction;
     private final Stage stage;
@@ -49,32 +48,7 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
         return this.renderingFunction;
     }
 
-    public static class DefaultIndirectFunctionForScene implements IndirectObjectsRenderer.IRenderingFunction {
-        @Override
-        public void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData) {
-            shaderManager.beginShading();
-            CubeMapTexture cubeMapProgram = JGemsHelper.ENVIRONMENT.getWorldEnvironment().getSkyBox().getSky2DTexture();
-            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(JGemsHelper.CAMERA.getCurrentCamera().getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
-                shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
-            }
-            shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getPerspectiveMatrix()));
-            shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
-            GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, indirectBufferCommandsBuilder.getRenderBufferHandle());
-            GL46.glBindVertexArray(renderBuffer.getStaticVao());
-            GL46.glMultiDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, 0, indirectBufferCommandsBuilder.getDrawCount(), 0);
-            GL46.glBindVertexArray(0);
-            GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, 0);
-            shaderManager.endShading();
-        }
-
-        @Override
-        public int uniqueFunctionID() {
-            return 0;
-        }
-    }
-
-    public static class DefaultIndirectFunctionForShadow implements IndirectObjectsRenderer.IRenderingFunction {
+    public static class DefaultIndirectFunction implements IndirectObjectsRenderer.IRenderingFunction {
         @Override
         public void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData) {
             Consumer<JGemsShaderManager> functionToHandleUniforms = metaData.getterFunc().getObject(0);
@@ -92,7 +66,7 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
 
         @Override
         public int uniqueFunctionID() {
-            return 1;
+            return 0;
         }
     }
 }

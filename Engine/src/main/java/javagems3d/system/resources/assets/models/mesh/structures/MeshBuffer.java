@@ -37,6 +37,12 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
     }
 
     @Override
+    public void clear() {
+        super.clear();
+        this.getPassData().clear();
+    }
+
+    @Override
     public boolean canBeUsedInIndirectRendering() {
         return true;
     }
@@ -51,7 +57,7 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
     }
 
     public static final class MeshBufferNode extends MeshStructure.Node<DataMesh> {
-        private Material material;
+        private final Material material;
 
         public MeshBufferNode(@NotNull DataMesh meshData, Material material) {
             super(meshData);
