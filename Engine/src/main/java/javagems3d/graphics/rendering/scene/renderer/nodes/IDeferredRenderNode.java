@@ -113,7 +113,7 @@ public interface IDeferredRenderNode extends IRenderNode {
                 add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
             }};
 
-            this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
             this.getOutSSAOBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
             this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
         }

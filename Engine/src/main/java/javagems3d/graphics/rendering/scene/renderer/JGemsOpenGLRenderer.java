@@ -33,9 +33,11 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
+import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.collections.Pair;
@@ -75,7 +77,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     @Override
     public @NotNull Vector2i getRenderingResolution() {
-        return this.getWindowSize();
+        return this.getWindowSize().div(1.0f);
     }
 
     protected void initNodes() {
@@ -149,7 +151,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(Nodes.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
-        OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
+        OpenGLRenderer.setViewPort(this.getRenderingResolution());
         if (this.getSceneWorld().getCamera() == null) {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             uiRenderNode.onRender(frameTicking);
@@ -163,7 +165,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
             return;
         }
         this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld().getCamera());
-        OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
+        OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
         Map<Stage, List<SceneObject>> dividedGroups = JGemsHelper.RENDERING.getFilteredSetToRender(this.getSceneWorld().getSceneObjects(), Pipeline.SCENE, true).stream().collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
 
@@ -173,17 +175,27 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
         deferredRenderNode.onRender(frameTicking);
         forwardRenderNode.onRender(frameTicking);
-        //transparencyRenderNode.onRender(frameTicking);
+        transparencyRenderNode.onRender(frameTicking);
         gluingRenderNode.onRender(frameTicking);
         postRenderNode.onRender(frameTicking);
-        this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
 
+        OpenGLRenderer.setViewPort(this.getWindowSize());
+        this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
         uiRenderNode.onRender(frameTicking);
         this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
-        finalFBO.copyFBOtoFBOColor(0, Pair.get(new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)), this.getRenderingResolution());
+       // finalFBO.copyFBOtoFBOColor(0, Pair.get(new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)), this.getRenderingResolution());
+
+        try (Model<Format2D> f = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowSize()), 0)){
+            JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
+            imgShader.beginShading();
+            imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
+            imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
+            JGemsHelper.RENDERING.renderModel(f, GL46.GL_TRIANGLES);
+            imgShader.endShading();
+        }
     }
 
     @Override
@@ -202,7 +214,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         if (this.sceenModel != null) {
             this.sceenModel.clear();
         }
-        this.sceenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getRenderingResolution()), 0);
+        this.sceenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowSize()), 0);
     }
 
     @Override

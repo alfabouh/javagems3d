@@ -50,7 +50,6 @@ public class JGemsScene implements IScene {
     @SuppressWarnings("all")
     public void renderScene(float frameDeltaTime) throws InterruptedException {
         if (JGemsHelper.WINDOW.isWindowActive()) {
-            OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
             JGemsOpenGLRenderer.UBOShader().beginShading();
             if (this.getCamera() != null) {
                 this.elapsedTime += frameDeltaTime / JGemsPhysics.getFrameTime();
