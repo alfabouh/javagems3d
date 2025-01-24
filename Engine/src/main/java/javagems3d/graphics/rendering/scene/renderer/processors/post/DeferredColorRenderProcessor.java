@@ -13,14 +13,13 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
-public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template {
-    private FBOTexture2DProgram colorBuffer;
+public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
     private final JGemsShaderManager lightPassShader;
     private final FBOTexture2DProgram gBuffer;
     private final FBOTexture2DProgram ssaoBuffer;
     private boolean isSsaoValid;
 
-    public DeferredSceneColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
+    public DeferredColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
         super(openGLRenderer);
         this.lightPassShader = lightPassShader;
         this.gBuffer = gBuffer;
@@ -30,28 +29,17 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
 
     @Override
     public void createResources() {
-        this.colorBuffer = new FBOTexture2DProgram(true);
-        T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
-            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
-        }};
-        this.colorBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
     @Override
     public void destroyResources() {
-        if (this.getColorBuffer() != null) {
-            this.getColorBuffer().clearFBO();
-        }
     }
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
         FBOTexture2DProgram gBuffer = this.getGBuffer();
         FBOTexture2DProgram ssaoBuffer = this.getSsaoBuffer();
-        //this.getIndirectGeometryRenderProcessor().getGBuffer().copyFBOtoFBOColor(this.getColorBuffer().getFrameBufferId(), new Pair[]{new Pair<>(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_COLOR_ATTACHMENT0)}, this.getRenderingResolution());
-        this.getColorBuffer().bindFBO();
-        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+        
         JGemsShaderManager deferredShader = this.getLightPassShader();
         deferredShader.beginShading();
         deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
@@ -66,8 +54,6 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
         deferredShader.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
         JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         deferredShader.endShading();
-        this.getColorBuffer().unBindFBO();
-        this.getGBuffer().copyFBOtoFBODepth(this.getColorBuffer().getFrameBufferId(), this.getRenderingResolution());
     }
 
     public boolean isSsaoValid() {
@@ -88,9 +74,5 @@ public class DeferredSceneColorRenderProcessor extends IRenderProcessor.Template
 
     public JGemsShaderManager getLightPassShader() {
         return this.lightPassShader;
-    }
-
-    public FBOTexture2DProgram getColorBuffer() {
-        return colorBuffer;
     }
 }

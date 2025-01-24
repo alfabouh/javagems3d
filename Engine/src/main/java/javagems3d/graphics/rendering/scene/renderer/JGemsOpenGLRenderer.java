@@ -36,9 +36,9 @@ import javagems3d.system.resources.assets.models.formats.Format2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -84,15 +84,20 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         }
     }
 
-    protected void setDefaults() {
-        IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(this);
+    protected void setDefaultNodes() {
+        IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(new FBOTexture2DProgram(true), this);
+        IForwardRenderNode forwardRenderNode = new IForwardRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
+        ITransparencyRenderNode transparencyRenderNode = new ITransparencyRenderNode.Default(this);
+        IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(forwardRenderNode.getOutColorBuffer(), this);
+        IPostFXRenderNode postFXRenderNode = new IPostFXRenderNode.Default(gluingRenderNode.getOutColorBuffer(), this);
+        IUIRenderNode iuiRenderNode = new IUIRenderNode.Default(this.getJGemsUI(), this);
 
         this.setDeferredRenderNode(defaultDeferredNode);
-        this.setForwardRenderNode(new IForwardRenderNode.Default(defaultDeferredNode, this));
-        this.setGluingRenderNode(new IGluingRenderNode.Default(defaultDeferredNode, this));
-        this.setTransparencyRenderNode(new ITransparencyRenderNode.Default(this));
-        this.setPostFXRenderNode(new IPostFXRenderNode.Default(this));
-        this.setUIRenderNode(new IUIRenderNode.Default(this.getJGemsUI(), this));
+        this.setForwardRenderNode(forwardRenderNode);
+        this.setTransparencyRenderNode(transparencyRenderNode);
+        this.setGluingRenderNode(gluingRenderNode);
+        this.setPostFXRenderNode(postFXRenderNode);
+        this.setUIRenderNode(iuiRenderNode);
     }
 
     public void setDeferredRenderNode(@NotNull IDeferredRenderNode node) {
@@ -129,7 +134,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         this.constructScreenModel();
         this.jGemsUI = new JGemsUI();
         this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.getGlobalGameResources());
-        this.setDefaults();
+
+        this.setDefaultNodes();
         this.createResources();
     }
 
@@ -169,20 +175,15 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         forwardRenderNode.onRender(frameTicking);
         //transparencyRenderNode.onRender(frameTicking);
         gluingRenderNode.onRender(frameTicking);
-        uiRenderNode.onRender(frameTicking);
-       //postRenderNode.onRender(frameTicking);
+        postRenderNode.onRender(frameTicking);
+        this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
 
-        this.renderFinalSceneInMainBuffer(gluingRenderNode.getOutGluedScene());
+        uiRenderNode.onRender(frameTicking);
         this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
-        JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
-        imgShader.beginShading();
-        imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
-        imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
-        JGemsHelper.RENDERING.renderModel(this.getScreenModel(), GL46.GL_TRIANGLES);
-        imgShader.endShading();
+        finalFBO.copyFBOtoFBOColor(0, Pair.get(new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)), this.getRenderingResolution());
     }
 
     @Override

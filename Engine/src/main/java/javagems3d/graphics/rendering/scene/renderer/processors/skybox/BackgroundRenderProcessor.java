@@ -35,22 +35,22 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class BackgroundRenderProcessor extends IRenderProcessor.Template {
-    private final IDeferredRenderNode deferredRenderNode;
+    private final FBOTexture2DProgram inColor;
     private final SkyBox skyBox;
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
     private FBOTexture2DProgram background;
 
-    public BackgroundRenderProcessor(@NotNull SkyBox skyBox, @NotNull IDeferredRenderNode deferredRenderNode, @NotNull OpenGLRenderer openGLRenderer) {
+    public BackgroundRenderProcessor(@NotNull FBOTexture2DProgram inColor, @NotNull SkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.skyBox = skyBox;
-        this.deferredRenderNode = deferredRenderNode;
+        this.inColor = inColor;
     }
 
     @SuppressWarnings("all")
     @Override
     public void createResources() {
-        Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+        final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
             final ICamera camera = this.getSkyBox().getBackground().getScaledCameraBackground();
             final Matrix4f cameraMatrix = TransformationUtils.getViewMatrix(camera);
             final Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
@@ -139,7 +139,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         return this.skyBox;
     }
 
-    public IDeferredRenderNode getDeferredRenderNode() {
-        return this.deferredRenderNode;
+    public FBOTexture2DProgram getInColor() {
+        return this.inColor;
     }
 }

@@ -192,7 +192,7 @@ public class IndirectObjectsRenderer {
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.renderingFunction, this.indirectShader);
+            return Objects.hash(this.renderingFunction.uniqueFunctionID(), this.indirectShader);
         }
 
         public IRenderingFunction getRenderingFunction() {

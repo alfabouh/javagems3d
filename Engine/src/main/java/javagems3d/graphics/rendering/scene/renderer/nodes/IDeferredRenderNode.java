@@ -1,6 +1,5 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -11,7 +10,7 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
-import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredSceneColorRenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredColorRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.SSAORenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformation;
@@ -39,30 +38,32 @@ public interface IDeferredRenderNode extends IRenderNode {
     Collection<SceneObject> getDirectDeferredRenderingObjects();
 
     final class Default extends IRenderNode.Template implements IDeferredRenderNode {
+        private final FBOTexture2DProgram startColorFBO;
         private FBOTexture2DProgram gBuffer;
         private FBOTexture2DProgram ssaoBuffer;
 
         private DirectGeometryRenderProcessor directGeometryRenderProcessor;
         private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
         private SSAORenderProcessor ssaoRenderProcessor;
-        private DeferredSceneColorRenderProcessor rawColorRenderProcessor;
+        private DeferredColorRenderProcessor rawColorRenderProcessor;
 
         private Collection<SceneObject> indirectDeferredRenderingObjects;
         private Collection<SceneObject> directDeferredRenderingObjects;
 
-        public Default(OpenGLRenderer openGLRenderer) {
+        public Default(@NotNull FBOTexture2DProgram startColorFbo, OpenGLRenderer openGLRenderer) {
             super(openGLRenderer);
             this.indirectDeferredRenderingObjects = new HashSet<>();
             this.directDeferredRenderingObjects = new HashSet<>();
-        }
-
-        public FBOTexture2DProgram getOutGBuffer() {
-            return this.gBuffer;
+            this.startColorFBO = startColorFbo;
         }
 
         @Override
         public FBOTexture2DProgram getOutColorBuffer() {
-            return this.getRawColorRenderProcessor().getColorBuffer();
+            return this.startColorFBO;
+        }
+
+        public FBOTexture2DProgram getOutGBuffer() {
+            return this.gBuffer;
         }
 
         @Override
@@ -76,7 +77,6 @@ public interface IDeferredRenderNode extends IRenderNode {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
             this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
-
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
             this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
             this.getOutGBuffer().unBindFBO();
@@ -85,13 +85,43 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.getSSAORenderProcessor().runProcessorRendering(frameTicking);
             this.getOutSSAOBuffer().unBindFBO();
 
+            this.getOutColorBuffer().bindFBO();
+            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.getRawColorRenderProcessor().setSsaoValidate(this.getSSAORenderProcessor().isValid());
             this.getRawColorRenderProcessor().runProcessorRendering(frameTicking);
+            this.getOutColorBuffer().unBindFBO();
+
+            this.getOutGBuffer().copyFBOtoFBODepth(this.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
         }
 
-        @SuppressWarnings("all")
-        public void initProcessors() {
-            Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+        public void initFBOs() {
+            this.gBuffer = new FBOTexture2DProgram(true);
+            this.ssaoBuffer = new FBOTexture2DProgram(true);
+
+            T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{
+                add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
+                add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
+                add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
+                add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
+                add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
+            }};
+            T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
+                add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
+            }};
+            T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
+                add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
+                add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
+            }};
+
+            this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.getOutSSAOBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+        }
+
+        @Override
+        public void createResources() {
+            this.initFBOs();
+            final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
                 final SceneWorld sceneWorld = this.getSceneWorld();
                 final ICamera camera = this.getSceneWorld().getCamera();
                 final Matrix4f cameraMatrix = JGemsTransformation.INSTANCE.getCameraViewMatrix();
@@ -109,32 +139,7 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
             this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, Pipeline.SCENE, this.getOpenGLRenderer());
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), JGemsResourceManager.globalShaderAssets.world_ssao);
-            this.rawColorRenderProcessor = new DeferredSceneColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), JGemsResourceManager.globalShaderAssets.world_deferred);
-        }
-
-        public void initFBOs() {
-            this.gBuffer = new FBOTexture2DProgram(true);
-            this.ssaoBuffer = new FBOTexture2DProgram(true);
-
-            T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{
-                add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB32F, GL46.GL_RGB);
-                add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
-                add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
-                add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
-                add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
-            }};
-            T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
-                add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
-            }};
-
-            this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
-            this.ssaoBuffer.createFrameBuffer2DTexture(this.getRenderingResolution(), ssao, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
-        }
-
-        @Override
-        public void createResources() {
-            this.initFBOs();
-            this.initProcessors();
+            this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), JGemsResourceManager.globalShaderAssets.world_deferred);
 
             this.getSSAORenderProcessor().createResources();
             this.getDirectGeometryRenderProcessor().createResources();
@@ -155,6 +160,9 @@ public interface IDeferredRenderNode extends IRenderNode {
             if (this.getOutSSAOBuffer() != null) {
                 this.getOutSSAOBuffer().clearFBO();
             }
+            if (this.getOutColorBuffer() != null) {
+                this.getOutColorBuffer().clearFBO();
+            }
         }
 
         public void setIndirectDeferredRenderingObjects(@NotNull Collection<SceneObject> indirectDeferredRenderingObjects) {
@@ -173,7 +181,7 @@ public interface IDeferredRenderNode extends IRenderNode {
             return this.directDeferredRenderingObjects;
         }
 
-        public DeferredSceneColorRenderProcessor getRawColorRenderProcessor() {
+        public DeferredColorRenderProcessor getRawColorRenderProcessor() {
             return this.rawColorRenderProcessor;
         }
 

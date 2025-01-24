@@ -15,6 +15,7 @@ import org.lwjgl.opengl.GL46;
 import java.util.Collection;
 
 public interface IForwardRenderNode extends IRenderNode {
+    FBOTexture2DProgram getInColorBuffer();
     FBOTexture2DProgram getOutColorBuffer();
 
     void setForwardRenderingObjects(@NotNull Collection<SceneObject> forwardRenderingObjects);
@@ -25,16 +26,21 @@ public interface IForwardRenderNode extends IRenderNode {
         private DirectGeometryRenderProcessor directGeometryRenderProcessor;
         private SkyboxRenderProcessor skyboxRenderProcessor;
         private BackgroundRenderProcessor backgroundRenderProcessor;
-        private final IDeferredRenderNode deferredRenderNode;
+        private final FBOTexture2DProgram inColor;
 
-        public Default(@NotNull IDeferredRenderNode deferredRenderNode, OpenGLRenderer openGLRenderer) {
+        public Default(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
             super(openGLRenderer);
-            this.deferredRenderNode = deferredRenderNode;
+            this.inColor = inColor;
+        }
+
+        @Override
+        public FBOTexture2DProgram getInColorBuffer() {
+            return this.inColor;
         }
 
         @Override
         public FBOTexture2DProgram getOutColorBuffer() {
-            return this.getDeferredRenderNode().getOutColorBuffer();
+            return this.getInColorBuffer();
         }
 
         @Override
@@ -53,7 +59,7 @@ public interface IForwardRenderNode extends IRenderNode {
         public void initProcessors() {
             this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
             this.skyboxRenderProcessor = new SkyboxRenderProcessor(this.getSceneWorld().getEnvironment().getSkyBox(), this.getOpenGLRenderer());
-            this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getSceneWorld().getEnvironment().getSkyBox(), this.getDeferredRenderNode(), this.getOpenGLRenderer());
+            this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), this.getSceneWorld().getEnvironment().getSkyBox(), this.getOpenGLRenderer());
         }
 
         public void initFBOs() {
@@ -83,10 +89,6 @@ public interface IForwardRenderNode extends IRenderNode {
 
         public BackgroundRenderProcessor getBackgroundRenderProcessor() {
             return this.backgroundRenderProcessor;
-        }
-
-        public IDeferredRenderNode getDeferredRenderNode() {
-            return this.deferredRenderNode;
         }
 
         public SkyboxRenderProcessor getSkyboxRenderProcessor() {
