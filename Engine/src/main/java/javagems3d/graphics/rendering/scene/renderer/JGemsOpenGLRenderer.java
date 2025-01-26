@@ -151,7 +151,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(Nodes.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
-        OpenGLRenderer.setViewPort(this.getRenderingResolution());
+        OpenGLRenderer.setViewPort(this.getWindowSize());
         if (this.getSceneWorld().getCamera() == null) {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             uiRenderNode.onRender(frameTicking);

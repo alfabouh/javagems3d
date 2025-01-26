@@ -19,6 +19,7 @@ const int metallic_code = 1 << 4;
 const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
 
+layout (early_fragment_tests) in;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 

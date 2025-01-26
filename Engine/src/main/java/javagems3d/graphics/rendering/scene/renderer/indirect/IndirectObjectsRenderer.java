@@ -50,37 +50,26 @@ public class IndirectObjectsRenderer {
     }
 
     public void processAndRender(@NotNull Pipeline pipeline, @Nullable ArbitraryArguments metaData) {
+        if (this.getIndirectMeshObjects() == null) {
+            return;
+        }
         IndirectRenderBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
+        IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
+        indirectBufferCommandsBuilder1.createBuffer();
+        IntBuffer indexes = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
+        IntBuffer materialIds = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
+        indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, this.getIndirectMeshObjects());
+        this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, pipeline);
         if (this.getOverlappingOperator() != null) {
-            IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
-            indirectBufferCommandsBuilder1.createBuffer();
-
-            IntBuffer indexes = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
-            IntBuffer materialIds = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
-            indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, this.getIndirectMeshObjects());
-
-            this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, pipeline);
             this.render(this.getOverlappingOperator(), indirectBufferCommandsBuilder1, renderBuffer, metaData);
-
-            indirectBufferCommandsBuilder1.destroyBuffer();
         } else {
             Map<Operator, Set<SceneObject>> map = this.groupObjects(this.getIndirectMeshObjects(), pipeline);
             for (Map.Entry<Operator, Set<SceneObject>> sceneObjects : map.entrySet()) {
                 Operator operator = sceneObjects.getKey();
-
-                IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
-                indirectBufferCommandsBuilder1.createBuffer();
-
-                IntBuffer indexes = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
-                IntBuffer materialIds = this.isUseMaterialsSSBO() ? MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE) : null;
-                indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, sceneObjects.getValue());
-
-                this.fillSSBOWithInformation(indexes, materialIds, sceneObjects.getValue(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, pipeline);
                 this.render(operator, indirectBufferCommandsBuilder1, renderBuffer, metaData);
-
-                indirectBufferCommandsBuilder1.destroyBuffer();
             }
         }
+        indirectBufferCommandsBuilder1.destroyBuffer();
     }
 
     protected void render(Operator operator, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @Nullable ArbitraryArguments arbitraryArguments) {
@@ -126,7 +115,7 @@ public class IndirectObjectsRenderer {
         }
     }
 
-    protected Map<Operator, Set<SceneObject>> groupObjects(Collection<SceneObject> sceneObjects, Pipeline pipeline) {
+    protected Map<Operator, Set<SceneObject>> groupObjects(@NotNull Collection<SceneObject> sceneObjects, Pipeline pipeline) {
         return sceneObjects.stream().collect(Collectors.groupingBy(e -> {
             RenderTable.Data renderingData = e.getRenderingTable().getRenderingData(pipeline);
             if (renderingData.getRenderFabric() == null) {

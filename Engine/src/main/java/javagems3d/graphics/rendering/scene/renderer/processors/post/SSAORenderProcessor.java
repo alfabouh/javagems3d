@@ -151,9 +151,9 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         return texture2DProgram;
     }
 
-    protected ITextureProgram createSSAOBuffer(Vector2i windowSize) {
+    protected ITextureProgram createSSAOBuffer(Vector2i size) {
         TextureSimple2DProgram texture2DProgram = new TextureSimple2DProgram();
-        texture2DProgram.createTexture(windowSize, new Texture2DProgram.Properties(GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), null);
+        texture2DProgram.createTexture(size, new Texture2DProgram.Properties(GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), null);
         return texture2DProgram;
     }
 

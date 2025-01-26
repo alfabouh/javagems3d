@@ -6,8 +6,10 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.processors.cullling.IndirectOcclusionCullingProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredColorRenderProcessor;
@@ -15,6 +17,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.post.SSAORenderPr
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformation;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
@@ -23,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
@@ -46,6 +50,7 @@ public interface IDeferredRenderNode extends IRenderNode {
         private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
         private SSAORenderProcessor ssaoRenderProcessor;
         private DeferredColorRenderProcessor rawColorRenderProcessor;
+        private IndirectOcclusionCullingProcessor occlusionCullingProcessor;
 
         private Collection<SceneObject> indirectDeferredRenderingObjects;
         private Collection<SceneObject> directDeferredRenderingObjects;
@@ -73,8 +78,19 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         @Override
         public void onRender(FrameTicking frameTicking) {
+           // this.earlyOcclusionCulling(frameTicking);
+
+         //  ByteBuffer buffer = ShaderStorageBufferProgram.readData(JGemsResourceManager.globalShaderAssets.VisibilityCulling);
+         //  for (int i = 0; i < 2048; i++) {
+         //      int value = buffer.getInt(i * Integer.BYTES);
+         //      if (value == 1) {
+         //          System.out.println("Slot " + i + ": " + true);
+         //      }
+         //  }
+
             this.getOutGBuffer().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+            //this.earlyOcclusionCulling(frameTicking);
             this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
             this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
@@ -92,6 +108,14 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.getOutColorBuffer().unBindFBO();
 
             this.getOutGBuffer().copyFBOtoFBODepth(this.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
+        }
+
+        private void earlyOcclusionCulling(FrameTicking frameTicking) {
+            ShaderStorageBufferObject visibilityCulling = JGemsResourceManager.globalShaderAssets.VisibilityCulling;
+            ShaderStorageBufferProgram.zeroIntBuffer(visibilityCulling);
+            this.getOcclusionCullingProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
+            this.getOcclusionCullingProcessor().runProcessorRendering(frameTicking);
+           // GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         }
 
         public void initFBOs() {
@@ -140,11 +164,13 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, Pipeline.SCENE, this.getOpenGLRenderer());
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), JGemsResourceManager.globalShaderAssets.world_ssao);
             this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), JGemsResourceManager.globalShaderAssets.world_deferred);
+            this.occlusionCullingProcessor = new IndirectOcclusionCullingProcessor(Pipeline.SCENE, this.getOpenGLRenderer(), JGemsResourceManager.globalShaderAssets.occlusion_culling);
 
             this.getSSAORenderProcessor().createResources();
             this.getDirectGeometryRenderProcessor().createResources();
             this.getIndirectGeometryRenderProcessor().createResources();
             this.getRawColorRenderProcessor().createResources();
+            this.getOcclusionCullingProcessor().createResources();
         }
 
         @Override
@@ -153,6 +179,7 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.getDirectGeometryRenderProcessor().destroyResources();
             this.getIndirectGeometryRenderProcessor().destroyResources();
             this.getRawColorRenderProcessor().destroyResources();
+            this.getOcclusionCullingProcessor().destroyResources();
 
             if (this.getOutGBuffer() != null) {
                 this.getOutGBuffer().clearFBO();
@@ -179,6 +206,10 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         public Collection<SceneObject> getDirectDeferredRenderingObjects() {
             return this.directDeferredRenderingObjects;
+        }
+
+        public IndirectOcclusionCullingProcessor getOcclusionCullingProcessor() {
+            return this.occlusionCullingProcessor;
         }
 
         public DeferredColorRenderProcessor getRawColorRenderProcessor() {

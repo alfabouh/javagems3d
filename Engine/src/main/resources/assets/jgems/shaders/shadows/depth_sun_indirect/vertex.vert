@@ -9,9 +9,9 @@ out flat uint ent_id;
 uniform mat4 projection_view_matrix;
 
 layout(std430, binding = 1) buffer IndirectBufferData {
-    mat4 modelMatrices[1024];
-    int entityIds[1024];
-    int materialIds[1024];
+    mat4 modelMatrices[2048];
+    int entityIds[2048];
+    int materialIds[2048];
 };
 
 void main()

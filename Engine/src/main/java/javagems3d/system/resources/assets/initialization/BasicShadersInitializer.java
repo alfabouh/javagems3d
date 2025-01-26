@@ -32,6 +32,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
     public ShaderStorageBufferObject BindlessTextures;
     public ShaderStorageBufferObject MaterialsData;
     public ShaderStorageBufferObject PropertiesData;
+    public ShaderStorageBufferObject VisibilityCulling;
 
     public UniformBufferObject SunLight;
     public UniformBufferObject PointLights;
@@ -78,6 +79,8 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
     public JGemsShaderManager inventory_common_item;
     public JGemsShaderManager imgui;
 
+    public JGemsShaderManager occlusion_culling;
+
     protected void initObjects(ResourceCache resourceCache) {
         this.addShaderLibraryContainerInGlobalList(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
 
@@ -96,10 +99,15 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
         this.PropertiesData = new ShaderStorageBufferObject(4, Integer.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_PROPERTIES);
         ShaderStorageBufferProgram.createSSBO(this.PropertiesData);
 
+        this.VisibilityCulling = new ShaderStorageBufferObject(5, Integer.BYTES * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS);
+        ShaderStorageBufferProgram.createSSBO(this.VisibilityCulling);
+
         this.SunLight = this.createUBO("SunLight", 0, LightsScene.SN_STRUCT_SIZE * Float.BYTES);
         this.PointLights = this.createUBO("PointLights", 1, ((LightsScene.PL_STRUCT_SIZE * Float.BYTES) * JGemsGlobalConfiguration.MAX_POINT_LIGHTS) + Integer.BYTES);
         this.Misc = this.createUBO("Misc", 2, Float.BYTES);
         this.Fog = this.createUBO("Fog", 3, Environment.FOG_STRUCT_SIZE * Float.BYTES);
+
+        this.occlusion_culling = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "culling/occlusion"));
 
         this.world_pickable = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "world/world_pickable"));
         this.debug = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "debug"));

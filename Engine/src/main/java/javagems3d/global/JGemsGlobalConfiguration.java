@@ -13,7 +13,7 @@ public abstract class JGemsGlobalConfiguration {
 
     public static int MAX_INDIRECT_RENDERING_MESH_PROPERTIES = 512;
     public static int MAX_INDIRECT_RENDERING_MESH_MATERIALS = 256;
-    public static int MAX_INDIRECT_RENDERING_MESH_DATASETS = 1024;
+    public static int MAX_INDIRECT_RENDERING_MESH_DATASETS = 2048;
     public static int MAX_BINDLESS_TEXTURES = 1024;
 
     public static int MAX_PARTICLES = 512;
