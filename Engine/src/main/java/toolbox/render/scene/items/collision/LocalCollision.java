@@ -60,7 +60,7 @@ public final class LocalCollision {
         Vector3f closestVector = null;
         for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
             List<Float> floats = meshNode.getMesh().getVertexPositions();
-            for (int i = 0; i < meshNode.getMesh().numVertices(); i += 3) {
+            for (int i = 0; i < meshNode.getMesh().numVertexIndexes(); i += 3) {
                 int i1 = meshNode.getMesh().getVertexIndexes().get(i) * 3;
                 int i2 = meshNode.getMesh().getVertexIndexes().get(i + 1) * 3;
                 int i3 = meshNode.getMesh().getVertexIndexes().get(i + 2) * 3;
@@ -90,7 +90,7 @@ public final class LocalCollision {
 
         for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
             List<Float> floats = meshNode.getMesh().getVertexPositions();
-            for (int i = 0; i < meshNode.getMesh().numVertices(); i += 3) {
+            for (int i = 0; i < meshNode.getMesh().numVertexIndexes(); i += 3) {
                 int i1 = meshNode.getMesh().getVertexIndexes().get(i) * 3;
                 int i2 = meshNode.getMesh().getVertexIndexes().get(i + 1) * 3;
                 int i3 = meshNode.getMesh().getVertexIndexes().get(i + 2) * 3;

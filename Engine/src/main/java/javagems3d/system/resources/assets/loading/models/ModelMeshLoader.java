@@ -231,12 +231,12 @@ public class ModelMeshLoader implements ILoadingHelper {
         }
 
         DataMesh dataMesh = new DataMesh();
-        dataMesh.putIndexes(vertices);
-        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_POSITIONS, positions);
-        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, textureCoordinates);
-        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_NORMALS, normals);
-        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_TANGENTS, tangents);
-        dataMesh.putBufferInMeshData(DefaultAttributePointers.ATTR_BI_TANGENTS, biTangents);
+        dataMesh.putVertexIndexes(vertices);
+        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_POSITIONS, positions);
+        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, textureCoordinates);
+        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_NORMALS, normals);
+        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_TANGENTS, tangents);
+        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_BI_TANGENTS, biTangents);
 
         if (skeletonData != null) {
             IntegerVertexAttribute boneIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONE_INDEXES);
@@ -280,11 +280,11 @@ public class ModelMeshLoader implements ILoadingHelper {
         vaTangents.put(tangents);
         vaBiTangents.put(biTangents);
 
-        renderMesh.addVertexAttributeInMesh(vaPositions);
-        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        renderMesh.addVertexAttributeInMesh(vaNormals);
-        renderMesh.addVertexAttributeInMesh(vaTangents);
-        renderMesh.addVertexAttributeInMesh(vaBiTangents);
+        renderMesh.putVertexAttribute(vaPositions);
+        renderMesh.putVertexAttribute(vaTextureCoordinates);
+        renderMesh.putVertexAttribute(vaNormals);
+        renderMesh.putVertexAttribute(vaTangents);
+        renderMesh.putVertexAttribute(vaBiTangents);
 
         if (skeletonData != null) {
             IntegerVertexAttribute boneIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONE_INDEXES);
@@ -293,8 +293,8 @@ public class ModelMeshLoader implements ILoadingHelper {
             boneIndexes.putArray(skeletonData.getBoneIds());
             boneWeights.putArray(skeletonData.getWeights());
 
-            renderMesh.addVertexAttributeInMesh(boneIndexes);
-            renderMesh.addVertexAttributeInMesh(boneWeights);
+            renderMesh.putVertexAttribute(boneIndexes);
+            renderMesh.putVertexAttribute(boneWeights);
         }
 
         renderMesh.bakeMesh();

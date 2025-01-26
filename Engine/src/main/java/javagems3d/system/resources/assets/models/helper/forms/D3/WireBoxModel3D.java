@@ -109,7 +109,7 @@ public class WireBoxModel3D implements BasicModelCreator<Format3D> {
         renderMesh.putVertexIndex(3);
         renderMesh.putVertexIndex(7);
 
-        renderMesh.addVertexAttributeInMesh(vaPositions);
+        renderMesh.putVertexAttribute(vaPositions);
 
         renderMesh.bakeMesh();
         return renderMesh;

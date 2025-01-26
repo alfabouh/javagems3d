@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class DataMesh implements IMesh {
         this.bufferMap = new HashMap<>();
     }
 
-    public void putIndexes(List<Integer> indexes) {
+    public void putVertexIndexes(List<Integer> indexes) {
         IntBuffer buffer = MemoryUtil.memAllocInt(indexes.size());
         for (int i : indexes) {
             buffer.put(i);
@@ -31,7 +30,7 @@ public class DataMesh implements IMesh {
     }
 
     @SuppressWarnings("all")
-    public DataMesh putBufferInMeshData(RenderAttributePointer attributePointer, List<Float> array) {
+    public DataMesh putVertexBuffer(RenderAttributePointer attributePointer, List<Float> array) {
         this.getBufferMap().put(attributePointer.getIndex(), new VertexBuffer(attributePointer, array));
         return this;
     }
@@ -42,7 +41,7 @@ public class DataMesh implements IMesh {
 
     @SuppressWarnings("all")
     public VertexBuffer<Float> getBufferById(int id) {
-        return this.getBufferMap().get(id);
+        return this.getBufferMap().getOrDefault(id, null);
     }
 
     public VertexBuffer<Float> getBufferById(RenderAttributePointer id) {

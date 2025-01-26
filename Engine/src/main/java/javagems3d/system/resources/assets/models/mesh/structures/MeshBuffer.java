@@ -14,6 +14,7 @@ package javagems3d.system.resources.assets.models.mesh.structures;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
     public static final class MeshBufferNode extends MeshStructure.Node<DataMesh> {
         private final Material material;
 
-        public MeshBufferNode(@NotNull DataMesh meshData, Material material) {
+        public MeshBufferNode(@NotNull DataMesh meshData, @Nullable Material material) {
             super(meshData);
             this.material = material;
         }
@@ -80,12 +81,12 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
         private final int vertices;
         private final int firstIndexOffset;
 
-        public PassData(int firstIndexOffset, int sizeInBytes, int materialId, int offset, int vertices) {
+        public PassData(int firstIndexOffset, int sizeInBytes, int materialId, int offset, int vertexIndexes) {
             this.firstIndexOffset = firstIndexOffset;
             this.sizeInBytes = sizeInBytes;
             this.materialId = materialId;
             this.offset = offset;
-            this.vertices = vertices;
+            this.vertices = vertexIndexes;
         }
 
         public int getFirstIndexOffset() {
@@ -108,7 +109,7 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
             return this.offset;
         }
 
-        public int getVertices() {
+        public int numVertexIndexes() {
             return this.vertices;
         }
     }

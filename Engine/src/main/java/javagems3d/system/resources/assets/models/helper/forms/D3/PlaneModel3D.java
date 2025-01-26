@@ -226,11 +226,11 @@ public class PlaneModel3D implements BasicModelCreator<Format3D> {
             vaBiTangents.put(-biTan2z);
         }
 
-        renderMesh.addVertexAttributeInMesh(vaPositions);
-        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        renderMesh.addVertexAttributeInMesh(vaNormals);
-        renderMesh.addVertexAttributeInMesh(vaTangents);
-        renderMesh.addVertexAttributeInMesh(vaBiTangents);
+        renderMesh.putVertexAttribute(vaPositions);
+        renderMesh.putVertexAttribute(vaTextureCoordinates);
+        renderMesh.putVertexAttribute(vaNormals);
+        renderMesh.putVertexAttribute(vaTangents);
+        renderMesh.putVertexAttribute(vaBiTangents);
 
         renderMesh.bakeMesh();
         return renderMesh;

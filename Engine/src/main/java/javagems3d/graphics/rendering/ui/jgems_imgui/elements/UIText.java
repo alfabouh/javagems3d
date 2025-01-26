@@ -172,8 +172,8 @@ public class UIText extends UIElement {
             }
             this.width = startX;
 
-            renderMesh.addVertexAttributeInMesh(vaPositions);
-            renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+            renderMesh.putVertexAttribute(vaPositions);
+            renderMesh.putVertexAttribute(vaTextureCoordinates);
 
             renderMesh.bakeMesh();
             return new Model<>(new Format2D(), new MeshGroup(new MeshGroup.MeshGroupNode(renderMesh)));

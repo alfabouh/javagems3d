@@ -52,7 +52,7 @@ public class VectorModel3D implements BasicModelCreator<Format3D> {
         renderMesh.putVertexIndex(0);
         renderMesh.putVertexIndex(1);
 
-        renderMesh.addVertexAttributeInMesh(vaPositions);
+        renderMesh.putVertexAttribute(vaPositions);
 
         renderMesh.bakeMesh();
         return renderMesh;

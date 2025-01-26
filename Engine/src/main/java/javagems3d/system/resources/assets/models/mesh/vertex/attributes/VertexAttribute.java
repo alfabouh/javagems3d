@@ -16,12 +16,14 @@ public abstract class VertexAttribute<T> {
         this.values = new ArrayList<>();
     }
 
-    public void put(List<T> values) {
+    public VertexAttribute<T> put(List<T> values) {
         this.getValues().addAll(values);
+        return this;
     }
 
-    public void put(T value) {
+    public VertexAttribute<T> put(T value) {
         this.getValues().add(value);
+        return this;
     }
 
     public abstract void pushGLBuffer();

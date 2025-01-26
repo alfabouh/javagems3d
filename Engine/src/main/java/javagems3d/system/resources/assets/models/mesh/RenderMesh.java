@@ -9,7 +9,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.IntBuffer;
 import java.util.*;
 
-public class RenderMesh implements IMesh {
+public class RenderMesh implements IMesh, AutoCloseable {
     private int positionsIdx;
 
     private int vao;
@@ -49,7 +49,7 @@ public class RenderMesh implements IMesh {
         this.getVertexIndexes().add(index);
     }
 
-    public void addVertexAttributeInMesh(VertexAttribute<?> vertexAttribute) {
+    public void putVertexAttribute(VertexAttribute<?> vertexAttribute) {
         this.vertexAttributesMap.put(vertexAttribute.getIndex(), vertexAttribute);
     }
 
@@ -176,4 +176,8 @@ public class RenderMesh implements IMesh {
         return this.baked;
     }
 
+    @Override
+    public void close() {
+        this.bakeMesh();
+    }
 }

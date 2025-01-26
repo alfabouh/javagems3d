@@ -7,6 +7,7 @@ import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffe
 import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -64,11 +65,20 @@ public final class IndirectRenderBufferProgram {
             for (MeshBuffer.MeshBufferNode node : meshBuffer.getMeshNodes()) {
                 DataMesh dataMesh = node.getMesh();
                 int posLength = dataMesh.numPositions();
-                indexesSize += dataMesh.numVertices();
+                indexesSize += dataMesh.numVertexIndexes();
                 positionsSize += posLength;
 
-                for (VertexBuffer<Float> attributePointer : dataMesh.getBufferMap().values()) {
-                    structSize += attributePointer.getLength();
+                for (RenderAttributePointer renderAttributePointer : this.getLayout().getRenderAttributePointers()) {
+                    VertexBuffer<Float> attributeBuffer = dataMesh.getBufferById(renderAttributePointer.getIndex());
+                    if (attributeBuffer != null) {
+                        int size = attributeBuffer.getValues().size();
+                        if (size % renderAttributePointer.getLengthInMemory() != 0) {
+                            throw new JGemsRuntimeException("MeshBuffer attribute: " + renderAttributePointer.getPointer() + " - doesn't match layout: " + renderAttributePointer.getLengthInMemory());
+                        }
+                        structSize += size;
+                    } else {
+                        structSize += (dataMesh.numPositions() / 3) * renderAttributePointer.getLengthInMemory();
+                    }
                 }
 
                 int meshSizeInBytes = 0;
@@ -78,9 +88,9 @@ public final class IndirectRenderBufferProgram {
                 }
                 meshSizeInBytes *= posLength;
 
-                meshBuffer.getPassData().add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, meshBuffersDataCache.getMaterialId(node.getMaterial()), offset, dataMesh.numVertices()));
+                meshBuffer.getPassData().add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, node.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(node.getMaterial()), offset, dataMesh.numVertexIndexes()));
                 offset = positionsSize / 3;
-                collect += node.getMesh().numVertices();
+                collect += node.getMesh().numVertexIndexes();
             }
             firstIndexOffset += collect;
         }
@@ -132,11 +142,16 @@ public final class IndirectRenderBufferProgram {
         List<VertexBuffer<Float>> values = new ArrayList<>(dataMesh.getBufferMap().values());
         values.sort(Comparator.comparingInt(e -> e.getRenderAttributePointer().getIndex()));
 
-        for (int row = 0; row < dataMesh.numPositions() / 3; row += 1) {
+        for (int row = 0; row < dataMesh.numPositions() / 3; row++) {
             for (int j = 0; j < this.getLayout().getAttributesNum(); j++) {
                 RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(j);
+                VertexBuffer<Float> attributeBuffer = dataMesh.getBufferById(j);
                 for (int i = 0; i < renderAttributePointer.getLengthInMemory(); i++) {
-                    floatBuffer.put(dataMesh.getBufferById(j).getValues().get(row * renderAttributePointer.getLengthInMemory() + i));
+                    if (attributeBuffer != null) {
+                        floatBuffer.put(attributeBuffer.getValues().get(row * renderAttributePointer.getLengthInMemory() + i));
+                    } else {
+                        floatBuffer.put(0.0f);
+                    }
                 }
             }
         }

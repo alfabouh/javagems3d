@@ -114,8 +114,8 @@ public class PlaneModel2D implements BasicModelCreator<Format2D> {
         renderMesh.putVertexIndex(0);
         renderMesh.putVertexIndex(2);
 
-        renderMesh.addVertexAttributeInMesh(vaPositions);
-        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        renderMesh.putVertexAttribute(vaPositions);
+        renderMesh.putVertexAttribute(vaTextureCoordinates);
 
         renderMesh.bakeMesh();
         return renderMesh;

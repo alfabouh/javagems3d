@@ -6,10 +6,10 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.system.resources.assets.initialization.ModelAssetsInitializer;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
@@ -18,30 +18,13 @@ import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVer
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
 public class SkyboxRenderProcessor extends IRenderProcessor.Template {
-    private static final float[] skyboxPos = {
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, -1.0f,
-            1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f
-    };
-    private static final int[] skyboxInd = new int[]{
-            0, 1, 3, 3, 1, 2,
-            4, 0, 3, 5, 4, 3,
-            3, 2, 7, 5, 3, 7,
-            6, 1, 0, 6, 0, 4,
-            2, 1, 6, 2, 6, 7,
-            7, 6, 4, 7, 4, 5
-    };
-    private Model<Format3D> skyBoxModel;
+    private final Model<Format3D> skyBoxModel;
     private final SkyBox skyBox;
     private ITextureProgram backgroundTexture;
 
@@ -49,24 +32,15 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         super(openGLRenderer);
         this.skyBox = skyBox;
         this.backgroundTexture = null;
+        this.skyBoxModel = new Model<>(new Format3D(), JGemsResourceManager.globalModelAssets.defaultCube_gr);
     }
 
     @Override
     public void createResources() {
-        RenderMesh mesh = new RenderMesh();
-        FloatVertexAttribute positions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
-        positions.putArray(SkyboxRenderProcessor.skyboxPos);
-        mesh.addVertexAttributeInMesh(positions);
-        mesh.putVertexIndexes(SkyboxRenderProcessor.skyboxInd);
-        mesh.bakeMesh();
-        this.skyBoxModel = new Model<>(new Format3D(), new MeshGroup(mesh));
     }
 
     @Override
     public void destroyResources() {
-        if (this.skyBoxModel != null) {
-            this.skyBoxModel.clear();
-        }
     }
 
     @Override

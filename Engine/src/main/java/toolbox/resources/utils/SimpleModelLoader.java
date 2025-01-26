@@ -111,9 +111,9 @@ public class SimpleModelLoader {
         vaNormals.put(normals);
         vaTextureCoordinates.put(textureCoordinates);
 
-        renderMesh.addVertexAttributeInMesh(vaPositions);
-        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
-        renderMesh.addVertexAttributeInMesh(vaNormals);
+        renderMesh.putVertexAttribute(vaPositions);
+        renderMesh.putVertexAttribute(vaTextureCoordinates);
+        renderMesh.putVertexAttribute(vaNormals);
 
         renderMesh.bakeMesh();
         return renderMesh;

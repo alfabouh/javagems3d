@@ -58,13 +58,13 @@ public class IndirectBufferCommandsBuilder {
             int firstIdx = 0;
             int entitiesCount = meshBuffer.getValue().size();
             for (MeshBuffer.PassData data : meshBuffer.getKey().getPassData()) {
-                commandBuffer.putInt(data.getVertices());
+                commandBuffer.putInt(data.numVertexIndexes());
                 commandBuffer.putInt(entitiesCount);
                 commandBuffer.putInt(data.getFirstIndexOffset() + firstIdx);
                 commandBuffer.putInt(data.getOffset());
                 commandBuffer.putInt(baseInstance);
 
-                firstIdx += data.getVertices();
+                firstIdx += data.numVertexIndexes();
                 baseInstance += entitiesCount;
 
                 for (SceneObject modeled : meshBuffer.getValue()) {

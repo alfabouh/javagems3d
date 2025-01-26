@@ -141,8 +141,8 @@ public class SimplePlaneModel3D implements BasicModelCreator<Format3D> {
         renderMesh.putVertexIndex(4);
         renderMesh.putVertexIndex(6);
 
-        renderMesh.addVertexAttributeInMesh(vaPositions);
-        renderMesh.addVertexAttributeInMesh(vaTextureCoordinates);
+        renderMesh.putVertexAttribute(vaPositions);
+        renderMesh.putVertexAttribute(vaTextureCoordinates);
 
         renderMesh.bakeMesh();
         return renderMesh;

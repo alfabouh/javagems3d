@@ -489,6 +489,21 @@ public abstract class JGemsHelper {
     }
 
     public static abstract class UTILS {
+        public static List<Integer> convertIntsList(int[] arr) {
+            List<Integer> list = new ArrayList<>(arr.length);
+            for (int f : arr) {
+                list.add(f);
+            }
+            return list;
+        }
+
+        public static List<Float> convertFloatsList(float[] arr) {
+            List<Float> list = new ArrayList<>(arr.length);
+            for (float f : arr) {
+                list.add(f);
+            }
+            return list;
+        }
 
         public static int[] convertIntsArray(List<Integer> list) {
             if (list == null || list.isEmpty()) {

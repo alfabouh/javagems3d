@@ -1,6 +1,5 @@
 package launcher;
 
-import javagems3d.JGems3D;
 import launcher.run.EngineRun;
 import launcher.run.ToolBoxRun;
 

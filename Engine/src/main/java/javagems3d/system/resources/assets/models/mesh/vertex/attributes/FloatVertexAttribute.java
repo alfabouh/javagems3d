@@ -20,10 +20,11 @@ public final class FloatVertexAttribute extends VertexAttribute<Float> {
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (FloatBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
     }
 
-    public void putArray(float[] i) {
+    public FloatVertexAttribute putArray(float[] i) {
         for (float a : i) {
             this.getValues().add(a);
         }
+        return this;
     }
 
     @Override
