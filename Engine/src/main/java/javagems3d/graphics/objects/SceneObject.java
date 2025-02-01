@@ -14,21 +14,22 @@ package javagems3d.graphics.objects;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public abstract class SceneObject implements IModeled, IRendered, ILightsKeeper {
+public abstract class SceneObject implements IModeled, IRendered, ILighted {
     private AnimationData animationData;
     private final SceneWorld sceneWorld;
     private RenderAttributes renderAttributes;
     protected Model<Format3D> model;
     private float animationSpeed;
     private double lastTick;
+
+    private CullingAABB cullingAABB;
 
     public SceneObject(SceneWorld sceneWorld, Model<Format3D> model, RenderAttributes renderAttributes) {
         this.setModel(model);
@@ -37,12 +38,19 @@ public abstract class SceneObject implements IModeled, IRendered, ILightsKeeper 
         this.lastTick = JGems3D.glfwTime();
         this.animationSpeed = 1.0f;
         this.animationData = null;
+        this.cullingAABB = null;
     }
 
     public SceneObject setModel(Model<Format3D> model) {
         this.model = model;
         this.initAnimation();
+        this.setCullingData(this.pickAABBDataFromMesh());
         return this;
+    }
+
+    @Override
+    public CullingAABB getCullingData() {
+        return this.cullingAABB;
     }
 
     @Override
@@ -92,6 +100,11 @@ public abstract class SceneObject implements IModeled, IRendered, ILightsKeeper 
         this.setAnimationData(animationData);
         this.nextAnimationFrame();
         return animationData;
+    }
+
+    public SceneObject setCullingData(CullingAABB cullingAABB) {
+        this.cullingAABB = cullingAABB;
+        return this;
     }
 
     @Override

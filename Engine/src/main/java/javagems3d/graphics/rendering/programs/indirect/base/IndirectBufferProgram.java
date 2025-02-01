@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.programs.indirect;
+package javagems3d.graphics.rendering.programs.indirect.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
@@ -17,7 +17,7 @@ import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class IndirectRenderBufferProgram {
+public final class IndirectBufferProgram {
     private int staticVao;
     private final List<Integer> vboList;
 
@@ -26,11 +26,11 @@ public final class IndirectRenderBufferProgram {
 
     private final Layout layout;
 
-    public IndirectRenderBufferProgram(RenderAttributePointer... attributePointers) {
+    public IndirectBufferProgram(RenderAttributePointer... attributePointers) {
         this(new Layout(attributePointers));
     }
 
-    public IndirectRenderBufferProgram(@NotNull Layout layout) {
+    public IndirectBufferProgram(@NotNull Layout layout) {
         this.vboList = new ArrayList<>();
         this.layout = layout;
     }

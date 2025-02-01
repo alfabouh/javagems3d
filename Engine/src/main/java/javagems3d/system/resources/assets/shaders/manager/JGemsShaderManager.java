@@ -160,7 +160,7 @@ public final class JGemsShaderManager extends ShaderManager {
                         for (int i = 0; i < length; i++) {
                             matrices[i].get(16 * i, fb);
                         }
-                        ShaderStorageBufferProgram.fillSSBOWithData(JGemsResourceManager.globalShaderAssets.Bones, 0, fb);
+                        ShaderStorageBufferProgram.updateSubDataSSBO(JGemsResourceManager.globalShaderAssets.Bones, 0, fb);
                     }
                     JGemsShaderManager.this.performUniformNoWarn(new UniformString("hasAnimations"), UniformFunctions.BOOLEAN(true));
                     return true;

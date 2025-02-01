@@ -1,0 +1,11 @@
+layout(local_size_x = 256) in;
+
+layout(std430, binding = 5) buffer Visibility {
+    int visibility[2048];
+};
+void main() {
+    uint index = gl_GlobalInvocationID.x;
+    if (index < 2048) {
+        visibility[index] = 0;
+    }
+}

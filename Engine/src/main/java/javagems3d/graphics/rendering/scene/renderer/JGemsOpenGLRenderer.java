@@ -17,14 +17,16 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
+import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
+import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
+import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
-import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIMenuInterface;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIMenuInterface;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -33,14 +35,12 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
-import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -56,12 +56,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
 
-    protected IndirectRenderBufferProgram sceneIndirectRenderBufferProgram;
+    protected IndirectBufferProgram sceneIndirectBufferProgram;
 
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
 
     protected Model<Format2D> sceenModel;
+
+    private final ISceneCulling sceneCulling;
 
     public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
         super(window, sceneWorld);
@@ -71,8 +73,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         JGemsOpenGLRenderer.inGameInterface = new DearUIGameInterface();
         JGemsOpenGLRenderer.inMenuInterface = new DearUIMenuInterface();
 
-        this.sceneIndirectRenderBufferProgram = new IndirectRenderBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
+        this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
         this.sceenModel = null;
+
+        this.sceneCulling = new SceneCulling(this, null);
     }
 
     @Override
@@ -167,7 +171,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
-        Map<Stage, List<SceneObject>> dividedGroups = JGemsHelper.RENDERING.getFilteredSetToRender(this.getSceneWorld().getSceneObjects(), Pipeline.SCENE, true).stream().collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
+        Set<SceneObject> toRender = new HashSet<>(this.getSceneWorld().getSceneObjects());
+        this.getSceneCulling().cull(toRender);
+
+        Map<Stage, List<SceneObject>> dividedGroups = toRender.stream().filter(Objects::nonNull).collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
 
         deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
         deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
@@ -186,16 +193,15 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
-       // finalFBO.copyFBOtoFBOColor(0, Pair.get(new Pair<>(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_COLOR_ATTACHMENT0)), this.getRenderingResolution());
+        ((SceneCulling) this.getSceneCulling()).setFreeze(false);
 
-        try (Model<Format2D> f = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowSize()), 0)){
-            JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
-            imgShader.beginShading();
-            imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
-            imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
-            JGemsHelper.RENDERING.renderModel(f, GL46.GL_TRIANGLES);
-            imgShader.endShading();
-        }
+        JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
+        imgShader.beginShading();
+        imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
+        //imgShader.performUniformTexture(new UniformString("texture_sampler"), ((SceneCulling) this.getSceneCulling()).getGpuOcclusionCulling().getBuffer().getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
+        imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
+        JGemsHelper.RENDERING.renderModel(this.getScreenModel(), GL46.GL_TRIANGLES);
+        imgShader.endShading();
     }
 
     @Override
@@ -247,11 +253,13 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     public void createResources() {
         this.getSceneWorld().getEnvironment().createEnvironment(this);
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
+        this.getSceneCulling().createResources();
     }
 
     public void destroyResources() {
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getSceneWorld().getEnvironment().destroyEnvironment();
+        this.getSceneCulling().destroyResources();
     }
 
     @Override
@@ -262,12 +270,15 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         if (this.getDearUIRenderer() != null) {
             this.getDearUIRenderer().onWindowResize(window);
         }
+        if (this.getSceneCulling() != null) {
+            this.getSceneCulling().onWindowResize(window);
+        }
         this.constructScreenModel();
         this.getConveyorNodes().values().stream().filter(Objects::nonNull).forEach(e -> e.onWindowResize(window));
     }
 
-    public IndirectRenderBufferProgram getSceneIndirectBuffer() {
-        return this.sceneIndirectRenderBufferProgram;
+    public IndirectBufferProgram getSceneIndirectBuffer() {
+        return this.sceneIndirectBufferProgram;
     }
 
     public JGemsUI getJGemsUI() {
@@ -280,6 +291,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     public Map<Nodes, IRenderNode> getConveyorNodes() {
         return this.conveyorNodes;
+    }
+
+    @Override
+    public ISceneCulling getSceneCulling() {
+        return this.sceneCulling;
     }
 
     public static JGemsShaderManager UBOShader() {

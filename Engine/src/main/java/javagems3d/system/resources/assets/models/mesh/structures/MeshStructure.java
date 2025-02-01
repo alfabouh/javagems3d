@@ -10,6 +10,7 @@ import java.util.*;
 
 public abstract class MeshStructure <T extends MeshStructure.Node<? extends IMesh>> implements ICached {
     public static final String MESH_COLLISION_UD = "mesh_collision";
+    public static final String MESH_AABB_UD = "mesh_aabb";
 
     private final List<T> meshNodes;
     private final List<Animation> animationList;
@@ -97,6 +98,10 @@ public abstract class MeshStructure <T extends MeshStructure.Node<? extends IMes
 
     public IMeshUserData getMeshUserData(String key) {
         return this.meshUserData.get(key);
+    }
+
+    public boolean hasMeshUserData(String key) {
+        return this.getMeshUserData(key) != null;
     }
 
     public void setMeshUserData(String key, IMeshUserData meshUserData) {

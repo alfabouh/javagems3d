@@ -1,14 +1,17 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
+import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
@@ -45,7 +48,9 @@ public interface IForwardRenderNode extends IRenderNode {
 
         @Override
         public void onRender(FrameTicking frameTicking) {
+            GL46.glEnable(GL46.GL_BLEND);
             this.getBackgroundRenderProcessor().runProcessorRendering(frameTicking);
+            GL46.glDisable(GL46.GL_BLEND);
 
             this.getOutColorBuffer().bindFBO();
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());
@@ -54,6 +59,18 @@ public interface IForwardRenderNode extends IRenderNode {
             this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
             this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);
             this.getOutColorBuffer().unBindFBO();
+
+          // GL46.glDisable(GL46.GL_DEPTH_TEST);
+          // if (true) {
+          //     for (SceneObject sceneObject : this.getSceneWorld().getSceneObjects()) {
+          //         CullingAABB cullingAABB = sceneObject.getCullingData();
+          //         if (cullingAABB == null) {
+          //             continue;
+          //         }
+          //         JGemsDebugGlobalConstants.linesDebugDraw.drawAABB(DynamicsUtils.convertV3F_JME(cullingAABB.getAabbMin()), DynamicsUtils.convertV3F_JME(cullingAABB.getAabbMax()));
+          //     }
+          // }
+          // GL46.glEnable(GL46.GL_DEPTH_TEST);
         }
 
         public void initProcessors() {

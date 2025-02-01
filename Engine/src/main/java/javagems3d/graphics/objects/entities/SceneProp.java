@@ -80,6 +80,7 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
 
     @Override
     public void onUpdate(IWorld iWorld) {
+        this.setCullingData(this.pickAABBDataFromMesh());
         this.adjustLightsTranslation(this.getModel().getFormat().getPosition(), new Vector3f(0.0f));
     }
 

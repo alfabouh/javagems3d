@@ -3,21 +3,16 @@ package javagems3d.graphics.rendering.scene.renderer.indirect;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
-import javagems3d.graphics.rendering.programs.indirect.IndirectBufferCommandsBuilder;
-import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
+import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
+import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommandsProgram;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
-import javagems3d.system.service.exceptions.JGemsNullException;
-import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -27,110 +22,77 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class IndirectObjectsRenderer {
-    private static final int SSBO_DATASETS_MATRICES_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
-    private static final int SSBO_DATASETS_ENT_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
-    private static final int SSBO_DATASETS_MATERIAL_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
-    private static final int SSBO_DATASETS_PROPERTIES_SIZE = JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_PROPERTIES;
+public abstract class IndirectObjectsRenderer {
+    protected static final int SSBO_DATASETS_MATRICES_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
+    protected static final int SSBO_DATASETS_ENT_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
+    protected static final int SSBO_DATASETS_MATERIAL_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
+    protected static final int SSBO_DATASETS_PROPERTIES_SIZE = JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_PROPERTIES;
 
-    private Collection<SceneObject> indirectMeshObjects;
+    private final Pipeline pipeline;
+
+    protected Collection<SceneObject> indirectMeshObjects;
     private final OpenGLRenderer openGLRenderer;
 
-    private final boolean usePropertiesSSBO;
-    private final boolean useMaterialsSSBO;
-    private final Operator overlappingOperator;
+    protected final boolean usePropertiesSSBO;
+    protected final boolean useMaterialsSSBO;
 
-    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @Nullable Operator overlappingOperator, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
+    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull Pipeline pipeline, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
+        this.pipeline = pipeline;
         this.openGLRenderer = openGLRenderer;
         this.usePropertiesSSBO = usePropertiesSSBO;
         this.useMaterialsSSBO = useMaterialsSSBO;
-        this.overlappingOperator = overlappingOperator;
     }
 
-    public void processAndRender(@NotNull Pipeline pipeline, @Nullable ArbitraryArguments metaData) {
-        if (this.getIndirectMeshObjects() == null) {
-            return;
-        }
-        IndirectRenderBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
-        IndirectBufferCommandsBuilder indirectBufferCommandsBuilder1 = new IndirectBufferCommandsBuilder(renderBuffer);
-        indirectBufferCommandsBuilder1.createBuffer();
-        IntBuffer indexes = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
-        IntBuffer materialIds = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
-        indirectBufferCommandsBuilder1.buildCommands(indexes, materialIds, this.getIndirectMeshObjects());
-        this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, pipeline);
-        if (this.getOverlappingOperator() != null) {
-            this.render(this.getOverlappingOperator(), indirectBufferCommandsBuilder1, renderBuffer, metaData);
-        } else {
-            Map<Operator, Set<SceneObject>> map = this.groupObjects(this.getIndirectMeshObjects(), pipeline);
-            for (Map.Entry<Operator, Set<SceneObject>> sceneObjects : map.entrySet()) {
-                Operator operator = sceneObjects.getKey();
-                this.render(operator, indirectBufferCommandsBuilder1, renderBuffer, metaData);
-            }
-        }
-        indirectBufferCommandsBuilder1.destroyBuffer();
+    protected abstract void processAndRender(@Nullable ArbitraryArguments metaData);
+    protected abstract IndirectCommandsProgram createCommands(IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects);
+
+    protected void render(Operator operator, IndirectCommandsProgram indirectCommandsProgram, IndirectBufferProgram renderBuffer, @Nullable ArbitraryArguments metaData) {
+        operator.getRenderingFunction().func(operator.getIndirectShader(), indirectCommandsProgram, renderBuffer, metaData == null ? ArbitraryArguments.empty() : metaData);
     }
 
-    protected void render(Operator operator, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @Nullable ArbitraryArguments arbitraryArguments) {
-        if (arbitraryArguments == null) {
-            arbitraryArguments = ArbitraryArguments.empty();
-        }
-        IRenderingFunction renderingFunction = this.getOverlappingOperator() != null ? this.getOverlappingOperator().getRenderingFunction() : operator.getRenderingFunction();
-        renderingFunction.func(operator.getIndirectShader(), indirectBufferCommandsBuilder, renderBuffer, arbitraryArguments);
-    }
-
-    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties, Pipeline pipeline) {
+    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
         ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
         FloatBuffer matrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
 
         for (SceneObject sceneObject : sceneObjects) {
-            Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
-            IndirectRenderFabric renderFabric = (IndirectRenderFabric) sceneObject.getRenderFabric(pipeline);
-            renderFabric.onFillBufferWithMatrices(pipeline, sceneObject, matrix, matrices, null);
+            this.passMatricesInBuffer(this.getPipeline(), sceneObject, matrices);
             if (properties != null) {
-                RenderAttributes attributes = sceneObject.getRenderAttributes();
-                renderFabric.onFillBufferWithProperties(pipeline, sceneObject, attributes, properties, null);
+                this.passPropertiesInBuffer(this.getPipeline(), sceneObject, properties);
             }
         }
 
         matrices.flip();
-        ShaderStorageBufferProgram.fillSSBOWithData(indirectBufferData, 0L, matrices);
+        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, 0L, matrices);
         MemoryUtil.memFree(matrices);
 
         indexes.flip();
-        ShaderStorageBufferProgram.fillSSBOWithData(indirectBufferData, (long) (IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE) * Float.BYTES, indexes);
+        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) (IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE) * Float.BYTES, indexes);
         MemoryUtil.memFree(indexes);
 
         if (materialIds != null) {
             materialIds.flip();
-            ShaderStorageBufferProgram.fillSSBOWithData(indirectBufferData, (long) IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE * Float.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES, materialIds);
+            ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE * Float.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES, materialIds);
             MemoryUtil.memFree(materialIds);
         }
 
         if (properties != null) {
             properties.flip();
-            ShaderStorageBufferProgram.fillSSBOWithData(objectProperties, 0L, properties);
+            ShaderStorageBufferProgram.updateSubDataSSBO(objectProperties, 0L, properties);
             MemoryUtil.memFree(properties);
         }
     }
 
-    protected Map<Operator, Set<SceneObject>> groupObjects(@NotNull Collection<SceneObject> sceneObjects, Pipeline pipeline) {
-        return sceneObjects.stream().collect(Collectors.groupingBy(e -> {
-            RenderTable.Data renderingData = e.getRenderingTable().getRenderingData(pipeline);
-            if (renderingData.getRenderFabric() == null) {
-                throw new JGemsNullException("RenderFabric should not be NULL!");
-            }
-            if (!renderingData.getRenderFabric().getRenderingType().equals(Type.INDIRECT)) {
-                throw new JGemsRuntimeException("RenderFabric-type should be INDIRECT!");
-            }
-            IndirectRenderFabric renderFabric = (IndirectRenderFabric) renderingData.getRenderFabric();
-            return new Operator(renderFabric.getRenderingFunction(), renderingData.getShaderManager());
-        }, HashMap::new, Collectors.toSet()));
+    protected void passMatricesInBuffer(Pipeline pipeline, SceneObject sceneObject, FloatBuffer matrices) {
+        Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
+        IndirectRenderFabric renderFabric = (IndirectRenderFabric) sceneObject.getRenderFabric(pipeline);
+        renderFabric.onFillBufferWithMatrices(pipeline, sceneObject, matrix, matrices, null);
     }
 
-    public Operator getOverlappingOperator() {
-        return this.overlappingOperator;
+    protected void passPropertiesInBuffer(Pipeline pipeline, SceneObject sceneObject, ByteBuffer properties) {
+        IndirectRenderFabric renderFabric = (IndirectRenderFabric) sceneObject.getRenderFabric(pipeline);
+        RenderAttributes attributes = sceneObject.getRenderAttributes();
+        renderFabric.onFillBufferWithProperties(pipeline, sceneObject, attributes, properties, null);
     }
 
     public boolean isUsePropertiesSSBO() {
@@ -145,6 +107,10 @@ public class IndirectObjectsRenderer {
         this.indirectMeshObjects = sceneObjects;
     }
 
+    public Pipeline getPipeline() {
+        return this.pipeline;
+    }
+
     public Collection<SceneObject> getIndirectMeshObjects() {
         return this.indirectMeshObjects;
     }
@@ -154,7 +120,7 @@ public class IndirectObjectsRenderer {
     }
 
     public interface IRenderingFunction {
-        void func(JGemsShaderManager shaderManager, IndirectBufferCommandsBuilder indirectBufferCommandsBuilder, IndirectRenderBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData);
+        void func(JGemsShaderManager shaderManager, IndirectCommandsProgram indirectCommandsProgram, IndirectBufferProgram renderBuffer, @NotNull ArbitraryArguments metaData);
         int uniqueFunctionID();
     }
 

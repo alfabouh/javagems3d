@@ -3,13 +3,16 @@ package javagems3d.graphics.rendering.scene.renderer.nodes;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.rendering.programs.indirect.commands.BaseIndirectCommandsProgram;
+import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.processors.cullling.IndirectOcclusionCullingProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredColorRenderProcessor;
@@ -22,11 +25,12 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL46;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
@@ -38,6 +42,7 @@ public interface IDeferredRenderNode extends IRenderNode {
 
     void setIndirectDeferredRenderingObjects(@NotNull Collection<SceneObject> indirectDeferredRenderingObjects);
     void setDirectDeferredRenderingObjects(@NotNull Collection<SceneObject> directDeferredRenderingObjects);
+
     Collection<SceneObject> getIndirectDeferredRenderingObjects();
     Collection<SceneObject> getDirectDeferredRenderingObjects();
 
@@ -50,7 +55,6 @@ public interface IDeferredRenderNode extends IRenderNode {
         private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
         private SSAORenderProcessor ssaoRenderProcessor;
         private DeferredColorRenderProcessor rawColorRenderProcessor;
-        private IndirectOcclusionCullingProcessor occlusionCullingProcessor;
 
         private Collection<SceneObject> indirectDeferredRenderingObjects;
         private Collection<SceneObject> directDeferredRenderingObjects;
@@ -78,19 +82,8 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         @Override
         public void onRender(FrameTicking frameTicking) {
-           // this.earlyOcclusionCulling(frameTicking);
-
-         //  ByteBuffer buffer = ShaderStorageBufferProgram.readData(JGemsResourceManager.globalShaderAssets.VisibilityCulling);
-         //  for (int i = 0; i < 2048; i++) {
-         //      int value = buffer.getInt(i * Integer.BYTES);
-         //      if (value == 1) {
-         //          System.out.println("Slot " + i + ": " + true);
-         //      }
-         //  }
-
             this.getOutGBuffer().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-            //this.earlyOcclusionCulling(frameTicking);
             this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
             this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
             this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
@@ -108,14 +101,6 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.getOutColorBuffer().unBindFBO();
 
             this.getOutGBuffer().copyFBOtoFBODepth(this.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
-        }
-
-        private void earlyOcclusionCulling(FrameTicking frameTicking) {
-            ShaderStorageBufferObject visibilityCulling = JGemsResourceManager.globalShaderAssets.VisibilityCulling;
-            ShaderStorageBufferProgram.zeroIntBuffer(visibilityCulling);
-            this.getOcclusionCullingProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
-            this.getOcclusionCullingProcessor().runProcessorRendering(frameTicking);
-           // GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         }
 
         public void initFBOs() {
@@ -164,13 +149,11 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, Pipeline.SCENE, this.getOpenGLRenderer());
             this.ssaoRenderProcessor = new SSAORenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), JGemsResourceManager.globalShaderAssets.world_ssao);
             this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), this.getOutSSAOBuffer(), JGemsResourceManager.globalShaderAssets.world_deferred);
-            this.occlusionCullingProcessor = new IndirectOcclusionCullingProcessor(Pipeline.SCENE, this.getOpenGLRenderer(), JGemsResourceManager.globalShaderAssets.occlusion_culling);
 
             this.getSSAORenderProcessor().createResources();
             this.getDirectGeometryRenderProcessor().createResources();
             this.getIndirectGeometryRenderProcessor().createResources();
             this.getRawColorRenderProcessor().createResources();
-            this.getOcclusionCullingProcessor().createResources();
         }
 
         @Override
@@ -179,7 +162,6 @@ public interface IDeferredRenderNode extends IRenderNode {
             this.getDirectGeometryRenderProcessor().destroyResources();
             this.getIndirectGeometryRenderProcessor().destroyResources();
             this.getRawColorRenderProcessor().destroyResources();
-            this.getOcclusionCullingProcessor().destroyResources();
 
             if (this.getOutGBuffer() != null) {
                 this.getOutGBuffer().clearFBO();
@@ -208,10 +190,6 @@ public interface IDeferredRenderNode extends IRenderNode {
             return this.directDeferredRenderingObjects;
         }
 
-        public IndirectOcclusionCullingProcessor getOcclusionCullingProcessor() {
-            return this.occlusionCullingProcessor;
-        }
-
         public DeferredColorRenderProcessor getRawColorRenderProcessor() {
             return this.rawColorRenderProcessor;
         }
@@ -226,6 +204,31 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         public DirectGeometryRenderProcessor getDirectGeometryRenderProcessor() {
             return this.directGeometryRenderProcessor;
+        }
+
+        public void MillionCubesTest() {
+            final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+                final SceneWorld sceneWorld = this.getSceneWorld();
+                final ICamera camera = this.getSceneWorld().getCamera();
+                final Matrix4f cameraMatrix = JGemsTransformation.INSTANCE.getCameraViewMatrix();
+                final Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
+                final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
+
+                shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
+                if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
+                    shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
+                }
+                shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
+                shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
+            };
+
+            IndirectBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
+            BaseIndirectCommandsProgram baseIndirectCommandProgram1 = new BaseIndirectCommandsProgram(renderBuffer);
+            baseIndirectCommandProgram1.createBuffer();
+            baseIndirectCommandProgram1.buildCommands(null, null, JGemsResourceManager.globalModelAssets.grassCube, 1_000_000);
+            GroupedIndirectRenderer.IRenderingFunction renderingFunction = IndirectRenderFabric.DEFAULT_FUNC;
+            renderingFunction.func(JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect, baseIndirectCommandProgram1, renderBuffer, ArbitraryArguments.pass(uniformsHandler));
+            baseIndirectCommandProgram1.destroyBuffer();
         }
     }
 }

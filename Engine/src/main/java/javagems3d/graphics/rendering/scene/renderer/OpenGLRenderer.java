@@ -2,7 +2,9 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
-import javagems3d.graphics.rendering.programs.indirect.IndirectRenderBufferProgram;
+import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
+import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
+import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.screen.window.IWindow;
@@ -18,7 +20,7 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
     private final IWindow window;
     private final SceneWorld sceneWorld;
 
-    public OpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
+    public OpenGLRenderer(@NotNull IWindow window, @NotNull SceneWorld sceneWorld) {
         this.window = window;
         this.sceneWorld = sceneWorld;
     }
@@ -29,8 +31,9 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
 
     public abstract @NotNull Vector2i getRenderingResolution();
 
-    public abstract IndirectRenderBufferProgram getSceneIndirectBuffer();
+    public abstract IndirectBufferProgram getSceneIndirectBuffer();
     public abstract Map<Nodes, IRenderNode> getConveyorNodes();
+    public abstract ISceneCulling getSceneCulling();
 
     @Override
     public @NotNull SceneWorld getSceneWorld() {

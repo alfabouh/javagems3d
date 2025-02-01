@@ -11,25 +11,6 @@
 
 package javagems3d;
 
-import javagems3d.graphics.environment.skybox.SkyBox;
-import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.entities.SceneProp;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
-import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.materials.Material;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
-import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
-import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -37,17 +18,22 @@ import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.fog.FogManager;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.entities.SceneEntity;
+import javagems3d.graphics.objects.entities.SceneProp;
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.data.EntityRenderData;
+import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.particles.ParticlesEmitter;
 import javagems3d.graphics.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.particles.objects.SimpleColoredParticle;
 import javagems3d.graphics.particles.objects.SimpleTexturedParticle;
 import javagems3d.graphics.particles.objects.base.ParticleFX;
-import javagems3d.graphics.objects.rendering.data.EntityRenderData;
-import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
-import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
+import javagems3d.graphics.transformation.TransformationUtils;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.properties.controller.IControllable;
@@ -63,24 +49,35 @@ import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.formats.Format2D;
+import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.helper.MeshHelper;
+import javagems3d.system.resources.assets.models.mesh.IMesh;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
+import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
+import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
-import javagems3d.system.resources.localisation.Lang;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.localisation.Lang;
 import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 import javagems3d.system.settings.JGemsSettings;
 import logger.SystemLogging;
 import logger.managers.LoggingManager;
 import org.joml.Math;
+import org.joml.*;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 /**
  * Using the JGemsHelper class, you can conveniently access most of the most important functions for managing the state of the engine. This utility class is divided into sections for easier navigation.
@@ -124,28 +121,6 @@ public abstract class JGemsHelper {
     }
 
     public static abstract class RENDERING {
-        @SuppressWarnings("all")
-        public static Set<SceneObject> getFilteredSetToRender(Set<SceneObject> sceneObjects, @Nullable Pipeline pipeline, boolean checkDistanceFromCamera) {
-            return sceneObjects.stream().filter(e -> {
-                if (!e.canBeRendered() || !e.hasModel()) {
-                    return false;
-                }
-                if (pipeline != null && !e.canBeRendered(pipeline)) {
-                    return false;
-                }
-                if (checkDistanceFromCamera && RENDERING.checkReachedRenderDistance(e)) {
-                    return false;
-                }
-                return true;
-            }).collect(Collectors.toSet());
-        }
-
-        public static boolean checkReachedRenderDistance(SceneObject renderObject) {
-            ICamera camera = JGems3D.get().getScreen().getCamera();
-            RenderAttributes renderAttributes = renderObject.getRenderAttributes();
-            return renderAttributes.getRenderDistance() >= 0 && camera.getCamPosition().distance(renderObject.getModel().getFormat().getPosition()) > renderAttributes.getRenderDistance();
-        }
-
         public static void renderModelNode(MeshGroup.MeshGroupNode meshNode) {
             GL46.glBindVertexArray(meshNode.getMesh().getVao());
             meshNode.getMesh().enableAllMeshAttributes();
@@ -566,23 +541,52 @@ public abstract class JGemsHelper {
             }
         }
 
+        public static void createMeshAABBData(MeshStructure<?>... m) {
+            for (MeshStructure<?> o : m) {
+                JGemsHelper.UTILS.createMeshAABBData(o);
+            }
+        }
+
         @SuppressWarnings("all")
-        public static boolean createMeshCollisionData(MeshStructure<?> meshGroup) {
-            if (meshGroup != null && meshGroup.getMeshUserData(MeshStructure.MESH_COLLISION_UD) == null) {
-                meshGroup.setMeshUserData(MeshStructure.MESH_COLLISION_UD, new MeshCollisionData(meshGroup));
+        public static boolean createMeshAABBData(MeshStructure<?> meshStructure) {
+            if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure.MESH_AABB_UD) == null) {
+                meshStructure.setMeshUserData(MeshStructure.MESH_AABB_UD, MeshAABBData.create(meshStructure));
                 return true;
             }
             return false;
         }
 
-        public static List<Vector3f> getVertexPositionsFromMesh(RenderMesh renderMesh, Format3D format3D) {
-            List<Integer> integers = renderMesh.getVertexIndexes();
-            List<Float> floats = renderMesh.getVertexPositions();
+        @SuppressWarnings("all")
+        public static boolean createMeshCollisionData(MeshStructure<?> meshStructure) {
+            if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure.MESH_COLLISION_UD) == null) {
+                meshStructure.setMeshUserData(MeshStructure.MESH_COLLISION_UD, new MeshCollisionData(meshStructure));
+                return true;
+            }
+            return false;
+        }
+
+        public static List<Vector3f> getVertexPositionsFromMesh(IMesh mesh) {
+            List<Integer> integers = mesh.getVertexIndexes();
+            List<Float> floats = mesh.getVertexPositions();
+            List<Vector3f> vertexes = new ArrayList<>();
+
+            for (int i = 0; i < integers.size(); i++) {
+                int i1 = mesh.getVertexIndexes().get(i) * 3;
+                Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f);
+                vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
+            }
+
+            return vertexes;
+        }
+
+        public static List<Vector3f> getVertexPositionsFromMesh(IMesh mesh, Format3D format3D) {
+            List<Integer> integers = mesh.getVertexIndexes();
+            List<Float> floats = mesh.getVertexPositions();
             List<Vector3f> vertexes = new ArrayList<>();
             Matrix4f modelMat = TransformationUtils.getModelMatrix(format3D);
 
             for (int i = 0; i < integers.size(); i++) {
-                int i1 = renderMesh.getVertexIndexes().get(i) * 3;
+                int i1 = mesh.getVertexIndexes().get(i) * 3;
                 Vector4f v4 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMat);
                 vertexes.add(new Vector3f(v4.x, v4.y, v4.z));
             }

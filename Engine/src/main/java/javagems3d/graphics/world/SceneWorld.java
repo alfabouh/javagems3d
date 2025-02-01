@@ -11,22 +11,23 @@
 
 package javagems3d.graphics.world;
 
+import api.app.events.bus.Events;
+import api.bridge.events.APIEventsLauncher;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.bridge.events.APIEventsLauncher;
+import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lights.Light;
+import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
-import javagems3d.graphics.particles.ParticlesEmitter;
-import javagems3d.global.JGemsDebugGlobalConstants;
+import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
-import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.ILightsKeeper;
-import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
+import javagems3d.graphics.particles.ParticlesEmitter;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -35,7 +36,6 @@ import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.synchronizing.SyncManager;
-import api.app.events.bus.Events;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -201,7 +201,7 @@ public final class SceneWorld implements IWorld {
         this.getEnvironment().getLightManager().addLight(light);
     }
 
-    public void addItemLight(ILightsKeeper keepLights, Light light) {
+    public void addItemLight(ILighted keepLights, Light light) {
         keepLights.addLight(light);
         this.getEnvironment().getLightManager().addLight(light);
     }
@@ -220,7 +220,7 @@ public final class SceneWorld implements IWorld {
         this.getEnvironment().getLightManager().addLight(light);
     }
 
-    public void removeLightFromById(ILightsKeeper keepLights, int i) {
+    public void removeLightFromById(ILighted keepLights, int i) {
         if (keepLights == null) {
             JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity!");
             return;
@@ -228,7 +228,7 @@ public final class SceneWorld implements IWorld {
         keepLights.removeLightById(i);
     }
 
-    public void removeLightFrom(ILightsKeeper keepLights, Light light) {
+    public void removeLightFrom(ILighted keepLights, Light light) {
         if (keepLights == null) {
             JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity!");
             return;

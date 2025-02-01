@@ -12,6 +12,7 @@
 package javagems3d.graphics.rendering.programs.fbo;
 
 import javagems3d.system.service.collections.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachment;
@@ -68,7 +69,7 @@ public class FBOTexture2DProgram {
         this.unBindFBO();
     }
 
-    public void createFrameBuffer2DTexture(Vector2i size, T2DAttachmentContainer t2DAttachmentContainer, boolean depthBuffer, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
+    public void createFrameBuffer2DTexture(Vector2i size, @Nullable T2DAttachmentContainer t2DAttachmentContainer, boolean depthBuffer, int filtering, int compareMode, int compareFunc, int clamp, float[] borderColor) {
         if (size.x <= 0.0f || size.y <= 0.0f) {
             return;
         }
@@ -76,14 +77,16 @@ public class FBOTexture2DProgram {
         this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
-        for (T2DAttachment t2DAttachment1 : t2DAttachmentContainer.getT2DAttachmentSet()) {
-            Texture2DProgram texture2DProgram1 = new Texture2DProgram();
-            texture2DProgram1.createTexture(size, new Texture2DProgram.Properties(t2DAttachment1.getTextureFormat(), t2DAttachment1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor),null);
-            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, t2DAttachment1.getAttachment(), GL46.GL_TEXTURE_2D, texture2DProgram1.getTextureId(), 0);
-            this.getTexturePrograms().add(texture2DProgram1);
+        if (t2DAttachmentContainer != null) {
+            for (T2DAttachment t2DAttachment1 : t2DAttachmentContainer.getT2DAttachmentSet()) {
+                Texture2DProgram texture2DProgram1 = new Texture2DProgram();
+                texture2DProgram1.createTexture(size, new Texture2DProgram.Properties(t2DAttachment1.getTextureFormat(), t2DAttachment1.getInternalFormat(), filtering, filtering, compareMode, compareFunc, clamp, clamp, borderColor), null);
+                GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, t2DAttachment1.getAttachment(), GL46.GL_TEXTURE_2D, texture2DProgram1.getTextureId(), 0);
+                this.getTexturePrograms().add(texture2DProgram1);
+            }
         }
 
-        if (!this.drawColor) {
+        if (!this.drawColor || t2DAttachmentContainer == null) {
             GL46.glDrawBuffer(GL46.GL_NONE);
             GL46.glReadBuffer(GL46.GL_NONE);
         } else {

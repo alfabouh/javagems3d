@@ -73,6 +73,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
 
     @Override
     public void onUpdate(IWorld iWorld) {
+        this.setCullingData(this.pickAABBDataFromMesh());
         if (this.getWorldItem().isDead()) {
             this.setDead();
         }

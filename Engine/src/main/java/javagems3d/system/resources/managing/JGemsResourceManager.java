@@ -80,7 +80,7 @@ public final class JGemsResourceManager {
             longBuffer.put(l.getBindingHandler());
         }
         longBuffer.flip();
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, longBuffer);
+        ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, 0L, longBuffer);
         MemoryUtil.memFree(longBuffer);
     }
 
@@ -112,7 +112,7 @@ public final class JGemsResourceManager {
             byteBuffer.putInt(0);
         }
         byteBuffer.flip();
-        ShaderStorageBufferProgram.fillSSBOWithData(shaderStorageBufferObject, 0L, byteBuffer);
+        ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, 0L, byteBuffer);
         MemoryUtil.memFree(byteBuffer);
     }
 

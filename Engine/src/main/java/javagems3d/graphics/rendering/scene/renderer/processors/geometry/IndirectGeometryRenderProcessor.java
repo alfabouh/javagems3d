@@ -3,7 +3,7 @@ package javagems3d.graphics.rendering.scene.renderer.processors.geometry;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
+import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -15,14 +15,12 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
-    private final IndirectObjectsRenderer indirectMeshObjects;
-    public final Pipeline pipeline;
+    private final GroupedIndirectRenderer indirectMeshObjects;
     private Consumer<JGemsShaderManager> uniformsHandler;
 
     public IndirectGeometryRenderProcessor(@Nullable Consumer<JGemsShaderManager> uniformsHandler, @NotNull Pipeline pipeline, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
-        this.indirectMeshObjects = new IndirectObjectsRenderer(openGLRenderer, null, true, true);
-        this.pipeline = pipeline;
+        this.indirectMeshObjects = new GroupedIndirectRenderer(openGLRenderer, pipeline, true, true);
         this.uniformsHandler = uniformsHandler;
     }
 
@@ -40,7 +38,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        this.getIndirectMeshObjects().processAndRender(this.getPipeline(), ArbitraryArguments.pass(this.getUniformsHandler()));
+        this.getIndirectMeshObjects().processAndRender(ArbitraryArguments.pass(this.getUniformsHandler()));
     }
 
     public void setIndirectMeshObjects(@NotNull Collection<SceneObject> sceneObjects) {
@@ -55,11 +53,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
         return this.uniformsHandler;
     }
 
-    public Pipeline getPipeline() {
-        return this.pipeline;
-    }
-
-    public IndirectObjectsRenderer getIndirectMeshObjects() {
+    public GroupedIndirectRenderer getIndirectMeshObjects() {
         return this.indirectMeshObjects;
     }
 }

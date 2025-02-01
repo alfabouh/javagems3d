@@ -11,38 +11,35 @@
 
 package javagems3d.graphics.environment.shadows.scene;
 
+import javagems3d.JGems3D;
+import javagems3d.JGemsHelper;
+import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
-import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
+import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
+import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.formats.Format2D;
+import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
-import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.graphics.environment.lights.PointLight;
-import javagems3d.global.JGemsDebugGlobalConstants;
-import javagems3d.global.JGemsRenderingGlobalConstants;
-import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.texturing.RGBAColor;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +50,8 @@ import java.util.stream.Collectors;
 
 public class ShadowScene implements IShadowScene {
     private OpenGLRenderer openGLRenderer;
-    private IndirectObjectsRenderer indirectObjectsRenderer;
+    private GroupedIndirectRenderer pointLightIndirectRendered;
+    private GroupedIndirectRenderer sunlightIndirectRendered;
     private final Environment environment;
     private List<PointLightShadow> pointLightShadows;
     private SunLightShadow sunLightShadow;
@@ -71,7 +69,8 @@ public class ShadowScene implements IShadowScene {
 
     public void createResources(OpenGLRenderer openGLRenderer) {
         this.openGLRenderer = openGLRenderer;
-        this.indirectObjectsRenderer = new IndirectObjectsRenderer(openGLRenderer, null, false, true);
+        this.pointLightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, Pipeline.POINT_LIGHT_SHADOW_MAP, false, true);
+        this.sunlightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, Pipeline.SUN_LIGHT_SHADOW_MAP, false, true);
         this.getPointLightShadows().forEach(PointLightShadow::createResources);
         this.getSunLightShadow().createResources();
     }
@@ -111,12 +110,12 @@ public class ShadowScene implements IShadowScene {
         if (JGemsRenderingGlobalConstants.DRAW_BACK_FACES_FOR_SHADOWS) {
             GL46.glDisable(GL46.GL_CULL_FACE);
         }
-        this.sunShadows(filtered);
-        this.pointLightShadows(filtered);
+        Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(filtered);
+        this.sunShadows(groups);
+        this.pointLightShadows(groups);
         if (oldV) {
             GL46.glEnable(GL46.GL_CULL_FACE);
         }
-
         try (Model<Format2D> screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
             final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
             this.blurSunShadow(screenModel, blurring);
@@ -146,8 +145,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     @SuppressWarnings("all")
-    protected void pointLightShadows(Set<SceneObject> filteredObjectsSet) {
-        Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(filteredObjectsSet);
+    protected void pointLightShadows(Pair<List<SceneObject>, List<SceneObject>> groups) {
         List<SceneObject> directRenderObjects = groups.getFirst();
         List<SceneObject> indirectRenderObjects = groups.getSecond();
 
@@ -177,8 +175,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     @SuppressWarnings("all")
-    protected void sunShadows(Set<SceneObject> filteredObjectsSet) {
-        Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(filteredObjectsSet);
+    protected void sunShadows(Pair<List<SceneObject>, List<SceneObject>> groups) {
         List<SceneObject> directRenderObjects = groups.getFirst();
         List<SceneObject> indirectRenderObjects = groups.getSecond();
 
@@ -203,8 +200,18 @@ public class ShadowScene implements IShadowScene {
     }
 
     protected void renderModelsIndirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
-        this.getIndirectObjectsRenderer().setIndirectMeshObjects(filteredObjectsSet);
-        this.getIndirectObjectsRenderer().processAndRender(pipeline, ArbitraryArguments.pass(functionToHandleUniforms));
+        switch (pipeline) {
+            case POINT_LIGHT_SHADOW_MAP: {
+                this.getPointLightIndirectRendered().setIndirectMeshObjects(filteredObjectsSet);
+                this.getPointLightIndirectRendered().processAndRender(ArbitraryArguments.pass(functionToHandleUniforms));
+                break;
+            }
+            case SUN_LIGHT_SHADOW_MAP: {
+                this.getSunlightIndirectRendered().setIndirectMeshObjects(filteredObjectsSet);
+                this.getSunlightIndirectRendered().processAndRender(ArbitraryArguments.pass(functionToHandleUniforms));
+                break;
+            }
+        }
     }
 
     protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
@@ -266,8 +273,12 @@ public class ShadowScene implements IShadowScene {
         this.getPointLightShadows().get(pointLight.getAttachedShadowSceneId()).setPointLight(null);
     }
 
-    protected IndirectObjectsRenderer getIndirectObjectsRenderer() {
-        return this.indirectObjectsRenderer;
+    public GroupedIndirectRenderer getPointLightIndirectRendered() {
+        return this.pointLightIndirectRendered;
+    }
+
+    public GroupedIndirectRenderer getSunlightIndirectRendered() {
+        return this.sunlightIndirectRendered;
     }
 
     public SunLightShadow getSunLightShadow() {

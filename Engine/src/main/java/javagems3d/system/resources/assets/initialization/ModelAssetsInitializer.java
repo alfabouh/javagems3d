@@ -62,6 +62,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
         this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);
 
         JGemsHelper.UTILS.createMeshCollisionData(this.grassCube, this.ground2, this.ground3, this.test_anim);
+        JGemsHelper.UTILS.createMeshAABBData(this.grassCube, this.ground2, this.ground3, this.test_anim);
     }
 
     private void createDefaults(GameResources gameResources) {

@@ -2,6 +2,7 @@ package javagems3d.graphics.objects.rendering.configuration;
 
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
+import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("all")
 public class RenderAttributes implements IRenderConfiguration {
     private RenderTable renderTable;
+    private CullingRules cullingRules;
 
     private float renderDistance;
     private float alphaDiscardValue;
@@ -22,6 +24,10 @@ public class RenderAttributes implements IRenderConfiguration {
     private boolean disableFaceCulling;
 
     public RenderAttributes(@NotNull RenderTable renderTable) {
+        this(renderTable, CullingRules.get());
+    }
+
+    public RenderAttributes(@NotNull RenderTable renderTable, @NotNull CullingRules cullingRules) {
         this.renderTable = renderTable;
 
         this.alphaDiscardValue = JGemsRenderingGlobalConstants.DEFAULT_ALPHA_DISCARD;
@@ -34,6 +40,8 @@ public class RenderAttributes implements IRenderConfiguration {
         this.defaultBrightLighted = false;
         this.allowMovementInterpolation = true;
         this.disableFaceCulling = false;
+
+        this.cullingRules = cullingRules;
     }
 
     public static @NotNull RenderAttributes get() {
@@ -42,6 +50,14 @@ public class RenderAttributes implements IRenderConfiguration {
 
     public static @NotNull RenderAttributes get(@Nullable RenderTable renderTable) {
         return renderTable == null ? null : new RenderAttributes(renderTable);
+    }
+
+    public @NotNull CullingRules getCullingRules() {
+        return cullingRules;
+    }
+
+    public void setCullingRules(@NotNull CullingRules cullingRules) {
+        this.cullingRules = cullingRules;
     }
 
     public @NotNull RenderTable getRenderingTable() {

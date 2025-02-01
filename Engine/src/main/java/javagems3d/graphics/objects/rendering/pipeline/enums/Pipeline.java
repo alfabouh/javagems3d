@@ -4,5 +4,6 @@ public enum Pipeline {
     SCENE,
     POINT_LIGHT_SHADOW_MAP,
     SUN_LIGHT_SHADOW_MAP,
-    TRANSPARENCY
+    TRANSPARENCY,
+    NONE
 }

@@ -107,7 +107,7 @@ public class LinesDebugDraw {
         GL46.glBindVertexArray(0);
     }
 
-    private void drawAABB(Vector3f min, Vector3f max) {
+    public void drawAABB(Vector3f min, Vector3f max) {
         Vector3f[] vertices = {
                 new Vector3f(min.x, min.y, min.z),
                 new Vector3f(max.x, min.y, min.z),

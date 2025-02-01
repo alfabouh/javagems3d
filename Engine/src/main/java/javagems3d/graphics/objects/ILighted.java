@@ -11,13 +11,12 @@
 
 package javagems3d.graphics.objects;
 
-import javagems3d.JGemsHelper;
-import org.joml.Vector3f;
 import javagems3d.graphics.environment.lights.Light;
+import org.joml.Vector3f;
 
 import java.util.List;
 
-public interface ILightsKeeper {
+public interface ILighted {
     void addLight(Light light);
 
     void removeLight(Light light);
