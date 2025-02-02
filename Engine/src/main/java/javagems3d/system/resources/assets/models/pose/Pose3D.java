@@ -9,34 +9,34 @@
  *
  */
 
-package javagems3d.system.resources.assets.models.formats;
+package javagems3d.system.resources.assets.models.pose;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @SuppressWarnings("all")
-public final class Format3D implements IFormat {
+public final class Pose3D implements IPose {
     private final Vector3f position;
     private final Vector3f rotation;
     private final Vector3f scaling;
     private boolean isOrientedToView;
 
-    public Format3D(@NotNull Vector3f position, Vector3f rotation, Vector3f scaling) {
+    public Pose3D(@NotNull Vector3f position, Vector3f rotation, Vector3f scaling) {
         this.position = position;
         this.rotation = rotation == null ? new Vector3f(0.0f) : rotation;
         this.scaling = scaling == null ? new Vector3f(1.0f) : scaling;
         this.isOrientedToView = false;
     }
 
-    public Format3D(Vector3f position, Vector3f rotation) {
+    public Pose3D(Vector3f position, Vector3f rotation) {
         this(position, rotation, new Vector3f(1.0f));
     }
 
-    public Format3D(Vector3f position) {
+    public Pose3D(Vector3f position) {
         this(position, new Vector3f(0.0f), new Vector3f(1.0f));
     }
 
-    public Format3D() {
+    public Pose3D() {
         this(new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(1.0f));
     }
 
@@ -65,15 +65,15 @@ public final class Format3D implements IFormat {
     }
 
     @Override
-    public IFormat copy() {
-        return new Format3D(new Vector3f(this.getPosition()), new Vector3f(this.getRotation()), new Vector3f(this.getScaling()));
+    public Pose3D copy() {
+        return new Pose3D(new Vector3f(this.getPosition()), new Vector3f(this.getRotation()), new Vector3f(this.getScaling()));
     }
 
     public boolean isOrientedToViewMatrix() {
         return this.isOrientedToView;
     }
 
-    public Format3D setOrientedToView(boolean orientedToView) {
+    public Pose3D setOrientedToView(boolean orientedToView) {
         this.isOrientedToView = orientedToView;
         return this;
     }

@@ -45,7 +45,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
             return true;
         }
         SceneObject sceneObject = (SceneObject) culled;
-        Vector3f position = sceneObject.getModel().getFormat().getPosition();
+        Vector3f position = sceneObject.getModel().getPose().getPosition();
         if (this.getDistanceToCull() > 0.0f && position.distance(this.getCamera().getCamPosition()) >= this.getDistanceToCull()) {
             return false;
         }

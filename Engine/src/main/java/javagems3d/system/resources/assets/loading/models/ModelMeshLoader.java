@@ -11,12 +11,14 @@ import javagems3d.system.resources.assets.models.animation.components.SkeletonDa
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -124,7 +126,7 @@ public class ModelMeshLoader implements ILoadingHelper {
     }
 
     @SuppressWarnings("all")
-    private SkeletonData readSkeleton(MeshStructure meshStructure, AIScene scene, AIMesh aiMesh) {
+    private SkeletonData readSkeleton(MeshStructure3D meshStructure, AIScene scene, AIMesh aiMesh) {
         List<Bone> bonesList = new ArrayList<>();
         SkeletonData skeletonData = AnimationLoadingUtils.readSkeleton(aiMesh, bonesList);
         if (skeletonData == null) {
@@ -144,12 +146,11 @@ public class ModelMeshLoader implements ILoadingHelper {
         meshStructure.loadAnimations(animations);
         JGemsHelper.getLogger().log("Loaded animation (size:" + animations.size() + ")  for: " + this.getPath());
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loaded animation(size:" + animations.size() + ")");
-
         return skeletonData;
     }
 
     @SuppressWarnings("all")
-    private <T extends MeshStructure> T processMeshStructure(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer, Class<T> structureType) {
+    private <T extends MeshStructure3D> T processMeshStructure(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer, Class<T> structureType) {
         T meshStructure;
         try {
             meshStructure = structureType.getDeclaredConstructor().newInstance();
@@ -188,13 +189,13 @@ public class ModelMeshLoader implements ILoadingHelper {
 
                 if (structureType == MeshBuffer.class) {
                     DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
-                    ((MeshBuffer) meshStructure).putMeshNode(new MeshBuffer.MeshBufferNode(meshData, material));
+                    ((MeshBuffer) meshStructure).putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
                     if (loadInIndirectBuffer) {
                         gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer((MeshBuffer) meshStructure);
                     }
                 } else if (structureType == MeshGroup.class) {
                     RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
-                    ((MeshGroup) meshStructure).putMeshNode(new MeshGroup.MeshGroupNode(meshData, material));
+                    ((MeshGroup) meshStructure).putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
                 }
             }
             Assimp.aiReleaseImport(aiScene);

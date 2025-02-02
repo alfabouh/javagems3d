@@ -13,6 +13,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.system.resources.assets.models.Model2D;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -24,8 +25,8 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIAction;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
+
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -36,7 +37,7 @@ public class UIButton extends UIInteractiveElement {
     private final UIText uiText;
     private final Vector2i position;
     private final Vector2i size;
-    private Model<Format2D> buttonModel;
+    private Model2D buttonModel;
     private UIAction onEntered;
     private UIAction onLeft;
     private UIAction onClick;
@@ -68,7 +69,7 @@ public class UIButton extends UIInteractiveElement {
         shaderManager.getUtils().performOrthographicMatrix(this.buttonModel);
         shaderManager.performUniform(new UniformString("background_color"), UniformFunctions.VEC4F(new Vector4f(0.25f, 0.0f, 0.15f, 0.8f)));
         shaderManager.performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
-        JGemsHelper.RENDERING.renderModel(this.buttonModel, GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel2D(this.buttonModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
         this.uiText.render(frameDeltaTicks);
     }

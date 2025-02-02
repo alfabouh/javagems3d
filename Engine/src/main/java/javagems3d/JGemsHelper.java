@@ -33,7 +33,7 @@ import javagems3d.graphics.particles.objects.base.ParticleFX;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.properties.controller.IControllable;
@@ -50,14 +50,17 @@ import javagems3d.system.graph.Graph;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
 import javagems3d.system.resources.assets.materials.Material;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
@@ -121,30 +124,40 @@ public abstract class JGemsHelper {
     }
 
     public static abstract class RENDERING {
-        public static void renderModelNode(MeshGroup.MeshGroupNode meshNode) {
-            GL46.glBindVertexArray(meshNode.getMesh().getVao());
-            meshNode.getMesh().enableAllMeshAttributes();
-            GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-            meshNode.getMesh().disableAllMeshAttributes();
-            GL46.glBindVertexArray(0);
-        }
 
         public static int getMaxTextureUnits() {
             return GL46.glGetInteger(GL46.GL_MAX_TEXTURE_IMAGE_UNITS);
         }
 
-        public static Model<Format2D> createScreenModel() {
+        public static Model2D createScreenModel() {
             return MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(JGemsHelper.getScreen().getWindowDimensions()), 0);
         }
 
-        @SuppressWarnings("all")
-        public static void renderModel(Model<?> model, int code) {
-            for (MeshGroup.MeshGroupNode meshNode : model.<MeshGroup>getMeshStructureWithUnSafeCast().getMeshNodes()) {
-                GL46.glBindVertexArray(meshNode.getMesh().getVao());
-                meshNode.getMesh().enableAllMeshAttributes();
-                GL46.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-                meshNode.getMesh().disableAllMeshAttributes();
-                GL46.glBindVertexArray(0);
+        public static void renderMeshNode(RenderMesh renderMesh) {
+            GL46.glBindVertexArray(renderMesh.getVao());
+            renderMesh.enableAllMeshAttributes();
+            GL46.glDrawElements(GL46.GL_TRIANGLES, renderMesh.getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+            renderMesh.disableAllMeshAttributes();
+            GL46.glBindVertexArray(0);
+        }
+
+        public static void renderModel2D(Model2D model2D, int code) {
+            RENDERING.renderMeshList2D(model2D.getMeshStructure().getNodes(), code);
+        }
+        
+        public static void renderMeshList2D(List<MeshNode2D> list, int code) {
+            for (MeshNode2D meshNode2D : list) {
+                RENDERING.renderMeshNode(meshNode2D.getMeshData());
+            }
+        }
+
+        public static void renderModel3D(Model3D model3D, int layer, int code) {
+            RENDERING.renderMeshList3D(model3D.<MeshStructure3D<RenderMesh>>getMeshStructureCast().getNodes(layer), code);
+        }
+
+        public static void renderMeshList3D(List<MeshNode3D<RenderMesh>> list, int code) {
+            for (MeshNode3D<RenderMesh> meshNode3D : list) {
+                RENDERING.renderMeshNode(meshNode3D.getMeshData());
             }
         }
 
@@ -178,10 +191,6 @@ public abstract class JGemsHelper {
     }
 
     public static abstract class ANIMATION {
-        public static boolean objectHasAnimations(WorldItem worldItem) {
-            return JGemsHelper.getSceneWorld().ifObjectHasAnimations(worldItem);
-        }
-
         public static IAnimated getAnimatedObject(WorldItem worldItem) {
             return JGemsHelper.getSceneWorld().getAnimatedObject(worldItem);
         }
@@ -535,31 +544,31 @@ public abstract class JGemsHelper {
             return new Vector3f(lX, lY, lZ);
         }
 
-        public static void createMeshCollisionData(MeshStructure<?>... m) {
-            for (MeshStructure<?> o : m) {
+        public static void createMeshCollisionData(MeshStructure3D... m) {
+            for (MeshStructure3D<?> o : m) {
                 JGemsHelper.UTILS.createMeshCollisionData(o);
             }
         }
 
-        public static void createMeshAABBData(MeshStructure<?>... m) {
-            for (MeshStructure<?> o : m) {
+        public static void createMeshAABBData(MeshStructure3D<?>... m) {
+            for (MeshStructure3D<?> o : m) {
                 JGemsHelper.UTILS.createMeshAABBData(o);
             }
         }
 
         @SuppressWarnings("all")
-        public static boolean createMeshAABBData(MeshStructure<?> meshStructure) {
-            if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure.MESH_AABB_UD) == null) {
-                meshStructure.setMeshUserData(MeshStructure.MESH_AABB_UD, MeshAABBData.create(meshStructure));
+        public static boolean createMeshAABBData(MeshStructure3D<?> meshStructure) {
+            if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure3D.MESH_AABB_UD) == null) {
+                meshStructure.setMeshUserData(MeshStructure3D.MESH_AABB_UD, MeshAABBData.create(meshStructure));
                 return true;
             }
             return false;
         }
 
         @SuppressWarnings("all")
-        public static boolean createMeshCollisionData(MeshStructure<?> meshStructure) {
-            if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure.MESH_COLLISION_UD) == null) {
-                meshStructure.setMeshUserData(MeshStructure.MESH_COLLISION_UD, new MeshCollisionData(meshStructure));
+        public static boolean createMeshCollisionData(MeshStructure3D<?> meshStructure) {
+            if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure3D.MESH_COLLISION_UD) == null) {
+                meshStructure.setMeshUserData(MeshStructure3D.MESH_COLLISION_UD, new MeshCollisionData(meshStructure));
                 return true;
             }
             return false;
@@ -579,11 +588,11 @@ public abstract class JGemsHelper {
             return vertexes;
         }
 
-        public static List<Vector3f> getVertexPositionsFromMesh(IMesh mesh, Format3D format3D) {
+        public static List<Vector3f> getVertexPositionsFromMesh(IMesh mesh, Pose3D pose) {
             List<Integer> integers = mesh.getVertexIndexes();
             List<Float> floats = mesh.getVertexPositions();
             List<Vector3f> vertexes = new ArrayList<>();
-            Matrix4f modelMat = TransformationUtils.getModelMatrix(format3D);
+            Matrix4f modelMat = TransformUtils.getModelMatrix(pose);
 
             for (int i = 0; i < integers.size(); i++) {
                 int i1 = mesh.getVertexIndexes().get(i) * 3;

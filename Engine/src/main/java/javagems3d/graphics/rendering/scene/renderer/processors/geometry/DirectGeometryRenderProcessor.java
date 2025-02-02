@@ -6,8 +6,9 @@ import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,8 +42,8 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
             for (SceneObject modeledSceneObject : entry.getValue()) {
-                Model<Format3D> model = modeledSceneObject.getModel();
-                if (model == null || model.getMeshStructure() == null) {
+                Model3D model = modeledSceneObject.getModel();
+                if (model == null || !model.isValid()) {
                     continue;
                 }
                 DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderingTable().getRenderFabric(pipeline);

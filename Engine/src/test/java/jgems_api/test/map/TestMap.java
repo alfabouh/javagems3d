@@ -39,7 +39,7 @@ public class TestMap implements IMapLoader {
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
        //MeshGroup meshGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj")).getFirst();
-       //sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Format3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup),
+       //sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Pose3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup),
        //        new RenderAttributes(JGemsResourceManager.globalShaderAssets.world_gbuffer).setAlphaDiscardValue(0.7f)));
     }
 

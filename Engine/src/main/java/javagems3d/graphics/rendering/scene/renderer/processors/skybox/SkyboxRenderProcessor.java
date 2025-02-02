@@ -8,14 +8,11 @@ import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.transformation.JGemsTransformation;
-import javagems3d.system.resources.assets.initialization.ModelAssetsInitializer;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
-import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
-import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.graphics.transformation.JGemsTransformManager;
+
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -24,7 +21,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
 public class SkyboxRenderProcessor extends IRenderProcessor.Template {
-    private final Model<Format3D> skyBoxModel;
+    private final Model3D skyBoxModel;
     private final SkyBox skyBox;
     private ITextureProgram backgroundTexture;
 
@@ -32,7 +29,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         super(openGLRenderer);
         this.skyBox = skyBox;
         this.backgroundTexture = null;
-        this.skyBoxModel = new Model<>(new Format3D(), JGemsResourceManager.globalModelAssets.defaultCube_gr);
+        this.skyBoxModel = new Model3D(new Pose3D(), JGemsResourceManager.globalModelAssets.defaultCube_gr);
     }
 
     @Override
@@ -49,12 +46,12 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
     }
 
     protected void renderSkyBox(JGemsShaderManager skyShaderManager) {
-        Model<Format3D> model = this.skyBoxModel;
+        Model3D model = this.skyBoxModel;
         skyShaderManager.beginShading();
         GL46.glDisable(GL46.GL_CULL_FACE);
         GL46.glDepthFunc(GL46.GL_LEQUAL);
         skyShaderManager.getUtils().performPerspectiveMatrix();
-        Matrix4f Matrix4f = JGemsTransformation.getModelViewMatrix(model);
+        Matrix4f Matrix4f = JGemsTransformManager.getModelViewMatrix(model);
         Matrix4f.m30(0);
         Matrix4f.m31(0);
         Matrix4f.m32(0);
@@ -62,10 +59,10 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
             skyShaderManager.performUniformTexture(new UniformString("skybox_background_sampler"), this.getBackgroundTexture());
         }
         skyShaderManager.performUniform(new UniformString("covered_by_fog"), UniformFunctions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
-        skyShaderManager.performUniform(new UniformString("view_mat_inverted"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix().invert()));
+        skyShaderManager.performUniform(new UniformString("view_mat_inverted"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
         skyShaderManager.getUtils().performModel3DViewMatrix(Matrix4f);
         skyShaderManager.performUniformTexture(new UniformString("skybox"), this.getSkyBox().getSky2DTexture());
-        JGemsHelper.RENDERING.renderModel(model, GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
         skyShaderManager.endShading();
         GL46.glDepthFunc(GL46.GL_LESS);
         GL46.glEnable(GL46.GL_CULL_FACE);

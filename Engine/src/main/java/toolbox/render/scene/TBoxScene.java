@@ -14,7 +14,12 @@ package toolbox.render.scene;
 import javafx.util.Pair;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
@@ -22,11 +27,10 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -71,33 +75,33 @@ public class TBoxScene {
     public static FBOTexture2DProgram previewItemFbo;
     private final SceneContainer sceneObjects;
     private final IWindow window;
-    private final JGemsTransformation JGemsTransformation;
+    private final JGemsTransformManager JGemsTransformManager;
     private DIMGuiRenderTBox dimGuiRenderTBox;
     private ICamera camera;
 
-    public TBoxScene(JGemsTransformation JGemsTransformation, IWindow window) {
+    public TBoxScene(JGemsTransformManager JGemsTransformManager, IWindow window) {
         this.sceneObjects = new SceneContainer();
-        this.JGemsTransformation = JGemsTransformation;
+        this.JGemsTransformManager = JGemsTransformManager;
         this.window = window;
     }
 
     @SuppressWarnings("all")
     public static void renderIsometricModel(TBoxShaderManager shaderManager, MeshGroup meshGroup, int code) {
-        for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
-            if (meshNode.getMaterial() != null) {
-                if (meshNode.getMaterial().getDiffuse() instanceof RGBAColor) {
+        for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
+            if (meshNode3D.getMaterial() != null) {
+                if (meshNode3D.getMaterial().getDiffuse() instanceof RGBAColor) {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
                 } else {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                     shaderManager.performUniformNoWarn(new UniformString("diffuse_map"),  UniformFunctions.INTEGER(0));
                     GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((ImageTexture) meshNode.getMaterial().getDiffuse()).getTextureId());
+                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((ImageTexture) meshNode3D.getMaterial().getDiffuse()).getTextureId());
                 }
             }
-            GL46.glBindVertexArray(meshNode.getMesh().getVao());
-            meshNode.getMesh().enableAllMeshAttributes();
-            GL46.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-            meshNode.getMesh().disableAllMeshAttributes();
+            GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
+            meshNode3D.getMeshData().enableAllMeshAttributes();
+            GL46.glDrawElements(code, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+            meshNode3D.getMeshData().disableAllMeshAttributes();
             GL46.glBindVertexArray(0);
         }
     }
@@ -175,7 +179,7 @@ public class TBoxScene {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             this.getSceneContainer().renderForward(deltaTime);
             Vector3f v3 = this.getMapProperties().getSkyProp().getSunPos();
-            Model<Format3D> modelSun = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(v3.x, v3.y, v3.z).mul(300.0f));
+            Model3D modelSun = MeshHelper.generateVector3DModel3f(new Vector3f(0.0f), new Vector3f(v3.x, v3.y, v3.z).mul(300.0f));
             TBoxResourceManager.shaderResources().world_lines.beginShading();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
             TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
@@ -206,7 +210,7 @@ public class TBoxScene {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             GL46.glEnable(GL46.GL_DEPTH_TEST);
 
-            try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowSize()), 0.5f)) {
+            try (Model2D model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindow().getWindowSize()), 0.5f)) {
                 TBoxShaderManager gluing = TBoxResourceManager.shaderResources().scene_gluing;
                 gluing.beginShading();
                 gluing.performUniformTexture(new UniformString("texture_sampler"), TBoxScene.sceneForwardFbo.getTexturePrograms().get(0));
@@ -214,13 +218,13 @@ public class TBoxScene {
                 gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0));
                 gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1));
                 gluing.getUtils().performOrthographicMatrix(model);
-                JGemsHelper.RENDERING.renderModel(model, GL46.GL_TRIANGLES);
+                JGemsHelper.RENDERING.renderModel2D(model, GL46.GL_TRIANGLES);
                 gluing.endShading();
             }
 
             if (editorContent.currentSelectedObject != null) {
                 GL46.glDisable(GL46.GL_DEPTH_TEST);
-                Model<Format3D> model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
+                Model3D model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
                 TBoxResourceManager.shaderResources().world_lines.beginShading();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performPerspectiveMatrix();
                 TBoxResourceManager.shaderResources().world_lines.getUtils().performViewMatrix(TBoxSceneUtils.getMainCameraViewMatrix());
@@ -257,8 +261,8 @@ public class TBoxScene {
     private void showXYZ() {
         GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
-        Format3D format3D = new Format3D();
-        Model<Format3D> model = new Model<>(format3D, ToolBox.get().getResourceManager().getModelResources().xyz);
+        Pose3D pose = new Pose3D();
+        Model3D model = new Model3D(pose, ToolBox.get().getResourceManager().getModelResources().xyz);
         Quaternionf quaterniond = new Quaternionf();
         Matrix4f Matrix4f = TBoxSceneUtils.getMainCameraViewMatrix();
         Matrix4f.getNormalizedRotation(quaterniond);
@@ -292,7 +296,7 @@ public class TBoxScene {
         Vector3f camPos = this.getCamera().getCamPosition();
 
         Set<TBoxAbstractObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(e -> e.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
-        List<Pair<Vector3f, TBoxAbstractObject>> intersections = intersectedAABBs.stream().map(obj -> new Pair<>(obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo), obj)).filter(pair -> pair.getKey() != null).sorted(Comparator.comparingDouble(pair -> pair.getKey().distance(camPos))).collect(Collectors.toList());
+        List<Pair<Vector3f, TBoxAbstractObject>> intersections = intersectedAABBs.stream().map(obj -> new Pair<>(obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getPose(), camPos, camTo), obj)).filter(pair -> pair.getKey() != null).sorted(Comparator.comparingDouble(pair -> pair.getKey().distance(camPos))).collect(Collectors.toList());
 
         if (intersections.isEmpty()) {
             editorContent.removeSelection();
@@ -313,30 +317,30 @@ public class TBoxScene {
         Vector3f camRot = this.getCamera().getCamRotation();
         Vector3f camPos = this.getCamera().getCamPosition();
 
-        Format3D format3D = new Format3D();
-        format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
+        Pose3D pose = new Pose3D();
+        pose.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
 
         if (whereLook != null) {
-            format3D.setPosition(whereLook);
+            pose.setPosition(whereLook);
         }
 
-        TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshGroup));
+        TBoxObject tBoxObject = new TBoxObject(nameId, new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model3D(pose, meshGroup));
         tBoxObject.setAttributeContainer(mapObject.copyAttributeContainer());
 
         Attribute<Vector3f> attribute = tBoxObject.getAttributeContainer().getAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (attribute == null) {
             throw new JGemsNullException("Caught attribute with NULL position!");
         }
-        attribute.setValue(format3D.getPosition());
+        attribute.setValue(pose.getPosition());
 
         Vector3f rot = tBoxObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
         if (rot != null) {
-            format3D.setRotation(rot);
+            pose.setRotation(rot);
         }
 
         Vector3f scaling = tBoxObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         if (scaling != null) {
-            format3D.setScaling(scaling);
+            pose.setScaling(scaling);
         }
 
         tBoxObject.reCalcCollision();
@@ -348,11 +352,11 @@ public class TBoxScene {
         Vector3f camPos = this.getCamera().getCamPosition();
         Vector3f camTo = JGemsHelper.UTILS.calcLookVector(camRot).normalize();
 
-        Format3D format3D = new Format3D();
-        format3D.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
+        Pose3D pose = new Pose3D();
+        pose.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
 
         Set<TBoxAbstractObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
-        List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getFormat(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < maxDist).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
+        List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getPose(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < maxDist).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());
 
         if (!intersections.isEmpty()) {
             return intersections.get(0);
@@ -460,10 +464,10 @@ public class TBoxScene {
                                 if (saveRot != null) {
                                     saveRot = new Vector3f(saveRot);
                                 }
-                                Format3D format3D = new Format3D(savePos, saveRot, saveScale);
+                                Pose3D pose = new Pose3D(savePos, saveRot, saveScale);
                                 AbstractObjectData mapObject = TBoxMapTable.INSTANCE.getObjectTable().getObjects().get(saveObject.getObjectId());
                                 MeshGroup meshGroup = mapObject.meshDataGroup();
-                                TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model<>(format3D, meshGroup));
+                                TBoxObject tBoxModelObject = new TBoxObject(saveObject.getObjectId(), new TBoxObjectRenderData(mapObject.getShaderManager(), mapObject.getObjectRenderer()), new Model3D(pose, meshGroup));
                                 tBoxModelObject.setAttributeContainer(saveObject.getAttributeContainer());
                                 this.addObject(tBoxModelObject);
                             } catch (NullPointerException e) {
@@ -537,8 +541,8 @@ public class TBoxScene {
         this.camera = camera;
     }
 
-    public JGemsTransformation getTransformationUtils() {
-        return this.JGemsTransformation;
+    public JGemsTransformManager getTransformationUtils() {
+        return this.JGemsTransformManager;
     }
 
     public IWindow getWindow() {

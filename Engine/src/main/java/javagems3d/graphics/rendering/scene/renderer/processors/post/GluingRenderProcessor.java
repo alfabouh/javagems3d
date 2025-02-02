@@ -39,7 +39,7 @@ public class GluingRenderProcessor extends IRenderProcessor.Template {
        //gluing.performUniformTexture(new UniformString("accumulated_alpha"), this.getTransparencySceneBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
        //gluing.performUniformTexture(new UniformString("reveal_alpha"), this.getTransparencySceneBuffer().getTextureIDByIndex(1), GL46.GL_TEXTURE_2D);
         gluing.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
-        JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         gluing.endShading();
     }
 

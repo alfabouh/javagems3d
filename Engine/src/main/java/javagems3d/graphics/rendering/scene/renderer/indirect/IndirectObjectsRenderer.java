@@ -9,7 +9,7 @@ import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgra
 import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommandsProgram;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -84,7 +84,7 @@ public abstract class IndirectObjectsRenderer {
     }
 
     protected void passMatricesInBuffer(Pipeline pipeline, SceneObject sceneObject, FloatBuffer matrices) {
-        Matrix4f matrix = TransformationUtils.getModelMatrix(sceneObject.getModel().getFormat());
+        Matrix4f matrix = TransformUtils.getModelMatrix(sceneObject.getModel().getPose());
         IndirectRenderFabric renderFabric = (IndirectRenderFabric) sceneObject.getRenderFabric(pipeline);
         renderFabric.onFillBufferWithMatrices(pipeline, sceneObject, matrix, matrices, null);
     }

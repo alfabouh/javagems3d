@@ -15,6 +15,7 @@ import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.world.SceneWorldEntity;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.graphics.world.SceneWorld;
@@ -27,21 +28,21 @@ public class EntityRenderData {
 
     private final ISceneObjectConstructor sceneObjectConstructor;
     private IEntityModelConstructor<WorldItem> entityModelConstructor;
-    private MeshStructure<?> meshStructure;
+    private MeshStructure3D<?> meshStructure;
     private RenderAttributes renderAttributes;
 
     public EntityRenderData(@NotNull ISceneObjectConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes) {
         this(sceneObjectConstructor, renderAttributes, null);
     }
 
-    public EntityRenderData(@NotNull ISceneObjectConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure<?> meshStructure) {
+    public EntityRenderData(@NotNull ISceneObjectConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
         this.sceneObjectConstructor = sceneObjectConstructor;
         this.entityModelConstructor = null;
         this.meshStructure = meshStructure;
         this.renderAttributes = renderAttributes;
     }
 
-    public EntityRenderData(@NotNull EntityRenderData entityRenderData, @Nullable MeshStructure<?> meshStructure) {
+    public EntityRenderData(@NotNull EntityRenderData entityRenderData, @Nullable MeshStructure3D<?> meshStructure) {
         this(entityRenderData.getSceneObjectConstructor(), entityRenderData.getObjectRenderAttributes(), meshStructure);
     }
 
@@ -61,7 +62,7 @@ public class EntityRenderData {
         return this;
     }
 
-    public EntityRenderData setMeshDataGroup(MeshStructure<?> meshStructure) {
+    public EntityRenderData setMeshDataGroup(MeshStructure3D<?> meshStructure) {
         this.meshStructure = meshStructure;
         this.entityModelConstructor = null;
         return this;
@@ -75,7 +76,7 @@ public class EntityRenderData {
         return this;
     }
 
-    public MeshStructure<?> getMeshDataGroup() {
+    public MeshStructure3D<?> getMeshDataGroup() {
         return this.meshStructure;
     }
 

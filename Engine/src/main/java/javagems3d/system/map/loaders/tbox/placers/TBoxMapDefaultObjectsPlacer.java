@@ -50,10 +50,10 @@ public abstract class TBoxMapDefaultObjectsPlacer {
        //     RenderAttributes modelRenderData = renderContainer.getObjectRenderSettings().copy();
        //     //IRenderObjectFabric renderFabric = renderContainer.getRenderFabric();
 //
-       //     Model<Format3D> model = new Model<>(new Format3D(), meshGroup);
-       //     model.getFormat().setPosition(pos);
-       //     model.getFormat().setRotation(rot);
-       //     model.getFormat().setScaling(scale);
+       //     Model3D model = new Model<>(new Pose3D(), meshGroup);
+       //     model.getPose().setPosition(pos);
+       //     model.getPose().setRotation(rot);
+       //     model.getPose().setScaling(scale);
        //     JGemsHelper.WORLD.addPropInScene(new SceneProp(null, model, modelRenderData));
        // } else {
        //     EntityRenderData entityRenderData = new EntityRenderData(null, renderContainer.getSceneEntityClass(), renderContainer.getObjectRenderSettings().copy());

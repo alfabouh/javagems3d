@@ -12,20 +12,22 @@
 package javagems3d.system.resources.assets.models.helper.forms.D3;
 
 import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Vector3f;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
 import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SimplePlaneModel3D implements BasicModelCreator<Format3D> {
+public class SimplePlaneModel3D implements BasicModelCreator<Model3D> {
     private final Vector3f v1;
     private final Vector3f v2;
     private final Vector3f v3;
@@ -61,8 +63,8 @@ public class SimplePlaneModel3D implements BasicModelCreator<Format3D> {
     }
 
     @Override
-    public Model<Format3D> generateModel() {
-        return new Model<>(new Format3D(), new MeshGroup(new MeshGroup.MeshGroupNode(this.generateMesh(), Material.createDefault())));
+    public Model3D generateModel() {
+        return new Model3D(new Pose3D(), new MeshGroup(new MeshNode3D<>(this.generateMesh())));
     }
 
     @Override

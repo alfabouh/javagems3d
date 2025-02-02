@@ -1,7 +1,7 @@
 package javagems3d.graphics.rendering.programs.indirect.commands;
 
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;

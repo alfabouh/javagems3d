@@ -55,7 +55,7 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
             blurShader.performUniformTexture(new UniformString("texture_sampler"), startFbo.getTextureByIndex(startBinding));
             blurShader.performUniform(new UniformString("direction"), UniformFunctions.VEC2F(i % 2 == 0 ? new Vector2f(1.0f, 0.0f) : new Vector2f(0.0f, 1.0f)));
             blurShader.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
-            JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+            JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
             this.getOutColor().unBindFBO();
             startFbo = this.getOutColor();
             startBinding = 0;

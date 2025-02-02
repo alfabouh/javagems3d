@@ -13,6 +13,8 @@ package javagems3d.graphics.particles;
 
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
@@ -20,12 +22,10 @@ import javagems3d.graphics.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.particles.objects.SimpleColoredParticle;
 import javagems3d.graphics.particles.objects.SimpleTexturedParticle;
 import javagems3d.graphics.particles.objects.base.ParticleFX;
-import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.service.synchronizing.SyncManager;
 
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 public final class ParticlesEmitter implements IParticlesEmitter {
     private final Set<ParticleFX> particlesSet;
-    private Model<Format3D> commonParticleModel2D;
+    private Model3D commonParticleModel2D;
 
     public ParticlesEmitter() {
         this.particlesSet = SyncManager.createSyncronisedSet();
@@ -89,8 +89,8 @@ public final class ParticlesEmitter implements IParticlesEmitter {
         this.getParticlesSet().clear();
     }
 
-    public Model<Format3D> getParticleModel(ParticleFX particleFX) {
-        return new Model<>(this.commonParticleModel2D, new Format3D(particleFX.getPosition(), new Vector3f(0.0f), new Vector3f(particleFX.getScaling(), 1.0f)).setOrientedToView(true));
+    public Model3D getParticleModel(ParticleFX particleFX) {
+        return new Model3D(this.commonParticleModel2D, new Pose3D(particleFX.getPosition(), new Vector3f(0.0f), new Vector3f(particleFX.getScaling(), 1.0f)).setOrientedToView(true));
     }
 
     public Set<ParticleFX> getCulledParticlesSet(ICamera camera) {

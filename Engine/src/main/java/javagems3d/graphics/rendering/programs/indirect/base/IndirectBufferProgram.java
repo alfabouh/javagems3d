@@ -3,8 +3,10 @@ package javagems3d.graphics.rendering.programs.indirect.base;
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -36,7 +38,7 @@ public final class IndirectBufferProgram {
     }
 
     public void init(MeshBuffersDataCache meshBuffersDataCache) {
-        Map<Boolean, List<MeshBuffer>> partitionedModels = meshBuffersDataCache.getMeshBuffers().stream().collect(Collectors.partitioningBy(MeshStructure::isAnimationsNotEmpty));
+        Map<Boolean, List<MeshBuffer>> partitionedModels = meshBuffersDataCache.getMeshBuffers().stream().collect(Collectors.partitioningBy(MeshStructure3D::isAnimatedStructure));
 
         this.allStaticMeshBuffers = partitionedModels.get(false);
         this.allAnimatedMeshBuffers = partitionedModels.get(true);
@@ -61,9 +63,10 @@ public final class IndirectBufferProgram {
 
         for (MeshBuffer meshBuffer : obj) {
             meshBuffer.getPassData().clear();
+            meshBuffer.getPassDataTransparent().clear();
             int collect = 0;
-            for (MeshBuffer.MeshBufferNode node : meshBuffer.getMeshNodes()) {
-                DataMesh dataMesh = node.getMesh();
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getSolidNodes()) {
+                DataMesh dataMesh = meshNode3D.getMeshData();
                 int posLength = dataMesh.numPositions();
                 indexesSize += dataMesh.numVertexIndexes();
                 positionsSize += posLength;
@@ -88,9 +91,11 @@ public final class IndirectBufferProgram {
                 }
                 meshSizeInBytes *= posLength;
 
-                meshBuffer.getPassData().add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, node.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(node.getMaterial()), offset, dataMesh.numVertexIndexes()));
+                boolean isTransparent = meshNode3D.getMaterial() != null && meshNode3D.getMaterial().hasTransparency();
+                List<MeshBuffer.PassData> dataToWrite = isTransparent ? meshBuffer.getPassDataTransparent() : meshBuffer.getPassData();
+                dataToWrite.add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, meshNode3D.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(meshNode3D.getMaterial()), offset, dataMesh.numVertexIndexes()));
                 offset = positionsSize / 3;
-                collect += node.getMesh().numVertexIndexes();
+                collect += meshNode3D.getMeshData().numVertexIndexes();
             }
             firstIndexOffset += collect;
         }
@@ -99,9 +104,8 @@ public final class IndirectBufferProgram {
         this.getVboList().add(vboId);
         FloatBuffer meshesBuffer = MemoryUtil.memAllocFloat(structSize);
         for (MeshBuffer meshBuffer : obj) {
-            List<MeshBuffer.MeshBufferNode> nodes = meshBuffer.getMeshNodes();
-            for (MeshBuffer.MeshBufferNode node : nodes) {
-                DataMesh dataMesh = node.getMesh();
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getSolidNodes()) {
+                DataMesh dataMesh = meshNode3D.getMeshData();
                 this.populateMeshBuffer(meshesBuffer, dataMesh);
             }
         }
@@ -116,9 +120,8 @@ public final class IndirectBufferProgram {
         this.getVboList().add(vboId);
         IntBuffer indexesBuffer = MemoryUtil.memAllocInt(indexesSize);
         for (MeshBuffer meshBuffer : obj) {
-            List<MeshBuffer.MeshBufferNode> nodes = meshBuffer.getMeshNodes();
-            for (MeshBuffer.MeshBufferNode node : nodes) {
-                DataMesh dataMesh = node.getMesh();
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getSolidNodes()) {
+                DataMesh dataMesh = meshNode3D.getMeshData();
                 for (int i : dataMesh.getIndexesBuffer().getValues()) {
                     indexesBuffer.put(i);
                 }
@@ -137,6 +140,15 @@ public final class IndirectBufferProgram {
     private void forAnimated(List<MeshBuffer> obj) {
         //TODO
     }
+
+ // private void processOpaqueMeshNodes(MeshBuffersDataCache meshBuffersDataCache, int firstIndexOffset, int meshSizeInBytes, int offset, List<MeshBuffer.PassData> dataToWrite, MeshBufferNode node) {
+ //     DataMesh dataMesh = node.getMeshData();
+ //     dataToWrite.add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, node.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(node.getMaterial()), offset, dataMesh.numVertexIndexes()));
+ // }
+
+ // private int processTransparentMeshNodes(MeshBuffersDataCache meshBuffersDataCache, int firstOffset, int offset, List<MeshBuffer.PassData> dataToWrite, MeshBufferNode node) {
+
+ // }
 
     private void populateMeshBuffer(FloatBuffer floatBuffer, DataMesh dataMesh) {
         List<VertexBuffer<Float>> values = new ArrayList<>(dataMesh.getBufferMap().values());

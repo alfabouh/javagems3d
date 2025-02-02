@@ -2,12 +2,11 @@ package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +41,7 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         
         JGemsShaderManager deferredShader = this.getLightPassShader();
         deferredShader.beginShading();
-        deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformation.INSTANCE.getCameraViewMatrix()));
+        deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix()));
         deferredShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
         deferredShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
         deferredShader.performUniformTexture(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));
@@ -52,7 +51,7 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(this.isSsaoValid()));
         deferredShader.getUtils().performShadowsInfo();
         deferredShader.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
-        JGemsHelper.RENDERING.renderModel(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         deferredShader.endShading();
     }
 

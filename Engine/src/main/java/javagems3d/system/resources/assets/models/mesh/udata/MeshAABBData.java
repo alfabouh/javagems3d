@@ -12,10 +12,12 @@
 package javagems3d.system.resources.assets.models.mesh.udata;
 
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -29,8 +31,8 @@ public class MeshAABBData implements IMeshUserData {
         this.cullingAABB = cullingAABB;
     }
 
-    public static MeshAABBData create(MeshStructure<? extends MeshStructure.Node<?>> meshStructure) {
-        List<? extends MeshStructure.Node<?>> list = meshStructure.getMeshNodes();
+    public static MeshAABBData create(MeshStructure3D<? extends IMesh> meshStructure) {
+        List<? extends MeshNode3D<?>> list = meshStructure.getAllNodes();
         if (list.isEmpty()) {
             return null;
         }
@@ -38,8 +40,8 @@ public class MeshAABBData implements IMeshUserData {
         Vector3f min = new Vector3f(Float.POSITIVE_INFINITY);
         Vector3f max = new Vector3f(Float.NEGATIVE_INFINITY);
 
-        for (MeshStructure.Node<?> node : list) {
-            IMesh mesh = node.getMesh();
+        for (MeshNode3D<?> meshNode3D : list) {
+            IMesh mesh = meshNode3D.getMeshData();
             List<Float> positions = mesh.getVertexPositions();
 
             for (int i = 0; i < positions.size(); i += 3) {
@@ -52,8 +54,8 @@ public class MeshAABBData implements IMeshUserData {
         return new MeshAABBData(new CullingAABB(min, max));
     }
 
-    public CullingAABB transformAABB(CullingAABB aabb, Format3D transform) {
-        Matrix4f modelMatrix = TransformationUtils.getModelMatrix(transform);
+    public CullingAABB transformAABB(CullingAABB aabb, Pose3D transform) {
+        Matrix4f modelMatrix = TransformUtils.getModelMatrix(transform);
 
         Vector3f[] corners = new Vector3f[]{
                 new Vector3f(aabb.getAabbMin().x, aabb.getAabbMin().y, aabb.getAabbMin().z),
@@ -80,7 +82,7 @@ public class MeshAABBData implements IMeshUserData {
         return new CullingAABB(newMin, newMax);
     }
     
-    public CullingAABB getCullingAABB(Format3D format3D) {
-        return this.transformAABB(this.cullingAABB, format3D);
+    public CullingAABB getCullingAABB(Pose3D pose) {
+        return this.transformAABB(this.cullingAABB, pose);
     }
 }

@@ -17,8 +17,11 @@ import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.joml.Matrix4f;
@@ -27,14 +30,13 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.scene.JGemsScene;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -151,7 +153,7 @@ public final class JGemsShaderManager extends ShaderManager {
         }
 
         public boolean performAnimationsInfo(IAnimated animated) {
-            if (animated.hasAnimations()) {
+            if (animated.hasAnimationData()) {
                 Matrix4f[] matrices = animated.getAnimationData().getCurrentAnimationFrame().getBoneMatrices();
                 if (matrices != null) {
                     try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -195,11 +197,11 @@ public final class JGemsShaderManager extends ShaderManager {
             }
         }
 
-        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Format3D format3D) {
-            Matrix4f modelM = new Matrix4f(TransformationUtils.getModelMatrix(format3D));
+        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Pose3D pose) {
+            Matrix4f modelM = new Matrix4f(TransformUtils.getModelMatrix(pose));
             if (JGemsShaderManager.this.isUniformExist(new UniformString("model_matrix"))) {
-                if (format3D.isOrientedToViewMatrix()) {
-                    modelM = TransformationUtils.getOrientedToViewModelMatrix(format3D, viewMatrix);
+                if (pose.isOrientedToViewMatrix()) {
+                    modelM = TransformUtils.getOrientedToViewModelMatrix(pose, viewMatrix);
                 }
                 this.performModel3DMatrix(modelM);
             }
@@ -211,28 +213,28 @@ public final class JGemsShaderManager extends ShaderManager {
             }
         }
 
-        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model<Format3D> model) {
-            this.performViewAndModelMatricesSeparately(viewMatrix, model.getFormat());
+        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model3D model) {
+            this.performViewAndModelMatricesSeparately(viewMatrix, model.getPose());
         }
 
-        public void performViewAndModelMatricesSeparately(Model<Format3D> model) {
-            this.performViewAndModelMatricesSeparately(JGemsTransformation.INSTANCE.getCameraViewMatrix(), model);
+        public void performViewAndModelMatricesSeparately(Model3D model) {
+            this.performViewAndModelMatricesSeparately(JGemsTransformManager.INSTANCE.getCameraViewMatrix(), model);
         }
 
         public void performPerspectiveMatrix() {
-            this.performPerspectiveMatrix(JGemsTransformation.INSTANCE.getPerspectiveMatrix());
+            this.performPerspectiveMatrix(JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
         }
 
         public void performPerspectiveMatrix(Matrix4f matrix4f) {
             JGemsShaderManager.this.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
 
-        public void performOrthographicMatrix(Model<Format2D> model) {
-            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(model.getFormat(), JGemsTransformation.INSTANCE.getOrthographicMatrix())));
+        public void performOrthographicMatrix(Model2D model) {
+            JGemsShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(model.getPose(), JGemsTransformManager.INSTANCE.getOrthographicMatrix())));
         }
 
-        public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {
-            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelViewMatrix(model.getFormat(), view)));
+        public void performModel3DViewMatrix(Model3D model, Matrix4f view) {
+            JGemsShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(TransformUtils.getModelViewMatrix(model.getPose(), view)));
         }
 
         public void performModel3DViewMatrix(Matrix4f model, Matrix4f view) {
@@ -247,8 +249,8 @@ public final class JGemsShaderManager extends ShaderManager {
             JGemsShaderManager.this.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
 
-        public void performModel3DMatrix(Model<Format3D> model) {
-            this.performModel3DMatrix(TransformationUtils.getModelMatrix(model.getFormat()));
+        public void performModel3DMatrix(Model3D model) {
+            this.performModel3DMatrix(TransformUtils.getModelMatrix(model.getPose()));
         }
 
         public void performModel3DMatrix(Matrix4f matrix4f) {

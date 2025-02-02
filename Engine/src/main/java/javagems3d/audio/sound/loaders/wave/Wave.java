@@ -65,7 +65,7 @@ public class Wave implements ISoundCodec {
         return this.data;
     }
 
-    public int getFormat() {
+    public int getPose() {
         return this.format;
     }
 

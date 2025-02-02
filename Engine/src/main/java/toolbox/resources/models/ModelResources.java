@@ -11,7 +11,7 @@
 
 package toolbox.resources.models;
 
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.service.path.JGemsPath;
 import toolbox.resources.TBoxResourceManager;
 

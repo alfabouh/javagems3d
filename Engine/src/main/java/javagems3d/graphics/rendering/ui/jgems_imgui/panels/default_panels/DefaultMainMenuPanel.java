@@ -13,6 +13,8 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels.default_panels;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -26,8 +28,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.map.loaders.custom.DefaultMap;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
+
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -43,12 +44,12 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
     public static void renderMenuBackGround(Vector3f color) {
         Window window = JGems3D.get().getScreen().getWindow();
         Vector2f res = new Vector2f(window.getWindowSize().x, window.getWindowSize().y);
-        try (Model<Format2D> model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
+        try (Model2D model = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), res, 0)) {
             JGemsResourceManager.globalShaderAssets.menu.beginShading();
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
             JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
-            JGemsHelper.RENDERING.renderModel(model, GL46.GL_TRIANGLES);
+            JGemsHelper.RENDERING.renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }
     }

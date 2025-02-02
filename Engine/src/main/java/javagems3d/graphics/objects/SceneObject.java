@@ -17,21 +17,22 @@ import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model;
+import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 
 public abstract class SceneObject implements IModeled, IRendered, ILighted {
     private AnimationData animationData;
     private final SceneWorld sceneWorld;
     private RenderAttributes renderAttributes;
-    protected Model<Format3D> model;
+    protected Model3D model;
     private float animationSpeed;
     private double lastTick;
 
     private CullingAABB cullingAABB;
 
-    public SceneObject(SceneWorld sceneWorld, Model<Format3D> model, RenderAttributes renderAttributes) {
+    public SceneObject(SceneWorld sceneWorld, Model3D model, RenderAttributes renderAttributes) {
         this.setModel(model);
         this.sceneWorld = sceneWorld;
         this.renderAttributes = renderAttributes;
@@ -41,7 +42,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
         this.cullingAABB = null;
     }
 
-    public SceneObject setModel(Model<Format3D> model) {
+    public SceneObject setModel(Model3D model) {
         this.model = model;
         this.initAnimation();
         this.setCullingData(this.pickAABBDataFromMesh());
@@ -63,7 +64,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
     }
 
     public void updateAnimation() {
-        if (!this.hasAnimations()) {
+        if (!this.hasAnimationData()) {
             return;
         }
         double fps = 1.0f - this.getAnimationData().getCurrentAnimation().getDuration() / this.getAnimationData().getCurrentAnimation().getFrameCount();
@@ -78,7 +79,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
     }
 
     public void nextAnimationFrame(int positionAttributeIndex) {
-        if (this.hasAnimations()) {
+        if (this.hasAnimationData()) {
             this.getAnimationData().nextFrame();
         }
     }
@@ -89,14 +90,14 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
 
     @Override
     public AnimationData setAnimationByID(int id) {
-        if (!this.hasModel() || !this.hasAnimations()) {
+        if (!this.hasModel() || !this.hasAnimationData() || !this.getModel().getMeshStructure().isAnimatedStructure()) {
             return null;
         }
-        if (id < 0 || id >= this.getModel().getMeshStructure().getAnimationList().size()) {
+        if (id < 0 || id >= this.getModel().getMeshStructure().getAnimationsList().size()) {
             JGemsHelper.getLogger().error("Couldn't set animation for: " + this);
             return null;
         }
-        AnimationData animationData = new AnimationData(this.getModel().getMeshStructure().getAnimationList().get(id));
+        AnimationData animationData = new AnimationData(this.getModel().getMeshStructure().getAnimationsList().get(id));
         this.setAnimationData(animationData);
         this.nextAnimationFrame();
         return animationData;
@@ -126,7 +127,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
         return this.animationSpeed;
     }
 
-    public Model<Format3D> getModel() {
+    public Model3D getModel() {
         return this.model;
     }
 }

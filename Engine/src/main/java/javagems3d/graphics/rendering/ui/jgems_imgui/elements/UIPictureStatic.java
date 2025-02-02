@@ -13,14 +13,15 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
+
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -32,7 +33,7 @@ public class UIPictureStatic extends UIElement {
     private final Vector2i size;
     private final Vector2f textureXY;
     private final Vector2f textureWH;
-    protected Model<Format2D> imageModel;
+    protected Model2D imageModel;
 
     public UIPictureStatic(@NotNull ImageTexture iImageSample, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_image, zValue);
@@ -45,15 +46,15 @@ public class UIPictureStatic extends UIElement {
 
     @Override
     public void render(float frameDeltaTicks) {
-        this.imageModel.getFormat().setPosition(new Vector2f(this.getPosition()));
-        this.imageModel.getFormat().setScale(new Vector2f(this.getScaling()));
+        this.imageModel.getPose().setPosition(new Vector2f(this.getPosition()));
+        this.imageModel.getPose().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
         GL46.glActiveTexture(GL46.GL_TEXTURE0);
         this.iImageSample.bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"),  UniformFunctions.INTEGER(0));
-        JGemsHelper.RENDERING.renderModel(this.imageModel, GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 
@@ -67,7 +68,7 @@ public class UIPictureStatic extends UIElement {
         this.imageModel.clear();
     }
 
-    protected Model<Format2D> constructModel(Vector2i imageSize) {
+    protected Model2D constructModel(Vector2i imageSize) {
         Vector2f tMin = new Vector2f(this.textureXY.x / (float) imageSize.x, this.textureXY.y / (float) imageSize.y);
         Vector2f tMax = new Vector2f((this.textureWH.x + this.textureXY.x) / (float) imageSize.x, (this.textureWH.y + this.textureXY.y) / (float) imageSize.y);
         return MeshHelper.generatePlane2DModel(new Vector2f(0.0f), this.getZValue(), tMin, tMax, new Vector2f(this.textureWH).mul(this.getScaling()));

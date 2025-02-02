@@ -14,7 +14,9 @@ package javagems3d.system.resources.assets.initialization;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 
@@ -39,7 +41,7 @@ public class RenderDataInitializer implements IAssetsInitializer {
     public void load(GameResources gameResources) {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building render data...");
         IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
-            MeshGroup meshGroup = new MeshGroup(new MeshGroup.MeshGroupNode(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f))));
+            MeshGroup meshGroup = new MeshGroup(new MeshNode3D<RenderMesh>(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f))));
             return meshGroup;
         };
 

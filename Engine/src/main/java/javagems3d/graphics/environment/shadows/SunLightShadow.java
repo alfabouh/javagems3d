@@ -1,13 +1,11 @@
 package javagems3d.graphics.environment.shadows;
 
-import javagems3d.JGems3D;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
-import javagems3d.graphics.rendering.scene.JGemsScene;
-import javagems3d.graphics.transformation.JGemsTransformation;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.transformation.TransformUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -35,8 +33,8 @@ public class SunLightShadow extends Shadow {
     }
 
     public void refreshCascades() {
-        Matrix4f view = JGemsTransformation.INSTANCE.getCameraViewMatrix();
-        Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
+        Matrix4f view = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
+        Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
 
         Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getSunPosition(), 0.0f);
 
@@ -106,8 +104,8 @@ public class SunLightShadow extends Shadow {
             Vector3f lightDir = (new Vector3f(sunPos.x, sunPos.y, sunPos.z).mul(-1.0f)).normalize();
             Vector3f eye = new Vector3f(frustumCenter).sub(new Vector3f(lightDir).mul(-minExtents.z));
             Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-            Matrix4f lightViewMatrix = TransformationUtils.getLookAtMatrix(eye, up, frustumCenter);
-            Matrix4f lightOrthoMatrix = TransformationUtils.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
+            Matrix4f lightViewMatrix = TransformUtils.getLookAtMatrix(eye, up, frustumCenter);
+            Matrix4f lightOrthoMatrix = TransformUtils.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
 
             Cascade cascade = this.getCascades().get(i);
             cascade.setSplitDistance((nearClip + splitDist * clipRange) * -1.0f);

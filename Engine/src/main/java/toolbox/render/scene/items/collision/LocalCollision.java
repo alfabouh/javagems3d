@@ -11,35 +11,39 @@
 
 package toolbox.render.scene.items.collision;
 
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import org.joml.Intersectionf;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.graphics.transformation.TransformUtils;
+
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 
 import java.util.List;
 
 public final class LocalCollision {
-    private final MeshStructure<?> meshStructure;
+    private final MeshStructure3D<RenderMesh> meshStructure;
     private AABB aabb;
 
-    public LocalCollision(Model<Format3D> model) {
-        this.meshStructure = model.getMeshStructure();
-        this.calcAABB(model.getFormat());
+    public LocalCollision(Model3D model) {
+        this.meshStructure = model.getMeshStructureCast();
+        this.calcAABB(model.getPose());
     }
 
-    public void calcAABB(Format3D format3D) {
-        Matrix4f modelMatrix = TransformationUtils.getModelMatrix(format3D);
+    public void calcAABB(Pose3D pose) {
+        Matrix4f modelMatrix = TransformUtils.getModelMatrix(pose);
 
         Vector3f min = new Vector3f((float) Double.POSITIVE_INFINITY);
         Vector3f max = new Vector3f((float) Double.NEGATIVE_INFINITY);
 
-        for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
-            List<Float> positions = meshNode.getMesh().getVertexPositions();
-            List<Integer> indices = meshNode.getMesh().getVertexIndexes();
+        for (MeshNode3D<?> meshNode3D : this.getMeshStructure().getAllNodes()) {
+            List<Float> positions = meshNode3D.getMeshData().getVertexPositions();
+            List<Integer> indices = meshNode3D.getMeshData().getVertexIndexes();
 
             for (int index : indices) {
                 int i1 = index * 3;
@@ -54,16 +58,16 @@ public final class LocalCollision {
         this.aabb = new AABB(min, max);
     }
 
-    public Vector3f findClosesPointRayIntersectObjectMesh(Format3D format3D, Vector3f rayStart, Vector3f rayEnd) {
-        Matrix4f modelMatrix = TransformationUtils.getModelMatrix(format3D);
+    public Vector3f findClosesPointRayIntersectObjectMesh(Pose3D pose, Vector3f rayStart, Vector3f rayEnd) {
+        Matrix4f modelMatrix = TransformUtils.getModelMatrix(pose);
 
         Vector3f closestVector = null;
-        for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
-            List<Float> floats = meshNode.getMesh().getVertexPositions();
-            for (int i = 0; i < meshNode.getMesh().numVertexIndexes(); i += 3) {
-                int i1 = meshNode.getMesh().getVertexIndexes().get(i) * 3;
-                int i2 = meshNode.getMesh().getVertexIndexes().get(i + 1) * 3;
-                int i3 = meshNode.getMesh().getVertexIndexes().get(i + 2) * 3;
+        for (MeshNode3D<?> meshNode3D : this.getMeshStructure().getAllNodes()) {
+            List<Float> floats = meshNode3D.getMeshData().getVertexPositions();
+            for (int i = 0; i < meshNode3D.getMeshData().numVertexIndexes(); i += 3) {
+                int i1 = meshNode3D.getMeshData().getVertexIndexes().get(i) * 3;
+                int i2 = meshNode3D.getMeshData().getVertexIndexes().get(i + 1) * 3;
+                int i3 = meshNode3D.getMeshData().getVertexIndexes().get(i + 2) * 3;
                 Vector4f Vector4f1 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMatrix);
                 Vector4f Vector4f2 = new Vector4f(floats.get(i2), floats.get(i2 + 1), floats.get(i2 + 2), 1.0f).mul(modelMatrix);
                 Vector4f Vector4f3 = new Vector4f(floats.get(i3), floats.get(i3 + 1), floats.get(i3 + 2), 1.0f).mul(modelMatrix);
@@ -85,15 +89,15 @@ public final class LocalCollision {
     }
 
     //969FE1C0623D4457
-    public boolean isRayIntersectObjectMesh(Format3D format3D, Vector3f rayStart, Vector3f rayEnd) {
-        Matrix4f modelMatrix = TransformationUtils.getModelMatrix(format3D);
+    public boolean isRayIntersectObjectMesh(Pose3D pose, Vector3f rayStart, Vector3f rayEnd) {
+        Matrix4f modelMatrix = TransformUtils.getModelMatrix(pose);
 
-        for (MeshStructure.Node<?> meshNode : this.getMeshStructure().getMeshNodes()) {
-            List<Float> floats = meshNode.getMesh().getVertexPositions();
-            for (int i = 0; i < meshNode.getMesh().numVertexIndexes(); i += 3) {
-                int i1 = meshNode.getMesh().getVertexIndexes().get(i) * 3;
-                int i2 = meshNode.getMesh().getVertexIndexes().get(i + 1) * 3;
-                int i3 = meshNode.getMesh().getVertexIndexes().get(i + 2) * 3;
+        for (MeshNode3D<?> meshNode3D : this.getMeshStructure().getAllNodes()) {
+            List<Float> floats = meshNode3D.getMeshData().getVertexPositions();
+            for (int i = 0; i < meshNode3D.getMeshData().numVertexIndexes(); i += 3) {
+                int i1 = meshNode3D.getMeshData().getVertexIndexes().get(i) * 3;
+                int i2 = meshNode3D.getMeshData().getVertexIndexes().get(i + 1) * 3;
+                int i3 = meshNode3D.getMeshData().getVertexIndexes().get(i + 2) * 3;
                 Vector4f Vector4f1 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMatrix);
                 Vector4f Vector4f2 = new Vector4f(floats.get(i2), floats.get(i2 + 1), floats.get(i2 + 2), 1.0f).mul(modelMatrix);
                 Vector4f Vector4f3 = new Vector4f(floats.get(i3), floats.get(i3 + 1), floats.get(i3 + 2), 1.0f).mul(modelMatrix);
@@ -118,7 +122,7 @@ public final class LocalCollision {
         return this.aabb;
     }
 
-    public MeshStructure<?> getMeshStructure() {
+    public MeshStructure3D<RenderMesh> getMeshStructure() {
         return this.meshStructure;
     }
 

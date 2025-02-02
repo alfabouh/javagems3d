@@ -33,8 +33,8 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
+
+import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -61,7 +61,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
 
-    protected Model<Format2D> sceenModel;
+    protected Model2D screenModel;
 
     private final ISceneCulling sceneCulling;
 
@@ -74,7 +74,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         JGemsOpenGLRenderer.inMenuInterface = new DearUIMenuInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
-        this.sceenModel = null;
+        this.screenModel = null;
 
         this.sceneCulling = new SceneCulling(this, null);
     }
@@ -200,14 +200,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
         //imgShader.performUniformTexture(new UniformString("texture_sampler"), ((SceneCulling) this.getSceneCulling()).getGpuOcclusionCulling().getBuffer().getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
-        JGemsHelper.RENDERING.renderModel(this.getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
     }
 
     @Override
     public void onStopRender() {
-        if (this.sceenModel != null) {
-            this.sceenModel.clear();
+        if (this.screenModel != null) {
+            this.screenModel.clear();
         }
         this.getSceneIndirectBuffer().clear();
         this.getJGemsUI().destroyUI();
@@ -217,10 +217,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     protected void constructScreenModel() {
-        if (this.sceenModel != null) {
-            this.sceenModel.clear();
+        if (this.screenModel != null) {
+            this.screenModel.clear();
         }
-        this.sceenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowSize()), 0);
+        this.screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getWindowSize()), 0);
     }
 
     @Override
@@ -229,8 +229,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     @Override
-    public @NotNull Model<Format2D> getScreenModel() {
-        return this.sceenModel;
+    public @NotNull Model2D getScreenModel() {
+        return this.screenModel;
     }
 
     @Override

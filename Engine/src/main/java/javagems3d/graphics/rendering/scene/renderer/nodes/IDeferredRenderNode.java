@@ -9,7 +9,6 @@ import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentConta
 import javagems3d.graphics.rendering.programs.indirect.commands.BaseIndirectCommandsProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
@@ -18,9 +17,8 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.Indirect
 import javagems3d.graphics.rendering.scene.renderer.processors.post.DeferredColorRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.SSAORenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
@@ -28,7 +26,6 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;
@@ -133,8 +130,8 @@ public interface IDeferredRenderNode extends IRenderNode {
             final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
                 final SceneWorld sceneWorld = this.getSceneWorld();
                 final ICamera camera = this.getSceneWorld().getCamera();
-                final Matrix4f cameraMatrix = JGemsTransformation.INSTANCE.getCameraViewMatrix();
-                final Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
+                final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
+                final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
                 final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
 
                 shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
@@ -210,8 +207,8 @@ public interface IDeferredRenderNode extends IRenderNode {
             final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
                 final SceneWorld sceneWorld = this.getSceneWorld();
                 final ICamera camera = this.getSceneWorld().getCamera();
-                final Matrix4f cameraMatrix = JGemsTransformation.INSTANCE.getCameraViewMatrix();
-                final Matrix4f projection = JGemsTransformation.INSTANCE.getPerspectiveMatrix();
+                final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
+                final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
                 final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
 
                 shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));

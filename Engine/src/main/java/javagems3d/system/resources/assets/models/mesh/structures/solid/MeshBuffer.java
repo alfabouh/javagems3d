@@ -9,38 +9,44 @@
  *
  */
 
-package javagems3d.system.resources.assets.models.mesh.structures;
+package javagems3d.system.resources.assets.models.mesh.structures.solid;
 
-import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
-import org.jetbrains.annotations.NotNull;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
+public class MeshBuffer extends MeshStructure3D<DataMesh> {
     public static final String POSTFIX = "_buffer";
     private final List<PassData> passData;
+    private final List<PassData> passDataTransparent;
+
+    public MeshBuffer(@Nullable List<MeshNode3D<DataMesh>> meshNodes) {
+        this.passData = new ArrayList<>();
+        this.passDataTransparent = new ArrayList<>();
+        if (meshNodes != null) {
+            this.putNodes(meshNodes);
+        }
+    }
+
+    @SafeVarargs
+    public MeshBuffer(MeshNode3D<DataMesh>... t) {
+        this(Arrays.asList(t));
+    }
 
     public MeshBuffer() {
-        this.passData = new ArrayList<>();
-    }
-
-    public MeshBuffer(List<MeshBufferNode> nodes) {
-        super(nodes);
-        this.passData = new ArrayList<>();
-    }
-
-    public MeshBuffer(MeshBufferNode... t) {
-        super(t);
-        this.passData = new ArrayList<>();
+        this((List<MeshNode3D<DataMesh>>) null);
     }
 
     @Override
     public void clear() {
         super.clear();
         this.getPassData().clear();
+        this.getPassDataTransparent().clear();
     }
 
     @Override
@@ -48,30 +54,12 @@ public class MeshBuffer extends MeshStructure<MeshBuffer.MeshBufferNode> {
         return true;
     }
 
+    public List<PassData> getPassDataTransparent() {
+        return this.passDataTransparent;
+    }
+
     public List<PassData> getPassData() {
         return this.passData;
-    }
-
-    @Override
-    public List<MeshBufferNode> getMeshNodes() {
-        return super.getMeshNodes();
-    }
-
-    public static final class MeshBufferNode extends MeshStructure.Node<DataMesh> {
-        private final Material material;
-
-        public MeshBufferNode(@NotNull DataMesh meshData, @Nullable Material material) {
-            super(meshData);
-            this.material = material;
-        }
-
-        public void clearMesh() {
-            this.getMesh().clearMesh();
-        }
-
-        public Material getMaterial() {
-            return this.material;
-        }
     }
 
     public static final class PassData {

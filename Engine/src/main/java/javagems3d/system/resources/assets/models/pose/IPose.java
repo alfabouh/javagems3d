@@ -9,8 +9,8 @@
  *
  */
 
-package javagems3d.system.resources.assets.models.formats;
+package javagems3d.system.resources.assets.models.pose;
 
-public interface IFormat {
-    IFormat copy();
+public interface IPose {
+    IPose copy();
 }

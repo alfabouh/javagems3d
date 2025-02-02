@@ -303,10 +303,6 @@ public final class SceneWorld implements IWorld {
         return this.particlesEmitter;
     }
 
-    public boolean ifObjectHasAnimations(WorldItem worldItem) {
-        return this.getObjectMap().get(worldItem.getItemId()).hasAnimations();
-    }
-
     public IAnimated getAnimatedObject(WorldItem worldItem) {
         return this.getObjectMap().get(worldItem.getItemId());
     }

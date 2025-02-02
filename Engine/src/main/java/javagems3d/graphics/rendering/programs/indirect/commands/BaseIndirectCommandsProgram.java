@@ -3,7 +3,7 @@ package javagems3d.graphics.rendering.programs.indirect.commands;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.ByteBuffer;

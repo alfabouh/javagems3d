@@ -11,18 +11,19 @@
 
 package javagems3d.graphics.objects.entities.world;
 
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 
 public final class SceneWorldLiquid {
     private final LiquidRenderData liquidRenderData;
     private final Liquid liquid;
-    private final Model<Format3D> model;
+    private final Model3D model;
     private final Vector2f textureScaling;
 
     public SceneWorldLiquid(Liquid iLiquid, LiquidRenderData liquidRenderData) {
@@ -32,7 +33,7 @@ public final class SceneWorldLiquid {
         this.model = this.constructModel(iLiquid);
     }
 
-    private Model<Format3D> constructModel(Liquid liquid) {
+    private Model3D constructModel(Liquid liquid) {
         Vector3f location = liquid.getSimpleTriggerZone().getZone().getLocation();
         Vector3f size = new Vector3f(liquid.getSimpleTriggerZone().getZone().getSize()).mul(0.5f);
         double y = location.y + size.y - 0.1f;
@@ -54,7 +55,7 @@ public final class SceneWorldLiquid {
         return new Vector2f(this.textureScaling);
     }
 
-    public Model<Format3D> getModel() {
+    public Model3D getModel() {
         return this.model;
     }
 

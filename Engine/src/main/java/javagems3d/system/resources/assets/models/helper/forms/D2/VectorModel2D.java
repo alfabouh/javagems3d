@@ -12,16 +12,20 @@
 package javagems3d.system.resources.assets.models.helper.forms.D2;
 
 import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector2f;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
+
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
 
-public class VectorModel2D implements BasicModelCreator<Format2D> {
+public class VectorModel2D implements BasicModelCreator<Model2D> {
     private final Vector2f v1;
     private final Vector2f v2;
 
@@ -31,8 +35,8 @@ public class VectorModel2D implements BasicModelCreator<Format2D> {
     }
 
     @Override
-    public Model<Format2D> generateModel() {
-        return new Model<>(new Format2D(), new MeshGroup(new MeshGroup.MeshGroupNode(this.generateMesh(), Material.createDefault())));
+    public Model2D generateModel() {
+        return new Model2D(new Pose2D(), new MeshGui(this.generateMesh()));
     }
 
     @Override

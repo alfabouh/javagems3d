@@ -26,10 +26,12 @@ import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
-import javagems3d.graphics.transformation.TransformationUtils;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+import javagems3d.graphics.transformation.TransformUtils;
+
+import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose2D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -116,24 +118,24 @@ public class ShadowScene implements IShadowScene {
         if (oldV) {
             GL46.glEnable(GL46.GL_CULL_FACE);
         }
-        try (Model<Format2D> screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
+        try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
             final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
             this.blurSunShadow(screenModel, blurring);
         }
     }
 
-    private void blurSunShadow(Model<Format2D> screenModel, final JGemsShaderManager blurring) {
+    private void blurSunShadow(Model2D screenModel, final JGemsShaderManager blurring) {
         this.getSunLightShadow().getSunShadowFBO().bindFBO();
         Vector2i resolution = this.getSunLightShadow().getShadowMapResolution();
         OpenGLRenderer.setViewPort(resolution);
         blurring.beginShading();
-        blurring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(screenModel.getFormat(), TransformationUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
+        blurring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(screenModel.getPose(), TransformUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
         for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
             blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
-            JGemsHelper.RENDERING.renderModel(screenModel, GL46.GL_TRIANGLES);
+            JGemsHelper.RENDERING.renderModel2D(screenModel, GL46.GL_TRIANGLES);
         }
         blurring.endShading();
         this.getSunLightShadow().getSunShadowFBO().unBindFBO();
@@ -221,8 +223,8 @@ public class ShadowScene implements IShadowScene {
             shaderManager.beginShading();
             functionToHandleUniforms.accept(shaderManager);
             for (SceneObject modeledSceneObject : entry.getValue()) {
-                Model<Format3D> model = modeledSceneObject.getModel();
-                if (model == null || model.getMeshStructure() == null) {
+                Model3D model = modeledSceneObject.getModel();
+                if (model == null || !model.isValid()) {
                     continue;
                 }
                 DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderingTable().getRenderFabric(pipeline);

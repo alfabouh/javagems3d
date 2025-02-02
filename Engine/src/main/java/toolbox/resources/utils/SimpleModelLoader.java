@@ -14,7 +14,8 @@ package toolbox.resources.utils;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import org.joml.Vector4f;
@@ -63,7 +64,7 @@ public class SimpleModelLoader {
                                 if (matIdx >= 0 && matIdx < materialList.size()) {
                                     material = materialList.get(matIdx);
                                 }
-                                meshGroup.putMeshNode(new MeshGroup.MeshGroupNode(renderMesh, material));
+                                meshGroup.putNode(0, new MeshNode3D<RenderMesh>(renderMesh, material));
                             }
                         }
                     } else {

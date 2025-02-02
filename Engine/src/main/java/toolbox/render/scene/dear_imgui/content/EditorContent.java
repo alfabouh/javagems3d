@@ -15,13 +15,13 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.*;
 import imgui.type.ImString;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.ControlledCamera;
-import javagems3d.system.resources.assets.models.formats.Format3D;
 import javagems3d.system.service.collections.Pair;
 import logger.managers.LoggingManager;
 import toolbox.ToolBox;
@@ -241,7 +241,7 @@ public class EditorContent implements ImGuiContent {
                         if (attribute.getAttributeType().equals(AttributeTarget.STATIC_NO_EDIT)) {
                             continue;
                         }
-                        Format3D format3D = this.currentSelectedObject.getModel().getFormat();
+                        Pose3D pose = this.currentSelectedObject.getModel().getPose();
                         Object value = attribute.getValue();
                         switch (attribute.getAttributeType()) {
                             case POSITION_X:
@@ -254,7 +254,7 @@ public class EditorContent implements ImGuiContent {
                                         Vector3f vector3f = (Vector3f) value;
                                         ImGui.text(attribute.getDescription());
                                         float[] f1 = new float[]{vector3f.x, vector3f.y, vector3f.z};
-                                        this.transformPosition(format3D, f1, i, speed);
+                                        this.transformPosition(pose, f1, i, speed);
                                         attribute.setValueWithCast(new Vector3f(f1));
                                     }
                                 }
@@ -270,7 +270,7 @@ public class EditorContent implements ImGuiContent {
                                         Vector3f vector3f = (Vector3f) value;
                                         ImGui.text(attribute.getDescription());
                                         float[] f1 = new float[]{vector3f.x, vector3f.y, vector3f.z};
-                                        this.transformRotation(format3D, f1, i, speed);
+                                        this.transformRotation(pose, f1, i, speed);
                                         attribute.setValueWithCast(new Vector3f(f1));
                                     }
                                 }
@@ -286,7 +286,7 @@ public class EditorContent implements ImGuiContent {
                                         Vector3f vector3f = (Vector3f) value;
                                         ImGui.text(attribute.getDescription());
                                         float[] f1 = new float[]{vector3f.x, vector3f.y, vector3f.z};
-                                        this.transformScaling(format3D, f1, i, speed);
+                                        this.transformScaling(pose, f1, i, speed);
                                         attribute.setValueWithCast(new Vector3f(f1));
                                     }
                                 }
@@ -355,7 +355,7 @@ public class EditorContent implements ImGuiContent {
         ImGui.text("Selected:" + this.currentSelectedObject);
         if (this.currentSelectedObject != null) {
             if (ImGui.button("Move Camera -> Object")) {
-                ((ControlledCamera) this.getTBoxScene().getCamera()).setCameraPosition(new Vector3f(this.currentSelectedObject.getModel().getFormat().getPosition()).add(0.0f, 1.0f, 0.0f));
+                ((ControlledCamera) this.getTBoxScene().getCamera()).setCameraPosition(new Vector3f(this.currentSelectedObject.getModel().getPose().getPosition()).add(0.0f, 1.0f, 0.0f));
             }
             if (ImGui.button("Move Object -> CameraDir")) {
                 Vector3f whereLook = this.getTBoxScene().findPointWhereCamLooks(15.0f);
@@ -385,7 +385,7 @@ public class EditorContent implements ImGuiContent {
         }
     }
 
-    private void transformPosition(Format3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
+    private void transformPosition(Pose3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
         boolean flag = false;
         float[] positionX = new float[]{0.0f};
         float[] positionY = new float[]{0.0f};
@@ -421,7 +421,7 @@ public class EditorContent implements ImGuiContent {
         }
     }
 
-    private void transformRotation(Format3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
+    private void transformRotation(Pose3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
         boolean flag = false;
         float[] rotationX = new float[]{0.0f};
         float[] rotationY = new float[]{0.0f};
@@ -457,7 +457,7 @@ public class EditorContent implements ImGuiContent {
         }
     }
 
-    private void transformScaling(Format3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
+    private void transformScaling(Pose3D currentObjFormat, float[] values, int transformFlag, float dragSpeed) {
         boolean flag = false;
         float[] scalingX = new float[]{0.0f};
         float[] scalingY = new float[]{0.0f};

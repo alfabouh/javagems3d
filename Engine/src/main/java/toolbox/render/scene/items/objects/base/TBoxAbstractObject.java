@@ -11,10 +11,11 @@
 
 package toolbox.render.scene.items.objects.base;
 
+import javagems3d.system.resources.assets.models.Model3D;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
 import javagems3d.temp.map_sys.save.objects.object_attributes.AttributesContainer;
 import toolbox.render.scene.items.collision.LocalCollision;
@@ -24,13 +25,13 @@ public abstract class TBoxAbstractObject {
     private static int globalObjectID;
     private final String name;
     private final int id;
-    private final Model<Format3D> model;
+    private final Model3D model;
     private final TBoxObjectRenderData renderData;
     private final LocalCollision localCollision;
     private boolean selected;
     private AttributesContainer attributesContainer;
 
-    public TBoxAbstractObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model<Format3D> model) {
+    public TBoxAbstractObject(@NotNull String name, @NotNull TBoxObjectRenderData renderData, @NotNull Model3D model) {
         this.name = name;
         this.id = TBoxAbstractObject.globalObjectID++;
         this.selected = false;
@@ -43,7 +44,7 @@ public abstract class TBoxAbstractObject {
     public abstract TBoxAbstractObject copy();
 
     public void setPositionWithAttribute(Vector3f vector3f) {
-        this.getModel().getFormat().setPosition(vector3f);
+        this.getModel().getPose().setPosition(vector3f);
         Vector3f vector3f1 = this.getAttributeContainer().getValueFromAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (vector3f != null) {
             vector3f1.set(vector3f);
@@ -52,7 +53,7 @@ public abstract class TBoxAbstractObject {
     }
 
     public void setRotationWithAttribute(Vector3f vector3f) {
-        this.getModel().getFormat().setRotation(vector3f);
+        this.getModel().getPose().setRotation(vector3f);
         Vector3f vector3f1 = this.getAttributeContainer().getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
         if (vector3f != null) {
             vector3f1.set(vector3f);
@@ -61,7 +62,7 @@ public abstract class TBoxAbstractObject {
     }
 
     public void setScalingWithAttribute(Vector3f vector3f) {
-        this.getModel().getFormat().setScaling(vector3f);
+        this.getModel().getPose().setScaling(vector3f);
         Vector3f vector3f1 = this.getAttributeContainer().getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
         if (vector3f != null) {
             vector3f1.set(vector3f);
@@ -83,14 +84,14 @@ public abstract class TBoxAbstractObject {
     }
 
     public void reCalcCollision() {
-        this.getLocalCollision().calcAABB(this.getModel().getFormat());
+        this.getLocalCollision().calcAABB(this.getModel().getPose());
     }
 
     public LocalCollision getLocalCollision() {
         return this.localCollision;
     }
 
-    public Model<Format3D> getModel() {
+    public Model3D getModel() {
         return this.model;
     }
 

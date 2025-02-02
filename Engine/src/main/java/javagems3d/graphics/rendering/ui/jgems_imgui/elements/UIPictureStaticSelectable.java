@@ -44,8 +44,8 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
 
     @Override
     public void render(float frameDeltaTicks) {
-        this.imageModel.getFormat().setPosition(new Vector2f(this.getPosition()));
-        this.imageModel.getFormat().setScale(new Vector2f(this.getScaling()));
+        this.imageModel.getPose().setPosition(new Vector2f(this.getPosition()));
+        this.imageModel.getPose().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
@@ -53,7 +53,7 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
         this.iImageSample.bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
         this.getCurrentShader().performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
-        JGemsHelper.RENDERING.renderModel(this.imageModel, GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 }

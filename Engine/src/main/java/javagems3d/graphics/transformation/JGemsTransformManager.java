@@ -11,15 +11,16 @@
 
 package javagems3d.graphics.transformation;
 
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.screen.window.IWindow;
 
-public class JGemsTransformation {
-    public static final JGemsTransformation INSTANCE = new JGemsTransformation(-1.0f, -10.0f, -1.0f);
+public class JGemsTransformManager {
+    public static final JGemsTransformManager INSTANCE = new JGemsTransformManager(-1.0f, -10.0f, -1.0f);
 
     private final Vector3f projectionData;
 
@@ -27,7 +28,7 @@ public class JGemsTransformation {
     private final Matrix4f perspectiveMatrix;
     private final Matrix4f orthographicMatrix;
 
-    protected JGemsTransformation(float fov, float zNear, float zFar) {
+    protected JGemsTransformManager(float fov, float zNear, float zFar) {
         this.projectionData = new Vector3f(fov, zNear, zFar);
         this.cameraMatrix = new CameraMatrix();
         this.perspectiveMatrix = new Matrix4f().identity();
@@ -44,23 +45,23 @@ public class JGemsTransformation {
     }
 
     public void updateOrthographicMatrix(IWindow window) {
-        this.orthographicMatrix.set(TransformationUtils.getOrthographic2DMatrix(0, window.getWindowSize().x, window.getWindowSize().y, 0));
+        this.orthographicMatrix.set(TransformUtils.getOrthographic2DMatrix(0, window.getWindowSize().x, window.getWindowSize().y, 0));
     }
 
     public void updatePerspectiveMatrix(IWindow window) {
-        this.perspectiveMatrix.set(TransformationUtils.getPerspectiveMatrix(window, this.getProjectionData().x, this.getProjectionData().y, this.getProjectionData().z));
+        this.perspectiveMatrix.set(TransformUtils.getPerspectiveMatrix(window, this.getProjectionData().x, this.getProjectionData().y, this.getProjectionData().z));
     }
 
     public void setProjectionData(IWindow window, float fov, float zNear, float zFar) {
         this.projectionData.set(fov, zNear, zFar);
     }
 
-    public static Matrix4f getModelViewMatrix(Model<Format3D> model) {
-        return TransformationUtils.getModelViewMatrix(model.getFormat(), JGemsTransformation.INSTANCE.getCameraViewMatrix());
+    public static Matrix4f getModelViewMatrix(Model3D model) {
+        return TransformUtils.getModelViewMatrix(model.getPose(), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
     }
 
     public static Matrix4f getAbstractCameraViewMatrix(ICamera camera) {
-        return TransformationUtils.getViewMatrix(camera);
+        return TransformUtils.getViewMatrix(camera);
     }
 
     public Vector3f getProjectionData() {

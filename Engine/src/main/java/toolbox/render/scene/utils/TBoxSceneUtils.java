@@ -11,11 +11,14 @@
 
 package toolbox.render.scene.utils;
 
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
 import toolbox.ToolBox;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
 
@@ -36,27 +39,27 @@ public class TBoxSceneUtils {
         return ToolBox.get().getScreen().getTransformationUtils().getOrthographicMatrix();
     }
 
-    public static void renderModel(Model<Format3D> model, int code) {
-        TBoxSceneUtils.renderModel(model.getMeshStructureWithUnSafeCast(), code);
+    public static void renderModel(Model3D model, int code) {
+        TBoxSceneUtils.renderModel(model.getMeshStructureCast(), code);
     }
 
     @SuppressWarnings("all")
     public static void renderModel(MeshGroup meshGroup, int code) {
-        for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
-            GL46.glBindVertexArray(meshNode.getMesh().getVao());
-            meshNode.getMesh().enableAllMeshAttributes();
-            GL46.glDrawElements(code, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-            meshNode.getMesh().disableAllMeshAttributes();
+        for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
+            GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
+            meshNode3D.getMeshData().enableAllMeshAttributes();
+            GL46.glDrawElements(code, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+            meshNode3D.getMeshData().disableAllMeshAttributes();
             GL46.glBindVertexArray(0);
         }
     }
 
     @SuppressWarnings("all")
-    public static void renderModelTextured(TBoxShaderManager shaderManager, Model<Format3D> model, int code) {
+    public static void renderModelTextured(TBoxShaderManager shaderManager, Model3D model, int code) {
         if (model == null) {
             return;
         }
-        TBoxSceneUtils.renderModelTextured(shaderManager, model.getMeshStructureWithUnSafeCast(), code);
+        TBoxSceneUtils.renderModelTextured(shaderManager, model.getMeshStructureCast(), code);
     }
 
     @SuppressWarnings("all")
@@ -64,12 +67,12 @@ public class TBoxSceneUtils {
         if (meshGroup == null) {
             return;
         }
-        for (MeshGroup.MeshGroupNode meshNode : meshGroup.getMeshNodes()) {
-            shaderManager.getUtils().performModelMaterialOnShader(meshNode.getMaterial());
-            GL46.glBindVertexArray(meshNode.getMesh().getVao());
-            meshNode.getMesh().enableAllMeshAttributes();
-            GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode.getMesh().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-            meshNode.getMesh().disableAllMeshAttributes();
+        for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
+            shaderManager.getUtils().performModelMaterialOnShader(meshNode3D.getMaterial());
+            GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
+            meshNode3D.getMeshData().enableAllMeshAttributes();
+            GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+            meshNode3D.getMeshData().disableAllMeshAttributes();
             GL46.glBindVertexArray(0);
         }
     }

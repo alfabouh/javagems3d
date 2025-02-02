@@ -12,9 +12,9 @@ import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.animation.AnimationData;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     protected InterpolationPoints currentRotationInterpolation;
 
     public SceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull EntityRenderData renderData) {
-        super(sceneWorld, new Model<>(new Format3D(), renderData.getMeshDataGroup()), renderData.getObjectRenderAttributes());
+        super(sceneWorld, new Model3D(new Pose3D(), renderData.getMeshDataGroup()), renderData.getObjectRenderAttributes());
         this.entityModelConstructor = renderData.getEntityModelConstructor();
         this.lightList = new ArrayList<>();
         this.worldItem = worldItem;
@@ -54,7 +54,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
         JGemsHelper.getLogger().log("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
             if (!this.hasModel() && this.getEntityModelConstructor() != null) {
-                this.setModel(new Model<>(new Format3D(), this.getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
+                this.setModel(new Model3D(new Pose3D(), this.getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
             }
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
         }
@@ -94,10 +94,10 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
 
     public void updateModelTranslation() {
         if (this.hasModel()) {
-            Model<Format3D> model = this.getModel();
-            model.getFormat().setScaling(new Vector3f(this.getScaling()));
-            model.getFormat().setPosition(this.getRenderPosition());
-            model.getFormat().setRotation(this.getRenderRotation());
+            Model3D model = this.getModel();
+            model.getPose().setScaling(new Vector3f(this.getScaling()));
+            model.getPose().setPosition(this.getRenderPosition());
+            model.getPose().setRotation(this.getRenderRotation());
         }
     }
 

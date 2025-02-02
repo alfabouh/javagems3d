@@ -13,15 +13,17 @@ package toolbox.resources.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.models.Model2D;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose2D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.transformation.TransformationUtils;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -92,7 +94,7 @@ public final class TBoxShaderManager extends ShaderManager {
             TBoxShaderManager.this.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(ToolBox.get().getScreen().getScene().getCamera().getCamPosition()));
         }
 
-        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model<Format3D> model) {
+        public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model3D model) {
             if (TBoxShaderManager.this.isUniformExist(new UniformString("model_matrix"))) {
                 this.performModel3DMatrix(model);
             }
@@ -104,12 +106,12 @@ public final class TBoxShaderManager extends ShaderManager {
             }
         }
 
-        public void performViewAndModelMatricesSeparately(Model<Format3D> model) {
+        public void performViewAndModelMatricesSeparately(Model3D model) {
             this.performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), model);
         }
 
         public void performOrthographicMatrix(float aspectRatio, float borders) {
-            this.performPerspectiveMatrix(TransformationUtils.getOrthographic3DMatrix(-borders * aspectRatio, borders * aspectRatio, -borders, borders, 0, 100, true));
+            this.performPerspectiveMatrix(TransformUtils.getOrthographic3DMatrix(-borders * aspectRatio, borders * aspectRatio, -borders, borders, 0, 100, true));
         }
 
         public void performPerspectiveMatrix() {
@@ -120,12 +122,12 @@ public final class TBoxShaderManager extends ShaderManager {
             TBoxShaderManager.this.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
 
-        public void performOrthographicMatrix(Model<Format2D> model) {
-            TBoxShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelOrthographicMatrix(model.getFormat(), TBoxSceneUtils.getMainOrthographicMatrix())));
+        public void performOrthographicMatrix(Model2D model) {
+            TBoxShaderManager.this.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(model.getPose(), TBoxSceneUtils.getMainOrthographicMatrix())));
         }
 
-        public void performModel3DViewMatrix(Model<Format3D> model, Matrix4f view) {
-            TBoxShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(TransformationUtils.getModelViewMatrix(model.getFormat(), view)));
+        public void performModel3DViewMatrix(Model3D model, Matrix4f view) {
+            TBoxShaderManager.this.performUniform(new UniformString("model_view_matrix"), UniformFunctions.MAT4F(TransformUtils.getModelViewMatrix(model.getPose(), view)));
         }
 
         public void performModel3DViewMatrix(Matrix4f matrix4f) {
@@ -136,12 +138,12 @@ public final class TBoxShaderManager extends ShaderManager {
             TBoxShaderManager.this.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(matrix4f));
         }
 
-        public void performModel3DMatrix(Format3D format3D) {
-            this.performModel3DMatrix(TransformationUtils.getModelMatrix(format3D));
+        public void performModel3DMatrix(Pose3D pose) {
+            this.performModel3DMatrix(TransformUtils.getModelMatrix(pose));
         }
 
-        public void performModel3DMatrix(Model<Format3D> model) {
-            this.performModel3DMatrix(TransformationUtils.getModelMatrix(model.getFormat()));
+        public void performModel3DMatrix(Model3D model) {
+            this.performModel3DMatrix(TransformUtils.getModelMatrix(model.getPose()));
         }
 
         public void performModel3DMatrix(Matrix4f matrix4f) {

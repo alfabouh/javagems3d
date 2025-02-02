@@ -33,7 +33,7 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.thread.timer.PhysicsProcessor;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.JGemsCore;
@@ -81,8 +81,8 @@ public class JGemsScreen implements IScreen {
     public void createScreenAndContext() {
         JGemsHelper.getLogger().log("Init Graphics!");
         if (this.tryToBuildScreen()) {
-            JGemsTransformation.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
-            JGemsTransformation.INSTANCE.updateSetOfMatrices(this.getWindow());
+            JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
+            JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
 
             this.adjustScreenMode();
             this.adjustVSync();
@@ -123,7 +123,7 @@ public class JGemsScreen implements IScreen {
         if (this.getScene() != null) {
             this.getScene().onWindowResize(window);
         }
-        JGemsTransformation.INSTANCE.updateSetOfMatrices(this.getWindow());
+        JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
     }
 
     public boolean tryToBuildScreen() {
@@ -376,7 +376,7 @@ public class JGemsScreen implements IScreen {
     private void updateSound() {
         JGems3D.get().getSoundManager().update();
         if (JGems3D.get().isValidPlayer()) {
-            SoundListener.updateOrientationAndPosition(JGemsTransformation.INSTANCE.getCameraViewMatrix(), this.getCamera().getCamPosition());
+            SoundListener.updateOrientationAndPosition(JGemsTransformManager.INSTANCE.getCameraViewMatrix(), this.getCamera().getCamPosition());
         }
         SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
     }

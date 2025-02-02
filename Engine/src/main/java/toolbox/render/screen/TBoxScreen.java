@@ -27,7 +27,7 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
@@ -37,7 +37,6 @@ import toolbox.controller.TBoxControllerDispatcher;
 import toolbox.map_table.TBoxMapTable;
 import toolbox.render.scene.TBoxScene;
 import toolbox.render.scene.dear_imgui.content.LoadingContent;
-import toolbox.render.scene.utils.TBoxSceneUtils;
 import toolbox.resources.TBoxResourceManager;
 
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +48,7 @@ public class TBoxScreen implements IScreen {
     private TBoxControllerDispatcher controllerDispatcher;
     private TBoxScene scene;
     private TBoxResourceManager resourceManager;
-    private JGemsTransformation JGemsTransformation;
+    private JGemsTransformManager JGemsTransformManager;
 
     public TBoxScreen() {
         this.timerPool = new TimerPool();
@@ -215,8 +214,8 @@ public class TBoxScreen implements IScreen {
         return this.resourceManager;
     }
 
-    public JGemsTransformation getTransformationUtils() {
-        return JGemsTransformation;
+    public JGemsTransformManager getTransformationUtils() {
+        return JGemsTransformManager;
     }
 
     public TBoxControllerDispatcher getControllerDispatcher() {

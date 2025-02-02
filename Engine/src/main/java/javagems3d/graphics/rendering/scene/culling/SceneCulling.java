@@ -6,7 +6,7 @@ import javagems3d.graphics.rendering.scene.culling.stages.CPUDistanceCulling;
 import javagems3d.graphics.rendering.scene.culling.stages.CPUFrustumCulling;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,7 +58,7 @@ public class SceneCulling implements ISceneCulling {
             this.getCpuDistanceCulling().filter(sceneObjects);
         }
         if (!this.disableFrustumCulling()) {
-            this.getCpuFrustumCulling().rebuildFrustum(JGemsTransformation.INSTANCE.getPerspectiveMatrix(), JGemsTransformation.INSTANCE.getCameraViewMatrix());
+            this.getCpuFrustumCulling().rebuildFrustum(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
             this.getCpuFrustumCulling().filter(sceneObjects);
         }
         if (this.isFrozen() && this.snapshot == null) {

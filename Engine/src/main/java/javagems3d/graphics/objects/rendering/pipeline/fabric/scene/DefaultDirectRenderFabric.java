@@ -7,8 +7,10 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.lwjgl.opengl.GL46;
@@ -29,9 +31,9 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
             IModeled modeled = (IModeled) renderedItem;
             if (renderedItem.canBeRendered()) {
                 if (renderedItem.canBeRendered()) {
-                    Model<Format3D> model = modeled.getModel();
+                    Model3D model = modeled.getModel();
                     shaderManager.getUtils().performModel3DMatrix(model);
-                    JGemsHelper.RENDERING.renderModel(model, GL46.GL_TRIANGLES);
+                    JGemsHelper.RENDERING.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
                 }
             }
         }

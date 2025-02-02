@@ -17,8 +17,9 @@ import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshBuffer;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.managing.resources.GameResources;
@@ -78,16 +79,16 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
         DataMesh dataMesh = new DataMesh();
         dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_POSITIONS, JGemsHelper.UTILS.convertFloatsList(ModelAssetsInitializer.CubeModelPos));
         dataMesh.putVertexIndexes(JGemsHelper.UTILS.convertIntsList(ModelAssetsInitializer.CubeModelInd));
-        MeshBuffer.MeshBufferNode meshBufferNode = new MeshBuffer.MeshBufferNode(dataMesh, null);
-        return new MeshBuffer(meshBufferNode);
+        MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, null);
+        return new MeshBuffer(meshBufferMeshNode3D);
     }
 
     private MeshGroup createDefaultCubeGroup() {
         try (RenderMesh renderMesh = new RenderMesh()) {
             renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS).putArray(ModelAssetsInitializer.CubeModelPos));
             renderMesh.putVertexIndexes(JGemsHelper.UTILS.convertIntsList(ModelAssetsInitializer.CubeModelInd));
-            MeshGroup.MeshGroupNode meshBufferNode = new MeshGroup.MeshGroupNode(renderMesh, null);
-            return new MeshGroup(meshBufferNode);
+            MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, null);
+            return new MeshGroup(meshBufferMeshNode3D);
         }
     }
 

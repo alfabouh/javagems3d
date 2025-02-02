@@ -13,10 +13,15 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.models.pose.Pose2D;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -25,8 +30,7 @@ import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.formats.Format2D;
+
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -57,7 +61,7 @@ public class UIText extends UIElement {
         this.getFontTexture().getTexture().bindTexture();
         shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
         shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
-        JGemsHelper.RENDERING.renderModel(this.textModel.getModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.RENDERING.renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 
@@ -65,8 +69,8 @@ public class UIText extends UIElement {
     public void buildUI() {
         if (this.getText() != null && !this.getText().isEmpty()) {
             this.textModel = new UIText.TextModel();
-            this.textModel.getModel().getFormat().setPosition(new Vector2f(this.getPosition()));
-            this.textModel.getModel().getFormat().setScale(new Vector2f(this.getScaling()));
+            this.textModel.getModel().getPose().setPosition(new Vector2f(this.getPosition()));
+            this.textModel.getModel().getPose().setScale(new Vector2f(this.getScaling()));
         }
     }
 
@@ -117,7 +121,7 @@ public class UIText extends UIElement {
     }
 
     public class TextModel {
-        private final Model<Format2D> model;
+        private final Model2D model;
         private float width;
         private float height;
 
@@ -125,7 +129,7 @@ public class UIText extends UIElement {
             this.model = this.buildModel();
         }
 
-        private Model<Format2D> buildModel() {
+        private Model2D buildModel() {
             RenderMesh renderMesh = new RenderMesh();
             char[] chars = UIText.this.getText().toCharArray();
             float z = UIText.this.getZValue();
@@ -176,7 +180,7 @@ public class UIText extends UIElement {
             renderMesh.putVertexAttribute(vaTextureCoordinates);
 
             renderMesh.bakeMesh();
-            return new Model<>(new Format2D(), new MeshGroup(new MeshGroup.MeshGroupNode(renderMesh)));
+            return new Model2D(new Pose2D(), new MeshGui(renderMesh));
         }
 
         public void clear() {
@@ -185,7 +189,7 @@ public class UIText extends UIElement {
             }
         }
 
-        public Model<Format2D> getModel() {
+        public Model2D getModel() {
             return this.model;
         }
 

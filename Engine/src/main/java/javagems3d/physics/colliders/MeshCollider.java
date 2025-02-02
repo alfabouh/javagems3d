@@ -4,33 +4,34 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
 import javagems3d.system.service.exceptions.JGemsNullException;
 
 public class MeshCollider implements IColliderConstructor {
-    private final MeshStructure<?> meshStructure;
+    private final MeshStructure3D<?> meshStructure;
     private final boolean isBodyDynamic;
 
-    public MeshCollider(MeshStructure<?> meshStructure, boolean isBodyDynamic) {
+    public MeshCollider(MeshStructure3D<?> meshStructure, boolean isBodyDynamic) {
         this.meshStructure = meshStructure;
         this.isBodyDynamic = isBodyDynamic;
     }
 
-    public static IColliderConstructor getDynamic(MeshStructure<?> meshStructure) {
+    public static IColliderConstructor getDynamic(MeshStructure3D<?> meshStructure) {
         return new MeshCollider(meshStructure, true);
     }
 
-    public static IColliderConstructor getStatic(MeshStructure<?> meshStructure) {
+    public static IColliderConstructor getStatic(MeshStructure3D<?> meshStructure) {
         return new MeshCollider(meshStructure, false);
     }
 
-    public static IColliderConstructor get(MeshStructure<?> meshStructure, boolean isBodyDynamic) {
+    public static IColliderConstructor get(MeshStructure3D<?> meshStructure, boolean isBodyDynamic) {
         return new MeshCollider(meshStructure, isBodyDynamic);
     }
 
     @Override
     public CollisionShape execute() {
-        MeshCollisionData meshCollisionData = this.meshStructure.getMeshUserData(MeshStructure.MESH_COLLISION_UD, MeshCollisionData.class);
+        MeshCollisionData meshCollisionData = this.meshStructure.getMeshUserData(MeshStructure3D.MESH_COLLISION_UD, MeshCollisionData.class);
         if (meshCollisionData == null) {
             throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshStructure);
         }

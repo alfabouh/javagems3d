@@ -7,6 +7,7 @@ public interface IAnimated {
     AnimationData getAnimationData();
     AnimationData setAnimationByID(int id);
     void setAnimationData(AnimationData animationData);
+
     default float animationSpeedMultiplier() {
         return 1.0f;
     }
@@ -19,7 +20,7 @@ public interface IAnimated {
         return this.setAnimationByID(0);
     }
 
-    default boolean hasAnimations() {
+    default boolean hasAnimationData() {
         return this.getAnimationData() != null && this.getAnimationData().isValid();
     }
 }

@@ -25,7 +25,7 @@ package jgems_api.test.resources;
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 

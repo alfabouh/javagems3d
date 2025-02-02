@@ -56,7 +56,7 @@ public class Ogg implements ISoundCodec {
         return this.pcm;
     }
 
-    public int getFormat() {
+    public int getPose() {
         return this.format;
     }
 

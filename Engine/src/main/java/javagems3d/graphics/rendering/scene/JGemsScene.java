@@ -11,16 +11,14 @@
 
 package javagems3d.graphics.rendering.scene;
 
-import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.graphics.transformation.JGemsTransformation;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.synchronizing.SyncManager;
 
@@ -73,7 +71,7 @@ public class JGemsScene implements IScene {
         this.refresh = false;
         this.getSceneWorld().onWorldUpdate();
         this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
-        JGemsTransformation.INSTANCE.updateCamera(this.getCamera());
+        JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());
     }
 
     public void postRender() {

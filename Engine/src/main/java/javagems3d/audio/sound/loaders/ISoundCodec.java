@@ -18,5 +18,5 @@ public interface ISoundCodec {
 
     Buffer getPcm();
 
-    int getFormat();
+    int getPose();
 }

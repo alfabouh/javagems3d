@@ -1,65 +1,47 @@
 package javagems3d.system.resources.assets.models.mesh.structures;
 
-import javagems3d.system.resources.assets.models.animation.Animation;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
-import javagems3d.system.resources.assets.models.mesh.udata.IMeshUserData;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public abstract class MeshStructure <T extends MeshStructure.Node<? extends IMesh>> implements ICached {
-    public static final String MESH_COLLISION_UD = "mesh_collision";
-    public static final String MESH_AABB_UD = "mesh_aabb";
-
-    private final List<T> meshNodes;
-    private final List<Animation> animationList;
-    private final Map<String, IMeshUserData> meshUserData;
+public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> implements ICached {
+    protected final Map<Integer, List<R>> nodesLayers;
 
     public MeshStructure() {
-        this.meshNodes = new ArrayList<>();
-        this.animationList = new ArrayList<>();
-        this.meshUserData = new HashMap<>();
+        this.nodesLayers = new HashMap<>();
+        this.initLayers();
     }
 
-    public MeshStructure(List<T> nodes) {
-        this();
-        this.getMeshNodes().addAll(nodes);
+    protected void initLayers() {
+        for (int i : this.getLayersToInit()) {
+            this.nodesLayers.put(i, new ArrayList<>());
+        }
+        if (this.nodesLayers.isEmpty()) {
+            this.nodesLayers.put(0, new ArrayList<>());
+        }
     }
 
-    @SafeVarargs
-    public MeshStructure(T... t) {
-        this();
-        this.getMeshNodes().addAll(Arrays.asList(t));
+    public static int chooseLayer(Material material) {
+        return material != null && material.hasTransparency() ? MeshStructure3D.TRANSPARENCY_LAYER : MeshStructure3D.SOLID_LAYER;
     }
 
-    public abstract boolean canBeUsedInIndirectRendering();
-
-    public boolean hasNodes() {
-        return !this.getMeshNodes().isEmpty();
+    public void putNode(int layer, R r) {
+        this.getNodes(layer).add(r);
     }
 
-    public T getFirstNode() {
-        return this.getMeshNodes().get(0);
+    public abstract int @NotNull [] getLayersToInit();
+
+    public boolean hasNodes(int layer) {
+        return !this.getNodes(layer).isEmpty();
     }
 
-    public void putMeshNode(T node) {
-        this.getMeshNodes().add(node);
-    }
-
-    @SuppressWarnings("all")
-    public MeshStructure loadAnimations(List<Animation> animations) {
-        this.getAnimationList().clear();
-        this.getAnimationList().addAll(animations);
-        return this;
-    }
-
-    public boolean isAnimationsNotEmpty() {
-        return this.getAnimationsNum() != 0;
-    }
-
-    public int getAnimationsNum() {
-        return this.getAnimationList().size();
+    protected void putMeshNode(int layer, R r) {
+        this.nodesLayers.get(layer).add(r);
     }
 
     @Override
@@ -68,59 +50,27 @@ public abstract class MeshStructure <T extends MeshStructure.Node<? extends IMes
     }
 
     public void clear() {
-        this.getMeshNodes().forEach(Node::clearNode);
-        this.getMeshNodes().clear();
-    }
-
-    public List<T> getMeshNodes() {
-        return this.meshNodes;
-    }
-
-    public List<Animation> getAnimationList() {
-        return this.animationList;
-    }
-
-    @SuppressWarnings("all")
-    public <T extends IMeshUserData> T getUnSafeMeshUserData(String key) {
-        return this.getMeshUserData(key, null);
-    }
-
-    @SuppressWarnings("all")
-    public <T extends IMeshUserData> T getMeshUserData(String key, Class<T> tClass) {
-        if (this.getMeshUserData(key) == null) {
-            return null;
+        for (List<R> l : this.nodesLayers.values()) {
+            for (R r : l) {
+                l.forEach(MeshNode::clearNode);
+            }
         }
-        if (tClass == null || this.getMeshUserData(key).getClass().isAssignableFrom(tClass)) {
-            return (T) this.getMeshUserData(key);
-        }
-        return null;
+        this.nodesLayers.clear();
     }
 
-    public IMeshUserData getMeshUserData(String key) {
-        return this.meshUserData.get(key);
+    public List<R> getNodes(int layer) {
+        return this.nodesLayers.get(layer);
     }
 
-    public boolean hasMeshUserData(String key) {
-        return this.getMeshUserData(key) != null;
-    }
-
-    public void setMeshUserData(String key, IMeshUserData meshUserData) {
-        this.meshUserData.put(key, meshUserData);
-    }
-
-    public abstract static class Node <T extends IMesh> {
-        private final T mesh;
-
-        protected Node(T mesh) {
-            this.mesh = mesh;
+    public List<R> getAllNodes() {
+        int capacity = 0;
+        for (List<R> layer : this.nodesLayers.values()) {
+            capacity += layer.size();
         }
-
-        public void clearNode() {
-            this.getMesh().clearMesh();
+        List<R> list = new ArrayList<>(capacity);
+        for (List<R> layer : this.nodesLayers.values()) {
+            list.addAll(layer);
         }
-
-        public T getMesh() {
-            return this.mesh;
-        }
+        return list;
     }
 }

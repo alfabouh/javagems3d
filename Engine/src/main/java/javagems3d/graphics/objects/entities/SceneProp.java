@@ -8,9 +8,9 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
-import javagems3d.system.resources.assets.models.Model;
-import javagems3d.system.resources.assets.models.animation.AnimationData;
-import javagems3d.system.resources.assets.models.formats.Format3D;
+
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -24,7 +24,7 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
     private boolean isVisible;
     private boolean isDead;
 
-    public SceneProp(@NotNull SceneWorld sceneWorld, @Nullable Model<Format3D> model, @NotNull RenderAttributes objectRenderingConfiguration) {
+    public SceneProp(@NotNull SceneWorld sceneWorld, @Nullable Model3D model, @NotNull RenderAttributes objectRenderingConfiguration) {
         super(sceneWorld, model, objectRenderingConfiguration);
         this.lightList = new ArrayList<>();
         this.isVisible = true;
@@ -81,7 +81,7 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
     @Override
     public void onUpdate(IWorld iWorld) {
         this.setCullingData(this.pickAABBDataFromMesh());
-        this.adjustLightsTranslation(this.getModel().getFormat().getPosition(), new Vector3f(0.0f));
+        this.adjustLightsTranslation(this.getModel().getPose().getPosition(), new Vector3f(0.0f));
     }
 
     public void setDead() {
@@ -109,6 +109,6 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
 
     @Override
     public String toString() {
-        return this.getClass().getName() + " - " + this.getModel().getFormat().getPosition();
+        return this.getClass().getName() + " - " + this.getModel().getPose().getPosition();
     }
 }

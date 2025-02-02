@@ -38,7 +38,7 @@ public class JGemsOpenGLRendererOLD {
     private TextureProgram ssaoKernelTexture;
     private TextureProgram ssaoBufferTexture;
 
-    private Model<Format2D> screenModel;
+    private Model2D screenModel;
 
     private final JGemsUI jGemsUI;
     private final IndirectRenderBuffer indirectRenderBuffer;
@@ -278,7 +278,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section HDR
-    public void screenBloomHDRCorrection(Model<Format2D> model) {
+    public void screenBloomHDRCorrection(Model2D model) {
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         this.getHdrBuffer().bindFBO();
@@ -298,7 +298,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section Gluing
-    public void sceneGluing(Model<Format2D> model) {
+    public void sceneGluing(Model2D model) {
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         this.getSceneGluingBuffer().bindFBO();
@@ -319,7 +319,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section FXAA
-    public void postFXAA(Model<Format2D> model, Vector2i windowSize) {
+    public void postFXAA(Model2D model, Vector2i windowSize) {
         JGemsShaderManager fxaaFilter = JGemsResourceManager.globalShaderAssets.fxaa;
         this.getFxaaBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
@@ -399,7 +399,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section FinalRender
-    private void renderFinalSceneInMainBuffer(Model<Format2D> model) {
+    private void renderFinalSceneInMainBuffer(Model2D model) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
         imgShader.performUniformTexture(new UniformString("texture_sampler"), this.getFinalizingBuffer().getTextureIDByIndex(0), GL46.GL_TEXTURE_2D);
@@ -409,7 +409,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section RenderForwardDeferred
-    public void renderForwardAndDeferredScenes(FrameTicking frameTicking, Vector2i windowSize, Model<Format2D> model) {
+    public void renderForwardAndDeferredScenes(FrameTicking frameTicking, Vector2i windowSize, Model2D model) {
         try (SpeedProfiler.Section s = SpeedProfiler.getGroup("Render_Sections").profile("g_buffer")) {
             this.deferredGeometry(frameTicking);
         }
@@ -493,7 +493,7 @@ public class JGemsOpenGLRendererOLD {
         JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsHelper.getScreen().getScene().getTransformationUtils().getMainCameraViewMatrix()));
         int entityIdx = 0;
         for (AbstractSceneObject a : abstractSceneObjects) {
-            JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect.performUniform(new UniformString("modelMatrices", entityIdx++), UniformFunctions.MAT4F(Transformation.getModelMatrix(a.getModel().getFormat())));
+            JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect.performUniform(new UniformString("modelMatrices", entityIdx++), UniformFunctions.MAT4F(Transformation.getModelMatrix(a.getModel().getPose())));
         }
 
         int drawElement = 0;
@@ -514,7 +514,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section DeferredLighting
-    private void deferredLighting(Model<Format2D> model) {
+    private void deferredLighting(Model2D model) {
         JGemsShaderManager deferredShader = JGemsResourceManager.globalShaderAssets.world_deferred;
         deferredShader.beginShading();
         deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsSceneUtils.getMainCameraViewMatrix()));
@@ -559,7 +559,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section SSAO
-    private void calcSSAOValueOnGBuffer(Model<Format2D> model, Vector2i windowSize) {
+    private void calcSSAOValueOnGBuffer(Model2D model, Vector2i windowSize) {
         if (!JGemsSceneGlobalConstants.USE_SSAO) {
             this.getSsaoBuffer().bindFBO();
             GL46.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
@@ -596,7 +596,7 @@ public class JGemsOpenGLRendererOLD {
     }
 
     //section BlurBloom
-    private void blurBloomBuffer(Model<Format2D> model, Vector2i windowSize) {
+    private void blurBloomBuffer(Model2D model, Vector2i windowSize) {
         if (!JGemsSceneGlobalConstants.USE_BLOOM || JGems3D.get().getGameSettings().bloom.getValue() == 0) {
             this.getBloomBlurredBuffer().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
