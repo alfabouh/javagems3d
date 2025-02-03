@@ -75,6 +75,10 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         return this.getNodes(MeshStructure3D.TRANSPARENCY_LAYER);
     }
 
+    public boolean hasTransparency() {
+        return !this.getTransparencyNodes().isEmpty();
+    }
+
     public void clear() {
         super.clear();
         this.meshUserData.clear();

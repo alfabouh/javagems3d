@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
@@ -34,6 +35,7 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void destroyResources() {
+        this.getRejected().clear();
     }
 
     @Override
@@ -43,6 +45,10 @@ public class IndirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     public void setIndirectMeshObjects(@NotNull Collection<SceneObject> sceneObjects) {
         this.getIndirectMeshObjects().setIndirectMeshObjects(sceneObjects);
+    }
+
+    public Set<SceneObject> getRejected() {
+        return this.getIndirectMeshObjects().getRejected();
     }
 
     public void setUniformsHandler(Consumer<JGemsShaderManager> uniformsHandler) {

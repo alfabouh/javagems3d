@@ -5,8 +5,7 @@ public enum Stage {
     DEFERRED_DIRECT(Type.DIRECT),
     DEFERRED_INDIRECT(Type.INDIRECT),
     SHADOW_DIRECT(Type.DIRECT),
-    SHADOW_INDIRECT(Type.INDIRECT),
-    TRANSPARENCY_INDIRECT(Type.INDIRECT);
+    SHADOW_INDIRECT(Type.INDIRECT);
 
     private final Type type;
 

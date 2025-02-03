@@ -55,7 +55,7 @@ public final class IndirectBufferProgram {
         this.staticVao = GL46.glGenVertexArrays();
         GL46.glBindVertexArray(this.getStaticVao());
 
-        int structSize = 0;
+        int[] structSize = {0};
         int indexesSize = 0;
         int positionsSize = 0;
         int offset = 0;
@@ -70,41 +70,33 @@ public final class IndirectBufferProgram {
                 int posLength = dataMesh.numPositions();
                 indexesSize += dataMesh.numVertexIndexes();
                 positionsSize += posLength;
-
-                for (RenderAttributePointer renderAttributePointer : this.getLayout().getRenderAttributePointers()) {
-                    VertexBuffer<Float> attributeBuffer = dataMesh.getBufferById(renderAttributePointer.getIndex());
-                    if (attributeBuffer != null) {
-                        int size = attributeBuffer.getValues().size();
-                        if (size % renderAttributePointer.getLengthInMemory() != 0) {
-                            throw new JGemsRuntimeException("MeshBuffer attribute: " + renderAttributePointer.getPointer() + " - doesn't match layout: " + renderAttributePointer.getLengthInMemory());
-                        }
-                        structSize += size;
-                    } else {
-                        structSize += (dataMesh.numPositions() / 3) * renderAttributePointer.getLengthInMemory();
-                    }
-                }
-
-                int meshSizeInBytes = 0;
-                for (int i = 0; i < this.getLayout().getAttributesNum(); i++) {
-                    RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(i);
-                    meshSizeInBytes += renderAttributePointer.getLengthInMemory() * renderAttributePointer.getBytes();
-                }
-                meshSizeInBytes *= posLength;
-
-                boolean isTransparent = meshNode3D.getMaterial() != null && meshNode3D.getMaterial().hasTransparency();
-                List<MeshBuffer.PassData> dataToWrite = isTransparent ? meshBuffer.getPassDataTransparent() : meshBuffer.getPassData();
-                dataToWrite.add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, meshNode3D.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(meshNode3D.getMaterial()), offset, dataMesh.numVertexIndexes()));
+                this.processNodes(meshNode3D, meshBuffer.getPassData(), firstIndexOffset, offset, meshBuffersDataCache, structSize);
                 offset = positionsSize / 3;
-                collect += meshNode3D.getMeshData().numVertexIndexes();
+                collect += dataMesh.numVertexIndexes();
+            }
+            firstIndexOffset += collect;
+            collect = 0;
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getTransparencyNodes()) {
+                DataMesh dataMesh = meshNode3D.getMeshData();
+                int posLength = dataMesh.numPositions();
+                indexesSize += dataMesh.numVertexIndexes();
+                positionsSize += posLength;
+                this.processNodes(meshNode3D, meshBuffer.getPassDataTransparent(), firstIndexOffset, offset, meshBuffersDataCache, structSize);
+                offset = positionsSize / 3;
+                collect += dataMesh.numVertexIndexes();
             }
             firstIndexOffset += collect;
         }
 
         int vboId = GL46.glGenBuffers();
         this.getVboList().add(vboId);
-        FloatBuffer meshesBuffer = MemoryUtil.memAllocFloat(structSize);
+        FloatBuffer meshesBuffer = MemoryUtil.memAllocFloat(structSize[0]);
         for (MeshBuffer meshBuffer : obj) {
             for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getSolidNodes()) {
+                DataMesh dataMesh = meshNode3D.getMeshData();
+                this.populateMeshBuffer(meshesBuffer, dataMesh);
+            }
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getTransparencyNodes()) {
                 DataMesh dataMesh = meshNode3D.getMeshData();
                 this.populateMeshBuffer(meshesBuffer, dataMesh);
             }
@@ -126,6 +118,12 @@ public final class IndirectBufferProgram {
                     indexesBuffer.put(i);
                 }
             }
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getTransparencyNodes()) {
+                DataMesh dataMesh = meshNode3D.getMeshData();
+                for (int i : dataMesh.getIndexesBuffer().getValues()) {
+                    indexesBuffer.put(i);
+                }
+            }
         }
         indexesBuffer.flip();
 
@@ -141,14 +139,32 @@ public final class IndirectBufferProgram {
         //TODO
     }
 
- // private void processOpaqueMeshNodes(MeshBuffersDataCache meshBuffersDataCache, int firstIndexOffset, int meshSizeInBytes, int offset, List<MeshBuffer.PassData> dataToWrite, MeshBufferNode node) {
- //     DataMesh dataMesh = node.getMeshData();
- //     dataToWrite.add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, node.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(node.getMaterial()), offset, dataMesh.numVertexIndexes()));
- // }
+    private void processNodes(MeshNode3D<DataMesh> meshNode3D, List<MeshBuffer.PassData> dataToWrite, int firstIndexOffset, int offset, MeshBuffersDataCache meshBuffersDataCache, int[] structSize) {
+        DataMesh dataMesh = meshNode3D.getMeshData();
+        int posLength = dataMesh.numPositions();
 
- // private int processTransparentMeshNodes(MeshBuffersDataCache meshBuffersDataCache, int firstOffset, int offset, List<MeshBuffer.PassData> dataToWrite, MeshBufferNode node) {
+        for (RenderAttributePointer renderAttributePointer : this.getLayout().getRenderAttributePointers()) {
+            VertexBuffer<Float> attributeBuffer = dataMesh.getBufferById(renderAttributePointer.getIndex());
+            if (attributeBuffer != null) {
+                int size = attributeBuffer.getValues().size();
+                if (size % renderAttributePointer.getLengthInMemory() != 0) {
+                    throw new JGemsRuntimeException("MeshBuffer attribute: " + renderAttributePointer.getPointer() + " - doesn't match layout: " + renderAttributePointer.getLengthInMemory());
+                }
+                structSize[0] += size;
+            } else {
+                structSize[0] += (dataMesh.numPositions() / 3) * renderAttributePointer.getLengthInMemory();
+            }
+        }
 
- // }
+        int meshSizeInBytes = 0;
+        for (int i = 0; i < this.getLayout().getAttributesNum(); i++) {
+            RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(i);
+            meshSizeInBytes += renderAttributePointer.getLengthInMemory() * renderAttributePointer.getBytes();
+        }
+        meshSizeInBytes *= posLength;
+
+        dataToWrite.add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, meshNode3D.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(meshNode3D.getMaterial()), offset, dataMesh.numVertexIndexes()));
+    }
 
     private void populateMeshBuffer(FloatBuffer floatBuffer, DataMesh dataMesh) {
         List<VertexBuffer<Float>> values = new ArrayList<>(dataMesh.getBufferMap().values());

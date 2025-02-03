@@ -31,11 +31,12 @@ public class RenderTable {
     public static JGemsShaderManager DEFAULT_SCENE_SHADER_IND = JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect;
     public static JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND = JGemsResourceManager.globalShaderAssets.depth_sun_indirect;
     public static JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND = JGemsResourceManager.globalShaderAssets.depth_plight;
-    public static JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER_IND = JGemsResourceManager.globalShaderAssets.weighted_oit;
+    public static JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER_IND = JGemsResourceManager.globalShaderAssets.weighted_oit_indirect;
 
     public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC = new DefaultDirectRenderFabric(Stage.DEFERRED_DIRECT);
     public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC_FOR = new DefaultDirectRenderFabric(Stage.FORWARD);
     public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC_IND = new DefaultIndirectRenderFabric(Stage.DEFERRED_INDIRECT, IndirectRenderFabric.DEFAULT_FUNC);
+    public static IRenderFabric DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND = RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND;
     public static IRenderFabric DEFAULT_SHADOW_RENDER_FABRIC = new DefaultDirectShadowRenderFabric();
     public static IRenderFabric DEFAULT_SHADOW_RENDER_FABRIC_IND = new DefaultIndirectShadowRenderFabric(IndirectRenderFabric.DEFAULT_FUNC);
 
@@ -59,7 +60,7 @@ public class RenderTable {
     protected void setDefaults() {
         this.setPointLightShadowRenderMatch(RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
         this.setSunLightShadowRenderMatch(RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
-        this.setTransparencyRenderMatch(RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND);
+        this.setTransparencyRenderMatch(RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND);
     }
 
     @SuppressWarnings("all")
@@ -81,8 +82,8 @@ public class RenderTable {
     }
 
     @SuppressWarnings("all")
-    public RenderTable setTransparencyRenderMatch(@NotNull JGemsShaderManager sLightStageShaderManager) {
-        this.setMatch(Pipeline.TRANSPARENCY, new Data(sLightStageShaderManager, null));
+    public RenderTable setTransparencyRenderMatch(@NotNull JGemsShaderManager sLightStageShaderManager, @NotNull IRenderFabric sLightStageRenderFabric) {
+        this.setMatch(Pipeline.TRANSPARENCY, new Data(sLightStageShaderManager, sLightStageRenderFabric));
         return this;
     }
 

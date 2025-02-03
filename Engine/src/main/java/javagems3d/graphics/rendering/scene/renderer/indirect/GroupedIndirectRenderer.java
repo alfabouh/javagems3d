@@ -46,7 +46,7 @@ public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
     protected IndirectCommandsProgram createCommands(IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects) {
         BaseIndirectCommandsProgram baseIndirectCommandProgram1 = new BaseIndirectCommandsProgram(renderBuffer);
         baseIndirectCommandProgram1.createBuffer();
-        baseIndirectCommandProgram1.buildCommands(indexes, materialIds, sceneObjects);
+        baseIndirectCommandProgram1.buildCommands(indexes, materialIds, sceneObjects, this.isTransparency());
         return baseIndirectCommandProgram1;
     }
 

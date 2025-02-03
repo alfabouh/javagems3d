@@ -12,18 +12,18 @@ import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private Collection<SceneObject> sceneObjects;
     private final Pipeline pipeline;
+    private final Set<SceneObject> rejected;
 
     public DirectGeometryRenderProcessor(@NotNull Pipeline pipeline, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.pipeline = pipeline;
+        this.rejected = new HashSet<>();
     }
 
     @Override
@@ -32,27 +32,39 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void destroyResources() {
+        this.getRejected().clear();
     }
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
+        this.getRejected().clear();
+
         Pipeline pipeline = this.getPipeline();
         Map<JGemsShaderManager, List<SceneObject>> groupedObjects = this.getSceneObjects().stream().collect(Collectors.groupingBy(e -> e.getRenderingTable().getShaderManager(pipeline)));
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
-            for (SceneObject modeledSceneObject : entry.getValue()) {
-                Model3D model = modeledSceneObject.getModel();
+            for (SceneObject sceneObject : entry.getValue()) {
+                Model3D model = sceneObject.getModel();
                 if (model == null || !model.isValid()) {
                     continue;
                 }
-                DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderingTable().getRenderFabric(pipeline);
-                directRenderFabric.onPreRender(pipeline, shaderManager, this.getOpenGLRenderer(), modeledSceneObject, null);
-                directRenderFabric.onRender(pipeline, shaderManager, this.getOpenGLRenderer(), modeledSceneObject, null);
-                directRenderFabric.onPostRender(pipeline, shaderManager, this.getOpenGLRenderer(), modeledSceneObject, null);
+                if (pipeline.equals(Pipeline.SCENE)) {
+                    if (sceneObject.getModel().getMeshStructure().hasTransparency()) {
+                        this.getRejected().add(sceneObject);
+                    }
+                }
+                DirectRenderFabric directRenderFabric = sceneObject.getRenderingTable().getRenderFabric(pipeline);
+                directRenderFabric.onPreRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);
+                directRenderFabric.onRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);
+                directRenderFabric.onPostRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);
             }
             shaderManager.endShading();
         }
+    }
+
+    public Set<SceneObject> getRejected() {
+        return this.rejected;
     }
 
     public void setDirectMeshObjects(@NotNull Collection<SceneObject> sceneObjects) {

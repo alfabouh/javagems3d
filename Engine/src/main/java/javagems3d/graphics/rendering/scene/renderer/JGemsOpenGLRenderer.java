@@ -93,7 +93,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     protected void setDefaultNodes() {
         IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(new FBOTexture2DProgram(true), this);
         IForwardRenderNode forwardRenderNode = new IForwardRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
-        ITransparencyRenderNode transparencyRenderNode = new ITransparencyRenderNode.Default(this);
+        ITransparencyRenderNode transparencyRenderNode = new ITransparencyRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
         IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(forwardRenderNode.getOutColorBuffer(), this);
         IPostFXRenderNode postFXRenderNode = new IPostFXRenderNode.Default(gluingRenderNode.getOutColorBuffer(), this);
         IUIRenderNode iuiRenderNode = new IUIRenderNode.Default(this.getJGemsUI(), this);
@@ -182,6 +182,13 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
         deferredRenderNode.onRender(frameTicking);
         forwardRenderNode.onRender(frameTicking);
+
+        Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
+        Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
+        rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
+
+        transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
+        transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
         transparencyRenderNode.onRender(frameTicking);
         gluingRenderNode.onRender(frameTicking);
         postRenderNode.onRender(frameTicking);
@@ -193,12 +200,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
-        ((SceneCulling) this.getSceneCulling()).setFreeze(false);
-
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
         imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
-        //imgShader.performUniformTexture(new UniformString("texture_sampler"), ((SceneCulling) this.getSceneCulling()).getGpuOcclusionCulling().getBuffer().getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
         JGemsHelper.RENDERING.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();

@@ -65,6 +65,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
     public JGemsShaderManager world_ssao;
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager weighted_oit;
+    public JGemsShaderManager weighted_oit_indirect;
     public JGemsShaderManager weighted_particle_oit;
     public JGemsShaderManager weighted_liquid_oit;
     public JGemsShaderManager simple;
@@ -131,6 +132,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
 
         this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "oit/weighted_liquid_oit"));
         this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "oit/weighted_oit"));
+        this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "oit/weighted_oit_indirect"));
         this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "oit/weighted_particle_oit"));
 
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "world/world_gbuffer"));

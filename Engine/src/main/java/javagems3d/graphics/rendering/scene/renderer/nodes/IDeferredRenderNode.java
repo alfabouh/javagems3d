@@ -29,6 +29,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
@@ -42,6 +43,9 @@ public interface IDeferredRenderNode extends IRenderNode {
 
     Collection<SceneObject> getIndirectDeferredRenderingObjects();
     Collection<SceneObject> getDirectDeferredRenderingObjects();
+
+    Collection<SceneObject> getRejectedIndirectDeferredRenderingObjects();
+    Collection<SceneObject> getRejectedDirectDeferredRenderingObjects();
 
     final class Default extends IRenderNode.Template implements IDeferredRenderNode {
         private final FBOTexture2DProgram startColorFBO;
@@ -185,6 +189,16 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         public Collection<SceneObject> getDirectDeferredRenderingObjects() {
             return this.directDeferredRenderingObjects;
+        }
+
+        @Override
+        public Collection<SceneObject> getRejectedIndirectDeferredRenderingObjects() {
+            return this.getIndirectGeometryRenderProcessor().getRejected();
+        }
+
+        @Override
+        public Collection<SceneObject> getRejectedDirectDeferredRenderingObjects() {
+            return this.getDirectGeometryRenderProcessor().getRejected();
         }
 
         public DeferredColorRenderProcessor getRawColorRenderProcessor() {

@@ -15,7 +15,7 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
         super(indirectBufferProgram);
     }
 
-    public void buildCommands(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects) {
+    public void buildCommands(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, boolean transparency) {
         Map<SceneObject, Integer> idMap = new HashMap<>();
         Map<MeshBuffer, Set<SceneObject>> objectsMap = new HashMap<>();
 
@@ -27,10 +27,13 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
             if (meshBuffer == null) {
                 throw new JGemsRuntimeException("Model should have MeshBuffer, to implement indirect rendering!");
             }
-            drawCount += meshBuffer.getPassData().size();
+            final List<MeshBuffer.PassData> passData = transparency ? meshBuffer.getPassDataTransparent() : meshBuffer.getPassData();
+            drawCount += passData.size();
             int id = i++;
             idMap.put(sceneObject, id);
-            JGemsHelper.UTILS.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{ add(sceneObject); }}, (ex, nw) ->
+            JGemsHelper.UTILS.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{
+                add(sceneObject);
+            }}, (ex, nw) ->
             {
                 ex.add(nw);
                 return ex;
@@ -42,7 +45,8 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
         for (Map.Entry<MeshBuffer, Set<SceneObject>> meshBuffer : objectsMap.entrySet()) {
             int firstIdx = 0;
             int entitiesCount = meshBuffer.getValue().size();
-            for (MeshBuffer.PassData data : meshBuffer.getKey().getPassData()) {
+            final List<MeshBuffer.PassData> passData = transparency ? meshBuffer.getKey().getPassDataTransparent() : meshBuffer.getKey().getPassData();
+            for (MeshBuffer.PassData data : passData) {
                 commandsBuffer.putInt(data.numVertexIndexes());
                 commandsBuffer.putInt(entitiesCount);
                 commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdx);

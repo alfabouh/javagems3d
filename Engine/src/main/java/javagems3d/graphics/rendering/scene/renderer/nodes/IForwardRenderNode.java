@@ -1,17 +1,14 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
-import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
@@ -23,6 +20,8 @@ public interface IForwardRenderNode extends IRenderNode {
 
     void setForwardRenderingObjects(@NotNull Collection<SceneObject> forwardRenderingObjects);
     Collection<SceneObject> getForwardRenderingObjects();
+
+    Collection<SceneObject> getRejectedDirectForwardRenderingObjects();
 
     final class Default extends IRenderNode.Template implements IForwardRenderNode {
         private Collection<SceneObject> forwardRenderingObjects;
@@ -119,6 +118,11 @@ public interface IForwardRenderNode extends IRenderNode {
         @Override
         public Collection<SceneObject> getForwardRenderingObjects() {
             return this.forwardRenderingObjects;
+        }
+
+        @Override
+        public Collection<SceneObject> getRejectedDirectForwardRenderingObjects() {
+            return this.getDirectGeometryRenderProcessor().getRejected();
         }
     }
 }

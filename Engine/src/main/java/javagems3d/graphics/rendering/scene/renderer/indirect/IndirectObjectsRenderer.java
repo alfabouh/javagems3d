@@ -31,6 +31,7 @@ public abstract class IndirectObjectsRenderer {
 
     private final Pipeline pipeline;
 
+    private final Set<SceneObject> rejected;
     protected Collection<SceneObject> indirectMeshObjects;
     private final OpenGLRenderer openGLRenderer;
 
@@ -42,6 +43,8 @@ public abstract class IndirectObjectsRenderer {
         this.openGLRenderer = openGLRenderer;
         this.usePropertiesSSBO = usePropertiesSSBO;
         this.useMaterialsSSBO = useMaterialsSSBO;
+
+        this.rejected = new HashSet<>();
     }
 
     protected abstract void processAndRender(@Nullable ArbitraryArguments metaData);
@@ -55,7 +58,11 @@ public abstract class IndirectObjectsRenderer {
         ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
         FloatBuffer matrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
 
+        this.getRejected().clear();
         for (SceneObject sceneObject : sceneObjects) {
+            if (this.getPipeline().equals(Pipeline.SCENE) && sceneObject.getModel().getMeshStructure().hasTransparency()) {
+                this.getRejected().add(sceneObject);
+            }
             this.passMatricesInBuffer(this.getPipeline(), sceneObject, matrices);
             if (properties != null) {
                 this.passPropertiesInBuffer(this.getPipeline(), sceneObject, properties);
@@ -95,6 +102,10 @@ public abstract class IndirectObjectsRenderer {
         renderFabric.onFillBufferWithProperties(pipeline, sceneObject, attributes, properties, null);
     }
 
+    public Set<SceneObject> getRejected() {
+        return this.rejected;
+    }
+
     public boolean isUsePropertiesSSBO() {
         return this.usePropertiesSSBO;
     }
@@ -117,6 +128,10 @@ public abstract class IndirectObjectsRenderer {
 
     public OpenGLRenderer getOpenGLRenderer() {
         return this.openGLRenderer;
+    }
+
+    public boolean isTransparency() {
+        return this.getPipeline().equals(Pipeline.TRANSPARENCY);
     }
 
     public interface IRenderingFunction {
