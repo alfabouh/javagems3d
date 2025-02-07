@@ -94,7 +94,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(new FBOTexture2DProgram(true), this);
         IForwardRenderNode forwardRenderNode = new IForwardRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
         ITransparencyRenderNode transparencyRenderNode = new ITransparencyRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
-        IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(forwardRenderNode.getOutColorBuffer(), this);
+        IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
         IPostFXRenderNode postFXRenderNode = new IPostFXRenderNode.Default(gluingRenderNode.getOutColorBuffer(), this);
         IUIRenderNode iuiRenderNode = new IUIRenderNode.Default(this.getJGemsUI(), this);
 

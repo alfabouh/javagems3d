@@ -36,23 +36,23 @@ public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
             Operator operator = sceneObjects.getKey();
             IntBuffer indexes = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
             IntBuffer materialIds = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
-            IndirectCommandsProgram indirectCommandsProgram = this.createCommands(indexes, materialIds, renderBuffer, this.getIndirectMeshObjects());
+            IndirectCommandsProgram indirectCommandsProgram = this.createCommands(this.getMode(), indexes, materialIds, renderBuffer, this.getIndirectMeshObjects());
             this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData);
             this.render(operator, indirectCommandsProgram, renderBuffer, metaData);
             indirectCommandsProgram.destroyBuffer();
         }
     }
 
-    protected IndirectCommandsProgram createCommands(IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects) {
+    protected IndirectCommandsProgram createCommands(Mode mode, IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects) {
         BaseIndirectCommandsProgram baseIndirectCommandProgram1 = new BaseIndirectCommandsProgram(renderBuffer);
         baseIndirectCommandProgram1.createBuffer();
-        baseIndirectCommandProgram1.buildCommands(indexes, materialIds, sceneObjects, this.isTransparency());
+        baseIndirectCommandProgram1.buildCommands(indexes, materialIds, sceneObjects, mode);
         return baseIndirectCommandProgram1;
     }
 
     protected Map<IndirectObjectsRenderer.Operator, Set<SceneObject>> groupObjects(@NotNull Collection<SceneObject> sceneObjects, Pipeline pipeline) {
         return sceneObjects.stream().collect(Collectors.groupingBy(e -> {
-            RenderTable.Data renderingData = e.getRenderingTable().getRenderingData(this.getPipeline());
+            RenderTable.Data renderingData = e.getRenderingTable().getRenderingData(pipeline);
             if (renderingData.getRenderFabric() == null) {
                 throw new JGemsNullException("RenderFabric should not be NULL!");
             }

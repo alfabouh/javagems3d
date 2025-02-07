@@ -2,7 +2,6 @@ package javagems3d.graphics.rendering.programs.indirect.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
@@ -62,15 +61,15 @@ public final class IndirectBufferProgram {
         int firstIndexOffset = 0;
 
         for (MeshBuffer meshBuffer : obj) {
-            meshBuffer.getPassData().clear();
-            meshBuffer.getPassDataTransparent().clear();
+            meshBuffer.getSolidPassData().clear();
+            meshBuffer.getTransparentPassData().clear();
             int collect = 0;
             for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getSolidNodes()) {
                 DataMesh dataMesh = meshNode3D.getMeshData();
                 int posLength = dataMesh.numPositions();
                 indexesSize += dataMesh.numVertexIndexes();
                 positionsSize += posLength;
-                this.processNodes(meshNode3D, meshBuffer.getPassData(), firstIndexOffset, offset, meshBuffersDataCache, structSize);
+                this.processNodes(meshNode3D, meshBuffer.getSolidPassData(), firstIndexOffset, offset, meshBuffersDataCache, structSize);
                 offset = positionsSize / 3;
                 collect += dataMesh.numVertexIndexes();
             }
@@ -81,7 +80,7 @@ public final class IndirectBufferProgram {
                 int posLength = dataMesh.numPositions();
                 indexesSize += dataMesh.numVertexIndexes();
                 positionsSize += posLength;
-                this.processNodes(meshNode3D, meshBuffer.getPassDataTransparent(), firstIndexOffset, offset, meshBuffersDataCache, structSize);
+                this.processNodes(meshNode3D, meshBuffer.getTransparentPassData(), firstIndexOffset, offset, meshBuffersDataCache, structSize);
                 offset = positionsSize / 3;
                 collect += dataMesh.numVertexIndexes();
             }

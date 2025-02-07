@@ -36,7 +36,7 @@ public interface ITransparencyRenderNode extends IRenderNode {
     Collection<SceneObject> getDirectDeferredRenderingObjects();
 
     final class Default extends IRenderNode.Template implements ITransparencyRenderNode {
-        private FBOTexture2DProgram outColor;
+        private final FBOTexture2DProgram outColor;
         private final FBOTexture2DProgram inColor;
 
         private Collection<SceneObject> indirectDeferredRenderingObjects;
@@ -50,6 +50,7 @@ public interface ITransparencyRenderNode extends IRenderNode {
             this.indirectDeferredRenderingObjects = new HashSet<>();
             this.directDeferredRenderingObjects = new HashSet<>();
             this.inColor = inColor;
+            this.outColor = new FBOTexture2DProgram(true);
         }
 
         @Override
@@ -67,10 +68,10 @@ public interface ITransparencyRenderNode extends IRenderNode {
             GL46.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
             GL46.glClearBufferfv(GL46.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
 
-          // this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
-          // this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
-          // this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
-          // this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+            this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
+            this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
+            this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
+            this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
 
             this.getOutColorBuffer().unBindFBO();
             GL46.glDisable(GL46.GL_BLEND);
@@ -79,13 +80,12 @@ public interface ITransparencyRenderNode extends IRenderNode {
 
         @Override
         public void createResources() {
-            this.outColor = new FBOTexture2DProgram(true);
             T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
                 add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
                 add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_R8, GL46.GL_RED);
                 add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA16F, GL46.GL_RGBA);
             }};
-            this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+            this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
             final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
                 final SceneWorld sceneWorld = this.getSceneWorld();
@@ -100,6 +100,7 @@ public interface ITransparencyRenderNode extends IRenderNode {
                 }
                 shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
                 shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
+                shaderManager.getUtils().performShadowsInfo();
             };
 
             this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.TRANSPARENCY, this.getOpenGLRenderer());

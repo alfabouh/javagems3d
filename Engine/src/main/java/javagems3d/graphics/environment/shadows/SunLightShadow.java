@@ -32,6 +32,39 @@ public class SunLightShadow extends Shadow {
         }
     }
 
+    /*
+                Vector4f vLightCameraOrthographicMin = new Vector4f(minExtents.x, minExtents.y, 0.0f, 0.0f);
+            Vector4f vLightCameraOrthographicMax = new Vector4f(maxExtents.x, maxExtents.y, 0.0f, 0.0f);
+            float fCascadeBound = maxExtents.x - minExtents.x;
+            float fWorldUnitsPerTexel = fCascadeBound / (float) this.getShadowMapResolution().x;
+            Vector4f vWorldUnitsPerTexel = new Vector4f(fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0f, 0.0f);
+            Vector4f tempMin = new Vector4f(vLightCameraOrthographicMin).div(vWorldUnitsPerTexel);
+            tempMin.x = (float) Math.floor(tempMin.x);
+            tempMin.y = (float) Math.floor(tempMin.y);
+            tempMin.z = (float) Math.floor(tempMin.z);
+            tempMin.w = (float) Math.floor(tempMin.w);
+            vLightCameraOrthographicMin.set(tempMin.mul(vWorldUnitsPerTexel));
+            Vector4f tempMax = new Vector4f(vLightCameraOrthographicMax).div(vWorldUnitsPerTexel);
+            tempMax.x = (float) Math.floor(tempMax.x);
+            tempMax.y = (float) Math.floor(tempMax.y);
+            tempMax.z = (float) Math.floor(tempMax.z);
+            tempMax.w = (float) Math.floor(tempMax.w);
+            vLightCameraOrthographicMax.set(tempMax.mul(vWorldUnitsPerTexel));
+     */
+
+    /*
+                Vector4f roundedOrigin = new Vector4f();
+            shadowOrigin.round(roundedOrigin);
+            Vector4f roundOffset = new Vector4f(roundedOrigin).sub(shadowOrigin);
+            roundOffset.mul(2.0f).div(this.getShadowMapResolution().x);
+
+            Matrix4f shadowProj = new Matrix4f(lightOrthoMatrix);
+            shadowProj.m30(shadowProj.m30() + roundOffset.x);
+            shadowProj.m31(shadowProj.m31() + roundOffset.y);
+            shadowProj.m32(shadowProj.m32() + roundOffset.z);
+            shadowProj.m33(shadowProj.m33() + roundOffset.w);
+     */
+
     public void refreshCascades() {
         Matrix4f view = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
         Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
@@ -105,6 +138,7 @@ public class SunLightShadow extends Shadow {
             Vector3f eye = new Vector3f(frustumCenter).sub(new Vector3f(lightDir).mul(-minExtents.z));
             Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
             Matrix4f lightViewMatrix = TransformUtils.getLookAtMatrix(eye, up, frustumCenter);
+
             Matrix4f lightOrthoMatrix = TransformUtils.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
 
             Cascade cascade = this.getCascades().get(i);
@@ -115,19 +149,21 @@ public class SunLightShadow extends Shadow {
             shadowOrigin.mul(shadowMatrix, shadowOrigin);
             shadowOrigin.mul(this.getShadowMapResolution().x).div(2.0f);
 
-            Vector4f roundedOrigin = new Vector4f();
-            shadowOrigin.round(roundedOrigin);
+            Vector4f tempOrigin = new Vector4f(shadowOrigin);
+            Vector4f halfTexel = new Vector4f(0.5f, 0.5f, 0.0f, 0.0f);
+            tempOrigin.add(halfTexel);
+            tempOrigin.x = (float) Math.floor(tempOrigin.x);
+            tempOrigin.y = (float) Math.floor(tempOrigin.y);
+            tempOrigin.z = (float) Math.floor(tempOrigin.z);
+            tempOrigin.w = (float) Math.floor(tempOrigin.w);
+            Vector4f roundedOrigin = new Vector4f(tempOrigin).sub(halfTexel);
             Vector4f roundOffset = new Vector4f(roundedOrigin).sub(shadowOrigin);
             roundOffset.mul(2.0f).div(this.getShadowMapResolution().x);
-            roundOffset.z = 0.0f;
-            roundOffset.w = 0.0f;
-
             Matrix4f shadowProj = new Matrix4f(lightOrthoMatrix);
             shadowProj.m30(shadowProj.m30() + roundOffset.x);
             shadowProj.m31(shadowProj.m31() + roundOffset.y);
             shadowProj.m32(shadowProj.m32() + roundOffset.z);
             shadowProj.m33(shadowProj.m33() + roundOffset.w);
-
             cascade.setLightProjectionViewMatrix(shadowProj);
 
             lastSplitDist = cascadeSplits[i];

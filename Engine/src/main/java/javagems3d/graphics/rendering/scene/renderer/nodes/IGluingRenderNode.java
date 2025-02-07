@@ -10,39 +10,46 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 public interface IGluingRenderNode extends IRenderNode {
-    FBOTexture2DProgram getInColorBuffer();
+    FBOTexture2DProgram getInColorTransparencyBuffer();
+    FBOTexture2DProgram getInColorSceneBuffer();
     FBOTexture2DProgram getOutColorBuffer();
 
     final class Default extends IRenderNode.Template implements IGluingRenderNode {
         private GluingRenderProcessor gluingRenderProcessor;
-        private final FBOTexture2DProgram inColor;
+        private final FBOTexture2DProgram inColorScene;
+        private final FBOTexture2DProgram inColorTransparency;
 
-        public Default(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
+        public Default(@NotNull FBOTexture2DProgram inColorTransparency, @NotNull FBOTexture2DProgram inColorScene, OpenGLRenderer openGLRenderer) {
             super(openGLRenderer);
-            this.inColor = inColor;
+            this.inColorScene = inColorScene;
+            this.inColorTransparency = inColorTransparency;
         }
 
         @Override
-        public FBOTexture2DProgram getInColorBuffer() {
-            return this.inColor;
+        public FBOTexture2DProgram getInColorTransparencyBuffer() {
+            return this.inColorTransparency;
+        }
+
+        @Override
+        public FBOTexture2DProgram getInColorSceneBuffer() {
+            return this.inColorScene;
         }
 
         @Override
         public FBOTexture2DProgram getOutColorBuffer() {
-            return this.getInColorBuffer();
+            return this.getInColorSceneBuffer();
         }
 
         @Override
         public void onRender(FrameTicking frameTicking) {
             this.getOutColorBuffer().bindFBO();
-            GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             this.getSceneGluingRenderProcessor().runProcessorRendering(frameTicking);
             this.getOutColorBuffer().unBindFBO();
         }
 
         @Override
         public void createResources() {
-            this.gluingRenderProcessor = new GluingRenderProcessor(this.getOutColorBuffer(), this.getOpenGLRenderer(), JGemsResourceManager.globalShaderAssets.scene_gluing);
+            this.gluingRenderProcessor = new GluingRenderProcessor(this.getInColorTransparencyBuffer(), this.getOutColorBuffer(), this.getOpenGLRenderer(), JGemsResourceManager.globalShaderAssets.scene_gluing);
             this.getSceneGluingRenderProcessor().createResources();
         }
 

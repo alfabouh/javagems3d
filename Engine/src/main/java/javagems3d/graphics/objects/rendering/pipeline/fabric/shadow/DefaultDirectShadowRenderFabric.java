@@ -43,7 +43,6 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
     protected void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, Model3D model) {
         shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
         shaderManager.getUtils().performAnimationsInfo(animated);
-        float alphaValue = 1.0f;
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
                 if (meshNode3D.getMaterial().getDiffuse() instanceof ImageBasedTexture) {
@@ -52,14 +51,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
                     ((ImageBasedTexture) meshNode3D.getMaterial().getDiffuse()).bindTexture();
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                 } else {
-                    if (meshNode3D.getMaterial().getDiffuse() instanceof RGBAColor) {
-                        RGBAColor RGBAColor = (RGBAColor) meshNode3D.getMaterial().getDiffuse();
-                        alphaValue *= RGBAColor.getColor().w;
-                    }
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
-                }
-                if (alphaValue * meshNode3D.getMaterial().getFullOpacity() <= JGemsRenderingGlobalConstants.MAX_ALPHA_TO_IGNORE_SHADOW) {
-                    continue;
                 }
                 GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
                 meshNode3D.getMeshData().enableAllMeshAttributes();

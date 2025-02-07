@@ -28,7 +28,7 @@ public abstract class IndirectCommandsProgram {
 
         ByteBuffer commandsBuffer = this.initCommandsByteBuffer(drawCount);
         int baseInstance = 0;
-        for (MeshBuffer.PassData data : buffer.getPassData()) {
+        for (MeshBuffer.PassData data : buffer.getSolidPassData()) {
             commandsBuffer.putInt(data.numVertexIndexes());
             commandsBuffer.putInt(drawCount);
             commandsBuffer.putInt(data.getFirstIndexOffset());

@@ -35,10 +35,7 @@ layout (std140, binding = 3) uniform Fog {
 };
 
 uniform vec3 camera_pos;
-uniform int texturing_code;
-uniform int lighting_code;
 uniform samplerCube ambient_cube_map;
-uniform float alpha_discard;
 
 vec4 calc_sun_light(vec3, vec3, vec3, vec4);
 vec4 calc_light_factor(vec3, float, vec3, vec3, vec3, vec4);

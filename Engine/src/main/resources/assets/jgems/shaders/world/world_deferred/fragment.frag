@@ -68,15 +68,11 @@ void main()
 
 vec4 calc_light(vec3 frag_pos, vec3 normal) {
     vec4 lightFactors = vec4(sunColor.xyz * sunMeta.x, 1.0);
-
     vec3 sunPos = normalize(sunPos.xyz);
-
     vec4 view_pos = vec4(frag_pos, 1.0);
     vec4 world_position = out_inversed_view_matrix * view_pos;
     world_position /= world_position.w;
-
     float sun_shadow = calc_sun_shadows(world_position, frag_pos);
-
     vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal);
 
     vec4 point_light_factor = vec4(0.0);

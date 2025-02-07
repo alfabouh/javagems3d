@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.indirect;
 
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -48,7 +49,7 @@ public abstract class IndirectObjectsRenderer {
     }
 
     protected abstract void processAndRender(@Nullable ArbitraryArguments metaData);
-    protected abstract IndirectCommandsProgram createCommands(IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects);
+    protected abstract IndirectCommandsProgram createCommands(Mode mode, IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects);
 
     protected void render(Operator operator, IndirectCommandsProgram indirectCommandsProgram, IndirectBufferProgram renderBuffer, @Nullable ArbitraryArguments metaData) {
         operator.getRenderingFunction().func(operator.getIndirectShader(), indirectCommandsProgram, renderBuffer, metaData == null ? ArbitraryArguments.empty() : metaData);
@@ -130,8 +131,20 @@ public abstract class IndirectObjectsRenderer {
         return this.openGLRenderer;
     }
 
-    public boolean isTransparency() {
-        return this.getPipeline().equals(Pipeline.TRANSPARENCY);
+    @SuppressWarnings("all")
+    public Mode getMode() {
+        switch (this.getPipeline()) {
+            case POINT_LIGHT_SHADOW_MAP:
+            case SUN_LIGHT_SHADOW_MAP: {
+                return JGemsRenderingGlobalConstants.CAST_SHADOWS_FROM_TRANSPARENT_MESHES ? Mode.ALL : Mode.ONLY_SOLID;
+            }
+            case TRANSPARENCY: {
+                return Mode.ONLY_TRANSPARENT;
+            }
+            default: {
+                return Mode.ONLY_SOLID;
+            }
+        }
     }
 
     public interface IRenderingFunction {
@@ -172,5 +185,11 @@ public abstract class IndirectObjectsRenderer {
         public JGemsShaderManager getIndirectShader() {
             return this.indirectShader;
         }
+    }
+
+    public enum Mode {
+        ALL,
+        ONLY_SOLID,
+        ONLY_TRANSPARENT
     }
 }

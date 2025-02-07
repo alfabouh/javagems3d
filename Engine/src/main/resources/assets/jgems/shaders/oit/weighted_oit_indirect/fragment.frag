@@ -34,6 +34,13 @@ in mat4 out_view_matrix;
 in flat uint matertial_id;
 in flat uint ent_id;
 
+const int diffuse_code = 1 << 2;
+const int normals_code = 1 << 3;
+const int emission_code = 1 << 4;
+const int specular_code = 1 << 5;
+const int metallic_code = 1 << 6;
+const int light_bright_code = 1 << 2;
+
 layout (location = 0) out vec4 accumulated;
 layout (location = 1) out float reveal;
 layout (location = 2) out vec4 bright_color;
@@ -63,19 +70,6 @@ layout (std140, binding = 3) uniform Fog {
 };
 
 uniform vec3 camera_pos;
-
-uniform int texturing_code;
-uniform int lighting_code;
-
-const int light_opacity_code = 1 << 2;
-const int light_bright_code = 1 << 3;
-
-const int diffuse_code = 1 << 2;
-const int emission_code = 1 << 3;
-const int metallic_code = 1 << 4;
-const int normals_code = 1 << 5;
-const int specular_code = 1 << 6;
-
 uniform samplerCube ambient_cube_map;
 
 #include "assets/jgems/shaders/libs/shadows"
@@ -156,14 +150,13 @@ void main()
     frag_color = calc_fog(frag_pos.xyz, frag_color);
     frag_color = vec4(frag_color.xyz, g_texture.a);
 
+    float depthFactor = exp(-60. * gl_FragCoord.z);
     float a_factor = frag_color.a;
-
-    float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * a_factor), a_factor) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
-
+    //float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * a_factor), a_factor) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
+    float weight = gl_FragCoord.z;
     accumulated = vec4(frag_color.rgb * a_factor, a_factor) * weight;
-
     reveal = a_factor;
-    reveal = calc_fog_float(frag_pos.xyz, a_factor);
+    reveal = calc_fog_float(frag_pos.xyz, reveal);
 
     float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722)) * reveal;
     bright_color = brightness >= 0.75 ? (accumulated) : vec4(0.);
@@ -171,11 +164,8 @@ void main()
 
 vec4 calc_light(vec3 frag_pos, vec3 normal, vec4 specularFactor) {
     vec4 lightFactors = vec4(sunColor.xyz * sunMeta.x, 1.0);
-
     vec3 sunPos = normalize(sunPos.xyz);
-
     float sun_shadow = calc_sun_shadows(model_vertex_pos, frag_pos);
-
     vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal, specularFactor);
 
     vec4 point_light_factor = vec4(0.0);

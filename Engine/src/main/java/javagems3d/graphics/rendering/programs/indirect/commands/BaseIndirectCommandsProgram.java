@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.programs.indirect.commands;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
+import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
@@ -15,7 +16,7 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
         super(indirectBufferProgram);
     }
 
-    public void buildCommands(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, boolean transparency) {
+    public void buildCommands(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, IndirectObjectsRenderer.Mode mode) {
         Map<SceneObject, Integer> idMap = new HashMap<>();
         Map<MeshBuffer, Set<SceneObject>> objectsMap = new HashMap<>();
 
@@ -27,8 +28,12 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
             if (meshBuffer == null) {
                 throw new JGemsRuntimeException("Model should have MeshBuffer, to implement indirect rendering!");
             }
-            final List<MeshBuffer.PassData> passData = transparency ? meshBuffer.getPassDataTransparent() : meshBuffer.getPassData();
-            drawCount += passData.size();
+            if (mode.equals(IndirectObjectsRenderer.Mode.ALL)) {
+                drawCount += meshBuffer.getSolidPassData().size() + meshBuffer.getTransparentPassData().size();
+            } else {
+                final List<MeshBuffer.PassData> passData = this.chooseCollection(mode, meshBuffer);
+                drawCount += passData.size();
+            }
             int id = i++;
             idMap.put(sceneObject, id);
             JGemsHelper.UTILS.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{
@@ -38,32 +43,87 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
                 ex.add(nw);
                 return ex;
             }, sceneObject);
-        }
+}
 
         int baseInstance = 0;
         ByteBuffer commandsBuffer = this.initCommandsByteBuffer(drawCount);
-        for (Map.Entry<MeshBuffer, Set<SceneObject>> meshBuffer : objectsMap.entrySet()) {
-            int firstIdx = 0;
-            int entitiesCount = meshBuffer.getValue().size();
-            final List<MeshBuffer.PassData> passData = transparency ? meshBuffer.getKey().getPassDataTransparent() : meshBuffer.getKey().getPassData();
-            for (MeshBuffer.PassData data : passData) {
-                commandsBuffer.putInt(data.numVertexIndexes());
-                commandsBuffer.putInt(entitiesCount);
-                commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdx);
-                commandsBuffer.putInt(data.getOffset());
-                commandsBuffer.putInt(baseInstance);
 
-                firstIdx += data.numVertexIndexes();
-                baseInstance += entitiesCount;
+        for (Map.Entry<MeshBuffer, Set<SceneObject>> entry : objectsMap.entrySet()) {
+            int entitiesCount = entry.getValue().size();
 
-                for (SceneObject modeled : meshBuffer.getValue()) {
-                    if (materialIds != null) {
-                        materialIds.put(data.getMaterialId());
+            if (mode.equals(IndirectObjectsRenderer.Mode.ALL)) {
+                List<MeshBuffer.PassData> solidPassData = entry.getKey().getSolidPassData();
+                int firstIdxSolid = 0;
+                for (MeshBuffer.PassData data : solidPassData) {
+                    commandsBuffer.putInt(data.numVertexIndexes());
+                    commandsBuffer.putInt(entitiesCount);
+                    commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdxSolid);
+                    commandsBuffer.putInt(data.getOffset());
+                    commandsBuffer.putInt(baseInstance);
+
+                    firstIdxSolid += data.numVertexIndexes();
+                    for (SceneObject modeled : entry.getValue()) {
+                        if (materialIds != null) {
+                            materialIds.put(data.getMaterialId());
+                        }
+                        indexes.put(idMap.get(modeled));
                     }
-                    indexes.put(idMap.get(modeled));
+                    baseInstance += entitiesCount;
+                }
+                List<MeshBuffer.PassData> transparentPassData = entry.getKey().getTransparentPassData();
+                int firstIdxTransparent = 0;
+                for (MeshBuffer.PassData data : transparentPassData) {
+                    commandsBuffer.putInt(data.numVertexIndexes());
+                    commandsBuffer.putInt(entitiesCount);
+                    commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdxTransparent);
+                    commandsBuffer.putInt(data.getOffset());
+                    commandsBuffer.putInt(baseInstance);
+
+                    firstIdxTransparent += data.numVertexIndexes();
+                    for (SceneObject modeled : entry.getValue()) {
+                        if (materialIds != null) {
+                            materialIds.put(data.getMaterialId());
+                        }
+                        indexes.put(idMap.get(modeled));
+                    }
+                    baseInstance += entitiesCount;
+                }
+            } else {
+                final List<MeshBuffer.PassData> passData = this.chooseCollection(mode, entry.getKey());
+                int firstIdx = 0;
+                for (MeshBuffer.PassData data : passData) {
+                    commandsBuffer.putInt(data.numVertexIndexes());
+                    commandsBuffer.putInt(entitiesCount);
+                    commandsBuffer.putInt(data.getFirstIndexOffset() + firstIdx);
+                    commandsBuffer.putInt(data.getOffset());
+                    commandsBuffer.putInt(baseInstance);
+
+                    firstIdx += data.numVertexIndexes();
+                    baseInstance += entitiesCount;
+
+                    for (SceneObject modeled : entry.getValue()) {
+                        if (materialIds != null) {
+                            materialIds.put(data.getMaterialId());
+                        }
+                        indexes.put(idMap.get(modeled));
+                    }
                 }
             }
         }
         this.passCommandsByteBuffer(commandsBuffer);
+    }
+
+    @SuppressWarnings("all")
+    private List<MeshBuffer.PassData> chooseCollection(IndirectObjectsRenderer.Mode mode, MeshBuffer key) {
+        //TODO: SWITCH DOESNT WORK
+        List<MeshBuffer.PassData> list = key.getSolidPassData();
+        if (mode.equals(IndirectObjectsRenderer.Mode.ALL)) {
+            list = key.getAllPassData();
+        } else if (mode.equals(IndirectObjectsRenderer.Mode.ONLY_TRANSPARENT)) {
+            list = key.getTransparentPassData();
+        } else if (mode.equals(IndirectObjectsRenderer.Mode.ONLY_SOLID)) {
+            list = key.getSolidPassData();
+        }
+        return list;
     }
 }

@@ -45,8 +45,8 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
     @Override
     public void clear() {
         super.clear();
-        this.getPassData().clear();
-        this.getPassDataTransparent().clear();
+        this.getSolidPassData().clear();
+        this.getTransparentPassData().clear();
     }
 
     @Override
@@ -54,12 +54,20 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
         return true;
     }
 
-    public List<PassData> getPassDataTransparent() {
+    public List<PassData> getTransparentPassData() {
         return this.passDataTransparent;
     }
 
-    public List<PassData> getPassData() {
+    public List<PassData> getSolidPassData() {
         return this.passData;
+    }
+
+    public List<PassData> getAllPassData() {
+        int capacity = this.getSolidPassData().size() + this.getTransparentPassData().size();
+        List<PassData> passData1 = new ArrayList<>(capacity);
+        passData1.addAll(this.getSolidPassData());
+        passData1.addAll(this.getTransparentPassData());
+        return passData1;
     }
 
     public static final class PassData {

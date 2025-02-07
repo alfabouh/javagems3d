@@ -97,7 +97,7 @@ public final class JGemsResourceManager {
                 byteBuffer.putFloat(rgbaColor.getColor().x);
                 byteBuffer.putFloat(rgbaColor.getColor().y);
                 byteBuffer.putFloat(rgbaColor.getColor().z);
-                byteBuffer.putFloat(rgbaColor.getColor().w);
+                byteBuffer.putFloat(material.getFullOpacity());
             } else {
                 byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
             }

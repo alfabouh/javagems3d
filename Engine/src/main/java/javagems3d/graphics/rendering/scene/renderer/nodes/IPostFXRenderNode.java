@@ -17,7 +17,7 @@ public interface IPostFXRenderNode extends IRenderNode {
     FBOTexture2DProgram getOutColorBuffer();
 
     final class Default extends IRenderNode.Template implements IPostFXRenderNode {
-        private final FBOTexture2DProgram inColor;
+        private final FBOTexture2DProgram inColorScene;
         private FBOTexture2DProgram outColor;
         private BloomRenderProcessor bloomRenderProcessor;
         private HDRRenderProcessor hdrRenderProcessor;
@@ -25,12 +25,12 @@ public interface IPostFXRenderNode extends IRenderNode {
 
         public Default(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
             super(openGLRenderer);
-            this.inColor = inColor;
+            this.inColorScene = inColor;
         }
 
         @Override
         public FBOTexture2DProgram getInColorBuffer() {
-            return this.inColor;
+            return this.inColorScene;
         }
 
         @Override
