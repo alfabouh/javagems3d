@@ -9,19 +9,25 @@ import java.util.*;
 public final class MeshBuffersDataCache implements IDataCache {
     private final Map<Material, Integer> materialsIdMap;
     private final List<Material> materials;
-    private final Set<MeshBuffer> meshBuffers;
+    private final Set<MeshBuffer> staticMeshBuffers;
+    private final Set<MeshBuffer> animatedMeshBuffers;
 
     public MeshBuffersDataCache() {
         this.materialsIdMap = new HashMap<>();
         this.materials = new ArrayList<>();
-        this.meshBuffers = new HashSet<>();
+        this.staticMeshBuffers = new HashSet<>();
+        this.animatedMeshBuffers = new HashSet<>();
     }
 
     public void writeData(Set<MeshBuffersDataArray> arraySet) {
         int i = 0;
         for (MeshBuffersDataArray bindlessTexturesDataArray : arraySet) {
             for (MeshBuffer meshBuffer : bindlessTexturesDataArray.getMeshBuffers()) {
-                this.addMeshBuffer(meshBuffer);
+                if (meshBuffer.isAnimatedStructure()) {
+                    this.addAnimatedMeshBuffer(meshBuffer);
+                } else {
+                    this.addStaticMeshBuffer(meshBuffer);
+                }
             }
             for (Material material : bindlessTexturesDataArray.getMaterials()) {
                 this.materialsIdMap.put(material, i++);
@@ -31,7 +37,8 @@ public final class MeshBuffersDataCache implements IDataCache {
     }
 
     public void clear() {
-        this.meshBuffers.clear();
+        this.animatedMeshBuffers.clear();
+        this.staticMeshBuffers.clear();
         this.materials.clear();
         this.materialsIdMap.clear();
     }
@@ -40,16 +47,24 @@ public final class MeshBuffersDataCache implements IDataCache {
         return this.materialsIdMap.get(material);
     }
 
-    public void addMeshBuffer(MeshBuffer meshBuffer) {
-        this.meshBuffers.add(meshBuffer);
+    public void addStaticMeshBuffer(MeshBuffer meshBuffer) {
+        this.staticMeshBuffers.add(meshBuffer);
+    }
+
+    public void addAnimatedMeshBuffer(MeshBuffer meshBuffer) {
+        this.animatedMeshBuffers.add(meshBuffer);
     }
 
     public void addMaterial(Material material) {
         this.materials.add(material);
     }
 
-    public Set<MeshBuffer> getMeshBuffers() {
-        return new HashSet<>(this.meshBuffers);
+    public Set<MeshBuffer> getAnimatedMeshBuffers() {
+        return new HashSet<>(this.animatedMeshBuffers);
+    }
+
+    public Set<MeshBuffer> getStaticMeshBuffers() {
+        return new HashSet<>(this.staticMeshBuffers);
     }
 
     public List<Material> getMaterials() {

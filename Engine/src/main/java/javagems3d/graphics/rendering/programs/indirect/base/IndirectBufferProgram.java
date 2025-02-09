@@ -20,10 +20,11 @@ import java.util.stream.Collectors;
 
 public final class IndirectBufferProgram {
     private int staticVao;
+    private int animatedVao;
     private final List<Integer> vboList;
 
-    private List<MeshBuffer> allStaticMeshBuffers;
-    private List<MeshBuffer> allAnimatedMeshBuffers;
+    private Set<MeshBuffer> allStaticMeshBuffers;
+    private Set<MeshBuffer> allAnimatedMeshBuffers;
 
     private final Layout layout;
 
@@ -37,13 +38,11 @@ public final class IndirectBufferProgram {
     }
 
     public void init(MeshBuffersDataCache meshBuffersDataCache) {
-        Map<Boolean, List<MeshBuffer>> partitionedModels = meshBuffersDataCache.getMeshBuffers().stream().collect(Collectors.partitioningBy(MeshStructure3D::isAnimatedStructure));
-
-        this.allStaticMeshBuffers = partitionedModels.get(false);
-        this.allAnimatedMeshBuffers = partitionedModels.get(true);
+        this.allStaticMeshBuffers = meshBuffersDataCache.getStaticMeshBuffers();
+        this.allAnimatedMeshBuffers = meshBuffersDataCache.getAnimatedMeshBuffers();
 
         this.forStatic(meshBuffersDataCache, this.getAllStaticMeshBuffers());
-        //this.forStatic(this.getAllAnimatedMeshBuffers());
+        this.forAnimated(meshBuffersDataCache, this.getAllAnimatedMeshBuffers());
     }
 
     private void forStatic(MeshBuffersDataCache meshBuffersDataCache, List<MeshBuffer> obj) {
@@ -134,7 +133,7 @@ public final class IndirectBufferProgram {
         GL46.glBindVertexArray(0);
     }
 
-    private void forAnimated(List<MeshBuffer> obj) {
+    private void forAnimated(MeshBuffersDataCache meshBuffersDataCache, List<MeshBuffer> obj) {
         //TODO
     }
 
@@ -215,11 +214,11 @@ public final class IndirectBufferProgram {
         return this.layout;
     }
 
-    public List<MeshBuffer> getAllStaticMeshBuffers() {
+    public Set<MeshBuffer> getAllStaticMeshBuffers() {
         return this.allStaticMeshBuffers;
     }
 
-    public List<MeshBuffer> getAllAnimatedMeshBuffers() {
+    public Set<MeshBuffer> getAllAnimatedMeshBuffers() {
         return this.allAnimatedMeshBuffers;
     }
 
