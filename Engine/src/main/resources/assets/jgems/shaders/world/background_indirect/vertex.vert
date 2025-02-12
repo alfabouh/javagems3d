@@ -35,6 +35,7 @@ layout(std430, binding = 1) buffer IndirectBufferData {
     mat4 modelMatrices[2048];
     int entityIds[2048];
     int materialIds[2048];
+    int animationOffset[2048];
 };
 
 void main()

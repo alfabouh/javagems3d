@@ -8,6 +8,7 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
@@ -30,11 +31,14 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
         if (renderedItem instanceof IModeled) {
             IModeled modeled = (IModeled) renderedItem;
             if (renderedItem.canBeRendered()) {
-                if (renderedItem.canBeRendered()) {
-                    Model3D model = modeled.getModel();
-                    shaderManager.getUtils().performModel3DMatrix(model);
-                    JGemsHelper.RENDERING.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
+                Model3D model = modeled.getModel();
+                shaderManager.getUtils().performPerspectiveMatrix();
+                shaderManager.getUtils().performModel3DMatrix(model);
+                shaderManager.getUtils().performViewMatrix(JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                if (model.getMeshStructure().isAnimatedStructure()) {
+                    shaderManager.getUtils().performAnimationsInfo(modeled);
                 }
+                JGemsHelper.RENDERING.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             }
         }
     }

@@ -9,11 +9,20 @@ public final class Animation {
     private final String name;
     private final double duration;
     private final List<AnimationFrame> frameList;
+    private int offset;
 
     public Animation(String name, double duration, List<AnimationFrame> frameList) {
         this.name = name;
         this.duration = duration;
         this.frameList = frameList;
+    }
+
+    public int getOffset() {
+        return this.offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public String getName() {

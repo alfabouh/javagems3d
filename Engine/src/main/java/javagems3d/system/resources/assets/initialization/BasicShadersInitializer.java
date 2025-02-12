@@ -13,11 +13,11 @@ package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lights.scene.LightsScene;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
-import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
@@ -69,6 +69,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
     public JGemsShaderManager weighted_particle_oit;
     public JGemsShaderManager weighted_liquid_oit;
     public JGemsShaderManager simple;
+    public JGemsShaderManager simple_gbuffer;
 
     public JGemsShaderManager depth_sun;
     public JGemsShaderManager depth_sun_indirect;
@@ -83,10 +84,10 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
     protected void initObjects(ResourceCache resourceCache) {
         this.addShaderLibraryContainerInGlobalList(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
 
-        this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * ModelLoadingUtils.ANIM_MAX_BONES);
+        this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * JGemsRenderingGlobalConstants.ANIM_MAX_BONES);
         ShaderStorageBufferProgram.createSSBOStorage(this.Bones, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.IndirectBufferData = new ShaderStorageBufferObject(1, 2 * (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        this.IndirectBufferData = new ShaderStorageBufferObject(1, 3 * (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
         ShaderStorageBufferProgram.createSSBOStorage(this.IndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.BindlessTextures = new ShaderStorageBufferObject(2, Long.BYTES * JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
@@ -144,6 +145,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
 
         this.inventory_common_item = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "inventory/inventory_common_item"));
 
+        this.simple_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "world/simple_gbuffer"));
         this.simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "world/simple"));
         this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "shadows/depth_sun"));
         this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.PATHS.SHADERS, "shadows/depth_sun_indirect"));

@@ -15,12 +15,18 @@ import javagems3d.JGems3D;
 import api.bridge.APIContainer;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.models.animation.Animation;
+import javagems3d.system.resources.assets.models.animation.AnimationFrame;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
@@ -32,13 +38,18 @@ import javagems3d.system.resources.managing.resources.data.cache.BindlessTexture
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
+import org.joml.Matrix4f;
+import org.joml.Vector2i;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.LongBuffer;
+import java.util.Collection;
 
 public final class JGemsResourceManager {
     public static BasicShadersInitializer globalShaderAssets = null;
@@ -51,6 +62,8 @@ public final class JGemsResourceManager {
     private final GameResources localResources;
 
     private final ResourcesDataCache resourcesDataCache;
+
+    private ITextureProgram animationMatricesTexture;
 
     public JGemsResourceManager() {
         JGemsResourceManager.globalShaderAssets = new BasicShadersInitializer();
@@ -116,6 +129,10 @@ public final class JGemsResourceManager {
         MemoryUtil.memFree(byteBuffer);
     }
 
+    public void loadModelAnimationsInTexture() {
+        this.animationMatricesTexture = this.createAnimationsTexture(this.getResourceDataCache().getMeshBuffersDataCache().getMeshBuffers());
+    }
+
     public static Font createFontFromJAR(JGemsPath path) {
         Font font1;
         try {
@@ -146,11 +163,57 @@ public final class JGemsResourceManager {
         return JGems3D.get().getResourceManager().getGlobalResources();
     }
 
+    public static ITextureProgram getAnimationsTextureBuffer() {
+        return JGems3D.get().getResourceManager().getAnimationMatricesTexture();
+    }
+
     public void destroy() {
         ShaderStorageBufferProgram.clearAll();
         GuiFont.allCreatedFonts.forEach(GuiFont::clear);
         this.getResourceDataCache().clearAll();
         this.clearAllCaches();
+
+        if (this.getAnimationMatricesTexture() != null) {
+            this.getAnimationMatricesTexture().clear();
+            this.animationMatricesTexture = null;
+        }
+    }
+
+    private Texture2DProgram createAnimationsTexture(Collection<? extends MeshStructure3D<?>> meshStructuresCollection) {
+        if (this.getAnimationMatricesTexture() != null) {
+            this.getAnimationMatricesTexture().clear();
+        }
+        int totalMatrices = 0;
+        for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
+            for (Animation animation : meshStructure3D.getAnimationsList()) {
+                animation.setOffset(totalMatrices);
+                for (AnimationFrame animationFrame : animation.getFrameList()) {
+                    animationFrame.setOffset(totalMatrices);
+                    totalMatrices += animationFrame.getBoneMatrices().length;
+                }
+            }
+        }
+        JGemsHelper.getLogger().log("Loading " + totalMatrices + " animations in texture-buffer!");
+        Texture2DProgram texture2DProgram = new Texture2DProgram();
+        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(totalMatrices * 16);
+        for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
+            for (Animation animation : meshStructure3D.getAnimationsList()) {
+                for (AnimationFrame animationFrame : animation.getFrameList()) {
+                    for (Matrix4f matrix4f : animationFrame.getBoneMatrices()) {
+                        floatBuffer.put(matrix4f.get(new float[16]));
+                    }
+                }
+            }
+        }
+        floatBuffer.flip();
+        int s = (int) Math.ceil(Math.sqrt(totalMatrices * 4));
+        texture2DProgram.createTexture(new Vector2i(s), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+        MemoryUtil.memFree(floatBuffer);
+        return texture2DProgram;
+    }
+
+    public ITextureProgram getAnimationMatricesTexture() {
+        return this.animationMatricesTexture;
     }
 
     public void loadGlobalResources() {

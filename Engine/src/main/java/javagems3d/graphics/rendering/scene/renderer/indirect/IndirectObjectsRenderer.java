@@ -57,22 +57,27 @@ public abstract class IndirectObjectsRenderer {
 
     protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
         ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
-        FloatBuffer matrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
+        FloatBuffer modelMatrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
+        IntBuffer animationMatricesOffsets = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
 
         this.getRejected().clear();
         for (SceneObject sceneObject : sceneObjects) {
             if (this.getPipeline().equals(Pipeline.SCENE) && sceneObject.getModel().getMeshStructure().hasTransparency()) {
                 this.getRejected().add(sceneObject);
             }
-            this.passMatricesInBuffer(this.getPipeline(), sceneObject, matrices);
+            this.passMatricesInBuffer(this.getPipeline(), sceneObject, modelMatrices);
+
+            int animToPass = sceneObject.hasAnimationData() ? sceneObject.getAnimationData().getCurrentAnimationFrame().getOffset() : -1;
+            animationMatricesOffsets.put(animToPass);
+
             if (properties != null) {
                 this.passPropertiesInBuffer(this.getPipeline(), sceneObject, properties);
             }
         }
 
-        matrices.flip();
-        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, 0L, matrices);
-        MemoryUtil.memFree(matrices);
+        modelMatrices.flip();
+        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, 0L, modelMatrices);
+        MemoryUtil.memFree(modelMatrices);
 
         indexes.flip();
         ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) (IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE) * Float.BYTES, indexes);
@@ -83,6 +88,10 @@ public abstract class IndirectObjectsRenderer {
             ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE * Float.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES, materialIds);
             MemoryUtil.memFree(materialIds);
         }
+
+        animationMatricesOffsets.flip();
+        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE * Float.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES, animationMatricesOffsets);
+        MemoryUtil.memFree(animationMatricesOffsets);
 
         if (properties != null) {
             properties.flip();

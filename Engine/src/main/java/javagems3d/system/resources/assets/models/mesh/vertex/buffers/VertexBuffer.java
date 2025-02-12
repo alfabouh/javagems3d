@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public final class VertexBuffer<T> {
+public final class VertexBuffer<T extends Number> {
     private final List<T> values;
     private final RenderAttributePointer renderAttributePointer;
 

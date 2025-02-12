@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.loading.models.utils;
 
 import javagems3d.JGemsHelper;
+import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.components.Bone;
@@ -31,7 +32,7 @@ public abstract class AnimationLoadingUtils {
                 animations.add(animation);
 
                 for (int j = 0; j < maxFrames; j++) {
-                    Matrix4f[] boneMatrices = new Matrix4f[ModelLoadingUtils.ANIM_MAX_BONES];
+                    Matrix4f[] boneMatrices = new Matrix4f[JGemsRenderingGlobalConstants.ANIM_MAX_BONES];
                     Arrays.fill(boneMatrices, new Matrix4f().identity());
                     AnimationFrame animationFrame = new AnimationFrame(boneMatrices);
                     AnimationLoadingUtils.createFrameMatrices(aiAnimation, bonesList, animationFrame, j, root, root.getTransformation(), globalInverseTransformation);
@@ -73,7 +74,7 @@ public abstract class AnimationLoadingUtils {
         for (int i = 0; i < totalVertices; i++) {
             List<VertexWeight> vertexWeightList = weightMap.get(i);
             int size = vertexWeightList != null ? vertexWeightList.size() : 0;
-            for (int j = 0; j < ModelLoadingUtils.ANIM_MAX_WEIGHTS; j++) {
+            for (int j = 0; j < JGemsRenderingGlobalConstants.ANIM_MAX_WEIGHTS; j++) {
                 if (j < size) {
                     VertexWeight vertexWeight = vertexWeightList.get(j);
                     weights.add(vertexWeight.getWeight());
@@ -85,7 +86,7 @@ public abstract class AnimationLoadingUtils {
             }
         }
 
-        return new SkeletonData(JGemsHelper.UTILS.convertFloatsArray(weights), JGemsHelper.UTILS.convertIntsArray(boneIds));
+        return new SkeletonData(weights, boneIds);
     }
 
     public static Animation.Node createNodesTree(AINode aiNode, Animation.Node parent) {
@@ -107,24 +108,12 @@ public abstract class AnimationLoadingUtils {
     }
 
     public static Matrix4f toJOMLMatrix(AIMatrix4x4 aiMatrix4x4) {
-        Matrix4f result = new Matrix4f();
-        result.m00(aiMatrix4x4.a1());
-        result.m10(aiMatrix4x4.a2());
-        result.m20(aiMatrix4x4.a3());
-        result.m30(aiMatrix4x4.a4());
-        result.m01(aiMatrix4x4.b1());
-        result.m11(aiMatrix4x4.b2());
-        result.m21(aiMatrix4x4.b3());
-        result.m31(aiMatrix4x4.b4());
-        result.m02(aiMatrix4x4.c1());
-        result.m12(aiMatrix4x4.c2());
-        result.m22(aiMatrix4x4.c3());
-        result.m32(aiMatrix4x4.c4());
-        result.m03(aiMatrix4x4.d1());
-        result.m13(aiMatrix4x4.d2());
-        result.m23(aiMatrix4x4.d3());
-        result.m33(aiMatrix4x4.d4());
-        return result;
+        return new Matrix4f(
+                aiMatrix4x4.a1(), aiMatrix4x4.b1(), aiMatrix4x4.c1(), aiMatrix4x4.d1(),
+                aiMatrix4x4.a2(), aiMatrix4x4.b2(), aiMatrix4x4.c2(), aiMatrix4x4.d2(),
+                aiMatrix4x4.a3(), aiMatrix4x4.b3(), aiMatrix4x4.c3(), aiMatrix4x4.d3(),
+                aiMatrix4x4.a4(), aiMatrix4x4.b4(), aiMatrix4x4.c4(), aiMatrix4x4.d4()
+        );
     }
 
     private static void createFrameMatrices(AIAnimation aiAnimation, List<Bone> boneList, AnimationFrame animationFrame, int frame, Animation.Node node, Matrix4f parentTransformation, Matrix4f globalInverseTransform) {

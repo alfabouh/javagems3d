@@ -125,7 +125,7 @@ public class RenderTable {
         }
     }
 
-    public @NotNull  Data getRenderingData(Pipeline pipeline) {
+    public @NotNull Data getRenderingData(Pipeline pipeline) {
         return this.dataMap.get(pipeline);
     }
 

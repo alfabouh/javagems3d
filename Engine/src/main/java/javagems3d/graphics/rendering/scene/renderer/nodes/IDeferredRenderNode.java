@@ -144,6 +144,7 @@ public interface IDeferredRenderNode extends IRenderNode {
                 }
                 shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
                 shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
+                shaderManager.performUniformTexture(new UniformString("animationsMatrix"), JGemsResourceManager.getAnimationsTextureBuffer());
             };
 
             this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
@@ -236,7 +237,7 @@ public interface IDeferredRenderNode extends IRenderNode {
             IndirectBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
             BaseIndirectCommandsProgram baseIndirectCommandProgram1 = new BaseIndirectCommandsProgram(renderBuffer);
             baseIndirectCommandProgram1.createBuffer();
-            baseIndirectCommandProgram1.buildCommands(null, null, JGemsResourceManager.globalModelAssets.grassCube, 1_000_000);
+            //baseIndirectCommandProgram1.buildCommands(null, null, JGemsResourceManager.globalModelAssets.grassCube, 1_000_000);
             GroupedIndirectRenderer.IRenderingFunction renderingFunction = IndirectRenderFabric.DEFAULT_FUNC;
             renderingFunction.func(JGemsResourceManager.globalShaderAssets.world_gbuffer_indirect, baseIndirectCommandProgram1, renderBuffer, ArbitraryArguments.pass(uniformsHandler));
             baseIndirectCommandProgram1.destroyBuffer();

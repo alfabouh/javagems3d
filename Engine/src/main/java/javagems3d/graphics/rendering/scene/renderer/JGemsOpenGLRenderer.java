@@ -52,17 +52,12 @@ import java.util.stream.Collectors;
 
 public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit {
     protected Map<Nodes, IRenderNode> conveyorNodes;
-
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
-
     protected IndirectBufferProgram sceneIndirectBufferProgram;
-
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
-
     protected Model2D screenModel;
-
     private final ISceneCulling sceneCulling;
 
     public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
@@ -73,7 +68,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         JGemsOpenGLRenderer.inGameInterface = new DearUIGameInterface();
         JGemsOpenGLRenderer.inMenuInterface = new DearUIMenuInterface();
 
-        this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS);
+        this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
 
         this.sceneCulling = new SceneCulling(this, null);
@@ -202,7 +197,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
-        imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));
+        imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
         JGemsHelper.RENDERING.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
@@ -242,6 +237,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
         resourceManager.loadMeshMaterialsIsSSBO(JGemsResourceManager.globalShaderAssets.MaterialsData);
         resourceManager.loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
+        resourceManager.loadModelAnimationsInTexture();
     }
 
     @Override

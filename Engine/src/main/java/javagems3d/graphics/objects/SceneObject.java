@@ -33,13 +33,13 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
     private CullingAABB cullingAABB;
 
     public SceneObject(SceneWorld sceneWorld, Model3D model, RenderAttributes renderAttributes) {
+        this.animationData = null;
+        this.cullingAABB = null;
         this.setModel(model);
         this.sceneWorld = sceneWorld;
         this.renderAttributes = renderAttributes;
         this.lastTick = JGems3D.glfwTime();
         this.animationSpeed = 1.0f;
-        this.animationData = null;
-        this.cullingAABB = null;
     }
 
     public SceneObject setModel(Model3D model) {
@@ -75,10 +75,6 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
     }
 
     public void nextAnimationFrame() {
-        this.nextAnimationFrame(DefaultAttributePointers.ATTR_POSITIONS.getIndex());
-    }
-
-    public void nextAnimationFrame(int positionAttributeIndex) {
         if (this.hasAnimationData()) {
             this.getAnimationData().nextFrame();
         }
@@ -90,7 +86,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
 
     @Override
     public AnimationData setAnimationByID(int id) {
-        if (!this.hasModel() || !this.hasAnimationData() || !this.getModel().getMeshStructure().isAnimatedStructure()) {
+        if (!this.hasModel() || !this.getModel().getMeshStructure().isAnimatedStructure()) {
             return null;
         }
         if (id < 0 || id >= this.getModel().getMeshStructure().getAnimationsList().size()) {

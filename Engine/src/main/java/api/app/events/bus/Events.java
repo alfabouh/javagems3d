@@ -12,11 +12,11 @@
 package api.app.events.bus;
 
 import javagems3d.graphics.objects.entities.SceneEntity;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.entities.SceneEntity;
-import javagems3d.graphics.OLD.JGemsOpenGLRendererOLD;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -214,12 +214,12 @@ public abstract class Events {
 
     // section RenderPostProcessing
     public static final class RenderPostProcessing extends Cancellable implements IEvent {
-        public final JGemsOpenGLRendererOLD jGemsOpenGLRendererOLD;
+        public final JGemsOpenGLRenderer jGemsOpenGLRendererOLD;
         public final FrameTicking ticking;
         public final int sceneBufferTextureID;
         public final Vector2i windowSize;
 
-        public RenderPostProcessing(FrameTicking ticking, Vector2i windowSize, int sceneBufferTextureID, JGemsOpenGLRendererOLD jGemsOpenGLRendererOLD) {
+        public RenderPostProcessing(FrameTicking ticking, Vector2i windowSize, int sceneBufferTextureID, JGemsOpenGLRenderer jGemsOpenGLRendererOLD) {
             this.jGemsOpenGLRendererOLD = jGemsOpenGLRendererOLD;
             this.ticking = ticking;
             this.sceneBufferTextureID = sceneBufferTextureID;
@@ -290,11 +290,11 @@ public abstract class Events {
     }
 
     public static final class RenderScenePre extends Cancellable implements IEvent {
-        public final JGemsOpenGLRendererOLD jGemsOpenGLRendererOLD;
+        public final JGemsOpenGLRenderer jGemsOpenGLRendererOLD;
         public final FrameTicking ticking;
         public final Vector2i windowSize;
 
-        public RenderScenePre(FrameTicking ticking, Vector2i windowSize, JGemsOpenGLRendererOLD jGemsOpenGLRendererOLD) {
+        public RenderScenePre(FrameTicking ticking, Vector2i windowSize, JGemsOpenGLRenderer jGemsOpenGLRendererOLD) {
             this.jGemsOpenGLRendererOLD = jGemsOpenGLRendererOLD;
             this.ticking = ticking;
             this.windowSize = windowSize;
@@ -302,11 +302,11 @@ public abstract class Events {
     }
 
     public static final class RenderScenePost implements IEvent {
-        public final JGemsOpenGLRendererOLD jGemsOpenGLRendererOLD;
+        public final JGemsOpenGLRenderer jGemsOpenGLRendererOLD;
         public final FrameTicking ticking;
         public final Vector2i windowSize;
 
-        public RenderScenePost(FrameTicking ticking, Vector2i windowSize, JGemsOpenGLRendererOLD jGemsOpenGLRendererOLD) {
+        public RenderScenePost(FrameTicking ticking, Vector2i windowSize, JGemsOpenGLRenderer jGemsOpenGLRendererOLD) {
             this.jGemsOpenGLRendererOLD = jGemsOpenGLRendererOLD;
             this.ticking = ticking;
             this.windowSize = windowSize;

@@ -48,7 +48,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
 
-    public MeshBuffer grassCube;
+    public MeshGroup grassCube;
     public MeshBuffer ground2;
     public MeshBuffer ground3;
     public MeshBuffer test_anim;
@@ -57,13 +57,10 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     public void load(GameResources gameResources) {
         this.createDefaults(gameResources);
 
-        this.grassCube = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
+        this.grassCube =gameResources.createMeshGroup(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblampclean.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT | ModelMeshLoader.FLAGS.LOAD_ANIMATIONS);// gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
         this.ground2 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.DEFAULT);
         this.ground3 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "map05/map05.obj"), ModelMeshLoader.FLAGS.DEFAULT);
-        this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);
-
-        JGemsHelper.UTILS.createMeshCollisionData(this.grassCube, this.ground2, this.ground3, this.test_anim);
-        JGemsHelper.UTILS.createMeshAABBData(this.grassCube, this.ground2, this.ground3, this.test_anim);
+        this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.DEFAULT);//gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);
     }
 
     private void createDefaults(GameResources gameResources) {
@@ -77,7 +74,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
 
     private MeshBuffer createDefaultCubeBuffer() {
         DataMesh dataMesh = new DataMesh();
-        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_POSITIONS, JGemsHelper.UTILS.convertFloatsList(ModelAssetsInitializer.CubeModelPos));
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsHelper.UTILS.convertFloatsList(ModelAssetsInitializer.CubeModelPos));
         dataMesh.putVertexIndexes(JGemsHelper.UTILS.convertIntsList(ModelAssetsInitializer.CubeModelInd));
         MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, null);
         return new MeshBuffer(meshBufferMeshNode3D);

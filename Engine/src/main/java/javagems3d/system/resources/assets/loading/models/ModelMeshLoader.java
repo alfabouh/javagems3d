@@ -16,7 +16,6 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -45,6 +44,7 @@ public class ModelMeshLoader implements ILoadingHelper {
     public MeshGroup createMeshGroup(int Flags) {
         boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
+        boolean createAabb = (Flags & FLAGS.CREATE_AABB_UD) != 0;
         boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
         MeshGroup meshGroup = null;
         String grString = this.getStr(MeshGroup.POSTFIX);
@@ -71,13 +71,17 @@ public class ModelMeshLoader implements ILoadingHelper {
         if (createCollision) {
             JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
         }
+        if (createAabb) {
+            JGemsHelper.UTILS.createMeshAABBData(meshGroup);
+        }
         return meshGroup;
     }
 
     public MeshBuffer createMeshBuffer(int Flags) {
         boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
-        boolean loadInIndirectBuffer = (Flags & ~FLAGS.LOAD_IN_INDIRECT_BUFFER) == 0;
+        boolean createAabb = (Flags & FLAGS.CREATE_AABB_UD) != 0;
+        boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
         String bffString = this.getStr(MeshBuffer.POSTFIX);
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
@@ -91,6 +95,9 @@ public class ModelMeshLoader implements ILoadingHelper {
         }
         if (createCollision) {
             JGemsHelper.UTILS.createMeshCollisionData(meshBuffer);
+        }
+        if (createAabb) {
+            JGemsHelper.UTILS.createMeshAABBData(meshBuffer);
         }
         return meshBuffer;
     }
@@ -178,6 +185,9 @@ public class ModelMeshLoader implements ILoadingHelper {
             int totalMeshes = aiScene.mNumMeshes();
             PointerBuffer aiMeshes = aiScene.mMeshes();
             SkeletonData skeletonData = null;
+            if (totalMeshes == 0) {
+                throw new JGemsIOException("Caught invalid model: " + this.getPath());
+            }
             for (int i = 0; i < totalMeshes; i++) {
                 AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
                 if (isAnimated) {
@@ -233,21 +243,15 @@ public class ModelMeshLoader implements ILoadingHelper {
 
         DataMesh dataMesh = new DataMesh();
         dataMesh.putVertexIndexes(vertices);
-        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_POSITIONS, positions);
-        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, textureCoordinates);
-        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_NORMALS, normals);
-        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_TANGENTS, tangents);
-        dataMesh.putVertexBuffer(DefaultAttributePointers.ATTR_BI_TANGENTS, biTangents);
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, positions);
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, textureCoordinates);
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_NORMALS, normals);
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_TANGENTS, tangents);
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_BI_TANGENTS, biTangents);
 
         if (skeletonData != null) {
-            IntegerVertexAttribute boneIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONE_INDEXES);
-            FloatVertexAttribute boneWeights = new FloatVertexAttribute(DefaultAttributePointers.ATTR_BONE_WEIGHTS);
-
-            boneIndexes.putArray(skeletonData.getBoneIds());
-            boneWeights.putArray(skeletonData.getWeights());
-
-           // directMeshData.addVertexAttributeInMesh(boneIndexes);
-           // directMeshData.addVertexAttributeInMesh(boneWeights);
+            dataMesh.putVertexBufferI(DefaultAttributePointers.ATTR_BONES_INDEXES, skeletonData.getBoneIds());
+            dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_BONES_WEIGHTS, skeletonData.getWeights());
         }
 
         return dataMesh;
@@ -288,14 +292,13 @@ public class ModelMeshLoader implements ILoadingHelper {
         renderMesh.putVertexAttribute(vaBiTangents);
 
         if (skeletonData != null) {
-            IntegerVertexAttribute boneIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONE_INDEXES);
-            FloatVertexAttribute boneWeights = new FloatVertexAttribute(DefaultAttributePointers.ATTR_BONE_WEIGHTS);
+            IntegerVertexAttribute vaBonesIndexes = new IntegerVertexAttribute(DefaultAttributePointers.ATTR_BONES_INDEXES);
+            FloatVertexAttribute vaBonesWeights = new FloatVertexAttribute(DefaultAttributePointers.ATTR_BONES_WEIGHTS);
+            vaBonesIndexes.put(skeletonData.getBoneIds());
+            vaBonesWeights.put(skeletonData.getWeights());
 
-            boneIndexes.putArray(skeletonData.getBoneIds());
-            boneWeights.putArray(skeletonData.getWeights());
-
-            renderMesh.putVertexAttribute(boneIndexes);
-            renderMesh.putVertexAttribute(boneWeights);
+            renderMesh.putVertexAttribute(vaBonesIndexes);
+            renderMesh.putVertexAttribute(vaBonesWeights);
         }
 
         renderMesh.bakeMesh();
@@ -318,9 +321,10 @@ public class ModelMeshLoader implements ILoadingHelper {
         public static final int
                 CREATE_COLLISION_UD = 1 << 2,
                 LOAD_ANIMATIONS = 1 << 3,
-                LOAD_IN_INDIRECT_BUFFER = 1 << 4;
+                LOAD_IN_INDIRECT_BUFFER = 1 << 4,
+                CREATE_AABB_UD = 1 << 5;
 
-        public static final int DEFAULT = 0x0;
-        public static final int ALL = FLAGS.LOAD_IN_INDIRECT_BUFFER | FLAGS.CREATE_COLLISION_UD | FLAGS.LOAD_ANIMATIONS;
+        public static final int DEFAULT = FLAGS.LOAD_IN_INDIRECT_BUFFER | FLAGS.CREATE_COLLISION_UD | FLAGS.CREATE_AABB_UD;
+        public static final int ALL = FLAGS.LOAD_IN_INDIRECT_BUFFER | FLAGS.CREATE_COLLISION_UD | FLAGS.LOAD_ANIMATIONS | FLAGS.CREATE_AABB_UD;
     }
 }

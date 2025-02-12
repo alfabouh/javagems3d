@@ -20,6 +20,7 @@ import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.controller.objects.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.profiler.SpeedProfiler;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import logger.managers.LoggingManager;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -204,7 +205,9 @@ public class DearUIGameInterface implements DearUIInterface {
             }
 
             if (ImGui.collapsingHeader("Scene")) {
-                //ImGui.beginChild("Images2", JGemsSceneGlobalConstants.defaultW / 2.0f + 50.0f, JGemsSceneGlobalConstants.defaultW / 4.0f + 60, true);
+                ImGui.beginChild("Images2", JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
+                ImGui.image(JGemsResourceManager.getAnimationsTextureBuffer().getTextureId(), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
 //
                 //ImGui.image(sceneRender.getSceneGluingBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 //ImGui.sameLine();
@@ -215,7 +218,7 @@ public class DearUIGameInterface implements DearUIInterface {
                 //ImGui.image(sceneRender.getHdrBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 //
                 //ImGui.image(sceneRender.getForwardAndDeferredScenesBuffer().getTexturePrograms().get(0).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-                //ImGui.endChild();
+                ImGui.endChild();
             }
 
             if (ImGui.collapsingHeader("Shadows")) {

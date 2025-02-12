@@ -7,18 +7,20 @@ public final class RenderAttributePointer {
     private final boolean normalized;
     private final int stride;
     private final int pointer;
+    private final Number defaultVal;
 
-    public RenderAttributePointer(int index, int length, int bytes) {
-        this(index, length, bytes, false, 0, 0);
+    public RenderAttributePointer(int index, int length, int bytes, Number defaultVal) {
+        this(index, length, bytes, false, 0, 0, defaultVal);
     }
 
-    public RenderAttributePointer(int index, int lengthInMemory, int bytes, boolean normalized, int stride, int pointer) {
+    public RenderAttributePointer(int index, int lengthInMemory, int bytes, boolean normalized, int stride, int pointer, Number defaultVal) {
         this.bytes = bytes;
         this.index = index;
         this.length = lengthInMemory;
         this.normalized = normalized;
         this.stride = stride;
         this.pointer = pointer;
+        this.defaultVal = defaultVal;
     }
 
     @Override
@@ -32,6 +34,10 @@ public final class RenderAttributePointer {
     @Override
     public int hashCode() {
         return this.getIndex();
+    }
+
+    public Number getDefaultVal() {
+        return this.defaultVal;
     }
 
     public int getBytes() {

@@ -30,8 +30,18 @@ public class DataMesh implements IMesh {
     }
 
     @SuppressWarnings("all")
-    public DataMesh putVertexBuffer(RenderAttributePointer attributePointer, List<Float> array) {
-        this.getBufferMap().put(attributePointer.getIndex(), new VertexBuffer(attributePointer, array));
+    public DataMesh putVertexBufferI(RenderAttributePointer attributePointer, List<Integer> array) {
+        return this.putVertexBuffer(attributePointer, new VertexBuffer(attributePointer, array));
+    }
+
+    @SuppressWarnings("all")
+    public DataMesh putVertexBufferF(RenderAttributePointer attributePointer, List<Float> array) {
+        return this.putVertexBuffer(attributePointer, new VertexBuffer(attributePointer, array));
+    }
+
+    @SuppressWarnings("all")
+    public DataMesh putVertexBuffer(RenderAttributePointer attributePointer, VertexBuffer vertexBuffer) {
+        this.getBufferMap().put(attributePointer.getIndex(), vertexBuffer);
         return this;
     }
 

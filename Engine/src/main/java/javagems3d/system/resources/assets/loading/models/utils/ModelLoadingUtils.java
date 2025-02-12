@@ -85,8 +85,6 @@ public abstract class ModelLoadingUtils {
             meta.put(0, 0L);
         }
     });
-    public static int ANIM_MAX_BONES = 64;
-    public static int ANIM_MAX_WEIGHTS = 4;
 
     public static PointerBuffer getAIFileMeta(long pFile) {
         return MemoryUtil.memPointerBuffer(MemoryUtil.memGetAddress(pFile + AIFile.USERDATA), 3);

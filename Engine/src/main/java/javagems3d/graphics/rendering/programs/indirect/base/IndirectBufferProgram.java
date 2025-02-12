@@ -2,7 +2,6 @@ package javagems3d.graphics.rendering.programs.indirect.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
@@ -13,18 +12,17 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class IndirectBufferProgram {
     private int staticVao;
     private int animatedVao;
     private final List<Integer> vboList;
 
-    private Set<MeshBuffer> allStaticMeshBuffers;
-    private Set<MeshBuffer> allAnimatedMeshBuffers;
+    private Set<MeshBuffer> meshBuffers;
 
     private final Layout layout;
 
@@ -38,14 +36,13 @@ public final class IndirectBufferProgram {
     }
 
     public void init(MeshBuffersDataCache meshBuffersDataCache) {
-        this.allStaticMeshBuffers = meshBuffersDataCache.getStaticMeshBuffers();
-        this.allAnimatedMeshBuffers = meshBuffersDataCache.getAnimatedMeshBuffers();
+        this.meshBuffers = meshBuffersDataCache.getMeshBuffers();
 
-        this.forStatic(meshBuffersDataCache, this.getAllStaticMeshBuffers());
-        this.forAnimated(meshBuffersDataCache, this.getAllAnimatedMeshBuffers());
+        this.forStatic(meshBuffersDataCache, this.getMeshBuffers());
+        //this.forAnimated(meshBuffersDataCache, this.getAllAnimatedMeshBuffers());
     }
 
-    private void forStatic(MeshBuffersDataCache meshBuffersDataCache, List<MeshBuffer> obj) {
+    private void forStatic(MeshBuffersDataCache meshBuffersDataCache, Collection<MeshBuffer> obj) {
         if (obj.isEmpty()) {
             return;
         }
@@ -88,7 +85,7 @@ public final class IndirectBufferProgram {
 
         int vboId = GL46.glGenBuffers();
         this.getVboList().add(vboId);
-        FloatBuffer meshesBuffer = MemoryUtil.memAllocFloat(structSize[0]);
+        ByteBuffer meshesBuffer = MemoryUtil.memAlloc(structSize[0]);
         for (MeshBuffer meshBuffer : obj) {
             for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getSolidNodes()) {
                 DataMesh dataMesh = meshNode3D.getMeshData();
@@ -133,7 +130,7 @@ public final class IndirectBufferProgram {
         GL46.glBindVertexArray(0);
     }
 
-    private void forAnimated(MeshBuffersDataCache meshBuffersDataCache, List<MeshBuffer> obj) {
+    private void forAnimated(MeshBuffersDataCache meshBuffersDataCache, Collection<MeshBuffer> obj) {
         //TODO
     }
 
@@ -148,9 +145,9 @@ public final class IndirectBufferProgram {
                 if (size % renderAttributePointer.getLengthInMemory() != 0) {
                     throw new JGemsRuntimeException("MeshBuffer attribute: " + renderAttributePointer.getPointer() + " - doesn't match layout: " + renderAttributePointer.getLengthInMemory());
                 }
-                structSize[0] += size;
+                structSize[0] += size * renderAttributePointer.getBytes();
             } else {
-                structSize[0] += (dataMesh.numPositions() / 3) * renderAttributePointer.getLengthInMemory();
+                structSize[0] += (dataMesh.numPositions() / 3) * renderAttributePointer.getLengthInMemory() * renderAttributePointer.getBytes();
             }
         }
 
@@ -164,22 +161,37 @@ public final class IndirectBufferProgram {
         dataToWrite.add(new MeshBuffer.PassData(firstIndexOffset, meshSizeInBytes, meshNode3D.getMaterial() == null ? 0 : meshBuffersDataCache.getMaterialId(meshNode3D.getMaterial()), offset, dataMesh.numVertexIndexes()));
     }
 
-    private void populateMeshBuffer(FloatBuffer floatBuffer, DataMesh dataMesh) {
-        List<VertexBuffer<Float>> values = new ArrayList<>(dataMesh.getBufferMap().values());
+    private void populateMeshBuffer(ByteBuffer byteBuffer, DataMesh dataMesh) {
+        List<VertexBuffer<?>> values = new ArrayList<>(dataMesh.getBufferMap().values());
         values.sort(Comparator.comparingInt(e -> e.getRenderAttributePointer().getIndex()));
 
         for (int row = 0; row < dataMesh.numPositions() / 3; row++) {
             for (int j = 0; j < this.getLayout().getAttributesNum(); j++) {
                 RenderAttributePointer renderAttributePointer = this.getLayout().getRenderAttributePointers().get(j);
-                VertexBuffer<Float> attributeBuffer = dataMesh.getBufferById(j);
+                VertexBuffer<?> attributeBuffer = dataMesh.getBufferById(j);
                 for (int i = 0; i < renderAttributePointer.getLengthInMemory(); i++) {
                     if (attributeBuffer != null) {
-                        floatBuffer.put(attributeBuffer.getValues().get(row * renderAttributePointer.getLengthInMemory() + i));
+                        Number value = attributeBuffer.getValues().get(row * renderAttributePointer.getLengthInMemory() + i);
+                        this.putNumberToBuffer(byteBuffer, value);
                     } else {
-                        floatBuffer.put(0.0f);
+                        this.putNumberToBuffer(byteBuffer, renderAttributePointer.getDefaultVal());
                     }
                 }
             }
+        }
+    }
+
+    private void putNumberToBuffer(ByteBuffer buffer, Number value) {
+        if (value instanceof Integer) {
+            buffer.putInt(value.intValue());
+        } else if (value instanceof Float) {
+            buffer.putFloat(value.floatValue());
+        } else if (value instanceof Double) {
+            buffer.putFloat(value.floatValue());
+        } else if (value instanceof Short) {
+            buffer.putShort(value.shortValue());
+        } else {
+            throw new JGemsRuntimeException("Unsupported number type: " + value.getClass().getSimpleName());
         }
     }
 
@@ -214,12 +226,8 @@ public final class IndirectBufferProgram {
         return this.layout;
     }
 
-    public Set<MeshBuffer> getAllStaticMeshBuffers() {
-        return this.allStaticMeshBuffers;
-    }
-
-    public Set<MeshBuffer> getAllAnimatedMeshBuffers() {
-        return this.allAnimatedMeshBuffers;
+    public Set<MeshBuffer> getMeshBuffers() {
+        return this.meshBuffers;
     }
 
     public int getStaticVao() {
