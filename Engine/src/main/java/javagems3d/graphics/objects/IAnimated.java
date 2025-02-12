@@ -17,7 +17,7 @@ public interface IAnimated {
     }
 
     default AnimationData initAnimation() {
-        return this.setAnimationByID(0);
+        return this.setAnimationByID(2);
     }
 
     default boolean hasAnimationData() {

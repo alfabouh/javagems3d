@@ -48,7 +48,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
 
-    public MeshGroup grassCube;
+    public MeshBuffer grassCube;
     public MeshBuffer ground2;
     public MeshBuffer ground3;
     public MeshBuffer test_anim;
@@ -57,7 +57,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     public void load(GameResources gameResources) {
         this.createDefaults(gameResources);
 
-        this.grassCube =gameResources.createMeshGroup(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblampclean.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT | ModelMeshLoader.FLAGS.LOAD_ANIMATIONS);// gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
+        this.grassCube = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/CharacterKit.fbx"), ModelMeshLoader.FLAGS.DEFAULT | ModelMeshLoader.FLAGS.LOAD_ANIMATIONS);// gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
         this.ground2 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.DEFAULT);
         this.ground3 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "map05/map05.obj"), ModelMeshLoader.FLAGS.DEFAULT);
         this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.DEFAULT);//gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);

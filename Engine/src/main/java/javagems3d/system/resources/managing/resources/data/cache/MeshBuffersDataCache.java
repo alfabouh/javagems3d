@@ -49,10 +49,10 @@ public final class MeshBuffersDataCache implements IDataCache {
     }
 
     public Set<MeshBuffer> getMeshBuffers() {
-        return new HashSet<>(this.meshBuffers);
+        return this.meshBuffers;
     }
 
     public List<Material> getMaterials() {
-        return new ArrayList<>(this.materials);
+        return this.materials;
     }
 }

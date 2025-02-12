@@ -133,8 +133,7 @@ public class ModelMeshLoader implements ILoadingHelper {
     }
 
     @SuppressWarnings("all")
-    private SkeletonData readSkeleton(MeshStructure3D meshStructure, AIScene scene, AIMesh aiMesh) {
-        List<Bone> bonesList = new ArrayList<>();
+    private SkeletonData readSkeleton(List<Bone> bonesList, MeshStructure3D meshStructure, AIScene scene, AIMesh aiMesh) {
         SkeletonData skeletonData = AnimationLoadingUtils.readSkeleton(aiMesh, bonesList);
         if (skeletonData == null) {
             throw new JGemsIOException("Failed to read bones in animated model");
@@ -171,6 +170,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             int totalMaterials = aiScene.mNumMaterials();
 
             List<Material> materialList = new ArrayList<>();
+            List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
@@ -191,7 +191,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             for (int i = 0; i < totalMeshes; i++) {
                 AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
                 if (isAnimated) {
-                    skeletonData = this.readSkeleton(meshStructure, aiScene, aiMesh);
+                    skeletonData = this.readSkeleton(bonesList, meshStructure, aiScene, aiMesh);
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();

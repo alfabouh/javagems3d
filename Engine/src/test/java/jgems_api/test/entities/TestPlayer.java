@@ -48,8 +48,8 @@ public class TestPlayer extends JGemsKinematicPlayer {
                 JGemsStaticBody entityPropInfo = new JGemsStaticBody(MeshCollider.getStatic(JGemsResourceManager.globalModelAssets.grassCube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "jgems_api/horror");
                 JGemsHelper.WORLD.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
                 Vector3f v3 = this.getLookVector().mul(50.0f);
-                entityPropInfo.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
-                entityPropInfo.setScaling(new Vector3f(0.05f));
+               // entityPropInfo.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
+                entityPropInfo.setScaling(new Vector3f(0.005f));
                 entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
             }
         }
