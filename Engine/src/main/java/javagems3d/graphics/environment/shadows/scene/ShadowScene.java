@@ -193,6 +193,7 @@ public class ShadowScene implements IShadowScene {
                 shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
                 shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
                 shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
+                shaderManager.performUniformTexture(new UniformString("animationsMatrix"), JGemsResourceManager.getAnimationsTextureBuffer());
             };
             this.renderModelsIndirect(consumer, Pipeline.SUN_LIGHT_SHADOW_MAP, indirectRenderObjects);
             this.renderModelsDirect(consumer, Pipeline.SUN_LIGHT_SHADOW_MAP, directRenderObjects);

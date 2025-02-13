@@ -3,6 +3,8 @@ package javagems3d.system.resources.assets.models.animation;
 public class AnimationData {
     private Animation currentAnimation;
     private int currentFrameId;
+    private int previousFrameId;
+    private double animationFrameDelta;
 
     public AnimationData() {
         this(null);
@@ -10,6 +12,8 @@ public class AnimationData {
 
     public AnimationData(Animation animation) {
         this.currentAnimation = animation;
+        this.previousFrameId = 0;
+        this.animationFrameDelta = 0.0f;
     }
 
     public void nextFrame() {
@@ -22,11 +26,32 @@ public class AnimationData {
     }
 
     public void setFrame(int frame) {
+        this.previousFrameId = this.currentFrameId;
         this.currentFrameId = frame;
+    }
+
+    public float getFrameRate() {
+        return this.getCurrentAnimation().getFrameRate();
+    }
+
+    public double getAnimationFrameDelta() {
+        return this.animationFrameDelta;
+    }
+
+    public void setAnimationFrameDelta(double animationFrameDelta) {
+        this.animationFrameDelta = animationFrameDelta;
     }
 
     public AnimationFrame getCurrentAnimationFrame() {
         return this.getCurrentAnimation().getFrameList().get(this.getCurrentFrameId());
+    }
+
+    public AnimationFrame getPreviousAnimationFrame() {
+        return this.getCurrentAnimation().getFrameList().get(this.getPreviousFrameId());
+    }
+
+    public int getPreviousFrameId() {
+        return this.previousFrameId;
     }
 
     public int getCurrentFrameId() {
@@ -35,6 +60,7 @@ public class AnimationData {
 
     public void setAnimation(Animation animation) {
         this.currentFrameId = 0;
+        this.previousFrameId = 0;
         this.currentAnimation = animation;
     }
 

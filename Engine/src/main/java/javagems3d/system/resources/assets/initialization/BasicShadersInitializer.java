@@ -87,7 +87,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
         this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * JGemsRenderingGlobalConstants.ANIM_MAX_BONES);
         ShaderStorageBufferProgram.createSSBOStorage(this.Bones, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.IndirectBufferData = new ShaderStorageBufferObject(1, 3 * (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
+        this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
         ShaderStorageBufferProgram.createSSBOStorage(this.IndirectBufferData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.BindlessTextures = new ShaderStorageBufferObject(2, Long.BYTES * JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);

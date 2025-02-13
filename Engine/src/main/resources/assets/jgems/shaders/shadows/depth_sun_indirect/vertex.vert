@@ -1,28 +1,81 @@
 layout (location=0) in vec3 aPosition;
 layout (location=1) in vec2 aTexture;
-layout (location=2) in vec3 aNormal;
+layout (location=5) in ivec4 aBoneIndexes;
+layout (location=6) in vec4 aBoneWeights;
 
 out vec2 uv_coordinates;
 out flat uint matertial_id;
 out flat uint ent_id;
 
 uniform mat4 projection_view_matrix;
+uniform sampler2D animationsMatrix;
+
+const int MAX_WEIGHTS = 4;
 
 layout(std430, binding = 1) buffer IndirectBufferData {
-    mat4 modelMatrices[2048];
-    int entityIds[2048];
-    int materialIds[2048];
+    int entityId[2048];
+    int materialId[2048];
+    mat4 modelMatrix[2048];
     int animationOffset[2048];
+    int animationOffsetPrev[2048];
+    float animationFrameDelta[2048];
 };
+
+ivec2 pickUV(int globalOffset, int arrI, int textureWidth) {
+    int texX = (globalOffset + arrI) % textureWidth;
+    int texY = (globalOffset + arrI) / textureWidth;
+    return ivec2(texX, texY);
+}
+
+mat4 getBoneMatrix(int baseOffset, int boneIndex) {
+    int textureWidth = textureSize(animationsMatrix, 0).x;
+    int globalOffset = (baseOffset + boneIndex) * 4;
+    vec4 row0 = texelFetch(animationsMatrix, pickUV(globalOffset, 0, textureWidth), 0);
+    vec4 row1 = texelFetch(animationsMatrix, pickUV(globalOffset, 1, textureWidth), 0);
+    vec4 row2 = texelFetch(animationsMatrix, pickUV(globalOffset, 2, textureWidth), 0);
+    vec4 row3 = texelFetch(animationsMatrix, pickUV(globalOffset, 3, textureWidth), 0);
+    return mat4(row0, row1, row2, row3);
+}
+
+vec4 mixVec4(mat4 matrixA, mat4 matrixB, vec4 value, float t) {
+    vec4 v1 = matrixA * value;
+    vec4 v2 = matrixB * value;
+    return mix(v1, v2, t);
+}
 
 void main()
 {
     uint idx = gl_BaseInstance + gl_InstanceID;
-    matertial_id = materialIds[idx];
-    ent_id = entityIds[idx];
+    ent_id = entityId[idx];
+    matertial_id = materialId[idx];
+    mat4 model = modelMatrix[ent_id];
+    int currAnimationOffset = animationOffset[ent_id];
 
-    mat4 model_matrix = modelMatrices[ent_id];
+    vec4 position = vec4(0.);
 
-    gl_Position = projection_view_matrix * model_matrix * vec4(aPosition, 1.0);
+    int j = 0;
+    if (currAnimationOffset >= 0) {
+        int currAnimationOffsetPrev = animationOffsetPrev[ent_id];
+        float deltaFrame = animationFrameDelta[ent_id];
+
+        for (int i = 0; i < MAX_WEIGHTS; i++) {
+            float weight = aBoneWeights[i];
+            if (weight > 0.) {
+                j += 1;
+                int boneId = aBoneIndexes[i];
+                mat4 matrixBone = getBoneMatrix(currAnimationOffset, boneId);
+                mat4 matrixBonePrev = getBoneMatrix(currAnimationOffsetPrev, boneId);
+
+                vec4 tempPos = mixVec4(matrixBone, matrixBonePrev, vec4(aPosition, 1.), deltaFrame);
+
+                position += weight * tempPos;
+            }
+        }
+    }
+    if (j == 0) {
+        position = vec4(aPosition, 1.0);
+    }
+
+    gl_Position = projection_view_matrix * model * position;
     uv_coordinates = aTexture;
 }

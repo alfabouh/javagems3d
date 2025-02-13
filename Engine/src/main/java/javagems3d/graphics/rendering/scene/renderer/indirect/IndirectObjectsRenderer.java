@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -55,10 +56,12 @@ public abstract class IndirectObjectsRenderer {
         operator.getRenderingFunction().func(operator.getIndirectShader(), indirectCommandsProgram, renderBuffer, metaData == null ? ArbitraryArguments.empty() : metaData);
     }
 
-    protected void fillSSBOWithInformation(IntBuffer indexes, IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
+    protected void fillSSBOWithInformation(@NotNull IntBuffer indexes, @NotNull IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
         ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
         FloatBuffer modelMatrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
-        IntBuffer animationMatricesOffsets = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
+        FloatBuffer deltaFrames = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
+        IntBuffer animationMatricesOffsets = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
+        IntBuffer animationMatricesOffsetsPrev = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
 
         this.getRejected().clear();
         for (SceneObject sceneObject : sceneObjects) {
@@ -68,35 +71,42 @@ public abstract class IndirectObjectsRenderer {
             this.passMatricesInBuffer(this.getPipeline(), sceneObject, modelMatrices);
 
             int animToPass = sceneObject.hasAnimationData() ? sceneObject.getAnimationData().getCurrentAnimationFrame().getOffset() : -1;
+            int animToPassPrev = sceneObject.hasAnimationData() ? sceneObject.getAnimationData().getPreviousAnimationFrame().getOffset() : -1;
+            double animationFrameDelta = sceneObject.hasAnimationData() ? sceneObject.getAnimationData().getAnimationFrameDelta() : -1.0f;
             animationMatricesOffsets.put(animToPass);
+            animationMatricesOffsetsPrev.put(animToPassPrev);
+            deltaFrames.put((float) animationFrameDelta);
 
             if (properties != null) {
                 this.passPropertiesInBuffer(this.getPipeline(), sceneObject, properties);
             }
         }
 
-        modelMatrices.flip();
-        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, 0L, modelMatrices);
-        MemoryUtil.memFree(modelMatrices);
-
-        indexes.flip();
-        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) (IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE) * Float.BYTES, indexes);
-        MemoryUtil.memFree(indexes);
-
-        if (materialIds != null) {
-            materialIds.flip();
-            ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE * Float.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES, materialIds);
-            MemoryUtil.memFree(materialIds);
-        }
-
-        animationMatricesOffsets.flip();
-        ShaderStorageBufferProgram.updateSubDataSSBO(indirectBufferData, (long) IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE * Float.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES + (long) IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE * Integer.BYTES, animationMatricesOffsets);
-        MemoryUtil.memFree(animationMatricesOffsets);
+        this.passBuffersInSSBO(indirectBufferData, indexes, materialIds, modelMatrices, animationMatricesOffsets, animationMatricesOffsetsPrev, deltaFrames);
 
         if (properties != null) {
             properties.flip();
             ShaderStorageBufferProgram.updateSubDataSSBO(objectProperties, 0L, properties);
             MemoryUtil.memFree(properties);
+        }
+    }
+
+    protected void passBuffersInSSBO(ShaderStorageBufferObject shaderStorageBufferObject, Buffer... buffers) {
+        long offset = 0L;
+        for (Buffer buffer : buffers) {
+            int elementSize = 0;
+            if (buffer instanceof FloatBuffer) {
+                elementSize = Float.BYTES;
+            } else if (buffer instanceof IntBuffer) {
+                elementSize = Integer.BYTES;
+            } else if (buffer instanceof ByteBuffer) {
+                elementSize = Byte.BYTES;
+            }
+            long bufferSize = (long) buffer.limit() * elementSize;
+            buffer.flip();
+            ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, offset, buffer);
+            MemoryUtil.memFree(buffer);
+            offset += bufferSize;
         }
     }
 

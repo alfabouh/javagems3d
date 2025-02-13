@@ -16,11 +16,8 @@ import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.system.resources.assets.models.Model;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
-import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 
 public abstract class SceneObject implements IModeled, IRendered, ILighted {
     private AnimationData animationData;
@@ -67,8 +64,10 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
         if (!this.hasAnimationData()) {
             return;
         }
-        double fps = 1.0f - this.getAnimationData().getCurrentAnimation().getDuration() / this.getAnimationData().getCurrentAnimation().getFrameCount();
-        if (JGems3D.glfwTime() - this.lastTick >= fps * (1.0f / this.animationSpeedMultiplier())) {
+        double fps = this.getAnimationData().getCurrentAnimation().getFrameCount() / (this.getAnimationData().getCurrentAnimation().getDuration() * this.getAnimationData().getCurrentAnimation().getDuration());
+        double deltaTime = JGems3D.glfwTime() - this.lastTick;
+        this.getAnimationData().setAnimationFrameDelta((fps / deltaTime) % 1.0f);
+        if (deltaTime >= fps) {
             this.nextAnimationFrame();
             this.lastTick = JGems3D.glfwTime();
         }

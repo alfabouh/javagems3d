@@ -24,10 +24,12 @@ uniform mat4 projection_matrix;
 uniform sampler2D animationsMatrix;
 
 layout(std430, binding = 1) buffer IndirectBufferData {
-    mat4 modelMatrices[2048];
-    int entityIds[2048];
-    int materialIds[2048];
+    int entityId[2048];
+    int materialId[2048];
+    mat4 modelMatrix[2048];
     int animationOffset[2048];
+    int animationOffsetPrev[2048];
+    float animationFrameDelta[2048];
 };
 
 ivec2 pickUV(int globalOffset, int arrI, int textureWidth) {
@@ -43,21 +45,21 @@ mat4 getBoneMatrix(int baseOffset, int boneIndex) {
     vec4 row1 = texelFetch(animationsMatrix, pickUV(globalOffset, 1, textureWidth), 0);
     vec4 row2 = texelFetch(animationsMatrix, pickUV(globalOffset, 2, textureWidth), 0);
     vec4 row3 = texelFetch(animationsMatrix, pickUV(globalOffset, 3, textureWidth), 0);
-
-   // row0 = vec4(1., 0., 0., 0.);
-   // row1 = vec4(0., 1., 0., 0.);
-   // row2 = vec4(0., 0., 1., 0.);
-   // row3 = vec4(0., 0., 0., 1.);
-
     return mat4(row0, row1, row2, row3);
+}
+
+vec4 mixVec4(mat4 matrixA, mat4 matrixB, vec4 value, float t) {
+    vec4 v1 = matrixA * value;
+    vec4 v2 = matrixB * value;
+    return mix(v1, v2, t);
 }
 
 void main()
 {
     uint idx = gl_BaseInstance + gl_InstanceID;
-    matertial_id = materialIds[idx];
-    ent_id = entityIds[idx];
-    mat4 model = modelMatrices[ent_id];
+    ent_id = entityId[idx];
+    matertial_id = materialId[idx];
+    mat4 model = modelMatrix[ent_id];
     int currAnimationOffset = animationOffset[ent_id];
 
     vec4 position = vec4(0.);
@@ -67,17 +69,21 @@ void main()
 
     int j = 0;
     if (currAnimationOffset >= 0) {
+        int currAnimationOffsetPrev = animationOffsetPrev[ent_id];
+        float deltaFrame = animationFrameDelta[ent_id];
+
         for (int i = 0; i < MAX_WEIGHTS; i++) {
             float weight = aBoneWeights[i];
             if (weight > 0.) {
                 j += 1;
                 int boneId = aBoneIndexes[i];
-
                 mat4 matrixBone = getBoneMatrix(currAnimationOffset, boneId);
-                vec4 tempPos = matrixBone * vec4(aPosition, 1.);
-                vec4 tempNormal = matrixBone * vec4(aNormal, 0.);
-                vec4 tempTangent = matrixBone * vec4(aTangent, 0.);
-                vec4 tempBiTangent = matrixBone * vec4(aBitangent, 0.);
+                mat4 matrixBonePrev = getBoneMatrix(currAnimationOffsetPrev, boneId);
+
+                vec4 tempPos = mixVec4(matrixBone, matrixBonePrev, vec4(aPosition, 1.), deltaFrame);
+                vec4 tempNormal = mixVec4(matrixBone, matrixBonePrev, vec4(aNormal, 0.), deltaFrame);
+                vec4 tempTangent = mixVec4(matrixBone, matrixBonePrev, vec4(aTangent, 0.), deltaFrame);
+                vec4 tempBiTangent = mixVec4(matrixBone, matrixBonePrev, vec4(aBitangent, 0.), deltaFrame);
 
                 position += weight * tempPos;
                 normal += weight * tempNormal;

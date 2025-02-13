@@ -37,6 +37,10 @@ public final class Animation {
         return this.frameList;
     }
 
+    public float getFrameRate() {
+        return (float) (this.getFrameCount() / this.getDuration());
+    }
+
     public int getFrameCount() {
         return this.getFrameList().size();
     }

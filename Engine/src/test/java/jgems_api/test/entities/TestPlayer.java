@@ -25,7 +25,6 @@ package jgems_api.test.entities;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.colliders.MeshCollider;
-import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
@@ -49,7 +48,7 @@ public class TestPlayer extends JGemsKinematicPlayer {
                 JGemsHelper.WORLD.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
                 Vector3f v3 = this.getLookVector().mul(50.0f);
                // entityPropInfo.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
-                entityPropInfo.setScaling(new Vector3f(0.005f));
+                entityPropInfo.setScaling(new Vector3f(0.05f));
                 entityPropInfo.getPhysicsRigidBody().addLinearVelocity(v3);
             }
         }
