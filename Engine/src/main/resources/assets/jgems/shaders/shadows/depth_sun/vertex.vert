@@ -3,7 +3,7 @@ layout (location=1) in vec2 texture;
 layout (location=5) in ivec4 aBoneIndexes;
 layout (location=6) in vec4 aBoneWeights;
 
-const int MAX_WEIGHTS = 4;
+const int MAX_WEIGHTS = CONST.ANIM_MAX_WEIGHTS;
 
 uniform mat4 projection_view_matrix;
 uniform mat4 model_matrix;

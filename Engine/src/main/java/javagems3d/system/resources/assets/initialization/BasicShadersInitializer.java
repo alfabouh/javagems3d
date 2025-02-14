@@ -21,7 +21,9 @@ import javagems3d.system.resources.assets.initialization.base.ShadersInitializer
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
@@ -81,10 +83,20 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
     public JGemsShaderManager inventory_common_item;
     public JGemsShaderManager imgui;
 
-    protected void initObjects(ResourceCache resourceCache) {
-        this.addShaderLibraryContainerInGlobalList(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
+    @Override
+    protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
+        shaderStaticConstants.putConstant("MAX_BINDLESS_TEXTURES", String.valueOf(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES));
+        shaderStaticConstants.putConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS));
+        shaderStaticConstants.putConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsGlobalConfiguration.ANIM_MAX_WEIGHTS));
+    }
 
-        this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * JGemsRenderingGlobalConstants.ANIM_MAX_BONES);
+    @Override
+    protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
+        shaderLibrary.putShaderLibrary(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
+    }
+
+    protected void initObjects(ResourceCache resourceCache) {
+        this.Bones = new ShaderStorageBufferObject(0, 16 * Float.BYTES * JGemsGlobalConfiguration.ANIM_MAX_BONES);
         ShaderStorageBufferProgram.createSSBOStorage(this.Bones, GL46.GL_DYNAMIC_STORAGE_BIT);
 
         this.IndirectBufferData = new ShaderStorageBufferObject(1, (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Float.BYTES) + 4 * (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * Integer.BYTES) + (JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16 * Float.BYTES));
@@ -158,6 +170,6 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
 
     @Override
     protected JGemsShaderManager createShaderObject(JGemsPath shaderPath) {
-        return new JGemsShaderManager(new ShadersContainer(this.getGlobalShaderLibrary(), shaderPath));
+        return new JGemsShaderManager(new ShadersContainer(this.getShaderStaticConstants(), this.getShaderLibrariesManager(), shaderPath));
     }
 }

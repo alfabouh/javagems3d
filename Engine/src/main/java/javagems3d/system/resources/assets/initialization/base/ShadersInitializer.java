@@ -13,22 +13,27 @@ package javagems3d.system.resources.assets.initialization.base;
 
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
+import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
-import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 
 public abstract class ShadersInitializer<T extends ShaderManager> {
     private final ShaderLibrariesManager shaderLibrary;
+    private final ShaderStaticConstants shaderStaticConstants;
 
     public ShadersInitializer() {
         this.shaderLibrary = new ShaderLibrariesManager();
+        this.shaderStaticConstants = new ShaderStaticConstants();
     }
 
     protected abstract void initObjects(ResourceCache resourceCache);
 
     protected abstract T createShaderObject(JGemsPath shaderPath);
+
+    protected abstract void initStaticConstants(ShaderStaticConstants shaderStaticConstants);
+    protected abstract void initShaderLibraries(ShaderLibrariesManager shaderLibrary);
 
     @SuppressWarnings("unchecked")
     public T createShaderManager(ResourceCache resourceCache, JGemsPath shaderPath) {
@@ -68,26 +73,35 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
         }
     }
 
-    public ShaderLibrariesContainer addShaderLibraryContainerInGlobalList(ShaderLibrariesContainer shaderLibrariesContainer) {
-        this.getGlobalShaderLibrary().addNewShaderLibrary(shaderLibrariesContainer);
-        return shaderLibrariesContainer;
+    public ShaderStaticConstants getShaderStaticConstants() {
+        return this.shaderStaticConstants;
     }
 
-    public ShaderLibrariesManager getGlobalShaderLibrary() {
+    public ShaderLibrariesManager getShaderLibrariesManager() {
         return this.shaderLibrary;
     }
 
     public void createShaders(ResourceCache resourceCache) {
-        this.getGlobalShaderLibrary().clear();
+        this.getShaderLibrariesManager().clear();
+        this.initConstants();
+        this.initShaderLibraries(this.getShaderLibrariesManager());
         this.initObjects(resourceCache);
         this.initShaders(resourceCache);
         this.startShaders(resourceCache);
     }
 
     public void reloadShaders(ResourceCache resourceCache) {
-        this.getGlobalShaderLibrary().reload();
+        this.getShaderLibrariesManager().reload();
+        this.initConstants();
+        this.initShaderLibraries(this.getShaderLibrariesManager());
         this.destroyShaderPrograms(resourceCache);
         this.initShaders(resourceCache);
         this.startShaders(resourceCache);
+    }
+
+    private void initConstants() {
+        this.getShaderStaticConstants().clear();
+        this.initStaticConstants(this.getShaderStaticConstants());
+        JGemsHelper.getLogger().log("Loaded " + this.getShaderStaticConstants().getCnstMap().size() + " shader static constants!");
     }
 }

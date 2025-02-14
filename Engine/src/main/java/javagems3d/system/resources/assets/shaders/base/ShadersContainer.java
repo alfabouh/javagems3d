@@ -12,6 +12,7 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGemsHelper;
+import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.path.JGemsPath;
@@ -35,10 +36,10 @@ public final class ShadersContainer {
     private final String id;
 
     public ShadersContainer(JGemsPath shaderPath) {
-        this(null, shaderPath);
+        this(null, null, shaderPath);
     }
 
-    public ShadersContainer(ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
+    public ShadersContainer(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
         this.id = shaderPath.getFullPath();
         this.gUniformsFullSet = new HashSet<>();
         this.cUniformsFullSet = new HashSet<>();
@@ -50,23 +51,23 @@ public final class ShadersContainer {
         ShaderObject tesselationEvaluationShaderObject1 = null;
 
         if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.FRAGMENT)) {
-            fragmentShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.FRAGMENT, shaderPath);
+            fragmentShaderObject1 = new ShaderObject(shaderStaticConstants,shaderLibrary, ShaderType.FRAGMENT, shaderPath);
         }
         if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.VERTEX)) {
-            vertexShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.VERTEX, shaderPath);
+            vertexShaderObject1 = new ShaderObject(shaderStaticConstants,shaderLibrary, ShaderType.VERTEX, shaderPath);
         }
         if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.GEOMETRIC)) {
-            geometricShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
+            geometricShaderObject1 = new ShaderObject(shaderStaticConstants,shaderLibrary, ShaderType.GEOMETRIC, shaderPath);
         }
         if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_CONTROL)) {
-            tesselationControlShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.TESS_CONTROL, shaderPath);
+            tesselationControlShaderObject1 = new ShaderObject(shaderStaticConstants,shaderLibrary, ShaderType.TESS_CONTROL, shaderPath);
         }
         if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.TESS_EVALUATION)) {
-            tesselationEvaluationShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.TESS_EVALUATION, shaderPath);
+            tesselationEvaluationShaderObject1 = new ShaderObject(shaderStaticConstants,shaderLibrary, ShaderType.TESS_EVALUATION, shaderPath);
         }
 
         if (ShaderObject.checkIfShaderExistsInJar(shaderPath, ShaderType.COMPUTE)) {
-            computeShaderObject1 = new ShaderObject(shaderLibrary, ShaderType.COMPUTE, shaderPath);
+            computeShaderObject1 = new ShaderObject(shaderStaticConstants,shaderLibrary, ShaderType.COMPUTE, shaderPath);
         }
 
         this.vertexShaderObject = vertexShaderObject1;

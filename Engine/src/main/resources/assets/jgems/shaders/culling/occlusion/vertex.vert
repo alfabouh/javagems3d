@@ -7,12 +7,12 @@ uniform mat4 projection_matrix;
 
 
 layout(std430, binding = 1) buffer IndirectBufferData {
-    int entityId[2048];
-    int materialId[2048];
-    mat4 modelMatrix[2048];
-    int animationOffset[2048];
-    int animationOffsetPrev[2048];
-    float animationFrameDelta[2048];
+    int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    int animationOffset[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    int animationOffsetPrev[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    float animationFrameDelta[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
 };
 
 void main()

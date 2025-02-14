@@ -6,7 +6,7 @@ layout (location=4) in vec3 aBitangent;
 layout (location=5) in ivec4 aBoneIndexes;
 layout (location=6) in vec4 aBoneWeights;
 
-const int MAX_WEIGHTS = 4;
+const int MAX_WEIGHTS = CONST.ANIM_MAX_WEIGHTS;
 
 out vec2 uv_coordinates;
 out vec3 model_vertex_normal;

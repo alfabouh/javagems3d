@@ -6,7 +6,7 @@ layout (location=4) in vec3 aBitangent;
 layout (location=5) in ivec4 aBoneIndexes;
 layout (location=6) in vec4 aBoneWeights;
 
-const int MAX_WEIGHTS = 4;
+const int MAX_WEIGHTS = CONST.ANIM_MAX_WEIGHTS;
 
 out vec2 uv_coordinates;
 out vec3 model_vertex_normal;
@@ -24,12 +24,12 @@ uniform mat4 projection_matrix;
 uniform sampler2D animationsMatrix;
 
 layout(std430, binding = 1) buffer IndirectBufferData {
-    int entityId[2048];
-    int materialId[2048];
-    mat4 modelMatrix[2048];
-    int animationOffset[2048];
-    int animationOffsetPrev[2048];
-    float animationFrameDelta[2048];
+    int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    int animationOffset[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    int animationOffsetPrev[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
+    float animationFrameDelta[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
 };
 
 ivec2 pickUV(int globalOffset, int arrI, int textureWidth) {

@@ -35,9 +35,6 @@ public abstract class JGemsRenderingGlobalConstants {
 
     public static final Vector2f NEUTRAL_SHADOWS = new Vector2f();
 
-    public static int ANIM_MAX_BONES = 64;
-    public static int ANIM_MAX_WEIGHTS = 4;
-
     static {
         float positiveExponent = JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT;
         float negativeExponent = JGemsRenderingGlobalConstants.EVSM_NEGATIVE_EXPONENT;

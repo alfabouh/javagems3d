@@ -59,7 +59,7 @@ struct Material {
 };
 
 layout(std430, binding = 2) buffer BindlessTextures {
-    uvec2 textures[1024];
+    uvec2 textures[CONST.MAX_BINDLESS_TEXTURES];
 };
 
 layout(std430, binding = 3) buffer MaterialsData {

@@ -12,12 +12,14 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGems3D;
+import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrary;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.io.*;
@@ -33,14 +35,16 @@ public class ShaderObject {
     private final JGemsPath pathToShader;
     private final ShaderType shaderType;
     private final ShaderLibrariesManager shaderLibrariesManager;
+    private final ShaderStaticConstants shaderStaticConstants;
     private String shaderText;
 
-    public ShaderObject(ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
+    public ShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrariesManager, ShaderType shaderType, JGemsPath pathToShader) {
         this.shaderType = shaderType;
         this.pathToShader = pathToShader;
         this.uniforms = new ArrayList<>();
         this.structs = new HashMap<>();
         this.shaderLibrariesManager = shaderLibrariesManager;
+        this.shaderStaticConstants = shaderStaticConstants;
         this.shaderText = "";
     }
 
@@ -180,9 +184,32 @@ public class ShaderObject {
         return processedShader.toString();
     }
 
+    private String processConstants(ShaderStaticConstants shaderStaticConstants, String shaderCode) {
+        String regex = "CONST\\.([A-Z_]+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(shaderCode);
+        StringBuffer processedCode = new StringBuffer();
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = shaderStaticConstants.getValue(key.replaceAll("CONST.", ""));
+            if (value == null) {
+                throw new JGemsRuntimeException("Constant not found for key: " + key);
+            }
+            matcher.appendReplacement(processedCode, value);
+        }
+        matcher.appendTail(processedCode);
+        return processedCode.toString();
+    }
+
     private String fillShader(String shaderStream) {
         String shader = ShaderObject.VERSION + shaderStream;
-        return this.processIncludes(shader);
+        shader = this.processIncludes(shader);
+        shader = this.processConstants(this.getShaderStaticConstants(), shader);
+        return shader;
+    }
+
+    public ShaderStaticConstants getShaderStaticConstants() {
+        return this.shaderStaticConstants;
     }
 
     public List<Uniform> getUniforms() {

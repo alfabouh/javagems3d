@@ -13,6 +13,8 @@ package toolbox.resources.shaders;
 
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
+import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
+import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import toolbox.resources.shaders.manager.TBoxShaderManager;
@@ -41,5 +43,15 @@ public final class ShaderResources extends ShadersInitializer<TBoxShaderManager>
     @Override
     public TBoxShaderManager createShaderObject(JGemsPath shaderPath) {
         return new TBoxShaderManager(new ShadersContainer(shaderPath));
+    }
+
+    @Override
+    protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
+
+    }
+
+    @Override
+    protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
+
     }
 }

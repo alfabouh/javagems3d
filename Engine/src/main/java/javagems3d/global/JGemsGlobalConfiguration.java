@@ -17,4 +17,6 @@ public abstract class JGemsGlobalConfiguration {
     public static int MAX_BINDLESS_TEXTURES = 1024;
 
     public static int MAX_PARTICLES = 512;
+    public static int ANIM_MAX_BONES = 64;
+    public static int ANIM_MAX_WEIGHTS = 4;
 }
