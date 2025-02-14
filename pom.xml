@@ -56,6 +56,82 @@
         </repository>
     </distributionManagement>
 
+    <properties>
+        <github.global.server>github</github.global.server>
+        <lwjgl.version>3.3.6</lwjgl.version>
+        <joml.version>1.10.8</joml.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <imgui.artifactId>imgui-java-natives-windows</imgui.artifactId>
+        <lwjgl.natives>natives-windows</lwjgl.natives>
+        <bullet.artifactId>Libbulletjme-Windows64</bullet.artifactId>
+        <bullet.version>22.0.1</bullet.version>
+        <bullet.classifier>SpDebug</bullet.classifier>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>linux-x86_64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>linux</name>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <lwjgl.natives>natives-linux</lwjgl.natives>
+                <imgui.artifactId>imgui-java-natives-linux</imgui.artifactId>
+                <bullet.artifactId>Libbulletjme-Linux64</bullet.artifactId>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>linux-arm64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>linux</name>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <lwjgl.natives>natives-linux-arm64</lwjgl.natives>
+                <imgui.artifactId>imgui-java-natives-arm64</imgui.artifactId>
+                <bullet.artifactId>Libbulletjme-Linux_ARM64</bullet.artifactId>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <lwjgl.natives>natives-windows</lwjgl.natives>
+                <imgui.artifactId>imgui-java-natives-windows</imgui.artifactId>
+                <bullet.artifactId>Libbulletjme-Windows64</bullet.artifactId>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <lwjgl.natives>natives-macos</lwjgl.natives>
+                <imgui.artifactId>imgui-java-natives-macos</imgui.artifactId>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -102,15 +178,30 @@
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
         </dependency>
+
         <dependency>
-            <groupId>net.sf.launch4j</groupId>
-            <artifactId>launch4j</artifactId>
-            <version>3.50</version>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>Libbulletjme-Linux_ARM64</artifactId>
+            <version>${bullet.version}</version>
+            <classifier>${bullet.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>com.github.stephengold</groupId>
-            <artifactId>Libbulletjme</artifactId>
-            <version>21.2.1</version>
+            <artifactId>Libbulletjme-Windows64</artifactId>
+            <version>${bullet.version}</version>
+            <classifier>${bullet.classifier}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>Libbulletjme-Linux64</artifactId>
+            <version>${bullet.version}</version>
+            <classifier>${bullet.classifier}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>${bullet.artifactId}</artifactId>
+            <version>${bullet.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.spair</groupId>
@@ -119,7 +210,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.spair</groupId>
-            <artifactId>imgui-java-natives-windows</artifactId>
+            <artifactId>${imgui.artifactId}</artifactId>
             <version>1.86.11</version>
         </dependency>
         <dependency>
@@ -247,15 +338,6 @@
             <version>24.1.0</version>
         </dependency>
     </dependencies>
-    <properties>
-        <github.global.server>github</github.global.server>
-        <lwjgl.version>3.3.6</lwjgl.version>
-        <joml.version>1.10.8</joml.version>
-        <lwjgl.natives>natives-windows</lwjgl.natives>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <repositories>
         <repository>
             <id>central</id>

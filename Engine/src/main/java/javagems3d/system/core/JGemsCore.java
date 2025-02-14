@@ -357,7 +357,6 @@ public class JGemsCore implements ICore {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long maxMemory = Runtime.getRuntime().maxMemory();
 
-        JGemsHelper.getLogger().log(JGems3D.checkIfSys64B() ? "x64" : "x32");
         JGemsHelper.getLogger().log("==========================================================");
         JGemsHelper.getLogger().log("****DATA***");
         JGemsHelper.getLogger().log("==========================================================");

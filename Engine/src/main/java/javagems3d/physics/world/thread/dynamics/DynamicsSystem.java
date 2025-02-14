@@ -16,10 +16,10 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
-import com.jme3.system.NativeLibraryLoader;
 import javagems3d.JGems3D;
 import api.bridge.events.APIEventsLauncher;
-import javagems3d.physics.world.thread.dynamics.extractor.DLLExtractor;
+import javagems3d.JGemsHelper;
+import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.system.service.collections.Pair;
@@ -27,7 +27,6 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
 import api.app.events.bus.Events;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -43,17 +42,14 @@ public class DynamicsSystem {
 
     public void init() {
         boolean dist = true;
-        String buildType = JGems3D.DEBUG_MODE ? "Debug" : "Release";
-        Path path = Paths.get(JGems3D.getEngineFilesFolder().toString(), "dlls");
+        Path path = Paths.get(JGems3D.getEngineFilesFolder().toString(), "natives");
         try {
-            DLLExtractor.extractDll(path, JGems3D.checkIfSys64B() ? "64" : "32", buildType);
-        } catch (IOException e) {
+            String lib = NativesExtractor.extractNativesAndReturnPath(path, JGems3D.get().getOS());
+            System.load(lib);
+            JGemsHelper.getLogger().log("Injected lib: " + lib);
+        } catch (Exception e) {
             throw new JGemsRuntimeException(e);
         }
-        if (!NativeLibraryLoader.loadLibbulletjme(dist, path.toFile(), buildType, "Sp")) {
-            throw new JGemsRuntimeException("Couldn't load Bullet DLL!");
-        }
-
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
         this.physicsSpace = new PhysicsSpace(new Vector3f(-JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE), new Vector3f(JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);
         this.physicsSpace.setGravity(new Vector3f(0.0f, -10.0f, 0.0f));

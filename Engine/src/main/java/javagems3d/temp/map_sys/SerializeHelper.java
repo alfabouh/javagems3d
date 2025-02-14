@@ -54,7 +54,7 @@ public final class SerializeHelper {
     public static <T> T readFromJSON(File file, String fileName, Class<T> tClass) throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-        try (FileReader reader = new FileReader(file + "//" + fileName)) {
+        try (FileReader reader = new FileReader(file + File.separator + fileName)) {
             return gson.fromJson(reader, tClass);
         }
     }
@@ -62,13 +62,13 @@ public final class SerializeHelper {
     public static <T> T readFromJSON(File file, String fileName, TypeToken<T> tTypeToken) throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-        try (FileReader reader = new FileReader(file + "//" + fileName)) {
+        try (FileReader reader = new FileReader(file + File.separator + fileName)) {
             return gson.fromJson(reader, tTypeToken);
         }
     }
 
     public static <T> T readFromBytes(File file, String fileName, Class<T> tClass) throws IOException, ClassNotFoundException {
-        try (FileInputStream fileInputStream = new FileInputStream(file + "//" + fileName)) {
+        try (FileInputStream fileInputStream = new FileInputStream(file + File.separator + fileName)) {
             try (ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
                 Object obj = objectInputStream.readObject();
                 if (tClass.isInstance(obj)) {
@@ -85,13 +85,13 @@ public final class SerializeHelper {
     public static void saveToJSON(File path, String fileName, Object object) throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String jsonString = gson.toJson(object);
-        try (FileWriter fileWriter = new FileWriter(path + "//" + fileName)) {
+        try (FileWriter fileWriter = new FileWriter(path + File.separator + fileName)) {
             fileWriter.write(jsonString);
         }
     }
 
     public static void saveToBytes(File path, String fileName, Object object) throws IOException {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(path + "//" + fileName)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(path + File.separator + fileName)) {
             try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
                 objectOutputStream.writeObject(object);
             }

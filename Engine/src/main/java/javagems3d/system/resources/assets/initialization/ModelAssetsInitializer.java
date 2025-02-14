@@ -57,10 +57,10 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     public void load(GameResources gameResources) {
         this.createDefaults(gameResources);
 //"test_anim/boblampclean.md5mesh"
-        this.grassCube = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblampclean.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT | ModelMeshLoader.FLAGS.LOAD_ANIMATIONS);// gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
-        this.ground2 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.DEFAULT);
-        this.ground3 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "map05/map05.obj"), ModelMeshLoader.FLAGS.DEFAULT);
-        this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.DEFAULT);//gameResources.createMeshBuffer(new JGemsPath(JGems3D.PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);
+        this.grassCube = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "test_anim/boblampclean.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT | ModelMeshLoader.FLAGS.LOAD_ANIMATIONS);// gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
+        this.ground2 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.DEFAULT);
+        this.ground3 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map05/map05.obj"), ModelMeshLoader.FLAGS.DEFAULT);
+        this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.DEFAULT);//gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);
     }
 
     private void createDefaults(GameResources gameResources) {

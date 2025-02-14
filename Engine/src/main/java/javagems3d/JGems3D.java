@@ -12,6 +12,9 @@
 package javagems3d;
 
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
+import javagems3d.system.os.OS;
+import javagems3d.system.os.SysOSValidation;
+import logger.managers.LoggingManager;
 import org.lwjgl.glfw.GLFW;
 import api.bridge.APIContainer;
 import api.bridge.APILauncher;
@@ -38,14 +41,14 @@ import logger.managers.JGemsLogging;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Random;
 
 public final class JGems3D {
+    private final OS os;
     public static int MAP_MAX_SIZE = 128;
 
     public static boolean DEBUG_MODE = false;
@@ -60,7 +63,7 @@ public final class JGems3D {
 
     private boolean shouldBeClosed;
 
-    private JGems3D() {
+    private JGems3D() throws JGemsRuntimeException {
         try {
             SystemLogging.get().setCurrentLogging(SystemLogging.jGemsLogging);
             this.api();
@@ -68,13 +71,18 @@ public final class JGems3D {
         } catch (IOException e) {
             throw new JGemsRuntimeException(e);
         }
-        this.shouldBeClosed = false;
+        this.os = SysOSValidation.getCurrentOS();
 
         JGems3D.rngSeed = JGems3D.systemTime();
         JGems3D.random = new Random(JGems3D.rngSeed);
 
         this.jGemsSettings = new JGemsSettings(new File(JGems3D.getGameFilesFolder().toFile(), "jgems_settings.txt"));
         this.jGemsLocalisation = new JGemsLocalisation();
+        this.shouldBeClosed = false;
+    }
+
+    public OS getOS() {
+        return this.os;
     }
 
     private void api() {
@@ -96,7 +104,13 @@ public final class JGems3D {
         if (JGems3D.mainObject != null) {
             throw new JGemsRuntimeException("Couldn't launch JavaGems more than 1 times!");
         }
-        JGems3D.mainObject = new JGems3D();
+        try {
+            JGems3D.mainObject = new JGems3D();
+        } catch (JGemsRuntimeException e) {
+            LoggingManager.showExceptionDialog(e.getMessage());
+            e.printStackTrace(System.err);
+            return;
+        }
         JGems3D.start();
     }
 
@@ -150,11 +164,6 @@ public final class JGems3D {
         return s1 + " " + s2 + " " + s3;
     }
 
-    public static boolean checkIfSys64B() {
-        RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
-        return runtimeBean.getVmName().toLowerCase().contains("64");
-    }
-
     public static String date() {
         LocalDateTime date = LocalDateTime.now();
         return date.toString();
@@ -183,19 +192,19 @@ public final class JGems3D {
     public static Path getEngineFilesFolder() {
         String appdataPath = System.getProperty("user.home");
         String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase();
-        return java.nio.file.Paths.get(appdataPath, folderPath);
+        return Paths.get(appdataPath, folderPath);
     }
 
     public static Path getGameFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase() + "//" + JGems3D.getGameTitle().toLowerCase();
-        return java.nio.file.Paths.get(appdataPath, folderPath);
+        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase() + File.separator + JGems3D.getGameTitle().toLowerCase();
+        return Paths.get(appdataPath, folderPath);
     }
 
     public static Path getFilesFolder() {
         String appdataPath = System.getProperty("user.home");
         String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase();
-        return java.nio.file.Paths.get(appdataPath, folderPath);
+        return Paths.get(appdataPath, folderPath);
     }
 
     public String I18n(String key, Object... objects) {
@@ -342,7 +351,7 @@ public final class JGems3D {
         return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " - " + JGems3D.getGameString();
     }
 
-    public static abstract class PATHS {
+    public static abstract class DEF_PATHS {
         public static final String PARTICLES = "/assets/jgems/textures/particles/";
         public static final String CUBE_MAPS = "/assets/jgems/textures/cubemaps/";
         public static final String TEXTURES = "/assets/jgems/textures/";

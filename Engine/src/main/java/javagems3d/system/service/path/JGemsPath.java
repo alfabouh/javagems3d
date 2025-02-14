@@ -11,6 +11,7 @@
 
 package javagems3d.system.service.path;
 
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
@@ -37,7 +38,8 @@ public final class JGemsPath {
                 stringBuilder.append(string);
             }
         }
-        return (stringBuilder.toString()).replaceAll("//", "/");
+        String path = stringBuilder.toString();
+        return path.replace("\\", "/").replace("//", "/");
     }
 
     private String fixPath(String path) {
