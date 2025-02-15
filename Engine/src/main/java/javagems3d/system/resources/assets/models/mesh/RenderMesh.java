@@ -92,7 +92,7 @@ public class RenderMesh implements IMesh, AutoCloseable {
 
     public void bakeMesh() {
         if (this.isBaked()) {
-            throw new JGemsRuntimeException("Tried to bake model, that is already had been baked!");
+            throw new JGemsRuntimeException("Tried to bake model, that is already had been baked");
         }
 
         this.totalVertices = this.getVertexIndexes().size();

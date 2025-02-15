@@ -86,6 +86,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
         shaderStaticConstants.putConstant("MAX_BINDLESS_TEXTURES", String.valueOf(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES));
         shaderStaticConstants.putConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS));
         shaderStaticConstants.putConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsGlobalConfiguration.ANIM_MAX_WEIGHTS));
+        shaderStaticConstants.putConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsGlobalConfiguration.MAX_POINT_LIGHTS));
     }
 
     @Override

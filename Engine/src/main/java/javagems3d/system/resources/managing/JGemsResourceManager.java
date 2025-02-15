@@ -193,7 +193,7 @@ public final class JGemsResourceManager {
                 }
             }
         }
-        JGemsHelper.getLogger().log("Loading " + totalMatrices + " animations in texture-buffer!");
+        JGemsHelper.getLogger().debug("Loading " + totalMatrices + " animations in texture-buffer");
         Texture2DProgram texture2DProgram = new Texture2DProgram();
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(totalMatrices * 16);
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {

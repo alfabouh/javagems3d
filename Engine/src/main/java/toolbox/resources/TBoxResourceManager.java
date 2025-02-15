@@ -46,10 +46,10 @@ public class TBoxResourceManager {
 
     public TBoxShaderManager createShaderManager(JGemsPath shaderPath) {
         if (ToolBox.get().getResourceManager().getCache().checkObjectInCache(shaderPath)) {
-            JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists!");
+            JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists");
             return (TBoxShaderManager) this.getCache().getCachedObject(shaderPath);
         }
-        JGemsHelper.getLogger().log("Creating shader " + shaderPath + "...");
+        JGemsHelper.getLogger().trace("Creating shader " + shaderPath + "...");
         TBoxShaderManager shaderManager = new TBoxShaderManager(new ShadersContainer(shaderPath));
         this.getCache().addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
@@ -68,7 +68,7 @@ public class TBoxResourceManager {
     }
 
     public void loadResources() {
-        SystemLogging.get().getLogManager().log("Loading resources...");
+        SystemLogging.get().getLogManager().trace("Loading resources...");
         this.getModelResources().init(this);
     }
 

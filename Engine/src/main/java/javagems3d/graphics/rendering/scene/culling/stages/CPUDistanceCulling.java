@@ -56,7 +56,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
     @Override
     public void filter(Set<SceneObject> sceneObjects) {
         if (this.getCamera() == null) {
-            JGemsHelper.getLogger().warn("Tried to do distance culling with NULL camera!");
+            JGemsHelper.getLogger().warn("Tried to do distance culling with NULL camera");
             return;
         }
         sceneObjects.removeIf(e -> !this.test(e));

@@ -50,7 +50,7 @@ layout (std140, binding = 0) uniform SunLight {
 };
 
 layout (std140, binding = 1) uniform PointLights {
-    PointLight p_l[128];
+    PointLight p_l[CONST.MAX_POINT_LIGHTS];
     int total_plights;
 };
 

@@ -26,7 +26,7 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
         for (SceneObject sceneObject : sceneObjects) {
             MeshBuffer meshBuffer = sceneObject.getModel().getMeshBufferForIndirectRendering();
             if (meshBuffer == null) {
-                throw new JGemsRuntimeException("Model should have MeshBuffer, to implement indirect rendering!");
+                throw new JGemsRuntimeException("Model should have MeshBuffer, to implement indirect rendering");
             }
             if (mode.equals(IndirectObjectsRenderer.Mode.ALL)) {
                 drawCount += meshBuffer.getSolidPassData().size() + meshBuffer.getTransparentPassData().size();

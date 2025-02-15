@@ -31,7 +31,7 @@ public final class ShaderLibrariesContainer {
         this.fragmentShaderLibrary = fragmentShader1;
         this.geometryShaderLibrary = geometricShader1;
 
-        JGemsHelper.getLogger().log("Read shader library: " + this);
+        JGemsHelper.getLogger().trace("Initialized shader library: " + this);
     }
 
     public ShaderLibrary getVertexShaderLibrary() {

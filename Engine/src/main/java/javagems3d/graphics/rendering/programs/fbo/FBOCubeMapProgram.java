@@ -37,7 +37,7 @@ public class FBOCubeMapProgram {
         GL46.glReadBuffer(GL46.GL_NONE);
 
         if (GL46.glCheckFramebufferStatus(GL46.GL_FRAMEBUFFER) != GL46.GL_FRAMEBUFFER_COMPLETE) {
-            throw new JGemsRuntimeException("Failed to create framebuffer!");
+            throw new JGemsRuntimeException("Failed to create framebuffer");
         }
 
         this.unBindFBO();
@@ -62,7 +62,7 @@ public class FBOCubeMapProgram {
         }
 
         if (GL46.glCheckFramebufferStatus(GL46.GL_FRAMEBUFFER) != GL46.GL_FRAMEBUFFER_COMPLETE) {
-            throw new JGemsRuntimeException("Failed to create framebuffer!");
+            throw new JGemsRuntimeException("Failed to create framebuffer");
         }
 
         this.unBindFBO();

@@ -29,13 +29,13 @@ public abstract class NativesExtractor {
     public static String extractNativesAndReturnPath(Path pathToFile, OS os) throws IOException {
         Pair<String, String> file = NativesExtractor.getPath(os);
         if (file == null) {
-            throw new JGemsIOException("Internal Native lib picking error!");
+            throw new JGemsIOException("Internal Native lib picking error");
         }
         pathToFile.toFile().mkdirs();
         try (InputStream is = JGems3D.loadFileFromJar(new JGemsPath(file.getFirst() + file.getSecond()))) {
             Path path = Paths.get(pathToFile.toString(), file.getSecond());
             Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
-            JGemsHelper.getLogger().log("Extracted Native: " + file);
+            JGemsHelper.getLogger().info("Extracted Native: " + file);
             return path.toString();
         } catch (IOException e) {
             throw new JGemsIOException(e);

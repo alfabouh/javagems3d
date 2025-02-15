@@ -38,17 +38,17 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     @SuppressWarnings("unchecked")
     public T createShaderManager(ResourceCache resourceCache, JGemsPath shaderPath) {
         if (resourceCache.checkObjectInCache(shaderPath)) {
-            JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists!");
+            JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists");
             return (T) resourceCache.getCachedObject(shaderPath);
         }
-        JGemsHelper.getLogger().log("Creating shader " + shaderPath + "...");
+        JGemsHelper.getLogger().info("Creating shader " + shaderPath + "...");
         T shaderManager = this.createShaderObject(shaderPath);
         resourceCache.addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }
 
     public void startShaders(ResourceCache resourceCache) {
-        JGemsHelper.getLogger().log("Compiling shaders!");
+        JGemsHelper.getLogger().info("Compiling shaders");
         for (ShaderManager shaderManager : resourceCache.getAllCachedObjectsCollection(ShaderManager.class)) {
             shaderManager.startProgram();
         }
@@ -63,7 +63,7 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     }
 
     public void destroyShaderPrograms(ResourceCache resourceCache) {
-        JGemsHelper.getLogger().log("Destroying shaders!");
+        JGemsHelper.getLogger().info("Destroying shaders");
         resourceCache.getAllCachedObjectsCollection(ShaderManager.class).forEach(ShaderManager::destroyProgram);
     }
 
@@ -102,6 +102,6 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     private void initConstants() {
         this.getShaderStaticConstants().clear();
         this.initStaticConstants(this.getShaderStaticConstants());
-        JGemsHelper.getLogger().log("Loaded " + this.getShaderStaticConstants().getCnstMap().size() + " shader static constants!");
+        JGemsHelper.getLogger().trace("Initialized " + this.getShaderStaticConstants().getCnstMap().size() + " shader static constants");
     }
 }

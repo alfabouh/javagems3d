@@ -30,7 +30,7 @@ public class UniformBufferProgram {
         this.uboBlock = GL46.glGenBuffers();
         this.shaderId = shaderId;
         if (this.getUboBlock() == 0) {
-            throw new JGemsRuntimeException("Could not create uniform-buffer program!");
+            throw new JGemsRuntimeException("Could not create uniform-buffer program");
         }
         this.name = name;
     }

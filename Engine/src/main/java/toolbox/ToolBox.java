@@ -52,7 +52,7 @@ public final class ToolBox {
     @SuppressWarnings("all")
     public static void launch() {
         if (ToolBox.toolBox != null) {
-            throw new JGemsRuntimeException("Couldn't launch ToolBox more than 1 times!");
+            throw new JGemsRuntimeException("Couldn't launch ToolBox more than 1 times");
         }
         ToolBox.toolBox = new ToolBox();
         ToolBox.get().startSystem();
@@ -73,7 +73,7 @@ public final class ToolBox {
     }
 
     public void startSystem() {
-        SystemLogging.get().getLogManager().log("Starting system!");
+        SystemLogging.get().getLogManager().trace("Starting system");
         try {
             ToolBox.get().getTBoxSettings().makeSettingDirs();
             ToolBox.get().getTBoxSettings().loadOptions();

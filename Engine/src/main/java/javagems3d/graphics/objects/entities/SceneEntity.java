@@ -51,7 +51,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        JGemsHelper.getLogger().log("[ " + this + " ]" + " - PreRender");
+        JGemsHelper.getLogger().trace("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
             if (!this.hasModel() && this.getEntityModelConstructor() != null) {
                 this.setModel(new Model3D(new Pose3D(), this.getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
@@ -64,7 +64,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     @Override
     public void onDestroy(IWorld iWorld) {
         APIEventsLauncher.pushEvent(new Events.ItemDestroyInRenderWorld(this));
-        JGemsHelper.getLogger().log("[ " + this + " ]" + " - PostRender");
+        JGemsHelper.getLogger().trace("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));
         }
@@ -157,11 +157,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     }
 
     protected void onAddLight(Light light) {
-        JGemsHelper.getLogger().log("Attached light to: " + this);
+        JGemsHelper.getLogger().trace("Attached light to: " + this);
     }
 
     protected void onRemoveLight(Light light) {
-        JGemsHelper.getLogger().log("Removed light from: " + this);
+        JGemsHelper.getLogger().trace("Removed light from: " + this);
     }
 
     protected IEntityModelConstructor<WorldItem> getEntityModelConstructor() {

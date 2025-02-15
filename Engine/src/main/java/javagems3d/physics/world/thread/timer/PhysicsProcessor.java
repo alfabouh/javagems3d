@@ -41,10 +41,10 @@ public class PhysicsProcessor implements IPhysicsProcessor {
         this.getDynamicsSystem().init();
 
         if (dynamicsSystem == null) {
-            throw new JGemsNullException("Current Dynamics PhysicsWorld is NULL!");
+            throw new JGemsNullException("Current Dynamics PhysicsWorld is NULL");
         }
         try {
-            JGemsHelper.getLogger().log("Starting physics!");
+            JGemsHelper.getLogger().info("Starting physics");
             while (!JGems3D.get().isShouldBeClosed()) {
                 SyncManager.SyncPhysics.mark();
                 SyncManager.SyncPhysics.blockCurrentThread(true);
@@ -58,14 +58,14 @@ public class PhysicsProcessor implements IPhysicsProcessor {
                 }
                 PhysicsProcessor.TPS += 1;
             }
-            JGemsHelper.getLogger().log("Stopping physics!");
+            JGemsHelper.getLogger().info("Stopping physics");
         } catch (JGemsException e) {
             throw new JGemsRuntimeException(e);
         }
     }
 
     public void clearResources() {
-        JGemsHelper.getLogger().log("Cleaning physics world resources...");
+        JGemsHelper.getLogger().info("Cleaning physics world resources...");
         this.getDynamicsSystem().destroy();
     }
 

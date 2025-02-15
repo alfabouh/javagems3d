@@ -81,7 +81,7 @@ public class ShaderHandler {
         for (UniformBufferObject uniformBufferObject : uniformBufferObjects) {
             UniformBufferProgram uniformBufferProgram = new UniformBufferProgram(shaderProgram.getProgramId(), uniformBufferObject.getId());
             if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.getBinding(), uniformBufferObject.getBufferSize())) {
-                JGemsHelper.getLogger().log("[" + this.id + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
+                JGemsHelper.getLogger().info("[" + this.id + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             } else {
                 JGemsHelper.getLogger().error("[" + this.id + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             }

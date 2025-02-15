@@ -38,7 +38,7 @@ import java.util.Objects;
 public class SimpleModelLoader {
     @SuppressWarnings("all")
     private static MeshGroup loadMesh(TBoxResourceManager tBoxResourceManager, JGemsPath modelPath) {
-        SystemLogging.get().getLogManager().log("Loading model " + modelPath);
+        SystemLogging.get().getLogManager().trace("Loading model " + modelPath);
 
         final int FLAGS = Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace | Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_PreTransformVertices;
         MeshGroup meshGroup = new MeshGroup();
@@ -68,7 +68,7 @@ public class SimpleModelLoader {
                             }
                         }
                     } else {
-                        throw new JGemsRuntimeException("Couldn't create assimp scene!");
+                        throw new JGemsRuntimeException("Couldn't create assimp scene");
                     }
                 } catch (RuntimeException e) {
                     SystemLogging.get().getLogManager().error("Error, while loading " + modelPath);

@@ -596,7 +596,7 @@ public class EditorContent implements ImGuiContent {
 
             if (ImGui.menuItem("Save Map")) {
                 if (this.getTBoxScene().getMapProperties().getMapName().isEmpty()) {
-                    LoggingManager.showWindowInfo("Enter map name!");
+                    LoggingManager.showWindowInfo("Enter map name");
                 } else {
                     this.getTBoxScene().prepareMapToSave(null);
                 }

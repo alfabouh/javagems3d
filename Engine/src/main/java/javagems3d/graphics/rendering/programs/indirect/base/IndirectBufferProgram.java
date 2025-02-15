@@ -46,7 +46,7 @@ public final class IndirectBufferProgram {
         if (obj.isEmpty()) {
             return;
         }
-        JGemsHelper.getLogger().log("Creating static indirect buffer: " + obj.size());
+        JGemsHelper.getLogger().debug("Creating static indirect buffer: " + obj.size());
         this.staticVao = GL46.glGenVertexArrays();
         GL46.glBindVertexArray(this.getStaticVao());
 

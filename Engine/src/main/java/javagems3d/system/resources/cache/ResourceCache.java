@@ -26,7 +26,7 @@ public class ResourceCache {
 
     public ResourceCache(String cacheName) {
         this.cacheName = cacheName;
-        JGemsHelper.getLogger().log("Created cache: " + this);
+        JGemsHelper.getLogger().info("Created cache: " + this);
         this.cache = new LinkedHashMap<>();
     }
 
@@ -39,7 +39,7 @@ public class ResourceCache {
                 cachedIterator.remove();
             }
         }
-        JGemsHelper.getLogger().log("Cleaned cache: " + this + ". Group " + clazz.getName());
+        JGemsHelper.getLogger().info("Cleaned cache: " + this + ". Group " + clazz.getName());
     }
 
     public void clearCache() {
@@ -48,7 +48,7 @@ public class ResourceCache {
         }
         this.cache.forEach((o, e) -> e.onClearingCache(this));
         this.cache.clear();
-        JGemsHelper.getLogger().log("Cleaned cache: " + this);
+        JGemsHelper.getLogger().info("Cleaned cache: " + this);
     }
 
     public Map<String, ICached> getCache() {
@@ -67,7 +67,7 @@ public class ResourceCache {
         if (this.cache.containsKey(key)) {
             return;
         }
-        JGemsHelper.getLogger().log("Put object " + key + " in system cache " + this);
+        JGemsHelper.getLogger().debug("Put object " + key + " in system cache " + this);
         this.cache.put(key, object);
     }
 

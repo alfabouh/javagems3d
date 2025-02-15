@@ -203,7 +203,7 @@ public class Window implements IWindow {
             throw new JGemsNullException("Null Monitor");
         }
         GLFW.glfwSetWindowMonitor(this.getDescriptor(), GLFW.glfwGetPrimaryMonitor(), 0, 0, vidMode.width(), vidMode.height(), GLFW.GLFW_DONT_CARE);
-        JGemsHelper.getLogger().log("FullScreen mode");
+        JGemsHelper.getLogger().trace("FullScreen mode");
     }
 
     public void removeFullScreen() {
@@ -214,7 +214,7 @@ public class Window implements IWindow {
         int x = (vidMode.width() - JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH) / 2;
         int y = (vidMode.height() - JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT) / 2;
         GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT, GLFW.GLFW_DONT_CARE);
-        JGemsHelper.getLogger().log("DefaultScreen mode");
+        JGemsHelper.getLogger().trace("DefaultScreen mode");
     }
 
     public WindowProperties getWindowProperties() {

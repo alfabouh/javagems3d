@@ -37,12 +37,12 @@ public class TexturesLoader implements ILoadingHelper {
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                JGemsHelper.getLogger().log("Texture " + this.getHashId() + " picked from cache!");
+                JGemsHelper.getLogger().info("Texture " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
         ImageTexture imageTexture = new ImageTexture(textureProperties, data);
-        JGemsHelper.getLogger().log("CubeMap " + this.getHashId() + " successfully created!");
+        JGemsHelper.getLogger().info("Texture " + this.getHashId() + " successfully created");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
                 this.getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);

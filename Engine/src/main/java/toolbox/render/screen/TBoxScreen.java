@@ -13,7 +13,7 @@ package toolbox.render.screen;
 
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.screen.JGemsScreen;
+import javagems3d.graphics.screen.OpenGLSysUtils;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -67,7 +67,7 @@ public class TBoxScreen implements IScreen {
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL46.GL_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
 
-        JGemsScreen.registerOGLDebugOutput();
+        OpenGLSysUtils.registerOGLDebugOutput();
 
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         this.tBoxWindow = new Window(new Window.WindowProperties(JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT, ToolBox.get().toString()), new JGemsPath("/assets/jgems/icons/icon.png"));
@@ -105,7 +105,7 @@ public class TBoxScreen implements IScreen {
     }
 
     public void runRenderThread() {
-        SystemLogging.get().getLogManager().log("Starting screen...");
+        SystemLogging.get().getLogManager().info("Start screen thread");
         GL46.glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
         this.getScene().createGUI();
         this.loadResourcesAndRenderLoadingScreen();
@@ -116,7 +116,7 @@ public class TBoxScreen implements IScreen {
             throw new JGemsRuntimeException(e);
         } finally {
             this.getScene().postRender();
-            SystemLogging.get().getLogManager().log("Destroying screen...");
+            SystemLogging.get().getLogManager().info("Stop screen thread");
             this.getTimerPool().clear();
             GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
             GLFW.glfwTerminate();
@@ -188,7 +188,7 @@ public class TBoxScreen implements IScreen {
 
     @Override
     public void createScreenAndContext() {
-        SystemLogging.get().getLogManager().log("Building screen...");
+        SystemLogging.get().getLogManager().info("Building screen");
         try {
             if (this.tryToBuildScreen()) {
                 GL.createCapabilities();
@@ -199,14 +199,12 @@ public class TBoxScreen implements IScreen {
                 this.setScreenCallbacks();
                 this.createObjects(this.getWindow());
                 OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
-
-                SystemLogging.get().getLogManager().log("TBoxScreen built successful");
             } else {
-                throw new JGemsRuntimeException("Caught service, while building screen!!");
+                throw new JGemsRuntimeException("Caught service, while building screen!");
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
-            LoggingManager.showExceptionDialog("Couldn't create window!");
+            LoggingManager.showExceptionDialog("Couldn't create window");
         }
     }
 

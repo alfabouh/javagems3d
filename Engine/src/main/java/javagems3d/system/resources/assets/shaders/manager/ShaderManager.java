@@ -77,7 +77,7 @@ public abstract class ShaderManager implements ICached {
 
     public void dispatchComputeShader(int grX, int grY, int grZ, int barrier) {
         if (this.getShadersContainer().getComputeShader() == null) {
-            JGemsHelper.getLogger().warn("[" + this + "]" + " doesn't have compute program!");
+            JGemsHelper.getLogger().warn("[" + this + "]" + " doesn't have compute program");
             return;
         }
         GL46.glDispatchCompute(grX, grY, grZ);
@@ -174,7 +174,7 @@ public abstract class ShaderManager implements ICached {
             return;
         }
         if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
-            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow!");
+            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow");
             return;
         }
         if (!program.isValid()) {
@@ -200,7 +200,7 @@ public abstract class ShaderManager implements ICached {
             return;
         }
         if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
-            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow!");
+            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow");
             return;
         }
         if (textureID < 0) {
@@ -222,7 +222,7 @@ public abstract class ShaderManager implements ICached {
             this.graphicShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
             if (gShaderProgram.createShader(this.getShadersContainer().getFragmentShader(), this.getShadersContainer().getVertexShader(), this.getShadersContainer().getGeometricShader(), this.getShadersContainer().getTesselationControlShader(), this.getShadersContainer().getTesselationEvaluationShader())) {
                 if (gShaderProgram.link()) {
-                    JGemsHelper.getLogger().log("G-Shader " + this + " successfully linked (program id=" + gShaderProgram.getProgramId() + ")");
+                    JGemsHelper.getLogger().info("G-Shader " + this + " successfully linked (program id=" + gShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in g-shader " + this);
                 }
@@ -234,7 +234,7 @@ public abstract class ShaderManager implements ICached {
             this.computingShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
             if (cShaderProgram.createShader(this.getShadersContainer().getComputeShader())) {
                 if (cShaderProgram.link()) {
-                    JGemsHelper.getLogger().log("C-Shader " + this + " successfully linked (program id=" + cShaderProgram.getProgramId() + ")");
+                    JGemsHelper.getLogger().info("C-Shader " + this + " successfully linked (program id=" + cShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in c-shader " + this);
                 }
@@ -243,7 +243,7 @@ public abstract class ShaderManager implements ICached {
             this.getComputingShaderGroup().initShaderGroup(cShaderProgram, shadersContainer.getCUniformsFullSet(), this.uniformBufferObjects);
         }
         if (!flag) {
-            throw new JGemsRuntimeException("Wrong ShaderManager passed in system!");
+            throw new JGemsRuntimeException("Wrong ShaderManager passed in system");
         }
     }
 

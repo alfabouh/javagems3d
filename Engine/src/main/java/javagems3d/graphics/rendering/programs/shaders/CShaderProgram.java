@@ -23,7 +23,7 @@ public class CShaderProgram implements IShaderProgram {
     public CShaderProgram() {
         this.programId = GL46.glCreateProgram();
         if (this.programId == 0) {
-            throw new JGemsRuntimeException("Could not create shader program!");
+            throw new JGemsRuntimeException("Could not create shader program");
         }
     }
 

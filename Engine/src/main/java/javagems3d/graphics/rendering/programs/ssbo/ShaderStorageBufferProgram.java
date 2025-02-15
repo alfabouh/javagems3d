@@ -67,7 +67,7 @@ public abstract class ShaderStorageBufferProgram {
         GL46.glMemoryBarrier(GL46.GL_SHADER_STORAGE_BARRIER_BIT);
         ByteBuffer buffer = shaderStorageBufferObject.getMappedBuffer();
         if (buffer == null) {
-            throw new IllegalStateException("SSBO is not mapped!");
+            throw new IllegalStateException("SSBO is not mapped");
         }
         for (int i = 0; i < buffer.capacity(); i++) {
             buffer.put(i, (byte) 0);

@@ -35,7 +35,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     public JGemsControllerDispatcher(IWindow window) {
         JGemsControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window, APIContainer.get().getApiGameInfo().getAppManager().createBindingManager());
         this.setController(JGemsControllerDispatcher.defaultController());
-        JGemsHelper.getLogger().log("Created controller dispatcher!");
+        JGemsHelper.getLogger().info("Created controller dispatcher");
     }
 
     public static BindingManager bindingManager() {
@@ -63,14 +63,14 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     }
 
     public void attachControllerTo(IController controller, IControllable remoteController) {
-        JGemsHelper.getLogger().log("Attached controller to: " + ((WorldItem) remoteController).getItemName());
+        JGemsHelper.getLogger().debug("Attached controller to: " + ((WorldItem) remoteController).getItemName());
         remoteController.setController(controller);
         this.currentControlledItem = remoteController;
     }
 
     public void detachController() {
         if (this.getCurrentControlledItem() != null) {
-            JGemsHelper.getLogger().log("Detached Controller From: " + ((WorldItem) this.getCurrentControlledItem()).getItemName());
+            JGemsHelper.getLogger().debug("Detached Controller From: " + ((WorldItem) this.getCurrentControlledItem()).getItemName());
             this.getCurrentControlledItem().setController(null);
             this.currentControlledItem = null;
         }

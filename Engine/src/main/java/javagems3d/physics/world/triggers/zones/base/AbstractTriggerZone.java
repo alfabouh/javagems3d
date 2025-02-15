@@ -41,13 +41,13 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        JGemsHelper.getLogger().log("Add trigger in world - [ " + this + " ]");
+        JGemsHelper.getLogger().trace("Added trigger in world - [ " + this + " ]");
         ((PhysicsWorld) iWorld).getDynamics().addCollisionObject(this.getGhostObject());
     }
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        JGemsHelper.getLogger().log("Removed trigger from world - [ " + this + " ]");
+        JGemsHelper.getLogger().trace("Removed trigger from world - [ " + this + " ]");
         ((PhysicsWorld) iWorld).getDynamics().removeCollisionObject(this.getGhostObject());
     }
 

@@ -291,7 +291,7 @@ public abstract class JGemsHelper {
                 mouseKeyboardController.setCursorInCenter();
                 return true;
             }
-            JGemsHelper.getLogger().warn("Couldn't find cursor. Check your controller!");
+            JGemsHelper.getLogger().warn("Couldn't find cursor. Check your controller");
             return false;
         }
 

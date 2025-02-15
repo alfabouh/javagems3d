@@ -41,7 +41,7 @@ public class JGemsScene implements IScene {
     }
 
     public void preRender() {
-        JGemsHelper.getLogger().log("Starting scene rendering!");
+        JGemsHelper.getLogger().info("Starting scene rendering");
         this.getSceneRenderer().onStartRender();
     }
 
@@ -75,7 +75,7 @@ public class JGemsScene implements IScene {
     }
 
     public void postRender() {
-        JGemsHelper.getLogger().log("Stopping scene rendering!");
+        JGemsHelper.getLogger().info("Stopping scene rendering");
         this.getSceneRenderer().onStopRender();
     }
 

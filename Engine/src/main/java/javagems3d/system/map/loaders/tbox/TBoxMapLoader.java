@@ -58,7 +58,7 @@ public class TBoxMapLoader implements IMapLoader {
         try {
             return new TBoxMapLoader(TBoxMapLoader.readMapFromJar(pathToMap));
         } catch (IOException | ClassNotFoundException | JGemsNotFoundException e) {
-            LoggingManager.showExceptionDialog("Failed to lad map!");
+            LoggingManager.showExceptionDialog("Failed to lad map");
             JGemsHelper.getLogger().error("Failed to load map: " + pathToMap);
             e.printStackTrace(System.err);
             return null;

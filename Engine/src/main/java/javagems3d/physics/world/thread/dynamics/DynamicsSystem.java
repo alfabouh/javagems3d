@@ -46,7 +46,7 @@ public class DynamicsSystem {
         try {
             String lib = NativesExtractor.extractNativesAndReturnPath(path, JGems3D.get().getOS());
             System.load(lib);
-            JGemsHelper.getLogger().log("Injected lib: " + lib);
+            JGemsHelper.getLogger().info("Injected lib: " + lib);
         } catch (Exception e) {
             throw new JGemsRuntimeException(e);
         }

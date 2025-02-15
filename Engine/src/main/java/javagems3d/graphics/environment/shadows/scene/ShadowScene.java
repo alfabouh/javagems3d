@@ -270,7 +270,7 @@ public class ShadowScene implements IShadowScene {
 
     public void unBindPointLightFromShadowScene(PointLight pointLight) {
         if (pointLight.getAttachedShadowSceneId() < 0) {
-            JGemsHelper.getLogger().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scene!");
+            JGemsHelper.getLogger().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scene");
             return;
         }
         this.getPointLightShadows().get(pointLight.getAttachedShadowSceneId()).setPointLight(null);

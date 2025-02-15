@@ -169,7 +169,7 @@ public class DearUIGameInterface implements DearUIInterface {
                 String mapName = JGemsHelper.GAME.getCurrentMap().getLevelInfo().toString();
                 Graph.saveInFile(graph);
                 if (graph == null || graph.getGraph().isEmpty()) {
-                    LoggingManager.showWindowInfo("Couldn't create NavMesh!");
+                    LoggingManager.showWindowInfo("Couldn't create NavMesh");
                 } else {
                     LoggingManager.showWindowInfo("Created NavMesh(" + graph.getGraph().size() + ") and saved in game folder. " + mapName + ".nav");
                 }
@@ -177,7 +177,7 @@ public class DearUIGameInterface implements DearUIInterface {
             }
             if (ImGui.isItemHovered()) {
                 ImGui.beginTooltip();
-                ImGui.setTooltip("Generates NavMesh, starting from current camera position!");
+                ImGui.setTooltip("Generates NavMesh, starting from current camera position");
                 ImGui.endTooltip();
             }
         }

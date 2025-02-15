@@ -65,7 +65,7 @@ public class APIContainer {
         for (PriorityMethod priorityMethod : APIContainer.INSTANCE.eventMap.get(event.getClass())) {
             Method method = priorityMethod.getMethod();
             if (method == null) {
-                SystemLogging.get().getLogManager().warn("Couldn't find event " + event.getClass().getName() + " in API Container!");
+                SystemLogging.get().getLogManager().warn("Couldn't find event " + event.getClass().getName() + " in API Container");
                 return;
             }
             try {

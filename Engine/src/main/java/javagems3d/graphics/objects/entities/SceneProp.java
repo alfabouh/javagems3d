@@ -54,16 +54,16 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
     }
 
     protected void onAddLight(Light light) {
-        JGemsHelper.getLogger().log("Add light to: " + this);
+        JGemsHelper.getLogger().trace("Added light to: " + this);
     }
 
     protected void onRemoveLight(Light light) {
-        JGemsHelper.getLogger().log("Removed light from: " + this);
+        JGemsHelper.getLogger().trace("Removed light from: " + this);
     }
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        JGemsHelper.getLogger().log("[ " + this + " ]" + " - PreRender");
+        JGemsHelper.getLogger().trace("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
         }
@@ -71,7 +71,7 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        JGemsHelper.getLogger().log("[ " + this + " ]" + " - PostRender");
+        JGemsHelper.getLogger().trace("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));
         }

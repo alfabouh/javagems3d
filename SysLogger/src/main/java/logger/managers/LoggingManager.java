@@ -63,14 +63,20 @@ public abstract class LoggingManager {
             }
         });
 
-        JTextField textField = new JTextField();
-        textField.setEditable(false);
-        textField.setText(msg);
+        JTextArea textArea = new JTextArea(10, 50);
+        textArea.setEditable(false);
+        textArea.setText(msg);
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setCaretPosition(0);
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
 
         JPanel panel = new JPanel();
-        panel.add(textField);
+        panel.setLayout(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
 
-        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, panel, "Error!", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
+        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, panel, "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
     }
 
     public static void showWindowInfo(String message) {
@@ -93,7 +99,11 @@ public abstract class LoggingManager {
         this.log.error(message, objects);
     }
 
-    public void log(String message, Object... objects) {
+    public void trace(String message, Object... objects) {
+        this.log.trace(message, objects);
+    }
+
+    public void info(String message, Object... objects) {
         this.log.info(message, objects);
     }
 
@@ -106,15 +116,15 @@ public abstract class LoggingManager {
     }
 
     public void exception(Exception e) {
-        this.bigWarn("Process caught an exception!");
+        this.fatal("Process caught an exception");
         System.err.println("\n****************************************Exception****************************************");
         e.printStackTrace(System.err);
         System.err.println("\n****************************************Exception****************************************");
     }
 
-    public void bigWarn(String message, Object... objects) {
-        this.log.error("****************************************");
-        this.log.error("* " + message, objects);
-        this.log.error("****************************************");
+    public void fatal(String message, Object... objects) {
+        this.log.fatal("****************************************");
+        this.log.fatal("* " + message, objects);
+        this.log.fatal("****************************************");
     }
 }

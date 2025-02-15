@@ -107,7 +107,7 @@ public class TBoxScene {
     }
 
     public void resetEditor() {
-        SystemLogging.get().getLogManager().log("Resetting editor...");
+        SystemLogging.get().getLogManager().trace("Resetting editor...");
         this.clear();
         this.setGUIEditor();
     }
@@ -146,7 +146,7 @@ public class TBoxScene {
         this.createFBOs(this.getWindow());
         this.camera = new TBoxCameraBase(ToolBox.get().getScreen().getControllerDispatcher().getCurrentController(), new Vector3f(-0.0f), new Vector3f(0.0f));
         this.setGUIEditor();
-        SystemLogging.get().getLogManager().log("Pre-Scene Render");
+        SystemLogging.get().getLogManager().trace("Pre-Scene Render");
 
         String recentStrOpen = ToolBox.get().getTBoxSettings().recentPathOpen.getValue();
         if (!recentStrOpen.isEmpty()) {
@@ -155,7 +155,7 @@ public class TBoxScene {
     }
 
     public void postRender() {
-        SystemLogging.get().getLogManager().log("Post-Scene Render");
+        SystemLogging.get().getLogManager().trace("Post-Scene Render");
         this.clear();
         this.destroyFBOs();
         this.getDimGuiRenderTBox().clear();
@@ -329,7 +329,7 @@ public class TBoxScene {
 
         Attribute<Vector3f> attribute = tBoxObject.getAttributeContainer().getAttributeByID(AttributeID.POSITION_XYZ, Vector3f.class);
         if (attribute == null) {
-            throw new JGemsNullException("Caught attribute with NULL position!");
+            throw new JGemsNullException("Caught attribute with NULL position");
         }
         attribute.setValue(pose.getPosition());
 
@@ -441,7 +441,7 @@ public class TBoxScene {
 
                     MapProperties mapObjectProperties = mapContainer.getSaveMapProperties();
                     if (mapObjectProperties == null) {
-                        throw new JGemsNullException("Invalid deserialization!");
+                        throw new JGemsNullException("Invalid deserialization");
                     }
 
                     if (mapObjectProperties.getMapName() == null || mapObjectProperties.getMapName().isEmpty()) {
@@ -458,7 +458,7 @@ public class TBoxScene {
                                 Vector3f saveRot = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.ROTATION_XYZ, Vector3f.class);
                                 Vector3f saveScale = saveObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.SCALING_XYZ, Vector3f.class);
                                 if (savePos == null) {
-                                    SystemLogging.get().getLogManager().error("Deserialized object has NULL position!!");
+                                    SystemLogging.get().getLogManager().error("Deserialized object has NULL position!");
                                     continue;
                                 }
                                 if (saveRot != null) {
@@ -475,8 +475,8 @@ public class TBoxScene {
                             }
                         }
                     } else {
-                        SystemLogging.get().getLogManager().error("Couldn't read objects path from map!");
-                        LoggingManager.showExceptionDialog("Couldn't read objects path from map!");
+                        SystemLogging.get().getLogManager().error("Couldn't read objects path from map");
+                        LoggingManager.showExceptionDialog("Couldn't read objects path from map");
                     }
                     this.getSceneContainer().setMapProperties(mapObjectProperties);
                 } catch (Exception e) {
@@ -488,13 +488,13 @@ public class TBoxScene {
             }
         } catch (Exception e) {
             SystemLogging.get().getLogManager().exception(e);
-            LoggingManager.showExceptionDialog("Found errors, while reading map!");
+            LoggingManager.showExceptionDialog("Found errors, while reading map");
         }
     }
 
     public void prepareMapToSave(File file) {
         if (this.getMapProperties().getMapName() == null || this.getMapProperties().getMapName().isEmpty()) {
-            LoggingManager.showWindowInfo("Enter map name!");
+            LoggingManager.showWindowInfo("Enter map name");
             return;
         }
 
@@ -521,7 +521,7 @@ public class TBoxScene {
             }
         } catch (Exception e) {
             SystemLogging.get().getLogManager().exception(e);
-            LoggingManager.showExceptionDialog("Found errors, while saving map!");
+            LoggingManager.showExceptionDialog("Found errors, while saving map");
         }
     }
 

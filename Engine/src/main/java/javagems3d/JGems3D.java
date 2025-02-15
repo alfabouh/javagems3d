@@ -102,7 +102,7 @@ public final class JGems3D {
     @SuppressWarnings("all")
     public static void launch() {
         if (JGems3D.mainObject != null) {
-            throw new JGemsRuntimeException("Couldn't launch JavaGems more than 1 times!");
+            throw new JGemsRuntimeException("Couldn't launch JavaGems more than 1 times");
         }
         try {
             JGems3D.mainObject = new JGems3D();
@@ -120,11 +120,11 @@ public final class JGems3D {
 
     private static void start() {
         try {
-            JGemsHelper.getLogger().log("Engine-On");
-            JGemsHelper.getLogger().log("Starting system! Date: " + JGems3D.date());
-            JGemsHelper.getLogger().log(JGems3D.getGameString() + ": " + JGemsCore.ENG_NAME + " - " + JGemsCore.ENG_VER);
-            JGemsHelper.getLogger().log("===============================================================");
-            JGemsHelper.getLogger().log("Loading settings from path...");
+            JGemsHelper.getLogger().debug("BEGIN");
+            JGemsHelper.getLogger().info("Starting system! Date: " + JGems3D.date());
+            JGemsHelper.getLogger().info(JGems3D.getGameString() + ": " + JGemsCore.ENG_NAME + " - " + JGemsCore.ENG_VER);
+            JGemsHelper.getLogger().info("===============================================================");
+            JGemsHelper.getLogger().info("Loading settings from path...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
                 JGems3D.FIRST_LAUNCH = true;
             } else {
@@ -141,7 +141,7 @@ public final class JGems3D {
     public static void checkFilesDirectory() throws IOException {
         if (!Files.exists(JGems3D.getGameFilesFolder())) {
             JGems3D.getGameFilesFolder().toFile().mkdirs();
-            JGemsHelper.getLogger().log("Created system folder");
+            JGemsHelper.getLogger().info("Created system folder");
         }
     }
 

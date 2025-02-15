@@ -21,10 +21,10 @@
     <Appenders>
         <JGemsConsoleAppender name="JGemsAppender" pattern="[%d{HH:mm:ss}] [%t] [%-5level] - %msg%n%ex" />
         <Console name="ConsoleERR" target="SYSTEM_ERR">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level]%logger{36} - %msg%n%ex"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss} [%t] [%-5level] %logger{36} - %msg%n%ex}{FATAL=red bold, ERROR=red underline, WARN=yellow bold, INFO=magenta, DEBUG=cyan, TRACE=default}" disableAnsi="false"/>
         </Console>
         <Console name="ConsoleOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%d{HH:mm:ss} [%t] [%-5level] %logger{36} - %msg%n%ex}{FATAL=red underline, ERROR=red underline, WARN=yellow bold, INFO=white, DEBUG=cyan, TRACE=magenta}" disableAnsi="false"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss} [%t] [%-5level] %logger{36} - %msg%n%ex}{FATAL=red bold, ERROR=red underline, WARN=yellow bold, INFO=magenta, DEBUG=cyan, TRACE=default}" disableAnsi="false"/>
         </Console>
         <File name="FileOUT_1" fileName="${log-path}/jgems/${log-file}">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>

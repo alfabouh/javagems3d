@@ -27,7 +27,7 @@ public final class TBoxObject extends TBoxAbstractObject {
 
     @Override
     public TBoxObject copy() {
-        SystemLogging.get().getLogManager().log("Copied " + this);
+        SystemLogging.get().getLogManager().trace("Copied " + this);
 
         TBoxObject tBoxObject = new TBoxObject(this.objectId(), this.getRenderData(), new Model3D(this.getModel()));
         tBoxObject.setAttributeContainer(new AttributesContainer(this.getAttributeContainer()));

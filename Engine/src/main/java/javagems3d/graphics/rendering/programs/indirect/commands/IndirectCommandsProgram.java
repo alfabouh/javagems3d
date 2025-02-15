@@ -23,7 +23,7 @@ public abstract class IndirectCommandsProgram {
 
     public void buildCommands(@Nullable IntBuffer indexes, @Nullable IntBuffer materialIds, MeshBuffer buffer, int drawCount) {
         if (buffer == null) {
-            throw new JGemsRuntimeException("MeshBuffer cannot be null for indirect rendering!");
+            throw new JGemsRuntimeException("MeshBuffer cannot be null for indirect rendering");
         }
 
         ByteBuffer commandsBuffer = this.initCommandsByteBuffer(drawCount);

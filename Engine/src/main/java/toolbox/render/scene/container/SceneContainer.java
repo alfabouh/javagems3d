@@ -63,12 +63,12 @@ public class SceneContainer {
 
     private void objectPreRender(TBoxAbstractObject scene3DObject) {
         scene3DObject.getRenderData().getObjectRenderer().preRender(scene3DObject);
-        SystemLogging.get().getLogManager().log("Object " + scene3DObject + " - Pre-Render!");
+        SystemLogging.get().getLogManager().trace("Object " + scene3DObject + " - Pre-Render");
     }
 
     private void objectPostRender(TBoxAbstractObject scene3DObject) {
         scene3DObject.getRenderData().getObjectRenderer().preRender(scene3DObject);
-        SystemLogging.get().getLogManager().log("Object " + scene3DObject + " - Post-Render!");
+        SystemLogging.get().getLogManager().trace("Object " + scene3DObject + " - Post-Render");
     }
 
     public <T extends TBoxAbstractObject> Set<T> getObjectsFromContainer(Class<T> clazz) {

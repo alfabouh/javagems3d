@@ -27,7 +27,7 @@ public class GShaderProgram implements IShaderProgram {
     public GShaderProgram() {
         this.programId = GL46.glCreateProgram();
         if (this.programId == 0) {
-            throw new JGemsRuntimeException("Could not create shader program!");
+            throw new JGemsRuntimeException("Could not create shader program");
         }
     }
 

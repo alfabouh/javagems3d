@@ -51,18 +51,20 @@ public class ModelMeshLoader implements ILoadingHelper {
         String bffString = this.getStr(MeshBuffer.POSTFIX);
         if (this.getResourceCache().checkObjectInCache(grString)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
+            JGemsHelper.getLogger().info("Mesh " + this.getPath() + " picked from cache");
         } else {
             meshGroup = this.processMeshGroup(this.getGameResources(), animated);
             this.getResourceCache().addObjectInBuffer(grString, meshGroup);
+            JGemsHelper.getLogger().info("Mesh " + this.getPath() + " successfully created");
         }
         if (meshGroup == null) {
-            throw new JGemsNullException("There was an error, while loading the model!");
+            throw new JGemsNullException("There was an error, while loading the model");
         }
         if (!this.getResourceCache().checkObjectInCache(bffString)) {
             if (loadInIndirectBuffer) {
                 MeshBuffer meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, true);
                 if (meshBuffer == null) {
-                    throw new JGemsNullException("There was an error, while loading the model!");
+                    throw new JGemsNullException("There was an error, while loading the model");
                 }
                 this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
                 meshGroup.setLinkedMeshBuffer(meshBuffer);
@@ -86,12 +88,14 @@ public class ModelMeshLoader implements ILoadingHelper {
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
+            JGemsHelper.getLogger().info("Mesh " + this.getPath() + " picked from cache");
         } else {
             meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, loadInIndirectBuffer);
             this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
+            JGemsHelper.getLogger().info("Mesh " + this.getPath() + " successfully created");
         }
         if (meshBuffer == null) {
-            throw new JGemsNullException("There was an error, while loading the model!");
+            throw new JGemsNullException("There was an error, while loading the model");
         }
         if (createCollision) {
             JGemsHelper.UTILS.createMeshCollisionData(meshBuffer);
@@ -114,8 +118,6 @@ public class ModelMeshLoader implements ILoadingHelper {
 
     private AIScene loadAIScene(MemoryStack stack, JGemsPath path, boolean isAnimated) {
         if (JGems3D.checkFileExistsInJar(path)) {
-            JGemsHelper.getLogger().log("Loading model " + path);
-
             int FLAGS = Assimp.aiProcess_LimitBoneWeights | Assimp.aiProcess_ImproveCacheLocality | Assimp.aiProcess_OptimizeGraph | Assimp.aiProcess_OptimizeMeshes | Assimp.aiProcess_GenNormals | Assimp.aiProcess_JoinIdenticalVertices | Assimp.aiProcess_Triangulate | Assimp.aiProcess_CalcTangentSpace;
             if (!isAnimated) {
                 FLAGS |= (Assimp.aiProcess_PreTransformVertices);
@@ -150,7 +152,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         }
 
         meshStructure.loadAnimations(animations);
-        JGemsHelper.getLogger().log("Loaded animation (size:" + animations.size() + ")  for: " + this.getPath());
+        JGemsHelper.getLogger().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPath());
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loaded animation(size:" + animations.size() + ")");
         return skeletonData;
     }

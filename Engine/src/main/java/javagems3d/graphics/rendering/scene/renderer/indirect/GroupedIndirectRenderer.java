@@ -54,10 +54,10 @@ public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
         return sceneObjects.stream().collect(Collectors.groupingBy(e -> {
             RenderTable.Data renderingData = e.getRenderingTable().getRenderingData(pipeline);
             if (renderingData.getRenderFabric() == null) {
-                throw new JGemsNullException("RenderFabric should not be NULL!");
+                throw new JGemsNullException("RenderFabric should not be NULL");
             }
             if (!renderingData.getRenderFabric().getRenderingType().equals(Type.INDIRECT)) {
-                throw new JGemsRuntimeException("RenderFabric-type should be INDIRECT!");
+                throw new JGemsRuntimeException("RenderFabric-type should be INDIRECT");
             }
             IndirectRenderFabric renderFabric = (IndirectRenderFabric) renderingData.getRenderFabric();
             return new IndirectObjectsRenderer.Operator(renderFabric.getRenderingFunction(), renderingData.getShaderManager());

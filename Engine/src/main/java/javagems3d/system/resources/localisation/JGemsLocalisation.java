@@ -61,9 +61,8 @@ public class JGemsLocalisation {
             JGemsHelper.getLogger().warn("Tried to set NULL language");
             lang = Lang.DefaultEnglish;
         }
-        JGemsHelper.getLogger().log("Loading language table: " + lang.getFullName());
         this.readLangFileInTable(lang);
-        JGemsHelper.getLogger().log("Language table loaded");
+        JGemsHelper.getLogger().info("Initialized language table "  + lang.getFullName());
         this.currentlang = lang;
     }
 

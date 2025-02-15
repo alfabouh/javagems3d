@@ -70,10 +70,10 @@ public class APILauncher {
     private APITBoxInfo loadTBoxInfo() throws JGemsException, InstantiationException, IllegalAccessException {
         Set<Class<?>> annotatedClass = this.reflections.getTypesAnnotatedWith(JGemsTBoxEntry.class);
         if (annotatedClass.size() > 1) {
-            throw new JGemsRuntimeException("Couldn't load more than 1 TBox entry class!");
+            throw new JGemsRuntimeException("Couldn't load more than 1 TBox entry class");
         }
         if (annotatedClass.isEmpty()) {
-            throw new JGemsRuntimeException("Couldn't find TBox entry class!");
+            throw new JGemsRuntimeException("Couldn't find TBox entry class");
         }
         Optional<Class<?>> aClass = annotatedClass.stream().findAny();
         JGemsTBoxEntry jGemsTBoxEntry = aClass.get().getAnnotation(JGemsTBoxEntry.class);
@@ -84,10 +84,10 @@ public class APILauncher {
     private APIGameInfo loadGameInfo() throws JGemsException, InstantiationException, IllegalAccessException {
         Set<Class<?>> annotatedClass = this.reflections.getTypesAnnotatedWith(JGemsGameEntry.class);
         if (annotatedClass.size() > 1) {
-            throw new JGemsRuntimeException("Couldn't load more than 1 JGems3D entry class!");
+            throw new JGemsRuntimeException("Couldn't load more than 1 JGems3D entry class");
         }
         if (annotatedClass.isEmpty()) {
-            throw new JGemsRuntimeException("Couldn't find JGems3D entry class!");
+            throw new JGemsRuntimeException("Couldn't find JGems3D entry class");
         }
         Optional<Class<?>> aClass = annotatedClass.stream().findAny();
         JGemsGameEntry jGemsGameEntry = aClass.get().getAnnotation(JGemsGameEntry.class);

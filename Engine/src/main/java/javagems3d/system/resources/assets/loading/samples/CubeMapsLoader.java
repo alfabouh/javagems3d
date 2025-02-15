@@ -40,12 +40,12 @@ public class CubeMapsLoader implements ILoadingHelper {
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                JGemsHelper.getLogger().log("CubeMap " + this.getHashId() + " picked from cache!");
+                JGemsHelper.getLogger().info("CubeMap " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
         CubeMapTexture cubeMapTexture = new CubeMapTexture(textureProperties, data);
-        JGemsHelper.getLogger().log("CubeMap " + this.getHashId() + " successfully created!");
+        JGemsHelper.getLogger().info("CubeMap " + this.getHashId() + " successfully created");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
                 this.getResourceCache().addObjectInBuffer(cubeMapTexture.toString(), cubeMapTexture);

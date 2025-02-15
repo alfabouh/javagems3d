@@ -102,7 +102,7 @@ public final class GameResources implements IGameResources {
             return textureLoader.get();
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned!");
+            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned");
             if (returnDefault != null) {
                 return returnDefault;
             } else {
@@ -117,7 +117,7 @@ public final class GameResources implements IGameResources {
             return textureLoader.get();
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned!");
+            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned");
             if (returnDefault != null) {
                 return returnDefault;
             } else {
@@ -171,7 +171,6 @@ public final class GameResources implements IGameResources {
     }
 
     public void loadResources() {
-        JGemsHelper.getLogger().log("Loading rendering resources...");
         Set<Thread> threads = this.initAssets();
         threads.forEach(Thread::start);
         List<IAssetsInitializer> normalLoad = this.getAssetsLoaderSet().stream().filter(e -> e.loadMode() == IAssetsInitializer.LaunchMode.REGULAR).collect(Collectors.toList());
@@ -185,19 +184,19 @@ public final class GameResources implements IGameResources {
         for (IAssetsInitializer assets : normalLoad) {
             assets.load(this);
         }
-        JGemsHelper.getLogger().log("Rendering resources loaded!");
+        JGemsHelper.getLogger().info("Initialized rendering resources " + this.getResourceCache());
     }
 
     public void addAssetsLoaders(IAssetsInitializer... a) {
         if (a == null) {
-            throw new JGemsNullException("Caught NULL AssetsLoader!");
+            throw new JGemsNullException("Caught NULL AssetsLoader");
         }
         this.assetsLoaderSet.addAll(Arrays.asList(a));
     }
 
     public void addAssetsLoaders(Collection<IAssetsInitializer> a) {
         if (a == null) {
-            throw new JGemsNullException("Caught NULL AssetsLoader Collection!");
+            throw new JGemsNullException("Caught NULL AssetsLoader Collection");
         }
         this.assetsLoaderSet.addAll(a);
     }

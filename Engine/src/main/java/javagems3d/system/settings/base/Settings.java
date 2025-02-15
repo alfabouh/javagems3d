@@ -33,7 +33,7 @@ public abstract class Settings {
     }
 
     public void saveOptions() {
-        JGemsHelper.getLogger().log("Saving settings...");
+        JGemsHelper.getLogger().trace("Saving settings...");
         try {
             PrintWriter printwriter = new PrintWriter(new FileWriter(this.getOptionsFile()));
             for (SettingObject<? extends Serializable> settingObject : this.getSettingObjectMap().values()) {
@@ -43,7 +43,7 @@ public abstract class Settings {
         } catch (Exception e) {
             throw new JGemsRuntimeException(e);
         }
-        JGemsHelper.getLogger().log("Settings successfully saved!");
+        JGemsHelper.getLogger().info("Settings successfully saved");
     }
 
     public boolean makeSettingDirs() {
@@ -51,7 +51,7 @@ public abstract class Settings {
             try {
                 this.getOptionsFile().getParentFile().mkdirs();
                 if (!this.getOptionsFile().createNewFile()) {
-                    throw new JGemsRuntimeException("Failed to create settings path!");
+                    throw new JGemsRuntimeException("Failed to create settings path");
                 }
             } catch (JGemsRuntimeException | IOException e) {
                 throw new JGemsRuntimeException(e);

@@ -47,7 +47,7 @@ public class ImageTexture implements ImageBasedTexture {
 
     private ImageTexture(String fullPath) {
         this.name = fullPath;
-        SystemLogging.get().getLogManager().log("Loading " + this.getName());
+        SystemLogging.get().getLogManager().trace("Loading texture" + this.getName());
         try (InputStream inputStream = JGems3D.loadFileFromJar(new JGemsPath(fullPath))) {
             this.createTexture(this.readTextureFromMemory(this.getName(), inputStream));
         } catch (IOException e) {
@@ -68,7 +68,7 @@ public class ImageTexture implements ImageBasedTexture {
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(fullPath, textureSample);
         } else {
-            throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
+            throw new JGemsRuntimeException("Couldn't add invalid texture in cache");
         }
         return textureSample;
     }
@@ -81,7 +81,7 @@ public class ImageTexture implements ImageBasedTexture {
         if (textureSample.isValid()) {
             resourceCache.addObjectInBuffer(name, textureSample);
         } else {
-            throw new JGemsRuntimeException("Couldn't add invalid texture in cache!");
+            throw new JGemsRuntimeException("Couldn't add invalid texture in cache");
         }
         return textureSample;
     }
@@ -125,7 +125,7 @@ public class ImageTexture implements ImageBasedTexture {
         GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
         STBImage.stbi_image_free(buffer);
-        SystemLogging.get().getLogManager().log("Texture " + this.getName() + " successfully created!");
+        SystemLogging.get().getLogManager().info("Texture " + this.getName() + " successfully created");
     }
 
     public void clear() {

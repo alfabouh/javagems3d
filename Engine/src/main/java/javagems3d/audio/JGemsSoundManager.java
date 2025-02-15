@@ -44,42 +44,41 @@ public final class JGemsSoundManager {
         if (errCode != AL10.AL_NO_ERROR) {
             switch (errCode) {
                 case AL10.AL_INVALID_NAME: {
-                    throw new JGemsRuntimeException("AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function!");
+                    throw new JGemsRuntimeException("AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function");
                 }
                 case AL10.AL_INVALID_ENUM: {
-                    throw new JGemsRuntimeException("AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function!");
+                    throw new JGemsRuntimeException("AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function");
                 }
                 case AL10.AL_INVALID_VALUE: {
-                    throw new JGemsRuntimeException("AL_INVALID_VALUE: an invalid value was passed to an OpenAL function!");
+                    throw new JGemsRuntimeException("AL_INVALID_VALUE: an invalid value was passed to an OpenAL function");
                 }
                 case AL10.AL_INVALID_OPERATION: {
-                    throw new JGemsRuntimeException("AL_INVALID_OPERATION: the requested operation is not valid!");
+                    throw new JGemsRuntimeException("AL_INVALID_OPERATION: the requested operation is not valid");
                 }
                 case AL10.AL_OUT_OF_MEMORY: {
-                    throw new JGemsRuntimeException("AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory!");
+                    throw new JGemsRuntimeException("AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
                 }
                 default: {
-                    throw new JGemsRuntimeException("OpenAL unknown error!");
+                    throw new JGemsRuntimeException("OpenAL unknown error");
                 }
             }
         }
     }
 
     public void createSystem() {
-        JGemsHelper.getLogger().log("Creating sound OpenAL system!");
         this.device = ALC10.alcOpenDevice((ByteBuffer) null);
         if (this.getDevice() == MemoryUtil.NULL) {
-            throw new JGemsRuntimeException("Failed to create OpenAL device!");
+            throw new JGemsRuntimeException("Failed to create OpenAL device");
         }
         ALCCapabilities alcCapabilities = ALC.createCapabilities(this.getDevice());
         this.context = ALC10.alcCreateContext(this.getDevice(), (IntBuffer) null);
         if (this.getContext() == MemoryUtil.NULL) {
-            throw new JGemsRuntimeException("Failed to create OpenAL context!");
+            throw new JGemsRuntimeException("Failed to create OpenAL context");
         }
         ALC10.alcMakeContextCurrent(this.getContext());
         AL.createCapabilities(alcCapabilities);
         this.isSystemCreated = true;
-        JGemsHelper.getLogger().log("OpenAL system successfully created!");
+        JGemsHelper.getLogger().info("OpenAL system successfully created");
         AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
         JGemsSoundManager.checkALonErrors();
     }

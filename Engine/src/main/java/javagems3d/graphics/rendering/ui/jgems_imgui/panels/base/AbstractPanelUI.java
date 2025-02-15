@@ -45,7 +45,7 @@ public abstract class AbstractPanelUI implements PanelUI, IWindow.ResizeEvent {
         if (JGemsUI != null) {
             JGemsUI.setPanel(this.prevPanel);
         } else {
-            JGemsHelper.getLogger().warn("Couldn't go back to NULL UI panel!");
+            JGemsHelper.getLogger().warn("Couldn't go back to NULL UI panel");
         }
     }
 }

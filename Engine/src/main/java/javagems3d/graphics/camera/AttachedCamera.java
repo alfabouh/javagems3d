@@ -50,7 +50,7 @@ public class AttachedCamera extends CameraBase {
     }
 
     public void attachCameraOnItem(SceneEntity abstractSceneEntity) {
-        JGemsHelper.getLogger().log("Attached camera to: " + abstractSceneEntity.getWorldItem().getItemName());
+        JGemsHelper.getLogger().debug("Attached camera to: " + abstractSceneEntity.getWorldItem().getItemName());
         this.abstractSceneEntity = abstractSceneEntity;
         this.setCameraPosition(abstractSceneEntity.getRenderPosition());
         this.setCameraRotation(abstractSceneEntity.getRenderRotation());

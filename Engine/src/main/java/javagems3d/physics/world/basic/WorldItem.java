@@ -86,12 +86,12 @@ public abstract class WorldItem implements IWorldObject {
 
     public void onSpawn(IWorld iWorld) {
         this.spawnTick = iWorld.getTicks();
-        JGemsHelper.getLogger().log("Add entity in world - [ " + this + " ]");
+        JGemsHelper.getLogger().trace("Added entity in world - [ " + this + " ]");
         this.spawned = true;
     }
 
     public void onDestroy(IWorld iWorld) {
-        JGemsHelper.getLogger().log("Removed entity from world - [ " + this + " ]");
+        JGemsHelper.getLogger().trace("Removed entity from world - [ " + this + " ]");
     }
 
     public boolean isSpawned() {

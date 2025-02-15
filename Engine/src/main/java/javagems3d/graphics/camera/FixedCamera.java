@@ -19,12 +19,12 @@ import org.joml.Vector3f;
 public class FixedCamera extends CameraBase {
     public FixedCamera(ICamera camera) {
         super(camera);
-        JGemsHelper.getLogger().log("Created free camera at: " + camera.getCamPosition());
+        JGemsHelper.getLogger().trace("Created free camera at: " + camera.getCamPosition());
     }
 
     public FixedCamera(Vector3f pos, Vector3f rot) {
         super(pos, rot);
-        JGemsHelper.getLogger().log("Created free camera at: " + pos);
+        JGemsHelper.getLogger().trace("Created free camera at: " + pos);
     }
 
     public void setCameraPosition(Vector3f vector3f) {

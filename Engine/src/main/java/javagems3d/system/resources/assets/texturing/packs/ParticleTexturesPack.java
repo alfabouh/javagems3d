@@ -47,7 +47,7 @@ public final class ParticleTexturesPack {
     }
 
     private void loadTextures() {
-        JGemsHelper.getLogger().log("Loading particle texture pack: " + this.pathToTexturePath);
+        JGemsHelper.getLogger().info("Loading particle texture pack: " + this.pathToTexturePath);
         for (int i = 0; i < this.texturesNum; i++) {
             this.iImageSample[i] = JGemsResourceManager.getGlobalGameResources().createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(this.pathToTexturePath, String.format("%s%d%s", "particle_", i, this.format)), new ImageTexture.Properties(true));
         }

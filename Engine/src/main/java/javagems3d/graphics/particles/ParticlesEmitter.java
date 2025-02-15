@@ -74,14 +74,14 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     public void create(SceneWorld sceneWorld) {
         final float size = 0.1f;
         this.commonParticleModel2D = MeshHelper.generatePlane3DModel(new Vector3f(-size, -size, 0.0f), new Vector3f(size, -size, 0.0f), new Vector3f(-size, size, 0.0f), new Vector3f(size, size, 0.0f));
-        JGemsHelper.getLogger().log("Created particles emitter!");
+        JGemsHelper.getLogger().info("Created particles emitter");
     }
 
     @Override
     public void destroy(SceneWorld sceneWorld) {
         this.commonParticleModel2D.clear();
         this.clearParticles(sceneWorld);
-        JGemsHelper.getLogger().log("Destroyed particles emitter!");
+        JGemsHelper.getLogger().info("Destroyed particles emitter");
     }
 
     public void clearParticles(SceneWorld sceneWorld) {

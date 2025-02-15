@@ -53,7 +53,7 @@ public class RenderTable {
             this.setDefaults();
         }
         if (this.dataMap.containsValue(null)) {
-            throw new JGemsNullException("Shading table contains NULL value!");
+            throw new JGemsNullException("Shading table contains NULL value");
         }
     }
 
@@ -93,13 +93,13 @@ public class RenderTable {
             switch (renderFabric.getRenderingType()) {
                 case DIRECT: {
                     if (!(renderFabric instanceof DirectRenderFabric)) {
-                        throw new JGemsRuntimeException("If you are using DIRECT RenderFabric, it should be extended from DirectRenderFabric!");
+                        throw new JGemsRuntimeException("If you are using DIRECT RenderFabric, it should be extended from DirectRenderFabric");
                     }
                     break;
                 }
                 case INDIRECT: {
                     if (!(renderFabric instanceof IndirectRenderFabric)) {
-                        throw new JGemsRuntimeException("If you are using INDIRECT RenderFabric, it should be extended from IndirectRenderFabric!");
+                        throw new JGemsRuntimeException("If you are using INDIRECT RenderFabric, it should be extended from IndirectRenderFabric");
                     }
                     break;
                 }

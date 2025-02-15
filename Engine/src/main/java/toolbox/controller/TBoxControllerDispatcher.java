@@ -28,7 +28,7 @@ public class TBoxControllerDispatcher implements IControllerDispatcher {
 
     public TBoxControllerDispatcher(IWindow window) {
         this.mouseKeyboardController = new AlternateMouseKeyboardController(window, new TBoxBindingManager());
-        SystemLogging.get().getLogManager().log("Created controller dispatcher!");
+        SystemLogging.get().getLogManager().info("Created controller dispatcher");
     }
 
     public static TBoxBindingManager bindingManager() {

@@ -20,6 +20,7 @@ import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
@@ -46,6 +47,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
@@ -91,7 +93,7 @@ public class JGemsCore implements ICore {
             return;
         }
         if (this.getMapLoader() != null) {
-            JGemsHelper.getLogger().error("Firstly, the current map should be destroyed!");
+            JGemsHelper.getLogger().error("Firstly, the current map should be destroyed");
             return;
         }
         this.mapLoader = mapLoader;
@@ -104,10 +106,10 @@ public class JGemsCore implements ICore {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
-        JGemsHelper.getLogger().log("Destroying map!");
+        JGemsHelper.getLogger().trace("Exit map");
         APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
         this.pauseGame();
-        this.getScreen().showGameLoadingScreen("Exit world...");
+        this.getScreen().showGameLoadingScreen("Exiting world...");
         this.clear();
         JGemsHelper.GAME.unPauseGameAndUnLockUnPausing();
         JGemsHelper.GAME.unLockController();
@@ -122,13 +124,11 @@ public class JGemsCore implements ICore {
 
     private void readAndProcessMapData() {
         if (!this.engineState().isEngineIsReady()) {
-            JGemsHelper.getLogger().error("Engine thread is not ready to load map!");
-            this.mapLoader = null;
-            return;
+            throw new JGemsRuntimeException("Attempted to load map, before initialization");
         }
 
         if (this.getMapLoader() == null) {
-            JGemsHelper.getLogger().error("Invalid map!");
+            JGemsHelper.getLogger().error("Invalid map");
             return;
         }
 
@@ -137,7 +137,7 @@ public class JGemsCore implements ICore {
 
         this.getScreen().showGameLoadingScreen("Loading Map...");
         this.startWorlds();
-        JGemsHelper.getLogger().log("Loading map " + this.currentMapName());
+        JGemsHelper.getLogger().trace("Loading map: " + this.currentMapName());
         PhysicsWorld physicsWorld = this.getPhysics().getPhysicsProcessor().getPhysicsWorld();
         SceneWorld sceneWorld = this.getScreen().getSceneWorld();
         APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
@@ -176,7 +176,7 @@ public class JGemsCore implements ICore {
         Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
         this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
 
-        JGemsHelper.getLogger().log(this.currentMapName() + ": Map Loaded!");
+        JGemsHelper.getLogger().info("Successfully loaded map: " + this.currentMapName());
 
         JGemsHelper.CONTROLLER.setCursorInCenter();
         JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
@@ -230,7 +230,7 @@ public class JGemsCore implements ICore {
             return;
         }
         if (!this.engineState().isEngineIsReady()) {
-            JGemsHelper.getLogger().warn("Engine thread is not ready to be cleaned!");
+            JGemsHelper.getLogger().warn("Engine thread is not ready to be cleaned");
             return;
         }
         this.getSoundManager().stopAllSounds();
@@ -256,9 +256,10 @@ public class JGemsCore implements ICore {
     public void startSystem() {
         this.printSystemInfo();
         if (this.engineState().isEngineIsReady()) {
-            JGemsHelper.getLogger().warn("Engine thread is currently running!");
+            JGemsHelper.getLogger().warn("Engine thread is currently running");
             return;
         }
+        AtomicReference<String> err = new AtomicReference<>();
         this.systemThread = new Thread(() -> {
             boolean badExit = true;
             try {
@@ -276,6 +277,7 @@ public class JGemsCore implements ICore {
                 this.getScreen().runRenderThread();
                 badExit = false;
             } catch (Exception e) {
+                err.set(e.getMessage());
                 JGemsHelper.getLogger().exception(e);
                 badExit = true;
             } finally {
@@ -292,13 +294,14 @@ public class JGemsCore implements ICore {
                         badExit = true;
                     }
                     this.getPhysics().getPhysicsProcessor().clearResources();
-                    JGemsHelper.getLogger().log("Engine-Off");
+                    JGemsHelper.getLogger().debug("END");
                 } catch (Exception e) {
+                    err.set(e.getMessage());
                     JGemsHelper.getLogger().exception(e);
                     badExit = true;
                 } finally {
                     if (badExit) {
-                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.");
+                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.\n" + (err != null ? err : ""));
                     }
                 }
             }
@@ -357,54 +360,54 @@ public class JGemsCore implements ICore {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long maxMemory = Runtime.getRuntime().maxMemory();
 
-        JGemsHelper.getLogger().log("==========================================================");
-        JGemsHelper.getLogger().log("****DATA***");
-        JGemsHelper.getLogger().log("==========================================================");
+        JGemsHelper.getLogger().info("==========================================================");
+        JGemsHelper.getLogger().info("****DATA***");
+        JGemsHelper.getLogger().info("==========================================================");
 
-        JGemsHelper.getLogger().log("SYSTEM INFO");
-        JGemsHelper.getLogger().log(osBean.getName());
-        JGemsHelper.getLogger().log("System: " + osBean.getName());
-        JGemsHelper.getLogger().log("System architecture: " + osBean.getArch());
-        JGemsHelper.getLogger().log("System version: " + osBean.getVersion());
+        JGemsHelper.getLogger().info("SYSTEM INFO");
+        JGemsHelper.getLogger().info(osBean.getName());
+        JGemsHelper.getLogger().info("System: " + osBean.getName());
+        JGemsHelper.getLogger().info("System architecture: " + osBean.getArch());
+        JGemsHelper.getLogger().info("System version: " + osBean.getVersion());
 
-        JGemsHelper.getLogger().log("");
-        JGemsHelper.getLogger().log("JAVA INFO");
-        JGemsHelper.getLogger().log("Java version: " + runtimeBean.getSpecVersion());
-        JGemsHelper.getLogger().log("Java vendor: " + runtimeBean.getSpecVendor());
-        JGemsHelper.getLogger().log("Java VM: " + runtimeBean.getVmVersion());
-        JGemsHelper.getLogger().log("Java VM version: " + runtimeBean.getVmVersion());
+        JGemsHelper.getLogger().info("");
+        JGemsHelper.getLogger().info("JAVA INFO");
+        JGemsHelper.getLogger().info("Java version: " + runtimeBean.getSpecVersion());
+        JGemsHelper.getLogger().info("Java vendor: " + runtimeBean.getSpecVendor());
+        JGemsHelper.getLogger().info("Java VM: " + runtimeBean.getVmVersion());
+        JGemsHelper.getLogger().info("Java VM version: " + runtimeBean.getVmVersion());
 
-        JGemsHelper.getLogger().log("");
-        JGemsHelper.getLogger().log("USER INFO");
-        JGemsHelper.getLogger().log("User name: " + properties.getProperty("user.name"));
-        JGemsHelper.getLogger().log("User home: " + properties.getProperty("user.home"));
-        JGemsHelper.getLogger().log("User dir: " + properties.getProperty("user.dir"));
+        JGemsHelper.getLogger().info("");
+        JGemsHelper.getLogger().info("USER INFO");
+        JGemsHelper.getLogger().info("User name: " + properties.getProperty("user.name"));
+        JGemsHelper.getLogger().info("User home: " + properties.getProperty("user.home"));
+        JGemsHelper.getLogger().info("User dir: " + properties.getProperty("user.dir"));
 
-        JGemsHelper.getLogger().log("");
-        JGemsHelper.getLogger().log("HARDWARE INFO");
-        JGemsHelper.getLogger().log("Available processors: " + availableProcessors);
-        JGemsHelper.getLogger().log("Free memory: " + freeMemory / 1024 / 1024 + " MB");
-        JGemsHelper.getLogger().log("Total memory: " + totalMemory / 1024 / 1024 + " MB");
-        JGemsHelper.getLogger().log("Max memory: " + (maxMemory == Long.MAX_VALUE ? "UNLIMITED" : maxMemory / 1024 / 1024 + " MB"));
+        JGemsHelper.getLogger().info("");
+        JGemsHelper.getLogger().info("HARDWARE INFO");
+        JGemsHelper.getLogger().info("Available processors: " + availableProcessors);
+        JGemsHelper.getLogger().info("Free memory: " + freeMemory / 1024 / 1024 + " MB");
+        JGemsHelper.getLogger().info("Total memory: " + totalMemory / 1024 / 1024 + " MB");
+        JGemsHelper.getLogger().info("Max memory: " + (maxMemory == Long.MAX_VALUE ? "UNLIMITED" : maxMemory / 1024 / 1024 + " MB"));
 
-        JGemsHelper.getLogger().log("==========================================================");
-        JGemsHelper.getLogger().log("****DATA***");
-        JGemsHelper.getLogger().log("==========================================================");
-        JGemsHelper.getLogger().log("");
+        JGemsHelper.getLogger().info("==========================================================");
+        JGemsHelper.getLogger().info("****DATA***");
+        JGemsHelper.getLogger().info("==========================================================");
+        JGemsHelper.getLogger().info("");
     }
 
     private void printGraphicsInfo() {
-        JGemsHelper.getLogger().log("");
-        JGemsHelper.getLogger().log("==========================================================");
-        JGemsHelper.getLogger().log("***RENDER INFO***");
-        JGemsHelper.getLogger().log("==========================================================");
-        JGemsHelper.getLogger().log("Renderer: " + GL46.glGetString(GL46.GL_RENDERER));
-        JGemsHelper.getLogger().log("OpenGL Version: " + GL46.glGetString(GL46.GL_VERSION));
-        JGemsHelper.getLogger().log("Vendor: " + GL46.glGetString(GL46.GL_VENDOR));
-        JGemsHelper.getLogger().log("==========================================================");
-        JGemsHelper.getLogger().log("***RENDER INFO***");
-        JGemsHelper.getLogger().log("==========================================================");
-        JGemsHelper.getLogger().log("");
+        JGemsHelper.getLogger().info("");
+        JGemsHelper.getLogger().info("==========================================================");
+        JGemsHelper.getLogger().info("***RENDER INFO***");
+        JGemsHelper.getLogger().info("==========================================================");
+        JGemsHelper.getLogger().info("Renderer: " + GL46.glGetString(GL46.GL_RENDERER));
+        JGemsHelper.getLogger().info("OpenGL Version: " + GL46.glGetString(GL46.GL_VERSION));
+        JGemsHelper.getLogger().info("Vendor: " + GL46.glGetString(GL46.GL_VENDOR));
+        JGemsHelper.getLogger().info("==========================================================");
+        JGemsHelper.getLogger().info("***RENDER INFO***");
+        JGemsHelper.getLogger().info("==========================================================");
+        JGemsHelper.getLogger().info("");
     }
 
     @Override

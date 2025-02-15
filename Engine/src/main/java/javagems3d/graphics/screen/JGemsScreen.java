@@ -79,7 +79,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public void createScreenAndContext() {
-        JGemsHelper.getLogger().log("Init Graphics!");
+        JGemsHelper.getLogger().info("Init Graphics");
         if (this.tryToBuildScreen()) {
             JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
             JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
@@ -87,8 +87,12 @@ public class JGemsScreen implements IScreen {
             this.adjustScreenMode();
             this.adjustVSync();
             GL.createCapabilities();
+            String validate = OpenGLSysUtils.validateOGLFunctions();
+            if (validate != null) {
+                throw new JGemsRuntimeException(validate);
+            }
             if (JGems3D.DEBUG_MODE) {
-                JGemsScreen.registerOGLDebugOutput();
+                OpenGLSysUtils.registerOGLDebugOutput();
             }
             JGemsResourceManager.createShaders();
 
@@ -97,10 +101,8 @@ public class JGemsScreen implements IScreen {
 
             OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
             this.getWindow().showWindow();
-
-            JGemsHelper.getLogger().log("JGemsScreen built successful");
         } else {
-            throw new JGemsRuntimeException("Caught service, while building screen!!");
+            throw new JGemsRuntimeException("Caught service, while building screen!");
         }
     }
 
@@ -156,102 +158,6 @@ public class JGemsScreen implements IScreen {
         }
         GLFW.glfwMakeContextCurrent(window);
         return true;
-    }
-
-    public static void registerOGLDebugOutput() {
-        JGemsHelper.getLogger().debug("Enabled OpenGL Debug Context");
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
-        GL46.glEnable(GL46.GL_DEBUG_OUTPUT);
-        GL46.glEnable(GL46.GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        GL46.glDebugMessageCallback((source, type, id, severity, length, message, param) -> {
-            if (severity == GL46.GL_DEBUG_SEVERITY_NOTIFICATION) {
-                return;
-            }
-            String msgS = MemoryUtil.memUTF8(message, length);
-            String sourceS = "unknown";
-            String typeS = "unknown";
-            String severityS = "unknown";
-            switch (source) {
-                case GL46.GL_DEBUG_SOURCE_API: {
-                    sourceS = "OpenGL API Functions";
-                    break;
-                }
-                case GL46.GL_DEBUG_SOURCE_WINDOW_SYSTEM: {
-                    sourceS = "Window Functions";
-                    break;
-                }
-                case GL46.GL_DEBUG_SOURCE_THIRD_PARTY: {
-                    sourceS = "Third Party Functions";
-                    break;
-                }
-                case GL46.GL_DEBUG_SOURCE_APPLICATION: {
-                    sourceS = "Application";
-                    break;
-                }
-                case GL46.GL_DEBUG_SOURCE_OTHER: {
-                    sourceS = "Other";
-                    break;
-                }
-            }
-            switch (type) {
-                case GL46.GL_DEBUG_TYPE_ERROR: {
-                    typeS = "OpenGL API Error";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: {
-                    typeS = "Deprecated Function Error";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: {
-                    typeS = "Undefined Error";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_PORTABILITY: {
-                    typeS = "Portable Function Error";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_PERFORMANCE: {
-                    typeS = "Performance Warning";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_MARKER: {
-                    typeS = "Annotation/Marker";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_PUSH_GROUP: {
-                    typeS = "Push Group Stack Error";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_POP_GROUP: {
-                    typeS = "Pop Group Stack Error";
-                    break;
-                }
-                case GL46.GL_DEBUG_TYPE_OTHER: {
-                    typeS = "Some Error";
-                    break;
-                }
-            }
-            switch (severity) {
-                case GL46.GL_DEBUG_SEVERITY_HIGH: {
-                    severityS = "HIGH SEVERITY/ERROR";
-                    break;
-                }
-                case GL46.GL_DEBUG_SEVERITY_MEDIUM: {
-                    severityS = "MEDIUM SEVERITY/WARNING";
-                    break;
-                }
-                case GL46.GL_DEBUG_SEVERITY_LOW: {
-                    severityS = "WARNING";
-                    break;
-                }
-                case GL46.GL_DEBUG_SEVERITY_NOTIFICATION: {
-                    severityS = "NOTIFICATION";
-                    break;
-                }
-            }
-            JGemsHelper.getLogger().error("[OpenGL]: " + msgS + " ::: \n" + sourceS + ", (type = " + typeS + "), severity: " + severityS);
-        }, 0L);
-        //GL46.glDebugMessageControl(GL46.GL_DONT_CARE, GL46.GL_DONT_CARE, GL46.GL_DEBUG_SEVERITY_LOW, (IntBuffer) null, true); DOES NOT WORK!!
     }
 
     public void adjustVSync() {
@@ -311,7 +217,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public void runRenderThread() {
-        JGemsHelper.getLogger().log("Starting screen...");
+        JGemsHelper.getLogger().info("Starting screen");
         SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
@@ -323,10 +229,10 @@ public class JGemsScreen implements IScreen {
             throw new JGemsRuntimeException(e);
         } finally {
             this.getScene().postRender();
-            JGemsHelper.getLogger().log("Destroying screen...");
             this.getTimerPool().clear();
             GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
             GLFW.glfwTerminate();
+            JGemsHelper.getLogger().info("Screen destroyed");
         }
     }
 
@@ -425,7 +331,6 @@ public class JGemsScreen implements IScreen {
         private int counter;
 
         public LoadingScreen(String title) {
-            JGemsHelper.getLogger().log("Loading screen");
             Font gameFont = JGemsResourceManager.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
