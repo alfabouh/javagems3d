@@ -22,7 +22,11 @@ public final class ShaderLibrariesManager {
         return this.getContainerMap().get(id);
     }
 
-    public void putShaderLibrary(ShaderLibrariesContainer shaderLibrariesContainer) {
+    public void initLibrary(JGemsPath path) {
+        this.initLibrary(new ShaderLibrariesContainer(path));
+    }
+
+    public void initLibrary(ShaderLibrariesContainer shaderLibrariesContainer) {
         this.getContainerMap().put(shaderLibrariesContainer.getPath(), shaderLibrariesContainer);
     }
 

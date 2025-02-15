@@ -13,7 +13,6 @@ package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
 import javagems3d.global.JGemsGlobalConfiguration;
-import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.environment.lights.scene.LightsScene;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
@@ -22,7 +21,6 @@ import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
-import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -92,7 +90,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
-        shaderLibrary.putShaderLibrary(new ShaderLibrariesContainer(new JGemsPath("/assets/jgems/shaders/libs/shadows")));
+        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
     }
 
     protected void initObjects(ResourceCache resourceCache) {
