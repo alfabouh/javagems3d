@@ -10,15 +10,17 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
 public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
-    private Vector2i[] size6;
-    private int textureId;
-    private int samplerId;
-    private long bindlessHandler;
+    protected Vector2i[] size6;
+    protected int textureId;
+    protected int samplerId;
+    protected long bindlessHandler;
+    protected IProperties properties;
 
     public CubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data) {
         this.bindlessHandler = 0;
         this.textureId = 0;
         this.samplerId = 0;
+        this.properties = new CubeMapTexture.Properties(true);
         this.init(textureProperties, data);
     }
 
@@ -40,10 +42,10 @@ public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
     }
 
     public void setProperties(IProperties properties) {
-        if (properties == null) {
-            properties = new CubeMapTexture.Properties(true);
+        if (properties != null) {
+            this.properties = properties;
         }
-        CubeMapTexture.Properties properties1 = (CubeMapTexture.Properties) properties;
+        CubeMapTexture.Properties properties1 = (CubeMapTexture.Properties) this.properties;
         if (this.getSamplerId() != 0) {
             GL46.glDeleteSamplers(this.getSamplerId());
         }

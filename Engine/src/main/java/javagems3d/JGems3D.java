@@ -272,11 +272,11 @@ public final class JGems3D {
     }
 
     public void loadMap(IMapLoader mapLoader) {
-        this.getCore().loadMap(mapLoader);
+        this.getCore().entryMap(mapLoader);
     }
 
     public void destroyMap() {
-        this.getCore().destroyMap();
+        this.getCore().exitMap();
     }
 
     public static void close(@Nullable Exception exception) {

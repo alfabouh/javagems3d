@@ -92,7 +92,7 @@ public class JGemsCore implements ICore {
         return GLFW.glfwGetCurrentContext() != 0L;
     }
 
-    public void loadMap(IMapLoader mapLoader) {
+    public void entryMap(IMapLoader mapLoader) {
         if (!this.isCurrentThreadOGL()) {
             this.requestsFromThreads.loadMap = mapLoader;
             return;
@@ -106,7 +106,7 @@ public class JGemsCore implements ICore {
         this.requestsFromThreads.loadMap = null;
     }
 
-    public void destroyMap() {
+    public void exitMap() {
         if (!this.isCurrentThreadOGL()) {
             this.requestsFromThreads.destroyMap = true;
             return;
@@ -288,7 +288,7 @@ public class JGemsCore implements ICore {
                     if (!this.getPhysics().waitForFullTermination()) {
                         JGemsHelper.getLogger().error("Waited for physics termination too long...");
                     }
-                    this.clear();
+                    this.getScreen().getScene().getSceneRenderer().destroySceneIndirectRenderBuffer();
                     this.destroyWorlds();
                     this.getSoundManager().stopAllSounds();
                     this.getResourceManager().destroy();
@@ -300,9 +300,9 @@ public class JGemsCore implements ICore {
                     this.appendException(err, e);
                     JGemsHelper.getLogger().exception(e);
                 } finally {
-                    this.collectExceptions(err);
                     String mss = err.toString();
                     if (!mss.isEmpty()) {
+                        this.collectExceptions(err);
                         JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.\n\n" + mss);
                     }
                 }
@@ -329,7 +329,7 @@ public class JGemsCore implements ICore {
     private void collectExceptions(StringBuilder err) {
         Iterator<Exception> iterator = this.getExceptionsBuffer().iterator();
         while (iterator.hasNext()) {
-            Exception ex = (Exception) iterator.next();
+            Exception ex = iterator.next();
             this.appendException(err, ex);
             iterator.remove();
         }
@@ -465,11 +465,11 @@ public class JGemsCore implements ICore {
 
         public void update() {
             if (this.destroyMap) {
-                JGemsCore.this.destroyMap();
+                JGemsCore.this.exitMap();
                 return;
             }
             if (this.loadMap != null) {
-                JGemsCore.this.loadMap(this.loadMap);
+                JGemsCore.this.entryMap(this.loadMap);
             }
         }
     }

@@ -25,15 +25,17 @@ import org.lwjgl.stb.STBImage;
 import java.nio.ByteBuffer;
 
 public class ImageTexture implements ImageBasedTexture, ITextureBindless {
-    private Vector2i size;
-    private int textureId;
-    private int samplerId;
-    private long bindlessHandler;
+    protected IProperties properties;
+    protected Vector2i size;
+    protected int textureId;
+    protected int samplerId;
+    protected long bindlessHandler;
 
     public ImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull Data data) {
         this.bindlessHandler = 0;
         this.textureId = 0;
         this.samplerId = 0;
+        this.properties = new Properties();
         this.init(textureProperties, data);
     }
 
@@ -45,9 +47,13 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         this.bindTexture();
         GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
         GL46.glTexImage2D(this.getTextureAttachment(), 0, GL46.GL_RGBA, this.getSize().x, this.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getBuffer());
-        if (((Properties) properties).isMipMap()) {
-            GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAX_LEVEL, 11);
+        if (properties != null && ((Properties) properties).isMipMap()) {
+            int maxDimension = Math.max(this.getSize().x, this.getSize().y);
+            int maxLevel = (int) Math.floor(Math.log(maxDimension) / Math.log(2));
+            GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAX_LEVEL, maxLevel);
             GL46.glGenerateMipmap(this.getTextureAttachment());
+        } else {
+            GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAX_LEVEL, 0);
         }
         this.unBindTexture();
         data.clear();
@@ -57,10 +63,10 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
     }
 
     public void setProperties(IProperties properties) {
-        if (properties == null) {
-            properties = new Properties();
+        if (properties != null) {
+            this.properties = properties;
         }
-        Properties properties1 = (Properties) properties;
+        Properties properties1 = (Properties) this.properties;
         //int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
         boolean linear = properties1.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
         boolean anisotropic = properties1.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;

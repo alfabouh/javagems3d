@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.map.IMapActionsCallback;
+import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -34,6 +35,9 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
     public abstract IndirectBufferProgram getSceneIndirectBuffer();
     public abstract Map<Nodes, IRenderNode> getConveyorNodes();
     public abstract ISceneCulling getSceneCulling();
+
+    public abstract void initSceneIndirectRenderBuffer(MeshBuffersDataCache meshBuffersDataCache);
+    public abstract void destroySceneIndirectRenderBuffer();
 
     @Override
     public @NotNull SceneWorld getSceneWorld() {

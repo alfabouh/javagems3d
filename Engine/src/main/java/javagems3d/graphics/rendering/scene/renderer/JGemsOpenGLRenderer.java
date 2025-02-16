@@ -240,12 +240,15 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
     @Override
     public void onMapDestroyed(IMapLoader loader, JGemsResourceManager resourceManager) {
-        this.getSceneIndirectBuffer().clear();
+        this.destroySceneIndirectRenderBuffer();
     }
 
     public void initSceneIndirectRenderBuffer(MeshBuffersDataCache meshBuffersDataCache) {
-        this.getSceneIndirectBuffer().clear();
         this.getSceneIndirectBuffer().init(meshBuffersDataCache);
+    }
+
+    public void destroySceneIndirectRenderBuffer() {
+        this.getSceneIndirectBuffer().clear();
     }
 
     public void createResources() {
@@ -255,7 +258,6 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     public void destroyResources() {
-        this.getSceneIndirectBuffer().clear();
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getSceneWorld().getEnvironment().destroyEnvironment();
         this.getSceneCulling().destroyResources();
