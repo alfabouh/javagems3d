@@ -15,6 +15,7 @@ import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.system.os.OS;
 import javagems3d.system.os.SysOSValidation;
 import logger.managers.LoggingManager;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import api.bridge.APIContainer;
 import api.bridge.APILauncher;
@@ -278,10 +279,16 @@ public final class JGems3D {
         this.getCore().destroyMap();
     }
 
-    public void destroyGame() {
+    public static void close(@Nullable Exception exception) {
+        synchronized (JGems3D.get()) {
+            JGems3D.get().shouldBeClosed = true;
+            JGems3D.get().getCore().addExceptionInTrace(exception);
+        }
+    }
+
+    public static void freeSync() {
         SyncManager.freeAll();
         synchronized (JGemsPhysics.locker) {
-            JGems3D.get().shouldBeClosed = true;
             JGemsPhysics.locker.notifyAll();
         }
     }

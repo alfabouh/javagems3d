@@ -23,7 +23,6 @@ import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 public class ImageTexture implements ImageBasedTexture, ITextureBindless {
     private Vector2i size;
@@ -46,8 +45,10 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         this.bindTexture();
         GL46.glPixelStorei(GL46.GL_UNPACK_ALIGNMENT, 1);
         GL46.glTexImage2D(this.getTextureAttachment(), 0, GL46.GL_RGBA, this.getSize().x, this.getSize().y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getBuffer());
-        GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAX_LEVEL, 11);
-        GL46.glGenerateMipmap(this.getTextureAttachment());
+        if (((Properties) properties).isMipMap()) {
+            GL46.glTexParameteri(this.getTextureAttachment(), GL46.GL_TEXTURE_MAX_LEVEL, 11);
+            GL46.glGenerateMipmap(this.getTextureAttachment());
+        }
         this.unBindTexture();
         data.clear();
         this.setProperties(properties);
@@ -68,7 +69,8 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
             GL46.glDeleteSamplers(this.getSamplerId());
         }
         this.samplerId = GL46.glGenSamplers();
-        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST);
+        int bitMin = properties1.isMipMap() ? (linear ? GL46.GL_LINEAR_MIPMAP_LINEAR : GL46.GL_NEAREST_MIPMAP_NEAREST) : (linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MIN_FILTER, bitMin);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, properties1.isShouldBeRepeated() ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
@@ -134,20 +136,26 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         private final boolean shouldBeRepeated;
         private final boolean anisotropicFiltration;
         private final boolean qualityAffected;
+        private final boolean mipMap;
 
-        public Properties(boolean qualityAffected) {
-            this(true, true, true, qualityAffected);
+        public Properties(boolean mipMap, boolean qualityAffected) {
+            this(mipMap, true, true, true, qualityAffected);
         }
 
         public Properties() {
-            this(true, true, true, false);
+            this(true, true, true, true, false);
         }
 
-        public Properties(boolean linearFilter, boolean shouldBeRepeated, boolean anisotropicFiltration, boolean qualityAffected) {
+        public Properties(boolean mipMap, boolean linearFilter, boolean shouldBeRepeated, boolean anisotropicFiltration, boolean qualityAffected) {
             this.linearFiltration = linearFilter;
             this.shouldBeRepeated = shouldBeRepeated;
             this.anisotropicFiltration = anisotropicFiltration;
             this.qualityAffected = qualityAffected;
+            this.mipMap = mipMap;
+        }
+
+        public boolean isMipMap() {
+            return this.mipMap;
         }
 
         public boolean isLinearFiltration() {

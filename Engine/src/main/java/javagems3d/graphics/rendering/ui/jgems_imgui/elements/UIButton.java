@@ -26,7 +26,6 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIAction;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIInteractiveElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 
-import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -75,9 +74,9 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    public void buildUI() {
+    public void build() {
         this.buttonModel = MeshHelper.generatePlane2DModel(new Vector2f(position), new Vector2f(this.getSize().x, this.getSize().y).add(position.x, position.y), this.getZValue());
-        this.uiText.buildUI();
+        this.uiText.build();
     }
 
     private Vector2i getFontPos(String text, Vector2i buttonSize) {
@@ -87,9 +86,9 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    public void clearData() {
+    public void clear() {
         this.buttonModel.clear();
-        this.uiText.clearData();
+        this.uiText.clear();
     }
 
     @Override
@@ -141,7 +140,7 @@ public class UIButton extends UIInteractiveElement {
     }
 
     @Override
-    protected void onUnClicked(Vector2f mouseCoordinates) {
+    protected void onReleased(Vector2f mouseCoordinates) {
         if (this.onUnClick != null) {
             this.onUnClick.action();
         }

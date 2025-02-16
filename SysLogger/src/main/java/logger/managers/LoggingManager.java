@@ -58,8 +58,8 @@ public abstract class LoggingManager {
         openLogFolderButton.addActionListener(e -> {
             try {
                 Desktop.getDesktop().open(new File(fileAppender.getFileName()));
-            } catch (IOException ignored) {
-                SystemLogging.get().getLogManager().error("Failed to open logs path");
+            } catch (IOException ex) {
+                SystemLogging.get().getLogManager().error("Failed to open logs path", ex);
             }
         });
 
@@ -72,11 +72,21 @@ public abstract class LoggingManager {
 
         JScrollPane scrollPane = new JScrollPane(textArea);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(scrollPane, BorderLayout.CENTER);
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        SwingUtilities.invokeLater(() -> JOptionPane.showOptionDialog(null, panel, "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new Object[]{openLogFolderButton}, openLogFolderButton));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(openLogFolderButton);
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        SwingUtilities.invokeLater(() -> {
+            JDialog dialog = new JDialog((Frame) null, "Error", false);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.getContentPane().add(contentPanel);
+            dialog.pack();
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+        });
     }
 
     public static void showWindowInfo(String message) {

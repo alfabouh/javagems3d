@@ -46,9 +46,8 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
                 if (meshNode3D.getMaterial().getDiffuse() instanceof ImageBasedTexture) {
-                    shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    ((ImageBasedTexture) meshNode3D.getMaterial().getDiffuse()).bindTexture();
+                    ImageBasedTexture imageBasedTexture = (ImageBasedTexture) meshNode3D.getMaterial().getDiffuse();
+                    shaderManager.performUniformTexture(new UniformString("texture_sampler"), imageBasedTexture);
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                 } else {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));

@@ -127,7 +127,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         while (uiElementIterator.hasNext()) {
             UIElement element = uiElementIterator.next();
             if (element.getUnUsedTicks() > JGemsRenderingGlobalConstants.TICKS_TO_CLEAN_UNUSED_UI) {
-                element.clearData();
+                element.clear();
                 uiElementIterator.remove();
             }
         }
@@ -195,13 +195,13 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     }
 
     private <T extends UIElement> T addUIInCache(Class<T> clazz, UIElement uiElement) {
-        uiElement.buildUI();
+        uiElement.build();
         int hash = uiElement.hashCode();
         if (this.getUiFrameCache().containsKey(hash)) {
             UIElement cachedUiElement = this.getUiFrameCache().get(hash);
             if (uiElement.equals(cachedUiElement)) {
                 cachedUiElement.zeroUnusedTicks();
-                uiElement.clearData();
+                uiElement.clear();
                 return clazz.cast(cachedUiElement);
             }
         } else {
@@ -231,7 +231,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     }
 
     private void clearFrame() {
-        this.getUiFrameCache().forEach((key, value) -> value.clearData());
+        this.getUiFrameCache().forEach((key, value) -> value.clear());
         this.getUiFrameCache().clear();
     }
 

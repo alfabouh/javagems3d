@@ -84,9 +84,9 @@ public class GuiFont {
             throw new JGemsIOException(e);
         }
         if (gameResources != null) {
-            this.texture = gameResources.createTexture(null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false));
+            this.texture = gameResources.createTexture(null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false, false));
         } else {
-            this.texture = new TexturesLoader(null, "font" + GuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false), inputStream);
+            this.texture = new TexturesLoader(null, "font" + GuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false, false), inputStream);
         }
         inputStream.close();
     }

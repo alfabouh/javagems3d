@@ -49,9 +49,7 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
-        GL46.glActiveTexture(GL46.GL_TEXTURE0);
-        this.iImageSample.bindTexture();
-        shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
+        shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.iImageSample);
         this.getCurrentShader().performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
         JGemsHelper.RENDERING.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();

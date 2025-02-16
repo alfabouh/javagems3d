@@ -38,7 +38,7 @@ public class DefaultLeaveConfirmationPanel extends AbstractPanelUI {
 
         JGemsUI.buttonUI(JGems3D.get().I18n("menu.confirm.yes"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW / 2 + 5, windowH / 2), new Vector2i(200, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().destroyGame();
+                    JGems3D.close(null);
                 });
         JGemsUI.buttonUI(JGems3D.get().I18n("menu.confirm.no"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW / 2 - 205, windowH / 2), new Vector2i(200, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {

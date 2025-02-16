@@ -31,9 +31,7 @@ public class UIArrow extends UIInteractiveElement {
         super(null, zValue);
         this.position = position;
         this.size = new Vector2i(4, 8);
-
         this.imageStaticUI = new UIPictureStaticSelectable(JGemsResourceManager.globalTextureAssets.gui1, position, new Vector2f(vector == -1 ? 5.0f : 0.0f, 22.0f), new Vector2f(this.size), zValue);
-
         this.settingIntSlots = settingIntSlots;
         this.vector = vector;
     }
@@ -48,13 +46,13 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    public void buildUI() {
-        this.imageStaticUI.buildUI();
+    public void build() {
+        this.imageStaticUI.build();
     }
 
     @Override
-    public void clearData() {
-        this.imageStaticUI.clearData();
+    public void clear() {
+        this.imageStaticUI.clear();
     }
 
     @Override
@@ -107,7 +105,7 @@ public class UIArrow extends UIInteractiveElement {
     }
 
     @Override
-    protected void onUnClicked(Vector2f mouseCoordinates) {
+    protected void onReleased(Vector2f mouseCoordinates) {
 
     }
 }

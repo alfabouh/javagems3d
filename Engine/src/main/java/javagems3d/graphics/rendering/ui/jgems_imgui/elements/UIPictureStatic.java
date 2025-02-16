@@ -51,20 +51,18 @@ public class UIPictureStatic extends UIElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
-        GL46.glActiveTexture(GL46.GL_TEXTURE0);
-        this.iImageSample.bindTexture();
-        shaderManager.performUniform(new UniformString("texture_sampler"),  UniformFunctions.INTEGER(0));
+        shaderManager.performUniformTexture(new UniformString("texture_sampler"),  this.iImageSample);
         JGemsHelper.RENDERING.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 
     @Override
-    public void buildUI() {
+    public void build() {
         this.imageModel = this.constructModel(iImageSample.getSize());
     }
 
     @Override
-    public void clearData() {
+    public void clear() {
         this.imageModel.clear();
     }
 

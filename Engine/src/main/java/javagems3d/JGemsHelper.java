@@ -361,10 +361,6 @@ public abstract class JGemsHelper {
             JGems3D.get().destroyMap();
         }
 
-        public static void destroyGame() {
-            JGems3D.get().destroyGame();
-        }
-
         public static JGemsSettings getGameSettings() {
             return JGems3D.get().getGameSettings();
         }

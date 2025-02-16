@@ -57,16 +57,14 @@ public class UIText extends UIElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.getUtils().performOrthographicMatrix(this.textModel.getModel());
-        GL46.glActiveTexture(GL46.GL_TEXTURE0);
-        this.getFontTexture().getTexture().bindTexture();
-        shaderManager.performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
+        shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.getFontTexture().getTexture());
         shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsHelper.RENDERING.renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 
     @Override
-    public void buildUI() {
+    public void build() {
         if (this.getText() != null && !this.getText().isEmpty()) {
             this.textModel = new UIText.TextModel();
             this.textModel.getModel().getPose().setPosition(new Vector2f(this.getPosition()));
@@ -75,7 +73,7 @@ public class UIText extends UIElement {
     }
 
     @Override
-    public void clearData() {
+    public void clear() {
         if (this.textModel != null) {
             this.textModel.clear();
         }

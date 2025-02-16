@@ -225,7 +225,8 @@ public class JGemsScreen implements IScreen {
         JGems3D.get().showMainMenu();
         try {
             this.renderLoop();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
+            JGems3D.close(null);
             throw new JGemsRuntimeException(e);
         } finally {
             this.getScene().postRender();
@@ -243,7 +244,7 @@ public class JGemsScreen implements IScreen {
         JGemsTimer deltaTimer = this.getTimerPool().createTimer();
         while (!JGems3D.get().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
-                JGems3D.get().destroyGame();
+                JGems3D.close(null);
                 break;
             }
             JGems3D.get().getCore().update();
@@ -347,9 +348,9 @@ public class JGemsScreen implements IScreen {
             for (Pair<Integer, String> s : this.lines) {
                 String textPre = strokes < 3 ? "[*] " : "[" + ++this.counter + "] ";
                 UIText textUI = new UIText(textPre + s.getSecond(), this.guiFont, s.getFirst(), new Vector2i(5, (strokes++) * 40 + 5), 0.5f);
-                textUI.buildUI();
+                textUI.build();
                 textUI.render(0.0f);
-                textUI.clearData();
+                textUI.clear();
             }
             GLFW.glfwSwapBuffers(JGemsScreen.this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();

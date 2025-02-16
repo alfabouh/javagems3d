@@ -63,7 +63,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = gameResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false));
+        this.textureSample = gameResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
         this.dearImGuiMesh = new DearUIMesh();
     }
 

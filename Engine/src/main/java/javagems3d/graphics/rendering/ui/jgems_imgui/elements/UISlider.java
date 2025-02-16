@@ -46,8 +46,8 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
         UIPictureStaticSelectable brick = new UIPictureStaticSelectable(JGemsResourceManager.globalTextureAssets.gui1, new Vector2i(this.getPosition()).add((int) (this.getOptionValue() * this.getScaling().mul(98).x), 0), new Vector2f(0.0f, 14.0f), new Vector2f(2.0f, 7.0f), this.getZValue());
         brick.setSelected(this.isSelected());
 
-        line.buildUI();
-        brick.buildUI();
+        line.build();
+        brick.build();
 
         line.setScaling(this.getScaling());
         brick.setScaling(this.getScaling());
@@ -55,22 +55,22 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
         line.render(frameDeltaTicks);
         brick.render(frameDeltaTicks);
 
-        line.clearData();
-        brick.clearData();
+        line.clear();
+        brick.clear();
 
         UIText uiText = new UIText(this.title + " " + (int) (this.getOptionValue() * 100.0f) + "%", guiFont, this.hexColor, new Vector2i(this.getPosition()).add(this.getSize().x + 30, -3), this.zValue);
-        uiText.buildUI();
+        uiText.build();
         uiText.render(frameDeltaTicks);
-        uiText.clearData();
+        uiText.clear();
     }
 
     @Override
-    public void buildUI() {
+    public void build() {
 
     }
 
     @Override
-    public void clearData() {
+    public void clear() {
     }
 
     @Override
@@ -144,7 +144,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     }
 
     @Override
-    protected void onUnClicked(Vector2f mouseCoordinates) {
+    protected void onReleased(Vector2f mouseCoordinates) {
 
     }
 }

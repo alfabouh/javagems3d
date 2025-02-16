@@ -46,8 +46,10 @@ import javagems3d.temp.map_sys.save.objects.map_prop.SkyProp;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Set;
 
 public class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
@@ -65,6 +67,8 @@ public class JGemsCore implements ICore {
     private IMapLoader mapLoader;
     private LocalPlayer localPlayer;
 
+    private final Set<Exception> exceptionsBuffer;
+
     public JGemsCore() {
         this.jGemsPhysics = new JGemsPhysics(JGemsPhysics.TICKS_PER_SECOND);
         this.jGemsSoundManager = new JGemsSoundManager();
@@ -76,6 +80,7 @@ public class JGemsCore implements ICore {
         this.mapLoader = null;
 
         this.requestsFromThreads = new RequestsFromThreads();
+        this.exceptionsBuffer = new HashSet<>();
     }
 
     public void update() {
@@ -136,7 +141,7 @@ public class JGemsCore implements ICore {
         GameResources localRes = this.getResourceManager().getLocalResources();
 
         this.getScreen().showGameLoadingScreen("Loading Map...");
-        this.startWorlds();
+        this.createWorlds();
         JGemsHelper.getLogger().trace("Loading map: " + this.currentMapName());
         PhysicsWorld physicsWorld = this.getPhysics().getPhysicsProcessor().getPhysicsWorld();
         SceneWorld sceneWorld = this.getScreen().getSceneWorld();
@@ -234,7 +239,7 @@ public class JGemsCore implements ICore {
             return;
         }
         this.getSoundManager().stopAllSounds();
-        this.endWorlds();
+        this.destroyWorlds();
         this.getScreen().getScene().getSceneRenderer().onMapDestroyed(this.getMapLoader(), this.getResourceManager());
         this.getResourceManager().destroyResourcesDataCache();
         this.getResourceManager().getLocalResources().destroy();
@@ -242,12 +247,12 @@ public class JGemsCore implements ICore {
         System.gc();
     }
 
-    private void startWorlds() {
+    private void createWorlds() {
         this.getPhysics().getPhysicsWorld().onWorldStart();
         this.getScreen().getSceneWorld().onWorldStart();
     }
 
-    private void endWorlds() {
+    private void destroyWorlds() {
         this.getPhysics().getPhysicsWorld().onWorldEnd();
         this.getScreen().getSceneWorld().onWorldEnd();
     }
@@ -259,9 +264,8 @@ public class JGemsCore implements ICore {
             JGemsHelper.getLogger().warn("Engine thread is currently running");
             return;
         }
-        AtomicReference<String> err = new AtomicReference<>();
         this.systemThread = new Thread(() -> {
-            boolean badExit = true;
+            StringBuilder err = new StringBuilder();
             try {
                 APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent(this);
                 JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
@@ -275,39 +279,68 @@ public class JGemsCore implements ICore {
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
                 this.getScreen().runRenderThread();
-                badExit = false;
             } catch (Exception e) {
-                err.set(e.getMessage());
+                this.appendException(err, e);
                 JGemsHelper.getLogger().exception(e);
-                badExit = true;
             } finally {
                 try {
-                    this.clear();
-                    JGems3D.get().destroyGame();
-                    this.getSoundManager().stopAllSounds();
-                    this.getResourceManager().destroy();
-                    this.getSoundManager().destroy();
+                    JGems3D.freeSync();
                     if (!this.getPhysics().waitForFullTermination()) {
                         JGemsHelper.getLogger().error("Waited for physics termination too long...");
                     }
-                    if (this.getPhysics().badExit) {
-                        badExit = true;
-                    }
+                    this.clear();
+                    this.destroyWorlds();
+                    this.getSoundManager().stopAllSounds();
+                    this.getResourceManager().destroy();
+                    this.getSoundManager().destroy();
                     this.getPhysics().getPhysicsProcessor().clearResources();
+                    this.localPlayer = null;
                     JGemsHelper.getLogger().debug("END");
                 } catch (Exception e) {
-                    err.set(e.getMessage());
+                    this.appendException(err, e);
                     JGemsHelper.getLogger().exception(e);
-                    badExit = true;
                 } finally {
-                    if (badExit) {
-                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.\n" + (err != null ? err : ""));
+                    this.collectExceptions(err);
+                    String mss = err.toString();
+                    if (!mss.isEmpty()) {
+                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.\n\n" + mss);
                     }
                 }
             }
         });
         this.systemThread.setName("system");
         this.systemThread.start();
+    }
+
+    private void appendException(StringBuilder err, Exception ex) {
+        err.append(ex.getClass().getSimpleName());
+        String message = ex.getMessage();
+        if (message != null && !message.isEmpty()) {
+            err.append(": ").append(message);
+        }
+        err.append(System.lineSeparator());
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        if (stackTrace != null && stackTrace.length > 0) {
+            StackTraceElement element = stackTrace[0];
+            err.append("-> ").append(element.getClassName()).append(".").append(element.getMethodName()).append("(").append(element.getFileName()).append(":").append(element.getLineNumber()).append(")").append(System.lineSeparator()).append(System.lineSeparator());
+        }
+    }
+
+    private void collectExceptions(StringBuilder err) {
+        Iterator<Exception> iterator = this.getExceptionsBuffer().iterator();
+        while (iterator.hasNext()) {
+            Exception ex = (Exception) iterator.next();
+            this.appendException(err, ex);
+            iterator.remove();
+        }
+    }
+
+    public void addExceptionInTrace(Exception e) {
+        this.getExceptionsBuffer().add(e);
+    }
+
+    private Set<Exception> getExceptionsBuffer() {
+        return this.exceptionsBuffer;
     }
 
     public JGemsSoundManager getSoundManager() {

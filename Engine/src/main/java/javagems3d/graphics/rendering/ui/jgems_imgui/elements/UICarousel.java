@@ -53,19 +53,19 @@ public class UICarousel extends UIElement {
     }
 
     @Override
-    public void buildUI() {
-        this.uiText.buildUI();
-        this.uiTitle.buildUI();
-        this.right.buildUI();
-        this.left.buildUI();
+    public void build() {
+        this.uiText.build();
+        this.uiTitle.build();
+        this.right.build();
+        this.left.build();
     }
 
     @Override
-    public void clearData() {
-        this.left.clearData();
-        this.right.clearData();
-        this.uiText.clearData();
-        this.uiTitle.clearData();
+    public void clear() {
+        this.left.clear();
+        this.right.clear();
+        this.uiText.clear();
+        this.uiTitle.clear();
     }
 
     @Override

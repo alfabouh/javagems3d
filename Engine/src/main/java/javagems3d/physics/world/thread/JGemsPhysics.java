@@ -28,14 +28,12 @@ public class JGemsPhysics {
     private final PhysicsProcessor physicsProcessor;
     private final int tps;
     private final ExecutorService executor;
-    public boolean badExit;
 
     @SuppressWarnings("all")
     public JGemsPhysics(int tps) {
         this.tps = tps;
         this.physicsProcessor = new PhysicsProcessor();
         this.executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("physics"));
-        this.badExit = false;
     }
 
     public static double getFrameTime() {
@@ -48,9 +46,8 @@ public class JGemsPhysics {
                 this.getPhysicsProcessor().updateTimer(this.getTps());
             } catch (Exception e) {
                 JGemsHelper.getLogger().exception(e);
-                this.badExit = true;
+                JGems3D.close(e);
             } finally {
-                JGems3D.get().destroyGame();
                 this.getExecutor().shutdown();
             }
         });

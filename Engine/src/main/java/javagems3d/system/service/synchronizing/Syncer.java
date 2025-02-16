@@ -25,7 +25,7 @@ public final class Syncer {
 
     public Syncer() {
         this.lock = new ReentrantLock();
-        this.condition = lock.newCondition();
+        this.condition = this.lock.newCondition();
         this.flag = false;
     }
 
@@ -53,10 +53,6 @@ public final class Syncer {
     }
 
     public void blockCurrentThread(final boolean flagB) throws JGemsException {
-        if (JGems3D.get().isShouldBeClosed()) {
-            return;
-        }
-
         this.lock.lock();
         try {
             while (this.flag == flagB) {

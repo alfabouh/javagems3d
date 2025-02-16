@@ -66,7 +66,7 @@ public abstract class UIInteractiveElement extends UIElement {
                     }
                 }
             } else if (this.wasClickedButton) {
-                this.onUnClicked(new Vector2f(mouseCoordinates));
+                this.onReleased(new Vector2f(mouseCoordinates));
                 this.wasClickedButton = false;
             }
         }
@@ -80,7 +80,7 @@ public abstract class UIInteractiveElement extends UIElement {
 
     protected abstract void onClicked(Vector2f mouseCoordinates);
 
-    protected abstract void onUnClicked(Vector2f mouseCoordinates);
+    protected abstract void onReleased(Vector2f mouseCoordinates);
 
     public boolean isSelected() {
         return this.selected;

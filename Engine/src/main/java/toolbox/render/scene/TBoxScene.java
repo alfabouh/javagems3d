@@ -92,10 +92,9 @@ public class TBoxScene {
                 if (meshNode3D.getMaterial().getDiffuse() instanceof RGBAColor) {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
                 } else {
+                    ImageTexture imageTexture = (ImageTexture) meshNode3D.getMaterial().getDiffuse();
+                    shaderManager.performUniformTexture(new UniformString("diffuse_map"), imageTexture);
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
-                    shaderManager.performUniformNoWarn(new UniformString("diffuse_map"),  UniformFunctions.INTEGER(0));
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, ((ImageTexture) meshNode3D.getMaterial().getDiffuse()).getTextureId());
                 }
             }
             GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());

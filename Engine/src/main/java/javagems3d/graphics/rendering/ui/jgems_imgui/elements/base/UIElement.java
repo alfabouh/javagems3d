@@ -38,9 +38,9 @@ public abstract class UIElement implements UIScalable {
 
     public abstract void render(float frameDeltaTicks);
 
-    public abstract void buildUI();
+    public abstract void build();
 
-    public abstract void clearData();
+    public abstract void clear();
 
     public abstract @NotNull Vector2i getSize();
 

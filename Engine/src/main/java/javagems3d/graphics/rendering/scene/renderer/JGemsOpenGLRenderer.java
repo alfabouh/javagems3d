@@ -153,13 +153,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         OpenGLRenderer.setViewPort(this.getWindowSize());
         if (this.getSceneWorld().getCamera() == null) {
-            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             uiRenderNode.onRender(frameTicking);
             this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
             return;
         }
         if (JGems3D.get().isPaused()) {
-            GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             uiRenderNode.onRender(frameTicking);
             this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
             return;
@@ -257,6 +255,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
     }
 
     public void destroyResources() {
+        this.getSceneIndirectBuffer().clear();
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getSceneWorld().getEnvironment().destroyEnvironment();
         this.getSceneCulling().destroyResources();
