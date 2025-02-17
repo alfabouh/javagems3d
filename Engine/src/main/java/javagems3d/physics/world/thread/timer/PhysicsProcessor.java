@@ -11,17 +11,15 @@
 
 package javagems3d.physics.world.thread.timer;
 
+import api.newer.events.EventBus;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.bridge.events.APIEventsLauncher;
+import api.newer.events.EventLauncher;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
-import javagems3d.system.service.exceptions.JGemsException;
-import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
-import api.app.events.bus.Events;
 
 public class PhysicsProcessor implements IPhysicsProcessor {
     public static final Object lockObject = new Object();
@@ -47,7 +45,7 @@ public class PhysicsProcessor implements IPhysicsProcessor {
                 if (JGems3D.get().getCore().engineState().isEngineIsReady() && !JGems3D.get().getCore().engineState().isPaused()) {
                     synchronized (PhysicsProcessor.lockObject) {
                         this.world.onWorldUpdate();
-                        APIEventsLauncher.pushEvent(new Events.BulletUpdate(this.dynamicsSystem));
+                        EventLauncher.pushEvent(new EventBus.BulletUpdate(this.dynamicsSystem));
                         this.dynamicsSystem.step(time, 0);
                         this.dynamicsSystem.collideTest();
                     }

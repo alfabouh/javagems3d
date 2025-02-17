@@ -1,7 +1,7 @@
 package javagems3d.graphics.objects.entities;
 
-import api.app.events.bus.Events;
-import api.bridge.events.APIEventsLauncher;
+import api.newer.events.EventBus;
+import api.newer.events.EventLauncher;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
@@ -58,12 +58,12 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
             }
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
         }
-        APIEventsLauncher.pushEvent(new Events.ItemSpawnInRenderWorld(this));
+        EventLauncher.pushEvent(new EventBus.ItemSpawnInRenderWorld(this));
     }
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        APIEventsLauncher.pushEvent(new Events.ItemDestroyInRenderWorld(this));
+        EventLauncher.pushEvent(new EventBus.ItemDestroyInRenderWorld(this));
         JGemsHelper.getLogger().trace("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));

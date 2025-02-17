@@ -59,7 +59,6 @@ import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
@@ -354,11 +353,11 @@ public abstract class JGemsHelper {
         }
 
         public static void loadMap(IMapLoader mapLoader) {
-            JGems3D.get().loadMap(mapLoader);
+            JGems3D.get().entryMap(mapLoader);
         }
 
         public static void destroyMap() {
-            JGems3D.get().destroyMap();
+            JGems3D.get().exitMap();
         }
 
         public static JGemsSettings getGameSettings() {

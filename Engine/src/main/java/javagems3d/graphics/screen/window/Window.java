@@ -11,9 +11,11 @@
 
 package javagems3d.graphics.screen.window;
 
+import api.newer.system.JGemsAPI;
 import com.google.common.io.ByteStreams;
 import javagems3d.global.JGemsGlobalConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
@@ -35,23 +37,31 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class Window implements IWindow {
+    public static final String DEFAULT_ICON = "/assets/jgems/icons/icon.png";
+    
     private final long window;
-    private final WindowProperties windowProperties;
     private long currentMonitor;
     private boolean isInFocus;
 
-    public Window(WindowProperties windowProperties, JGemsPath iconPath) {
+    public Window(int width, int height, WindowProperties windowProperties) {
         this.isInFocus = false;
-        this.window = GLFW.glfwCreateWindow(windowProperties.getWidth(), windowProperties.getHeight(), windowProperties.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
-        this.windowProperties = windowProperties;
+        this.window = GLFW.glfwCreateWindow(width, height, windowProperties.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
         this.currentMonitor = GLFW.glfwGetPrimaryMonitor();
-
-        if (iconPath != null) {
-            this.loadIcon(iconPath);
-        }
+        this.setIcon(windowProperties.getIcon());
     }
 
-    private void loadIcon(@NotNull JGemsPath iconPath) {
+    @Override
+    public void setTitle(@NotNull String title) {
+        GLFW.glfwSetWindowTitle(this.getDescriptor(), title);
+        JGemsHelper.getLogger().info("Changed title -> " + title);
+    }
+    
+    @Override
+    public void setIcon(@Nullable JGemsPath iconPath) {
+        if (iconPath == null) {
+            JGemsHelper.getLogger().warn("Couldn't load app icon, because it was NULL");
+            return;
+        }
         try (MemoryStack stack = MemoryStack.stackPush()) {
             try (InputStream inputStream = JGems3D.loadFileFromJar(iconPath)) {
                 IntBuffer width = stack.mallocInt(1);
@@ -73,8 +83,9 @@ public class Window implements IWindow {
                 STBImage.stbi_image_free(imageBuffer);
             }
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            JGemsHelper.getLogger().exception(e);
         }
+        JGemsHelper.getLogger().info("Installed icon: " + iconPath);
     }
 
     public void onWindowChangedCallback() {
@@ -217,10 +228,6 @@ public class Window implements IWindow {
         JGemsHelper.getLogger().trace("DefaultScreen mode");
     }
 
-    public WindowProperties getWindowProperties() {
-        return this.windowProperties;
-    }
-
     public long getCurrentMonitor() {
         return this.currentMonitor;
     }
@@ -230,38 +237,24 @@ public class Window implements IWindow {
     }
 
     public static class WindowProperties {
-        private int width;
-        private int height;
-        private String title;
+        private final String title;
+        private final JGemsPath icon;
 
-        public WindowProperties(int width, int height, String title) {
-            this.width = width;
-            this.height = height;
+        public WindowProperties(@NotNull String title) {
+            this(title, new JGemsPath(Window.DEFAULT_ICON));
+        }
+
+        public WindowProperties(@NotNull String title, @Nullable JGemsPath icon) {
             this.title = title;
+            this.icon = icon;
         }
 
-        public int getWidth() {
-            return this.width;
-        }
-
-        public void setWidth(int width) {
-            this.width = width;
-        }
-
-        public int getHeight() {
-            return this.height;
-        }
-
-        public void setHeight(int height) {
-            this.height = height;
+        public JGemsPath getIcon() {
+            return this.icon;
         }
 
         public String getTitle() {
             return this.title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
         }
     }
 }

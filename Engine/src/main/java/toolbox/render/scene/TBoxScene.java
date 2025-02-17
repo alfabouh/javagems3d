@@ -470,7 +470,7 @@ public class TBoxScene {
                                 tBoxModelObject.setAttributeContainer(saveObject.getAttributeContainer());
                                 this.addObject(tBoxModelObject);
                             } catch (NullPointerException e) {
-                                e.printStackTrace(System.err);
+                                JGemsHelper.getLogger().exception(e);
                             }
                         }
                     } else {
@@ -480,7 +480,7 @@ public class TBoxScene {
                     this.getSceneContainer().setMapProperties(mapObjectProperties);
                 } catch (Exception e) {
                     LoggingManager.showExceptionDialog("Couldn't load map! See the logs");
-                    e.printStackTrace(System.err);
+                    JGemsHelper.getLogger().exception(e);
                     ToolBox.get().getTBoxSettings().recentPathOpen.setValue("");
                     ToolBox.get().getTBoxSettings().saveOptions();
                 }

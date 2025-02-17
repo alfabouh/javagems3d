@@ -1,0 +1,27 @@
+package api.newer.application;
+
+import api.newer.application.events.IAppEventSubscriber;
+import api.newer.application.resources.IAppResources;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
+import javagems3d.graphics.screen.window.Window;
+import javagems3d.system.controller.binding.BindingManager;
+import javagems3d.system.core.JGemsCore;
+import org.jetbrains.annotations.NotNull;
+
+public abstract class JGemsApplication {
+    protected JGemsApplication() {
+    }
+
+    public void preInit(@NotNull JGemsCore engineSystem) {
+    }
+
+    public void postInit(@NotNull JGemsCore engineSystem) {
+    }
+
+    public abstract void initEvents(@NotNull IAppEventSubscriber appEventSubscriber);
+    public abstract void initResources(@NotNull IAppResources appResources);
+
+    public abstract @NotNull BindingManager getBindingManager();
+    public abstract @NotNull PanelUI getMainMenuPanel();
+    public abstract @NotNull Window.WindowProperties getWindowProperties();
+}

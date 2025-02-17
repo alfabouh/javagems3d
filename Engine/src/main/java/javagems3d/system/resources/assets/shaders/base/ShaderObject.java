@@ -193,7 +193,7 @@ public class ShaderObject {
             String key = matcher.group(1);
             String value = shaderStaticConstants.getValue(key.replaceAll("CONST.", ""));
             if (value == null) {
-                throw new JGemsRuntimeException("Constant not found for key: " + key);
+                throw new JGemsNullException("Constant not found for key: " + key);
             }
             matcher.appendReplacement(processedCode, value);
         }

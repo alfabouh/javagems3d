@@ -5,6 +5,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.ByteBuffer;
@@ -26,7 +27,7 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
         for (SceneObject sceneObject : sceneObjects) {
             MeshBuffer meshBuffer = sceneObject.getModel().getMeshBufferForIndirectRendering();
             if (meshBuffer == null) {
-                throw new JGemsRuntimeException("Model should have MeshBuffer, to implement indirect rendering");
+                throw new JGemsNullException("Model should have MeshBuffer, to implement indirect rendering");
             }
             if (mode.equals(IndirectObjectsRenderer.Mode.ALL)) {
                 drawCount += meshBuffer.getSolidPassData().size() + meshBuffer.getTransparentPassData().size();

@@ -11,6 +11,9 @@
 
 package javagems3d.graphics.screen.window;
 
+import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 
@@ -25,6 +28,9 @@ public interface IWindow {
         }
         return GLFW.glfwGetWindowAttrib(this.getDescriptor(), GLFW.GLFW_ICONIFIED) == 0;
     }
+
+    void setIcon(@Nullable JGemsPath iconPath);
+    void setTitle(@NotNull String title);
 
     interface ResizeEvent {
         void onWindowResize(IWindow window);

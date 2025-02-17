@@ -15,13 +15,15 @@ import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.bridge.APIContainer;
+import api.newer.system.JGemsAPIManager;
 import javagems3d.audio.sound.SoundListener;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.global.JGemsRenderingGlobalConstants;
@@ -144,7 +146,11 @@ public class JGemsScreen implements IScreen {
 
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         boolean flag = vidMode != null && JGems3D.get().getGameSettings().windowMode.getValue() == 0;
-        this.window = new Window(new Window.WindowProperties(flag ? vidMode.width() : JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH, flag ? vidMode.height() : JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT, JGems3D.get().toString()), APIContainer.get().getApiGameInfo().getAppManager().getAppConfiguration().getWindowIcon());
+
+        int width = flag ? vidMode.width() : JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH;
+        int height = flag ? vidMode.height() : JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT;
+
+        this.window = new Window(width, height, JGems3D.getAPIAppData().getWindowProperties());
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new JGemsRuntimeException("Failed to create the GLFW window");
@@ -324,6 +330,14 @@ public class JGemsScreen implements IScreen {
 
     public TimerPool getTimerPool() {
         return this.timerPool;
+    }
+
+    public void setIcon(@Nullable JGemsPath icon) {
+        this.getWindow().setIcon(icon);
+    }
+
+    public void setTitle(@NotNull String title) {
+        this.getWindow().setTitle(title);
     }
 
     public class LoadingScreen {

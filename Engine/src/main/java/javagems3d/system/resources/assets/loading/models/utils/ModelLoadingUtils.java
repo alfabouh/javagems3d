@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.loading.models.utils;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
+import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
@@ -240,7 +241,7 @@ public abstract class ModelLoadingUtils {
                     }
                 }
             } catch (JGemsException e) {
-                e.printStackTrace(System.err);
+                JGemsHelper.getLogger().exception(e);
             }
         }
         return material;

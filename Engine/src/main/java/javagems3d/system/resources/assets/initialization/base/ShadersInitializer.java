@@ -29,9 +29,7 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     }
 
     protected abstract void initObjects(ResourceCache resourceCache);
-
-    protected abstract T createShaderObject(JGemsPath shaderPath);
-
+    protected abstract T createShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath);
     protected abstract void initStaticConstants(ShaderStaticConstants shaderStaticConstants);
     protected abstract void initShaderLibraries(ShaderLibrariesManager shaderLibrary);
 
@@ -42,7 +40,7 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
             return (T) resourceCache.getCachedObject(shaderPath);
         }
         JGemsHelper.getLogger().info("Creating shader " + shaderPath + "...");
-        T shaderManager = this.createShaderObject(shaderPath);
+        T shaderManager = this.createShaderObject(this.getShaderStaticConstants(), this.getShaderLibrariesManager(), shaderPath);
         resourceCache.addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }

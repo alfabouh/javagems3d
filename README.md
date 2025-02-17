@@ -92,7 +92,7 @@ public class Main {
 
 ### 3. Working with the API
 *The API of the engine does not have too many useful functions at the moment, but there are enough of them to implement the basic features*
-* Before you start working, it should be noted that the starter classes that represent your program must be located in the ***jgems_api*** directory
+* Before you start working, it should be noted that the starter classes that represent your program must be located in the ***jgems_app*** directory
   
 ![image](https://github.com/user-attachments/assets/61c5c650-85b8-4c0b-8f6f-a6e0da36316b)
 

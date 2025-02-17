@@ -16,11 +16,14 @@ import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.physics.colliders.MeshCollider;
+import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
+import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -80,6 +83,11 @@ public class DefaultMap implements IMapLoader {
         SceneBackgroundProp sceneProp3 = new SceneBackgroundProp(background.getSceneWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), RenderAttributes.get(new RenderTable(JGemsResourceManager.globalShaderAssets.background_indirect, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND, false)));
         sceneProp3.getRenderAttributes().setAlphaDiscardValue(0.5f);
         background.addObjectInBackGround(sceneProp3);
+    }
+
+    @Override
+    public @NotNull IPlayerConstructor playerConstructor() {
+        return (world, startPos, startRot) -> new Pair<>(new JGemsKinematicPlayer(world, startPos, startRot), null);
     }
 
     @Override

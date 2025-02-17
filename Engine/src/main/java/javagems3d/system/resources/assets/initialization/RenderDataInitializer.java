@@ -12,7 +12,6 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
@@ -31,7 +30,7 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class RenderDataInitializer implements IAssetsInitializer {
     public EntityRenderData entityCube;
-    public EntityRenderData player;
+    public EntityRenderData defaultPlayer;
     public EntityRenderData ground;
     public LiquidRenderData water;
 
@@ -50,7 +49,7 @@ public class RenderDataInitializer implements IAssetsInitializer {
 
         this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
         this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get()).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
-        this.player = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
+        this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
         this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get().setAlphaDiscardValue(0.25f));
     }
 

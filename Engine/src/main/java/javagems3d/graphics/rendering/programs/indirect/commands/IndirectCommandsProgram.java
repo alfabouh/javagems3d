@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.programs.indirect.commands;
 
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
@@ -23,7 +24,7 @@ public abstract class IndirectCommandsProgram {
 
     public void buildCommands(@Nullable IntBuffer indexes, @Nullable IntBuffer materialIds, MeshBuffer buffer, int drawCount) {
         if (buffer == null) {
-            throw new JGemsRuntimeException("MeshBuffer cannot be null for indirect rendering");
+            throw new JGemsNullException("MeshBuffer cannot be null for indirect rendering");
         }
 
         ByteBuffer commandsBuffer = this.initCommandsByteBuffer(drawCount);

@@ -18,6 +18,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
+import javagems3d.system.service.exceptions.JGemsNullException;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -68,7 +69,7 @@ public class SimpleModelLoader {
                             }
                         }
                     } else {
-                        throw new JGemsRuntimeException("Couldn't create assimp scene");
+                        throw new JGemsNullException("Couldn't create assimp scene");
                     }
                 } catch (RuntimeException e) {
                     SystemLogging.get().getLogManager().error("Error, while loading " + modelPath);

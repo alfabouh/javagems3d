@@ -53,7 +53,7 @@ public class SoundBuffer implements ICached {
                 return this.readOgg(inputStream, soundFormat);
             }
         } catch (UnsupportedAudioFileException | IOException e) {
-            e.printStackTrace(System.err);
+            JGemsHelper.getLogger().exception(e);
             return false;
         }
     }

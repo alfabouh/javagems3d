@@ -11,8 +11,8 @@
 
 package javagems3d.graphics.world;
 
-import api.app.events.bus.Events;
-import api.bridge.events.APIEventsLauncher;
+import api.newer.events.EventBus;
+import api.newer.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsDebugGlobalConstants;
@@ -74,18 +74,18 @@ public final class SceneWorld implements IWorld {
     //section WorldStart
     @Override
     public void onWorldStart() {
-        APIEventsLauncher.pushEvent(new Events.RenderWorldStart(Events.Stage.PRE, this));
+        EventLauncher.pushEvent(new EventBus.RenderWorldStart(EventBus.Run.PRE, this));
         JGemsDebugGlobalConstants.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
         this.ticks = 0;
-        APIEventsLauncher.pushEvent(new Events.RenderWorldStart(Events.Stage.POST, this));
+        EventLauncher.pushEvent(new EventBus.RenderWorldStart(EventBus.Run.POST, this));
     }
 
     //section WorldUpdate
     @Override
     public void onWorldUpdate() {
-        if (!APIEventsLauncher.pushEvent(new Events.RenderWorldTickPre(this)).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.RenderWorldTickPre(this)).isCancelled()) {
             Iterator<Pair<WorldItem, Light>> iterator = this.lightAttachmentQueue.iterator();
             while (iterator.hasNext()) {
                 Pair<WorldItem, Light> pair = iterator.next();
@@ -94,16 +94,16 @@ public final class SceneWorld implements IWorld {
             }
             this.ticks += 1;
         }
-        APIEventsLauncher.pushEvent(new Events.RenderWorldTickPost(this));
+        EventLauncher.pushEvent(new EventBus.RenderWorldTickPost(this));
     }
 
     //section WorldEnd
     @Override
     public void onWorldEnd() {
-        APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.PRE, this));
+        EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.PRE, this));
         this.getParticlesEmitter().destroy(this);
         this.clearAll();
-        APIEventsLauncher.pushEvent(new Events.RenderWorldEnd(Events.Stage.POST, this));
+        EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.POST, this));
     }
 
     //section WorldUpdObj

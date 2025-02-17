@@ -11,13 +11,13 @@
 
 package javagems3d.system.controller.dispatcher;
 
+import api.newer.system.JGemsAPI;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.bridge.APIContainer;
+import api.newer.system.JGemsAPIManager;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.screen.window.Window;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.controller.binding.BindingManager;
@@ -33,7 +33,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     private boolean lockController;
 
     public JGemsControllerDispatcher(IWindow window) {
-        JGemsControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window, APIContainer.get().getApiGameInfo().getAppManager().createBindingManager());
+        JGemsControllerDispatcher.mouseKeyboardController = new MouseKeyboardController(window, JGemsAPI.APIAppData().getBindingManager());
         this.setController(JGemsControllerDispatcher.defaultController());
         JGemsHelper.getLogger().info("Created controller dispatcher");
     }

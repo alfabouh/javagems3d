@@ -1,5 +1,6 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.shadow;
 
+import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IModeled;
@@ -59,7 +60,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
                 GL46.glBindVertexArray(0);
             }
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            JGemsHelper.getLogger().exception(e);
             throw new JGemsRuntimeException("There was an error, while rendering model for shadows. ");
         }
     }

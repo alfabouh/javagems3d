@@ -12,6 +12,7 @@
 package javagems3d.system.core.player;
 
 import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -30,7 +31,7 @@ public final class LocalPlayer {
     public void addPlayerInWorlds(PhysicsWorld world, Vector3f startPos, Vector3f startRot) {
         Pair<IPlayer, EntityRenderData> dynamicPlayer = this.playerConstructor.constructPlayer(world, new Vector3f(startPos), new Vector3f(startRot));
         this.player = dynamicPlayer.getFirst();
-        JGemsHelper.WORLD.addItemInWorld((WorldItem) dynamicPlayer.getFirst(), dynamicPlayer.getSecond());
+        JGemsHelper.WORLD.addItemInWorld((WorldItem) dynamicPlayer.getFirst(), dynamicPlayer.getSecond() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : dynamicPlayer.getSecond());
     }
 
     public IPlayer getEntityPlayer() {

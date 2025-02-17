@@ -11,15 +11,17 @@
 
 package javagems3d;
 
+import api.newer.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.system.os.OS;
 import javagems3d.system.os.SysOSValidation;
 import logger.managers.LoggingManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import api.bridge.APIContainer;
-import api.bridge.APILauncher;
-import api.bridge.events.APIEventsLauncher;
+import api.newer.system.JGemsAPIManager;
+import api.newer.system.JGemsAPI;
+import api.newer.events.EventLauncher;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
@@ -35,7 +37,7 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import javagems3d.system.service.synchronizing.SyncManager;
 import javagems3d.system.settings.JGemsSettings;
-import api.app.events.bus.Events;
+import api.newer.events.EventBus;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;
 
@@ -67,7 +69,7 @@ public final class JGems3D {
     private JGems3D() throws JGemsRuntimeException {
         try {
             SystemLogging.get().setCurrentLogging(SystemLogging.jGemsLogging);
-            this.api();
+            JGemsAPI.get().launchAPI();
             JGems3D.checkFilesDirectory();
         } catch (IOException e) {
             throw new JGemsRuntimeException(e);
@@ -86,18 +88,16 @@ public final class JGems3D {
         return this.os;
     }
 
-    private void api() {
-        APILauncher.get().launchGameAPI();
-        APILauncher.get().launchToolBoxAPI();
-        APILauncher.get().disposeReflection();
-    }
-
     public static long systemTime() {
         return System.currentTimeMillis();
     }
 
     public static double glfwTime() {
         return GLFW.glfwGetTime();
+    }
+
+    public static JGemsAPIData getAPIAppData() {
+        return JGemsAPI.APIAppData();
     }
 
     @SuppressWarnings("all")
@@ -108,8 +108,8 @@ public final class JGems3D {
         try {
             JGems3D.mainObject = new JGems3D();
         } catch (JGemsRuntimeException e) {
-            LoggingManager.showExceptionDialog(e.getMessage());
-            e.printStackTrace(System.err);
+            LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!\n\n" + e.getMessage());
+            JGemsHelper.getLogger().exception(e);
             return;
         }
         JGems3D.start();
@@ -123,7 +123,7 @@ public final class JGems3D {
         try {
             JGemsHelper.getLogger().debug("BEGIN");
             JGemsHelper.getLogger().info("Starting system! Date: " + JGems3D.date());
-            JGemsHelper.getLogger().info(JGems3D.getGameString() + ": " + JGemsCore.ENG_NAME + " - " + JGemsCore.ENG_VER);
+            JGemsHelper.getLogger().info(JGems3D.get().toString());
             JGemsHelper.getLogger().info("===============================================================");
             JGemsHelper.getLogger().info("Loading settings from path...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
@@ -142,27 +142,8 @@ public final class JGems3D {
     public static void checkFilesDirectory() throws IOException {
         if (!Files.exists(JGems3D.getGameFilesFolder())) {
             JGems3D.getGameFilesFolder().toFile().mkdirs();
-            JGemsHelper.getLogger().info("Created system folder");
+            JGemsHelper.getLogger().debug("Created system folder");
         }
-    }
-
-    public static String getGameTitle() {
-        return APIContainer.get().getApiGameInfo().getGemsEntry().gameTitle();
-    }
-
-    public static String getGameVersion() {
-        return APIContainer.get().getApiGameInfo().getGemsEntry().gameVersion();
-    }
-
-    public static String getGameDev() {
-        return APIContainer.get().getApiGameInfo().getGemsEntry().devStage().name().toLowerCase();
-    }
-
-    public static String getGameString() {
-        String s1 = JGems3D.getGameTitle();
-        String s2 = JGems3D.getGameVersion();
-        String s3 = JGems3D.getGameDev();
-        return s1 + " " + s2 + " " + s3;
     }
 
     public static String date() {
@@ -198,7 +179,7 @@ public final class JGems3D {
 
     public static Path getGameFilesFolder() {
         String appdataPath = System.getProperty("user.home");
-        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase() + File.separator + JGems3D.getGameTitle().toLowerCase();
+        String folderPath = "." + JGemsCore.ENG_FILEPATH.toLowerCase() + File.separator + JGems3D.getAPIAppData().getId();
         return Paths.get(appdataPath, folderPath);
     }
 
@@ -217,7 +198,7 @@ public final class JGems3D {
     }
 
     public void reloadResources() {
-        APIEventsLauncher.pushEvent(new Events.ReloadResourcesEvent());
+        EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent());
         JGems3D.get().getScreen().showGameLoadingScreen("System01");
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
         JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
@@ -227,8 +208,16 @@ public final class JGems3D {
         JGems3D.get().getScreen().removeLoadingScreen();
     }
 
+    public void changeIcon(@Nullable JGemsPath icon) {
+        this.getScreen().setIcon(icon);
+    }
+
+    public void changeTitle(@NotNull String title) {
+        this.getScreen().setTitle(title);
+    }
+
     public void showMainMenu() {
-        this.openUIPanel(APIContainer.get().getApiGameInfo().getAppManager().gameMainMenuPanel());
+        this.openUIPanel(JGems3D.getAPIAppData().getMainMenuPanel());
     }
 
     public void openUIPanel(PanelUI panelUI) {
@@ -271,11 +260,11 @@ public final class JGems3D {
         }
     }
 
-    public void loadMap(IMapLoader mapLoader) {
+    public void entryMap(IMapLoader mapLoader) {
         this.getCore().entryMap(mapLoader);
     }
 
-    public void destroyMap() {
+    public void exitMap() {
         this.getCore().exitMap();
     }
 
@@ -355,7 +344,7 @@ public final class JGems3D {
     }
 
     public String toString() {
-        return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " - " + JGems3D.getGameString();
+        return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " | appId = " + JGems3D.getAPIAppData().getId();
     }
 
     public static abstract class DEF_PATHS {

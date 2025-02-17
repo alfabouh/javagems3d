@@ -12,6 +12,7 @@
 package javagems3d.system.map.loaders;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.system.core.player.IPlayerConstructor;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -27,6 +28,7 @@ public interface IMapLoader {
 
     void fillSkyBox(SkyBox.Background background);
 
-    @NotNull
-    MapInfo getLevelInfo();
+    @NotNull IPlayerConstructor playerConstructor();
+
+    @NotNull MapInfo getLevelInfo();
 }

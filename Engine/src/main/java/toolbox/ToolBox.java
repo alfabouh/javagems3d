@@ -11,7 +11,7 @@
 
 package toolbox;
 
-import api.bridge.APILauncher;
+import api.newer.system.JGemsAPI;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.SystemLogging;
@@ -40,8 +40,8 @@ public final class ToolBox {
             throw new JGemsRuntimeException(e);
         }
 
-        APILauncher.get().launchToolBoxAPI();
-        APILauncher.get().disposeReflection();
+       // JGemsAPI.get().launchToolBoxAPI();
+        JGemsAPI.get().disposeReflection();
 
         this.tBoxScreen = new TBoxScreen();
 

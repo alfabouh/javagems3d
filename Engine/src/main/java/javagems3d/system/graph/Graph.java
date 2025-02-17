@@ -14,6 +14,7 @@ package javagems3d.system.graph;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import javagems3d.JGemsHelper;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.system.service.json.JSONGraphDeserializer;
@@ -42,7 +43,7 @@ public class Graph implements Serializable {
         try (FileWriter fileWriter = new FileWriter("nav.mesh")) {
             fileWriter.write(json);
         } catch (IOException e) {
-            e.printStackTrace(System.err);
+            JGemsHelper.getLogger().exception(e);
             LoggingManager.showExceptionDialog("Couldn't save NavMesh");
         }
     }
@@ -57,7 +58,7 @@ public class Graph implements Serializable {
                 return gson.fromJson(reader, Graph.class);
             }
         } catch (IOException e) {
-            e.printStackTrace(System.err);
+            JGemsHelper.getLogger().exception(e);
             return null;
         }
     }

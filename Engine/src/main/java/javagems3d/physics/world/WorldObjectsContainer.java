@@ -11,13 +11,13 @@
 
 package javagems3d.physics.world;
 
-import api.bridge.events.APIEventsLauncher;
+import api.newer.events.EventLauncher;
+import api.newer.events.EventBus;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.inventory.IInventoryOwner;
 import javagems3d.system.service.synchronizing.SyncManager;
-import api.app.events.bus.Events;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,10 +43,10 @@ public final class WorldObjectsContainer {
                 }
                 worldItem1.setPrevPosition(worldItem1.getPosition());
             }
-            if (!APIEventsLauncher.pushEvent(new Events.WorldItemUpdatePre(worldTicked)).isCancelled()) {
+            if (!EventLauncher.pushEvent(new EventBus.WorldItemUpdatePre(worldTicked)).isCancelled()) {
                 worldTicked.onUpdate(world);
             }
-            APIEventsLauncher.pushEvent(new Events.WorldItemUpdatePost(worldTicked));
+            EventLauncher.pushEvent(new EventBus.WorldItemUpdatePost(worldTicked));
         }
     }
 

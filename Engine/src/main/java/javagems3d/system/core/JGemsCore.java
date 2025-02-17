@@ -11,6 +11,8 @@
 
 package javagems3d.system.core;
 
+import api.newer.events.EventBus;
+import api.newer.system.JGemsAPI;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Plane;
@@ -26,8 +28,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.bridge.APIContainer;
-import api.bridge.events.APIEventsLauncher;
+import api.newer.events.EventLauncher;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -38,7 +39,6 @@ import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.stat.PerformanceStat;
-import api.app.events.bus.Events;
 import logger.managers.JGemsLogging;
 import javagems3d.temp.map_sys.save.objects.map_prop.FogProp;
 import javagems3d.temp.map_sys.save.objects.map_prop.SkyProp;
@@ -112,7 +112,7 @@ public class JGemsCore implements ICore {
             return;
         }
         JGemsHelper.getLogger().trace("Exit map");
-        APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.PRE, mapLoader));
+        EventLauncher.pushEvent(new EventBus.MapDestroy(EventBus.Run.PRE, mapLoader));
         this.pauseGame();
         this.getScreen().showGameLoadingScreen("Exiting world...");
         this.clear();
@@ -123,7 +123,7 @@ public class JGemsCore implements ICore {
         this.getScreen().removeLoadingScreen();
         this.mapLoader = null;
         JGems3D.get().showMainMenu();
-        APIEventsLauncher.pushEvent(new Events.MapDestroy(Events.Stage.POST, mapLoader));
+        EventLauncher.pushEvent(new EventBus.MapDestroy(EventBus.Run.POST, mapLoader));
         this.requestsFromThreads.destroyMap = false;
     }
 
@@ -145,7 +145,7 @@ public class JGemsCore implements ICore {
         JGemsHelper.getLogger().trace("Loading map: " + this.currentMapName());
         PhysicsWorld physicsWorld = this.getPhysics().getPhysicsProcessor().getPhysicsWorld();
         SceneWorld sceneWorld = this.getScreen().getSceneWorld();
-        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.PRE, mapLoader));
+        EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.PRE, mapLoader));
         this.getMapLoader().preLoad(physicsWorld, sceneWorld);
 
         Environment environment = sceneWorld.getEnvironment();
@@ -176,7 +176,7 @@ public class JGemsCore implements ICore {
         this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
 
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
-        this.localPlayer = new LocalPlayer(APIContainer.get().getApiGameInfo().getAppManager().createPlayer(this.getMapLoader()));
+        this.localPlayer = new LocalPlayer(this.getMapLoader().playerConstructor());
         Vector3f startPos = new Vector3f(pair.getFirst());
         Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
         this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
@@ -192,7 +192,7 @@ public class JGemsCore implements ICore {
         }
 
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
-        APIEventsLauncher.pushEvent(new Events.MapLoad(Events.Stage.POST, mapLoader));
+        EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.POST, mapLoader));
         this.getResourceManager().writeResourcesDataCache();
         this.getScreen().getScene().getSceneRenderer().onMapLoaded(this.getMapLoader(), this.getResourceManager());
 
@@ -267,15 +267,14 @@ public class JGemsCore implements ICore {
         this.systemThread = new Thread(() -> {
             StringBuilder err = new StringBuilder();
             try {
-                APIContainer.get().getApiGameInfo().getAppInstance().preInitEvent(this);
+                JGemsAPI.APIAppData().preInit(this);
                 JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
                 this.getResourceManager().initGlobalResources();
                 this.getResourceManager().initLocalResources();
-                APIContainer.get().getApiTBoxInfo().getAppInstance().initEntitiesUserData(this.getResourceManager(), APIContainer.get().getTBoxEntitiesUserData());
                 this.getSoundManager().createSystem();
                 this.getPhysics().initService();
                 this.createGraphics();
-                APIContainer.get().getApiGameInfo().getAppInstance().postInitEvent(this);
+                JGemsAPI.APIAppData().postInit(this);
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
                 this.getScreen().runRenderThread();

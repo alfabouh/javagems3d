@@ -11,9 +11,11 @@
 
 package toolbox.render.screen;
 
+import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.OpenGLSysUtils;
+import javagems3d.system.service.exceptions.JGemsNullException;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -70,10 +72,10 @@ public class TBoxScreen implements IScreen {
         OpenGLSysUtils.registerOGLDebugOutput();
 
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        this.tBoxWindow = new Window(new Window.WindowProperties(JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT, ToolBox.get().toString()), new JGemsPath("/assets/jgems/icons/icon.png"));
+        this.tBoxWindow = new Window(JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT, new Window.WindowProperties(ToolBox.get().toString()));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
-            throw new JGemsRuntimeException("Failed to create the GLFW window");
+            throw new JGemsNullException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
             int x = (vidMode.width() - JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH) / 2;
@@ -195,15 +197,14 @@ public class TBoxScreen implements IScreen {
 
                 this.createResourceManager();
                 TBoxResourceManager.createShaders();
-
                 this.setScreenCallbacks();
                 this.createObjects(this.getWindow());
                 OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
             } else {
-                throw new JGemsRuntimeException("Caught service, while building screen!");
+                throw new JGemsRuntimeException("Caught exception, while building screen!");
             }
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            JGemsHelper.getLogger().exception(e);
             LoggingManager.showExceptionDialog("Couldn't create window");
         }
     }

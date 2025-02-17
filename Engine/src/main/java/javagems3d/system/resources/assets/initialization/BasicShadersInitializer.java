@@ -168,7 +168,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
     }
 
     @Override
-    protected JGemsShaderManager createShaderObject(JGemsPath shaderPath) {
-        return new JGemsShaderManager(new ShadersContainer(this.getShaderStaticConstants(), this.getShaderLibrariesManager(), shaderPath));
+    protected JGemsShaderManager createShaderObject(ShaderStaticConstants shaderStaticConstants, ShaderLibrariesManager shaderLibrary, JGemsPath shaderPath) {
+        return new JGemsShaderManager(new ShadersContainer(shaderStaticConstants, shaderLibrary, shaderPath));
     }
 }

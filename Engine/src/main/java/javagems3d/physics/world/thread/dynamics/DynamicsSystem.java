@@ -11,13 +11,14 @@
 
 package javagems3d.physics.world.thread.dynamics;
 
+import api.newer.events.EventBus;
 import com.jme3.bullet.CollisionConfiguration;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import javagems3d.JGems3D;
-import api.bridge.events.APIEventsLauncher;
+import api.newer.events.EventLauncher;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
@@ -25,7 +26,6 @@ import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
-import api.app.events.bus.Events;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -74,7 +74,7 @@ public class DynamicsSystem {
         for (Pair<IHasCollisionTrigger, Object> objectPair : triggerPairs) {
             ITriggerAction triggerAction = objectPair.getFirst().onColliding();
             if (triggerAction != null) {
-                if (!APIEventsLauncher.pushEvent(new Events.CollisionTriggered(objectPair.getFirst(), triggerAction)).isCancelled()) {
+                if (!EventLauncher.pushEvent(new EventBus.CollisionTriggered(objectPair.getFirst(), triggerAction)).isCancelled()) {
                     triggerAction.action(objectPair.getSecond());
                 }
             }

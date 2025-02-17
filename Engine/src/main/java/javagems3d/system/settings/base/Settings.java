@@ -78,14 +78,14 @@ public abstract class Settings {
                     try {
                         settingObject.setValue(settingObject.tryParseFromString(value));
                     } catch (Exception e) {
-                        e.printStackTrace(System.err);
+                        JGemsHelper.getLogger().exception(e);
                         settingObject.setDefault();
                     }
                 }
             }
             bufferedreader.close();
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+            JGemsHelper.getLogger().exception(e);
             if (this.getOptionsFile().exists()) {
                 this.getOptionsFile().delete();
             }

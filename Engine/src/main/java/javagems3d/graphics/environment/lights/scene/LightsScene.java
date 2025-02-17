@@ -11,6 +11,7 @@
 
 package javagems3d.graphics.environment.lights.scene;
 
+import api.newer.events.EventBus;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -19,13 +20,12 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
-import api.bridge.events.APIEventsLauncher;
+import api.newer.events.EventLauncher;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
-import api.app.events.bus.Events;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -62,7 +62,7 @@ public class LightsScene implements ILightsScene {
             }
             this.getPointLightList().add((PointLight) light);
         }
-        APIEventsLauncher.pushEvent(new Events.LightAdded(light));
+        EventLauncher.pushEvent(new EventBus.LightAdded(light));
     }
 
     public void removeLight(Light light) {

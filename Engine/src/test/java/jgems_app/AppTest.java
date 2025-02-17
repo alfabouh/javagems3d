@@ -1,0 +1,52 @@
+package jgems_app;
+
+import api.newer.application.JGemsApplication;
+import api.newer.application.events.IAppEventSubscriber;
+import api.newer.application.resources.IAppResources;
+import api.newer.system.JGemsAppEntry;
+import api.newer.system.JGemsAppInstance;
+import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
+import javagems3d.graphics.screen.window.Window;
+import javagems3d.system.controller.binding.BindingManager;
+import javagems3d.system.controller.binding.DefaultBindings;
+import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
+import jgems_app.events.TestEvents;
+import jgems_app.gui.TestMainMenuPanel;
+import jgems_app.resources.ModelInitializer;
+
+@JGemsAppEntry(id = "DefaultGame")
+public class AppTest extends JGemsApplication {
+    @JGemsAppInstance
+    public static AppTest appTest;
+
+    public AppTest() {
+        JGems3D.DEBUG_MODE = true;
+    }
+
+    @Override
+    public void initEvents(@NotNull IAppEventSubscriber appEventSubscriber) {
+        appEventSubscriber.addClassWithEvents(TestEvents.class);
+    }
+
+    @Override
+    public void initResources(@NotNull IAppResources appResources) {
+        appResources.putGlobalAssetsInitializer(new ModelInitializer());
+    }
+
+    @Override
+    public @NotNull BindingManager getBindingManager() {
+        return new DefaultBindings();
+    }
+
+    @Override
+    public @NotNull PanelUI getMainMenuPanel() {
+        return new TestMainMenuPanel(null);
+    }
+
+    @Override
+    public @NotNull Window.WindowProperties getWindowProperties() {
+        return new Window.WindowProperties("DefaultGame", new JGemsPath(Window.DEFAULT_ICON));
+    }
+}
