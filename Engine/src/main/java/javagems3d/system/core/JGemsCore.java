@@ -11,8 +11,8 @@
 
 package javagems3d.system.core;
 
-import api.newer.events.EventBus;
-import api.newer.system.JGemsAPI;
+import api.events.EventBus;
+import api.system.JGemsAPI;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Plane;
@@ -28,7 +28,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.newer.events.EventLauncher;
+import api.events.EventLauncher;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;

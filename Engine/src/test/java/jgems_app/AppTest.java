@@ -1,10 +1,10 @@
 package jgems_app;
 
-import api.newer.application.JGemsApplication;
-import api.newer.application.events.IAppEventSubscriber;
-import api.newer.application.resources.IAppResources;
-import api.newer.system.JGemsAppEntry;
-import api.newer.system.JGemsAppInstance;
+import api.application.JGemsApplication;
+import api.application.events.IAppEventSubscriber;
+import api.application.resources.IAppResources;
+import api.system.JGemsAppEntry;
+import api.system.JGemsAppInstance;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;

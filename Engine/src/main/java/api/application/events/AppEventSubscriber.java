@@ -9,7 +9,7 @@
  *
  */
 
-package api.newer.application.events;
+package api.application.events;
 
 import java.util.HashSet;
 import java.util.Set;

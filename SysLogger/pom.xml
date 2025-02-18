@@ -7,9 +7,11 @@
         <groupId>com.github.alfabouh</groupId>
         <artifactId>javagems3d</artifactId>
         <version>0.2</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>SysLogger</artifactId>
+    <version>0.2</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

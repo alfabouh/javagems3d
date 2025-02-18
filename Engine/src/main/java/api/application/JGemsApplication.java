@@ -1,7 +1,7 @@
-package api.newer.application;
+package api.application;
 
-import api.newer.application.events.IAppEventSubscriber;
-import api.newer.application.resources.IAppResources;
+import api.application.events.IAppEventSubscriber;
+import api.application.resources.IAppResources;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.controller.binding.BindingManager;

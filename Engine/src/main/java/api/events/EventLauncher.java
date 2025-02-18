@@ -9,8 +9,15 @@
  *
  */
 
-package api.newer.application.events;
+package api.events;
 
-public interface IAppEventSubscriber {
-    void addClassWithEvents(Class<?> clazz);
+
+import api.system.JGemsAPI;
+
+@SuppressWarnings("all")
+public abstract class EventLauncher {
+    public static EventBus.IEvent pushEvent(EventBus.IEvent event) {
+        JGemsAPI.pushEvent(event);
+        return event;
+    }
 }

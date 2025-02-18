@@ -23,7 +23,6 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.newer.system.JGemsAPIManager;
 import javagems3d.audio.sound.SoundListener;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.global.JGemsRenderingGlobalConstants;

@@ -9,7 +9,7 @@
  *
  */
 
-package api.newer.events;
+package api.events;
 
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;

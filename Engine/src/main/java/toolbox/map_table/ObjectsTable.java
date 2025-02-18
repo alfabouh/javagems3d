@@ -11,18 +11,7 @@
 
 package toolbox.map_table;
 
-import org.joml.Vector3f;
-import javagems3d.JGems3D;
-import api.newer.system.JGemsAPIManager;
-import toolbox.ToolBox;
-import javagems3d.temp.map_sys.save.objects.object_attributes.Attribute;
-import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeID;
-import javagems3d.temp.map_sys.save.objects.object_attributes.AttributeTarget;
-import javagems3d.temp.map_sys.save.objects.object_attributes.AttributesContainer;
-import toolbox.map_table.object.AABBZoneObjectData;
 import toolbox.map_table.object.AbstractObjectData;
-import toolbox.map_table.object.MarkerObjectData;
-import toolbox.map_table.object.ObjectCategory;
 import toolbox.resources.TBoxResourceManager;
 
 import java.lang.reflect.InvocationTargetException;

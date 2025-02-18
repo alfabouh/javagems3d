@@ -11,7 +11,7 @@
 
 package javagems3d;
 
-import api.newer.system.JGemsAPIData;
+import api.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.system.os.OS;
 import javagems3d.system.os.SysOSValidation;
@@ -19,9 +19,8 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import api.newer.system.JGemsAPIManager;
-import api.newer.system.JGemsAPI;
-import api.newer.events.EventLauncher;
+import api.system.JGemsAPI;
+import api.events.EventLauncher;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
@@ -37,7 +36,7 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import javagems3d.system.service.synchronizing.SyncManager;
 import javagems3d.system.settings.JGemsSettings;
-import api.newer.events.EventBus;
+import api.events.EventBus;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;
 

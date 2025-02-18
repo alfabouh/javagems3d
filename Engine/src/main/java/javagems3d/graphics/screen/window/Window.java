@@ -11,7 +11,6 @@
 
 package javagems3d.graphics.screen.window;
 
-import api.newer.system.JGemsAPI;
 import com.google.common.io.ByteStreams;
 import javagems3d.global.JGemsGlobalConfiguration;
 import org.jetbrains.annotations.NotNull;

@@ -11,11 +11,11 @@
 
 package javagems3d.physics.world.thread.timer;
 
-import api.newer.events.EventBus;
+import api.events.EventBus;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
-import api.newer.events.EventLauncher;
+import api.events.EventLauncher;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;

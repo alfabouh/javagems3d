@@ -9,16 +9,16 @@
  *
  */
 
-package api.newer.system;
+package api.system;
 
-import api.newer.events.EventBus;
-import api.newer.application.JGemsApplication;
-import api.newer.application.resources.AppResources;
+import api.events.EventBus;
+import api.application.JGemsApplication;
+import api.application.resources.AppResources;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import api.newer.application.events.AppEventSubscriber;
-import api.newer.application.events.SubscribeEvent;
+import api.application.events.AppEventSubscriber;
+import api.application.events.SubscribeEvent;
 import logger.SystemLogging;
 
 import java.lang.reflect.InvocationTargetException;

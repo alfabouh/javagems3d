@@ -9,10 +9,10 @@
  *
  */
 
-package api.newer.system;
+package api.system;
 
-import api.newer.events.EventBus;
-import api.newer.application.JGemsApplication;
+import api.events.EventBus;
+import api.application.JGemsApplication;
 import javagems3d.JGemsHelper;
 import javagems3d.system.service.collections.Pair;
 import org.reflections.Reflections;

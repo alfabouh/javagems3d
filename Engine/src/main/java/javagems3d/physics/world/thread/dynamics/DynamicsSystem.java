@@ -11,14 +11,14 @@
 
 package javagems3d.physics.world.thread.dynamics;
 
-import api.newer.events.EventBus;
+import api.events.EventBus;
 import com.jme3.bullet.CollisionConfiguration;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import javagems3d.JGems3D;
-import api.newer.events.EventLauncher;
+import api.events.EventLauncher;
 import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;

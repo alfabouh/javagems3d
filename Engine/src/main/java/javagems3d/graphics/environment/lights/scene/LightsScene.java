@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.environment.lights.scene;
 
-import api.newer.events.EventBus;
+import api.events.EventBus;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -20,7 +20,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
-import api.newer.events.EventLauncher;
+import api.events.EventLauncher;
 import javagems3d.graphics.environment.Environment;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;

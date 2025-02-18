@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.rendering.ui.dear_imgui;
 
-import api.newer.events.EventBus;
+import api.events.EventBus;
 import imgui.*;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
@@ -25,7 +25,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
-import api.newer.events.EventLauncher;
+import api.events.EventLauncher;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.objects.MouseKeyboardController;

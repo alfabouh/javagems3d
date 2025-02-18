@@ -11,8 +11,8 @@
 
 package javagems3d.graphics.world;
 
-import api.newer.events.EventBus;
-import api.newer.events.EventLauncher;
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsDebugGlobalConstants;

@@ -1,4 +1,4 @@
-package api.newer.application.setup;
+package api.application.setup;
 
 public final class AppSetup implements IAppSetup {
 

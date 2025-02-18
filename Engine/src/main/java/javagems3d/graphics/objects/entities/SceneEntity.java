@@ -1,7 +1,7 @@
 package javagems3d.graphics.objects.entities;
 
-import api.newer.events.EventBus;
-import api.newer.events.EventLauncher;
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;

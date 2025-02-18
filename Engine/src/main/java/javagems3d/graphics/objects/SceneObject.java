@@ -65,6 +65,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
             return;
         }
         double fps = this.getAnimationData().getCurrentAnimation().getFrameCount() / (this.getAnimationData().getCurrentAnimation().getDuration() * this.getAnimationData().getCurrentAnimation().getDuration());
+        fps *= this.animationSpeedMultiplier();
         double deltaTime = JGems3D.glfwTime() - this.lastTick;
         this.getAnimationData().setAnimationFrameDelta((fps / deltaTime) % 1.0f);
         if (deltaTime >= fps) {

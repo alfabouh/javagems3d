@@ -1,8 +1,8 @@
-package api.newer.system;
+package api.system;
 
-import api.newer.application.JGemsApplication;
-import api.newer.application.events.AppEventSubscriber;
-import api.newer.application.resources.AppResources;
+import api.application.JGemsApplication;
+import api.application.events.AppEventSubscriber;
+import api.application.resources.AppResources;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.controller.binding.BindingManager;

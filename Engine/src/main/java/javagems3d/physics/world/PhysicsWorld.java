@@ -11,9 +11,9 @@
 
 package javagems3d.physics.world;
 
-import api.newer.events.EventBus;
+import api.events.EventBus;
 import javagems3d.JGems3D;
-import api.newer.events.EventLauncher;
+import api.events.EventLauncher;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;

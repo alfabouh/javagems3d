@@ -22,8 +22,8 @@
 
 package jgems_app.events;
 
-import api.newer.application.events.SubscribeEvent;
-import api.newer.events.EventBus;
+import api.application.events.SubscribeEvent;
+import api.events.EventBus;
 
 public class TestEvents {
     @SubscribeEvent

@@ -11,7 +11,7 @@
 
 package javagems3d.system.resources.managing;
 
-import api.newer.system.JGemsAPI;
+import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;

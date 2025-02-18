@@ -1,4 +1,4 @@
-package api.newer.application.resources;
+package api.application.resources;
 
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
