@@ -21,6 +21,7 @@ import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataArrays;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
+import javagems3d.system.service.exceptions.JGemsIOException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
@@ -34,9 +35,12 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import org.joml.Vector2i;
 
+import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -134,6 +138,20 @@ public final class GameResources implements IGameResources {
     @SuppressWarnings("all")
     public <S extends ICached> S getResource(String key) {
         return (S) this.getResourceCache().getCachedObject(key);
+    }
+
+    public static Font createFontFromJAR(JGemsPath path) {
+        Font font1;
+        try {
+            try (InputStream inputStream = JGems3D.loadFileFromJar(path)) {
+                font1 = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            }
+        } catch (FontFormatException | IOException e) {
+            throw new JGemsIOException(e);
+        }
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        ge.registerFont(font1);
+        return font1;
     }
 
     public void destroy() {

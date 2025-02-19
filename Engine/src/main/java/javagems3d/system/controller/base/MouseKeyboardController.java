@@ -9,24 +9,20 @@
  *
  */
 
-package javagems3d.system.controller.objects;
+package javagems3d.system.controller.base;
 
-import javagems3d.system.controller.binding.DefaultBindings;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
-import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
-import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.controller.objects.devices.MouseKeyboard;
-import javagems3d.system.inventory.IInventoryOwner;
-import javagems3d.system.inventory.Inventory;
+import javagems3d.system.controller.devices.MouseKeyboard;
+import toolbox.render.scene.dear_imgui.content.EditorContent;
 
-public class MouseKeyboardController implements IController {
+public abstract class MouseKeyboardController implements IController {
+    private final Vector2i prevMouseCoord;
+
     protected final Vector2f normalizedRotationInput;
     protected final Vector3f normalizedPositionInput;
     private final BindingManager bindingManager;
@@ -38,6 +34,7 @@ public class MouseKeyboardController implements IController {
         this.window = window;
         this.mouseAndKeyboard = new MouseKeyboard(window);
         this.xyzInput = new Vector3f(0.0f);
+        this.prevMouseCoord = new Vector2i(0);
         this.normalizedRotationInput = new Vector2f();
         this.normalizedPositionInput = new Vector3f();
         this.bindingManager = bindingManager;
@@ -88,12 +85,34 @@ public class MouseKeyboardController implements IController {
         if (!window.isWindowInFocus()) {
             return;
         }
-        Vector2i posM = new Vector2i((int) (window.getWindowSize().x / 2.0f), (int) (window.getWindowSize().y / 2.0f));
+        boolean isCenterScanning = this.getScanningMode().equals(ScanningMode.CENTER);
+        Vector2i posM = isCenterScanning ? new Vector2i((int) (window.getWindowSize().x / 2.0f), (int) (window.getWindowSize().y / 2.0f)) : this.prevMouseCoord;
         double[] xy = this.getMouseAndKeyboard().getCursorCoordinates();
         float d1 = (float) (xy[0] - posM.x);
         float d2 = (float) (xy[1] - posM.y);
-        this.getRotationInput().set(new Vector2f(d2, d1));
-        this.setCursorInCenter();
+        this.prevMouseCoord.set((int) xy[0], (int) xy[1]);
+
+        if (this.disableScanning()) {
+            return;
+        }
+
+        this.scanMouse(isCenterScanning, d1, d2);
+        this.scanKeyBoard();
+
+        this.normalizedPositionInput.set(new Vector3f(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
+        this.normalizedRotationInput.set(new Vector2f(this.getRotationInput()).mul(this.getCamSensitivity()));
+    }
+
+    protected void scanMouse(boolean isCenterScanning, float d1, float d2) {
+        if (isCenterScanning) {
+            this.getRotationInput().set(new Vector2f(d2, d1));
+            this.setCursorInCenter();
+        } else if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
+            this.getRotationInput().set(new Vector2f(d2, d1));
+        }
+    }
+
+    protected void scanKeyBoard() {
         if (this.getBindingManager().keyMoveLeft().isPressed()) {
             this.getPositionInput().add(-1.0f, 0.0f, 0.0f);
         }
@@ -112,24 +131,15 @@ public class MouseKeyboardController implements IController {
         if (this.getBindingManager().keyMoveDown().isPressed()) {
             this.getPositionInput().add(0.0f, -1.0f, 0.0f);
         }
-        this.normalizedPositionInput.set(new Vector3f(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
-        this.normalizedRotationInput.set(new Vector2f(this.getRotationInput()).mul(JGemsControllerDispatcher.CAM_SENS));
     }
 
-    @Override
-    public void updateItemWithInventory(IInventoryOwner hasInventory) {
-        if (JGemsHelper.CAMERA.getCurrentCamera() instanceof ControlledCamera) {
-            return;
-        }
-        Inventory inventory = hasInventory.getInventory();
-        if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
-            inventory.onMouseLeftClick(hasInventory.getWorld());
-        }
-        if (this.getMouseAndKeyboard().isRightKeyPressed()) {
-            inventory.onMouseRightClick(hasInventory.getWorld());
-        }
-        inventory.scrollInventoryToNotNullItem(this.getMouseAndKeyboard().getScrollVector());
+    public abstract ScanningMode getScanningMode();
+
+    public boolean disableScanning() {
+        return false;
     }
+
+    public abstract float getCamSensitivity();
 
     public void setCursorInCenter() {
         Vector2i posM = new Vector2i((int) (this.getWindow().getWindowSize().x / 2.0f), (int) (this.getWindow().getWindowSize().y / 2.0f));

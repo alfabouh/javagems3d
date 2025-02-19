@@ -16,7 +16,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
-import javagems3d.system.controller.objects.IController;
+import javagems3d.system.controller.base.IController;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 import java.util.Objects;

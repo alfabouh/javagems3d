@@ -14,7 +14,7 @@ package toolbox.render.scene.camera;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.graphics.camera.ControlledCamera;
-import javagems3d.system.controller.objects.IController;
+import javagems3d.system.controller.base.IController;
 import toolbox.controller.TBoxControllerDispatcher;
 
 public class TBoxCameraBase extends ControlledCamera {

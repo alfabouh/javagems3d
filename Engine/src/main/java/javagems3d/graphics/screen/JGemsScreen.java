@@ -15,6 +15,7 @@ import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
+import javagems3d.system.resources.managing.resources.GameResources;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -331,21 +332,13 @@ public class JGemsScreen implements IScreen {
         return this.timerPool;
     }
 
-    public void setIcon(@Nullable JGemsPath icon) {
-        this.getWindow().setIcon(icon);
-    }
-
-    public void setTitle(@NotNull String title) {
-        this.getWindow().setTitle(title);
-    }
-
     public class LoadingScreen {
         private final GuiFont guiFont;
         private final ArrayList<Pair<Integer, String>> lines;
         private int counter;
 
         public LoadingScreen(String title) {
-            Font gameFont = JGemsResourceManager.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
+            Font gameFont = GameResources.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(new Pair<>(0x00ff00, JGemsCore.ENG_NAME + " : " + JGemsCore.ENG_VER));

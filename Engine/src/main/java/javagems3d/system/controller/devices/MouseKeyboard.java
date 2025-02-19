@@ -9,7 +9,7 @@
  *
  */
 
-package javagems3d.system.controller.objects.devices;
+package javagems3d.system.controller.devices;
 
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;

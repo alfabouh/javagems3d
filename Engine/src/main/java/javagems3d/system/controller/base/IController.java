@@ -9,13 +9,12 @@
  *
  */
 
-package javagems3d.system.controller.objects;
+package javagems3d.system.controller.base;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
-import javagems3d.system.inventory.IInventoryOwner;
 
 public interface IController {
     Vector2f getNormalizedRotationInput();
@@ -25,6 +24,4 @@ public interface IController {
     BindingManager getBindingManager();
 
     void updateControllerState(IWindow window);
-
-    void updateItemWithInventory(IInventoryOwner hasInventory);
 }

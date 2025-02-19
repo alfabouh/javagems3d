@@ -4,7 +4,7 @@ import javagems3d.physics.entities.kinematic.JGemsKinematicItem;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.thread.JGemsPhysics;
-import javagems3d.system.controller.objects.IController;
+import javagems3d.system.controller.base.IController;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3d;

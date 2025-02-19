@@ -1,15 +1,12 @@
 package javagems3d.system.resources.managing.resources.data;
 
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
-import javagems3d.system.resources.managing.resources.data.arrays.IDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public final class ResourcesDataCache {
     private final MeshBuffersDataCache meshBuffersDataArray;
@@ -20,10 +17,10 @@ public final class ResourcesDataCache {
         this.bindlessTexturesDataArray = bindlessTexturesDataCache;
     }
 
-    public void writeAll(ResourcesDataArrays... arrays) {
+    public void writeAll(Collection<ResourcesDataArrays> arrays) {
         Set<BindlessTexturesDataArray> bindlessTexturesDataArraySet = new HashSet<>();
         Set<MeshBuffersDataArray> meshBuffersDataArraySet = new HashSet<>();
-        Arrays.asList(arrays).forEach(e -> {
+        arrays.forEach(e -> {
             bindlessTexturesDataArraySet.add(e.getBindlessTexturesArray());
             meshBuffersDataArraySet.add(e.getMeshBuffersDataArray());
         });
@@ -31,6 +28,11 @@ public final class ResourcesDataCache {
         this.getMeshBuffersDataCache().clear();
         this.getBindlessTexturesCache().writeData(bindlessTexturesDataArraySet);
         this.getMeshBuffersDataCache().writeData(meshBuffersDataArraySet);
+    }
+
+    public void writeAll(ResourcesDataArrays... arrays) {
+        List<ResourcesDataArrays> arrays1 = new ArrayList<>(Arrays.asList(arrays));
+        this.writeAll(arrays1);
     }
 
     public void clearAll() {

@@ -8,7 +8,7 @@ import javagems3d.system.controller.components.FunctionalKey;
 import javagems3d.system.controller.components.IKeyAction;
 import javagems3d.system.controller.components.Key;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.lwjgl.glfw.GLFW;
 

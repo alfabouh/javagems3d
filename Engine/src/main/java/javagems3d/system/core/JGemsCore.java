@@ -259,7 +259,7 @@ public class JGemsCore implements ICore {
 
     @SuppressWarnings("all")
     public void startSystem() {
-        this.printSystemInfo();
+        JGemsCore.printSystemInfo();
         if (this.engineState().isEngineIsReady()) {
             JGemsHelper.getLogger().warn("Engine thread is currently running");
             return;
@@ -270,7 +270,6 @@ public class JGemsCore implements ICore {
                 JGemsAPI.APIAppData().preInit(this);
                 JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
                 this.getResourceManager().initGlobalResources();
-                this.getResourceManager().initLocalResources();
                 this.getSoundManager().createSystem();
                 this.getPhysics().initService();
                 this.createGraphics();
@@ -383,7 +382,7 @@ public class JGemsCore implements ICore {
         this.engineState().lockedUnPausing = lockedUnPausing;
     }
 
-    private void printSystemInfo() {
+    public static void printSystemInfo() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
         Properties properties = System.getProperties();

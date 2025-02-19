@@ -44,8 +44,8 @@ import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.physics.world.triggers.zones.base.ITriggerZone;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.controller.objects.IController;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.IController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
@@ -311,7 +311,7 @@ public abstract class JGemsHelper {
         }
 
         public static BindingManager bindingManager() {
-            return JGemsControllerDispatcher.bindingManager();
+            return JGemsHelper.CONTROLLER.getControllerDispatcher().getCurrentController().getBindingManager();
         }
     }
 

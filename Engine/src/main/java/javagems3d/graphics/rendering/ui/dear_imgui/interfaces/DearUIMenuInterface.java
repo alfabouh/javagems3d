@@ -5,7 +5,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.screen.JGemsScreen;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import logger.managers.LoggingManager;
 import org.joml.Vector2i;
 

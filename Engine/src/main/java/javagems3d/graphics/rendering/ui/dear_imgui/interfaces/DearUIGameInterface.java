@@ -17,7 +17,7 @@ import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.profiler.SpeedProfiler;
 import javagems3d.system.resources.managing.JGemsResourceManager;

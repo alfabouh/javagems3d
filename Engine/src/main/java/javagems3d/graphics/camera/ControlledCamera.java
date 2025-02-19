@@ -14,7 +14,7 @@ package javagems3d.graphics.camera;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.controller.objects.IController;
+import javagems3d.system.controller.base.IController;
 
 public class ControlledCamera extends FixedCamera {
     private IController controller;

@@ -10,7 +10,7 @@
 
 **JavaGames3D** is a three-dimensional game engine written in java. **v0.2a** is the latest released version
 
-The engine uses **OpenGL 4.3** for graphics, and the **Bullet Physics([Libbulletjme](https://github.com/stephengold/Libbulletjme))** as the physics engine.
+The engine uses **OpenGL 4.3** for workbench.graphics, and the **Bullet Physics([Libbulletjme](https://github.com/stephengold/Libbulletjme))** as the physics engine.
 
 ***The project is at the initial pipeline of development, many features have not yet been implemented, and those that have been implemented have not been properly implemented. Use the best practices at your own risk!***
 

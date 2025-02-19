@@ -19,4 +19,5 @@ public abstract class JGemsGlobalConfiguration {
     public static int MAX_PARTICLES = 512;
     public static int ANIM_MAX_BONES = 64;
     public static int ANIM_MAX_WEIGHTS = 4;
+    public static float CAM_SENS = 0.0015f;
 }

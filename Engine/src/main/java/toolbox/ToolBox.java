@@ -34,11 +34,7 @@ public final class ToolBox {
     private boolean shouldBeClosed;
 
     private ToolBox() {
-        try {
-            SystemLogging.get().setCurrentLogging(SystemLogging.toolBoxLogging);
-        } catch (IOException e) {
-            throw new JGemsRuntimeException(e);
-        }
+
 
        // JGemsAPI.get().launchToolBoxAPI();
         JGemsAPI.get().disposeReflection();

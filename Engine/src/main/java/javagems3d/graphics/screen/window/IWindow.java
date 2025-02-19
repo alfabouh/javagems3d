@@ -22,6 +22,10 @@ public interface IWindow {
     Vector2i getWindowSize();
     boolean isWindowInFocus();
 
+    default boolean isFullScreen() {
+        return GLFW.glfwGetWindowMonitor(this.getDescriptor()) != 0;
+    }
+
     default boolean isWindowActive() {
         if (this.getWindowSize().x == 0 || this.getWindowSize().y == 0) {
             return false;

@@ -28,7 +28,7 @@ import javagems3d.JGems3D;
 import api.events.EventLauncher;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;

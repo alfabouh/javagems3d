@@ -41,7 +41,6 @@ public class DynamicsSystem {
     }
 
     public void init() {
-        boolean dist = true;
         Path path = Paths.get(JGems3D.getEngineFilesFolder().toString(), "natives");
         try {
             String lib = NativesExtractor.extractNativesAndReturnPath(path, JGems3D.get().getOS());

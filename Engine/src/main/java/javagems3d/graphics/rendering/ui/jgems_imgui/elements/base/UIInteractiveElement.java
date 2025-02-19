@@ -13,8 +13,8 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base;
 
 import org.joml.Vector2f;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.controller.objects.IController;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.IController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
 public abstract class UIInteractiveElement extends UIElement {

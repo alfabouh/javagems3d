@@ -1,6 +1,7 @@
 package launcher.run;
 
 import javagems3d.JGems3D;
+import javagems3d.JGemsHelper;
 import launcher.util.ArgsDecomposer;
 
 public final class EngineRun implements IRun {

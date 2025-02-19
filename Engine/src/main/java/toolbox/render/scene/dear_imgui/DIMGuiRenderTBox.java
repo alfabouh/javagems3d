@@ -22,7 +22,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIMesh;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.cache.ResourceCache;
 import toolbox.ToolBox;

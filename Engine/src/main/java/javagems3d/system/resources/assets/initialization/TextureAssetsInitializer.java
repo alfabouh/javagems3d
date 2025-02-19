@@ -49,7 +49,7 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading textures...");
         TextureAssetsInitializer.DEFAULT = gameResources.createTexture(null, new JGemsPath(JGems3D.DEF_PATHS.TEXTURES, "default.png"), new ImageTexture.Properties(false, false, true, false, false));
 
-        Font gameFont = JGemsResourceManager.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
+        Font gameFont = GameResources.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
 
         this.standardFont2 = new GuiFont(gameResources, gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);
         this.standardFont = new GuiFont(gameResources, gameFont.deriveFont(Font.PLAIN, 24), FontCode.Window);

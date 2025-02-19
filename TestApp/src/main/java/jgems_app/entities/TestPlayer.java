@@ -43,7 +43,7 @@ public class TestPlayer extends JGemsKinematicPlayer {
     @Override
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
         if (JGems3D.DEBUG_MODE) {
-            if (((DefaultBindings) JGemsControllerDispatcher.bindingManager()).keyBlock1.isClicked()) {
+            if (((DefaultBindings) JGemsHelper.CONTROLLER.bindingManager()).keyBlock1.isClicked()) {
                 JGemsStaticBody entityPropInfo = new JGemsStaticBody(MeshCollider.getStatic(JGemsResourceManager.globalModelAssets.grassCube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "jgems_app/horror");
                 JGemsHelper.WORLD.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
                 Vector3f v3 = this.getLookVector().mul(50.0f);

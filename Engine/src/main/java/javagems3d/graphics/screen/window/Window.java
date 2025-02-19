@@ -195,10 +195,6 @@ public class Window implements IWindow {
         }
     }
 
-    public boolean isFullScreen() {
-        return GLFW.glfwGetWindowMonitor(this.getDescriptor()) != 0;
-    }
-
     public void enableVSync() {
         GLFW.glfwSwapInterval(1);
     }

@@ -15,6 +15,7 @@
         <module>SysLogger</module>
         <module>Launcher</module>
         <module>Workbench</module>
+        <module>TestApp</module>
     </modules>
 
     <scm>

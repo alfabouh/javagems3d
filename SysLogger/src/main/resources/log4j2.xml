@@ -52,7 +52,7 @@
             </AppenderRef>
             <AppenderRef ref="FileOUT_1" />
         </Logger>
-        <Logger name="ToolBoxLogger" level="all" additivity="true">
+        <Logger name="WorkbenchLogger" level="all" additivity="true">
             <AppenderRef ref="ConsoleERR">
                 <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             </AppenderRef>

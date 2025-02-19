@@ -11,11 +11,12 @@
 
 package toolbox.controller.objects;
 
+import javagems3d.system.controller.base.ScanningMode;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
-import javagems3d.system.controller.objects.MouseKeyboardController;
+import javagems3d.system.controller.base.MouseKeyboardController;
 import toolbox.controller.TBoxControllerDispatcher;
 import toolbox.render.scene.dear_imgui.content.EditorContent;
 
@@ -71,5 +72,15 @@ public class AlternateMouseKeyboardController extends MouseKeyboardController {
 
         this.normalizedPositionInput.set(new Vector3f(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
         this.normalizedRotationInput.set(new Vector2f(this.getRotationInput()).mul(TBoxControllerDispatcher.CAM_SENS));
+    }
+
+    @Override
+    public ScanningMode getScanningMode() {
+        return null;
+    }
+
+    @Override
+    public float getCamSensitivity() {
+        return 0;
     }
 }
