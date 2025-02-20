@@ -334,7 +334,9 @@ public class JGemsCore implements ICore {
     }
 
     public void addExceptionInTrace(Exception e) {
-        this.getExceptionsBuffer().add(e);
+        if (e != null) {
+            this.getExceptionsBuffer().add(e);
+        }
     }
 
     private Set<Exception> getExceptionsBuffer() {

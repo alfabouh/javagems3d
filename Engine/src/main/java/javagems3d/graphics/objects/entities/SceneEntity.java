@@ -201,6 +201,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     }
 
     @Override
+    public SceneWorld getWorld() {
+        return (SceneWorld) super.getWorld();
+    }
+
+    @Override
     public boolean canBeRendered() {
         return super.canBeRendered() && this.isVisible;
     }

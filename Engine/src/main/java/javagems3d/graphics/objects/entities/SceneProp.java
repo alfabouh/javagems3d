@@ -84,6 +84,11 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
         this.adjustLightsTranslation(this.getModel().getPose().getPosition(), new Vector3f(0.0f));
     }
 
+    @Override
+    public SceneWorld getWorld() {
+        return (SceneWorld) super.getWorld();
+    }
+
     public void setDead() {
         this.isDead = true;
     }

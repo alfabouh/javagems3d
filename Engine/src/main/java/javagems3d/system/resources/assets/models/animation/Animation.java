@@ -8,13 +8,15 @@ import java.util.List;
 public final class Animation {
     private final String name;
     private final double duration;
+    private final double fps;
     private final List<AnimationFrame> frameList;
     private int offset;
 
-    public Animation(String name, double duration, List<AnimationFrame> frameList) {
+    public Animation(String name, double duration, double fps, List<AnimationFrame> frameList) {
         this.name = name;
         this.duration = duration;
         this.frameList = frameList;
+        this.fps = fps;
     }
 
     public int getOffset() {
@@ -29,16 +31,16 @@ public final class Animation {
         return this.name;
     }
 
+    public double getFps() {
+        return this.fps;
+    }
+
     public double getDuration() {
         return this.duration;
     }
 
     public List<AnimationFrame> getFrameList() {
         return this.frameList;
-    }
-
-    public float getFrameRate() {
-        return (float) (this.getFrameCount() / this.getDuration());
     }
 
     public int getFrameCount() {

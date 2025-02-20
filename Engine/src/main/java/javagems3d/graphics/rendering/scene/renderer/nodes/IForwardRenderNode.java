@@ -9,6 +9,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGe
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.world.SceneWorld;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
@@ -73,9 +74,10 @@ public interface IForwardRenderNode extends IRenderNode {
         }
 
         public void initProcessors() {
+            SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
             this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
-            this.skyboxRenderProcessor = new SkyboxRenderProcessor(this.getSceneWorld().getEnvironment().getSkyBox(), this.getOpenGLRenderer());
-            this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), this.getSceneWorld().getEnvironment().getSkyBox(), this.getOpenGLRenderer());
+            this.skyboxRenderProcessor = new SkyboxRenderProcessor(sceneWorld.getEnvironment().getSkyBox(), this.getOpenGLRenderer());
+            this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), sceneWorld.getEnvironment().getSkyBox(), this.getOpenGLRenderer());
         }
 
         public void initFBOs() {

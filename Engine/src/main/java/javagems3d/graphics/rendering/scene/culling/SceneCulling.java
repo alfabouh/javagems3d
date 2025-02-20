@@ -54,7 +54,7 @@ public class SceneCulling implements ISceneCulling {
         }
         this.preFilter(sceneObjects);
         if (!this.disableDistanceCulling()) {
-            this.getCpuDistanceCulling().setCamera(this.getOpenGLRender().getSceneWorld().getCamera());
+            this.getCpuDistanceCulling().setCamera(this.getOpenGLRender().getCamera());
             this.getCpuDistanceCulling().filter(sceneObjects);
         }
         if (!this.disableFrustumCulling()) {

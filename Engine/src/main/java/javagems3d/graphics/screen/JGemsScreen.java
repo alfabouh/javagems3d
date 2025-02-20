@@ -16,8 +16,6 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
 import javagems3d.system.resources.managing.resources.GameResources;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -295,7 +293,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public SceneWorld getSceneWorld() {
-        return this.getScene().getSceneWorld();
+        return this.getScene().getWorld();
     }
 
     public ICamera getCamera() {

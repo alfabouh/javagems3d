@@ -1,10 +1,10 @@
 package jgems_app;
 
-import launcher.JGemsLauncher;
+import launcher.JavaGemsLauncher;
 
 public class Main {
     public static void main(String[] args) {
-        //JGemsLauncher.launchEngine(args);
-        JGemsLauncher.launchWorkbench(args);
+        //JavaGemsLauncher.launchEngine(args);
+        JavaGemsLauncher.launch(args);
     }
 }

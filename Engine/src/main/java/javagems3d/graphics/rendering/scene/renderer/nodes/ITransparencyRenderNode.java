@@ -88,8 +88,8 @@ public interface ITransparencyRenderNode extends IRenderNode {
             this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
             final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
-                final SceneWorld sceneWorld = this.getSceneWorld();
-                final ICamera camera = this.getSceneWorld().getCamera();
+                final SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
+                final ICamera camera = this.getOpenGLRenderer().getCamera();
                 final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
                 final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
                 final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();

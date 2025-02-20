@@ -13,6 +13,7 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
+import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
@@ -40,7 +41,6 @@ import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAtt
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -152,7 +152,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         OpenGLRenderer.setViewPort(this.getWindowSize());
-        if (this.getSceneWorld().getCamera() == null) {
+        if (this.getWorld().getCamera() == null) {
             uiRenderNode.onRender(frameTicking);
             this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
             return;
@@ -162,10 +162,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
             this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
             return;
         }
-        this.getSceneWorld().getEnvironment().updateEnvironment(this.getSceneWorld().getCamera());
+        this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
-        Set<SceneObject> toRender = new HashSet<>(this.getSceneWorld().getSceneObjects());
+        Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
         this.getSceneCulling().cull(toRender);
 
         Map<Stage, List<SceneObject>> dividedGroups = toRender.stream().filter(Objects::nonNull).collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
@@ -251,15 +251,20 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         this.getSceneIndirectBuffer().clear();
     }
 
+    @Override
+    public ICamera getCamera() {
+        return this.getWorld().getCamera();
+    }
+
     public void createResources() {
-        this.getSceneWorld().getEnvironment().createEnvironment(this);
+        this.getWorld().getEnvironment().createEnvironment(this);
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
         this.getSceneCulling().createResources();
     }
 
     public void destroyResources() {
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
-        this.getSceneWorld().getEnvironment().destroyEnvironment();
+        this.getWorld().getEnvironment().destroyEnvironment();
         this.getSceneCulling().destroyResources();
     }
 
@@ -276,6 +281,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         }
         this.constructScreenModel();
         this.getConveyorNodes().values().stream().filter(Objects::nonNull).forEach(e -> e.onWindowResize(window));
+    }
+
+    @Override
+    public @NotNull SceneWorld getWorld() {
+        return (SceneWorld) super.getWorld();
     }
 
     public IndirectBufferProgram getSceneIndirectBuffer() {

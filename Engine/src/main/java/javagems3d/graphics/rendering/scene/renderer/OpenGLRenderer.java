@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGemsHelper;
+import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
@@ -9,6 +10,7 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.physics.world.IWorld;
 import javagems3d.system.map.IMapActionsCallback;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import org.jetbrains.annotations.NotNull;
@@ -19,11 +21,11 @@ import java.util.Map;
 
 public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, IMapActionsCallback {
     private final IWindow window;
-    private final SceneWorld sceneWorld;
+    private final IWorld world;
 
-    public OpenGLRenderer(@NotNull IWindow window, @NotNull SceneWorld sceneWorld) {
+    public OpenGLRenderer(@NotNull IWindow window, @NotNull IWorld world) {
         this.window = window;
-        this.sceneWorld = sceneWorld;
+        this.world = world;
     }
 
     public final Vector2i getWindowSize() {
@@ -38,10 +40,11 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
 
     public abstract void initSceneIndirectRenderBuffer(MeshBuffersDataCache meshBuffersDataCache);
     public abstract void destroySceneIndirectRenderBuffer();
+    public abstract ICamera getCamera();
 
     @Override
-    public @NotNull SceneWorld getSceneWorld() {
-        return this.sceneWorld;
+    public @NotNull IWorld getWorld() {
+        return this.world;
     }
 
     @Override

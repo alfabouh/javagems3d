@@ -27,7 +27,7 @@ public abstract class AnimationLoadingUtils {
                 int maxFrames = AnimationLoadingUtils.calcAnimationMaxFrames(aiAnimation);
 
                 List<AnimationFrame> frameList = new ArrayList<>();
-                Animation animation = new Animation(aiAnimation.mName().dataString(), aiAnimation.mDuration(), frameList);
+                Animation animation = new Animation(aiAnimation.mName().dataString(), aiAnimation.mDuration(), aiAnimation.mTicksPerSecond(), frameList);
                 animations.add(animation);
 
                 for (int j = 0; j < maxFrames; j++) {

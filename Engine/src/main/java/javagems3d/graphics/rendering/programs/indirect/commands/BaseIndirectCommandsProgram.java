@@ -116,7 +116,6 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
 
     @SuppressWarnings("all")
     private List<MeshBuffer.PassData> chooseCollection(IndirectObjectsRenderer.Mode mode, MeshBuffer key) {
-        //TODO: SWITCH DOESNT WORK
         List<MeshBuffer.PassData> list = key.getSolidPassData();
         if (mode.equals(IndirectObjectsRenderer.Mode.ALL)) {
             list = key.getAllPassData();

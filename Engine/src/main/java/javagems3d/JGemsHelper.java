@@ -264,7 +264,7 @@ public abstract class JGemsHelper {
         }
 
         public static ParticlesEmitter getParticlesEmitter() {
-            return JGemsHelper.getScreen().getScene().getSceneWorld().getParticlesEmitter();
+            return JGemsHelper.getScreen().getScene().getWorld().getParticlesEmitter();
         }
     }
 
@@ -391,11 +391,11 @@ public abstract class JGemsHelper {
         }
 
         public static void removePropFromScene(SceneProp sceneProp) {
-            JGems3D.get().getScreen().getScene().getSceneWorld().removeObjectFromWorld(sceneProp);
+            JGems3D.get().getScreen().getScene().getWorld().removeObjectFromWorld(sceneProp);
         }
 
         public static void addPropInScene(SceneProp sceneProp) {
-            JGems3D.get().getScreen().getScene().getSceneWorld().addObjectInWorld(sceneProp);
+            JGems3D.get().getScreen().getScene().getWorld().addObjectInWorld(sceneProp);
         }
 
         public static void removeItemFromWorld(WorldItem worldItem) {

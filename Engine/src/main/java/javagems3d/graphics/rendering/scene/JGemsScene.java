@@ -37,7 +37,7 @@ public class JGemsScene implements IScene {
     }
 
     protected void setDefaultRenderer() {
-        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getWindow(), this.getSceneWorld()));
+        this.setSceneRenderer(new JGemsOpenGLRenderer(this.getWindow(), this.getWorld()));
     }
 
     public void preRender() {
@@ -67,9 +67,9 @@ public class JGemsScene implements IScene {
 
     @SuppressWarnings("all")
     public void updateSceneComponents(final FrameTicking frameTicking) throws InterruptedException {
-        this.getSceneWorld().updateWorldObjects(this.refresh, frameTicking);
+        this.getWorld().updateWorldObjects(this.refresh, frameTicking);
         this.refresh = false;
-        this.getSceneWorld().onWorldUpdate();
+        this.getWorld().onWorldUpdate();
         this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
         JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());
     }
@@ -85,7 +85,7 @@ public class JGemsScene implements IScene {
     }
 
     public void setCamera(ICamera camera) {
-        this.getSceneWorld().setCamera(camera);
+        this.getWorld().setCamera(camera);
     }
 
     public void setSceneRenderer(OpenGLRenderer sceneRenderer) {
@@ -93,7 +93,7 @@ public class JGemsScene implements IScene {
     }
 
     public ICamera getCamera() {
-        return this.getSceneWorld().getCamera();
+        return this.getWorld().getCamera();
     }
 
     public IWindow getWindow() {
@@ -101,7 +101,7 @@ public class JGemsScene implements IScene {
     }
 
     @Override
-    public SceneWorld getSceneWorld() {
+    public SceneWorld getWorld() {
         return this.sceneWorld;
     }
 

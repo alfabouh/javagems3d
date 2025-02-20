@@ -30,8 +30,8 @@ public class AnimationData {
         this.currentFrameId = frame;
     }
 
-    public float getFrameRate() {
-        return this.getCurrentAnimation().getFrameRate();
+    public double getFps() {
+        return this.getCurrentAnimation().getFps();
     }
 
     public double getAnimationFrameDelta() {

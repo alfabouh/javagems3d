@@ -132,8 +132,8 @@ public interface IDeferredRenderNode extends IRenderNode {
         public void createResources() {
             this.initFBOs();
             final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
-                final SceneWorld sceneWorld = this.getSceneWorld();
-                final ICamera camera = this.getSceneWorld().getCamera();
+                final SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
+                final ICamera camera = this.getOpenGLRenderer().getCamera();
                 final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
                 final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
                 final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
@@ -220,8 +220,8 @@ public interface IDeferredRenderNode extends IRenderNode {
 
         public void MillionCubesTest() {
             final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
-                final SceneWorld sceneWorld = this.getSceneWorld();
-                final ICamera camera = this.getSceneWorld().getCamera();
+                final SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
+                final ICamera camera = this.getOpenGLRenderer().getCamera();
                 final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
                 final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
                 final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
