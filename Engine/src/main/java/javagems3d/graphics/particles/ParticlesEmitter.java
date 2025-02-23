@@ -79,7 +79,9 @@ public final class ParticlesEmitter implements IParticlesEmitter {
 
     @Override
     public void destroy(SceneWorld sceneWorld) {
-        this.commonParticleModel2D.clear();
+        if (this.commonParticleModel2D != null) {
+            this.commonParticleModel2D.clear();
+        }
         this.clearParticles(sceneWorld);
         JGemsHelper.getLogger().info("Destroyed particles emitter");
     }

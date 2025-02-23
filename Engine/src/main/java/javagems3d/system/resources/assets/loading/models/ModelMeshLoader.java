@@ -30,7 +30,9 @@ import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ModelMeshLoader implements ILoadingHelper {
     private final JGemsPath path;
@@ -41,34 +43,22 @@ public class ModelMeshLoader implements ILoadingHelper {
         this.gameResources = gameResources;
     }
 
-    public MeshGroup createMeshGroup(int Flags) {
-        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
-        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
-        boolean createAabb = (Flags & FLAGS.CREATE_AABB_UD) != 0;
-        boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
+    public MeshGroup createMeshGroup(int Flags, boolean attachMeshBuffer, MemMode mode) {
+        boolean animated = (Flags & ModelLoaderFlags.LOAD_ANIMATIONS) != 0;
+        boolean createCollision = (Flags & ModelLoaderFlags.CREATE_COLLISION_UD) != 0;
+        boolean createAabb = (Flags & ModelLoaderFlags.CREATE_AABB_UD) != 0;
         MeshGroup meshGroup = null;
         String grString = this.getStr(MeshGroup.POSTFIX);
-        String bffString = this.getStr(MeshBuffer.POSTFIX);
         if (this.getResourceCache().checkObjectInCache(grString)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
             JGemsHelper.getLogger().info("Mesh " + this.getPath() + " picked from cache");
         } else {
-            meshGroup = this.processMeshGroup(this.getGameResources(), animated);
+            meshGroup = this.processMeshGroup(this.getGameResources(), animated, attachMeshBuffer);
             this.getResourceCache().addObjectInBuffer(grString, meshGroup);
             JGemsHelper.getLogger().info("Mesh " + this.getPath() + " successfully created");
         }
         if (meshGroup == null) {
             throw new JGemsNullException("There was an error, while loading the model");
-        }
-        if (!this.getResourceCache().checkObjectInCache(bffString)) {
-            if (loadInIndirectBuffer) {
-                MeshBuffer meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, true);
-                if (meshBuffer == null) {
-                    throw new JGemsNullException("There was an error, while loading the model");
-                }
-                this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
-                meshGroup.setLinkedMeshBuffer(meshBuffer);
-            }
         }
         if (createCollision) {
             JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
@@ -76,21 +66,24 @@ public class ModelMeshLoader implements ILoadingHelper {
         if (createAabb) {
             JGemsHelper.UTILS.createMeshAABBData(meshGroup);
         }
+        meshGroup.setMemMode(mode);
+        if (meshGroup.getMemMode().equals(MemMode.ERASE_NODES_DATA)) {
+            meshGroup.clearNodesData();
+        }
         return meshGroup;
     }
 
-    public MeshBuffer createMeshBuffer(int Flags) {
-        boolean animated = (Flags & FLAGS.LOAD_ANIMATIONS) != 0;
-        boolean createCollision = (Flags & FLAGS.CREATE_COLLISION_UD) != 0;
-        boolean createAabb = (Flags & FLAGS.CREATE_AABB_UD) != 0;
-        boolean loadInIndirectBuffer = (Flags & FLAGS.LOAD_IN_INDIRECT_BUFFER) != 0;
+    public MeshBuffer createMeshBuffer(int Flags, MemMode mode) {
+        boolean animated = (Flags & ModelLoaderFlags.LOAD_ANIMATIONS) != 0;
+        boolean createCollision = (Flags & ModelLoaderFlags.CREATE_COLLISION_UD) != 0;
+        boolean createAabb = (Flags & ModelLoaderFlags.CREATE_AABB_UD) != 0;
         String bffString = this.getStr(MeshBuffer.POSTFIX);
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
             JGemsHelper.getLogger().info("Mesh " + this.getPath() + " picked from cache");
         } else {
-            meshBuffer = this.processMeshBuffer(this.getGameResources(), animated, loadInIndirectBuffer);
+            meshBuffer = this.processMeshBuffer(this.getGameResources(), animated);
             this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
             JGemsHelper.getLogger().info("Mesh " + this.getPath() + " successfully created");
         }
@@ -103,6 +96,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         if (createAabb) {
             JGemsHelper.UTILS.createMeshAABBData(meshBuffer);
         }
+        meshBuffer.setMemMode(mode);
         return meshBuffer;
     }
 
@@ -135,7 +129,7 @@ public class ModelMeshLoader implements ILoadingHelper {
     }
 
     @SuppressWarnings("all")
-    private SkeletonData readSkeleton(List<Bone> bonesList, MeshStructure3D meshStructure, AIScene scene, AIMesh aiMesh) {
+    private SkeletonData readSkeleton(List<Bone> bonesList, AIScene scene, AIMesh aiMesh, MeshStructure3D... meshStructures) {
         SkeletonData skeletonData = AnimationLoadingUtils.readSkeleton(aiMesh, bonesList);
         if (skeletonData == null) {
             throw new JGemsIOException("Failed to read bones in animated model");
@@ -150,22 +144,17 @@ public class ModelMeshLoader implements ILoadingHelper {
                 throw new JGemsIOException("Failed to create nodes in animated model");
             }
         }
-
-        meshStructure.loadAnimations(animations);
+        List<Animation> finalAnimations = animations;
+        Arrays.asList(meshStructures).stream().filter(Objects::nonNull).forEach(e -> e.loadAnimations(finalAnimations));
         JGemsHelper.getLogger().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPath());
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loaded animation(size:" + animations.size() + ")");
         return skeletonData;
     }
 
-    @SuppressWarnings("all")
-    private <T extends MeshStructure3D> T processMeshStructure(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer, Class<T> structureType) {
-        T meshStructure;
-        try {
-            meshStructure = structureType.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            JGemsHelper.getLogger().error("Failed to create mesh structure instance: " + e.getMessage());
-            return null;
-        }
+
+    private MeshGroup processMeshGroup(GameResources gameResources, boolean isAnimated, boolean attachMeshBuffer) {
+        MeshGroup meshGroup = new MeshGroup();
+        MeshBuffer meshBuffer = attachMeshBuffer ? new MeshBuffer() : null;
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIScene aiScene = this.loadAIScene(stack, this.getPath(), isAnimated);
@@ -174,15 +163,15 @@ public class ModelMeshLoader implements ILoadingHelper {
             List<Material> materialList = new ArrayList<>();
             List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
-                AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
+                AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
                 Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
-                if (loadInIndirectBuffer) {
+                if (meshBuffer != null) {
                     gameResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
                 }
                 materialList.add(material);
             }
 
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building Mesh Structure...");
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building Mesh Group...");
 
             int totalMeshes = aiScene.mNumMeshes();
             PointerBuffer aiMeshes = aiScene.mMeshes();
@@ -191,23 +180,22 @@ public class ModelMeshLoader implements ILoadingHelper {
                 throw new JGemsIOException("Caught invalid model: " + this.getPath());
             }
             for (int i = 0; i < totalMeshes; i++) {
-                AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+                AIMesh aiMesh = AIMesh.create(Objects.requireNonNull(aiMeshes).get(i));
                 if (isAnimated) {
-                    skeletonData = this.readSkeleton(bonesList, meshStructure, aiScene, aiMesh);
+                    skeletonData = this.readSkeleton(bonesList, aiScene, aiMesh, meshGroup, meshBuffer);
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
                 Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
 
-                if (structureType == MeshBuffer.class) {
-                    DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
-                    ((MeshBuffer) meshStructure).putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
-                    if (loadInIndirectBuffer) {
-                        gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer((MeshBuffer) meshStructure);
-                    }
-                } else if (structureType == MeshGroup.class) {
-                    RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
-                    ((MeshGroup) meshStructure).putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
+                RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
+                meshGroup.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
+
+                if (meshBuffer != null) {
+                    DataMesh meshData2 = this.createDataMesh(aiMesh, skeletonData);
+                    meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData2, material));
+                    gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
+                    meshGroup.setLinkedMeshBuffer(meshBuffer);
                 }
             }
             Assimp.aiReleaseImport(aiScene);
@@ -217,17 +205,54 @@ public class ModelMeshLoader implements ILoadingHelper {
             return null;
         }
 
-        return meshStructure;
+        return meshGroup;
     }
 
-    @SuppressWarnings("all")
-    private MeshBuffer processMeshBuffer(GameResources gameResources, boolean isAnimated, boolean loadInIndirectBuffer) {
-        return processMeshStructure(gameResources, isAnimated, loadInIndirectBuffer, MeshBuffer.class);
-    }
+    private MeshBuffer processMeshBuffer(GameResources gameResources, boolean isAnimated) {
+        MeshBuffer meshBuffer = new MeshBuffer();
 
-    @SuppressWarnings("all")
-    private MeshGroup processMeshGroup(GameResources gameResources, boolean isAnimated) {
-        return processMeshStructure(gameResources, isAnimated, false, MeshGroup.class);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            AIScene aiScene = this.loadAIScene(stack, this.getPath(), isAnimated);
+            int totalMaterials = aiScene.mNumMaterials();
+
+            List<Material> materialList = new ArrayList<>();
+            List<Bone> bonesList = new ArrayList<>();
+            for (int i = 0; i < totalMaterials; i++) {
+                AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
+                Material material = ModelLoadingUtils.readMaterial(gameResources, aiMaterial, this.getPath().getParentPath());
+                gameResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
+                materialList.add(material);
+            }
+
+            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building Mesh Buffer...");
+
+            int totalMeshes = aiScene.mNumMeshes();
+            PointerBuffer aiMeshes = aiScene.mMeshes();
+            SkeletonData skeletonData = null;
+            if (totalMeshes == 0) {
+                throw new JGemsIOException("Caught invalid model: " + this.getPath());
+            }
+            for (int i = 0; i < totalMeshes; i++) {
+                AIMesh aiMesh = AIMesh.create(Objects.requireNonNull(aiMeshes).get(i));
+                if (isAnimated) {
+                    skeletonData = this.readSkeleton(bonesList, aiScene, aiMesh, meshBuffer);
+                }
+
+                int matIdx = aiMesh.mMaterialIndex();
+                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
+
+               DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
+               meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
+               gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
+            }
+            Assimp.aiReleaseImport(aiScene);
+
+        } catch (Exception e) {
+            JGemsHelper.getLogger().error(e.getMessage());
+            return null;
+        }
+
+        return meshBuffer;
     }
 
     private DataMesh createDataMesh(AIMesh aiMesh, SkeletonData skeletonData) {
@@ -317,16 +342,5 @@ public class ModelMeshLoader implements ILoadingHelper {
 
     public ResourceCache getResourceCache() {
         return this.getGameResources().getResourceCache();
-    }
-
-    public static class FLAGS {
-        public static final int
-                CREATE_COLLISION_UD = 1 << 2,
-                LOAD_ANIMATIONS = 1 << 3,
-                LOAD_IN_INDIRECT_BUFFER = 1 << 4,
-                CREATE_AABB_UD = 1 << 5;
-
-        public static final int DEFAULT = FLAGS.LOAD_IN_INDIRECT_BUFFER | FLAGS.CREATE_COLLISION_UD | FLAGS.CREATE_AABB_UD;
-        public static final int ALL = FLAGS.LOAD_IN_INDIRECT_BUFFER | FLAGS.CREATE_COLLISION_UD | FLAGS.LOAD_ANIMATIONS | FLAGS.CREATE_AABB_UD;
     }
 }

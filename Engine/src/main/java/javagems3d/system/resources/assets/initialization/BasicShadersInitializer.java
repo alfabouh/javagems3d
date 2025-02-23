@@ -13,7 +13,7 @@ package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
 import javagems3d.global.JGemsGlobalConfiguration;
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.lights.scene.LightsScene;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
@@ -113,7 +113,7 @@ public final class BasicShadersInitializer extends ShadersInitializer<JGemsShade
         this.SunLight = this.createUBO("SunLight", 0, LightsScene.SN_STRUCT_SIZE * Float.BYTES);
         this.PointLights = this.createUBO("PointLights", 1, ((LightsScene.PL_STRUCT_SIZE * Float.BYTES) * JGemsGlobalConfiguration.MAX_POINT_LIGHTS) + Integer.BYTES);
         this.Misc = this.createUBO("Misc", 2, Float.BYTES);
-        this.Fog = this.createUBO("Fog", 3, Environment.FOG_STRUCT_SIZE * Float.BYTES);
+        this.Fog = this.createUBO("Fog", 3, JGemsEnvironment.FOG_STRUCT_SIZE * Float.BYTES);
 
         this.world_pickable = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEF_PATHS.SHADERS, "world/world_pickable"));
         this.debug = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEF_PATHS.SHADERS, "debug"));

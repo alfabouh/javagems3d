@@ -16,9 +16,6 @@ import org.joml.Vector3f;
 import javagems3d.physics.world.basic.IWorldTicked;
 
 public abstract class Light implements IWorldTicked {
-    public static final int
-            POINT_LIGHT = (1 << 2);
-
     private final Vector3f offset;
     private final Vector3f lightColor;
     private final Vector3f lightPos;
@@ -77,7 +74,7 @@ public abstract class Light implements IWorldTicked {
         this.enabled = enabled;
     }
 
-    public abstract int lightCode();
+    public abstract LightType getLightType();
 
     public Vector3f getLightColor() {
         return new Vector3f(this.lightColor);

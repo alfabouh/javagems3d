@@ -77,8 +77,8 @@ public class PointLight extends Light {
     }
 
     @Override
-    public int lightCode() {
-        return POINT_LIGHT;
+    public LightType getLightType() {
+        return LightType.POINT;
     }
 
     @Override

@@ -11,7 +11,8 @@
 
 package javagems3d.graphics.environment.shadows;
 
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -28,7 +29,7 @@ public class PointLightShadow extends Shadow {
     private PointLight pointLight;
     private List<Matrix4f> shadowDirections;
 
-    public PointLightShadow(Environment environment, Vector2i shadowMapResolution, int id) {
+    public PointLightShadow(IEnvironment environment, Vector2i shadowMapResolution, int id) {
         super(environment, shadowMapResolution);
         this.id = id;
         this.shadowDirections = new ArrayList<>(6);

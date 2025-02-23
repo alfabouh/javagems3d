@@ -56,7 +56,11 @@ public class TexturesLoader implements ILoadingHelper {
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull JGemsPath pathToTexture) {
         this.hashId = pathToTexture.toString();
-        return this.createImageTexture(textureProperties, JGems3D.loadFileFromJar(pathToTexture));
+        try (InputStream inputStream = JGems3D.loadFileFromJar(pathToTexture)) {
+            return this.createImageTexture(textureProperties, inputStream);
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull InputStream inputStream) {

@@ -28,7 +28,7 @@ public abstract class JGemsRenderingGlobalConstants {
     public static float EVSM_POSITIVE_EXPONENT = 60.0f;
     public static float EVSM_NEGATIVE_EXPONENT = 5.0f;
     public static float MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT = JGemsRenderingGlobalConstants.DEFAULT_ALPHA_DISCARD;
-    public static int MAX_SHADOW_RES = 1024;
+    public static int MAX_SHADOW_RES = 2048;
 
     public static boolean CAST_SHADOWS_FROM_TRANSPARENT_MESHES = true;
     public static boolean DRAW_BACK_FACES_FOR_SHADOWS = true;

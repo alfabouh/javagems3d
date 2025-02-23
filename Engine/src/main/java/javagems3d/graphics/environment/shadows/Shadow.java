@@ -1,15 +1,16 @@
 package javagems3d.graphics.environment.shadows;
 
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.rendering.scene.renderer.IResourceInit;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
 public abstract class Shadow implements IResourceInit {
-    private final Environment environment;
+    private final IEnvironment environment;
     private Vector2i shadowMapResolution;
 
-    public Shadow(@NotNull Environment environment, @NotNull Vector2i shadowMapResolution) {
+    public Shadow(@NotNull IEnvironment environment, @NotNull Vector2i shadowMapResolution) {
         this.environment = environment;
         this.shadowMapResolution = shadowMapResolution;
     }
@@ -22,7 +23,7 @@ public abstract class Shadow implements IResourceInit {
         return this.shadowMapResolution;
     }
 
-    public Environment getEnvironment() {
+    public IEnvironment getEnvironment() {
         return this.environment;
     }
 }

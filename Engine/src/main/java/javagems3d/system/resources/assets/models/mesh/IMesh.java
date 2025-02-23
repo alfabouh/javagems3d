@@ -19,6 +19,7 @@ public interface IMesh {
         return this.getVertexPositions().size();
     }
 
+    void clearData();
     void clearMesh();
     int positionsIndex();
 }

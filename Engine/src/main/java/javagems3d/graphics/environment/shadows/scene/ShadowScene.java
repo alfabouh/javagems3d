@@ -16,7 +16,8 @@ import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.global.JGemsRenderingGlobalConstants;
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
@@ -30,8 +31,6 @@ import javagems3d.graphics.transformation.TransformUtils;
 
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.pose.Pose2D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -54,11 +53,11 @@ public class ShadowScene implements IShadowScene {
     private OpenGLRenderer openGLRenderer;
     private GroupedIndirectRenderer pointLightIndirectRendered;
     private GroupedIndirectRenderer sunlightIndirectRendered;
-    private final Environment environment;
+    private final IEnvironment environment;
     private List<PointLightShadow> pointLightShadows;
     private SunLightShadow sunLightShadow;
 
-    public ShadowScene(Environment environment) {
+    public ShadowScene(IEnvironment environment) {
         this.environment = environment;
         this.initPointLightShadows();
         this.initSunLightShadow();
@@ -70,6 +69,9 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void createResources(OpenGLRenderer openGLRenderer) {
+        this.getSunLightShadow().setShadowMapResolution(this.getShadowResolution());
+        this.getPointLightShadows().forEach(e -> e.setShadowMapResolution(this.getShadowResolution()));
+
         this.openGLRenderer = openGLRenderer;
         this.pointLightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, Pipeline.POINT_LIGHT_SHADOW_MAP, false, true);
         this.sunlightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, Pipeline.SUN_LIGHT_SHADOW_MAP, false, true);
@@ -133,7 +135,7 @@ public class ShadowScene implements IShadowScene {
         for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
-            blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(1.0f));
+            blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(0.0f));
             blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
             JGemsHelper.RENDERING.renderModel2D(screenModel, GL46.GL_TRIANGLES);
         }
@@ -292,7 +294,7 @@ public class ShadowScene implements IShadowScene {
         return this.pointLightShadows;
     }
 
-    public Environment getEnvironment() {
+    public IEnvironment getEnvironment() {
         return this.environment;
     }
 }

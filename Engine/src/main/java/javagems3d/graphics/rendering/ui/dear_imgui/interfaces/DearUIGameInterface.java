@@ -34,9 +34,6 @@ public class DearUIGameInterface implements DearUIInterface {
     private Set<Map.Entry<String, SpeedProfiler.Group>> snapShot = null;
 
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
-        if (!JGems3D.get().isValidPlayer()) {
-            return;
-        }
         ICamera camera = JGems3D.get().getScreen().getCamera();
         IPlayer entityPlayerSP = JGems3D.get().getPlayer();
         SceneWorld sceneWorld = JGemsHelper.getSceneWorld();

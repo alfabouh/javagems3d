@@ -17,19 +17,16 @@ public final class IntegerVertexAttribute extends VertexAttribute<Integer> {
 
     @Override
     public void pushGLBuffer() {
+        this.intBuffer = MemoryUtil.memAllocInt(this.getValues().size());
+        this.intBuffer.put(JGemsHelper.UTILS.convertIntsArray(this.getValues())).flip();
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (IntBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
+        MemoryUtil.memFree(this.intBuffer);
     }
 
     public void putArray(int[] i) {
         for (int a : i) {
             this.getValues().add(a);
         }
-    }
-
-    @Override
-    public void bake() {
-        this.intBuffer = MemoryUtil.memAllocInt(this.getValues().size());
-        this.intBuffer.put(JGemsHelper.UTILS.convertIntsArray(this.getValues())).flip();
     }
 
     @Override

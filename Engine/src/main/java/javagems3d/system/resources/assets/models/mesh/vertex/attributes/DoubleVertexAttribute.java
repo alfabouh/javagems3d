@@ -17,19 +17,16 @@ public final class DoubleVertexAttribute extends VertexAttribute<Double> {
 
     @Override
     public void pushGLBuffer() {
+        this.doubleBuffer = MemoryUtil.memAllocDouble(this.getValues().size());
+        this.doubleBuffer.put(JGemsHelper.UTILS.convertDoublesArray(this.getValues())).flip();
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (DoubleBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
+        MemoryUtil.memFree(this.doubleBuffer);
     }
 
     public void putArray(double[] i) {
         for (double a : i) {
             this.getValues().add(a);
         }
-    }
-
-    @Override
-    public void bake() {
-        this.doubleBuffer = MemoryUtil.memAllocDouble(this.getValues().size());
-        this.doubleBuffer.put(JGemsHelper.UTILS.convertDoublesArray(this.getValues())).flip();
     }
 
     @Override

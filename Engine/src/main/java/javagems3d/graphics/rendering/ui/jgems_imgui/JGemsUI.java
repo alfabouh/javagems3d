@@ -14,6 +14,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.*;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -231,7 +232,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     }
 
     private void clearFrame() {
-        this.getUiFrameCache().forEach((key, value) -> value.clear());
+        this.getUiFrameCache().values().forEach(UIElement::clear);
         this.getUiFrameCache().clear();
     }
 

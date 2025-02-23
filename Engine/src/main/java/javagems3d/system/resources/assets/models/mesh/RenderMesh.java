@@ -94,7 +94,6 @@ public class RenderMesh implements IMesh, AutoCloseable {
         if (this.isBaked()) {
             throw new JGemsRuntimeException("Tried to bake model, that is already had been baked");
         }
-
         this.totalVertices = this.getVertexIndexes().size();
         IntBuffer inxBuffer =  MemoryUtil.memAllocInt(this.totalVertices);
         for (int i : this.getVertexIndexes()) {
@@ -108,9 +107,9 @@ public class RenderMesh implements IMesh, AutoCloseable {
         GL46.glBindVertexArray(this.getVao());
         GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getVertexIndexesIBO());
         GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, inxBuffer, GL46.GL_STATIC_DRAW);
+        MemoryUtil.memFree(inxBuffer);
 
         for (VertexAttribute<?> vertexAttribute : this.vertexAttributesMap.values()) {
-            vertexAttribute.bake();
             int vbo = GL46.glGenBuffers();
             this.vboMap.put(vertexAttribute.getIndex(), vbo);
             GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vbo);
@@ -123,19 +122,19 @@ public class RenderMesh implements IMesh, AutoCloseable {
         this.baked = true;
     }
 
+    public void clearData() {
+        this.getVertexIndexes().clear();
+        this.vertexAttributesMap.values().forEach(VertexAttribute::clearData);
+        this.vertexAttributesMap.clear();
+    }
+
     @Override
     public void clearMesh() {
-        for (VertexAttribute<?> v : this.vertexAttributesMap.values()) {
-            v.clearData();
-        }
+        this.clearData();
         for (int a : this.vboMap.values()) {
             GL46.glDeleteBuffers(a);
         }
-
         this.vboMap.clear();
-        this.vertexAttributesMap.clear();
-
-        this.getVertexIndexes().clear();
         GL46.glDeleteBuffers(this.getVertexIndexesIBO());
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
         GL46.glBindVertexArray(0);

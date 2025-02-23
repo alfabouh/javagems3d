@@ -197,12 +197,12 @@ public abstract class ModelLoadingUtils {
                 }
             }
 
-            String emission = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_EMISSIVE);
-            String metallic = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_AMBIENT);
-            String specular = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_SPECULAR);
-            String normals = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_NORMALS);
-            String opacity = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_OPACITY);
-            String diffuse = tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
+            String emission = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_EMISSIVE);
+            String metallic = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_AMBIENT);
+            String specular = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_SPECULAR);
+            String normals = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_NORMALS);
+            String opacity = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_OPACITY);
+            String diffuse = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
             try {
                 if (!diffuse.isEmpty()) {
                     ImageTexture textureSample = gameResources.createTexture(TextureAssetsInitializer.DEFAULT, new JGemsPath(fullPath, diffuse), new ImageTexture.Properties(true, true));

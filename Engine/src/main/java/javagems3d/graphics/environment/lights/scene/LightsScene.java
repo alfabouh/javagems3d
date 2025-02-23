@@ -13,16 +13,17 @@ package javagems3d.graphics.environment.lights.scene;
 
 import api.events.EventBus;
 import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.Light;
+import javagems3d.graphics.environment.lights.LightType;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
+import javagems3d.physics.world.IWorld;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import api.events.EventLauncher;
-import javagems3d.graphics.environment.Environment;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
@@ -37,10 +38,10 @@ import java.util.stream.Collectors;
 public class LightsScene implements ILightsScene {
     public static final int PL_STRUCT_SIZE = 16;
     public static final int SN_STRUCT_SIZE = 12;
-    private final Environment environment;
+    private final IEnvironment environment;
     private List<PointLight> pointLightList;
 
-    public LightsScene(Environment environment) {
+    public LightsScene(IEnvironment environment) {
         this.environment = environment;
         this.initCollections();
     }
@@ -56,7 +57,7 @@ public class LightsScene implements ILightsScene {
     }
 
     public void addLight(Light light) {
-        if ((light.lightCode() & Light.POINT_LIGHT) != 0) {
+        if (light.getLightType().equals(LightType.POINT)) {
             if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= JGemsGlobalConfiguration.MAX_POINT_LIGHTS) {
                 throw new JGemsRuntimeException("Reached active point lights limit: " + JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
             }
@@ -78,8 +79,8 @@ public class LightsScene implements ILightsScene {
     }
 
     @Override
-    public void updateBuffers(MemoryStack stack, SceneWorld sceneWorld, Matrix4f viewMatrix) {
-        this.getPointLightList().forEach(e -> e.onUpdate(sceneWorld));
+    public void updateBuffers(MemoryStack stack, IWorld world, Matrix4f viewMatrix) {
+        this.getPointLightList().forEach(e -> e.onUpdate(world));
         this.updateSunUbo(stack, viewMatrix);
         this.updatePointLightsUbo(stack, viewMatrix);
     }

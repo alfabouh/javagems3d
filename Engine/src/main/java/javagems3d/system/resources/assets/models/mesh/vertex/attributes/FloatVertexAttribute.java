@@ -17,7 +17,10 @@ public final class FloatVertexAttribute extends VertexAttribute<Float> {
 
     @Override
     public void pushGLBuffer() {
+        this.floatBuffer = MemoryUtil.memAllocFloat(this.getValues().size());
+        this.floatBuffer.put(JGemsHelper.UTILS.convertFloatsArray(this.getValues())).flip();
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (FloatBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
+        MemoryUtil.memFree(this.floatBuffer);
     }
 
     public FloatVertexAttribute putArray(float[] i) {
@@ -25,12 +28,6 @@ public final class FloatVertexAttribute extends VertexAttribute<Float> {
             this.getValues().add(a);
         }
         return this;
-    }
-
-    @Override
-    public void bake() {
-        this.floatBuffer = MemoryUtil.memAllocFloat(this.getValues().size());
-        this.floatBuffer.put(JGemsHelper.UTILS.convertFloatsArray(this.getValues())).flip();
     }
 
     @Override

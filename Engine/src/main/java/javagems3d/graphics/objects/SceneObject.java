@@ -73,9 +73,9 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
         fps *= this.animationSpeedMultiplier();
         double deltaTime = JGems3D.glfwTime() - this.lastTick;
         this.animationProgress += (float) (deltaTime * fps);
-        while (this.animationProgress >= 1.0f) {
+        if (this.animationProgress >= 1.0f) {
             this.nextAnimationFrame();
-            this.animationProgress -= 1.0f;
+            this.animationProgress %= 1.0f;
         }
         this.getAnimationData().setAnimationFrameDelta(1.0f - this.animationProgress);
         this.lastTick = JGems3D.glfwTime();

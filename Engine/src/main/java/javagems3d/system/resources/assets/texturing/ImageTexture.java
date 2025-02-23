@@ -21,6 +21,7 @@ import javagems3d.system.resources.cache.ResourceCache;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
@@ -182,7 +183,7 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
     }
 
     public static final class Data implements IData {
-        private final ByteBuffer buffer;
+        private ByteBuffer buffer;
         private final Vector2i size;
 
         public Data(@NotNull ByteBuffer buffer, @NotNull Vector2i size) {
@@ -192,6 +193,7 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
 
         public void clear() {
             STBImage.stbi_image_free(this.getBuffer());
+            this.buffer = null;
         }
 
         public ByteBuffer getBuffer() {

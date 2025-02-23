@@ -50,6 +50,11 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
     }
 
     @Override
+    public boolean hasTransparency() {
+        return !this.getTransparentPassData().isEmpty();
+    }
+
+    @Override
     public boolean canBeUsedInIndirectRendering() {
         return true;
     }

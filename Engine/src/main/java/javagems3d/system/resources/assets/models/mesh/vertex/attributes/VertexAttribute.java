@@ -27,13 +27,11 @@ public abstract class VertexAttribute<T> {
     }
 
     public abstract void pushGLBuffer();
-    public abstract void bake();
     public abstract Buffer getBuffer();
     public abstract int attributeType();
 
     public void clearData() {
         this.getValues().clear();
-        MemoryUtil.memFree(this.getBuffer());
     }
 
     public List<T> getValues() {

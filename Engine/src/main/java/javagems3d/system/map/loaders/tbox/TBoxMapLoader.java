@@ -27,6 +27,7 @@ import logger.managers.LoggingManager;
 import javagems3d.temp.map_sys.read.TBoxMapReader;
 import javagems3d.temp.map_sys.save.container.TBoxMapContainer;
 import javagems3d.temp.map_sys.save.objects.SaveObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class TBoxMapLoader implements IMapLoader {
     }
 
     @Override
-    public @NotNull IPlayerConstructor playerConstructor() {
+    public @Nullable IPlayerConstructor playerConstructor() {
         return null;
     }
 

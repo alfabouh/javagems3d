@@ -49,13 +49,14 @@ public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> imp
         this.clear();
     }
 
+    public void clearNodesData() {
+        this.nodesLayers.values().forEach(e -> e.forEach(MeshNode::clearData));
+        this.nodesLayers.values().forEach(List::clear);
+    }
+
     public void clear() {
-        for (List<R> l : this.nodesLayers.values()) {
-            for (R r : l) {
-                l.forEach(MeshNode::clearNode);
-            }
-        }
-        this.nodesLayers.clear();
+        this.nodesLayers.values().forEach(e -> e.forEach(MeshNode::clearNode));
+        this.nodesLayers.values().forEach(List::clear);
     }
 
     public List<R> getNodes(int layer) {

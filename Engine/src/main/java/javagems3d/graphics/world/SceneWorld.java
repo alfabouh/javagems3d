@@ -18,7 +18,7 @@ import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.ILighted;
@@ -41,14 +41,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * In the world of the scene, logic is being updated for the functioning of the render based on information from the physical world.
- */
 public final class SceneWorld implements IWorld {
     private ICamera camera;
 
     private final ParticlesEmitter particlesEmitter;
-    private final Environment environment;
+    private final JGemsEnvironment environment;
 
     private final Set<Pair<WorldItem, Light>> lightAttachmentQueue;
     private final Map<Integer, SceneEntity> objectMap;
@@ -66,7 +63,7 @@ public final class SceneWorld implements IWorld {
         this.liquids = SyncManager.createSyncronisedSet();
         this.toRenderSet = SyncManager.createSyncronisedSet();
 
-        this.environment = new Environment(this);
+        this.environment = new JGemsEnvironment(this);
 
         this.particlesEmitter = new ParticlesEmitter();
     }
@@ -101,7 +98,9 @@ public final class SceneWorld implements IWorld {
     @Override
     public void onWorldEnd() {
         EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.PRE, this));
-        this.getParticlesEmitter().destroy(this);
+        if (this.getParticlesEmitter() != null) {
+            this.getParticlesEmitter().destroy(this);
+        }
         this.clearAll();
         EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.POST, this));
     }
@@ -260,7 +259,7 @@ public final class SceneWorld implements IWorld {
 
     public void removeObjectFromWorld(SceneObject renderObject) {
         if (!this.getSceneObjects().remove(renderObject)) {
-            JGemsHelper.getLogger().warn("Couldn't remove a render object from scene rendering");
+            JGemsHelper.getLogger().warn("Couldn't remove a render object from SceneWorld");
         }
     }
 
@@ -289,7 +288,7 @@ public final class SceneWorld implements IWorld {
         this.camera = camera;
     }
 
-    public Environment getEnvironment() {
+    public JGemsEnvironment getEnvironment() {
         synchronized (this) {
             return this.environment;
         }

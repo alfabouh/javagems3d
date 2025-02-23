@@ -12,7 +12,6 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.profiler.SpeedProfiler;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;

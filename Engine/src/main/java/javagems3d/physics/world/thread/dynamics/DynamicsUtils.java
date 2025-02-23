@@ -122,18 +122,4 @@ public abstract class DynamicsUtils {
     public static IndexedMesh getIndexMesh(float[] pos, int[] ind) {
         return new IndexedMesh(BufferUtils.createFloatBuffer(pos), BufferUtils.createIntBuffer(ind));
     }
-
-    public static CompoundMesh getCompoundMesh(MeshStructure3D<?> meshStructure) {
-        CompoundMesh compoundMesh = new CompoundMesh();
-        List<IndexedMesh> indexedMeshList = new ArrayList<>();
-        for (MeshNode3D<?> meshNode3D : meshStructure.getAllNodes()) {
-            float[] positions = JGemsHelper.UTILS.convertFloatsArray(meshNode3D.getMeshData().getVertexPositions());
-            int[] indexes = JGemsHelper.UTILS.convertIntsArray(meshNode3D.getMeshData().getVertexIndexes());
-            indexedMeshList.add(DynamicsUtils.getIndexMesh(positions, indexes));
-        }
-        for (IndexedMesh indexedMesh : indexedMeshList) {
-            compoundMesh.add(indexedMesh);
-        }
-        return compoundMesh;
-    }
 }

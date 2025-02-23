@@ -89,6 +89,11 @@ public class UIButton extends UIInteractiveElement {
     public void clear() {
         this.buttonModel.clear();
         this.uiText.clear();
+        this.onEntered = null;
+        this.onLeft = null;
+        this.onClick = null;
+        this.onUnClick = null;
+        this.onInside = null;
     }
 
     @Override

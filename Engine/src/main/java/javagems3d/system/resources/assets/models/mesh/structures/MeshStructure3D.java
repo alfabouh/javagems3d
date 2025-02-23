@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh.structures;
 
+import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -21,9 +22,12 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
     private final Map<String, IMeshUserData> meshUserData;
     private final List<Animation> animationsList;
 
+    private MemMode memMode;
+
     public MeshStructure3D() {
         this.meshUserData = new HashMap<>();
         this.animationsList = new ArrayList<>();
+        this.memMode = MemMode.ERASE_NODES_DATA;
     }
 
     public abstract boolean canBeUsedInIndirectRendering();
@@ -83,6 +87,14 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         super.clear();
         this.meshUserData.clear();
         this.getAnimationsList().clear();
+    }
+
+    public MemMode getMemMode() {
+        return this.memMode;
+    }
+
+    public void setMemMode(MemMode memMode) {
+        this.memMode = memMode;
     }
 
     @SuppressWarnings("all")

@@ -22,33 +22,41 @@
 
 package jgems_app.map;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.map.MapInfo;
 import javagems3d.system.map.loaders.IMapLoader;
+import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
+import javagems3d.system.resources.assets.loading.models.MemMode;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.managing.resources.GameResources;
-import javagems3d.system.service.collections.Pair;
+import javagems3d.system.service.path.JGemsPath;
 import javagems3d.temp.map_sys.save.objects.MapProperties;
 import javagems3d.temp.map_sys.save.objects.map_prop.FogProp;
 import javagems3d.temp.map_sys.save.objects.map_prop.SkyProp;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import jgems_app.entities.TestPlayer;
 
 public class TestMap implements IMapLoader {
     @Override
     public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-       //MeshGroup meshGroup = localResources.createMesh(new JGemsPath("/assets/models/sponza/sponza.obj")).getFirst();
-       //sceneWorld.addObjectInWorld(new SceneProp(new RenderProp(), new Model<>(new Pose3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup),
-       //        new RenderAttributes(JGemsResourceManager.globalShaderAssets.world_gbuffer).setAlphaDiscardValue(0.7f)));
+        MeshBuffer meshGroup = localResources.createMeshBuffer(new JGemsPath("/assets/models/sponza/sponza.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
+        //sceneWorld.addObjectInWorld(new SceneWorldProp(sceneWorld, new Model3D(new Pose3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup), RenderAttributes.get()));
+
+        //MeshBuffer meshGroup = localResources.createMeshBuffer(new JGemsPath("/assets/models/map01/map01.obj"), ModelMeshLoader.ModelLoaderFlags.DEFAULT);
+        //JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
+        //JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, meshGroup));
+        //worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
+        //worldModeledBrush.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
+        //worldModeledBrush.setScaling(new Vector3f(0.1f));
     }
 
     @Override
     public void postLoad(PhysicsWorld world, SceneWorld sceneWorld) {
-        JGemsHelper.CAMERA.enableFreeCamera(JGemsHelper.CONTROLLER.getCurrentController(), new Vector3f(), new Vector3f());
+        //JGemsHelper.CAMERA.enableFreeCamera(JGemsHelper.CONTROLLER.getCurrentController(), new Vector3f(), new Vector3f());
     }
 
     @Override
@@ -61,8 +69,9 @@ public class TestMap implements IMapLoader {
     }
 
     @Override
-    public @NotNull IPlayerConstructor playerConstructor() {
-        return (world, startPos, startRot) -> new Pair<>(new TestPlayer(world, startPos, startRot), null);
+    public @Nullable IPlayerConstructor playerConstructor() {
+        return null;
+        //return (world, startPos, startRot) -> new Pair<>(new TestPlayer(world, startPos, startRot), null);
     }
 
     @Override

@@ -154,7 +154,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         OpenGLRenderer.setViewPort(this.getWindowSize());
         if (this.getWorld().getCamera() == null) {
             uiRenderNode.onRender(frameTicking);
-            this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
+            //this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
             return;
         }
         if (JGems3D.get().isPaused()) {

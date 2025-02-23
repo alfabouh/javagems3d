@@ -29,7 +29,7 @@ import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import api.events.EventLauncher;
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
@@ -148,17 +148,17 @@ public class JGemsCore implements ICore {
         EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.PRE, mapLoader));
         this.getMapLoader().preLoad(physicsWorld, sceneWorld);
 
-        Environment environment = sceneWorld.getEnvironment();
+        JGemsEnvironment environment = sceneWorld.getEnvironment();
         FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
         SkyProp skyProp = this.getMapLoader().getLevelInfo().getMapProperties().getSkyProp();
 
         if (fogProp != null) {
             if (fogProp.isFogEnabled()) {
-                environment.getFog().setColor(fogProp.getFogColor());
-                environment.getFog().setDensity(fogProp.getFogDensity());
+                environment.getFogManager().setColor(fogProp.getFogColor());
+                environment.getFogManager().setDensity(fogProp.getFogDensity());
                 environment.getSkyBox().setSkyCoveredByFog(fogProp.isSkyCoveredByFog());
             } else {
-                environment.getFog().disable();
+                environment.getFogManager().disable();
             }
         }
 
@@ -176,16 +176,18 @@ public class JGemsCore implements ICore {
         this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
 
         Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
-        this.localPlayer = new LocalPlayer(this.getMapLoader().playerConstructor());
         Vector3f startPos = new Vector3f(pair.getFirst());
         Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
-        this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
-
+        if (this.getMapLoader().playerConstructor() != null) {
+            this.localPlayer = new LocalPlayer(this.getMapLoader().playerConstructor());
+            this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
+            JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
+            JGemsHelper.CAMERA.enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayer());
+        } else {
+            JGemsHelper.CAMERA.enableFreeCamera(JGemsHelper.CONTROLLER.getCurrentController(), startPos, startRot);
+        }
         JGemsHelper.getLogger().info("Successfully loaded map: " + this.currentMapName());
-
         JGemsHelper.CONTROLLER.setCursorInCenter();
-        JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
-        JGemsHelper.CAMERA.enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayer());
 
         if (true) {//TODO
            this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);

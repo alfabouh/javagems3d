@@ -14,7 +14,8 @@ package javagems3d.system.resources.assets.initialization;
 import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
+import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
+import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
@@ -56,11 +57,13 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     @Override
     public void load(GameResources gameResources) {
         this.createDefaults(gameResources);
-//"test_anim/boblampclean.md5mesh"
-        this.grassCube = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "test_anim/boblampclean.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT | ModelMeshLoader.FLAGS.LOAD_ANIMATIONS);// gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.LOAD_IN_INDIRECT_BUFFER);
-        this.ground2 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.DEFAULT);
-        this.ground3 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map05/map05.obj"), ModelMeshLoader.FLAGS.DEFAULT);
-        this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.FLAGS.DEFAULT);//gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.FLAGS.DEFAULT);
+        this.grassCube = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "sponza/sponza.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
+        this.ground2 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map04/map04.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
+        this.ground3 = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map05/map05.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
+        this.test_anim = gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
+
+        // gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.ModelLoaderFlags.LOAD_IN_INDIRECT_BUFFER);
+        //gameResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.ModelLoaderFlags.DEFAULT);
     }
 
     private void createDefaults(GameResources gameResources) {

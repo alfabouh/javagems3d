@@ -14,7 +14,7 @@ package javagems3d;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.fog.FogManager;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -274,10 +274,10 @@ public abstract class JGemsHelper {
         }
 
         public static FogManager getFog() {
-            return JGemsHelper.ENVIRONMENT.getWorldEnvironment().getFog();
+            return JGemsHelper.ENVIRONMENT.getWorldEnvironment().getFogManager();
         }
 
-        public static Environment getWorldEnvironment() {
+        public static JGemsEnvironment getWorldEnvironment() {
             return JGemsHelper.getSceneWorld().getEnvironment();
         }
     }

@@ -1,7 +1,8 @@
 package javagems3d.graphics.environment.shadows;
 
 import javagems3d.global.JGemsRenderingGlobalConstants;
-import javagems3d.graphics.environment.Environment;
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
@@ -19,7 +20,7 @@ public class SunLightShadow extends Shadow {
     private final FBOTexture2DProgram sunShadowFBO;
     private List<Cascade> cascades;
 
-    public SunLightShadow(Environment environment, Vector2i shadowMapResolution) {
+    public SunLightShadow(IEnvironment environment, Vector2i shadowMapResolution) {
         super(environment, shadowMapResolution);
         this.sunShadowFBO = new FBOTexture2DProgram(true);
         this.initCascades();

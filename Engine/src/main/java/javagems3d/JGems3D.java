@@ -335,7 +335,7 @@ public final class JGems3D {
     }
 
     public IPlayer getPlayer() {
-        return this.getCore().getLocalPlayer().getEntityPlayer();
+        return this.getCore().getLocalPlayer() == null ? null : this.getCore().getLocalPlayer().getEntityPlayer();
     }
 
     public boolean isPaused() {

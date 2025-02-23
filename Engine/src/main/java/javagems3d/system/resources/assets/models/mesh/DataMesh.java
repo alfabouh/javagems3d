@@ -21,11 +21,6 @@ public class DataMesh implements IMesh {
     }
 
     public void putVertexIndexes(List<Integer> indexes) {
-        IntBuffer buffer = MemoryUtil.memAllocInt(indexes.size());
-        for (int i : indexes) {
-            buffer.put(i);
-        }
-        buffer.flip();
         this.indexes = new VertexBuffer<>(null, indexes);
     }
 
@@ -73,11 +68,15 @@ public class DataMesh implements IMesh {
     }
 
     @Override
-    public void clearMesh() {
+    public void clearData() {
         this.getIndexesBuffer().getValues().clear();
-        for (VertexBuffer<Float> buffer : this.getBufferMap().values()) {
-            buffer.getValues().clear();
-        }
+        this.getBufferMap().values().forEach(e -> e.getValues().clear());
+        this.getBufferMap().clear();
+    }
+
+    @Override
+    public void clearMesh() {
+        this.clearData();
     }
 
     public void setPositionsIdx(int idx) {

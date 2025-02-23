@@ -36,7 +36,7 @@ public class DefaultGamePanel extends AbstractPanelUI {
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
-        final WorldItem entityPlayerSP = (WorldItem) JGems3D.get().getPlayer();
+        //final WorldItem entityPlayerSP = (WorldItem) JGems3D.get().getPlayer();
 
        //if (entityPlayerSP instanceof IInventoryOwner) {
        //    IInventoryOwner dynamicPlayer = (IInventoryOwner) entityPlayerSP;

@@ -35,7 +35,7 @@ public class ModelInitializer implements IAssetsInitializer {
 
     @Override
     public void load(GameResources gameResources) {
-        this.ground2 = gameResources.createMeshGroup(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map04/map04.obj"), ModelMeshLoader.FLAGS.DEFAULT);
+        this.ground2 = null;
     }
 
     @Override

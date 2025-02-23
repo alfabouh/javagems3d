@@ -12,6 +12,7 @@
 package javagems3d.system.resources.managing.resources;
 
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
@@ -62,12 +63,12 @@ public final class GameResources implements IGameResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, int modelLoadingFlags) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(modelLoadingFlags));
+    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, int modelLoadingFlags, MemMode memMode) {
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(modelLoadingFlags, memMode));
     }
 
-    public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags));
+    public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean attachMeshBuffer, MemMode memMode) {
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer, memMode));
     }
 
     public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
@@ -162,6 +163,7 @@ public final class GameResources implements IGameResources {
 
     public void clearCache() {
         this.getResourceCache().clearCache();
+        System.gc();
     }
 
     public void reloadTexturesInCache() {

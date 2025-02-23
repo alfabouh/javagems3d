@@ -3,7 +3,6 @@ package javagems3d.system.resources.assets.models.mesh.structures.solid;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -33,15 +32,6 @@ public class MeshGroup extends MeshStructure3D<RenderMesh> {
     }
 
     @SuppressWarnings("all")
-    public boolean clearMeshBuffer() {
-        if (this.canBeUsedInIndirectRendering()) {
-            this.getLinkedMeshBuffer().clear();
-            return true;
-        }
-        return false;
-    }
-
-    @SuppressWarnings("all")
     public MeshGroup setLinkedMeshBuffer(MeshBuffer linkedMeshBuffer) {
         this.linkedMeshBuffer = linkedMeshBuffer;
         return this;
@@ -53,9 +43,19 @@ public class MeshGroup extends MeshStructure3D<RenderMesh> {
     }
 
     @Override
+    public void clearNodesData() {
+        super.clearNodesData();
+        if (this.canBeUsedInIndirectRendering()) {
+            this.getLinkedMeshBuffer().clearNodesData();
+        }
+    }
+
+    @Override
     public void clear() {
         super.clear();
-        this.clearMeshBuffer();
+        if (this.canBeUsedInIndirectRendering()) {
+            this.getLinkedMeshBuffer().clear();
+        }
     }
 
     public MeshBuffer getLinkedMeshBuffer() {

@@ -18,6 +18,11 @@ public class MeshNode3D<T extends IMesh> extends MeshNode<T> {
         this.material = material;
     }
 
+    @Override
+    public void clear() {
+        this.material = null;
+    }
+
     public boolean hasTransparency() {
         return this.getMaterial() != null && this.getMaterial().hasTransparency();
     }

@@ -37,9 +37,9 @@ public class MeshCollider implements IColliderConstructor {
         }
         CollisionShape collisionShape;
         if (this.isBodyDynamic) {
-            collisionShape = new HullCollisionShape(meshCollisionData.getAllPositions());
+            collisionShape = meshCollisionData.getOptimizedMeshCollisionShape();
         } else {
-            collisionShape = new MeshCollisionShape(true, meshCollisionData.getCompoundMesh());
+            collisionShape = meshCollisionData.getMeshCollisionShape();
         }
         collisionShape.setMargin(this.margin());
         return collisionShape;

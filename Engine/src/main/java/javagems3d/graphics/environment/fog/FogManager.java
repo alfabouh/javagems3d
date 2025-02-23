@@ -11,16 +11,13 @@
 
 package javagems3d.graphics.environment.fog;
 
-import javagems3d.graphics.environment.Environment;
 import org.joml.Vector3f;
 
-public class FogManager {
+public class FogManager implements IFogManager {
     private float density;
     private Vector3f color;
-    private final Environment environment;
 
-    public FogManager(Environment environment) {
-        this.environment = environment;
+    public FogManager() {
         this.density = -1.0f;
         this.color = new Vector3f(0.85f);
     }
