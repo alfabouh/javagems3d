@@ -13,8 +13,10 @@ package javagems3d;
 
 import api.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
+import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.system.os.OS;
 import javagems3d.system.os.SysOSValidation;
+import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -108,7 +110,7 @@ public final class JGems3D {
             JGems3D.mainObject = new JGems3D();
         } catch (JGemsRuntimeException e) {
             LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!\n\n" + e.getMessage());
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
             return;
         }
         JGems3D.start();
@@ -120,11 +122,11 @@ public final class JGems3D {
 
     private static void start() {
         try {
-            JGemsHelper.getLogger().debug("BEGIN");
-            JGemsHelper.getLogger().info("Starting system! Date: " + JGems3D.date());
-            JGemsHelper.getLogger().info(JGems3D.get().toString());
-            JGemsHelper.getLogger().info("===============================================================");
-            JGemsHelper.getLogger().info("Loading settings from path...");
+            Log.get().debug("BEGIN");
+            Log.get().info("Starting system! Date: " + JGems3D.date());
+            Log.get().info(JGems3D.get().toString());
+            Log.get().info("===============================================================");
+            Log.get().info("Loading settings from path...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
                 JGems3D.FIRST_LAUNCH = true;
             } else {
@@ -133,7 +135,7 @@ public final class JGems3D {
             JGems3D.get().core = new JGemsCore();
             JGems3D.get().getCore().startSystem();
         } catch (Exception e) {
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
         }
     }
@@ -141,7 +143,7 @@ public final class JGems3D {
     public static void checkFilesDirectory() throws IOException {
         if (!Files.exists(JGems3D.getGameFilesFolder())) {
             JGems3D.getGameFilesFolder().toFile().mkdirs();
-            JGemsHelper.getLogger().debug("Created system folder");
+            Log.get().debug("Created system folder");
         }
     }
 
@@ -190,7 +192,7 @@ public final class JGems3D {
 
     public String I18n(String key, Object... objects) {
         if (this.getLocalisation() == null) {
-            JGemsHelper.getLogger().warn("Tried to get localised name from NULL Localisation Manager");
+            Log.get().warn("Tried to get localised name from NULL Localisation Manager");
             return key;
         }
         return String.format(this.getLocalisation().format(key), objects);
@@ -220,11 +222,11 @@ public final class JGems3D {
     }
 
     public void openUIPanel(PanelUI panelUI) {
-        this.getSceneRenderer().UIPanelActionRequest(panelUI);
+        ((IJGemsUIImp) this.getSceneRenderer()).UIPanelActionRequest(panelUI);
     }
 
     public void closeUIPanel() {
-        this.getSceneRenderer().UIPanelActionRequest(null);
+        ((IJGemsUIImp) this.getSceneRenderer()).UIPanelActionRequest(null);
     }
 
     public void lockController() {

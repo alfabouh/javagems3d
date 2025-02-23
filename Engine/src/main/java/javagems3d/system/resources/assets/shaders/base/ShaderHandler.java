@@ -14,9 +14,9 @@ package javagems3d.system.resources.assets.shaders.base;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.IShaderProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
@@ -50,7 +50,7 @@ public class ShaderHandler {
     @SuppressWarnings("all")
     private boolean tryCreateUniform(UniformProgram uniformProgram, UniformString value) {
         if (!uniformProgram.createUniform(value)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Could not find uniform " + value);
+            Log.get().warn("[" + this + "] Could not find uniform " + value);
             return false;
         }
         this.rawUniforms.add(value);
@@ -59,7 +59,7 @@ public class ShaderHandler {
 
     private void initUniforms(Set<Uniform> uniforms) {
         if (uniforms.isEmpty()) {
-            JGemsHelper.getLogger().warn("Warning! No Uniforms found in: " + this);
+            Log.get().warn("Warning! No Uniforms found in: " + this);
         }
         for (Uniform uniform : uniforms) {
             if (uniform.getArraySize() > 1) {
@@ -81,9 +81,9 @@ public class ShaderHandler {
         for (UniformBufferObject uniformBufferObject : uniformBufferObjects) {
             UniformBufferProgram uniformBufferProgram = new UniformBufferProgram(shaderProgram.getProgramId(), uniformBufferObject.getId());
             if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.getBinding(), uniformBufferObject.getBufferSize())) {
-                JGemsHelper.getLogger().info("[" + this.id + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
+                Log.get().info("[" + this.id + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             } else {
-                JGemsHelper.getLogger().error("[" + this.id + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
+                Log.get().error("[" + this.id + "] Couldn't link " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
             }
             this.uniformBufferProgramMap.put(uniformBufferObject, uniformBufferProgram);
         }
@@ -92,7 +92,7 @@ public class ShaderHandler {
     public UniformBufferProgram getUniformBufferProgram(@NotNull UniformBufferObject uniformBufferObject) {
         UniformBufferProgram uniformBufferProgram = this.getUniformBufferProgramMap().get(uniformBufferObject);
         if (uniformBufferProgram == null) {
-            JGemsHelper.getLogger().warn("[" + this + "] Unknown UBO " + uniformBufferObject);
+            Log.get().warn("[" + this + "] Unknown UBO " + uniformBufferObject);
         }
         return uniformBufferProgram;
     }

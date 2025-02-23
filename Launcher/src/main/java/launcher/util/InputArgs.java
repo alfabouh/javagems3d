@@ -3,11 +3,12 @@ package launcher.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ArgsDecomposer {
+public final class InputArgs {
     private Map<String, String> values;
 
-    public ArgsDecomposer(String[] args) {
+    public InputArgs(String[] args) {
         this.values = new HashMap<>();
+        this.decompose(args);
     }
 
     private void decompose(String[] args) {
@@ -35,6 +36,10 @@ public final class ArgsDecomposer {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public boolean hasValue(String value) {
+        return this.values.containsKey(value);
     }
 
     public String getStringValue(String s) {

@@ -14,10 +14,10 @@ package javagems3d.system.controller.dispatcher;
 import api.system.JGemsAPI;
 import javagems3d.system.controller.base.IInventoryController;
 import javagems3d.system.controller.JGemsMouseKeyboardController;
+import logger.Log;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.basic.WorldItem;
@@ -34,7 +34,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     public JGemsControllerDispatcher(IWindow window) {
         JGemsControllerDispatcher.mouseKeyboardController = new JGemsMouseKeyboardController(window, JGemsAPI.APIAppData().getBindingManager());
         this.setController(JGemsControllerDispatcher.defaultController());
-        JGemsHelper.getLogger().info("Created controller dispatcher");
+        Log.get().info("Created controller dispatcher");
     }
 
     public static IController defaultController() {
@@ -58,14 +58,14 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     }
 
     public void attachControllerTo(IController controller, IControllable remoteController) {
-        JGemsHelper.getLogger().debug("Attached controller to: " + ((WorldItem) remoteController).getItemName());
+        Log.get().debug("Attached controller to: " + ((WorldItem) remoteController).getItemName());
         remoteController.setController(controller);
         this.currentControlledItem = remoteController;
     }
 
     public void detachController() {
         if (this.getCurrentControlledItem() != null) {
-            JGemsHelper.getLogger().debug("Detached Controller From: " + ((WorldItem) this.getCurrentControlledItem()).getItemName());
+            Log.get().debug("Detached Controller From: " + ((WorldItem) this.getCurrentControlledItem()).getItemName());
             this.getCurrentControlledItem().setController(null);
             this.currentControlledItem = null;
         }

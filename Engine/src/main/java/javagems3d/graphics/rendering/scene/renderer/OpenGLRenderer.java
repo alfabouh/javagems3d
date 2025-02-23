@@ -1,25 +1,22 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
-import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
-import javagems3d.system.map.IMapActionsCallback;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Map;
 
-public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, IMapActionsCallback {
+public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit{
     private final IWindow window;
     private final IWorld world;
 
@@ -86,7 +83,7 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit, I
                     error = "UNKNOWN";
                     break;
             }
-            JGemsHelper.getLogger().error("GL ERROR: " + error);
+            Log.get().error("GL ERROR: " + error);
         }
     }
 }

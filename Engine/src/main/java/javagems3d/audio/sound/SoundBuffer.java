@@ -11,9 +11,9 @@
 
 package javagems3d.audio.sound;
 
+import logger.Log;
 import org.lwjgl.openal.AL10;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.audio.sound.loaders.ogg.Ogg;
 import javagems3d.system.resources.cache.ICached;
@@ -53,7 +53,7 @@ public class SoundBuffer implements ICached {
                 return this.readOgg(inputStream, soundFormat);
             }
         } catch (UnsupportedAudioFileException | IOException e) {
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
             return false;
         }
     }
@@ -67,7 +67,7 @@ public class SoundBuffer implements ICached {
             JGemsSoundManager.checkALonErrors();
             return true;
         } else {
-            JGemsHelper.getLogger().warn("Failed to read sound: " + this.getSoundPath());
+            Log.get().warn("Failed to read sound: " + this.getSoundPath());
         }
         return false;
     }

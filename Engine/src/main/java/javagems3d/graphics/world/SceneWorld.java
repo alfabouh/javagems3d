@@ -14,7 +14,6 @@ package javagems3d.graphics.world;
 import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -36,6 +35,7 @@ import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.synchronizing.SyncManager;
+import logger.Log;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -171,7 +171,7 @@ public final class SceneWorld implements IWorld {
     public AttachedCamera createAttachedCamera(WorldItem worldItem) {
         SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
         if (abstractSceneEntity == null) {
-            JGemsHelper.getLogger().warn("Couldn't attach camera on " + worldItem + ". SceneEntity doesn't exist");
+            Log.get().warn("Couldn't attach camera on " + worldItem + ". SceneEntity doesn't exist");
             return null;
         }
         return new AttachedCamera(abstractSceneEntity);
@@ -180,7 +180,7 @@ public final class SceneWorld implements IWorld {
     public boolean attachCameraOn(WorldItem worldItem, AttachedCamera attachedCamera) {
         SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
         if (abstractSceneEntity == null) {
-            JGemsHelper.getLogger().warn("Couldn't attach camera on " + worldItem + ". SceneEntity doesn't exist");
+            Log.get().warn("Couldn't attach camera on " + worldItem + ". SceneEntity doesn't exist");
             return false;
         }
         attachedCamera.attachCameraOnItem(abstractSceneEntity);
@@ -207,7 +207,7 @@ public final class SceneWorld implements IWorld {
 
     public void addWorldItemLight(WorldItem worldItem, Light light) {
         if (!worldItem.isSpawned()) {
-            JGemsHelper.getLogger().error("Couldn't attach light. Entity hasn't been spawned");
+            Log.get().error("Couldn't attach light. Entity hasn't been spawned");
             return;
         }
         SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
@@ -221,7 +221,7 @@ public final class SceneWorld implements IWorld {
 
     public void removeLightFromById(ILighted keepLights, int i) {
         if (keepLights == null) {
-            JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity");
+            Log.get().error("Couldn't attach light. Invalid entity");
             return;
         }
         keepLights.removeLightById(i);
@@ -229,7 +229,7 @@ public final class SceneWorld implements IWorld {
 
     public void removeLightFrom(ILighted keepLights, Light light) {
         if (keepLights == null) {
-            JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity");
+            Log.get().error("Couldn't attach light. Invalid entity");
             return;
         }
         keepLights.removeLight(light);
@@ -238,7 +238,7 @@ public final class SceneWorld implements IWorld {
     public void removeLightFrom(WorldItem worldItem, Light light) {
         SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
         if (abstractSceneEntity == null) {
-            JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity");
+            Log.get().error("Couldn't attach light. Invalid entity");
             return;
         }
         abstractSceneEntity.removeLight(light);
@@ -247,7 +247,7 @@ public final class SceneWorld implements IWorld {
     public void removeLightFromById(WorldItem worldItem, int i) {
         SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
         if (abstractSceneEntity == null) {
-            JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity");
+            Log.get().error("Couldn't attach light. Invalid entity");
             return;
         }
         abstractSceneEntity.removeLightById(i);
@@ -259,7 +259,7 @@ public final class SceneWorld implements IWorld {
 
     public void removeObjectFromWorld(SceneObject renderObject) {
         if (!this.getSceneObjects().remove(renderObject)) {
-            JGemsHelper.getLogger().warn("Couldn't remove a render object from SceneWorld");
+            Log.get().warn("Couldn't remove a render object from SceneWorld");
         }
     }
 

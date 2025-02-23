@@ -11,12 +11,12 @@
 
 package toolbox.resources;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import logger.SystemLogging;
 import toolbox.ToolBox;
 import toolbox.resources.models.ModelResources;
@@ -46,10 +46,10 @@ public class TBoxResourceManager {
 
     public TBoxShaderManager createShaderManager(JGemsPath shaderPath) {
         if (ToolBox.get().getResourceManager().getCache().checkObjectInCache(shaderPath)) {
-            JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists");
+            Log.get().warn("Shader " + shaderPath + " already exists");
             return (TBoxShaderManager) this.getCache().getCachedObject(shaderPath);
         }
-        JGemsHelper.getLogger().trace("Creating shader " + shaderPath + "...");
+        Log.get().trace("Creating shader " + shaderPath + "...");
         TBoxShaderManager shaderManager = new TBoxShaderManager(new ShadersContainer(shaderPath));
         this.getCache().addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;

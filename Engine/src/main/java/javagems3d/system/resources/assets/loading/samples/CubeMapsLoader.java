@@ -2,7 +2,6 @@ package javagems3d.system.resources.assets.loading.samples;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
@@ -11,6 +10,7 @@ import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -40,12 +40,12 @@ public class CubeMapsLoader implements ILoadingHelper {
     public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture.Properties textureProperties, @NotNull CubeMapTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                JGemsHelper.getLogger().info("CubeMap " + this.getHashId() + " picked from cache");
+                Log.get().info("CubeMap " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
         CubeMapTexture cubeMapTexture = new CubeMapTexture(textureProperties, data);
-        JGemsHelper.getLogger().info("CubeMap " + this.getHashId() + " successfully created");
+        Log.get().info("CubeMap " + this.getHashId() + " successfully created");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
                 this.getResourceCache().addObjectInBuffer(cubeMapTexture.toString(), cubeMapTexture);

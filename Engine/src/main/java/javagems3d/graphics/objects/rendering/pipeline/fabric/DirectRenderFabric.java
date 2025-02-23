@@ -1,6 +1,5 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
@@ -8,6 +7,7 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class DirectRenderFabric implements IRenderFabric {
@@ -15,7 +15,7 @@ public abstract class DirectRenderFabric implements IRenderFabric {
 
     public DirectRenderFabric(@NotNull Stage stage) {
         if (!stage.getType().equals(Type.DIRECT)) {
-            JGemsHelper.getLogger().warn("RenderFabric type doesn't belong to DIRECT");
+            Log.get().warn("RenderFabric type doesn't belong to DIRECT");
         }
         this.stage = stage;
     }

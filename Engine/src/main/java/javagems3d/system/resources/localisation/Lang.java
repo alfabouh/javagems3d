@@ -12,8 +12,8 @@
 package javagems3d.system.resources.localisation;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ public final class Lang {
     public static Lang createLang(String fullName, JGemsPath filePath) {
         Lang lang = new Lang(fullName, filePath);
         Lang.values.put(fullName, lang);
-        JGemsHelper.getLogger().info("Created lang: " + fullName);
+        Log.get().info("Created lang: " + fullName);
         return lang;
     }
 
@@ -68,7 +68,7 @@ public final class Lang {
     public static void setFilePath(Lang lang, JGemsPath path) {
         Lang lang1 = Lang.values.get(lang.getFullName());
         if (lang1 == null) {
-            JGemsHelper.getLogger().warn("Couldn't find language " + lang + " in lang-list");
+            Log.get().warn("Couldn't find language " + lang + " in lang-list");
             return;
         }
         lang1.setFileDirectoryPath(path);

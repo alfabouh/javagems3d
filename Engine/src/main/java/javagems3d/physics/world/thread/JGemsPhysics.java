@@ -12,9 +12,9 @@
 package javagems3d.physics.world.thread;
 
 import javagems3d.physics.world.PhysicsWorld;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.timer.PhysicsProcessor;
 
 import java.util.concurrent.ExecutorService;
@@ -45,7 +45,7 @@ public class JGemsPhysics {
             try {
                 this.getPhysicsProcessor().updateTimer(this.getTps());
             } catch (Exception e) {
-                JGemsHelper.getLogger().exception(e);
+                Log.get().exception(e);
                 JGems3D.close(e);
             } finally {
                 this.getExecutor().shutdown();

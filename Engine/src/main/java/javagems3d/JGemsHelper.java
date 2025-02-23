@@ -70,8 +70,7 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 import javagems3d.system.settings.JGemsSettings;
-import logger.SystemLogging;
-import logger.managers.LoggingManager;
+import logger.Log;
 import org.joml.Math;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
@@ -116,10 +115,6 @@ public abstract class JGemsHelper {
 
     public static JGemsSoundManager getSoundManager() {
         return JGemsHelper.getMainObject().getSoundManager();
-    }
-
-    public static LoggingManager getLogger() {
-        return SystemLogging.get().getLogManager();
     }
 
     public static abstract class RENDERING {
@@ -290,7 +285,7 @@ public abstract class JGemsHelper {
                 mouseKeyboardController.setCursorInCenter();
                 return true;
             }
-            JGemsHelper.getLogger().warn("Couldn't find cursor. Check your controller");
+            Log.get().warn("Couldn't find cursor. Check your controller");
             return false;
         }
 

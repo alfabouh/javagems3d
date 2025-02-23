@@ -1,8 +1,8 @@
 package javagems3d.system.resources.assets.shaders.libraries;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.base.ShaderType;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 
 public final class ShaderLibrariesContainer {
     private final String path;
@@ -31,7 +31,7 @@ public final class ShaderLibrariesContainer {
         this.fragmentShaderLibrary = fragmentShader1;
         this.geometryShaderLibrary = geometricShader1;
 
-        JGemsHelper.getLogger().trace("Initialized shader library: " + this);
+        Log.get().trace("Initialized shader library: " + this);
     }
 
     public ShaderLibrary getVertexShaderLibrary() {

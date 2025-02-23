@@ -12,13 +12,13 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
+import logger.Log;
 
 public abstract class SceneObject implements IModeled, IRendered, ILighted {
     private AnimationData animationData;
@@ -97,7 +97,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
             return null;
         }
         if (id < 0 || id >= this.getModel().getMeshStructure().getAnimationsList().size()) {
-            JGemsHelper.getLogger().error("Couldn't set animation for: " + this);
+            Log.get().error("Couldn't set animation for: " + this);
             return null;
         }
         AnimationData animationData = new AnimationData(this.getModel().getMeshStructure().getAnimationsList().get(id));

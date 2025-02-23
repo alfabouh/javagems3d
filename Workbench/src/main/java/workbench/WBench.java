@@ -1,15 +1,14 @@
 package workbench;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.os.OS;
 import javagems3d.system.os.SysOSValidation;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import logger.Log;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;
 import org.lwjgl.glfw.GLFW;
-import toolbox.ToolBox;
 import workbench.controller.WBenchControllerDispatcher;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.resources.WBenchResourceManager;
@@ -79,7 +78,7 @@ public final class WBench {
     public static void checkFilesDirectory() throws IOException {
         if (!Files.exists(WBench.getFilesFolder())) {
             WBench.getFilesFolder().toFile().mkdirs();
-            JGemsHelper.getLogger().debug("Created system folder");
+            Log.get().debug("Created system folder");
         }
     }
 
@@ -91,10 +90,10 @@ public final class WBench {
 
     private static void start() {
         try {
-            JGemsHelper.getLogger().debug("BEGIN");
-            JGemsHelper.getLogger().info("Starting system! Date: " + JGems3D.date());
-            JGemsHelper.getLogger().info(WBench.get().toString());
-            JGemsHelper.getLogger().info("===============================================================");
+            Log.get().debug("BEGIN");
+            Log.get().info("Starting system! Date: " + JGems3D.date());
+            Log.get().info(WBench.get().toString());
+            Log.get().info("===============================================================");
             JGemsCore.printSystemInfo();
 
             WBench.get().getResourceManager().initGlobalResources();
@@ -104,12 +103,12 @@ public final class WBench {
             WBench.get().getScreen().runRenderThread();
 
         } catch (Exception e) {
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
         } finally {
             WBench.get().getResourceManager().destroy();
-            JGemsHelper.getLogger().info("Cleared resources!");
-            JGemsHelper.getLogger().debug("END");
+            Log.get().info("Cleared resources!");
+            Log.get().debug("END");
         }
     }
 

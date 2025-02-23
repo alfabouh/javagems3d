@@ -11,6 +11,7 @@
 
 package javagems3d.physics.entities.collectabes;
 
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.JGemsHelper;
@@ -45,7 +46,7 @@ public class EntityCollectableItem extends WorldItem {
                 IInventoryOwner inventory = (IInventoryOwner) e;
                 if (inventory.getInventory().addItemInInventory(this.getInventoryItem())) {
                     JGemsHelper.getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 1.5f, 1.0f, 1.0f, this.getPosition());
-                    JGemsHelper.getLogger().trace("Put " + this.getInventoryItem().getName() + " in inventory");
+                    Log.get().trace("Put " + this.getInventoryItem().getName() + " in inventory");
                     this.setDead();
                 }
             }

@@ -11,9 +11,8 @@
 
 package javagems3d.graphics.rendering.programs.shaders.unifrom;
 
+import logger.Log;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46;
-import javagems3d.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.ByteBuffer;
@@ -39,7 +38,7 @@ public class UniformBufferProgram {
         int uniformLocation = this.getLocation();
         this.binding = binding;
         if (uniformLocation < 0) {
-            JGemsHelper.getLogger().warn("Could not find uniform-buffer " + this.getName());
+            Log.get().warn("Could not find uniform-buffer " + this.getName());
             return false;
         }
         this.setupUniformBuffer(bytes, binding);

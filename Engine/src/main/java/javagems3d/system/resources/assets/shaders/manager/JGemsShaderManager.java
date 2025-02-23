@@ -45,11 +45,11 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.FloatBuffer;
 
 public final class JGemsShaderManager extends ShaderManager {
-    private final JGemsShaderUtils shaderUtils;
+    private final Utils shaderUtils;
 
     public JGemsShaderManager(ShadersContainer shadersContainer) {
         super(shadersContainer);
-        this.shaderUtils = new JGemsShaderUtils();
+        this.shaderUtils = new Utils();
     }
 
     @Override
@@ -61,12 +61,12 @@ public final class JGemsShaderManager extends ShaderManager {
         return new JGemsShaderManager(this.getShadersContainer());
     }
 
-    public JGemsShaderUtils getUtils() {
+    public Utils getUtils() {
         return this.shaderUtils;
     }
 
-    public class JGemsShaderUtils {
-        public JGemsShaderUtils() {
+    public class Utils {
+        public Utils() {
         }
 
         public void performUniformSampleNoWarn(UniformString uniform, ISample sample) {

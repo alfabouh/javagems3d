@@ -27,25 +27,6 @@ import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.path.JGemsPath;
 
 public class ModelAssetsInitializer implements IAssetsInitializer {
-    public static final float[] CubeModelPos = {
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, -1.0f,
-            1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f
-    };
-    public static final int[] CubeModelInd = new int[]{
-            0, 1, 3, 3, 1, 2,
-            4, 0, 3, 5, 4, 3,
-            3, 2, 7, 5, 3, 7,
-            6, 1, 0, 6, 0, 4,
-            2, 1, 6, 2, 6, 7,
-            7, 6, 4, 7, 4, 5
-    };
-
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
 
@@ -67,29 +48,12 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     }
 
     private void createDefaults(GameResources gameResources) {
-        this.defaultCube_bff = this.createDefaultCubeBuffer();
+        this.defaultCube_bff = IAssetsInitializer.createDefaultCubeBuffer();
         gameResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_BFF", this.defaultCube_bff);
         gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(this.defaultCube_bff);
 
-        this.defaultCube_gr = this.createDefaultCubeGroup();
+        this.defaultCube_gr = IAssetsInitializer.createDefaultCubeGroup();
         gameResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_GR", this.defaultCube_gr);
-    }
-
-    private MeshBuffer createDefaultCubeBuffer() {
-        DataMesh dataMesh = new DataMesh();
-        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsHelper.UTILS.convertFloatsList(ModelAssetsInitializer.CubeModelPos));
-        dataMesh.putVertexIndexes(JGemsHelper.UTILS.convertIntsList(ModelAssetsInitializer.CubeModelInd));
-        MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, null);
-        return new MeshBuffer(meshBufferMeshNode3D);
-    }
-
-    private MeshGroup createDefaultCubeGroup() {
-        try (RenderMesh renderMesh = new RenderMesh()) {
-            renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS).putArray(ModelAssetsInitializer.CubeModelPos));
-            renderMesh.putVertexIndexes(JGemsHelper.UTILS.convertIntsList(ModelAssetsInitializer.CubeModelInd));
-            MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, null);
-            return new MeshGroup(meshBufferMeshNode3D);
-        }
     }
 
     @Override

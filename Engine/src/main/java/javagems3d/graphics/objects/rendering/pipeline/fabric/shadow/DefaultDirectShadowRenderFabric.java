@@ -1,6 +1,5 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.shadow;
 
-import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IModeled;
@@ -12,16 +11,15 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import logger.Log;
 import org.lwjgl.opengl.GL46;
 
 public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
@@ -60,7 +58,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
                 GL46.glBindVertexArray(0);
             }
         } catch (Exception e) {
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
             throw new JGemsRuntimeException("There was an error, while rendering model for shadows. ");
         }
     }

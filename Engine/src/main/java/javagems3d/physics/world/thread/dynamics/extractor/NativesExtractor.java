@@ -12,11 +12,11 @@
 package javagems3d.physics.world.thread.dynamics.extractor;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.system.os.OS;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ public abstract class NativesExtractor {
         try (InputStream is = JGems3D.loadFileFromJar(new JGemsPath(file.getFirst() + file.getSecond()))) {
             Path path = Paths.get(pathToFile.toString(), file.getSecond());
             Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
-            JGemsHelper.getLogger().info("Extracted Native: " + file);
+            Log.get().info("Extracted Native: " + file);
             return path.toString();
         } catch (IOException e) {
             throw new JGemsIOException(e);

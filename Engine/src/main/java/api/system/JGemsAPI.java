@@ -13,8 +13,8 @@ package api.system;
 
 import api.events.EventBus;
 import api.application.JGemsApplication;
-import javagems3d.JGemsHelper;
 import javagems3d.system.service.collections.Pair;
+import logger.Log;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
@@ -63,7 +63,7 @@ public final class JGemsAPI {
         try {
             JGemsAPI.appData = new JGemsAPIData();
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication(JGemsAPI.APIAppData());
-            JGemsHelper.getLogger().debug("Init API-App: id=" + pair.getSecond().id());
+            Log.get().debug("Init API-App: id=" + pair.getSecond().id());
             JGemsAPI.getManager().pullDataFromApplication(JGemsAPI.APIAppData(), pair);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new JGemsRuntimeException(e);

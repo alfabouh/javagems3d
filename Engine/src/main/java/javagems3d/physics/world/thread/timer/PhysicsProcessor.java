@@ -14,12 +14,12 @@ package javagems3d.physics.world.thread.timer;
 import api.events.EventBus;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import api.events.EventLauncher;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
+import logger.Log;
 
 public class PhysicsProcessor implements IPhysicsProcessor {
     public static final Object lockObject = new Object();
@@ -37,7 +37,7 @@ public class PhysicsProcessor implements IPhysicsProcessor {
     public void updateTimer(int TPS) {
         final float time = 1.0f / TPS;
         this.getDynamicsSystem().init();
-        JGemsHelper.getLogger().info("Starting physics");
+        Log.get().info("Starting physics");
         try {
             while (!JGems3D.get().isShouldBeClosed()) {
                 SyncManager.SyncPhysics.mark();
@@ -55,12 +55,12 @@ public class PhysicsProcessor implements IPhysicsProcessor {
         } catch (Exception e) {
             throw new JGemsRuntimeException(e);
         }
-        JGemsHelper.getLogger().info("Stopping physics");
+        Log.get().info("Stopping physics");
     }
 
     public void clearResources() {
         this.getDynamicsSystem().destroy();
-        JGemsHelper.getLogger().info("Cleaned physics world resources");
+        Log.get().info("Cleaned physics world resources");
     }
 
     public void removeDynamicsObject(PhysicsCollisionObject physicsCollisionObject) {

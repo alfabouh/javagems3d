@@ -17,7 +17,6 @@ import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.environment.IEnvironment;
-import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
@@ -37,6 +36,7 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
+import logger.Log;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -263,7 +263,7 @@ public class ShadowScene implements IShadowScene {
 
     public void bindPointLightToShadowScene(int attachCode, PointLight pointLight) {
         if (attachCode >= JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS) {
-            JGemsHelper.getLogger().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS);
+            Log.get().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS);
             return;
         }
         PointLightShadow pointLightShadow = this.getPointLightShadows().get(attachCode);
@@ -272,7 +272,7 @@ public class ShadowScene implements IShadowScene {
 
     public void unBindPointLightFromShadowScene(PointLight pointLight) {
         if (pointLight.getAttachedShadowSceneId() < 0) {
-            JGemsHelper.getLogger().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scene");
+            Log.get().warn("Point Light " + pointLight.getAttachedShadowSceneId() + " is not attached to shadow scene");
             return;
         }
         this.getPointLightShadows().get(pointLight.getAttachedShadowSceneId()).setPointLight(null);

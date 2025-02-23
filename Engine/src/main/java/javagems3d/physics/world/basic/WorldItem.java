@@ -11,6 +11,7 @@
 
 package javagems3d.physics.world.basic;
 
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -86,12 +87,12 @@ public abstract class WorldItem implements IWorldObject {
 
     public void onSpawn(IWorld iWorld) {
         this.spawnTick = iWorld.getTicks();
-        JGemsHelper.getLogger().trace("Added entity in world - [ " + this + " ]");
+        Log.get().trace("Added entity in world - [ " + this + " ]");
         this.spawned = true;
     }
 
     public void onDestroy(IWorld iWorld) {
-        JGemsHelper.getLogger().trace("Removed entity from world - [ " + this + " ]");
+        Log.get().trace("Removed entity from world - [ " + this + " ]");
     }
 
     public boolean isSpawned() {

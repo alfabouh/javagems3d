@@ -11,10 +11,10 @@
 
 package javagems3d.audio;
 
+import logger.Log;
 import org.joml.Vector3f;
 import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryUtil;
-import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.GameSound;
 import javagems3d.audio.sound.SoundBuffer;
 import javagems3d.audio.sound.data.SoundType;
@@ -78,7 +78,7 @@ public final class JGemsSoundManager {
         ALC10.alcMakeContextCurrent(this.getContext());
         AL.createCapabilities(alcCapabilities);
         this.isSystemCreated = true;
-        JGemsHelper.getLogger().info("OpenAL system successfully created");
+        Log.get().info("OpenAL system successfully created");
         AL10.alDistanceModel(AL11.AL_EXPONENT_DISTANCE);
         JGemsSoundManager.checkALonErrors();
     }

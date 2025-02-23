@@ -21,6 +21,7 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.synchronizing.SyncManager;
+import logger.Log;
 
 public class JGemsScene implements IScene {
     private final IWindow window;
@@ -41,7 +42,7 @@ public class JGemsScene implements IScene {
     }
 
     public void preRender() {
-        JGemsHelper.getLogger().info("Starting scene rendering");
+        Log.get().info("Starting scene rendering");
         this.getSceneRenderer().onStartRender();
     }
 
@@ -75,7 +76,7 @@ public class JGemsScene implements IScene {
     }
 
     public void postRender() {
-        JGemsHelper.getLogger().info("Stopping scene rendering");
+        Log.get().info("Stopping scene rendering");
         this.getSceneRenderer().onStopRender();
     }
 

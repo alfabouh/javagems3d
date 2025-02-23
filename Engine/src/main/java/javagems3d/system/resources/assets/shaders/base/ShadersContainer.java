@@ -11,11 +11,11 @@
 
 package javagems3d.system.resources.assets.shaders.base;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 
 import java.util.HashSet;
 import java.util.List;
@@ -81,32 +81,32 @@ public final class ShadersContainer {
 
     public void initAll() {
         if (this.getFragmentShader() != null) {
-            JGemsHelper.getLogger().trace("Initializing " + this.getFragmentShader().getShaderPath() + "/" + this.getFragmentShader().getShaderType().getFile());
+            Log.get().trace("Initializing " + this.getFragmentShader().getShaderPath() + "/" + this.getFragmentShader().getShaderType().getFile());
             this.getFragmentShader().init();
             this.putUniformsInGHeap(this.getFragmentShader().getUniforms());
         }
         if (this.getVertexShader() != null) {
-            JGemsHelper.getLogger().trace("Initializing " + this.getVertexShader().getShaderPath() + "/" + this.getVertexShader().getShaderType().getFile());
+            Log.get().trace("Initializing " + this.getVertexShader().getShaderPath() + "/" + this.getVertexShader().getShaderType().getFile());
             this.getVertexShader().init();
             this.putUniformsInGHeap(this.getVertexShader().getUniforms());
         }
         if (this.getGeometricShader() != null) {
-            JGemsHelper.getLogger().trace("Initializing " + this.getGeometricShader().getShaderPath() + "/" + this.getGeometricShader().getShaderType().getFile());
+            Log.get().trace("Initializing " + this.getGeometricShader().getShaderPath() + "/" + this.getGeometricShader().getShaderType().getFile());
             this.getGeometricShader().init();
             this.putUniformsInGHeap(this.getGeometricShader().getUniforms());
         }
         if (this.getTesselationControlShader() != null) {
-            JGemsHelper.getLogger().trace("Initializing " + this.getTesselationControlShader().getShaderPath() + "/" + this.getTesselationControlShader().getShaderType().getFile());
+            Log.get().trace("Initializing " + this.getTesselationControlShader().getShaderPath() + "/" + this.getTesselationControlShader().getShaderType().getFile());
             this.getTesselationControlShader().init();
             this.putUniformsInGHeap(this.getTesselationControlShader().getUniforms());
         }
         if (this.getTesselationEvaluationShader() != null) {
-            JGemsHelper.getLogger().trace("Initializing " + this.getTesselationEvaluationShader().getShaderPath() + "/" + this.getTesselationEvaluationShader().getShaderType().getFile());
+            Log.get().trace("Initializing " + this.getTesselationEvaluationShader().getShaderPath() + "/" + this.getTesselationEvaluationShader().getShaderType().getFile());
             this.getTesselationEvaluationShader().init();
             this.putUniformsInGHeap(this.getTesselationEvaluationShader().getUniforms());
         }
         if (this.getComputeShader() != null) {
-            JGemsHelper.getLogger().trace("Initializing " + this.getComputeShader().getShaderPath() + "/" + this.getComputeShader().getShaderType().getFile());
+            Log.get().trace("Initializing " + this.getComputeShader().getShaderPath() + "/" + this.getComputeShader().getShaderType().getFile());
             this.getComputeShader().init();
             this.putUniformsInCHeap(this.getComputeShader().getUniforms());
         }

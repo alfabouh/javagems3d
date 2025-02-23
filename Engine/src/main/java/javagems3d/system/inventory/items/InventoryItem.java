@@ -11,9 +11,9 @@
 
 package javagems3d.system.inventory.items;
 
-import javagems3d.JGemsHelper;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.inventory.IInventoryOwner;
+import logger.Log;
 
 public abstract class InventoryItem {
     private final String name;
@@ -42,7 +42,7 @@ public abstract class InventoryItem {
 
     public void onAddInInventory(IInventoryOwner hasInventory) {
         if (this.itemOwner() != null) {
-            JGemsHelper.getLogger().error("Item " + this.getName() + " already exists in someone's inventory");
+            Log.get().error("Item " + this.getName() + " already exists in someone's inventory");
             return;
         }
         this.itemOwner = hasInventory;

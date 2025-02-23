@@ -25,14 +25,17 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
+import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIMenuInterface;
+import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.system.map.IMapActionsCallback;
 import javagems3d.system.map.loaders.IMapLoader;
 
 import javagems3d.system.resources.assets.models.Model2D;
@@ -51,15 +54,15 @@ import org.lwjgl.opengl.GL46;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit {
+public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionsCallback {
     protected Map<Nodes, IRenderNode> conveyorNodes;
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
+    private final ISceneCulling sceneCulling;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
     protected Model2D screenModel;
-    private final ISceneCulling sceneCulling;
 
     public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
         super(window, sceneWorld);
@@ -154,7 +157,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         OpenGLRenderer.setViewPort(this.getWindowSize());
         if (this.getWorld().getCamera() == null) {
             uiRenderNode.onRender(frameTicking);
-            //this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
+            this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
             return;
         }
         if (JGems3D.get().isPaused()) {
@@ -292,10 +295,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IResourceInit
         return this.sceneIndirectBufferProgram;
     }
 
+    @Override
     public JGemsUI getJGemsUI() {
         return this.jGemsUI;
     }
 
+    @Override
     public DearUIRenderer getDearUIRenderer() {
         return this.dearUIRenderer;
     }

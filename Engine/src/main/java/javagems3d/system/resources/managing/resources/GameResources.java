@@ -23,10 +23,10 @@ import javagems3d.system.resources.managing.resources.data.ResourcesDataArrays;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
 import javagems3d.system.service.exceptions.JGemsIOException;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.SoundBuffer;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ICached;
@@ -107,7 +107,7 @@ public final class GameResources implements IGameResources {
             return textureLoader.get();
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned");
+            Log.get().error("Couldn't load: " + name + ". Default returned");
             if (returnDefault != null) {
                 return returnDefault;
             } else {
@@ -122,7 +122,7 @@ public final class GameResources implements IGameResources {
             return textureLoader.get();
         } catch (Exception e) {
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-            JGemsHelper.getLogger().error("Couldn't load: " + name + ". Default returned");
+            Log.get().error("Couldn't load: " + name + ". Default returned");
             if (returnDefault != null) {
                 return returnDefault;
             } else {
@@ -180,7 +180,7 @@ public final class GameResources implements IGameResources {
                     try {
                         assets.load(this);
                     } catch (Exception e) {
-                        JGemsHelper.getLogger().exception(e);
+                        Log.get().exception(e);
                     }
                 });
                 thread.setDaemon(true);
@@ -204,7 +204,7 @@ public final class GameResources implements IGameResources {
         for (IAssetsInitializer assets : normalLoad) {
             assets.load(this);
         }
-        JGemsHelper.getLogger().info("Initialized rendering resources " + this.getResourceCache());
+        Log.get().info("Initialized rendering resources " + this.getResourceCache());
     }
 
     public void addAssetsLoaders(IAssetsInitializer... a) {

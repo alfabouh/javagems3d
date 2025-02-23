@@ -1,12 +1,12 @@
 package launcher.run;
 
-import launcher.util.ArgsDecomposer;
+import launcher.util.InputArgs;
 import workbench.WBench;
 
 public final class WorkbenchRun implements IRun {
     @Override
     public void run(String[] args) {
-        ArgsDecomposer argsDecomposer = new ArgsDecomposer(args);
+        InputArgs inputArgs = new InputArgs(args);
         WBench.launch();
     }
 }

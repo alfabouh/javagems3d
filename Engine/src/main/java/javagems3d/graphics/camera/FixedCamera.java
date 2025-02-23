@@ -11,20 +11,20 @@
 
 package javagems3d.graphics.camera;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.CameraBase;
 import javagems3d.graphics.camera.base.ICamera;
+import logger.Log;
 import org.joml.Vector3f;
 
 public class FixedCamera extends CameraBase {
     public FixedCamera(ICamera camera) {
         super(camera);
-        JGemsHelper.getLogger().trace("Created free camera at: " + camera.getCamPosition());
+        Log.get().trace("Created free camera at: " + camera.getCamPosition());
     }
 
     public FixedCamera(Vector3f pos, Vector3f rot) {
         super(pos, rot);
-        JGemsHelper.getLogger().trace("Created free camera at: " + pos);
+        Log.get().trace("Created free camera at: " + pos);
     }
 
     public void setCameraPosition(Vector3f vector3f) {

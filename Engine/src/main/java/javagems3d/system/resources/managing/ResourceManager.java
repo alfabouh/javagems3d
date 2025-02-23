@@ -11,7 +11,6 @@
 
 package javagems3d.system.resources.managing;
 
-import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
@@ -31,16 +30,12 @@ import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
-import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.LongBuffer;
@@ -142,7 +137,7 @@ public abstract class ResourceManager {
                 }
             }
         }
-        JGemsHelper.getLogger().debug("Loading " + totalMatrices + " animations in texture-buffer");
+        Log.get().debug("Loading " + totalMatrices + " animations in texture-buffer");
         Texture2DProgram texture2DProgram = new Texture2DProgram();
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(totalMatrices * 16);
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {

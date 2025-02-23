@@ -2,7 +2,6 @@ package javagems3d.system.resources.assets.loading.models.utils;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.TextureAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
@@ -11,6 +10,7 @@ import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
@@ -241,7 +241,7 @@ public abstract class ModelLoadingUtils {
                     }
                 }
             } catch (JGemsException e) {
-                JGemsHelper.getLogger().exception(e);
+                Log.get().exception(e);
             }
         }
         return material;

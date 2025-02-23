@@ -12,8 +12,8 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels.base;
 
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
+import logger.Log;
 
 public abstract class AbstractPanelUI implements PanelUI, IWindow.ResizeEvent {
     private final PanelUI prevPanel;
@@ -45,7 +45,7 @@ public abstract class AbstractPanelUI implements PanelUI, IWindow.ResizeEvent {
         if (JGemsUI != null) {
             JGemsUI.setPanel(this.prevPanel);
         } else {
-            JGemsHelper.getLogger().warn("Couldn't go back to NULL UI panel");
+            Log.get().warn("Couldn't go back to NULL UI panel");
         }
     }
 }

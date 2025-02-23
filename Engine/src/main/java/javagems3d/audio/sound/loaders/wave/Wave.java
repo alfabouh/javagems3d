@@ -11,8 +11,8 @@
 
 package javagems3d.audio.sound.loaders.wave;
 
+import logger.Log;
 import org.lwjgl.openal.AL10;
-import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.loaders.ISoundCodec;
 
 import javax.sound.sampled.AudioFormat;
@@ -40,7 +40,7 @@ public class Wave implements ISoundCodec {
             ais.read(audioBytes);
             buffer = convertAudioBytes(audioBytes, audioFormat.getSampleSizeInBits() == 16, audioFormat.isBigEndian());
         } catch (IOException e) {
-            JGemsHelper.getLogger().warn("Unable to read audio input stream, " + e.getMessage());
+            Log.get().warn("Unable to read audio input stream, " + e.getMessage());
         }
 
         this.data = buffer;
@@ -52,7 +52,7 @@ public class Wave implements ISoundCodec {
         try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(is)) {
             return new Wave(inputStream);
         } catch (Exception e) {
-            JGemsHelper.getLogger().warn("Unable to create from inputstream, " + e.getMessage());
+            Log.get().warn("Unable to create from inputstream, " + e.getMessage());
             return null;
         }
     }

@@ -13,9 +13,9 @@ package javagems3d.graphics.camera;
 
 import javagems3d.graphics.camera.base.CameraBase;
 import javagems3d.graphics.objects.entities.SceneEntity;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 
 public class AttachedCamera extends CameraBase {
@@ -50,7 +50,7 @@ public class AttachedCamera extends CameraBase {
     }
 
     public void attachCameraOnItem(SceneEntity abstractSceneEntity) {
-        JGemsHelper.getLogger().debug("Attached camera to: " + abstractSceneEntity.getWorldItem().getItemName());
+        Log.get().debug("Attached camera to: " + abstractSceneEntity.getWorldItem().getItemName());
         this.abstractSceneEntity = abstractSceneEntity;
         this.setCameraPosition(abstractSceneEntity.getRenderPosition());
         this.setCameraRotation(abstractSceneEntity.getRenderRotation());

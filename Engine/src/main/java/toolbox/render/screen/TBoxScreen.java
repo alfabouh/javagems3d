@@ -11,11 +11,11 @@
 
 package toolbox.render.screen;
 
-import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.OpenGLSysUtils;
 import javagems3d.system.service.exceptions.JGemsNullException;
+import logger.Log;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -31,7 +31,6 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
-import javagems3d.system.service.path.JGemsPath;
 import logger.SystemLogging;
 import logger.managers.LoggingManager;
 import toolbox.ToolBox;
@@ -204,7 +203,7 @@ public class TBoxScreen implements IScreen {
                 throw new JGemsRuntimeException("Caught exception, while building screen!");
             }
         } catch (Exception e) {
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
             LoggingManager.showExceptionDialog("Couldn't create window");
         }
     }

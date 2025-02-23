@@ -20,6 +20,7 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import logger.Log;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
@@ -30,7 +31,6 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 
-import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -470,7 +470,7 @@ public class TBoxScene {
                                 tBoxModelObject.setAttributeContainer(saveObject.getAttributeContainer());
                                 this.addObject(tBoxModelObject);
                             } catch (NullPointerException e) {
-                                JGemsHelper.getLogger().exception(e);
+                                Log.get().exception(e);
                             }
                         }
                     } else {
@@ -480,7 +480,7 @@ public class TBoxScene {
                     this.getSceneContainer().setMapProperties(mapObjectProperties);
                 } catch (Exception e) {
                     LoggingManager.showExceptionDialog("Couldn't load map! See the logs");
-                    JGemsHelper.getLogger().exception(e);
+                    Log.get().exception(e);
                     ToolBox.get().getTBoxSettings().recentPathOpen.setValue("");
                     ToolBox.get().getTBoxSettings().saveOptions();
                 }

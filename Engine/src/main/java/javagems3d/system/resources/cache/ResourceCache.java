@@ -11,8 +11,8 @@
 
 package javagems3d.system.resources.cache;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -26,7 +26,7 @@ public class ResourceCache {
 
     public ResourceCache(String cacheName) {
         this.cacheName = cacheName;
-        JGemsHelper.getLogger().info("Created cache: " + this);
+        Log.get().info("Created cache: " + this);
         this.cache = new LinkedHashMap<>();
     }
 
@@ -39,7 +39,7 @@ public class ResourceCache {
                 cachedIterator.remove();
             }
         }
-        JGemsHelper.getLogger().info("Cleaned cache: " + this + ". Group " + clazz.getName());
+        Log.get().info("Cleaned cache: " + this + ". Group " + clazz.getName());
     }
 
     public void clearCache() {
@@ -48,7 +48,7 @@ public class ResourceCache {
         }
         this.cache.forEach((o, e) -> e.onClearingCache(this));
         this.cache.clear();
-        JGemsHelper.getLogger().info("Cleaned cache: " + this);
+        Log.get().info("Cleaned cache: " + this);
     }
 
     public Map<String, ICached> getCache() {
@@ -61,13 +61,13 @@ public class ResourceCache {
 
     public void addObjectInBuffer(String key, ICached object) {
         if (object == null) {
-            JGemsHelper.getLogger().error("Couldn't add NULL object in system cache: " + key + this);
+            Log.get().error("Couldn't add NULL object in system cache: " + key + this);
             return;
         }
         if (this.cache.containsKey(key)) {
             return;
         }
-        JGemsHelper.getLogger().debug("Put object " + key + " in system cache " + this);
+        Log.get().debug("Put object " + key + " in system cache " + this);
         this.cache.put(key, object);
     }
 
@@ -83,7 +83,7 @@ public class ResourceCache {
     public ICached getCachedObject(String key) {
         ICached cached = this.cache.get(key);
         if (!this.checkObjectInCache(key)) {
-            JGemsHelper.getLogger().error("Object " + key + " doesn't exist in system cache " + this);
+            Log.get().error("Object " + key + " doesn't exist in system cache " + this);
             return null;
         }
         return cached;

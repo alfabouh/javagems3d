@@ -16,6 +16,7 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
 import javagems3d.system.resources.managing.resources.GameResources;
+import logger.Log;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -79,7 +80,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public void createScreenAndContext() {
-        JGemsHelper.getLogger().info("Init Graphics");
+        Log.get().info("Init Graphics");
         if (this.tryToBuildScreen()) {
             JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
             JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
@@ -221,7 +222,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public void runRenderThread() {
-        JGemsHelper.getLogger().info("Starting screen");
+        Log.get().info("Starting screen");
         SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
@@ -237,7 +238,7 @@ public class JGemsScreen implements IScreen {
             this.getTimerPool().clear();
             GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
             GLFW.glfwTerminate();
-            JGemsHelper.getLogger().info("Screen destroyed");
+            Log.get().info("Screen destroyed");
         }
     }
 

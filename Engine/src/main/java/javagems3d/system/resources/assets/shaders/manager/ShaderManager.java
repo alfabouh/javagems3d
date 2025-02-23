@@ -17,6 +17,7 @@ import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import logger.Log;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.CShaderProgram;
@@ -77,7 +78,7 @@ public abstract class ShaderManager implements ICached {
 
     public void dispatchComputeShader(int grX, int grY, int grZ, int barrier) {
         if (this.getShadersContainer().getComputeShader() == null) {
-            JGemsHelper.getLogger().warn("[" + this + "]" + " doesn't have compute program");
+            Log.get().warn("[" + this + "]" + " doesn't have compute program");
             return;
         }
         GL46.glDispatchCompute(grX, grY, grZ);
@@ -126,7 +127,7 @@ public abstract class ShaderManager implements ICached {
             }
             case NONE:
             default: {
-                JGemsHelper.getLogger().error("Couldn't operate with ShaderManager: " + this);
+                Log.get().error("Couldn't operate with ShaderManager: " + this);
             }
         }
         return null;
@@ -142,7 +143,7 @@ public abstract class ShaderManager implements ICached {
             }
             case NONE:
             default: {
-                JGemsHelper.getLogger().error("Couldn't operate with ShaderManager: " + this);
+                Log.get().error("Couldn't operate with ShaderManager: " + this);
             }
         }
         return false;
@@ -158,7 +159,7 @@ public abstract class ShaderManager implements ICached {
             }
             case NONE:
             default: {
-                JGemsHelper.getLogger().error("Couldn't operate with ShaderManager: " + this);
+                Log.get().error("Couldn't operate with ShaderManager: " + this);
             }
         }
         return false;
@@ -170,15 +171,15 @@ public abstract class ShaderManager implements ICached {
 
     public void performUniformTexture(UniformString uniform, ITextureProgram program, int textureUnit) {
         if (!this.isUniformExist(uniform)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
+            Log.get().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
         if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
-            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow");
+            Log.get().error("[" + this + "] Texture attachments overflow");
             return;
         }
         if (!program.isValid()) {
-            JGemsHelper.getLogger().warn("[" + this + "] Wrong textureID: " + program.getTextureId() + " - (" + program + ")");
+            Log.get().warn("[" + this + "] Wrong textureID: " + program.getTextureId() + " - (" + program + ")");
             return;
         }
 
@@ -196,15 +197,15 @@ public abstract class ShaderManager implements ICached {
 
     public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment, int textureUnit) {
         if (!this.isUniformExist(uniform)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
+            Log.get().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
         if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
-            JGemsHelper.getLogger().error("[" + this + "] Texture attachments overflow");
+            Log.get().error("[" + this + "] Texture attachments overflow");
             return;
         }
         if (textureID < 0) {
-            JGemsHelper.getLogger().warn("[" + this + "] Wrong textureID: " + textureID);
+            Log.get().warn("[" + this + "] Wrong textureID: " + textureID);
             return;
         }
 
@@ -222,7 +223,7 @@ public abstract class ShaderManager implements ICached {
             this.graphicShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
             if (gShaderProgram.createShader(this.getShadersContainer().getFragmentShader(), this.getShadersContainer().getVertexShader(), this.getShadersContainer().getGeometricShader(), this.getShadersContainer().getTesselationControlShader(), this.getShadersContainer().getTesselationEvaluationShader())) {
                 if (gShaderProgram.link()) {
-                    JGemsHelper.getLogger().info("G-Shader " + this + " successfully linked (program id=" + gShaderProgram.getProgramId() + ")");
+                    Log.get().info("G-Shader " + this + " successfully linked (program id=" + gShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in g-shader " + this);
                 }
@@ -234,7 +235,7 @@ public abstract class ShaderManager implements ICached {
             this.computingShaderHandler = new ShaderHandler(this.getShadersContainer().getId());
             if (cShaderProgram.createShader(this.getShadersContainer().getComputeShader())) {
                 if (cShaderProgram.link()) {
-                    JGemsHelper.getLogger().info("C-Shader " + this + " successfully linked (program id=" + cShaderProgram.getProgramId() + ")");
+                    Log.get().info("C-Shader " + this + " successfully linked (program id=" + cShaderProgram.getProgramId() + ")");
                 } else {
                     throw new JGemsRuntimeException("Found problems in c-shader " + this);
                 }
@@ -249,15 +250,15 @@ public abstract class ShaderManager implements ICached {
 
     public void performUniform(UniformString uniform, UniformProgram.UFunction UFUnction) {
         if (UFUnction == null) {
-            JGemsHelper.getLogger().error("[" + this + "] NULL uniform " + uniform);
+            Log.get().error("[" + this + "] NULL uniform " + uniform);
             return;
         }
         if (!this.isUniformExist(uniform)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Unknown uniform " + uniform);
+            Log.get().warn("[" + this + "] Unknown uniform " + uniform);
             return;
         }
         if (!this.setUniform(uniform, UFUnction)) {
-            JGemsHelper.getLogger().warn("[" + this + "] Wrong arguments! U: " + uniform);
+            Log.get().warn("[" + this + "] Wrong arguments! U: " + uniform);
         }
     }
 

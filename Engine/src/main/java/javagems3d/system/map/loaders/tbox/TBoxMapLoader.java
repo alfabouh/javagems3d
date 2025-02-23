@@ -13,8 +13,8 @@ package javagems3d.system.map.loaders.tbox;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.system.core.player.IPlayerConstructor;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.graph.Graph;
@@ -48,8 +48,8 @@ public class TBoxMapLoader implements IMapLoader {
             return new TBoxMapLoader(TBoxMapLoader.readMapFromJar(pathToMap));
         } catch (IOException | ClassNotFoundException | JGemsNotFoundException e) {
             LoggingManager.showExceptionDialog("Failed to lad map");
-            JGemsHelper.getLogger().error("Failed to load map: " + pathToMap);
-            JGemsHelper.getLogger().exception(e);
+            Log.get().error("Failed to load map: " + pathToMap);
+            Log.get().exception(e);
             return null;
         }
     }
@@ -60,7 +60,7 @@ public class TBoxMapLoader implements IMapLoader {
         try {
             graph = Graph.readFromFile(pathTo);
         } catch (JGemsNotFoundException e) {
-            JGemsHelper.getLogger().warn("Couldn't read NavFile " + pathTo);
+            Log.get().warn("Couldn't read NavFile " + pathTo);
         }
         return new MapObject(graph, TBoxMapReader.readMapFromJAR(pathToMap));
     }

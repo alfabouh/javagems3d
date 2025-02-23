@@ -15,9 +15,9 @@ import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import logger.Log;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.particles.objects.SimpleColoredParticle;
 import javagems3d.graphics.particles.objects.SimpleTexturedParticle;
@@ -74,7 +74,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     public void create(SceneWorld sceneWorld) {
         final float size = 0.1f;
         this.commonParticleModel2D = MeshHelper.generatePlane3DModel(new Vector3f(-size, -size, 0.0f), new Vector3f(size, -size, 0.0f), new Vector3f(-size, size, 0.0f), new Vector3f(size, size, 0.0f));
-        JGemsHelper.getLogger().info("Created particles emitter");
+        Log.get().info("Created particles emitter");
     }
 
     @Override
@@ -83,7 +83,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
             this.commonParticleModel2D.clear();
         }
         this.clearParticles(sceneWorld);
-        JGemsHelper.getLogger().info("Destroyed particles emitter");
+        Log.get().info("Destroyed particles emitter");
     }
 
     public void clearParticles(SceneWorld sceneWorld) {

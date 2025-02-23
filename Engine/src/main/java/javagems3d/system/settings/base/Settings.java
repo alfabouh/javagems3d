@@ -11,9 +11,9 @@
 
 package javagems3d.system.settings.base;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.settings.objects.SettingObject;
+import logger.Log;
 
 import java.io.*;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public abstract class Settings {
     }
 
     public void saveOptions() {
-        JGemsHelper.getLogger().trace("Saving settings...");
+        Log.get().trace("Saving settings...");
         try {
             PrintWriter printwriter = new PrintWriter(new FileWriter(this.getOptionsFile()));
             for (SettingObject<? extends Serializable> settingObject : this.getSettingObjectMap().values()) {
@@ -43,7 +43,7 @@ public abstract class Settings {
         } catch (Exception e) {
             throw new JGemsRuntimeException(e);
         }
-        JGemsHelper.getLogger().info("Settings successfully saved");
+        Log.get().info("Settings successfully saved");
     }
 
     public boolean makeSettingDirs() {
@@ -78,14 +78,14 @@ public abstract class Settings {
                     try {
                         settingObject.setValue(settingObject.tryParseFromString(value));
                     } catch (Exception e) {
-                        JGemsHelper.getLogger().exception(e);
+                        Log.get().exception(e);
                         settingObject.setDefault();
                     }
                 }
             }
             bufferedreader.close();
         } catch (Exception e) {
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
             if (this.getOptionsFile().exists()) {
                 this.getOptionsFile().delete();
             }

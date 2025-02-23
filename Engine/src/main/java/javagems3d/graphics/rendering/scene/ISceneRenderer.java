@@ -25,8 +25,6 @@ public interface ISceneRenderer extends IWindow.ResizeEvent {
     void onRender(FrameTicking frameTicking);
     void onStopRender();
 
-    void UIPanelActionRequest(@Nullable PanelUI panelUI);
-
     @NotNull Model2D getScreenModel();
 
     @NotNull IWorld getWorld();

@@ -11,13 +11,13 @@
 
 package javagems3d.system.settings;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.service.stat.PerformanceStat;
 import javagems3d.system.settings.base.Settings;
 import javagems3d.system.settings.objects.SettingChooseLanguage;
 import javagems3d.system.settings.objects.SettingFloatBar;
 import javagems3d.system.settings.objects.SettingIntSlots;
+import logger.Log;
 
 import java.io.File;
 
@@ -100,7 +100,7 @@ public class JGemsSettings extends Settings {
     }
 
     public void setDefaultByPerfStat(PerformanceStat.Result stat) {
-        JGemsHelper.getLogger().debug("PerfStat: " + stat.name());
+        Log.get().debug("PerfStat: " + stat.name());
         switch (stat) {
             case POTATO: {
                 this.ssao.setValue(0);

@@ -1,9 +1,8 @@
 package launcher;
 
-import javagems3d.JGems3D;
 import launcher.run.EngineRun;
 import launcher.run.WorkbenchRun;
-import launcher.util.ArgsDecomposer;
+import launcher.util.InputArgs;
 
 public abstract class JavaGemsLauncher {
     public static void launchEngine(String[] args) {
@@ -15,8 +14,8 @@ public abstract class JavaGemsLauncher {
     }
 
     public static void launch(String[] args) {
-        ArgsDecomposer argsDecomposer = new ArgsDecomposer(args);
-        if (argsDecomposer.getBoolValue("workbench")) {
+        InputArgs inputArgs = new InputArgs(args);
+        if (inputArgs.hasValue("workbench")) {
             JavaGemsLauncher.launchWorkbench(args);
             return;
         }

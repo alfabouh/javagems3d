@@ -19,13 +19,13 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
-import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.extractor.NativesExtractor;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
+import logger.Log;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +45,7 @@ public class DynamicsSystem {
         try {
             String lib = NativesExtractor.extractNativesAndReturnPath(path, JGems3D.get().getOS());
             System.load(lib);
-            JGemsHelper.getLogger().info("Injected lib: " + lib);
+            Log.get().info("Injected lib: " + lib);
         } catch (Exception e) {
             throw new JGemsRuntimeException(e);
         }

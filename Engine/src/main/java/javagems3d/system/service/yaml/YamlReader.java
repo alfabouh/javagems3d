@@ -11,10 +11,10 @@
 
 package javagems3d.system.service.yaml;
 
+import logger.Log;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import javagems3d.JGemsHelper;
 
 import java.io.InputStream;
 import java.util.List;
@@ -30,7 +30,7 @@ public class YamlReader {
             Yaml yaml = new Yaml(new Constructor(Map.class, loaderOptions));
             this.data = yaml.load(inputStream);
         } else {
-            JGemsHelper.getLogger().warn("Couldn't read NULL yaml bytes");
+            Log.get().warn("Couldn't read NULL yaml bytes");
             this.data = null;
         }
     }

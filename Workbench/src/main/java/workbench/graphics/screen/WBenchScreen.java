@@ -1,7 +1,6 @@
 package workbench.graphics.screen;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.IScreen;
@@ -13,6 +12,7 @@ import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.profiler.SpeedProfiler;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import logger.Log;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -24,13 +24,15 @@ import org.lwjgl.system.MemoryUtil;
 import workbench.WBench;
 import workbench.controller.WBenchControllerDispatcher;
 import workbench.global.WBenchConstants;
+import workbench.graphics.scene.WBenchScene;
+import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 
 public class WBenchScreen implements IScreen {
     public static int RENDER_FPS;
     private final TimerPool timerPool;
     private WBenchControllerDispatcher controllerDispatcher;
-    //private JGemsScene scene;
+    private WBenchScene scene;
     private Window window;
     private float renderTicks;
 
@@ -41,11 +43,11 @@ public class WBenchScreen implements IScreen {
 
     public void createObjects(IWindow window) {
         this.controllerDispatcher = new WBenchControllerDispatcher(window);
-       // this.scene = new JGemsScene(window, new SceneWorld());
+        this.scene = new WBenchScene(window, new WBenchWorld());
     }
 
     public void createScreenAndContext() {
-        JGemsHelper.getLogger().info("Init Graphics");
+        Log.get().info("Init Graphics");
         if (this.tryToBuildScreen()) {
             JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), WBenchConstants.FOV, WBenchConstants.Z_NEAR, WBenchConstants.Z_FAR);
             JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
@@ -82,9 +84,9 @@ public class WBenchScreen implements IScreen {
     }
 
     private void resizeWindow(IWindow window) {
-      //  if (this.getScene() != null) {
-      //      this.getScene().onWindowResize(window);
-      //  }
+        if (this.getScene() != null) {
+            this.getScene().onWindowResize(window);
+        }
         JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
     }
 
@@ -131,7 +133,7 @@ public class WBenchScreen implements IScreen {
     }
 
     public void refreshSceneResources() {
-   //     this.getScene().getSceneRenderer().recreateResources();
+        this.getScene().getSceneRenderer().recreateResources();
     }
 
     private void updateController() {
@@ -141,20 +143,20 @@ public class WBenchScreen implements IScreen {
     }
 
     public void runRenderThread() {
-        JGemsHelper.getLogger().info("Starting screen");
+        Log.get().info("Starting screen");
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        //this.getScene().preRender();
+        this.getScene().preRender();
         try {
             this.renderLoop();
         } catch (Exception e) {
             WBench.get().close();
             throw new JGemsRuntimeException(e);
         } finally {
-           // this.getScene().postRender();
+            this.getScene().postRender();
             this.getTimerPool().clear();
             GLFW.glfwDestroyWindow(this.getWindow().getDescriptor());
             GLFW.glfwTerminate();
-            JGemsHelper.getLogger().info("Screen destroyed");
+            Log.get().info("Screen destroyed");
         }
     }
 
@@ -168,7 +170,6 @@ public class WBenchScreen implements IScreen {
                 WBench.get().close();
                 break;
             }
-            //WBench.get().getCore().update();
 
             this.updateController();
             this.getWindow().refreshFocusState();
@@ -194,8 +195,12 @@ public class WBenchScreen implements IScreen {
         GL46.glCullFace(GL46.GL_BACK);
         GL46.glClearDepth(1.0f);
         GL46.glDepthFunc(GL46.GL_LESS);
-       // this.getScene().renderScene(delta);
+        this.getScene().renderScene(delta);
         OpenGLRenderer.catchGLContextExceptions();
+    }
+
+    public WBenchScene getScene() {
+        return this.scene;
     }
 
     public void zeroRenderTick() {

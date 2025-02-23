@@ -15,10 +15,10 @@ import api.events.EventBus;
 import api.application.JGemsApplication;
 import api.application.resources.AppResources;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import api.application.events.AppEventSubscriber;
 import api.application.events.SubscribeEvent;
+import logger.Log;
 import logger.SystemLogging;
 
 import java.lang.reflect.InvocationTargetException;
@@ -79,19 +79,19 @@ public final class JGemsAPIManager {
                 Class<?>[] interfaces = cl.getInterfaces();
                 if (interfaces.length == 1 && interfaces[0] == EventBus.IEvent.class) {
                     if (!Modifier.isFinal(cl.getModifiers())) {
-                        JGemsHelper.getLogger().error(cl.getName() + " should be final class");
+                        Log.get().error(cl.getName() + " should be final class");
                         continue;
                     }
                     if (!Modifier.isPublic(cl.getModifiers())) {
-                        JGemsHelper.getLogger().error(cl.getName() + " should be public class");
+                        Log.get().error(cl.getName() + " should be public class");
                         continue;
                     }
                     if (!Modifier.isStatic(cl.getModifiers())) {
-                        JGemsHelper.getLogger().error(cl.getName() + " should be static class");
+                        Log.get().error(cl.getName() + " should be static class");
                         continue;
                     }
                     this.eventMap.put((Class<EventBus.IEvent>) cl, new TreeSet<PriorityMethod>(Comparator.comparingInt(PriorityMethod::getPriority).thenComparingInt(System::identityHashCode)));
-                    JGemsHelper.getLogger().debug("Created API ClassEvent: " + cl.getName());
+                    Log.get().debug("Created API ClassEvent: " + cl.getName());
                 }
             }
         }
@@ -101,17 +101,17 @@ public final class JGemsAPIManager {
                 for (Method method : methods) {
                     Class<?>[] parameters = method.getParameterTypes();
                     if (parameters.length != 1) {
-                        JGemsHelper.getLogger().error("Method has more(or less) than 1 argument(? -> IEvent): " + method.getName());
+                        Log.get().error("Method has more(or less) than 1 argument(? -> IEvent): " + method.getName());
                         continue;
                     }
                     Class<?>[] interfaces = parameters[0].getInterfaces();
                     if (interfaces.length != 1 || interfaces[0] != EventBus.IEvent.class) {
-                        JGemsHelper.getLogger().error("Method has wrong argument(? -> IEvent): " + method.getName());
+                        Log.get().error("Method has wrong argument(? -> IEvent): " + method.getName());
                         continue;
                     }
                     TreeSet<PriorityMethod> priorityMethods = this.eventMap.get(parameters[0]);
                     if (priorityMethods == null) {
-                        JGemsHelper.getLogger().error("Couldn't find event with name: " + clazz.getName());
+                        Log.get().error("Couldn't find event with name: " + clazz.getName());
                         continue;
                     }
                     if (method.isAnnotationPresent(SubscribeEvent.class)) {

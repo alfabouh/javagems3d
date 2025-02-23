@@ -1,11 +1,10 @@
 package javagems3d.graphics.rendering.scene.culling.stages;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import org.jetbrains.annotations.NotNull;
+import logger.Log;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -56,7 +55,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
     @Override
     public void filter(Set<SceneObject> sceneObjects) {
         if (this.getCamera() == null) {
-            JGemsHelper.getLogger().warn("Tried to do distance culling with NULL camera");
+            Log.get().warn("Tried to do distance culling with NULL camera");
             return;
         }
         sceneObjects.removeIf(e -> !this.test(e));

@@ -1,6 +1,6 @@
 package javagems3d.graphics.screen;
 
-import javagems3d.JGemsHelper;
+import logger.Log;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
@@ -23,7 +23,7 @@ public abstract class OpenGLSysUtils {
     }
 
     public static void registerOGLDebugOutput() {
-        JGemsHelper.getLogger().debug("Enabled OpenGL Debug Context");
+        Log.get().debug("Enabled OpenGL Debug Context");
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
         GL46.glEnable(GL46.GL_DEBUG_OUTPUT);
         GL46.glEnable(GL46.GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -113,7 +113,7 @@ public abstract class OpenGLSysUtils {
                     break;
                 }
             }
-            JGemsHelper.getLogger().error("[OpenGL]: " + msgS + " ::: \n" + sourceS + ", (type = " + typeS + "), severity: " + severityS);
+            Log.get().error("[OpenGL]: " + msgS + " ::: \n" + sourceS + ", (type = " + typeS + "), severity: " + severityS);
         }, 0L);
         //GL46.glDebugMessageControl(GL46.GL_DONT_CARE, GL46.GL_DONT_CARE, GL46.GL_DEBUG_SEVERITY_LOW, (IntBuffer) null, true); DOES NOT WORK!!
     }

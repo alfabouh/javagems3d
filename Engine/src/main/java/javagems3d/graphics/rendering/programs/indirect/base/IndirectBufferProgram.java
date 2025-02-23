@@ -1,6 +1,5 @@
 package javagems3d.graphics.rendering.programs.indirect.base;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -9,12 +8,12 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffe
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 
@@ -47,7 +46,7 @@ public final class IndirectBufferProgram {
         if (obj.isEmpty()) {
             return;
         }
-        JGemsHelper.getLogger().debug("Creating static indirect buffer: " + obj.size());
+        Log.get().debug("Creating static indirect buffer: " + obj.size());
         this.staticVao = GL46.glGenVertexArrays();
         GL46.glBindVertexArray(this.getStaticVao());
 

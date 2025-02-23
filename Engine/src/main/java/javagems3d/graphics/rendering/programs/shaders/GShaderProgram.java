@@ -11,8 +11,8 @@
 
 package javagems3d.graphics.rendering.programs.shaders;
 
+import logger.Log;
 import org.lwjgl.opengl.GL46;
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.base.ShaderObject;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
@@ -77,7 +77,7 @@ public class GShaderProgram implements IShaderProgram {
         GL46.glShaderSource(id, shader);
         GL46.glCompileShader(id);
         if (GL46.glGetShaderi(id, GL46.GL_COMPILE_STATUS) == 0) {
-            JGemsHelper.getLogger().warn(shader);
+            Log.get().warn(shader);
             throw new JGemsRuntimeException("Compile shader error: " + GL46.glGetShaderInfoLog(id, 4096));
         }
         GL46.glAttachShader(this.programId, id);
@@ -91,7 +91,7 @@ public class GShaderProgram implements IShaderProgram {
             if (err.isEmpty()) {
                 err = "UNKNOWN ERR";
             }
-            JGemsHelper.getLogger().warn("Could not link shader: " + err);
+            Log.get().warn("Could not link shader: " + err);
             //return false;
         }
         if (this.vertexShaderId != 0) {
@@ -113,7 +113,7 @@ public class GShaderProgram implements IShaderProgram {
         if (GL46.glGetProgrami(this.programId, GL46.GL_VALIDATE_STATUS) == 0) {
             String err = GL46.glGetShaderInfoLog(this.programId, 4096);
             if (!err.isEmpty()) {
-                JGemsHelper.getLogger().warn("Could not validate shader " + err);
+                Log.get().warn("Could not validate shader " + err);
                 return false;
             }
         }

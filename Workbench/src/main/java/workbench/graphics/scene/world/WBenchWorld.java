@@ -1,17 +1,14 @@
 package workbench.graphics.scene.world;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
-import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
-import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.service.exceptions.JGemsException;
+import logger.Log;
 import workbench.WBench;
 
 import java.util.HashSet;
@@ -84,7 +81,7 @@ public class WBenchWorld implements IWorld {
 
     public void removeLightFromById(ILighted keepLights, int i) {
         if (keepLights == null) {
-            JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity");
+            Log.get().error("Couldn't attach light. Invalid entity");
             return;
         }
         keepLights.removeLightById(i);
@@ -92,7 +89,7 @@ public class WBenchWorld implements IWorld {
 
     public void removeLightFrom(ILighted keepLights, Light light) {
         if (keepLights == null) {
-            JGemsHelper.getLogger().error("Couldn't attach light. Invalid entity");
+            Log.get().error("Couldn't attach light. Invalid entity");
             return;
         }
         keepLights.removeLight(light);
@@ -104,7 +101,7 @@ public class WBenchWorld implements IWorld {
 
     public void removeObjectFromWorld(SceneObject renderObject) {
         if (!this.getSceneObjects().remove(renderObject)) {
-            JGemsHelper.getLogger().warn("Couldn't remove a render object from SceneWorld");
+            Log.get().warn("Couldn't remove a render object from SceneWorld");
         }
     }
 

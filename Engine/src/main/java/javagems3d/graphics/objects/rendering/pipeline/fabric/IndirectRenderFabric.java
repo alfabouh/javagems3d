@@ -1,6 +1,5 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -11,6 +10,7 @@ import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommands
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
@@ -28,7 +28,7 @@ public abstract class IndirectRenderFabric implements IRenderFabric {
     public IndirectRenderFabric(@NotNull Stage stage, @NotNull IndirectObjectsRenderer.IRenderingFunction renderingFunction) {
         this.renderingFunction = renderingFunction;
         if (!stage.getType().equals(Type.INDIRECT)) {
-            JGemsHelper.getLogger().warn("RenderFabric type doesn't belong to INDIRECT");
+            Log.get().warn("RenderFabric type doesn't belong to INDIRECT");
         }
         this.stage = stage;
     }

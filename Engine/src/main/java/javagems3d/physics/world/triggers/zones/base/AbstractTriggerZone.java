@@ -13,8 +13,8 @@ package javagems3d.physics.world.triggers.zones.base;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.objects.PhysicsGhostObject;
+import logger.Log;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -41,13 +41,13 @@ public abstract class AbstractTriggerZone implements ITriggerZone {
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        JGemsHelper.getLogger().trace("Added trigger in world - [ " + this + " ]");
+        Log.get().trace("Added trigger in world - [ " + this + " ]");
         ((PhysicsWorld) iWorld).getDynamics().addCollisionObject(this.getGhostObject());
     }
 
     @Override
     public void onDestroy(IWorld iWorld) {
-        JGemsHelper.getLogger().trace("Removed trigger from world - [ " + this + " ]");
+        Log.get().trace("Removed trigger from world - [ " + this + " ]");
         ((PhysicsWorld) iWorld).getDynamics().removeCollisionObject(this.getGhostObject());
     }
 

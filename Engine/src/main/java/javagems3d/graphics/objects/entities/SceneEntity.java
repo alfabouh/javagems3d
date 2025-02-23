@@ -2,7 +2,6 @@ package javagems3d.graphics.objects.entities;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -17,6 +16,7 @@ import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -51,7 +51,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
 
     @Override
     public void onSpawn(IWorld iWorld) {
-        JGemsHelper.getLogger().trace("[ " + this + " ]" + " - PreRender");
+        Log.get().trace("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
             if (!this.hasModel() && this.getEntityModelConstructor() != null) {
                 this.setModel(new Model3D(new Pose3D(), this.getEntityModelConstructor().constructMeshDataGroup(this.getWorldItem())));
@@ -64,7 +64,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     @Override
     public void onDestroy(IWorld iWorld) {
         EventLauncher.pushEvent(new EventBus.ItemDestroyInRenderWorld(this));
-        JGemsHelper.getLogger().trace("[ " + this + " ]" + " - PostRender");
+        Log.get().trace("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));
         }
@@ -157,11 +157,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     }
 
     protected void onAddLight(Light light) {
-        JGemsHelper.getLogger().trace("Attached light to: " + this);
+        Log.get().trace("Attached light to: " + this);
     }
 
     protected void onRemoveLight(Light light) {
-        JGemsHelper.getLogger().trace("Removed light from: " + this);
+        Log.get().trace("Removed light from: " + this);
     }
 
     protected IEntityModelConstructor<WorldItem> getEntityModelConstructor() {

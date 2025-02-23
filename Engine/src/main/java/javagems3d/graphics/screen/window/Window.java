@@ -13,6 +13,7 @@ package javagems3d.graphics.screen.window;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.global.JGemsGlobalConfiguration;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -27,7 +28,6 @@ import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
 
@@ -52,13 +52,13 @@ public class Window implements IWindow {
     @Override
     public void setTitle(@NotNull String title) {
         GLFW.glfwSetWindowTitle(this.getDescriptor(), title);
-        JGemsHelper.getLogger().info("Changed title -> " + title);
+        Log.get().info("Changed title -> " + title);
     }
     
     @Override
     public void setIcon(@Nullable JGemsPath iconPath) {
         if (iconPath == null) {
-            JGemsHelper.getLogger().warn("Couldn't load app icon, because it was NULL");
+            Log.get().warn("Couldn't load app icon, because it was NULL");
             return;
         }
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -82,9 +82,9 @@ public class Window implements IWindow {
                 STBImage.stbi_image_free(imageBuffer);
             }
         } catch (Exception e) {
-            JGemsHelper.getLogger().exception(e);
+            Log.get().exception(e);
         }
-        JGemsHelper.getLogger().info("Installed icon: " + iconPath);
+        Log.get().info("Installed icon: " + iconPath);
     }
 
     public void onWindowChangedCallback() {
@@ -209,7 +209,7 @@ public class Window implements IWindow {
             throw new JGemsNullException("Null Monitor");
         }
         GLFW.glfwSetWindowMonitor(this.getDescriptor(), GLFW.glfwGetPrimaryMonitor(), 0, 0, vidMode.width(), vidMode.height(), GLFW.GLFW_DONT_CARE);
-        JGemsHelper.getLogger().trace("FullScreen mode");
+        Log.get().trace("FullScreen mode");
     }
 
     public void removeFullScreen() {
@@ -220,7 +220,7 @@ public class Window implements IWindow {
         int x = (vidMode.width() - JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH) / 2;
         int y = (vidMode.height() - JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT) / 2;
         GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT, GLFW.GLFW_DONT_CARE);
-        JGemsHelper.getLogger().trace("DefaultScreen mode");
+        Log.get().trace("DefaultScreen mode");
     }
 
     public long getCurrentMonitor() {

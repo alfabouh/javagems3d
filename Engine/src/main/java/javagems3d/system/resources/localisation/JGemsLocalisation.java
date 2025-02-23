@@ -15,6 +15,7 @@ import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,11 +59,11 @@ public class JGemsLocalisation {
 
     public void setLanguage(Lang lang) {
         if (lang == null) {
-            JGemsHelper.getLogger().warn("Tried to set NULL language");
+            Log.get().warn("Tried to set NULL language");
             lang = Lang.DefaultEnglish;
         }
         this.readLangFileInTable(lang);
-        JGemsHelper.getLogger().info("Initialized language table "  + lang.getFullName());
+        Log.get().info("Initialized language table "  + lang.getFullName());
         this.currentlang = lang;
     }
 
@@ -91,7 +92,7 @@ public class JGemsLocalisation {
                 if (strings.length == 2) {
                     langMap.addPair(strings[0], strings[1]);
                 } else {
-                    JGemsHelper.getLogger().warn("Error in lang path " + filePath + " on line: " + l);
+                    Log.get().warn("Error in lang path " + filePath + " on line: " + l);
                 }
             }
             reader.close();

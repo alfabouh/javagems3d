@@ -2,13 +2,13 @@ package javagems3d.system.resources.assets.loading.samples;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -37,12 +37,12 @@ public class TexturesLoader implements ILoadingHelper {
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data, @NotNull String name) {
         if (this.isCacheValid() && !name.equals(ILoadingHelper.DEFAULT_NAME)) {
             if (this.getResourceCache().checkObjectInCache(name)) {
-                JGemsHelper.getLogger().info("Texture " + this.getHashId() + " picked from cache");
+                Log.get().info("Texture " + this.getHashId() + " picked from cache");
                 return this.getResourceCache().getCachedObjectUnSafeCast(name);
             }
         }
         ImageTexture imageTexture = new ImageTexture(textureProperties, data);
-        JGemsHelper.getLogger().info("Texture " + this.getHashId() + " successfully created");
+        Log.get().info("Texture " + this.getHashId() + " successfully created");
         if (this.isCacheValid()) {
             if (name.equals(ILoadingHelper.DEFAULT_NAME)) {
                 this.getResourceCache().addObjectInBuffer(imageTexture.toString(), imageTexture);

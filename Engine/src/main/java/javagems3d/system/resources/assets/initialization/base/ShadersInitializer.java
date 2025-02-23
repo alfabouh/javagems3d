@@ -11,13 +11,13 @@
 
 package javagems3d.system.resources.assets.initialization.base;
 
-import javagems3d.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 
 public abstract class ShadersInitializer<T extends ShaderManager> {
     private final ShaderLibrariesManager shaderLibrary;
@@ -36,17 +36,17 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     @SuppressWarnings("unchecked")
     public T createShaderManager(ResourceCache resourceCache, JGemsPath shaderPath) {
         if (resourceCache.checkObjectInCache(shaderPath)) {
-            JGemsHelper.getLogger().warn("Shader " + shaderPath + " already exists");
+            Log.get().warn("Shader " + shaderPath + " already exists");
             return (T) resourceCache.getCachedObject(shaderPath);
         }
-        JGemsHelper.getLogger().info("Creating shader " + shaderPath + "...");
+        Log.get().info("Creating shader " + shaderPath + "...");
         T shaderManager = this.createShaderObject(this.getShaderStaticConstants(), this.getShaderLibrariesManager(), shaderPath);
         resourceCache.addObjectInBuffer(shaderPath, shaderManager);
         return shaderManager;
     }
 
     public void startShaders(ResourceCache resourceCache) {
-        JGemsHelper.getLogger().info("Compiling shaders");
+        Log.get().info("Compiling shaders");
         for (ShaderManager shaderManager : resourceCache.getAllCachedObjectsCollection(ShaderManager.class)) {
             shaderManager.startProgram();
         }
@@ -61,7 +61,7 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     }
 
     public void destroyShaderPrograms(ResourceCache resourceCache) {
-        JGemsHelper.getLogger().info("Destroying shaders");
+        Log.get().info("Destroying shaders");
         resourceCache.getAllCachedObjectsCollection(ShaderManager.class).forEach(ShaderManager::destroyProgram);
     }
 
@@ -100,6 +100,6 @@ public abstract class ShadersInitializer<T extends ShaderManager> {
     private void initConstants() {
         this.getShaderStaticConstants().clear();
         this.initStaticConstants(this.getShaderStaticConstants());
-        JGemsHelper.getLogger().trace("Initialized " + this.getShaderStaticConstants().getCnstMap().size() + " shader static constants");
+        Log.get().trace("Initialized " + this.getShaderStaticConstants().getCnstMap().size() + " shader static constants");
     }
 }
