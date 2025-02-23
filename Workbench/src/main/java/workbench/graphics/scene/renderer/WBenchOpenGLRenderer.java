@@ -21,6 +21,7 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterfac
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIMenuInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -164,7 +165,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
         imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
-        imgShader.getUtils().performOrthographicMatrix(this.getScreenModel());
+        imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.RENDERING.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
     }

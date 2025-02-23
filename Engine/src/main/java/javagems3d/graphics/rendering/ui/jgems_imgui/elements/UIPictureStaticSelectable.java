@@ -13,6 +13,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -48,7 +49,7 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
         this.imageModel.getPose().setScale(new Vector2f(this.getScaling()));
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
-        shaderManager.getUtils().performOrthographicMatrix(this.imageModel);
+        shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.iImageSample);
         this.getCurrentShader().performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
         JGemsHelper.RENDERING.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);

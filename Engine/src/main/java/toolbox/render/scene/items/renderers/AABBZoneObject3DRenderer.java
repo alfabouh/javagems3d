@@ -26,8 +26,8 @@ public class AABBZoneObject3DRenderer implements ITBoxObjectRenderer {
     @Override
     public void onRender(MapProperties properties, TBoxAbstractObject tBoxAbstractObject, float deltaTime) {
         tBoxAbstractObject.getRenderData().getShaderManager().beginShading();
-        tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
-        tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
+       //tBoxAbstractObject.getRenderData().getShaderManager().performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+       //tBoxAbstractObject.getRenderData().getShaderManager().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(tBoxAbstractObject.isSelected()));
         Vector3f color = tBoxAbstractObject.getAttributeContainer().getValueFromAttributeByID(AttributeID.COLOR, Vector3f.class);
         if (color == null) {

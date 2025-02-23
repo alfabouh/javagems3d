@@ -16,6 +16,7 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import javagems3d.system.resources.assets.shaders.manager.helper.JGemsShadersHelper;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
@@ -68,7 +69,7 @@ public class TBoxSceneUtils {
             return;
         }
         for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
-            shaderManager.getUtils().performModelMaterialOnShader(meshNode3D.getMaterial());
+            JGemsShadersHelper.performModelMaterialOnShader(null, meshNode3D.getMaterial());
             GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
             meshNode3D.getMeshData().enableAllMeshAttributes();
             GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);

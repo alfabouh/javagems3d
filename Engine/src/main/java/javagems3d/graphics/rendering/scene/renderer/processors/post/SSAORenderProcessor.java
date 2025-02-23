@@ -102,7 +102,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;
         ssaoBlur.beginShading();
         ssaoBlur.performUniformTexture(new UniformString("texture_sampler"), this.getSsaoBufferTexture());
-        ssaoBlur.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
+        ssaoBlur.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         ssaoBlur.endShading();
     }

@@ -15,6 +15,7 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.manager.helper.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -33,7 +34,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
             IModeled modeled = (IModeled) renderedItem;
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
-                shaderManager.getUtils().performModel3DMatrix(model);
+                shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
                 this.renderModelForShadow(modeled, shaderManager, model);
             }
         }
@@ -41,7 +42,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
 
     protected void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, Model3D model) {
         shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
-        shaderManager.getUtils().performAnimationsInfo(animated);
+        JGemsShadersHelper.performAnimationsInfo(shaderManager, animated);
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
                 if (meshNode3D.getMaterial().getDiffuse() instanceof ImageBasedTexture) {

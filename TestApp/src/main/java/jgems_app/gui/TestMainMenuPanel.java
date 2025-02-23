@@ -35,6 +35,7 @@ import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentConta
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.map.loaders.custom.DefaultMap;
 
@@ -67,7 +68,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
             JGemsResourceManager.globalShaderAssets.menu.beginShading();
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
-            JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
+            JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
             JGemsHelper.RENDERING.renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }

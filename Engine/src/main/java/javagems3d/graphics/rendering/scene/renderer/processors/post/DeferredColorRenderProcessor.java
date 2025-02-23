@@ -8,6 +8,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.manager.helper.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -49,8 +50,8 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         deferredShader.performUniformTexture(new UniformString("gSpecular"), gBuffer.getTextureByIndex(4));
         deferredShader.performUniformTexture(new UniformString("ssaoSampler"), ssaoBuffer.getTextureByIndex(0));
         deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(this.isSsaoValid()));
-        deferredShader.getUtils().performShadowsInfo();
-        deferredShader.getUtils().performOrthographicMatrix(this.getOpenGLRenderer().getScreenModel());
+        JGemsShadersHelper.performShadowsInfo(deferredShader);
+        deferredShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         deferredShader.endShading();
     }

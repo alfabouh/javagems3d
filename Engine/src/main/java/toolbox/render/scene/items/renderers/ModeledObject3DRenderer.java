@@ -24,8 +24,8 @@ public class ModeledObject3DRenderer implements ITBoxObjectRenderer {
     @Override
     public void onRender(MapProperties properties, TBoxAbstractObject tBoxAbstractObject, float deltaTime) {
         tBoxAbstractObject.getRenderData().getShaderManager().beginShading();
-        tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performPerspectiveMatrix();
-        tBoxAbstractObject.getRenderData().getShaderManager().getUtils().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
+    //    tBoxAbstractObject.getRenderData().getShaderManager().performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+    //    tBoxAbstractObject.getRenderData().getShaderManager().performViewAndModelMatricesSeparately(TBoxSceneUtils.getMainCameraViewMatrix(), tBoxAbstractObject.getModel());
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("diffuse_color"),  UniformFunctions.VEC4F(new Vector4f(1.0f)));
         tBoxAbstractObject.getRenderData().getShaderManager().performUniform(new UniformString("use_texturing"),  UniformFunctions.BOOLEAN(true));
 

@@ -43,11 +43,23 @@ public abstract class ShaderManager implements ICached {
     private ShaderHandler computingShaderHandler;
     private int usedTextureUnits;
 
+    private boolean warns;
+
     public ShaderManager(ShadersContainer shadersContainer) {
         this.uniformBufferObjects = new HashSet<>();
         this.shadersContainer = shadersContainer;
         this.activeShader = ActiveShader.NONE;
         this.usedTextureUnits = 0;
+
+        this.warns = true;
+    }
+
+    public void disableWarns() {
+        this.warns = false;
+    }
+
+    public void enableWarns() {
+        this.warns = true;
     }
 
     public void clearUsedTextureSlots() {
@@ -78,7 +90,7 @@ public abstract class ShaderManager implements ICached {
 
     public void dispatchComputeShader(int grX, int grY, int grZ, int barrier) {
         if (this.getShadersContainer().getComputeShader() == null) {
-            Log.get().warn("[" + this + "]" + " doesn't have compute program");
+            Log.get().error("[" + this + "]" + " doesn't have compute program");
             return;
         }
         GL46.glDispatchCompute(grX, grY, grZ);
@@ -171,7 +183,9 @@ public abstract class ShaderManager implements ICached {
 
     public void performUniformTexture(UniformString uniform, ITextureProgram program, int textureUnit) {
         if (!this.isUniformExist(uniform)) {
-            Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            }
             return;
         }
         if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
@@ -179,7 +193,9 @@ public abstract class ShaderManager implements ICached {
             return;
         }
         if (!program.isValid()) {
-            Log.get().warn("[" + this + "] Wrong textureID: " + program.getTextureId() + " - (" + program + ")");
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Wrong textureID: " + program.getTextureId() + " - (" + program + ")");
+            }
             return;
         }
 
@@ -197,7 +213,9 @@ public abstract class ShaderManager implements ICached {
 
     public void performUniformTexture(UniformString uniform, int textureID, int samplerId, int textureAttachment, int textureUnit) {
         if (!this.isUniformExist(uniform)) {
-            Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            }
             return;
         }
         if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
@@ -205,7 +223,9 @@ public abstract class ShaderManager implements ICached {
             return;
         }
         if (textureID < 0) {
-            Log.get().warn("[" + this + "] Wrong textureID: " + textureID);
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Wrong textureID: " + textureID);
+            }
             return;
         }
 
@@ -254,11 +274,15 @@ public abstract class ShaderManager implements ICached {
             return;
         }
         if (!this.isUniformExist(uniform)) {
-            Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            }
             return;
         }
         if (!this.setUniform(uniform, UFUnction)) {
-            Log.get().warn("[" + this + "] Wrong arguments! U: " + uniform);
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Wrong arguments! U: " + uniform);
+            }
         }
     }
 
@@ -343,6 +367,10 @@ public abstract class ShaderManager implements ICached {
         }
         ShaderManager that = (ShaderManager) o;
         return Objects.equals(this.shadersContainer, that.shadersContainer);
+    }
+
+    public boolean isWarnsEnabled() {
+        return this.warns;
     }
 
     @Override

@@ -13,6 +13,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.models.Model2D;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -47,7 +48,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
             JGemsResourceManager.globalShaderAssets.menu.beginShading();
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
-            JGemsResourceManager.globalShaderAssets.menu.getUtils().performOrthographicMatrix(model);
+            JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
             JGemsHelper.RENDERING.renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }

@@ -96,10 +96,10 @@ public final class TBoxShaderManager extends ShaderManager {
 
         public void performViewAndModelMatricesSeparately(Matrix4f viewMatrix, Model3D model) {
             if (TBoxShaderManager.this.isUniformExist(new UniformString("model_matrix"))) {
-                this.performModel3DMatrix(model);
+          //      this.performModel3DMatrix(new UniformString("model_matrix"), model);
             }
             if (TBoxShaderManager.this.isUniformExist(new UniformString("view_matrix"))) {
-                this.performViewMatrix(viewMatrix);
+           //     thisperformViewMatrix(new UniformString("view_matrix"), viewMatrix);
             }
             if (TBoxShaderManager.this.isUniformExist(new UniformString("model_view_matrix"))) {
                 this.performModel3DViewMatrix(model, viewMatrix);
@@ -139,11 +139,11 @@ public final class TBoxShaderManager extends ShaderManager {
         }
 
         public void performModel3DMatrix(Pose3D pose) {
-            this.performModel3DMatrix(TransformUtils.getModelMatrix(pose));
+          //  this.performModel3DMatrix(new UniformString("model_matrix"), TransformUtils.getModelMatrix(pose));
         }
 
         public void performModel3DMatrix(Model3D model) {
-            this.performModel3DMatrix(TransformUtils.getModelMatrix(model.getPose()));
+         //   this.performModel3DMatrix(new UniformString("model_matrix"), (TransformUtils.getModelMatrix(model.getPose()));
         }
 
         public void performModel3DMatrix(Matrix4f matrix4f) {
