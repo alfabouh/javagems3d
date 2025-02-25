@@ -13,7 +13,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font;
 
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 
 import javax.imageio.ImageIO;
@@ -37,10 +37,10 @@ public class GuiFont {
     private int height;
     private int width;
 
-    public GuiFont(GameResources gameResources, Font font, FontCode fontCode) {
+    public GuiFont(SystemResources systemResources, Font font, FontCode fontCode) {
         this.fontCode = fontCode;
         try {
-            this.initFontTexture(gameResources, font);
+            this.initFontTexture(systemResources, font);
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
@@ -51,7 +51,7 @@ public class GuiFont {
         this(null, font, fontCode);
     }
 
-    private void initFontTexture(GameResources gameResources, Font font) throws IOException {
+    private void initFontTexture(SystemResources systemResources, Font font) throws IOException {
         BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(font);
@@ -83,8 +83,8 @@ public class GuiFont {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
-        if (gameResources != null) {
-            this.texture = gameResources.createTexture(null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false, false));
+        if (systemResources != null) {
+            this.texture = systemResources.createTexture(null, "font" + GuiFont.globalFonts++, inputStream, new ImageTexture.Properties(false, false, false, false, false));
         } else {
             this.texture = new TexturesLoader(null, "font" + GuiFont.globalFonts++).createImageTexture(new ImageTexture.Properties(false, false, false, false, false), inputStream);
         }

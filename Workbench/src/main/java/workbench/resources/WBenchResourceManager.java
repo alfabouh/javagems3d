@@ -12,9 +12,11 @@
 package workbench.resources;
 
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.JGemsSystemResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import workbench.WBench;
 import workbench.resources.initialization.*;
 
@@ -25,7 +27,7 @@ public final class WBenchResourceManager extends ResourceManager {
     public static RenderDataInitializer globalRenderDataAssets = null;
 
     public WBenchResourceManager() {
-        super(JGemsResourceManager.GLOBAL);
+        super(new Factory(JGemsResourceManager.GLOBAL));
         WBenchResourceManager.globalShaderAssets = new BasicShadersInitializer();
     }
 
@@ -37,7 +39,7 @@ public final class WBenchResourceManager extends ResourceManager {
         WBenchResourceManager.globalShaderAssets.reloadShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
     }
 
-    public static GameResources getGlobalGameResources() {
+    public static SystemResources getGlobalGameResources() {
         return WBench.get().getResourceManager().getGlobalResources();
     }
 
@@ -64,7 +66,25 @@ public final class WBenchResourceManager extends ResourceManager {
         this.getGlobalResources().reloadTexturesInCache();
     }
 
-    public GameResources getGlobalResources() {
+    public SystemResources getGlobalResources() {
         return this.getGameResources(JGemsResourceManager.GLOBAL);
+    }
+
+    private static class Factory implements ResourceManager.Factory {
+        private final String id;
+
+        public Factory(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public SystemResources createObject(String id) {
+            return new WBenchResources(new ResourceCache(id));
+        }
+
+        @Override
+        public String getId() {
+            return this.id;
+        }
     }
 }

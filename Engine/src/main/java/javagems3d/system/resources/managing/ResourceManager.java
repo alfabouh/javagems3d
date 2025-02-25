@@ -25,8 +25,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
@@ -45,14 +44,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class ResourceManager {
-    private final Map<String, GameResources> gameResourcesMap;
+    private final Map<String, SystemResources> gameResourcesMap;
     private final ResourcesDataCache resourcesDataCache;
     private ITextureProgram animationMatricesTexture;
 
-    public ResourceManager(String... gameResourcesIDs) {
+    public ResourceManager(Factory... factories) {
         this.gameResourcesMap = new HashMap<>();
-        for (String s : gameResourcesIDs) {
-            this.gameResourcesMap.put(s, new GameResources(new ResourceCache(s)));
+        for (Factory factory : factories) {
+            this.gameResourcesMap.put(factory.getId(), factory.createObject(factory.getId()));
         }
         this.resourcesDataCache = new ResourcesDataCache(new MeshBuffersDataCache(), new BindlessTexturesDataCache());
     }
@@ -104,7 +103,7 @@ public abstract class ResourceManager {
     }
 
     public void writeResourcesDataCache() {
-        this.getResourceDataCache().writeAll(this.gameResourcesMap.values().stream().map(GameResources::getResourceArrays).collect(Collectors.toList()));
+        this.getResourceDataCache().writeAll(this.gameResourcesMap.values().stream().map(SystemResources::getResourceArrays).collect(Collectors.toList()));
     }
 
     public void destroyResourcesDataCache() {
@@ -157,12 +156,12 @@ public abstract class ResourceManager {
     }
 
     public void clearAll() {
-        for (GameResources gameResources : this.gameResourcesMap.values()) {
-            gameResources.clearCache();
+        for (SystemResources systemResources : this.gameResourcesMap.values()) {
+            systemResources.clearCache();
         }
     }
 
-    public GameResources getGameResources(String id) {
+    public SystemResources getGameResources(String id) {
         return this.gameResourcesMap.get(id);
     }
 
@@ -172,5 +171,10 @@ public abstract class ResourceManager {
 
     public ResourcesDataCache getResourceDataCache() {
         return this.resourcesDataCache;
+    }
+
+    public interface Factory {
+        SystemResources createObject(String id);
+        String getId();
     }
 }

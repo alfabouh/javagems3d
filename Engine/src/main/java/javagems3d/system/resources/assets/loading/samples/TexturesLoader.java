@@ -5,7 +5,7 @@ import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
@@ -23,11 +23,11 @@ import java.nio.IntBuffer;
 
 public class TexturesLoader implements ILoadingHelper {
     private String hashId;
-    private final GameResources gameResources;
+    private final SystemResources systemResources;
 
-    public TexturesLoader(@Nullable GameResources gameResources, @Nullable String hashId) {
+    public TexturesLoader(@Nullable SystemResources systemResources, @Nullable String hashId) {
         this.hashId = hashId == null ? ILoadingHelper.DEFAULT_NAME : hashId;
-        this.gameResources = gameResources;
+        this.systemResources = systemResources;
     }
 
     public ImageTexture createImageTexture(@Nullable ImageTexture.Properties textureProperties, @NotNull ImageTexture.Data data) {
@@ -86,8 +86,8 @@ public class TexturesLoader implements ILoadingHelper {
         }
     }
 
-    public GameResources getGameResources() {
-        return this.gameResources;
+    public SystemResources getGameResources() {
+        return this.systemResources;
     }
 
     public ResourceCache getResourceCache() {

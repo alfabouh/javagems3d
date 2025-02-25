@@ -23,6 +23,7 @@ import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.map.IMapActionsCallback;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
 import org.joml.Vector3f;
@@ -37,7 +38,6 @@ import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.core.player.LocalPlayer;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.stat.PerformanceStat;
@@ -139,8 +139,8 @@ public class JGemsCore implements ICore {
             return;
         }
 
-        GameResources globalRes = this.getResourceManager().getGlobalResources();
-        GameResources localRes = this.getResourceManager().getLocalResources();
+        SystemResources globalRes = this.getResourceManager().getGlobalResources();
+        SystemResources localRes = this.getResourceManager().getLocalResources();
 
         this.getScreen().showGameLoadingScreen("Loading Map...");
         this.createWorlds();

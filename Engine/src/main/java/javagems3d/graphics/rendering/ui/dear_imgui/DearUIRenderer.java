@@ -18,7 +18,8 @@ import imgui.type.ImInt;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -32,7 +33,6 @@ import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 
 import java.nio.ByteBuffer;
 
@@ -43,15 +43,15 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     private GLFWKeyCallback prevKeyCallback;
     private final IWindow window;
 
-    public DearUIRenderer(IWindow window, GameResources gameResources) {
-        this.shaderManager = JGemsResourceManager.globalShaderAssets.imgui;
+    public DearUIRenderer(@NotNull IWindow window, @NotNull JGemsShaderManager imguiShader, @NotNull SystemResources systemResources) {
+        this.shaderManager = imguiShader;
         this.window = window;
 
-        this.createUIResources(gameResources);
+        this.createUIResources(systemResources);
         this.createUICallbacks(this.getWindow());
     }
 
-    private void createUIResources(GameResources gameResources) {
+    private void createUIResources(SystemResources systemResources) {
         ImGui.createContext();
 
         ImGuiIO imGuiIO = ImGui.getIO();
@@ -63,7 +63,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         ImInt height = new ImInt();
 
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
-        this.textureSample = gameResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
+        this.textureSample = systemResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
         this.dearImGuiMesh = new DearUIMesh();
     }
 

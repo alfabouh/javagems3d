@@ -14,6 +14,7 @@ package javagems3d.system.resources.assets.shaders.base;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
+import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 
@@ -84,11 +85,15 @@ public final class ShadersContainer {
             Log.get().trace("Initializing " + this.getFragmentShader().getShaderPath() + "/" + this.getFragmentShader().getShaderType().getFile());
             this.getFragmentShader().init();
             this.putUniformsInGHeap(this.getFragmentShader().getUniforms());
+        } else {
+            throw new JGemsIOException("Couldn't load shader: " + this.getId());
         }
         if (this.getVertexShader() != null) {
             Log.get().trace("Initializing " + this.getVertexShader().getShaderPath() + "/" + this.getVertexShader().getShaderType().getFile());
             this.getVertexShader().init();
             this.putUniformsInGHeap(this.getVertexShader().getUniforms());
+        } else {
+            throw new JGemsIOException("Couldn't load shader: " + this.getId());
         }
         if (this.getGeometricShader() != null) {
             Log.get().trace("Initializing " + this.getGeometricShader().getShaderPath() + "/" + this.getGeometricShader().getShaderType().getFile());

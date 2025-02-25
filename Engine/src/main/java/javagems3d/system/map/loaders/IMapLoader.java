@@ -17,11 +17,11 @@ import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.map.MapInfo;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import org.jetbrains.annotations.Nullable;
 
 public interface IMapLoader {
-    void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld world, SceneWorld sceneWorld);
+    void createMap(SystemResources globalResources, SystemResources localResources, PhysicsWorld world, SceneWorld sceneWorld);
 
     void postLoad(PhysicsWorld world, SceneWorld sceneWorld);
 

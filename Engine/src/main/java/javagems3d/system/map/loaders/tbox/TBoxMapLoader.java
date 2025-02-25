@@ -13,6 +13,7 @@ package javagems3d.system.map.loaders.tbox;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.system.core.player.IPlayerConstructor;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import javagems3d.graphics.world.SceneWorld;
@@ -20,7 +21,6 @@ import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.map.MapInfo;
 import javagems3d.system.map.loaders.IMapLoader;
-import javagems3d.system.resources.managing.resources.GameResources;
 import javagems3d.system.service.exceptions.JGemsNotFoundException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.managers.LoggingManager;
@@ -72,7 +72,7 @@ public class TBoxMapLoader implements IMapLoader {
     }
 
     @Override
-    public void createMap(GameResources globalResources, GameResources localResources, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+    public void createMap(SystemResources globalResources, SystemResources localResources, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
 
     }
 

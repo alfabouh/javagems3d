@@ -5,7 +5,7 @@ import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
@@ -32,7 +32,7 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit{
     public abstract @NotNull Vector2i getRenderingResolution();
 
     public abstract IndirectBufferProgram getSceneIndirectBuffer();
-    public abstract Map<Nodes, IRenderNode> getConveyorNodes();
+    public abstract Map<NodeID, IRenderNode> getConveyorNodes();
     public abstract ISceneCulling getSceneCulling();
 
     public abstract void initSceneIndirectRenderBuffer(MeshBuffersDataCache meshBuffersDataCache);

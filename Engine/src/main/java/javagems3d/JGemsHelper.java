@@ -67,7 +67,7 @@ import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.localisation.Lang;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
 import javagems3d.system.settings.JGemsSettings;
 import logger.Log;
@@ -191,11 +191,11 @@ public abstract class JGemsHelper {
     }
 
     public static abstract class RESOURCES {
-        public static GameResources getGlobalResources() {
+        public static SystemResources getGlobalResources() {
             return JGemsResourceManager.getGlobalGameResources();
         }
 
-        public static GameResources getLocalResources() {
+        public static SystemResources getLocalResources() {
             return JGemsResourceManager.getLocalGameResources();
         }
 

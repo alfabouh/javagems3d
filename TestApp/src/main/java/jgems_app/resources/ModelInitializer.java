@@ -22,19 +22,16 @@
 
 package jgems_app.resources;
 
-import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.managing.resources.GameResources;
-import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.resources.managing.resources.SystemResources;
 
 
 public class ModelInitializer implements IAssetsInitializer {
     public MeshGroup ground2;
 
     @Override
-    public void load(GameResources gameResources) {
+    public void load(SystemResources systemResources) {
         this.ground2 = null;
     }
 

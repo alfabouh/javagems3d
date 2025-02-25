@@ -46,14 +46,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * The GameResources class contains a cache, as well as tools for loading resources
+ * The SystemResources class contains a cache, as well as tools for loading resources
  */
-public final class GameResources implements IGameResources {
+public abstract class SystemResources implements IGameResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsInitializer> assetsLoaderSet;
     private final ResourcesDataArrays resourcesDataArrays;
 
-    public GameResources(@NotNull ResourceCache resourceCache) {
+    public SystemResources(@NotNull ResourceCache resourceCache) {
         this.resourceCache = resourceCache;
         this.resourcesDataArrays = new ResourcesDataArrays(new MeshBuffersDataArray(), new BindlessTexturesDataArray());
         this.assetsLoaderSet = new TreeSet<>(Comparator.comparingInt(e -> ((IAssetsInitializer) e).loadPriority().getPriority()).thenComparingInt(System::identityHashCode));
@@ -91,23 +91,34 @@ public final class GameResources implements IGameResources {
         return this.loadCubeMap(returnDefault, pathToCubeMapFile.toString(), () -> new CubeMapsLoader(this, pathToCubeMapFile.toString()).createCubeMapTexture(textureProperties, pathToCubeMapFile, textureDescriptor));
     }
 
+    protected abstract void handlePreProcessingMessage(String message);
+    protected abstract void handleFailedProcessingMessage(String message);
+    protected abstract void handleSuccessfulProcessingMessage(String message);
+
     private <T> T loadModel(@NotNull JGemsPath modelPath, Supplier<T> modelLoader) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading model: " + modelPath);
+        this.handlePreProcessingMessage("Loading model: " + modelPath);
         try {
-            return modelLoader.get();
+            T t = modelLoader.get();
+            this.handleSuccessfulProcessingMessage("Successfully loaded model");
+            return t;
         } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Error, while loading model: " + modelPath);
+            this.handleFailedProcessingMessage("Error, while loading model: " + modelPath);
             throw e;
         }
     }
 
     private ImageTexture loadTexture(@Nullable ImageTexture returnDefault, @Nullable String name, Supplier<ImageTexture> textureLoader) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading texture: " + name);
+        this.handlePreProcessingMessage("Loading texture: " + name);
         try {
-            return textureLoader.get();
+            ImageTexture t = textureLoader.get();
+            this.handleSuccessfulProcessingMessage("Successfully loaded texture");
+            return t;
         } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-            Log.get().error("Couldn't load: " + name + ". Default returned");
+            this.handleFailedProcessingMessage("Error, while loading texture: " + name + ". Default returned");
+
+          // JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
+          // Log.get().error("Couldn't load: " + name + ". Default returned");
+
             if (returnDefault != null) {
                 return returnDefault;
             } else {
@@ -117,12 +128,16 @@ public final class GameResources implements IGameResources {
     }
 
     private CubeMapTexture loadCubeMap(@Nullable CubeMapTexture returnDefault, @Nullable String name, Supplier<CubeMapTexture> textureLoader) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading cube map: " + name);
+        this.handlePreProcessingMessage("Loading texture: " + name);
         try {
-            return textureLoader.get();
+            CubeMapTexture t = textureLoader.get();
+            this.handleSuccessfulProcessingMessage("Successfully loaded cube-map texture");
+            return t;
         } catch (Exception e) {
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-            Log.get().error("Couldn't load: " + name + ". Default returned");
+            this.handleFailedProcessingMessage("Error, while loading cube-map texture: " + name + ". Default returned");
+
+           // JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
+           // Log.get().error("Couldn't load: " + name + ". Default returned");
             if (returnDefault != null) {
                 return returnDefault;
             } else {

@@ -12,23 +12,17 @@
 package workbench.resources.initialization;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
-import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
 
 public class TextureAssetsInitializer implements IAssetsInitializer {
     public static ImageTexture DEFAULT;
 
-    public void load(GameResources gameResources) {
-        TextureAssetsInitializer.DEFAULT = gameResources.createTexture(null, new JGemsPath(JGems3D.DEF_PATHS.TEXTURES, "default.png"), new ImageTexture.Properties(false, false, true, false, false));
+    public void load(SystemResources systemResources) {
+        TextureAssetsInitializer.DEFAULT = systemResources.createTexture(null, new JGemsPath(JGems3D.DEF_PATHS.TEXTURES, "default.png"), new ImageTexture.Properties(false, false, true, false, false));
     }
 
     @NotNull

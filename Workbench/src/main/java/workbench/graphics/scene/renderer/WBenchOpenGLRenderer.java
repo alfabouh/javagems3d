@@ -1,6 +1,5 @@
 package workbench.graphics.scene.renderer;
 
-import javagems3d.JGems3D;
 import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
@@ -10,19 +9,15 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
-import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
-import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIMenuInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -35,12 +30,18 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.resources.WBenchResourceManager;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp {
-    protected Map<Nodes, IRenderNode> conveyorNodes;
+    public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
+    public static final NodeID FORWARD_RENDER_PASS = new NodeID("f-pass", 1);
+    public static final NodeID TRANSPARENCY_RENDER_PASS = new NodeID("transparency-pass", 2);
+    public static final NodeID GLUING_RENDER_PASS = new NodeID("gluing-pass", 3);
+
+    protected Map<NodeID, IRenderNode> conveyorNodes;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
     protected DearUIRenderer dearUIRenderer;
     protected Model2D screenModel;
@@ -48,8 +49,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
 
     public WBenchOpenGLRenderer(IWindow window, WBenchWorld wBenchWorld) {
         super(window, wBenchWorld);
-        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(Nodes::getId));
-        this.initNodes();
+        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
@@ -62,55 +62,43 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         return this.getWindowSize().div(1.0f);
     }
 
-    protected void initNodes() {
-        for (Nodes group : Nodes.values()) {
-            this.getConveyorNodes().put(group, null);
-        }
-    }
-
     protected void setDefaultNodes() {
         IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(new FBOTexture2DProgram(true), this);
         IForwardRenderNode forwardRenderNode = new IForwardRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
         ITransparencyRenderNode transparencyRenderNode = new ITransparencyRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
-        IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
-        IPostFXRenderNode postFXRenderNode = new IPostFXRenderNode.Default(gluingRenderNode.getOutColorBuffer(), this);
+        IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(transparencyRenderNode.getOutColorBuffer(), defaultDeferredNode.getOutColorBuffer(), this);
 
-        this.setDeferredRenderNode(defaultDeferredNode);
         this.setForwardRenderNode(forwardRenderNode);
+        this.setDeferredRenderNode(defaultDeferredNode);
         this.setTransparencyRenderNode(transparencyRenderNode);
         this.setGluingRenderNode(gluingRenderNode);
-        this.setPostFXRenderNode(postFXRenderNode);
-    }
-
-    public void setDeferredRenderNode(@NotNull IDeferredRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.DEFERRED_RENDER_PASS, node);
     }
 
     public void setForwardRenderNode(@NotNull IForwardRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.FORWARD_RENDER_PASS, node);
+        this.getConveyorNodes().put(WBenchOpenGLRenderer.FORWARD_RENDER_PASS, node);
+    }
+
+    public void setDeferredRenderNode(@NotNull IDeferredRenderNode node) {
+        this.getConveyorNodes().put(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS, node);
     }
 
     public void setTransparencyRenderNode(@NotNull ITransparencyRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.TRANSPARENCY_RENDER_PASS, node);
+        this.getConveyorNodes().put(WBenchOpenGLRenderer.TRANSPARENCY_RENDER_PASS, node);
     }
 
     public void setGluingRenderNode(@NotNull IGluingRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.GLUING_RENDER_PASS, node);
-    }
-
-    public void setPostFXRenderNode(@NotNull IPostFXRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.POST_EFFECTS_RENDER_PASS, node);
+        this.getConveyorNodes().put(WBenchOpenGLRenderer.GLUING_RENDER_PASS, node);
     }
 
     @SuppressWarnings("all")
-    public @NotNull <T extends IRenderNode> T getRenderNodeByPass(Nodes node) {
+    public @NotNull <T extends IRenderNode> T getRenderNodeByPass(NodeID node) {
         return (T) this.getConveyorNodes().get(node);
     }
 
     @Override
     public void onStartRender() {
         this.constructScreenModel();
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.getGlobalGameResources());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, WBenchResourceManager.getGlobalGameResources());
 
         this.setDefaultNodes();
         this.createResources();
@@ -118,12 +106,10 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(Nodes.DEFERRED_RENDER_PASS);
-        IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(Nodes.FORWARD_RENDER_PASS);
-        ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(Nodes.TRANSPARENCY_RENDER_PASS);
-        IGluingRenderNode gluingRenderNode = this.getRenderNodeByPass(Nodes.GLUING_RENDER_PASS);
-        IPostFXRenderNode postRenderNode = this.getRenderNodeByPass(Nodes.POST_EFFECTS_RENDER_PASS);
-        IUIRenderNode uiRenderNode = this.getRenderNodeByPass(Nodes.UI_RENDER_PASS);
+        IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.FORWARD_RENDER_PASS);
+        IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
+        ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.TRANSPARENCY_RENDER_PASS);
+        IGluingRenderNode gluingRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         OpenGLRenderer.setViewPort(this.getWindowSize());
@@ -131,7 +117,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
          //   this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
             return;
         }
-        this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
+      //  this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
         Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
@@ -153,11 +139,10 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
         transparencyRenderNode.onRender(frameTicking);
         gluingRenderNode.onRender(frameTicking);
-        postRenderNode.onRender(frameTicking);
 
         OpenGLRenderer.setViewPort(this.getWindowSize());
-        this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
-        uiRenderNode.onRender(frameTicking);
+        this.renderFinalSceneInMainBuffer(gluingRenderNode.getOutColorBuffer());
+      //  uiRenderNode.onRender(frameTicking);
      //   this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
     }
 
@@ -220,14 +205,14 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
     }
 
     public void createResources() {
-        this.getWorld().getEnvironment().createEnvironment(this);
+       // this.getWorld().getEnvironment().createEnvironment(this);
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
         this.getSceneCulling().createResources();
     }
 
     public void destroyResources() {
+        //   this.getWorld().getEnvironment().destroyEnvironment();
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
-        this.getWorld().getEnvironment().destroyEnvironment();
         this.getSceneCulling().destroyResources();
     }
 
@@ -244,8 +229,8 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
     }
 
     @Override
-    public @NotNull SceneWorld getWorld() {
-        return (SceneWorld) super.getWorld();
+    public @NotNull WBenchWorld getWorld() {
+        return (WBenchWorld) super.getWorld();
     }
 
     public IndirectBufferProgram getSceneIndirectBuffer() {
@@ -256,20 +241,12 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         return this.dearUIRenderer;
     }
 
-    public Map<Nodes, IRenderNode> getConveyorNodes() {
+    public Map<NodeID, IRenderNode> getConveyorNodes() {
         return this.conveyorNodes;
     }
 
     @Override
     public ISceneCulling getSceneCulling() {
         return this.sceneCulling;
-    }
-
-    public static JGemsShaderManager UBOShader() {
-        return JGemsResourceManager.globalShaderAssets.gameUbo;
-    }
-
-    public static JGemsShaderManager SkyBoxShader() {
-        return JGemsResourceManager.globalShaderAssets.skybox;
     }
 }

@@ -14,24 +14,24 @@ package workbench.resources.initialization;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 
 public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
 
     @Override
-    public void load(GameResources gameResources) {
-        this.createDefaults(gameResources);
+    public void load(SystemResources systemResources) {
+        this.createDefaults(systemResources);
     }
 
-    private void createDefaults(GameResources gameResources) {
+    private void createDefaults(SystemResources systemResources) {
         this.defaultCube_bff = IAssetsInitializer.createDefaultCubeBuffer();
-        gameResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_BFF", this.defaultCube_bff);
-        gameResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(this.defaultCube_bff);
+        systemResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_BFF", this.defaultCube_bff);
+        systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(this.defaultCube_bff);
 
         this.defaultCube_gr = IAssetsInitializer.createDefaultCubeGroup();
-        gameResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_GR", this.defaultCube_gr);
+        systemResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_GR", this.defaultCube_gr);
     }
 
     @Override

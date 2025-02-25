@@ -19,10 +19,10 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffe
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 
 public interface IAssetsInitializer {
-    void load(GameResources gameResources);
+    void load(SystemResources systemResources);
     LaunchMode loadMode();
     LoadPriority loadPriority();
 

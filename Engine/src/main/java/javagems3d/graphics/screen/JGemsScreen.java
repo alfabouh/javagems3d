@@ -15,7 +15,7 @@ import javagems3d.global.JGemsGlobalConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
-import javagems3d.system.resources.managing.resources.GameResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 import logger.Log;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.*;
@@ -337,7 +337,7 @@ public class JGemsScreen implements IScreen {
         private int counter;
 
         public LoadingScreen(String title) {
-            Font gameFont = GameResources.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
+            Font gameFont = SystemResources.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
             this.guiFont = new GuiFont(gameFont.deriveFont(Font.PLAIN, 20), FontCode.Window);
             this.lines = new ArrayList<>();
             this.lines.add(new Pair<>(0x00ff00, JGemsCore.ENG_NAME + " : " + JGemsCore.ENG_VER));

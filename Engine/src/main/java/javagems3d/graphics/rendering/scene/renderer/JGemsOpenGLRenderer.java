@@ -23,7 +23,7 @@ import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
@@ -56,7 +56,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionsCallback {
-    protected Map<Nodes, IRenderNode> conveyorNodes;
+    public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
+    public static final NodeID FORWARD_RENDER_PASS = new NodeID("f-pass", 1);
+    public static final NodeID TRANSPARENCY_RENDER_PASS = new NodeID("transparency-pass", 2);
+    public static final NodeID UI_RENDER_PASS = new NodeID("ui-pass", 3);
+    public static final NodeID GLUING_RENDER_PASS = new NodeID("gluing-pass", 4);
+    public static final NodeID POST_EFFECTS_RENDER_PASS = new NodeID("post-fx-pass", 5);
+
+    protected Map<NodeID, IRenderNode> conveyorNodes;
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
     private final ISceneCulling sceneCulling;
@@ -67,8 +74,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
         super(window, sceneWorld);
-        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(Nodes::getId));
-        this.initNodes();
+        this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
         JGemsOpenGLRenderer.inGameInterface = new DearUIGameInterface();
         JGemsOpenGLRenderer.inMenuInterface = new DearUIMenuInterface();
@@ -82,12 +88,6 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     @Override
     public @NotNull Vector2i getRenderingResolution() {
         return this.getWindowSize().div(1.0f);
-    }
-
-    protected void initNodes() {
-        for (Nodes group : Nodes.values()) {
-            this.getConveyorNodes().put(group, null);
-        }
     }
 
     protected void setDefaultNodes() {
@@ -107,31 +107,31 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     public void setDeferredRenderNode(@NotNull IDeferredRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.DEFERRED_RENDER_PASS, node);
+        this.getConveyorNodes().put(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS, node);
     }
 
     public void setForwardRenderNode(@NotNull IForwardRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.FORWARD_RENDER_PASS, node);
+        this.getConveyorNodes().put(JGemsOpenGLRenderer.FORWARD_RENDER_PASS, node);
     }
 
     public void setTransparencyRenderNode(@NotNull ITransparencyRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.TRANSPARENCY_RENDER_PASS, node);
+        this.getConveyorNodes().put(JGemsOpenGLRenderer.TRANSPARENCY_RENDER_PASS, node);
     }
 
     public void setUIRenderNode(@NotNull IUIRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.UI_RENDER_PASS, node);
+        this.getConveyorNodes().put(JGemsOpenGLRenderer.UI_RENDER_PASS, node);
     }
 
     public void setGluingRenderNode(@NotNull IGluingRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.GLUING_RENDER_PASS, node);
+        this.getConveyorNodes().put(JGemsOpenGLRenderer.GLUING_RENDER_PASS, node);
     }
 
     public void setPostFXRenderNode(@NotNull IPostFXRenderNode node) {
-        this.getConveyorNodes().replace(Nodes.POST_EFFECTS_RENDER_PASS, node);
+        this.getConveyorNodes().put(JGemsOpenGLRenderer.POST_EFFECTS_RENDER_PASS, node);
     }
 
     @SuppressWarnings("all")
-    public @NotNull <T extends IRenderNode> T getRenderNodeByPass(Nodes node) {
+    public @NotNull <T extends IRenderNode> T getRenderNodeByPass(NodeID node) {
         return (T) this.getConveyorNodes().get(node);
     }
 
@@ -139,7 +139,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     public void onStartRender() {
         this.constructScreenModel();
         this.jGemsUI = new JGemsUI();
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.getGlobalGameResources());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, JGemsResourceManager.getGlobalGameResources());
 
         this.setDefaultNodes();
         this.createResources();
@@ -147,12 +147,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(Nodes.DEFERRED_RENDER_PASS);
-        IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(Nodes.FORWARD_RENDER_PASS);
-        ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(Nodes.TRANSPARENCY_RENDER_PASS);
-        IGluingRenderNode gluingRenderNode = this.getRenderNodeByPass(Nodes.GLUING_RENDER_PASS);
-        IPostFXRenderNode postRenderNode = this.getRenderNodeByPass(Nodes.POST_EFFECTS_RENDER_PASS);
-        IUIRenderNode uiRenderNode = this.getRenderNodeByPass(Nodes.UI_RENDER_PASS);
+        IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
+        IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.FORWARD_RENDER_PASS);
+        ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.TRANSPARENCY_RENDER_PASS);
+        IGluingRenderNode gluingRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.GLUING_RENDER_PASS);
+        IPostFXRenderNode postRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.POST_EFFECTS_RENDER_PASS);
+        IUIRenderNode uiRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         OpenGLRenderer.setViewPort(this.getWindowSize());
@@ -267,8 +267,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     public void destroyResources() {
-        this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getWorld().getEnvironment().destroyEnvironment();
+        this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getSceneCulling().destroyResources();
     }
 
@@ -306,7 +306,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         return this.dearUIRenderer;
     }
 
-    public Map<Nodes, IRenderNode> getConveyorNodes() {
+    public Map<NodeID, IRenderNode> getConveyorNodes() {
         return this.conveyorNodes;
     }
 

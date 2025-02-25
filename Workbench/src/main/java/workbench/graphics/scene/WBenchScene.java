@@ -1,13 +1,16 @@
 package workbench.graphics.scene;
 
+import javagems3d.graphics.camera.ControlledCamera;
+import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.scene.IScene;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import logger.Log;
+import org.joml.Vector3f;
+import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.world.WBenchWorld;
 
@@ -27,6 +30,7 @@ public class WBenchScene implements IScene {
     }
 
     public void preRender() {
+        this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
         Log.get().info("Starting scene rendering");
         this.getSceneRenderer().onStartRender();
     }
@@ -34,10 +38,10 @@ public class WBenchScene implements IScene {
     @SuppressWarnings("all")
     public void renderScene(float frameDeltaTime) throws InterruptedException {
         if (this.getWindow().isWindowActive()) {
-            JGemsOpenGLRenderer.UBOShader().beginShading();
+           // JGemsOpenGLRenderer.UBOShader().beginShading();
             this.updateSceneComponents(new FrameTicking(0.0f, frameDeltaTime));
             this.getSceneRenderer().onRender(new FrameTicking(0.0f, frameDeltaTime));
-            JGemsOpenGLRenderer.UBOShader().endShading();
+           // JGemsOpenGLRenderer.UBOShader().endShading();
         }
     }
 

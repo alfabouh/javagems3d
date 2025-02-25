@@ -11,7 +11,6 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.base.Nodes;
 import javagems3d.graphics.rendering.scene.renderer.nodes.IDeferredRenderNode;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.world.SceneWorld;
@@ -185,7 +184,7 @@ public class DearUIGameInterface implements DearUIInterface {
             if (ImGui.collapsingHeader("GBuffer")) {
                 ImGui.beginChild("Images1", JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f + 60, true);
 
-                IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(Nodes.DEFERRED_RENDER_PASS);
+                IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
 
                 ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(0).getTextureId(), JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
@@ -230,7 +229,7 @@ public class DearUIGameInterface implements DearUIInterface {
             }
 
             if (ImGui.collapsingHeader("SSAO")) {
-                IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(Nodes.DEFERRED_RENDER_PASS);
+                IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
 
                 ImGui.beginChild("Images4", JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
 

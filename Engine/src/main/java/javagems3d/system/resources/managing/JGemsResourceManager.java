@@ -13,42 +13,13 @@ package javagems3d.system.resources.managing;
 
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsGlobalConfiguration;
-import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
-import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
-import javagems3d.system.resources.assets.materials.Material;
-import javagems3d.system.resources.assets.models.animation.Animation;
-import javagems3d.system.resources.assets.models.animation.AnimationFrame;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
-import javagems3d.system.resources.assets.texturing.RGBAColor;
-import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
-import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
-import javagems3d.system.resources.managing.resources.GameResources;
-import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
-import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
-import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.path.JGemsPath;
-import org.joml.Matrix4f;
-import org.joml.Vector2i;
-import org.lwjgl.opengl.GL46;
-import org.lwjgl.system.MemoryUtil;
-
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.LongBuffer;
-import java.util.Collection;
+import javagems3d.system.resources.managing.resources.JGemsSystemResources;
+import javagems3d.system.resources.managing.resources.SystemResources;
 
 public final class JGemsResourceManager extends ResourceManager {
     public static final String GLOBAL = "Global";
@@ -61,7 +32,7 @@ public final class JGemsResourceManager extends ResourceManager {
     public static SoundAssetsInitializer globalSoundAssets = null;
 
     public JGemsResourceManager() {
-        super(JGemsResourceManager.GLOBAL, JGemsResourceManager.LOCAL);
+        super(new Factory(JGemsResourceManager.GLOBAL), new Factory(JGemsResourceManager.LOCAL));
         JGemsResourceManager.globalShaderAssets = new BasicShadersInitializer();
     }
 
@@ -79,11 +50,11 @@ public final class JGemsResourceManager extends ResourceManager {
         }
     }
 
-    public static GameResources getLocalGameResources() {
+    public static SystemResources getLocalGameResources() {
         return JGems3D.get().getResourceManager().getLocalResources();
     }
 
-    public static GameResources getGlobalGameResources() {
+    public static SystemResources getGlobalGameResources() {
         return JGems3D.get().getResourceManager().getGlobalResources();
     }
 
@@ -129,11 +100,29 @@ public final class JGemsResourceManager extends ResourceManager {
         this.reloadTexturesInLocalCache();
     }
 
-    public GameResources getLocalResources() {
+    public SystemResources getLocalResources() {
         return this.getGameResources(JGemsResourceManager.LOCAL);
     }
 
-    public GameResources getGlobalResources() {
+    public SystemResources getGlobalResources() {
         return this.getGameResources(JGemsResourceManager.GLOBAL);
+    }
+
+    private static class Factory implements ResourceManager.Factory {
+        private final String id;
+
+        public Factory(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public SystemResources createObject(String id) {
+            return new JGemsSystemResources(new ResourceCache(id));
+        }
+
+        @Override
+        public String getId() {
+            return this.id;
+        }
     }
 }

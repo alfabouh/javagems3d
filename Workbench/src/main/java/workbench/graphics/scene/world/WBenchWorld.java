@@ -19,7 +19,6 @@ public class WBenchWorld implements IWorld {
     private ICamera camera;
    // private final JGemsEnvironment environment;
     private final Set<SceneObject> toRenderSet;
-
     private int ticks;
 
     public WBenchWorld() {
@@ -53,7 +52,6 @@ public class WBenchWorld implements IWorld {
         }
     }
 
-    //section WorldClean
     private void clearAll() {
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {

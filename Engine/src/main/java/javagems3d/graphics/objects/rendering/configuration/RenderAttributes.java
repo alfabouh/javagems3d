@@ -44,10 +44,6 @@ public class RenderAttributes implements IRenderConfiguration {
         this.cullingRules = cullingRules;
     }
 
-    public static @NotNull RenderAttributes get() {
-        return RenderAttributes.get(new RenderTable());
-    }
-
     public static @NotNull RenderAttributes get(@Nullable RenderTable renderTable) {
         return renderTable == null ? null : new RenderAttributes(renderTable);
     }
