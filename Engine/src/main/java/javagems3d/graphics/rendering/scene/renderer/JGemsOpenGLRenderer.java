@@ -24,6 +24,7 @@ import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.*;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
@@ -46,6 +47,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -91,12 +93,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     protected void setDefaultNodes() {
-        IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(new FBOTexture2DProgram(true), this);
-        IForwardRenderNode forwardRenderNode = new IForwardRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
-        ITransparencyRenderNode transparencyRenderNode = new ITransparencyRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
-        IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
-        IPostFXRenderNode postFXRenderNode = new IPostFXRenderNode.Default(gluingRenderNode.getOutColorBuffer(), this);
-        IUIRenderNode iuiRenderNode = new IUIRenderNode.Default(this.getJGemsUI(), this);
+        IDeferredRenderNode defaultDeferredNode = new DeferredRenderNode(new FBOTexture2DProgram(true), this);
+        IForwardRenderNode forwardRenderNode = new ForwardRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
+        ITransparencyRenderNode transparencyRenderNode = new TransparencyRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
+        IGluingRenderNode gluingRenderNode = new GluingRenderNode(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
+        IPostFXRenderNode postFXRenderNode = new PostFXRenderNode(gluingRenderNode.getOutColorBuffer(), this);
+        IUIRenderNode iuiRenderNode = new UIRenderNode(this.getDearUIRenderer(), this.getJGemsUI(), this);
 
         this.setDeferredRenderNode(defaultDeferredNode);
         this.setForwardRenderNode(forwardRenderNode);
@@ -142,6 +144,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, JGemsResourceManager.getGlobalGameResources());
 
         this.setDefaultNodes();
+        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scene node: " + e.getName()));
         this.createResources();
     }
 
@@ -157,13 +160,13 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         OpenGLRenderer.setViewPort(this.getWindowSize());
         if (this.getWorld().getCamera() == null) {
+            uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inMenuInterface);
             uiRenderNode.onRender(frameTicking);
-            this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inMenuInterface, frameTicking);
             return;
         }
         if (JGems3D.get().isPaused()) {
+            uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
             uiRenderNode.onRender(frameTicking);
-            this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
             return;
         }
         this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
@@ -192,8 +195,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
         OpenGLRenderer.setViewPort(this.getWindowSize());
         this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
+        uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
         uiRenderNode.onRender(frameTicking);
-        this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {

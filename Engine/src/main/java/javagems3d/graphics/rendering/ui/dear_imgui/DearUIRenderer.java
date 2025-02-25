@@ -114,104 +114,99 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         });
     }
 
-    public void onRender(DearUIInterface dearUIInterface, FrameTicking frameTicking) {
-        JGemsControllerDispatcher controllerDispatcher = JGems3D.get().getScreen().getControllerDispatcher();
-        if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
-            MouseKeyboardController mouseKeyboardController = (MouseKeyboardController) controllerDispatcher.getCurrentController();
+    public void onRender(MouseKeyboardController mouseKeyboardController, DearUIInterface dearUIInterface, FrameTicking frameTicking) {
+        ImGui.newFrame();
+        dearUIInterface.drawGui(this.getWindow().getWindowSize(), mouseKeyboardController);
+        EventLauncher.pushEvent(new EventBus.DearIMGUIRender(this.getWindow().getWindowSize(), this));
+        ImGui.endFrame();
+        ImGui.render();
 
-            ImGui.newFrame();
-            dearUIInterface.drawGui(this.getWindow().getWindowSize(), mouseKeyboardController);
-            EventLauncher.pushEvent(new EventBus.DearIMGUIRender(this.getWindow().getWindowSize(), this));
-            ImGui.endFrame();
-            ImGui.render();
+        ImDrawData drawData = ImGui.getDrawData();
 
-            ImDrawData drawData = ImGui.getDrawData();
-
-            ImGuiIO io = ImGui.getIO();
-            float delta = frameTicking.getFrameDeltaTime();
-            if (delta == 0.0f) {
-                delta = 1.0f;
-            }
-            io.setDeltaTime(delta);
-
-            ImVec2 dSize = new ImVec2();
-            io.getDisplaySize(dSize);
-
-            this.getShaderManager().beginShading();
-            this.getShaderManager().performUniform(new UniformString("scale"), UniformFunctions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
-            this.getShaderManager().performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
-
-            GL46.glEnable(GL46.GL_BLEND);
-            GL46.glBlendEquation(GL46.GL_FUNC_ADD);
-            GL46.glBlendFuncSeparate(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA, GL46.GL_ONE, GL46.GL_ONE_MINUS_SRC_ALPHA);
-            GL46.glDisable(GL46.GL_DEPTH_TEST);
-            GL46.glDisable(GL46.GL_CULL_FACE);
-
-            GL46.glBindVertexArray(this.getImguiMesh().getVaoId());
-            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.getImguiMesh().getVerticesVbo());
-            GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getImguiMesh().getIndicesVbo());
-
-            int numLists = drawData.getCmdListsCount();
-
-            ImVec2 dPos = new ImVec2();
-            ImVec2 fbScale = new ImVec2();
-
-            drawData.getDisplayPos(dPos);
-            drawData.getFramebufferScale(fbScale);
-
-            final float clipOffX = dPos.x;
-            final float clipOffY = dPos.y;
-            final float clipScaleX = fbScale.x;
-            final float clipScaleY = fbScale.y;
-
-            for (int i = 0; i < numLists; i++) {
-                GL46.glBufferData(GL46.GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(i), GL46.GL_STREAM_DRAW);
-                GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(i), GL46.GL_STREAM_DRAW);
-
-                for (int j = 0; j < drawData.getCmdListCmdBufferSize(i); j++) {
-                    final int elemCount = drawData.getCmdListCmdBufferElemCount(i, j);
-                    final int idxBufferOffset = drawData.getCmdListCmdBufferIdxOffset(i, j);
-                    final int indices = idxBufferOffset * ImDrawData.SIZEOF_IM_DRAW_IDX;
-
-                    int textureId = drawData.getCmdListCmdBufferTextureId(i, j);
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0);
-                    if (textureId > 0) {
-                        GL46.glBindTexture(GL46.GL_TEXTURE_2D, textureId);
-                    } else {
-                        this.getTextureSample().bindTexture();
-                    }
-
-                    ImVec4 clipRect = drawData.getCmdListCmdBufferClipRect(i, j);
-
-                    final float clipMinX = (clipRect.x - clipOffX) * clipScaleX;
-                    final float clipMinY = (clipRect.y - clipOffY) * clipScaleY;
-                    final float clipMaxX = (clipRect.z - clipOffX) * clipScaleX;
-                    final float clipMaxY = (clipRect.w - clipOffY) * clipScaleY;
-                    final int fbHeight = (int) (dSize.y * fbScale.y);
-
-                    if (clipMaxX <= clipMinX || clipMaxY <= clipMinY) {
-                        continue;
-                    }
-
-                    GL46.glEnable(GL46.GL_SCISSOR_TEST);
-                    GL46.glScissor((int) clipMinX, (int) (fbHeight - clipMaxY), (int) (clipMaxX - clipMinX), (int) (clipMaxY - clipMinY));
-                    GL46.glDrawElements(GL46.GL_TRIANGLES, elemCount, GL46.GL_UNSIGNED_SHORT, indices);
-                    GL46.glDisable(GL46.GL_SCISSOR_TEST);
-                }
-            }
-
-            GL46.glEnable(GL46.GL_DEPTH_TEST);
-            GL46.glEnable(GL46.GL_CULL_FACE);
-            GL46.glDisable(GL46.GL_BLEND);
-
-            this.getShaderManager().endShading();
-
-            ImGuiIO imGuiIO = ImGui.getIO();
-            imGuiIO.setMousePos((float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[0], (float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[1]);
-            imGuiIO.setMouseDown(0, mouseKeyboardController.getMouseAndKeyboard().isLeftKeyPressed());
-            imGuiIO.setMouseDown(1, mouseKeyboardController.getMouseAndKeyboard().isRightKeyPressed());
-            imGuiIO.setMouseWheel(mouseKeyboardController.getMouseAndKeyboard().getScrollVector());
+        ImGuiIO io = ImGui.getIO();
+        float delta = frameTicking.getFrameDeltaTime();
+        if (delta == 0.0f) {
+            delta = 1.0f;
         }
+        io.setDeltaTime(delta);
+
+        ImVec2 dSize = new ImVec2();
+        io.getDisplaySize(dSize);
+
+        this.getShaderManager().beginShading();
+        this.getShaderManager().performUniform(new UniformString("scale"), UniformFunctions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
+        this.getShaderManager().performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
+
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendEquation(GL46.GL_FUNC_ADD);
+        GL46.glBlendFuncSeparate(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA, GL46.GL_ONE, GL46.GL_ONE_MINUS_SRC_ALPHA);
+        GL46.glDisable(GL46.GL_DEPTH_TEST);
+        GL46.glDisable(GL46.GL_CULL_FACE);
+
+        GL46.glBindVertexArray(this.getImguiMesh().getVaoId());
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.getImguiMesh().getVerticesVbo());
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getImguiMesh().getIndicesVbo());
+
+        int numLists = drawData.getCmdListsCount();
+
+        ImVec2 dPos = new ImVec2();
+        ImVec2 fbScale = new ImVec2();
+
+        drawData.getDisplayPos(dPos);
+        drawData.getFramebufferScale(fbScale);
+
+        final float clipOffX = dPos.x;
+        final float clipOffY = dPos.y;
+        final float clipScaleX = fbScale.x;
+        final float clipScaleY = fbScale.y;
+
+        for (int i = 0; i < numLists; i++) {
+            GL46.glBufferData(GL46.GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(i), GL46.GL_STREAM_DRAW);
+            GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(i), GL46.GL_STREAM_DRAW);
+
+            for (int j = 0; j < drawData.getCmdListCmdBufferSize(i); j++) {
+                final int elemCount = drawData.getCmdListCmdBufferElemCount(i, j);
+                final int idxBufferOffset = drawData.getCmdListCmdBufferIdxOffset(i, j);
+                final int indices = idxBufferOffset * ImDrawData.SIZEOF_IM_DRAW_IDX;
+
+                int textureId = drawData.getCmdListCmdBufferTextureId(i, j);
+                GL46.glActiveTexture(GL46.GL_TEXTURE0);
+                if (textureId > 0) {
+                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, textureId);
+                } else {
+                    this.getTextureSample().bindTexture();
+                }
+
+                ImVec4 clipRect = drawData.getCmdListCmdBufferClipRect(i, j);
+
+                final float clipMinX = (clipRect.x - clipOffX) * clipScaleX;
+                final float clipMinY = (clipRect.y - clipOffY) * clipScaleY;
+                final float clipMaxX = (clipRect.z - clipOffX) * clipScaleX;
+                final float clipMaxY = (clipRect.w - clipOffY) * clipScaleY;
+                final int fbHeight = (int) (dSize.y * fbScale.y);
+
+                if (clipMaxX <= clipMinX || clipMaxY <= clipMinY) {
+                    continue;
+                }
+
+                GL46.glEnable(GL46.GL_SCISSOR_TEST);
+                GL46.glScissor((int) clipMinX, (int) (fbHeight - clipMaxY), (int) (clipMaxX - clipMinX), (int) (clipMaxY - clipMinY));
+                GL46.glDrawElements(GL46.GL_TRIANGLES, elemCount, GL46.GL_UNSIGNED_SHORT, indices);
+                GL46.glDisable(GL46.GL_SCISSOR_TEST);
+            }
+        }
+
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
+        GL46.glEnable(GL46.GL_CULL_FACE);
+        GL46.glDisable(GL46.GL_BLEND);
+
+        this.getShaderManager().endShading();
+
+        ImGuiIO imGuiIO = ImGui.getIO();
+        imGuiIO.setMousePos((float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[0], (float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[1]);
+        imGuiIO.setMouseDown(0, mouseKeyboardController.getMouseAndKeyboard().isLeftKeyPressed());
+        imGuiIO.setMouseDown(1, mouseKeyboardController.getMouseAndKeyboard().isRightKeyPressed());
+        imGuiIO.setMouseWheel(mouseKeyboardController.getMouseAndKeyboard().getScrollVector());
     }
 
     public IWindow getWindow() {

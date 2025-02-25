@@ -11,7 +11,7 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.IDeferredRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IDeferredRenderNode;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.kinematic.player.IPlayer;

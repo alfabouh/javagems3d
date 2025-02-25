@@ -23,7 +23,7 @@ import java.util.Random;
 public final class WBench {
     private final OS os;
     public static final String ID = "wbench";
-    public static final String VERSION = "0.20a";
+    public static final String VERSION = JGemsCore.ENG_VER;
 
     public static long rngSeed;
     public static Random random;

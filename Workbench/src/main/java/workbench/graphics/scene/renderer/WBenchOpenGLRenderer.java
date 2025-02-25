@@ -10,11 +10,11 @@ import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgra
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
+import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
@@ -25,10 +25,14 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
+import workbench.graphics.scene.nodes.templates.*;
+import workbench.graphics.scene.nodes.*;
+import workbench.graphics.scene.ui.EditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 
@@ -40,6 +44,9 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
     public static final NodeID FORWARD_RENDER_PASS = new NodeID("f-pass", 1);
     public static final NodeID TRANSPARENCY_RENDER_PASS = new NodeID("transparency-pass", 2);
     public static final NodeID GLUING_RENDER_PASS = new NodeID("gluing-pass", 3);
+    public static final NodeID UI_RENDER_PASS = new NodeID("ui-pass", 4);
+
+    public static DearUIInterface editorInterface;
 
     protected Map<NodeID, IRenderNode> conveyorNodes;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
@@ -50,6 +57,8 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
     public WBenchOpenGLRenderer(IWindow window, WBenchWorld wBenchWorld) {
         super(window, wBenchWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
+
+        WBenchOpenGLRenderer.editorInterface = new EditorInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
@@ -63,15 +72,17 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
     }
 
     protected void setDefaultNodes() {
-        IDeferredRenderNode defaultDeferredNode = new IDeferredRenderNode.Default(new FBOTexture2DProgram(true), this);
-        IForwardRenderNode forwardRenderNode = new IForwardRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
-        ITransparencyRenderNode transparencyRenderNode = new ITransparencyRenderNode.Default(defaultDeferredNode.getOutColorBuffer(), this);
-        IGluingRenderNode gluingRenderNode = new IGluingRenderNode.Default(transparencyRenderNode.getOutColorBuffer(), defaultDeferredNode.getOutColorBuffer(), this);
+        IDeferredRenderNode defaultDeferredNode = new DeferredRenderNode(this);
+        IForwardRenderNode forwardRenderNode = new ForwardRenderNode(this);
+        ITransparencyRenderNode transparencyRenderNode = new TransparencyRenderNode(this);
+        IGluingRenderNode gluingRenderNode = new GluingRenderNode(this);
+        IUIRenderNode uiRenderNode = new UIRenderNode(this.getDearUIRenderer(), this);
 
         this.setForwardRenderNode(forwardRenderNode);
         this.setDeferredRenderNode(defaultDeferredNode);
         this.setTransparencyRenderNode(transparencyRenderNode);
         this.setGluingRenderNode(gluingRenderNode);
+        this.setUIRenderNode(uiRenderNode);
     }
 
     public void setForwardRenderNode(@NotNull IForwardRenderNode node) {
@@ -90,6 +101,10 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         this.getConveyorNodes().put(WBenchOpenGLRenderer.GLUING_RENDER_PASS, node);
     }
 
+    public void setUIRenderNode(@NotNull IUIRenderNode node) {
+        this.getConveyorNodes().put(WBenchOpenGLRenderer.UI_RENDER_PASS, node);
+    }
+
     @SuppressWarnings("all")
     public @NotNull <T extends IRenderNode> T getRenderNodeByPass(NodeID node) {
         return (T) this.getConveyorNodes().get(node);
@@ -101,6 +116,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, WBenchResourceManager.getGlobalGameResources());
 
         this.setDefaultNodes();
+        this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scene node: " + e.getName()));
         this.createResources();
     }
 
@@ -110,40 +126,41 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
         ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.TRANSPARENCY_RENDER_PASS);
         IGluingRenderNode gluingRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
+        IUIRenderNode uiRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         OpenGLRenderer.setViewPort(this.getWindowSize());
         if (this.getWorld().getCamera() == null) {
-         //   this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
+            //   this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
             return;
         }
-      //  this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
-        OpenGLRenderer.setViewPort(this.getRenderingResolution());
-
-        Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
-        this.getSceneCulling().cull(toRender);
-
-        Map<Stage, List<SceneObject>> dividedGroups = toRender.stream().filter(Objects::nonNull).collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
-        deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
-        deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
-        forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
-
-        deferredRenderNode.onRender(frameTicking);
-        forwardRenderNode.onRender(frameTicking);
-
-        Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
-        Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
-        rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
-
-        transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
-        transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
-        transparencyRenderNode.onRender(frameTicking);
-        gluingRenderNode.onRender(frameTicking);
+        //  this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
+        //  OpenGLRenderer.setViewPort(this.getRenderingResolution());
+//
+        //  Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
+        //  this.getSceneCulling().cull(toRender);
+//
+        //  Map<Stage, List<SceneObject>> dividedGroups = toRender.stream().filter(Objects::nonNull).collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
+        //  deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
+        //  deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
+        //  forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
+//
+        //  deferredRenderNode.onRender(frameTicking);
+        //  forwardRenderNode.onRender(frameTicking);
+//
+        //  Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
+        //  Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
+        //  rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
+//
+        //  transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
+        //  transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
+        //  transparencyRenderNode.onRender(frameTicking);
+        //  gluingRenderNode.onRender(frameTicking);
 
         OpenGLRenderer.setViewPort(this.getWindowSize());
-        this.renderFinalSceneInMainBuffer(gluingRenderNode.getOutColorBuffer());
-      //  uiRenderNode.onRender(frameTicking);
-     //   this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
+        //  this.renderFinalSceneInMainBuffer(gluingRenderNode.getOutColorBuffer());
+        uiRenderNode.setAnInterface(WBenchOpenGLRenderer.editorInterface);
+        uiRenderNode.onRender(frameTicking);
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
