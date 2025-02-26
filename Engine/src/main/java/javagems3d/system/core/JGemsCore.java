@@ -18,6 +18,10 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Plane;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
+import javagems3d.help.JGemsCameraHelper;
+import javagems3d.help.JGemsControllerHelper;
+import javagems3d.help.JGemsCoreHelper;
+import javagems3d.help.JGemsWindowHelper;
 import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.JGemsPhysics;
@@ -30,7 +34,6 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import api.events.EventLauncher;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.world.SceneWorld;
@@ -118,10 +121,10 @@ public class JGemsCore implements ICore {
         this.pauseGame();
         this.getScreen().showGameLoadingScreen("Exiting world...");
         this.clear();
-        JGemsHelper.GAME.unPauseGameAndUnLockUnPausing();
-        JGemsHelper.GAME.unLockController();
-        JGemsHelper.CAMERA.setCurrentCamera(null);
-        JGemsHelper.WINDOW.setWindowFocus(false);
+        JGemsCoreHelper.unPauseGameAndUnLockUnPausing();
+        JGemsCoreHelper.unLockController();
+        JGemsCameraHelper.setCurrentCamera(null);
+        JGemsWindowHelper.setWindowFocus(false);
         this.getScreen().removeLoadingScreen();
         this.mapLoader = null;
         JGems3D.get().showMainMenu();
@@ -183,13 +186,13 @@ public class JGemsCore implements ICore {
         if (this.getMapLoader().playerConstructor() != null) {
             this.localPlayer = new LocalPlayer(this.getMapLoader().playerConstructor());
             this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
-            JGemsHelper.CONTROLLER.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
-            JGemsHelper.CAMERA.enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayer());
+            JGemsControllerHelper.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
+            JGemsCameraHelper.enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayer());
         } else {
-            JGemsHelper.CAMERA.enableFreeCamera(JGemsHelper.CONTROLLER.getCurrentController(), startPos, startRot);
+            JGemsCameraHelper.enableFreeCamera(JGemsControllerHelper.getCurrentController(), startPos, startRot);
         }
         Log.get().info("Successfully loaded map: " + this.currentMapName());
-        JGemsHelper.CONTROLLER.setCursorInCenter();
+        JGemsControllerHelper.setCursorInCenter();
 
         if (true) {//TODO
            this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);
@@ -200,7 +203,7 @@ public class JGemsCore implements ICore {
         this.getResourceManager().writeResourcesDataCache();
         ((IMapActionsCallback) this.getScreen().getScene().getSceneRenderer()).onMapLoaded(this.getMapLoader(), this.getResourceManager());
 
-        JGemsHelper.WINDOW.setWindowFocus(true);
+        JGemsWindowHelper.setWindowFocus(true);
         this.getScreen().removeLoadingScreen();
 
         this.unPauseGame();

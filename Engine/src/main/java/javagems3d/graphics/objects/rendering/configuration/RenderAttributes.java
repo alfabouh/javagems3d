@@ -1,6 +1,6 @@
 package javagems3d.graphics.objects.rendering.configuration;
 
-import javagems3d.global.JGemsRenderingGlobalConstants;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +30,7 @@ public class RenderAttributes implements IRenderConfiguration {
     public RenderAttributes(@NotNull RenderTable renderTable, @NotNull CullingRules cullingRules) {
         this.renderTable = renderTable;
 
-        this.alphaDiscardValue = JGemsRenderingGlobalConstants.DEFAULT_ALPHA_DISCARD;
+        this.alphaDiscardValue = JGemsConfiguration.RENDERING.DEFAULT_ALPHA_DISCARD;
         this.renderDistance = -1.0f;
 
         this.allowMoveMeshesIntoTransparencyPass = true;

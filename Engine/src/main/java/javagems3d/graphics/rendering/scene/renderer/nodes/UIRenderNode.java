@@ -1,14 +1,13 @@
 package javagems3d.graphics.rendering.scene.renderer.nodes;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IUIRenderNode;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,7 @@ public final class UIRenderNode implements IUIRenderNode {
         GL46.glDisable(GL46.GL_BLEND);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
 
-        JGemsControllerDispatcher controllerDispatcher = JGemsHelper.getScreen().getControllerDispatcher();
+        JGemsControllerDispatcher controllerDispatcher = JGemsCoreHelper.getScreen().getControllerDispatcher();
         if (JGems3D.DEBUG_MODE && controllerDispatcher.getCurrentController() instanceof MouseKeyboardController) {
             this.dearUIRenderer.onRender((MouseKeyboardController) controllerDispatcher.getCurrentController(), this.getAnInterface(), frameTicking);
         }

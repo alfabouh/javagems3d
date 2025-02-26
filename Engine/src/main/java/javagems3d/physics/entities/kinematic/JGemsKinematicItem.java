@@ -9,7 +9,7 @@ import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Transform;
-import javagems3d.JGemsHelper;
+import javagems3d.help.JGemsMathHelper;
 import javagems3d.physics.entities.bullet.IJGemsBulletEntity;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.entities.properties.state.EntityState;
@@ -295,7 +295,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.tryToJump(this.getGravity(), motion, jumpSpeed);
         this.gravityVelocity(this.getGravity());
 
-        JGemsHelper.MATH.clampVectorToZeroThreshold(this.bodyVelocity, 0.001f);
+        JGemsMathHelper.clampVectorToZeroThreshold(this.bodyVelocity, 0.001f);
 
        //if (motion.y <= 0.0f)
        //this.setBodyVelocity(new Vector3f(this.getBodyVelocity().x, -0.1f, this.getBodyVelocity().z));
@@ -680,7 +680,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                 physicsSweepTestResult1.getHitNormalLocal(normal0);
                 Vector3f normal = DynamicsUtils.convertV3F_JOML(normal0);
                 Vector3f inNormal = new Vector3f(normal);
-                JGemsHelper.MATH.clampVectorToZeroThreshold(inNormal, 0.001f);
+                JGemsMathHelper.clampVectorToZeroThreshold(inNormal, 0.001f);
                 if (inNormal.length() > 0f) {
                     inNormal.normalize();
                 }
@@ -754,7 +754,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     normal.mul(slideNormalCorrection);
                 }
 
-                JGemsHelper.MATH.clampVectorToZeroThreshold(normal, 0.001f);
+                JGemsMathHelper.clampVectorToZeroThreshold(normal, 0.001f);
                 if (normal.length() > 0f) {
                     normal.normalize();
                 }

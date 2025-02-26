@@ -1,12 +1,12 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.scene;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.joml.Matrix4f;
 
@@ -26,7 +26,7 @@ public class DefaultIndirectRenderFabric extends IndirectRenderFabric {
     @Override
     public void onFillBufferWithProperties(Pipeline pipeline, IRendered renderedItem, RenderAttributes defaultAttributes, ByteBuffer properties, ArbitraryArguments metaData) {
         properties.putFloat(defaultAttributes.getAlphaDiscardValue());
-        properties.putInt(JGemsHelper.RENDERING.getLightingCodeForShader(defaultAttributes));
+        properties.putInt(JGemsRenderingHelper.getLightingCodeForShader(defaultAttributes));
     }
 
     @Override

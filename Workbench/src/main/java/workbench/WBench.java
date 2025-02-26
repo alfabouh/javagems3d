@@ -11,6 +11,7 @@ import logger.managers.JGemsLogging;
 import org.lwjgl.glfw.GLFW;
 import workbench.controller.WBenchControllerDispatcher;
 import workbench.graphics.screen.WBenchScreen;
+import workbench.project.ProjectManager;
 import workbench.resources.WBenchResourceManager;
 
 import java.io.File;
@@ -33,6 +34,8 @@ public final class WBench {
     private final WBenchScreen wBenchScreen;
     private final WBenchResourceManager resourceManager;
 
+    private final ProjectManager projectManager;
+
     private WBench() {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("WorkbenchLogger"));
@@ -47,6 +50,8 @@ public final class WBench {
 
         this.resourceManager = new WBenchResourceManager();
         this.wBenchScreen = new WBenchScreen();
+        this.projectManager = new ProjectManager();
+
         this.shouldBeClosed = false;
     }
 
@@ -113,7 +118,12 @@ public final class WBench {
     }
 
     public void close() {
+        Log.get().warn("Exit...");
         this.shouldBeClosed = true;
+    }
+
+    public ProjectManager getProjectManager() {
+        return this.projectManager;
     }
 
     public WBenchControllerDispatcher getControllerDispatcher() {

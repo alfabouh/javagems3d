@@ -15,7 +15,6 @@ import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
-import javagems3d.system.resources.managing.resources.JGemsSystemResources;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import workbench.WBench;
 import workbench.resources.initialization.*;

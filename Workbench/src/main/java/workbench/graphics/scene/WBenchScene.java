@@ -30,7 +30,7 @@ public class WBenchScene implements IScene {
     }
 
     public void preRender() {
-        this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
+       // this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
         Log.get().info("Starting scene rendering");
         this.getSceneRenderer().onStartRender();
     }
@@ -49,8 +49,10 @@ public class WBenchScene implements IScene {
     public void updateSceneComponents(final FrameTicking frameTicking) throws InterruptedException {
         this.getWorld().updateWorldObjects(frameTicking);
         this.getWorld().onWorldUpdate();
-        this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
-        JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());
+        if (this.getCamera() != null) {
+            this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
+            JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());
+        }
     }
 
     public void postRender() {

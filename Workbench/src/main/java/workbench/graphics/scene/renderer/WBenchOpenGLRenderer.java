@@ -1,10 +1,6 @@
 package workbench.graphics.scene.renderer;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
@@ -18,6 +14,7 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -25,6 +22,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -33,11 +31,11 @@ import org.lwjgl.opengl.GL46;
 import workbench.graphics.scene.nodes.templates.*;
 import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.ProjectInitInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp {
     public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
@@ -47,6 +45,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
     public static final NodeID UI_RENDER_PASS = new NodeID("ui-pass", 4);
 
     public static DearUIInterface editorInterface;
+    public static DearUIInterface projectInterface;
 
     protected Map<NodeID, IRenderNode> conveyorNodes;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
@@ -59,6 +58,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
         WBenchOpenGLRenderer.editorInterface = new EditorInterface();
+        WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
@@ -113,7 +113,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
     @Override
     public void onStartRender() {
         this.constructScreenModel();
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, WBenchResourceManager.getGlobalGameResources());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), WBenchResourceManager.globalShaderAssets.imgui, new JGemsPath("/assets/wbench/gamefont.ttf"), WBenchResourceManager.getGlobalGameResources());
 
         this.setDefaultNodes();
         this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scene node: " + e.getName()));
@@ -129,9 +129,10 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
-        OpenGLRenderer.setViewPort(this.getWindowSize());
         if (this.getWorld().getCamera() == null) {
-            //   this.getDearUIRenderer().onRender(JGemsOpenGLRenderer.inGameInterface, frameTicking);
+            OpenGLRenderer.setViewPort(this.getWindowSize());
+            uiRenderNode.setAnInterface(WBenchOpenGLRenderer.projectInterface);
+            uiRenderNode.onRender(frameTicking);
             return;
         }
         //  this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
@@ -168,7 +169,7 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
         imgShader.beginShading();
         imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsHelper.RENDERING.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
     }
 

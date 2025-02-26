@@ -11,11 +11,9 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
-import javagems3d.JGemsHelper;
-import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model2D;
-import javagems3d.system.resources.assets.models.pose.Pose2D;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -49,7 +47,7 @@ public class UIPictureSizable extends UIElement {
         shaderManager.beginShading();
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.iImageSample);
-        JGemsHelper.RENDERING.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 

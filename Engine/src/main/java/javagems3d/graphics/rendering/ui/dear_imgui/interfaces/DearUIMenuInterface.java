@@ -3,7 +3,7 @@ package javagems3d.graphics.rendering.ui.dear_imgui.interfaces;
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import logger.managers.LoggingManager;
@@ -31,7 +31,7 @@ public class DearUIMenuInterface implements DearUIInterface {
         }
         ImGui.end();
 
-        ImGui.setNextWindowSize(JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);
+        ImGui.setNextWindowSize(JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);
         ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
         ImGui.begin("Debug");
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);

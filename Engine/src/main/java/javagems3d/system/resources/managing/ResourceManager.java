@@ -11,13 +11,12 @@
 
 package javagems3d.system.resources.managing;
 
-import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
-import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;
@@ -57,7 +56,7 @@ public abstract class ResourceManager {
     }
 
     public void loadBindlessHandlersInSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
-        LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES);
+        LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsConfiguration.SYSTEM.MAX_BINDLESS_TEXTURES);
         for (ITextureBindless l : this.getResourceDataCache().getBindlessTexturesCache().getBindlessTexturesIdMap().keySet()) {
             longBuffer.put(l.getBindingHandler());
         }
@@ -67,7 +66,7 @@ public abstract class ResourceManager {
     }
 
     public void loadMeshMaterialsIsSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
-        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsGlobalConfiguration.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsConfiguration.SYSTEM.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsConfiguration.SYSTEM.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
         for (Material material : this.getResourceDataCache().getMeshBuffersDataCache().getMaterials()) {
             ISample diffuse = material.getDiffuse();
             ISample normals = material.getNormalsMap();
@@ -89,7 +88,7 @@ public abstract class ResourceManager {
             byteBuffer.putInt(emission instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emission) : 0);
             byteBuffer.putInt(specular instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) specular) : 0);
             byteBuffer.putInt(metallic instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallic) : 0);
-            byteBuffer.putInt(JGemsHelper.RENDERING.getTexturingCodeForShader(material));
+            byteBuffer.putInt(JGemsRenderingHelper.getTexturingCodeForShader(material));
             byteBuffer.putInt(0);
             byteBuffer.putInt(0);
         }
@@ -112,7 +111,6 @@ public abstract class ResourceManager {
 
     public void destroy() {
         ShaderStorageBufferProgram.clearAll();
-        GuiFont.allCreatedFonts.forEach(GuiFont::clear);
         this.getResourceDataCache().clearAll();
         this.clearAll();
 

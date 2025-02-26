@@ -11,9 +11,9 @@
 
 package javagems3d.system.inventory.items;
 
+import javagems3d.help.JGemsWorldHelper;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.data.SoundType;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.physics.world.IWorld;
@@ -65,7 +65,7 @@ public class ItemZippo extends InventoryItem {
         super.onAddInInventory(hasInventory);
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3f(1.0f, 0.475f, 0.375f));
         pointLight.setBrightness(this.zippoBrightness());
-        JGemsHelper.WORLD.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
+        JGemsWorldHelper.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
         this.pointLight.setEnabled(false);
     }
 

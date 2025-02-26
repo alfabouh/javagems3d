@@ -13,7 +13,7 @@ package javagems3d.system.map.navigation.pathgen;
 
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.math.Vector3f;
-import javagems3d.global.JGemsDebugGlobalConstants;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
@@ -46,7 +46,7 @@ public class MapNavGraphGenerator {
         while (!stack.isEmpty()) {
             GraphVertex current = stack.pop();
             this.getGraph().addVertex(current);
-            float off = JGemsDebugGlobalConstants.PATH_GEN_GRAPH_GAP;
+            float off = JGemsConfiguration.DEBUG.PATH_GEN_GRAPH_GAP;
 
             GraphVertex[] vertices = new GraphVertex[4];
             vertices[0] = this.tryPlaceVertex(current, current.getPosition().x - off, current.getPosition().y, current.getPosition().z);

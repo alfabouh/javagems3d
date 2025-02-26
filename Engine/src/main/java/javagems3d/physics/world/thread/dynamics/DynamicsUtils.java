@@ -12,7 +12,6 @@
 package javagems3d.physics.world.thread.dynamics;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
-import com.jme3.bullet.collision.shapes.infos.CompoundMesh;
 import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
 import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
@@ -20,15 +19,7 @@ import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.util.BufferUtils;
-import javagems3d.system.resources.assets.models.mesh.RenderMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * It is a utilitarian class that has functions for managing the state of physical Bullet entities.

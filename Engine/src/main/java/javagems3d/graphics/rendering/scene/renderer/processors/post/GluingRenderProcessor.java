@@ -1,11 +1,11 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public class GluingRenderProcessor extends IRenderProcessor.Template {
         gluing.performUniformTexture(new UniformString("accumulated_alpha"), this.getInColorTransparency().getTextureByIndex(0));
         gluing.performUniformTexture(new UniformString("reveal_alpha"), this.getInColorTransparency().getTextureByIndex(1));
         gluing.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         gluing.endShading();
     }
 

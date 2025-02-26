@@ -12,10 +12,9 @@
 package javagems3d.graphics.environment.shadows.scene;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsDebugGlobalConstants;
-import javagems3d.global.JGemsGlobalConfiguration;
-import javagems3d.global.JGemsRenderingGlobalConstants;
+import javagems3d.help.JGemsMathHelper;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
@@ -64,7 +63,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     public static float qualityMultiplier() {
-        int i = (int) JGemsHelper.MATH.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
+        int i = (int) JGemsMathHelper.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 
@@ -85,7 +84,7 @@ public class ShadowScene implements IShadowScene {
     }
 
     private Vector2i getShadowResolution() {
-        return new Vector2i((int) (JGemsRenderingGlobalConstants.MAX_SHADOW_RES * ShadowScene.qualityMultiplier()));
+        return new Vector2i((int) (JGemsConfiguration.RENDERING.MAX_SHADOW_RES * ShadowScene.qualityMultiplier()));
     }
 
     private void initSunLightShadow() {
@@ -93,8 +92,8 @@ public class ShadowScene implements IShadowScene {
     }
 
     private void initPointLightShadows() {
-        this.pointLightShadows = new ArrayList<>(JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS);
-        for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
+        this.pointLightShadows = new ArrayList<>(JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS_SHADOWS);
+        for (int i = 0; i < JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS_SHADOWS; i++) {
             this.pointLightShadows.add(new PointLightShadow(this.getEnvironment(), this.getShadowResolution(), i));
         }
     }
@@ -104,14 +103,14 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void renderSceneInShadowMap(Set<SceneObject> modeledSceneObjectSet) {
-        if (!JGemsRenderingGlobalConstants.USE_SHADOWS || JGemsDebugGlobalConstants.FULL_BRIGHT) {
+        if (!JGemsConfiguration.RENDERING.USE_SHADOWS || JGemsConfiguration.DEBUG.FULL_BRIGHT) {
             this.renderNullShadows();
             return;
         }
         this.getSunLightShadow().refreshCascades();
         Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().isShadowCaster()).collect(Collectors.toSet());
         boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
-        if (JGemsRenderingGlobalConstants.DRAW_BACK_FACES_FOR_SHADOWS) {
+        if (JGemsConfiguration.RENDERING.DRAW_BACK_FACES_FOR_SHADOWS) {
             GL46.glDisable(GL46.GL_CULL_FACE);
         }
         Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(filtered);
@@ -132,12 +131,12 @@ public class ShadowScene implements IShadowScene {
         OpenGLRenderer.setViewPort(resolution);
         blurring.beginShading();
         blurring.performUniform(new UniformString("projection_model_matrix"), UniformFunctions.MAT4F(TransformUtils.getModelOrthographicMatrix(screenModel.getPose(), TransformUtils.getOrthographic2DMatrix(0, resolution.x, resolution.y, 0))));
-        for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsConfiguration.RENDERING.CASCADE_SPLITS; i++) {
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(0.0f));
             blurring.performUniformTexture(new UniformString("texture_sampler"), this.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
-            JGemsHelper.RENDERING.renderModel2D(screenModel, GL46.GL_TRIANGLES);
+            JGemsRenderingHelper.renderModel2D(screenModel, GL46.GL_TRIANGLES);
         }
         blurring.endShading();
         this.getSunLightShadow().getSunShadowFBO().unBindFBO();
@@ -153,7 +152,7 @@ public class ShadowScene implements IShadowScene {
         List<SceneObject> directRenderObjects = groups.getFirst();
         List<SceneObject> indirectRenderObjects = groups.getSecond();
 
-        for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
+        for (int i = 0; i < JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS_SHADOWS; i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             if (pointLightShadow.isAttachedToLight() && pointLightShadow.getPointLight().isEnabled()) {
                 pointLightShadow.getPointLightCubeMap().bindFBO();
@@ -185,16 +184,16 @@ public class ShadowScene implements IShadowScene {
 
         this.getSunLightShadow().getSunShadowFBO().bindFBO();
         OpenGLRenderer.setViewPort(this.getSunLightShadow().getShadowMapResolution());
-        for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsConfiguration.RENDERING.CASCADE_SPLITS; i++) {
             SunLightShadow.Cascade cascade = this.getSunLightShadow().getCascades().get(i);
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
-            GL46.glClearColor(JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.x, JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y * JGemsRenderingGlobalConstants.NEUTRAL_SHADOWS.y);
+            GL46.glClearColor(JGemsConfiguration.RENDERING.NEUTRAL_SHADOWS.x, JGemsConfiguration.RENDERING.NEUTRAL_SHADOWS.y, JGemsConfiguration.RENDERING.NEUTRAL_SHADOWS.x * JGemsConfiguration.RENDERING.NEUTRAL_SHADOWS.x, JGemsConfiguration.RENDERING.NEUTRAL_SHADOWS.y * JGemsConfiguration.RENDERING.NEUTRAL_SHADOWS.y);
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_COLOR_BUFFER_BIT);
             final Matrix4f lightProjection = cascade.getLightProjectionViewMatrix();
             Consumer<JGemsShaderManager> consumer = (shaderManager) -> {
                 shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
-                shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
-                shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.EVSM_POSITIVE_EXPONENT));
+                shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.EVSM_POSITIVE_EXPONENT));
+                shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.EVSM_POSITIVE_EXPONENT));
                 shaderManager.performUniformTexture(new UniformString("animationsMatrix"), JGemsResourceManager.getAnimationsTextureBuffer());
             };
             this.renderModelsIndirect(consumer, Pipeline.SUN_LIGHT_SHADOW_MAP, indirectRenderObjects);
@@ -242,13 +241,13 @@ public class ShadowScene implements IShadowScene {
     protected void renderNullShadows() {
         GL46.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         this.getSunLightShadow().getSunShadowFBO().bindFBO();
-        for (int i = 0; i < JGemsRenderingGlobalConstants.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsConfiguration.RENDERING.CASCADE_SPLITS; i++) {
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
         }
         this.getSunLightShadow().getSunShadowFBO().unBindFBO();
 
-        for (int i = 0; i < JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS; i++) {
+        for (int i = 0; i < JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS_SHADOWS; i++) {
             PointLightShadow pointLightShadow = this.getPointLightShadows().get(i);
             pointLightShadow.getPointLightCubeMap().bindFBO();
             for (int j = 0; j < 6; j++) {
@@ -262,8 +261,8 @@ public class ShadowScene implements IShadowScene {
     }
 
     public void bindPointLightToShadowScene(int attachCode, PointLight pointLight) {
-        if (attachCode >= JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS) {
-            Log.get().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + JGemsGlobalConfiguration.MAX_POINT_LIGHTS_SHADOWS);
+        if (attachCode >= JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS_SHADOWS) {
+            Log.get().warn("Couldn't attach point light with code: " + attachCode + ", because reached limit: " + JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS_SHADOWS);
             return;
         }
         PointLightShadow pointLightShadow = this.getPointLightShadows().get(attachCode);

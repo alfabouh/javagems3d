@@ -1,12 +1,11 @@
 package javagems3d.graphics.rendering.programs.indirect.commands;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.indirect.IndirectObjectsRenderer;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.service.exceptions.JGemsNullException;
-import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -37,7 +36,7 @@ public class BaseIndirectCommandsProgram extends IndirectCommandsProgram {
             }
             int id = i++;
             idMap.put(sceneObject, id);
-            JGemsHelper.UTILS.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{
+            JGemsUtils.putObjectInMapOrUpdate(objectsMap, meshBuffer, new HashSet<SceneObject>() {{
                 add(sceneObject);
             }}, (ex, nw) ->
             {

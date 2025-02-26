@@ -1,7 +1,7 @@
 package workbench.graphics.screen;
 
 import javagems3d.JGems3D;
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.IScreen;
 import javagems3d.graphics.screen.OpenGLSysUtils;
@@ -44,6 +44,8 @@ public class WBenchScreen implements IScreen {
     public void createObjects(IWindow window) {
         this.controllerDispatcher = new WBenchControllerDispatcher(window);
         this.scene = new WBenchScene(window, new WBenchWorld());
+
+        WBench.get().getProjectManager().setWorld(this.getScene().getWorld());
     }
 
     public void createScreenAndContext() {
@@ -62,10 +64,17 @@ public class WBenchScreen implements IScreen {
             WBenchResourceManager.createShaders();
             this.setScreenCallbacks();
             OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
-            this.getWindow().showWindow();
         } else {
             throw new JGemsRuntimeException("Caught service, while building screen!");
         }
+    }
+
+    private void showScreen() {
+        GL46.glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
+        this.getWindow().showWindow();
+        GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
+        GLFW.glfwPollEvents();
     }
 
     private void setScreenCallbacks() {
@@ -105,8 +114,8 @@ public class WBenchScreen implements IScreen {
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
-        int width = JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH;
-        int height = JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT;
+        int width = JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH;
+        int height = JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT;
 
         this.window = new Window(width, height, new Window.WindowProperties(WBench.get().toString()));
         long window = this.getWindow().getDescriptor();
@@ -114,8 +123,8 @@ public class WBenchScreen implements IScreen {
             throw new JGemsRuntimeException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
-            int x = (vidMode.width() - JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH) / 2;
-            int y = (vidMode.height() - JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT) / 2;
+            int x = (vidMode.width() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH) / 2;
+            int y = (vidMode.height() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT) / 2;
             GLFW.glfwSetWindowPos(window, x, y);
         } else {
             return false;
@@ -144,8 +153,9 @@ public class WBenchScreen implements IScreen {
 
     public void runRenderThread() {
         Log.get().info("Starting screen");
-        GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        WBench.get().getResourceManager().loadGlobalResources();
         this.getScene().preRender();
+        this.showScreen();
         try {
             this.renderLoop();
         } catch (Exception e) {
@@ -175,7 +185,7 @@ public class WBenchScreen implements IScreen {
             this.getWindow().refreshFocusState();
             this.getTimerPool().update();
             this.renderGameScene(deltaTimer.getDeltaTime());
-            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsGlobalConfiguration.RENDER_TICKS_UPD_RATE)) {
+            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsConfiguration.SYSTEM.RENDER_TICKS_UPD_RATE)) {
                 this.renderTicks += 0.01f;
             }
             fps += 1;

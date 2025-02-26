@@ -11,7 +11,8 @@
 
 package javagems3d.graphics.screen;
 
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.help.JGemsCoreHelper;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.profiler.SpeedProfiler;
@@ -22,10 +23,8 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryUtil;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.SoundListener;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.UIText;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
@@ -82,7 +81,7 @@ public class JGemsScreen implements IScreen {
     public void createScreenAndContext() {
         Log.get().info("Init Graphics");
         if (this.tryToBuildScreen()) {
-            JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsRenderingGlobalConstants.FOV, JGemsRenderingGlobalConstants.Z_NEAR, JGemsRenderingGlobalConstants.Z_FAR);
+            JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsConfiguration.RENDERING.FOV, JGemsConfiguration.RENDERING.Z_NEAR, JGemsConfiguration.RENDERING.Z_FAR);
             JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
 
             this.adjustScreenMode();
@@ -146,8 +145,8 @@ public class JGemsScreen implements IScreen {
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         boolean flag = vidMode != null && JGems3D.get().getGameSettings().windowMode.getValue() == 0;
 
-        int width = flag ? vidMode.width() : JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH;
-        int height = flag ? vidMode.height() : JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT;
+        int width = flag ? vidMode.width() : JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH;
+        int height = flag ? vidMode.height() : JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT;
 
         this.window = new Window(width, height, JGems3D.getAPIAppData().getWindowProperties());
         long window = this.getWindow().getDescriptor();
@@ -155,8 +154,8 @@ public class JGemsScreen implements IScreen {
             throw new JGemsRuntimeException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
-            int x = (vidMode.width() - JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH) / 2;
-            int y = (vidMode.height() - JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT) / 2;
+            int x = (vidMode.width() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH) / 2;
+            int y = (vidMode.height() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT) / 2;
             GLFW.glfwSetWindowPos(window, x, y);
         } else {
             return false;
@@ -223,7 +222,7 @@ public class JGemsScreen implements IScreen {
 
     public void runRenderThread() {
         Log.get().info("Starting screen");
-        SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
+        SoundListener.updateListenerGain(JGemsCoreHelper.getMainObject().getGameSettings());
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
@@ -258,7 +257,7 @@ public class JGemsScreen implements IScreen {
             this.getWindow().refreshFocusState();
             this.getTimerPool().update();
             this.renderGameScene(deltaTimer.getDeltaTime());
-            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsGlobalConfiguration.RENDER_TICKS_UPD_RATE)) {
+            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsConfiguration.SYSTEM.RENDER_TICKS_UPD_RATE)) {
                 this.renderTicks += 0.01f;
             }
             fps += 1;
@@ -290,7 +289,7 @@ public class JGemsScreen implements IScreen {
         if (JGems3D.get().isValidPlayer()) {
             SoundListener.updateOrientationAndPosition(JGemsTransformManager.INSTANCE.getCameraViewMatrix(), this.getCamera().getCamPosition());
         }
-        SoundListener.updateListenerGain(JGemsHelper.getMainObject().getGameSettings());
+        SoundListener.updateListenerGain(JGemsCoreHelper.getMainObject().getGameSettings());
     }
 
     public SceneWorld getSceneWorld() {

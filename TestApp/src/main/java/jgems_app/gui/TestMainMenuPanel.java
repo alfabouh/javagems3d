@@ -23,7 +23,6 @@
 package jgems_app.gui;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
@@ -36,13 +35,14 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.help.JGemsUIHelper;
 import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.map.loaders.custom.DefaultMap;
 
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +69,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
             JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-            JGemsHelper.RENDERING.renderModel2D(model, GL46.GL_TRIANGLES);
+            JGemsRenderingHelper.renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }
     }
@@ -93,7 +93,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         JGemsUI.buttonUI("SponzaMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().entryMap(new TestMap());
-                    JGemsHelper.UI.openUIPanel(new DefaultGamePanel(null));
+                    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                 });
 
         JGemsUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
@@ -104,7 +104,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                             return (world, startPos, startRot) -> new Pair<>(new TestPlayer(world, startPos, startRot), null);
                         }
                     });
-                    JGemsHelper.UI.openUIPanel(new DefaultGamePanel(null));
+                    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                 });
 
         JGemsUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)

@@ -14,11 +14,11 @@ package javagems3d.graphics.rendering.scene;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsWindowHelper;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
@@ -48,7 +48,7 @@ public class JGemsScene implements IScene {
 
     @SuppressWarnings("all")
     public void renderScene(float frameDeltaTime) throws InterruptedException {
-        if (JGemsHelper.WINDOW.isWindowActive()) {
+        if (JGemsWindowHelper.isWindowActive()) {
             JGemsOpenGLRenderer.UBOShader().beginShading();
             if (this.getCamera() != null) {
                 this.elapsedTime += frameDeltaTime / JGemsPhysics.getFrameTime();

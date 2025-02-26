@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.particles.attributes;
 
-import javagems3d.JGemsHelper;
+import javagems3d.help.JGemsMathHelper;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
@@ -51,7 +51,7 @@ public class ParticleAttributes {
     }
 
     public ParticleAttributes setBrightness(float brightness) {
-        this.brightness = JGemsHelper.MATH.clamp(brightness, 0.0f, 1.0f);
+        this.brightness = JGemsMathHelper.clamp(brightness, 0.0f, 1.0f);
         return this;
     }
 

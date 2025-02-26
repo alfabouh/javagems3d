@@ -12,7 +12,7 @@
 package javagems3d.graphics.environment.lights.scene;
 
 import api.events.EventBus;
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.LightType;
@@ -53,13 +53,13 @@ public class LightsScene implements ILightsScene {
     }
 
     private void initCollections() {
-        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(JGemsGlobalConfiguration.MAX_POINT_LIGHTS));
+        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS));
     }
 
     public void addLight(Light light) {
         if (light.getLightType().equals(LightType.POINT)) {
-            if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= JGemsGlobalConfiguration.MAX_POINT_LIGHTS) {
-                throw new JGemsRuntimeException("Reached active point lights limit: " + JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
+            if (this.getPointLightList().stream().filter(PointLight::isEnabled).count() >= JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS) {
+                throw new JGemsRuntimeException("Reached active point lights limit: " + JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS);
             }
             this.getPointLightList().add((PointLight) light);
         }
@@ -111,7 +111,7 @@ public class LightsScene implements ILightsScene {
     private void updatePointLightsUbo(MemoryStack stack, Matrix4f viewMatrix) {
         List<PointLight> pointLights = this.getPointLightList().stream().filter(PointLight::isEnabled).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1)).collect(Collectors.toList());
 
-        FloatBuffer value1Buffer = stack.mallocFloat(LightsScene.PL_STRUCT_SIZE * JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = stack.mallocFloat(LightsScene.PL_STRUCT_SIZE * JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS);
         int total = pointLights.size();
         for (int i = 0; i < total; i++) {
             PointLight pointLight = pointLights.get(i);
@@ -142,12 +142,12 @@ public class LightsScene implements ILightsScene {
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(total);
         intBuffer.flip();
-        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsGlobalConfiguration.MAX_POINT_LIGHTS * LightsScene.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS * LightsScene.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
     }
 
     public void removeAllLights(MemoryStack stack) {
         boolean flag = JGemsOpenGLRenderer.UBOShader().beginShading();
-        FloatBuffer value1Buffer = stack.mallocFloat(LightsScene.PL_STRUCT_SIZE * JGemsGlobalConfiguration.MAX_POINT_LIGHTS);
+        FloatBuffer value1Buffer = stack.mallocFloat(LightsScene.PL_STRUCT_SIZE * JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS);
         for (int i = 0; i < this.getPointLightList().size(); i++) {
             value1Buffer.put(0.0f);
             value1Buffer.put(0.0f);
@@ -176,7 +176,7 @@ public class LightsScene implements ILightsScene {
         IntBuffer intBuffer = stack.mallocInt(1);
         intBuffer.put(0);
         intBuffer.flip();
-        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsGlobalConfiguration.MAX_POINT_LIGHTS * LightsScene.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
+        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.PointLights, JGemsConfiguration.SYSTEM.MAX_POINT_LIGHTS * LightsScene.PL_STRUCT_SIZE * Integer.BYTES, intBuffer);
         this.getPointLightList().clear();
         if (flag) {
             JGemsOpenGLRenderer.UBOShader().endShading();

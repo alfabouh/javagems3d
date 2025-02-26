@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh.vertex.attributes;
 
-import javagems3d.JGemsHelper;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -18,7 +18,7 @@ public final class DoubleVertexAttribute extends VertexAttribute<Double> {
     @Override
     public void pushGLBuffer() {
         this.doubleBuffer = MemoryUtil.memAllocDouble(this.getValues().size());
-        this.doubleBuffer.put(JGemsHelper.UTILS.convertDoublesArray(this.getValues())).flip();
+        this.doubleBuffer.put(JGemsUtils.convertDoublesArray(this.getValues())).flip();
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, (DoubleBuffer) this.getBuffer(), GL46.GL_STATIC_DRAW);
         MemoryUtil.memFree(this.doubleBuffer);
     }

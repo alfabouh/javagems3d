@@ -16,10 +16,10 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.help.JGemsUtils;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
-import javagems3d.JGemsHelper;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.graph.Graph;
 import javagems3d.system.graph.GraphEdge;
@@ -84,7 +84,7 @@ public class LinesDebugDraw {
             }
         }
 
-        float[] aPoints = JGemsHelper.UTILS.convertFloatsArray(points);
+        float[] aPoints = JGemsUtils.convertFloatsArray(points);
 
         this.navMeshFloatBuffer = MemoryUtil.memAllocFloat(aPoints.length);
         this.navMeshFloatBuffer.put(aPoints).flip();

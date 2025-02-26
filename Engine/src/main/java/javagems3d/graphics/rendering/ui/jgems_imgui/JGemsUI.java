@@ -11,17 +11,15 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui;
 
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.help.JGemsCoreHelper;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.*;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsRenderingGlobalConstants;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
@@ -78,8 +76,8 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     }
 
     public static float GET_GLOBAL_UI_SCALING() {
-        if (!JGemsRenderingGlobalConstants.AUTO_SCREEN_SCALING) {
-            return (float) (1.0f / Math.pow(2.0f, JGemsRenderingGlobalConstants.GLOBAL_UI_SCALING));
+        if (!JGemsConfiguration.RENDERING.AUTO_SCREEN_SCALING) {
+            return (float) (1.0f / Math.pow(2.0f, JGemsConfiguration.RENDERING.GLOBAL_UI_SCALING));
         }
         return GET_SCREEN_NORMALIZED_SCALING();
     }
@@ -87,8 +85,8 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     public static float GET_SCREEN_NORMALIZED_SCALING() {
         double width = JGems3D.get().getScreen().getWindowDimensions().x;
         double height = JGems3D.get().getScreen().getWindowDimensions().y;
-        float f1 = (float) (width / JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH);
-        float f2 = (float) (height / JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT);
+        float f1 = (float) (width / JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH);
+        float f2 = (float) (height / JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT);
         float f1_r = (float) Math.max(Math.ceil(f1 * 2.0f) / 2.0f, 1.0f);
         float f2_r = (float) Math.max(Math.ceil(f2 * 2.0f) / 2.0f, 1.0f);
         return Math.min(f1_r, f2_r);
@@ -127,7 +125,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         Iterator<UIElement> uiElementIterator = this.getUiFrameCache().values().iterator();
         while (uiElementIterator.hasNext()) {
             UIElement element = uiElementIterator.next();
-            if (element.getUnUsedTicks() > JGemsRenderingGlobalConstants.TICKS_TO_CLEAN_UNUSED_UI) {
+            if (element.getUnUsedTicks() > JGemsConfiguration.RENDERING.TICKS_TO_CLEAN_UNUSED_UI) {
                 element.clear();
                 uiElementIterator.remove();
             }
@@ -237,7 +235,7 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     }
 
     public Window getWindow() {
-        return JGemsHelper.getScreen().getWindow();
+        return JGemsCoreHelper.getScreen().getWindow();
     }
 
     public PanelUI getCurrentPanel() {

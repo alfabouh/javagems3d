@@ -14,7 +14,7 @@ package javagems3d.graphics.world;
 import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.JGems3D;
-import javagems3d.global.JGemsDebugGlobalConstants;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.JGemsEnvironment;
@@ -72,7 +72,7 @@ public final class SceneWorld implements IWorld {
     @Override
     public void onWorldStart() {
         EventLauncher.pushEvent(new EventBus.RenderWorldStart(EventBus.Run.PRE, this));
-        JGemsDebugGlobalConstants.reset();
+        JGemsConfiguration.DEBUG.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
         this.ticks = 0;

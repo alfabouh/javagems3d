@@ -1,7 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.indirect;
 
-import javagems3d.global.JGemsGlobalConfiguration;
-import javagems3d.global.JGemsRenderingGlobalConstants;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -26,10 +25,10 @@ import java.nio.IntBuffer;
 import java.util.*;
 
 public abstract class IndirectObjectsRenderer {
-    protected static final int SSBO_DATASETS_MATRICES_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
-    protected static final int SSBO_DATASETS_ENT_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
-    protected static final int SSBO_DATASETS_MATERIAL_IDS_SIZE = JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS;
-    protected static final int SSBO_DATASETS_PROPERTIES_SIZE = JGemsGlobalConfiguration.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_PROPERTIES;
+    protected static final int SSBO_DATASETS_MATRICES_SIZE = JGemsConfiguration.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS * 16;
+    protected static final int SSBO_DATASETS_ENT_IDS_SIZE = JGemsConfiguration.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS;
+    protected static final int SSBO_DATASETS_MATERIAL_IDS_SIZE = JGemsConfiguration.SYSTEM.MAX_INDIRECT_RENDERING_MESH_DATASETS;
+    protected static final int SSBO_DATASETS_PROPERTIES_SIZE = JGemsConfiguration.SYSTEM.INDIRECT_RENDERING_PROPERTIES_PACK_SIZE * JGemsConfiguration.SYSTEM.MAX_INDIRECT_RENDERING_MESH_PROPERTIES;
 
     private final Pipeline pipeline;
 
@@ -155,7 +154,7 @@ public abstract class IndirectObjectsRenderer {
         switch (this.getPipeline()) {
             case POINT_LIGHT_SHADOW_MAP:
             case SUN_LIGHT_SHADOW_MAP: {
-                return JGemsRenderingGlobalConstants.CAST_SHADOWS_FROM_TRANSPARENT_MESHES ? Mode.ALL : Mode.ONLY_SOLID;
+                return JGemsConfiguration.RENDERING.CAST_SHADOWS_FROM_TRANSPARENT_MESHES ? Mode.ALL : Mode.ONLY_SOLID;
             }
             case TRANSPARENCY: {
                 return Mode.ONLY_TRANSPARENT;

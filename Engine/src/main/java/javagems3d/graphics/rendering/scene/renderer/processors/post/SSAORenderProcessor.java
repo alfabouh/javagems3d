@@ -1,8 +1,9 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsRenderingGlobalConstants;
+import javagems3d.help.JGemsMathHelper;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
@@ -52,7 +53,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     protected void createSSAOResources(@Nullable Vector3i ssaoParams) {
         if (ssaoParams != null) {
             this.ssaoKernelTexture = this.calcSSAOKernel(ssaoParams.z * ssaoParams.z);
-            this.ssaoNoiseTexture = this.calcSSAONoise(JGemsRenderingGlobalConstants.SSAO_NOISE_SIZE * JGemsRenderingGlobalConstants.SSAO_NOISE_SIZE);
+            this.ssaoNoiseTexture = this.calcSSAONoise(JGemsConfiguration.RENDERING.SSAO_NOISE_SIZE * JGemsConfiguration.RENDERING.SSAO_NOISE_SIZE);
             this.ssaoBufferTexture = this.createSSAOBuffer(new Vector2i(ssaoParams.x, ssaoParams.y));
         }
     }
@@ -74,7 +75,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        if (this.getSsaoBufferTexture() == null || !JGemsRenderingGlobalConstants.USE_SSAO) {
+        if (this.getSsaoBufferTexture() == null || !JGemsConfiguration.RENDERING.USE_SSAO) {
             GL46.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -85,11 +86,11 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         JGemsShaderManager ssaoComputeShader = this.getSsaoComputing();
         ssaoComputeShader.beginComputing();
 
-        ssaoComputeShader.performUniform(new UniformString("ssao_bias"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.SSAO_BIAS));
-        ssaoComputeShader.performUniform(new UniformString("ssao_radius"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.SSAO_RADIUS));
-        ssaoComputeShader.performUniform(new UniformString("ssao_range"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.SSAO_RANGE));
+        ssaoComputeShader.performUniform(new UniformString("ssao_bias"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.SSAO_BIAS));
+        ssaoComputeShader.performUniform(new UniformString("ssao_radius"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.SSAO_RADIUS));
+        ssaoComputeShader.performUniform(new UniformString("ssao_range"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.SSAO_RANGE));
 
-        ssaoComputeShader.performUniform(new UniformString("noiseScale"), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsRenderingGlobalConstants.SSAO_NOISE_SIZE)));
+        ssaoComputeShader.performUniform(new UniformString("noiseScale"), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsConfiguration.RENDERING.SSAO_NOISE_SIZE)));
         ssaoComputeShader.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
         ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
         ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
@@ -103,7 +104,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         ssaoBlur.beginShading();
         ssaoBlur.performUniformTexture(new UniformString("texture_sampler"), this.getSsaoBufferTexture());
         ssaoBlur.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         ssaoBlur.endShading();
     }
 
@@ -120,7 +121,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
             sample.mul(JGems3D.random.nextFloat());
 
             float scale = (float) i / ((float) size);
-            scale = JGemsHelper.MATH.lerp(0.1f, 1.0f, scale * scale);
+            scale = JGemsMathHelper.interpolate(0.1f, 1.0f, scale * scale);
             sample.mul(scale);
 
             floatBuffer.put(sample.x);

@@ -11,10 +11,10 @@
 
 package javagems3d.physics.entities.collectabes;
 
+import javagems3d.help.JGemsCoreHelper;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
 import javagems3d.audio.sound.data.SoundType;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.world.IWorld;
@@ -45,7 +45,7 @@ public class EntityCollectableItem extends WorldItem {
             if (e instanceof IInventoryOwner) {
                 IInventoryOwner inventory = (IInventoryOwner) e;
                 if (inventory.getInventory().addItemInInventory(this.getInventoryItem())) {
-                    JGemsHelper.getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 1.5f, 1.0f, 1.0f, this.getPosition());
+                    JGemsCoreHelper.getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 1.5f, 1.0f, 1.0f, this.getPosition());
                     Log.get().trace("Put " + this.getInventoryItem().getName() + " in inventory");
                     this.setDead();
                 }

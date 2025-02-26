@@ -11,12 +11,12 @@
 
 package javagems3d.graphics.particles.objects.base;
 
+import javagems3d.help.JGemsCoreHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.particles.attributes.ParticleAttributes;
 import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.world.SceneWorld;
@@ -47,10 +47,10 @@ public abstract class ParticleFX implements IWorldObject {
         this.world = world;
         this.particleTexturesPack = particleTexturesPack;
 
-        this.liveTimer = JGemsHelper.createTimer();
+        this.liveTimer = JGemsCoreHelper.createTimer();
 
         if (particleTexturesPack != null) {
-            this.frameTimer = JGemsHelper.createTimer();
+            this.frameTimer = JGemsCoreHelper.createTimer();
         } else {
             this.frameTimer = null;
         }

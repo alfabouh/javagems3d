@@ -14,6 +14,7 @@ package javagems3d;
 import api.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
+import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.os.OS;
 import javagems3d.system.os.SysOSValidation;
 import logger.Log;
@@ -204,7 +205,7 @@ public final class JGems3D {
         JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
         JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
         JGems3D.get().getScreen().refreshSceneResources();
-        JGems3D.get().getLocalisation().setLanguage(JGemsHelper.GAME.getGameSettings().language.getCurrentLanguage());
+        JGems3D.get().getLocalisation().setLanguage(JGemsCoreHelper.getGameSettings().language.getCurrentLanguage());
         this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
         JGems3D.get().getScreen().removeLoadingScreen();
     }
@@ -270,6 +271,7 @@ public final class JGems3D {
     }
 
     public static void close(@Nullable Exception exception) {
+        Log.get().warn("Exit...");
         synchronized (JGems3D.get()) {
             JGems3D.get().shouldBeClosed = true;
             JGems3D.get().getCore().addExceptionInTrace(exception);

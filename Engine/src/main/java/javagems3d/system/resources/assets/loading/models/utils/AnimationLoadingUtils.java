@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.loading.models.utils;
 
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.components.Bone;
@@ -31,7 +31,7 @@ public abstract class AnimationLoadingUtils {
                 animations.add(animation);
 
                 for (int j = 0; j < maxFrames; j++) {
-                    Matrix4f[] boneMatrices = new Matrix4f[JGemsGlobalConfiguration.ANIM_MAX_BONES];
+                    Matrix4f[] boneMatrices = new Matrix4f[JGemsConfiguration.SYSTEM.ANIM_MAX_BONES];
                     Arrays.fill(boneMatrices, new Matrix4f().identity());
                     AnimationFrame animationFrame = new AnimationFrame(boneMatrices);
                     AnimationLoadingUtils.createFrameMatrices(aiAnimation, bonesList, animationFrame, j, root, root.getTransformation(), globalInverseTransformation);
@@ -73,7 +73,7 @@ public abstract class AnimationLoadingUtils {
         for (int i = 0; i < totalVertices; i++) {
             List<VertexWeight> vertexWeightList = weightMap.get(i);
             int size = vertexWeightList != null ? vertexWeightList.size() : 0;
-            for (int j = 0; j < JGemsGlobalConfiguration.ANIM_MAX_WEIGHTS; j++) {
+            for (int j = 0; j < JGemsConfiguration.SYSTEM.ANIM_MAX_WEIGHTS; j++) {
                 if (j < size) {
                     VertexWeight vertexWeight = vertexWeightList.get(j);
                     weights.add(vertexWeight.getWeight());

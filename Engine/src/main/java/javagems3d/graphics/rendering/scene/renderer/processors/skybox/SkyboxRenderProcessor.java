@@ -1,6 +1,5 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
@@ -10,6 +9,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
@@ -62,7 +62,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         skyShaderManager.performUniform(new UniformString("view_mat_inverted"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
         skyShaderManager.performModel3DViewMatrix(new UniformString("model_view_matrix"), viewMatrix);
         skyShaderManager.performUniformTexture(new UniformString("skybox"), this.getSkyBox().getSky2DTexture());
-        JGemsHelper.RENDERING.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
         skyShaderManager.endShading();
         GL46.glDepthFunc(GL46.GL_LESS);
         GL46.glEnable(GL46.GL_CULL_FACE);

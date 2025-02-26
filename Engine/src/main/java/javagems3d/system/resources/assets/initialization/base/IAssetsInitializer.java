@@ -11,7 +11,7 @@
 
 package javagems3d.system.resources.assets.initialization.base;
 
-import javagems3d.JGemsHelper;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -47,8 +47,8 @@ public interface IAssetsInitializer {
 
     static MeshBuffer createDefaultCubeBuffer() {
         DataMesh dataMesh = new DataMesh();
-        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsHelper.UTILS.convertFloatsList(IAssetsInitializer.CubeModelPos));
-        dataMesh.putVertexIndexes(JGemsHelper.UTILS.convertIntsList(IAssetsInitializer.CubeModelInd));
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsUtils.convertFloatsList(IAssetsInitializer.CubeModelPos));
+        dataMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
         MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, null);
         return new MeshBuffer(meshBufferMeshNode3D);
     }
@@ -56,7 +56,7 @@ public interface IAssetsInitializer {
     static MeshGroup createDefaultCubeGroup() {
         try (RenderMesh renderMesh = new RenderMesh()) {
             renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS).putArray(IAssetsInitializer.CubeModelPos));
-            renderMesh.putVertexIndexes(JGemsHelper.UTILS.convertIntsList(IAssetsInitializer.CubeModelInd));
+            renderMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
             MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, null);
             return new MeshGroup(meshBufferMeshNode3D);
         }

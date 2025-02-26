@@ -18,8 +18,12 @@ import imgui.type.ImInt;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -28,12 +32,13 @@ import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 public class DearUIRenderer implements IWindow.ResizeEvent {
@@ -43,27 +48,40 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     private GLFWKeyCallback prevKeyCallback;
     private final IWindow window;
 
-    public DearUIRenderer(@NotNull IWindow window, @NotNull JGemsShaderManager imguiShader, @NotNull SystemResources systemResources) {
+    public DearUIRenderer(@NotNull IWindow window, @NotNull JGemsShaderManager imguiShader, @Nullable JGemsPath pathToJarFont, @NotNull SystemResources systemResources) {
         this.shaderManager = imguiShader;
         this.window = window;
 
-        this.createUIResources(systemResources);
+        this.createUIResources(systemResources, pathToJarFont);
         this.createUICallbacks(this.getWindow());
     }
 
-    private void createUIResources(SystemResources systemResources) {
+    private void createUIResources(SystemResources systemResources, @Nullable JGemsPath pathToJarFont) {
         ImGui.createContext();
 
         ImGuiIO imGuiIO = ImGui.getIO();
         imGuiIO.setIniFilename(null);
         imGuiIO.setDisplaySize(this.getWindow().getWindowSize().x, this.getWindow().getWindowSize().y);
 
-        ImFontAtlas fontAtlas = ImGui.getIO().getFonts();
+        ImFontAtlas fontAtlas = imGuiIO.getFonts();
+
+        if (pathToJarFont != null) {
+            try (InputStream stream = JGems3D.loadFileFromJar(pathToJarFont)) {
+                byte[] fontData = JGemsFilesHelper.toByteArray(stream);
+                ImFontConfig fontConfig = new ImFontConfig();
+                fontConfig.setGlyphRanges(fontAtlas.getGlyphRangesCyrillic());
+                fontAtlas.addFontFromMemoryTTF(fontData, 12, fontConfig);
+                fontConfig.destroy();
+            } catch (IOException e) {
+                Log.get().exception(e);
+            }
+        }
+
         ImInt width = new ImInt();
         ImInt height = new ImInt();
-
         ByteBuffer buffer = fontAtlas.getTexDataAsRGBA32(width, height);
         this.textureSample = systemResources.createTexture(null, "imgui_fonts", buffer, new Vector2i(width.get(), height.get()), new ImageTexture.Properties(false, false, false, false, false));
+
         this.dearImGuiMesh = new DearUIMesh();
     }
 

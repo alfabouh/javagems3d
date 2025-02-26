@@ -1,8 +1,8 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsRenderingGlobalConstants;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -36,12 +36,12 @@ public class FXAARenderProcessor extends IRenderProcessor.Template {
     public void runProcessorRendering(FrameTicking frameTicking) {
         JGemsShaderManager fxaaFilter = this.getFxaaShader();
         fxaaFilter.beginShading();
-        fxaaFilter.performUniform(new UniformString("use_fxaa"), UniformFunctions.BOOLEAN(JGemsRenderingGlobalConstants.USE_FXAA));
+        fxaaFilter.performUniform(new UniformString("use_fxaa"), UniformFunctions.BOOLEAN(JGemsConfiguration.RENDERING.USE_FXAA));
         fxaaFilter.performUniform(new UniformString("resolution"), UniformFunctions.VEC2I(this.getRenderingResolution()));
         fxaaFilter.performUniformTexture(new UniformString("texture_sampler"), this.getInColor().getTextureByIndex(0));
         fxaaFilter.performUniform(new UniformString("FXAA_SPAN_MAX"), UniformFunctions.FLOAT((float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2)));
         fxaaFilter.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         fxaaFilter.endShading();
     }
 

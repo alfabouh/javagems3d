@@ -1,8 +1,8 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
-import javagems3d.global.JGemsRenderingGlobalConstants;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -39,7 +39,7 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        if (!JGemsRenderingGlobalConstants.USE_BLOOM || JGems3D.get().getGameSettings().bloom.getValue() == 0) {
+        if (!JGemsConfiguration.RENDERING.USE_BLOOM || JGems3D.get().getGameSettings().bloom.getValue() == 0) {
             this.getOutColor().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             this.getOutColor().unBindFBO();
@@ -56,7 +56,7 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
             blurShader.performUniformTexture(new UniformString("texture_sampler"), startFbo.getTextureByIndex(startBinding));
             blurShader.performUniform(new UniformString("direction"), UniformFunctions.VEC2F(i % 2 == 0 ? new Vector2f(1.0f, 0.0f) : new Vector2f(0.0f, 1.0f)));
             blurShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-            JGemsHelper.RENDERING.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+            JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
             this.getOutColor().unBindFBO();
             startFbo = this.getOutColor();
             startBinding = 0;

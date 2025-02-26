@@ -11,10 +11,10 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
+import javagems3d.help.JGemsResourcesHelper;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
@@ -52,7 +52,7 @@ public class DefaultSettingsPanel extends AbstractPanelUI {
         JGemsUI.buttonUI(JGems3D.get().I18n("menu.save"), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(windowW / 2 - 150, y += 50), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().getGameSettings().saveOptions();
-                    JGemsHelper.RESOURCES.reloadResources();
+                    JGemsResourcesHelper.reloadResources();
                     this.goBack(JGemsUI);
                 });
 

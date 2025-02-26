@@ -1,7 +1,7 @@
 package javagems3d.system.resources.assets.loading.models;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.loading.models.utils.AnimationLoadingUtils;
 import javagems3d.system.resources.assets.materials.Material;
@@ -62,10 +62,10 @@ public class ModelMeshLoader implements ILoadingHelper {
             throw new JGemsNullException("There was an error, while loading the model");
         }
         if (createCollision) {
-            JGemsHelper.UTILS.createMeshCollisionData(meshGroup);
+            JGemsUtils.createMeshCollisionData(meshGroup);
         }
         if (createAabb) {
-            JGemsHelper.UTILS.createMeshAABBData(meshGroup);
+            JGemsUtils.createMeshAABBData(meshGroup);
         }
         meshGroup.setMemMode(mode);
         if (meshGroup.getMemMode().equals(MemMode.ERASE_NODES_DATA)) {
@@ -92,10 +92,10 @@ public class ModelMeshLoader implements ILoadingHelper {
             throw new JGemsNullException("There was an error, while loading the model");
         }
         if (createCollision) {
-            JGemsHelper.UTILS.createMeshCollisionData(meshBuffer);
+            JGemsUtils.createMeshCollisionData(meshBuffer);
         }
         if (createAabb) {
-            JGemsHelper.UTILS.createMeshAABBData(meshBuffer);
+            JGemsUtils.createMeshAABBData(meshBuffer);
         }
         meshBuffer.setMemMode(mode);
         return meshBuffer;

@@ -14,13 +14,14 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.help.JGemsUIHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
@@ -49,7 +50,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
             JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-            JGemsHelper.RENDERING.renderModel2D(model, GL46.GL_TRIANGLES);
+            JGemsRenderingHelper.renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }
     }
@@ -74,7 +75,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
         JGemsUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().entryMap(new DefaultMap());
-                    JGemsHelper.UI.openUIPanel(new DefaultGamePanel(null));
+                    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                 });
 
         JGemsUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)

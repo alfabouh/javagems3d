@@ -15,6 +15,7 @@ import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
+import javagems3d.help.JGemsWorldHelper;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.system.core.player.IPlayerConstructor;
@@ -29,7 +30,6 @@ import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
@@ -52,11 +52,11 @@ public class DefaultMap implements IMapLoader {
         //world.setMapNavGraph(Graph.readFromFile(new JGemsPath("/assets/jgems/nav.mesh")));
 
         JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(JGemsResourceManager.globalModelAssets.ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
-        JGemsHelper.WORLD.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
+        JGemsWorldHelper.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, JGemsResourceManager.globalModelAssets.ground2));
         worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
 
         Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
-        JGemsHelper.WORLD.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
+        JGemsWorldHelper.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
         //CubeAI cubeAI = new CubeAI(world, new Vector3f(0.0f), "grass");
         //JGemsHelper.WORLD.addItemInWorld(cubeAI, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.entityCube, JGemsResourceManager.globalModelAssets.cube));

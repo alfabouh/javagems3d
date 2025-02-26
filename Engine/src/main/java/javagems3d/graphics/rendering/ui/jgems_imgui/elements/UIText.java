@@ -11,15 +11,12 @@
 
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.pose.Pose2D;
@@ -60,7 +57,7 @@ public class UIText extends UIElement {
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.textModel.getModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.getFontTexture().getTexture());
         shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
-        JGemsHelper.RENDERING.renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 

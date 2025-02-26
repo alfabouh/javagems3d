@@ -15,8 +15,7 @@ import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
-import javagems3d.system.resources.assets.shaders.manager.helper.JGemsShadersHelper;
+import javagems3d.help.JGemsShadersHelper;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 

@@ -12,7 +12,6 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -37,6 +36,7 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.map.IMapActionsCallback;
 import javagems3d.system.map.loaders.IMapLoader;
 
@@ -141,7 +141,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     public void onStartRender() {
         this.constructScreenModel();
         this.jGemsUI = new JGemsUI();
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, JGemsResourceManager.getGlobalGameResources());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, null, JGemsResourceManager.getGlobalGameResources());
 
         this.setDefaultNodes();
         this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scene node: " + e.getName()));
@@ -204,7 +204,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         imgShader.beginShading();
         imgShader.performUniformTexture(new UniformString("texture_sampler"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsHelper.RENDERING.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsRenderingHelper.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
     }
 

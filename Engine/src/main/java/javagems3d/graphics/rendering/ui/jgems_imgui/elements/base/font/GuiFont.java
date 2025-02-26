@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class GuiFont {
-    public static Set<GuiFont> allCreatedFonts = new HashSet<>();
     private static int globalFonts = 0;
     private final FontCode fontCode;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
@@ -44,7 +43,6 @@ public class GuiFont {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
-        GuiFont.allCreatedFonts.add(this);
     }
 
     public GuiFont(Font font, FontCode fontCode) {
@@ -96,10 +94,6 @@ public class GuiFont {
         graphics2D.setColor(Color.WHITE);
     }
 
-    public void clear() {
-        this.getTexture().clear();
-    }
-
     public CharInfo getCharInfo(char c) {
         return this.charMap.get(c);
     }
@@ -114,6 +108,10 @@ public class GuiFont {
 
     public int getHeight() {
         return this.height;
+    }
+
+    public void clear() {
+        this.getTexture().clear();
     }
 
     public static class CharInfo {

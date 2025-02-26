@@ -18,10 +18,10 @@ import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.IWorld;
+import javagems3d.system.global.JGemsConfiguration;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.environment.fog.FogManager;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
-import javagems3d.global.JGemsDebugGlobalConstants;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
@@ -78,7 +78,7 @@ public class JGemsEnvironment implements IEnvironment {
         value1Buffer.put(this.getFogManager().getColor().y * this.getSkyBox().getSun().getSunBrightness());
         value1Buffer.put(this.getFogManager().getColor().z * this.getSkyBox().getSun().getSunBrightness());
         value1Buffer.put(0.0f);
-        value1Buffer.put(!JGemsDebugGlobalConstants.FULL_BRIGHT ? this.getFogManager().getDensity() : 0.0f);
+        value1Buffer.put(!JGemsConfiguration.DEBUG.FULL_BRIGHT ? this.getFogManager().getDensity() : 0.0f);
         value1Buffer.flip();
         JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Fog, value1Buffer);
     }

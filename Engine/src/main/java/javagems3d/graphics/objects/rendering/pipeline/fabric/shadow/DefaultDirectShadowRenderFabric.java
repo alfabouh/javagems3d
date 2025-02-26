@@ -1,6 +1,6 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.shadow;
 
-import javagems3d.global.JGemsRenderingGlobalConstants;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.IRendered;
@@ -15,7 +15,7 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.manager.helper.JGemsShadersHelper;
+import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -41,7 +41,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
     }
 
     protected void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, Model3D model) {
-        shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsRenderingGlobalConstants.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
+        shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
         JGemsShadersHelper.performAnimationsInfo(shaderManager, animated);
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {

@@ -19,13 +19,13 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import workbench.resources.WBenchResourceManager;
 
 public class RenderDataInitializer implements IAssetsInitializer {
-    public EntityRenderData entityCube;
+   // public EntityRenderData entityCube;
     public RenderDataInitializer() {
     }
 
     @Override
     public void load(SystemResources systemResources) {
-        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect())).setMeshDataGroup(WBenchResourceManager.globalModelAssets.defaultCube_bff);
+    //    this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect())).setMeshDataGroup(WBenchResourceManager.globalModelAssets.defaultCube_bff);
     }
 
     @Override

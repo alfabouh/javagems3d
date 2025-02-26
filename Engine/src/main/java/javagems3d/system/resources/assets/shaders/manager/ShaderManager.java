@@ -14,12 +14,12 @@ package javagems3d.system.resources.assets.shaders.manager;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import logger.Log;
 import org.lwjgl.opengl.GL46;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.rendering.programs.shaders.CShaderProgram;
 import javagems3d.graphics.rendering.programs.shaders.GShaderProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
@@ -188,7 +188,7 @@ public abstract class ShaderManager implements ICached {
             }
             return;
         }
-        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
+        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsRenderingHelper.getMaxTextureUnits()) {
             Log.get().error("[" + this + "] Texture attachments overflow");
             return;
         }
@@ -218,7 +218,7 @@ public abstract class ShaderManager implements ICached {
             }
             return;
         }
-        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.RENDERING.getMaxTextureUnits()) {
+        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsRenderingHelper.getMaxTextureUnits()) {
             Log.get().error("[" + this + "] Texture attachments overflow");
             return;
         }

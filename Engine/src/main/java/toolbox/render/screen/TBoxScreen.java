@@ -11,7 +11,7 @@
 
 package toolbox.render.screen;
 
-import javagems3d.global.JGemsGlobalConfiguration;
+import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.OpenGLSysUtils;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -71,14 +71,14 @@ public class TBoxScreen implements IScreen {
         OpenGLSysUtils.registerOGLDebugOutput();
 
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        this.tBoxWindow = new Window(JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH, JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT, new Window.WindowProperties(ToolBox.get().toString()));
+        this.tBoxWindow = new Window(JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT, new Window.WindowProperties(ToolBox.get().toString()));
         long window = this.getWindow().getDescriptor();
         if (window == MemoryUtil.NULL) {
             throw new JGemsNullException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
-            int x = (vidMode.width() - JGemsGlobalConfiguration.DEFAULT_SCREEN_WIDTH) / 2;
-            int y = (vidMode.height() - JGemsGlobalConfiguration.DEFAULT_SCREEN_HEIGHT) / 2;
+            int x = (vidMode.width() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH) / 2;
+            int y = (vidMode.height() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT) / 2;
             GLFW.glfwSetWindowPos(window, x, y);
         } else {
             return false;

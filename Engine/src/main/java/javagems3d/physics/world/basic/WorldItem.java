@@ -11,11 +11,11 @@
 
 package javagems3d.physics.world.basic;
 
+import javagems3d.help.JGemsUtils;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import javagems3d.JGemsHelper;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
@@ -140,7 +140,7 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public Vector3f getLookVector() {
-        return JGemsHelper.UTILS.calcLookVector(this.getRotation());
+        return JGemsUtils.calcLookVector(this.getRotation());
     }
 
     public void setDead() {

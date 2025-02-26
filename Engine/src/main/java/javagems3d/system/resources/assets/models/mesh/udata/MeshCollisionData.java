@@ -14,20 +14,15 @@ package javagems3d.system.resources.assets.models.mesh.udata;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
-import com.jme3.bullet.collision.shapes.infos.CompoundMesh;
 import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
-import javagems3d.JGemsHelper;
+import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.service.collections.Pair;
 import vhacd.VHACD;
 import vhacd.VHACDHull;
 import vhacd.VHACDParameters;
-import vhacd4.Vhacd4;
-import vhacd4.Vhacd4Hull;
-import vhacd4.Vhacd4Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +73,7 @@ public class MeshCollisionData implements IMeshUserData {
             for (Integer vertexIndex : vertexIndexes) {
                 integers[intIndex++] = vertexIndex;
             }
-            indexedMeshList.add(DynamicsUtils.getIndexMesh(JGemsHelper.UTILS.convertFloatsArray(meshNode3D.getMeshData().getVertexPositions()), JGemsHelper.UTILS.convertIntsArray(meshNode3D.getMeshData().getVertexIndexes())));
+            indexedMeshList.add(DynamicsUtils.getIndexMesh(JGemsUtils.convertFloatsArray(meshNode3D.getMeshData().getVertexPositions()), JGemsUtils.convertIntsArray(meshNode3D.getMeshData().getVertexIndexes())));
         }
         return new Pair<>(floats, integers);
     }

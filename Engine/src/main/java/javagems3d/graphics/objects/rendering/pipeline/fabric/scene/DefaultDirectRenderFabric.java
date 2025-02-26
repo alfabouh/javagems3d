@@ -1,6 +1,5 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.scene;
 
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -9,11 +8,11 @@ import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.manager.helper.JGemsShadersHelper;
+import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.lwjgl.opengl.GL46;
@@ -40,7 +39,7 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
                 if (model.getMeshStructure().isAnimatedStructure()) {
                     JGemsShadersHelper.performAnimationsInfo(shaderManager, modeled);
                 }
-                JGemsHelper.RENDERING.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
+                JGemsRenderingHelper.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             }
         }
     }

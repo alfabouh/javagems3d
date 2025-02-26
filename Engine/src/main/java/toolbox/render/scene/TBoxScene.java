@@ -14,6 +14,8 @@ package toolbox.render.scene;
 import javafx.util.Pair;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
@@ -23,7 +25,6 @@ import javagems3d.system.resources.assets.models.pose.Pose3D;
 import logger.Log;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -217,13 +218,13 @@ public class TBoxScene {
                 gluing.performUniformTexture(new UniformString("accumulated_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(0));
                 gluing.performUniformTexture(new UniformString("reveal_alpha"), TBoxScene.sceneTransparentFbo.getTexturePrograms().get(1));
               //  gluing.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-                JGemsHelper.RENDERING.renderModel2D(model, GL46.GL_TRIANGLES);
+                JGemsRenderingHelper.renderModel2D(model, GL46.GL_TRIANGLES);
                 gluing.endShading();
             }
 
             if (editorContent.currentSelectedObject != null) {
                 GL46.glDisable(GL46.GL_DEPTH_TEST);
-                Model3D model = MeshHelper.generateWirebox3DModel(JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsHelper.UTILS.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
+                Model3D model = MeshHelper.generateWirebox3DModel(JGemsUtils.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMin()), JGemsUtils.convertV3DV3F(editorContent.currentSelectedObject.getLocalCollision().getAabb().getMax()));
                 TBoxResourceManager.shaderResources().world_lines.beginShading();
             //   TBoxResourceManager.shaderResources().world_lines.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
             //   TBoxResourceManager.shaderResources().world_linesperformViewMatrix(new UniformString("view_matrix"), TBoxSceneUtils.getMainCameraViewMatrix());
@@ -317,7 +318,7 @@ public class TBoxScene {
         Vector3f camPos = this.getCamera().getCamPosition();
 
         Pose3D pose = new Pose3D();
-        pose.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
+        pose.setPosition(new Vector3f(camPos).add(JGemsUtils.calcLookVector(camRot).mul(5.0f)));
 
         if (whereLook != null) {
             pose.setPosition(whereLook);
@@ -349,10 +350,10 @@ public class TBoxScene {
     public Vector3f findPointWhereCamLooks(final float maxDist) {
         Vector3f camRot = this.getCamera().getCamRotation();
         Vector3f camPos = this.getCamera().getCamPosition();
-        Vector3f camTo = JGemsHelper.UTILS.calcLookVector(camRot).normalize();
+        Vector3f camTo = JGemsUtils.calcLookVector(camRot).normalize();
 
         Pose3D pose = new Pose3D();
-        pose.setPosition(new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f)));
+        pose.setPosition(new Vector3f(camPos).add(JGemsUtils.calcLookVector(camRot).mul(5.0f)));
 
         Set<TBoxAbstractObject> intersectedAABBs = this.getSceneContainer().getSceneObjects().stream().filter(obj -> obj.getLocalCollision().isRayIntersectObjectAABB(camPos, camTo)).collect(Collectors.toSet());
         List<Vector3f> intersections = intersectedAABBs.stream().map(obj -> obj.getLocalCollision().findClosesPointRayIntersectObjectMesh(obj.getModel().getPose(), camPos, camTo)).filter(Objects::nonNull).filter(e -> e.distance(camPos) < maxDist).sorted(Comparator.comparingDouble(e -> e.distance(camPos))).collect(Collectors.toList());

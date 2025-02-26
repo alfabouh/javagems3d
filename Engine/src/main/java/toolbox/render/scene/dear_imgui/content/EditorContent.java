@@ -15,12 +15,12 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.*;
 import imgui.type.ImString;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import javagems3d.JGemsHelper;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.system.service.collections.Pair;
 import logger.managers.LoggingManager;
@@ -363,7 +363,7 @@ public class EditorContent implements ImGuiContent {
                 Vector3f camRot = this.getTBoxScene().getCamera().getCamRotation();
                 Vector3f camPos = this.getTBoxScene().getCamera().getCamPosition();
 
-                Vector3f where = new Vector3f(camPos).add(JGemsHelper.UTILS.calcLookVector(camRot).mul(5.0f));
+                Vector3f where = new Vector3f(camPos).add(JGemsUtils.calcLookVector(camRot).mul(5.0f));
 
                 if (whereLook != null) {
                     where = whereLook;

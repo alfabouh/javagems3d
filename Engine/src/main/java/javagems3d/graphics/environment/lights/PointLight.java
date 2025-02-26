@@ -11,7 +11,7 @@
 
 package javagems3d.graphics.environment.lights;
 
-import javagems3d.JGemsHelper;
+import javagems3d.help.JGemsEnvironmentHelper;
 import org.joml.Vector3f;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.world.IWorld;
@@ -72,7 +72,7 @@ public class PointLight extends Light {
     public void off() {
         super.off();
         if (this.getAttachedShadowSceneId() >= 0) {
-            JGemsHelper.ENVIRONMENT.getWorldEnvironment().getShadowScene().unBindPointLightFromShadowScene(this);
+            JGemsEnvironmentHelper.getWorldEnvironment().getShadowScene().unBindPointLightFromShadowScene(this);
         }
     }
 
