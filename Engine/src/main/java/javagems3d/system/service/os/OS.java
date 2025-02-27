@@ -1,4 +1,4 @@
-package javagems3d.system.os;
+package javagems3d.system.service.os;
 
 public enum OS {
     Win64,

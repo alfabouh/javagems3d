@@ -1,4 +1,4 @@
-package javagems3d.system.profiler;
+package javagems3d.system.service.profiler;
 
 import java.util.HashMap;
 import java.util.Map;

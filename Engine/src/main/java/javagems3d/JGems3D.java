@@ -1,22 +1,11 @@
-/*
- * *
- *  * @author alfabouh
- *  * @since 2024
- *  * @link https://github.com/alfabouh/JavaGems3D
- *  *
- *  * This software is provided 'as-is', without any express or implied warranty.
- *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
- */
-
 package javagems3d;
 
 import api.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.help.JGemsCoreHelper;
-import javagems3d.system.os.OS;
-import javagems3d.system.os.SysOSValidation;
+import javagems3d.system.service.os.OS;
+import javagems3d.system.service.os.SysOSValidation;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -223,11 +212,11 @@ public final class JGems3D {
     }
 
     public void openUIPanel(PanelUI panelUI) {
-        ((IJGemsUIImp) this.getSceneRenderer()).UIPanelActionRequest(panelUI);
+        ((IJGemsUIImp) this.getSceneRenderer()).openUIPanel(panelUI);
     }
 
     public void closeUIPanel() {
-        ((IJGemsUIImp) this.getSceneRenderer()).UIPanelActionRequest(null);
+        ((IJGemsUIImp) this.getSceneRenderer()).openUIPanel(null);
     }
 
     public void lockController() {

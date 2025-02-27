@@ -1,14 +1,3 @@
-/*
- * *
- *  * @author alfabouh
- *  * @since 2024
- *  * @link https://github.com/alfabouh/JavaGems3D
- *  *
- *  * This software is provided 'as-is', without any express or implied warranty.
- *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
- */
-
 package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.JGems3D;
@@ -228,7 +217,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     @Override
-    public void UIPanelActionRequest(@Nullable PanelUI panelUI) {
+    public void openUIPanel(@Nullable PanelUI panelUI) {
         this.getJGemsUI().setPanel(panelUI);
     }
 
@@ -302,6 +291,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     @Override
     public JGemsUI getJGemsUI() {
         return this.jGemsUI;
+    }
+
+    @Override
+    public void openUIInterface(@Nullable DearUIInterface dearUIInterface) {
+        ((IUIRenderNode) this.getRenderNodeByPass(JGemsOpenGLRenderer.UI_RENDER_PASS)).setAnInterface(dearUIInterface);
     }
 
     @Override

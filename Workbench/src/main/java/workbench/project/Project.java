@@ -1,19 +1,26 @@
 package workbench.project;
 
+import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
+
 public class Project {
     private final String projectName;
-    private final String projectPath;
+    private final String version;
 
-    public Project(String projectName, String projectPath) {
+    public Project(@NotNull String version, @NotNull String projectName) {
+        this.version = version;
         this.projectName = projectName;
-        this.projectPath = projectPath;
     }
 
     public String getProjectName() {
         return this.projectName;
     }
 
-    public String getProjectPath() {
-        return this.projectPath;
+    public String getVersion() {
+        return this.version;
+    }
+
+    public String toString() {
+        return this.getProjectName() + "&" + this.getVersion();
     }
 }

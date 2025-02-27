@@ -5,6 +5,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
@@ -25,6 +26,7 @@ import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersData
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -37,7 +39,7 @@ import workbench.resources.WBenchResourceManager;
 
 import java.util.*;
 
-public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp {
+public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
     public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
     public static final NodeID FORWARD_RENDER_PASS = new NodeID("f-pass", 1);
     public static final NodeID TRANSPARENCY_RENDER_PASS = new NodeID("transparency-pass", 2);
@@ -253,6 +255,11 @@ public class WBenchOpenGLRenderer  extends OpenGLRenderer implements IDearUIImp 
 
     public IndirectBufferProgram getSceneIndirectBuffer() {
         return this.sceneIndirectBufferProgram;
+    }
+
+    @Override
+    public void openUIInterface(@Nullable DearUIInterface dearUIInterface) {
+        ((IUIRenderNode) this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS)).setAnInterface(dearUIInterface);
     }
 
     public DearUIRenderer getDearUIRenderer() {

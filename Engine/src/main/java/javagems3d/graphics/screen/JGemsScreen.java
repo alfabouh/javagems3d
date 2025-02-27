@@ -1,21 +1,10 @@
-/*
- * *
- *  * @author alfabouh
- *  * @since 2024
- *  * @link https://github.com/alfabouh/JavaGems3D
- *  *
- *  * This software is provided 'as-is', without any express or implied warranty.
- *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
- */
-
 package javagems3d.graphics.screen;
 
 import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.global.JGemsConfiguration;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.profiler.SpeedProfiler;
+import javagems3d.system.service.profiler.SpeedProfiler;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import logger.Log;
 import org.joml.Vector2i;

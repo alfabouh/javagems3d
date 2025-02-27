@@ -1,18 +1,24 @@
 package workbench;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
+import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.core.JGemsCore;
-import javagems3d.system.os.OS;
-import javagems3d.system.os.SysOSValidation;
+import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.os.OS;
+import javagems3d.system.service.os.SysOSValidation;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import workbench.controller.WBenchControllerDispatcher;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
 import workbench.resources.WBenchResourceManager;
+import workbench.settings.WBenchSettings;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +37,9 @@ public final class WBench {
     private static WBench wBench;
     private boolean shouldBeClosed;
 
-    private final WBenchScreen wBenchScreen;
+    private final WBenchScreen screen;
     private final WBenchResourceManager resourceManager;
-
+    private WBenchSettings settings;
     private final ProjectManager projectManager;
 
     private WBench() {
@@ -48,8 +54,16 @@ public final class WBench {
         WBench.rngSeed = WBench.systemTime();
         WBench.random = new Random(WBench.rngSeed);
 
+        this.settings = new WBenchSettings();
+
+        try {
+            this.settings = WBenchSettings.load(new JGemsPath(WBench.getFilesFolder()));
+        } catch (JGemsIOException | IllegalStateException e) {
+            Log.get().exception(e);
+        }
+
         this.resourceManager = new WBenchResourceManager();
-        this.wBenchScreen = new WBenchScreen();
+        this.screen = new WBenchScreen();
         this.projectManager = new ProjectManager();
 
         this.shouldBeClosed = false;
@@ -117,9 +131,17 @@ public final class WBench {
         }
     }
 
+    public void openInterface(@NotNull DearUIInterface dearUIInterface) {
+        ((IDearUIImp) this.getScreen().getScene().getSceneRenderer()).openUIInterface(dearUIInterface);
+    }
+
     public void close() {
         Log.get().warn("Exit...");
         this.shouldBeClosed = true;
+    }
+
+    public WBenchSettings getSettings() {
+        return this.settings;
     }
 
     public ProjectManager getProjectManager() {
@@ -135,7 +157,7 @@ public final class WBench {
     }
 
     public WBenchScreen getScreen() {
-        return this.wBenchScreen;
+        return this.screen;
     }
 
     public boolean isShouldBeClosed() {

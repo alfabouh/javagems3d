@@ -32,10 +32,10 @@
         <File name="FileERR_1" fileName="${fatal-path}/jgems/${fatal-file}">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>
         </File>
-        <File name="FileOUT_2" fileName="${log-path}/tbox/${log-file}">
+        <File name="FileOUT_2" fileName="${log-path}/wbench/${log-file}">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>
         </File>
-        <File name="FileERR_2" fileName="${fatal-path}/tbox/${fatal-file}">
+        <File name="FileERR_2" fileName="${fatal-path}/wbench/${fatal-file}">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n%ex"/>
         </File>
     </Appenders>

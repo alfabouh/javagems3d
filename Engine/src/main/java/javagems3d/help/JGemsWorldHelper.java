@@ -10,7 +10,7 @@ import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
 import javagems3d.physics.world.triggers.zones.base.ITriggerZone;
-import javagems3d.system.graph.Graph;
+import javagems3d.system.service.graph.Graph;
 import javagems3d.system.map.navigation.pathgen.MapNavGraphGenerator;
 import org.joml.Vector3f;
 

@@ -1,24 +1,13 @@
-/*
- * *
- *  * @author alfabouh
- *  * @since 2024
- *  * @link https://github.com/alfabouh/JavaGems3D
- *  *
- *  * This software is provided 'as-is', without any express or implied warranty.
- *  * In no event will the authors be held liable for any damages arising from the use of this software.
- *
- */
-
 package javagems3d.system.service.json;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import javagems3d.system.graph.Graph;
-import javagems3d.system.graph.GraphChunk;
-import javagems3d.system.graph.GraphEdge;
-import javagems3d.system.graph.GraphVertex;
+import javagems3d.system.service.graph.Graph;
+import javagems3d.system.service.graph.GraphChunk;
+import javagems3d.system.service.graph.GraphEdge;
+import javagems3d.system.service.graph.GraphVertex;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

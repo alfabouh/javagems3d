@@ -1,4 +1,4 @@
-package javagems3d.system.os;
+package javagems3d.system.service.os;
 
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 

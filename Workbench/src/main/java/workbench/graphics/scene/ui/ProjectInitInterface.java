@@ -1,14 +1,22 @@
 package workbench.graphics.scene.ui;
 
 import imgui.ImGui;
+import imgui.ImGuiInputTextCallbackData;
+import imgui.callback.ImGuiInputTextCallback;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImString;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
+import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import org.joml.Vector2i;
 import workbench.WBench;
+import workbench.project.ProjectManager;
+import workbench.settings.WBenchSettings;
 
 public class ProjectInitInterface implements DearUIInterface {
     private final ImString projectName = new ImString(256);
@@ -39,7 +47,15 @@ public class ProjectInitInterface implements DearUIInterface {
             ImGui.pushStyleColor(ImGuiCol.FrameBg, 1.0f, 0.0f, 0.0f, 1.0f);
         }
         ImGui.text("Project name:");
-        ImGui.inputText("##project_name", this.projectName);
+        ImGui.inputText("##project_name", this.projectName, ImGuiInputTextFlags.CallbackCharFilter, new ImGuiInputTextCallback() {
+            @Override
+            public void accept(ImGuiInputTextCallbackData data) {
+                char c = (char) data.getEventChar();
+                if (!Character.isLetterOrDigit(c)) {
+                    data.setEventChar((char) 0);
+                }
+            }
+        });
         if (f1) {
             ImGui.popStyleColor();
         }
@@ -60,15 +76,48 @@ public class ProjectInitInterface implements DearUIInterface {
 
         if (ImGui.button("Create project", 120, 30)) {
             this.pressed = true;
+            String projectPath = this.projectPath.get();
+            String projectName = this.projectName.get();
+            if (!projectPath.isEmpty() && !projectName.isEmpty()) {
+                WBench.get().getProjectManager().createProject(new JGemsPath(projectPath, projectName + ProjectManager.extension), projectName);
+                WBench.get().getSettings().addPath(projectPath);
+
+                try {
+                    WBenchSettings.save(WBench.get().getSettings(), new JGemsPath(WBench.getFilesFolder()));
+                } catch (JGemsIOException e) {
+                    Log.get().exception(e);
+                }
+            }
         }
-
-        ImGui.separator();
-
+        ImGui.sameLine();
         ImGui.pushStyleColor(ImGuiCol.Button, 0.1f, 0.2f, 0.9f, 1.0f);
         if (ImGui.button("Open project", 120, 30)) {
-            //projectPath.set(JGemsFilesHelper.openFolderViewer(""));
+            String projectPath = JGemsFilesHelper.openFolderViewer("");
+            if (!projectPath.isEmpty()) {
+                WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
+                WBench.get().getSettings().addPath(projectPath);
+
+                try {
+                    WBenchSettings.save(WBench.get().getSettings(), new JGemsPath(WBench.getFilesFolder()));
+                } catch (JGemsIOException e) {
+                    Log.get().exception(e);
+                }
+            }
         }
         ImGui.popStyleColor();
+
+        WBenchSettings wBenchSettings = WBench.get().getSettings();
+        if (wBenchSettings != null && wBenchSettings.getRecentProjects() != null) {
+            ImGui.separator();
+            ImGui.text("Recent: ");
+            for (String projectPath : wBenchSettings.getRecentProjects()) {
+                ImGui.text(projectPath);
+                ImGui.sameLine();
+                if (ImGui.button("Open##" + projectPath)) {
+                    WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
+                }
+            }
+        }
 
         ImGui.end();
     }
