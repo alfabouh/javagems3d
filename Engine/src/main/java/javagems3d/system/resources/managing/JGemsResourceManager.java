@@ -11,9 +11,6 @@ import javagems3d.system.resources.managing.resources.JGemsSystemResources;
 import javagems3d.system.resources.managing.resources.SystemResources;
 
 public final class JGemsResourceManager extends ResourceManager {
-    public static final String GLOBAL = "Global";
-    public static final String LOCAL = "Local";
-
     public static BasicShadersInitializer globalShaderAssets = null;
     public static TextureAssetsInitializer globalTextureAssets = null;
     public static ModelAssetsInitializer globalModelAssets = null;
@@ -21,7 +18,7 @@ public final class JGemsResourceManager extends ResourceManager {
     public static SoundAssetsInitializer globalSoundAssets = null;
 
     public JGemsResourceManager() {
-        super(new Factory(JGemsResourceManager.GLOBAL), new Factory(JGemsResourceManager.LOCAL));
+        super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL));
         JGemsResourceManager.globalShaderAssets = new BasicShadersInitializer();
     }
 
@@ -30,6 +27,8 @@ public final class JGemsResourceManager extends ResourceManager {
         for (ShadersInitializer<? extends ShaderManager> shadersLoader : JGemsAPI.APIAppData().getAppResources().getShadersInitializers()) {
             shadersLoader.createShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
         }
+
+        RenderDataInitializer.setDefaultRenderTableValues();
     }
 
     public static void reloadShaders() {
@@ -90,11 +89,11 @@ public final class JGemsResourceManager extends ResourceManager {
     }
 
     public SystemResources getLocalResources() {
-        return this.getGameResources(JGemsResourceManager.LOCAL);
+        return this.getGameResources(ResourceManager.LOCAL);
     }
 
     public SystemResources getGlobalResources() {
-        return this.getGameResources(JGemsResourceManager.GLOBAL);
+        return this.getGameResources(ResourceManager.GLOBAL);
     }
 
     private static class Factory implements ResourceManager.Factory {

@@ -1,7 +1,7 @@
 package javagems3d.graphics.screen;
 
 import javagems3d.help.JGemsCoreHelper;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.service.profiler.SpeedProfiler;
@@ -70,7 +70,7 @@ public class JGemsScreen implements IScreen {
     public void createScreenAndContext() {
         Log.get().info("Init Graphics");
         if (this.tryToBuildScreen()) {
-            JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsConfiguration.RENDERING.FOV, JGemsConfiguration.RENDERING.Z_NEAR, JGemsConfiguration.RENDERING.Z_FAR);
+            JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsConfig.SYSTEM.FOV, JGemsConfig.SYSTEM.Z_NEAR, JGemsConfig.SYSTEM.Z_FAR);
             JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
 
             this.adjustScreenMode();
@@ -134,8 +134,8 @@ public class JGemsScreen implements IScreen {
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         boolean flag = vidMode != null && JGems3D.get().getGameSettings().windowMode.getValue() == 0;
 
-        int width = flag ? vidMode.width() : JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH;
-        int height = flag ? vidMode.height() : JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT;
+        int width = flag ? vidMode.width() : JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH;
+        int height = flag ? vidMode.height() : JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT;
 
         this.window = new Window(width, height, JGems3D.getAPIAppData().getWindowProperties());
         long window = this.getWindow().getDescriptor();
@@ -143,8 +143,8 @@ public class JGemsScreen implements IScreen {
             throw new JGemsRuntimeException("Failed to create the GLFW window");
         }
         if (vidMode != null) {
-            int x = (vidMode.width() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH) / 2;
-            int y = (vidMode.height() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT) / 2;
+            int x = (vidMode.width() - JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH) / 2;
+            int y = (vidMode.height() - JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT) / 2;
             GLFW.glfwSetWindowPos(window, x, y);
         } else {
             return false;
@@ -219,7 +219,6 @@ public class JGemsScreen implements IScreen {
         try {
             this.renderLoop();
         } catch (Exception e) {
-            JGems3D.close(null);
             throw new JGemsRuntimeException(e);
         } finally {
             this.getScene().postRender();
@@ -246,7 +245,7 @@ public class JGemsScreen implements IScreen {
             this.getWindow().refreshFocusState();
             this.getTimerPool().update();
             this.renderGameScene(deltaTimer.getDeltaTime());
-            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsConfiguration.SYSTEM.RENDER_TICKS_UPD_RATE)) {
+            if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsConfig.SYSTEM.RENDER_TICKS_UPD_RATE)) {
                 this.renderTicks += 0.01f;
             }
             fps += 1;
@@ -282,7 +281,7 @@ public class JGemsScreen implements IScreen {
     }
 
     public SceneWorld getSceneWorld() {
-        return this.getScene().getWorld();
+        return this.getScene() == null ? null : this.getScene().getWorld();
     }
 
     public ICamera getCamera() {

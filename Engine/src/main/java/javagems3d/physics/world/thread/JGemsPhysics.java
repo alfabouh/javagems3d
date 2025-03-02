@@ -43,7 +43,7 @@ public class JGemsPhysics {
     }
 
     public boolean waitForFullTermination() throws InterruptedException {
-        return this.getExecutor().awaitTermination(10000, TimeUnit.MILLISECONDS);
+        return this.getExecutor().awaitTermination(5000, TimeUnit.MILLISECONDS);
     }
 
     private ExecutorService getExecutor() {

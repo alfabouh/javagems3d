@@ -4,7 +4,7 @@ public class AnimationData {
     private Animation currentAnimation;
     private int currentFrameId;
     private int previousFrameId;
-    private double animationFrameDelta;
+    private float animationFrameDelta;
 
     public AnimationData() {
         this(null);
@@ -34,11 +34,11 @@ public class AnimationData {
         return this.getCurrentAnimation().getFps();
     }
 
-    public double getAnimationFrameDelta() {
+    public float getAnimationFrameDelta() {
         return this.animationFrameDelta;
     }
 
-    public void setAnimationFrameDelta(double animationFrameDelta) {
+    public void setAnimationFrameDelta(float animationFrameDelta) {
         this.animationFrameDelta = animationFrameDelta;
     }
 

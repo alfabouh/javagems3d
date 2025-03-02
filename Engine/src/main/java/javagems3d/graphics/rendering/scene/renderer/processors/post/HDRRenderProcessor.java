@@ -1,7 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.help.JGemsRenderingHelper;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -37,9 +37,9 @@ public class HDRRenderProcessor extends IRenderProcessor.Template {
     public void runProcessorRendering(FrameTicking frameTicking) {
         JGemsShaderManager hdr = this.getHdrShader();
         hdr.beginShading();
-        hdr.performUniform(new UniformString("exposure"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.HDR_EXPOSURE));
-        hdr.performUniform(new UniformString("gamma"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.HDR_GAMMA));
-        hdr.performUniform(new UniformString("use_hdr"), UniformFunctions.BOOLEAN(JGemsConfiguration.RENDERING.USE_HDR));
+        hdr.performUniform(new UniformString("exposure"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_EXPOSURE));
+        hdr.performUniform(new UniformString("gamma"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_GAMMA));
+        hdr.performUniform(new UniformString("use_hdr"), UniformFunctions.BOOLEAN(JGemsConfig.SYSTEM.USE_HDR));
         hdr.performUniformTexture(new UniformString("texture_sampler"), this.getInColor().getTextureByIndex(0));
         hdr.performUniformTexture(new UniformString("bloom_sampler"), this.getInBloomColor().getTextureByIndex(0));
         hdr.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());

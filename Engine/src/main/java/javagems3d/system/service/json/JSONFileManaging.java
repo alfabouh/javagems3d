@@ -46,7 +46,7 @@ public class JSONFileManaging {
         return gson.toJson(object);
     }
 
-    protected <T> T read(String jsonString, Class<T> clazz, @Nullable ArbitraryArguments metaData) {
+    protected <T> T read(String jsonString, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
         Gson gson = createGson(metaData);
         return gson.fromJson(jsonString, clazz);
     }
@@ -68,11 +68,11 @@ public class JSONFileManaging {
         }
     }
 
-    public <T> T readFromFile(File file, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+    public <T> T readFromFile(File file, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JGemsIOException, JsonSyntaxException {
         try (Reader reader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8)) {
             String string = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
             return this.read(string, clazz, metaData);
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             throw new JGemsIOException(e);
         }
     }

@@ -1,5 +1,6 @@
 package javagems3d.system.map.loaders.custom;
 
+import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
@@ -47,6 +48,17 @@ public class DefaultMap implements IMapLoader {
         Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
         JGemsWorldHelper.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
+        PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
+        pointLight.on();
+        sceneWorld.addLight(pointLight);
+
+        PointLight pointLight2 = new PointLight(new Vector3f(-10.0f, 0.0f, -12.0f), new Vector3f(1.0f, 1.0f, 0.0f)).setBrightness(10.0f);
+        pointLight2.on();
+        sceneWorld.addLight(pointLight2);
+
+        PointLight pointLight3 = new PointLight(new Vector3f(0.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 1.0f)).setBrightness(10.0f);
+        pointLight3.on();
+        sceneWorld.addLight(pointLight3);
         //CubeAI cubeAI = new CubeAI(world, new Vector3f(0.0f), "grass");
         //JGemsHelper.WORLD.addItemInWorld(cubeAI, new RenderEntityData(JGemsResourceManager.globalRenderDataAssets.entityCube, JGemsResourceManager.globalModelAssets.cube));
 

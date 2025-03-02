@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
+import workbench.WBench;
 import workbench.graphics.scene.nodes.templates.*;
 import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.ui.EditorInterface;
@@ -46,8 +47,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
     public static final NodeID GLUING_RENDER_PASS = new NodeID("gluing-pass", 3);
     public static final NodeID UI_RENDER_PASS = new NodeID("ui-pass", 4);
 
-    public static DearUIInterface editorInterface;
-    public static DearUIInterface projectInterface;
+    private static DearUIInterface editorInterface;
+    private static DearUIInterface projectInterface;
 
     protected Map<NodeID, IRenderNode> conveyorNodes;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
@@ -59,7 +60,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
         super(window, wBenchWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
-        WBenchOpenGLRenderer.editorInterface = new EditorInterface();
+        WBenchOpenGLRenderer.editorInterface = new EditorInterface(WBench.get().getProjectManager());
         WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
@@ -79,7 +80,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
         ITransparencyRenderNode transparencyRenderNode = new TransparencyRenderNode(this);
         IGluingRenderNode gluingRenderNode = new GluingRenderNode(this);
         IUIRenderNode uiRenderNode = new UIRenderNode(this.getDearUIRenderer(), this);
-
+        uiRenderNode.setAnInterface(WBenchOpenGLRenderer.getProjectInterface());
+        
         this.setForwardRenderNode(forwardRenderNode);
         this.setDeferredRenderNode(defaultDeferredNode);
         this.setTransparencyRenderNode(transparencyRenderNode);
@@ -133,7 +135,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         if (this.getWorld().getCamera() == null) {
             OpenGLRenderer.setViewPort(this.getWindowSize());
-            uiRenderNode.setAnInterface(WBenchOpenGLRenderer.projectInterface);
             uiRenderNode.onRender(frameTicking);
             return;
         }
@@ -162,7 +163,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
 
         OpenGLRenderer.setViewPort(this.getWindowSize());
         //  this.renderFinalSceneInMainBuffer(gluingRenderNode.getOutColorBuffer());
-        uiRenderNode.setAnInterface(WBenchOpenGLRenderer.editorInterface);
         uiRenderNode.onRender(frameTicking);
     }
 
@@ -273,5 +273,13 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
     @Override
     public ISceneCulling getSceneCulling() {
         return this.sceneCulling;
+    }
+
+    public static DearUIInterface getEditorInterface() {
+        return WBenchOpenGLRenderer.editorInterface;
+    }
+
+    public static DearUIInterface getProjectInterface() {
+        return WBenchOpenGLRenderer.projectInterface;
     }
 }

@@ -4,24 +4,12 @@ layout (location=2) in vec3 aNormal;
 layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
 
-layout (std140, binding = 0) uniform SunLight {
-    vec4 sunPos;
-    vec4 sunColor;
-    vec2 sunMeta;
-};
-
-layout (std140, binding = 3) uniform Fog {
-    vec4 fogColor;
-    float fogDensity;
-};
 
 out vec2 uv_coordinates;
-
 out vec3 modelview_vertex_normal;
 out vec3 model_vertex_normal;
 out vec3 modelview_vertex_pos;
 out vec4 model_vertex_pos;
-
 out mat3 TBN;
 out mat4 out_view_matrix;
 

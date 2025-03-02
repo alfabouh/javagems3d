@@ -1,17 +1,7 @@
 layout (location=0) in vec3 position;
 
-layout (std140, binding = 0) uniform SunLight {
-    vec4 sunPos;
-    vec4 sunColor;
-    vec2 sunMeta;
-};
-
-layout (std140, binding = 3) uniform Fog {
-    vec4 fogColor;
-    float fogDensity;
-};
-
 out vec3 uv_coordinates_cube;
+
 uniform mat4 projection_matrix;
 uniform mat4 model_view_matrix;
 

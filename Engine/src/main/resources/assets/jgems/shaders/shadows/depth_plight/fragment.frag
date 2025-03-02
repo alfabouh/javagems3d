@@ -1,11 +1,11 @@
+in vec2 uv_coordinates;
+in vec4 frag_pos;
 layout (location = 0) out vec4 frag_color0;
 
-in vec2 uv_coordinates;
+
 uniform float alpha_discard;
 uniform sampler2D texture_sampler;
 uniform bool use_texture;
-
-in vec4 frag_pos;
 uniform vec3 lightPos;
 uniform float far_plane;
 

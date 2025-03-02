@@ -8,7 +8,6 @@ public abstract class Light implements IWorldTicked {
     private final Vector3f offset;
     private final Vector3f lightColor;
     private final Vector3f lightPos;
-    private boolean enabled;
     private boolean isActive;
 
     public Light() {
@@ -27,7 +26,6 @@ public abstract class Light implements IWorldTicked {
         this.lightColor = new Vector3f(lightColor);
         this.lightPos = new Vector3f(lightPos);
         this.offset = new Vector3f(offset);
-        this.enabled = true;
         this.isActive = true;
     }
 
@@ -53,14 +51,6 @@ public abstract class Light implements IWorldTicked {
 
     public boolean isActive() {
         return this.isActive;
-    }
-
-    public boolean isEnabled() {
-        return this.isActive() && this.enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public abstract LightType getLightType();

@@ -3,22 +3,29 @@ in vec3 uv_coordinates_cube;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
-uniform sampler2D skybox_background_sampler;
+struct Sun {
+    vec3 position;
+    float _padding0;
+    vec3 color;
+    float ambient;
+    float brightness;
+};
+layout (std430, binding = 5) buffer SunLight {
+    Sun sun;
+};
 
+struct Fog {
+    vec3 color;
+    float density;
+};
+layout (std430, binding = 7) buffer WorldFog {
+    Fog fog;
+};
+
+uniform sampler2D skybox_background_sampler;
 uniform mat4 view_mat_inverted;
 uniform samplerCube skybox;
 uniform bool covered_by_fog;
-
-layout (std140, binding = 0) uniform SunLight {
-    vec4 sunPos;
-    vec4 sunColor;
-    vec2 sunMeta;
-};
-
-layout (std140, binding = 3) uniform Fog {
-    vec4 fogColor;
-    float fogDensity;
-};
 
 void main()
 {
@@ -26,20 +33,20 @@ void main()
 
     vec4 diffuse = texture(skybox, uv_coordinates_cube);
 
-    vec3 sunDirection = (view_mat_inverted * vec4(normalize(sunPos.xyz), 0.0)).rgb;
+    vec3 sunDirection = (view_mat_inverted * vec4(normalize(sun.position), 0.0)).rgb;
 
     float scos = dot(normalize(uv_coordinates_cube), sunDirection);
     float sunFactor = pow(smoothstep(0.98, 1.0, scos), 32.);
 
-    vec4 color = vec4(fogColor.xyz, 1.0);
+    vec4 color = vec4(sun.color, 1.0);
 
-    float fogFactor = fogDensity * 100.0;
+    float fogFactor = fog.density * 100.0;
     float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
 
     vec2 texel_size = textureSize(skybox_background_sampler, 0);
     vec4 background = texture(skybox_background_sampler, gl_FragCoord.xy / texel_size);
 
-    vec3 sunEffect = sunColor.xyz * sunMeta.y * sunFactor;
+    vec3 sunEffect = color.xyz * sun.brightness * sunFactor;
     vec4 tex2d_colors = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * brightness) + sunEffect, 1.0);
     frag_color = background + tex2d_colors * (1. - background.a);
 

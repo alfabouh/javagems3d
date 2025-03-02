@@ -17,6 +17,16 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public abstract class JGemsUtils {
+    public static String getTextWithLines(String text) {
+        String[] lines = text.split("\n");
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            stringBuilder.append("/* (").append(i + 1).append(") */ ").append(line).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
     public static List<Integer> convertIntsList(int[] arr) {
         List<Integer> list = new ArrayList<>(arr.length);
         for (int f : arr) {

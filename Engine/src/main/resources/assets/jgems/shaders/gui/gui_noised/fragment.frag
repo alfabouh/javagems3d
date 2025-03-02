@@ -4,7 +4,7 @@ in vec2 uv_coordinates;
 uniform vec4 color;
 uniform sampler2D texture_sampler;
 
-layout (std140, binding = 2) uniform Misc {
+layout (std430, binding = 0) buffer Timer {
     float w_tick;
 };
 

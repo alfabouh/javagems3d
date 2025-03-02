@@ -6,23 +6,6 @@ layout (location=4) in vec3 aBitangent;
 layout (location=5) in ivec4 aBoneIndexes;
 layout (location=6) in vec4 aBoneWeights;
 
-const int MAX_WEIGHTS = CONST.ANIM_MAX_WEIGHTS;
-
-out vec2 uv_coordinates;
-out vec3 model_vertex_normal;
-out vec4 model_vertex_pos;
-out vec3 modelview_vertex_normal;
-out vec3 modelview_vertex_pos;
-out mat3 TBN;
-
-out flat uint matertial_id;
-out flat uint ent_id;
-
-uniform mat4 view_matrix;
-uniform mat4 projection_matrix;
-
-uniform sampler2D animationsMatrix;
-
 layout(std430, binding = 1) buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
@@ -32,27 +15,19 @@ layout(std430, binding = 1) buffer IndirectBufferData {
     float animationFrameDelta[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
 };
 
-ivec2 pickUV(int globalOffset, int arrI, int textureWidth) {
-    int texX = (globalOffset + arrI) % textureWidth;
-    int texY = (globalOffset + arrI) / textureWidth;
-    return ivec2(texX, texY);
-}
+out vec2 uv_coordinates;
+out vec3 model_vertex_normal;
+out vec4 model_vertex_pos;
+out vec3 modelview_vertex_normal;
+out vec3 modelview_vertex_pos;
+out mat3 TBN;
+out flat uint matertial_id;
+out flat uint ent_id;
 
-mat4 getBoneMatrix(int baseOffset, int boneIndex) {
-    int textureWidth = textureSize(animationsMatrix, 0).x;
-    int globalOffset = (baseOffset + boneIndex) * 4;
-    vec4 row0 = texelFetch(animationsMatrix, pickUV(globalOffset, 0, textureWidth), 0);
-    vec4 row1 = texelFetch(animationsMatrix, pickUV(globalOffset, 1, textureWidth), 0);
-    vec4 row2 = texelFetch(animationsMatrix, pickUV(globalOffset, 2, textureWidth), 0);
-    vec4 row3 = texelFetch(animationsMatrix, pickUV(globalOffset, 3, textureWidth), 0);
-    return mat4(row0, row1, row2, row3);
-}
+uniform mat4 view_matrix;
+uniform mat4 projection_matrix;
 
-vec4 mixVec4(mat4 matrixA, mat4 matrixB, vec4 value, float t) {
-    vec4 v1 = matrixA * value;
-    vec4 v2 = matrixB * value;
-    return mix(v1, v2, t);
-}
+#include "assets/jgems/shaders/libs/animations"
 
 void main()
 {
@@ -60,44 +35,16 @@ void main()
     ent_id = entityId[idx];
     matertial_id = materialId[idx];
     mat4 model = modelMatrix[ent_id];
+
     int currAnimationOffset = animationOffset[ent_id];
+    int currAnimationOffsetPrev = animationOffsetPrev[ent_id];
+    float deltaFrame = animationFrameDelta[ent_id];
 
-    vec4 position = vec4(0.);
-    vec4 normal = vec4(0.);
-    vec4 tangent = vec4(0.);
-    vec4 bitanget = vec4(0.);
-
-    int j = 0;
-    if (currAnimationOffset >= 0) {
-        int currAnimationOffsetPrev = animationOffsetPrev[ent_id];
-        float deltaFrame = animationFrameDelta[ent_id];
-
-        for (int i = 0; i < MAX_WEIGHTS; i++) {
-            float weight = aBoneWeights[i];
-            if (weight > 0.) {
-                j += 1;
-                int boneId = aBoneIndexes[i];
-                mat4 matrixBone = getBoneMatrix(currAnimationOffset, boneId);
-                mat4 matrixBonePrev = getBoneMatrix(currAnimationOffsetPrev, boneId);
-
-                vec4 tempPos = mixVec4(matrixBone, matrixBonePrev, vec4(aPosition, 1.), deltaFrame);
-                vec4 tempNormal = mixVec4(matrixBone, matrixBonePrev, vec4(aNormal, 0.), deltaFrame);
-                vec4 tempTangent = mixVec4(matrixBone, matrixBonePrev, vec4(aTangent, 0.), deltaFrame);
-                vec4 tempBiTangent = mixVec4(matrixBone, matrixBonePrev, vec4(aBitangent, 0.), deltaFrame);
-
-                position += weight * tempPos;
-                normal += weight * tempNormal;
-                tangent += weight * tempTangent;
-                bitanget += weight * tempBiTangent;
-            }
-        }
-    }
-    if (j == 0) {
-        position = vec4(aPosition, 1.0);
-        normal = vec4(aNormal, 0.0);
-        tangent = vec4(aTangent, 0.0);
-        bitanget = vec4(aBitangent, 0.0);
-    }
+    vec4 position = vec4(aPosition, 1.0);
+    vec4 normal = vec4(aNormal, 0.0);
+    vec4 tangent = vec4(aTangent, 0.0);
+    vec4 bitanget = vec4(aBitangent, 0.0);
+    perform_animation(position, normal, tangent, bitanget, aBoneIndexes, aBoneWeights, currAnimationOffset, currAnimationOffsetPrev, deltaFrame);
 
     mat4 view = view_matrix;
     mat4 model_view_matrix = view_matrix * model;

@@ -1,7 +1,7 @@
 package javagems3d.system.resources.managing;
 
 import javagems3d.help.JGemsRenderingHelper;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class ResourceManager {
+    public static final String GLOBAL = "Global";
+    public static final String LOCAL = "Local";
     private final Map<String, SystemResources> gameResourcesMap;
     private final ResourcesDataCache resourcesDataCache;
     private ITextureProgram animationMatricesTexture;
@@ -45,7 +47,7 @@ public abstract class ResourceManager {
     }
 
     public void loadBindlessHandlersInSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
-        LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsConfiguration.SYSTEM.MAX_BINDLESS_TEXTURES);
+        LongBuffer longBuffer = MemoryUtil.memAllocLong(JGemsConfig.SYSTEM.MAX_BINDLESS_TEXTURES);
         for (ITextureBindless l : this.getResourceDataCache().getBindlessTexturesCache().getBindlessTexturesIdMap().keySet()) {
             longBuffer.put(l.getBindingHandler());
         }
@@ -55,7 +57,7 @@ public abstract class ResourceManager {
     }
 
     public void loadMeshMaterialsIsSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
-        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsConfiguration.SYSTEM.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsConfiguration.SYSTEM.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
         for (Material material : this.getResourceDataCache().getMeshBuffersDataCache().getMaterials()) {
             ISample diffuse = material.getDiffuse();
             ISample normals = material.getNormalsMap();

@@ -194,6 +194,8 @@ public class ShaderObject {
         String shader = ShaderObject.VERSION + shaderStream;
         shader = this.processIncludes(shader);
         shader = this.processConstants(this.getShaderStaticConstants(), shader);
+        shader = shader.replaceAll("/\\*[^*]*\\*+([^/*][^*]*\\*+)*/", "");
+        shader += "\n/* Shader:::::" + this.getShaderPath() + " */ \n\n";
         return shader;
     }
 

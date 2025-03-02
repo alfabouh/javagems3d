@@ -195,7 +195,7 @@ public final class JGems3D {
         JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
         JGems3D.get().getScreen().refreshSceneResources();
         JGems3D.get().getLocalisation().setLanguage(JGemsCoreHelper.getGameSettings().language.getCurrentLanguage());
-        this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
+        this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
         JGems3D.get().getScreen().removeLoadingScreen();
     }
 

@@ -30,7 +30,6 @@ public class WBenchScene implements IScene {
     }
 
     public void preRender() {
-       // this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
         Log.get().info("Starting scene rendering");
         this.getSceneRenderer().onStartRender();
     }

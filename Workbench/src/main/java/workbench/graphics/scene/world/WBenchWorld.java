@@ -9,6 +9,7 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import logger.Log;
+import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 
 import java.util.HashSet;
@@ -103,7 +104,7 @@ public class WBenchWorld implements IWorld {
         }
     }
 
-    public void setCamera(ICamera camera) {
+    public void setCamera(@Nullable ICamera camera) {
         this.camera = camera;
     }
 

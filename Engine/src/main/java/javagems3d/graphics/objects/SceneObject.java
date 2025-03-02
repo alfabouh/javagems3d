@@ -1,7 +1,7 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.physics.world.IWorld;
@@ -57,7 +57,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted {
         double k = 50.0f;
         double fps = this.getAnimationData().getCurrentAnimation().getFps();
         if (fps <= 0.0d) {
-            fps = JGemsConfiguration.SYSTEM.DEFAULT_ANIM_FPX;
+            fps = JGemsConfig.SYSTEM.DEFAULT_ANIM_FPS;
         }
         fps *= this.animationSpeedMultiplier();
         double deltaTime = JGems3D.glfwTime() - this.lastTick;

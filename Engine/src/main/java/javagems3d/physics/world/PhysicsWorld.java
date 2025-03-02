@@ -3,7 +3,7 @@ package javagems3d.physics.world;
 import api.events.EventBus;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -67,7 +67,7 @@ public final class PhysicsWorld implements IWorld {
     public void removeNavGraph() {
         if (JGems3D.DEBUG_MODE) {
             if (this.mapNavGraph != null) {
-                JGemsConfiguration.DEBUG.linesDebugDraw.destroyNavMeshFloatBuffer();
+                JGemsConfig.DEBUG.linesDebugDraw.destroyNavMeshFloatBuffer();
             }
         }
         synchronized (this) {
@@ -87,7 +87,7 @@ public final class PhysicsWorld implements IWorld {
         }
         if (JGems3D.DEBUG_MODE) {
             if (mapNavGraph != null) {
-                JGemsConfiguration.DEBUG.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
+                JGemsConfig.DEBUG.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
             }
         }
     }

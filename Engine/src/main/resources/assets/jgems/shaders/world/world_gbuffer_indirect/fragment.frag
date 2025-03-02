@@ -6,16 +6,8 @@ in vec3 modelview_vertex_normal;
 in vec3 modelview_vertex_pos;
 in vec4 model_vertex_pos;
 in vec3 model_vertex_normal;
-
 in flat uint matertial_id;
 in flat uint ent_id;
-
-const int diffuse_code = 1 << 2;
-const int normals_code = 1 << 3;
-const int emission_code = 1 << 4;
-const int specular_code = 1 << 5;
-const int metallic_code = 1 << 6;
-const int light_bright_code = 1 << 2;
 
 layout (early_fragment_tests) in;
 layout (location = 0) out vec4 gPosition;
@@ -23,9 +15,6 @@ layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gColor;
 layout (location = 3) out vec4 gEmission;
 layout (location = 4) out vec4 gSpecular;
-
-uniform vec3 camera_pos;
-uniform samplerCube ambient_cube_map;
 
 struct Properties {
     float alpha_discard;
@@ -53,6 +42,16 @@ layout(std430, binding = 3) buffer MaterialsData {
 layout(std430, binding = 4) buffer RenderPropertiesData {
     Properties properties[512];
 };
+
+const int diffuse_code = 1 << 2;
+const int normals_code = 1 << 3;
+const int emission_code = 1 << 4;
+const int specular_code = 1 << 5;
+const int metallic_code = 1 << 6;
+const int light_bright_code = 1 << 2;
+
+uniform vec3 camera_pos;
+uniform samplerCube ambient_cube_map;
 
 vec3 calc_normal_map(int normalsMapId) {
     vec3 normal = texture(sampler2D(textures[normalsMapId]), uv_coordinates).rgb;

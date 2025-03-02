@@ -2,7 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.JGems3D;
 import javagems3d.help.JGemsRenderingHelper;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -39,7 +39,7 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        if (!JGemsConfiguration.RENDERING.USE_BLOOM || JGems3D.get().getGameSettings().bloom.getValue() == 0) {
+        if (!JGemsConfig.SYSTEM.USE_BLOOM || JGems3D.get().getGameSettings().bloom.getValue() == 0) {
             this.getOutColor().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             this.getOutColor().unBindFBO();

@@ -74,15 +74,11 @@ public final class ShadersContainer {
             Log.get().trace("Initializing " + this.getFragmentShader().getShaderPath() + "/" + this.getFragmentShader().getShaderType().getFile());
             this.getFragmentShader().init();
             this.putUniformsInGHeap(this.getFragmentShader().getUniforms());
-        } else {
-            throw new JGemsIOException("Couldn't load shader: " + this.getId());
         }
         if (this.getVertexShader() != null) {
             Log.get().trace("Initializing " + this.getVertexShader().getShaderPath() + "/" + this.getVertexShader().getShaderType().getFile());
             this.getVertexShader().init();
             this.putUniformsInGHeap(this.getVertexShader().getUniforms());
-        } else {
-            throw new JGemsIOException("Couldn't load shader: " + this.getId());
         }
         if (this.getGeometricShader() != null) {
             Log.get().trace("Initializing " + this.getGeometricShader().getShaderPath() + "/" + this.getGeometricShader().getShaderType().getFile());
@@ -103,6 +99,8 @@ public final class ShadersContainer {
             Log.get().trace("Initializing " + this.getComputeShader().getShaderPath() + "/" + this.getComputeShader().getShaderType().getFile());
             this.getComputeShader().init();
             this.putUniformsInCHeap(this.getComputeShader().getUniforms());
+        } else if (this.getFragmentShader() == null || this.getVertexShader() == null) {
+            throw new JGemsIOException("Couldn't load shader: " + this.getId());
         }
     }
 

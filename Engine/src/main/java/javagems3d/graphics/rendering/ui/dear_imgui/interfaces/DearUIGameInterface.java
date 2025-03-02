@@ -8,7 +8,7 @@ import javagems3d.help.JGemsCameraHelper;
 import javagems3d.help.JGemsControllerHelper;
 import javagems3d.help.JGemsCoreHelper;
 import javagems3d.help.JGemsWorldHelper;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
@@ -59,7 +59,7 @@ public class DearUIGameInterface implements DearUIInterface {
         }
         ImGui.end();
 
-        ImGui.setNextWindowSize(JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);
+        ImGui.setNextWindowSize(JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 3.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 3.0f, ImGuiCond.Once);
         ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
         ImGui.begin("Debug");
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
@@ -100,44 +100,44 @@ public class DearUIGameInterface implements DearUIInterface {
         }
 
         if (ImGui.collapsingHeader("Scene")) {
-            if (ImGui.checkbox("HDR", JGemsConfiguration.RENDERING.USE_HDR)) {
-                JGemsConfiguration.RENDERING.USE_HDR = !JGemsConfiguration.RENDERING.USE_HDR;
+            if (ImGui.checkbox("HDR", JGemsConfig.SYSTEM.USE_HDR)) {
+                JGemsConfig.SYSTEM.USE_HDR = !JGemsConfig.SYSTEM.USE_HDR;
             }
             if (ImGui.treeNode("HDR Settings")) {
-                float[] exposure = new float[]{JGemsConfiguration.RENDERING.HDR_EXPOSURE};
+                float[] exposure = new float[]{JGemsConfig.SYSTEM.HDR_EXPOSURE};
                 ImGui.sliderFloat("exposure", exposure, 0.0f, 5.0f);
-                JGemsConfiguration.RENDERING.HDR_EXPOSURE = exposure[0];
-                float[] gamma = new float[]{JGemsConfiguration.RENDERING.HDR_GAMMA};
+                JGemsConfig.SYSTEM.HDR_EXPOSURE = exposure[0];
+                float[] gamma = new float[]{JGemsConfig.SYSTEM.HDR_GAMMA};
                 ImGui.sliderFloat("gamma", gamma, 0.0f, 3.0f);
-                JGemsConfiguration.RENDERING.HDR_GAMMA = gamma[0];
+                JGemsConfig.SYSTEM.HDR_GAMMA = gamma[0];
                 ImGui.treePop();
             }
 
-            if (ImGui.checkbox("FXAA", JGemsConfiguration.RENDERING.USE_FXAA)) {
-                JGemsConfiguration.RENDERING.USE_FXAA = !JGemsConfiguration.RENDERING.USE_FXAA;
+            if (ImGui.checkbox("FXAA", JGemsConfig.SYSTEM.USE_FXAA)) {
+                JGemsConfig.SYSTEM.USE_FXAA = !JGemsConfig.SYSTEM.USE_FXAA;
             }
-            if (ImGui.checkbox("Bloom", JGemsConfiguration.RENDERING.USE_BLOOM)) {
-                JGemsConfiguration.RENDERING.USE_BLOOM = !JGemsConfiguration.RENDERING.USE_BLOOM;
+            if (ImGui.checkbox("Bloom", JGemsConfig.SYSTEM.USE_BLOOM)) {
+                JGemsConfig.SYSTEM.USE_BLOOM = !JGemsConfig.SYSTEM.USE_BLOOM;
             }
 
-            if (ImGui.checkbox("SSAO", JGemsConfiguration.RENDERING.USE_SSAO)) {
-                JGemsConfiguration.RENDERING.USE_SSAO = !JGemsConfiguration.RENDERING.USE_SSAO;
+            if (ImGui.checkbox("SSAO", JGemsConfig.SYSTEM.USE_SSAO)) {
+                JGemsConfig.SYSTEM.USE_SSAO = !JGemsConfig.SYSTEM.USE_SSAO;
             }
             if (ImGui.treeNode("SSAO Settings")) {
-                float[] radius = new float[]{JGemsConfiguration.RENDERING.SSAO_RADIUS};
+                float[] radius = new float[]{JGemsConfig.SYSTEM.SSAO_RADIUS};
                 ImGui.sliderFloat("radius", radius, 0.0f, 5.0f);
-                JGemsConfiguration.RENDERING.SSAO_RADIUS = radius[0];
-                float[] bias = new float[]{JGemsConfiguration.RENDERING.SSAO_BIAS};
+                JGemsConfig.SYSTEM.SSAO_RADIUS = radius[0];
+                float[] bias = new float[]{JGemsConfig.SYSTEM.SSAO_BIAS};
                 ImGui.sliderFloat("bias", bias, 0.0f, 0.1f);
-                JGemsConfiguration.RENDERING.SSAO_BIAS = bias[0];
-                float[] range = new float[]{JGemsConfiguration.RENDERING.SSAO_RANGE};
+                JGemsConfig.SYSTEM.SSAO_BIAS = bias[0];
+                float[] range = new float[]{JGemsConfig.SYSTEM.SSAO_RANGE};
                 ImGui.sliderFloat("range", range, 1.0f, 10.0f);
-                JGemsConfiguration.RENDERING.SSAO_RANGE = range[0];
+                JGemsConfig.SYSTEM.SSAO_RANGE = range[0];
                 ImGui.treePop();
             }
 
-            if (ImGui.checkbox("Shadows", JGemsConfiguration.RENDERING.USE_SHADOWS)) {
-                JGemsConfiguration.RENDERING.USE_SHADOWS = !JGemsConfiguration.RENDERING.USE_SHADOWS;
+            if (ImGui.checkbox("Shadows", JGemsConfig.SYSTEM.USE_SHADOWS)) {
+                JGemsConfig.SYSTEM.USE_SHADOWS = !JGemsConfig.SYSTEM.USE_SHADOWS;
             }
         }
 
@@ -153,12 +153,12 @@ public class DearUIGameInterface implements DearUIInterface {
                 }
             }
 
-            if (ImGui.checkbox("Full Bright", JGemsConfiguration.DEBUG.FULL_BRIGHT)) {
-                JGemsConfiguration.DEBUG.FULL_BRIGHT = !JGemsConfiguration.DEBUG.FULL_BRIGHT;
+            if (ImGui.checkbox("Full Bright", JGemsConfig.DEBUG.FULL_BRIGHT)) {
+                JGemsConfig.DEBUG.FULL_BRIGHT = !JGemsConfig.DEBUG.FULL_BRIGHT;
             }
 
-            if (ImGui.checkbox("Show Debug Lines", JGemsConfiguration.DEBUG.SHOW_DEBUG_LINES)) {
-                JGemsConfiguration.DEBUG.SHOW_DEBUG_LINES = !JGemsConfiguration.DEBUG.SHOW_DEBUG_LINES;
+            if (ImGui.checkbox("Show Debug Lines", JGemsConfig.DEBUG.SHOW_DEBUG_LINES)) {
+                JGemsConfig.DEBUG.SHOW_DEBUG_LINES = !JGemsConfig.DEBUG.SHOW_DEBUG_LINES;
             }
 
             if (ImGui.button("Generate NavMesh")) {
@@ -183,27 +183,27 @@ public class DearUIGameInterface implements DearUIInterface {
             GL46.glScissor(0, 0, 1, 1);
             ImGui.beginChild("inner1");
             if (ImGui.collapsingHeader("GBuffer")) {
-                ImGui.beginChild("Images1", JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f + 60, true);
+                ImGui.beginChild("Images1", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f + 60, true);
 
                 IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
 
-                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(0).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(0).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
-                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(1).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(1).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(2).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(2).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
-                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(3).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(3).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(4).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(4).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
 
                 ImGui.endChild();
             }
 
             if (ImGui.collapsingHeader("Scene")) {
-                ImGui.beginChild("Images2", JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
-                ImGui.image(JGemsResourceManager.getAnimationsTextureBuffer().getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.beginChild("Images2", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
+                ImGui.image(JGemsResourceManager.getAnimationsTextureBuffer().getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
 //
                 //ImGui.image(sceneRender.getSceneGluingBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
@@ -219,22 +219,22 @@ public class DearUIGameInterface implements DearUIInterface {
             }
 
             if (ImGui.collapsingHeader("Shadows")) {
-                ImGui.beginChild("Images3", JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
+                ImGui.beginChild("Images3", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
 
-                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(0).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(0).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
-                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(1).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(1).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(2).getTextureId(), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(2).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.endChild();
             }
 
             if (ImGui.collapsingHeader("SSAO")) {
                 IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
 
-                ImGui.beginChild("Images4", JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
+                ImGui.beginChild("Images4", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
 
-                ImGui.image(iDeferredRenderNode.getOutSSAOBuffer().getTextureIDByIndex(0), JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(iDeferredRenderNode.getOutSSAOBuffer().getTextureIDByIndex(0), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
                 ImGui.endChild();
             }

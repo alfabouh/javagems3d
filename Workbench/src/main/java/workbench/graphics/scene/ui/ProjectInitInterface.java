@@ -79,7 +79,7 @@ public class ProjectInitInterface implements DearUIInterface {
             String projectPath = this.projectPath.get();
             String projectName = this.projectName.get();
             if (!projectPath.isEmpty() && !projectName.isEmpty()) {
-                WBench.get().getProjectManager().createProject(new JGemsPath(projectPath, projectName + ProjectManager.extension), projectName);
+                WBench.get().getProjectManager().createProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + ProjectManager.extension), projectName);
                 WBench.get().getSettings().addPath(projectPath);
 
                 try {

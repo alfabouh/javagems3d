@@ -3,11 +3,12 @@ package javagems3d.graphics.environment;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.scene.LightsScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.physics.world.IWorld;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import org.lwjgl.system.MemoryStack;
 import javagems3d.graphics.environment.fog.FogManager;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
@@ -17,8 +18,6 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 import java.nio.FloatBuffer;
 
 public class JGemsEnvironment implements IEnvironment {
-    public static final int FOG_STRUCT_SIZE = 5;
-
     private final ShadowScene shadowScene;
     private final LightsScene lightManager;
     private final SkyBox skyBox;
@@ -29,7 +28,7 @@ public class JGemsEnvironment implements IEnvironment {
     public JGemsEnvironment(IWorld world) {
         this.skyBox = new SkyBox(4.0f, world, JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
         this.fogManager = new FogManager();
-        this.lightManager = new LightsScene(this);
+        this.lightManager = new LightsScene(JGemsResourceManager.globalShaderAssets.SunLightData, JGemsResourceManager.globalShaderAssets.PointLightsData,this);
         this.shadowScene = new ShadowScene(this);
         this.world = world;
     }
@@ -43,7 +42,7 @@ public class JGemsEnvironment implements IEnvironment {
         this.getSkyBox().destroySkyBox(this.getWorld());
         this.getShadowScene().destroyResources();
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.getLightManager().removeAllLights(stack);
+            this.getLightManager().clearPointLightsBuffer(stack);
         }
     }
 
@@ -53,7 +52,10 @@ public class JGemsEnvironment implements IEnvironment {
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.updateLightsUBO(this.getWorld(), stack);
-            this.updateFogUBO(stack);
+            if (this.getFogManager().update) {
+                this.updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, stack);
+                this.getFogManager().update = false;
+            }
         }
     }
 
@@ -61,15 +63,14 @@ public class JGemsEnvironment implements IEnvironment {
         this.getLightManager().updateBuffers(stack, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
     }
 
-    private void updateFogUBO(MemoryStack stack) {
-        FloatBuffer value1Buffer = stack.mallocFloat(JGemsEnvironment.FOG_STRUCT_SIZE);
-        value1Buffer.put(this.getFogManager().getColor().x * this.getSkyBox().getSun().getSunBrightness());
-        value1Buffer.put(this.getFogManager().getColor().y * this.getSkyBox().getSun().getSunBrightness());
-        value1Buffer.put(this.getFogManager().getColor().z * this.getSkyBox().getSun().getSunBrightness());
-        value1Buffer.put(0.0f);
-        value1Buffer.put(!JGemsConfiguration.DEBUG.FULL_BRIGHT ? this.getFogManager().getDensity() : 0.0f);
-        value1Buffer.flip();
-        JGemsOpenGLRenderer.UBOShader().performUniformBuffer(JGemsResourceManager.globalShaderAssets.Fog, value1Buffer);
+    private void updateFogBuffer(ShaderStorageBufferObject shaderStorageBufferObject, MemoryStack stack) {
+        FloatBuffer buffer = stack.mallocFloat(JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
+        buffer.put(this.getFogManager().getColor().x * this.getSkyBox().getSun().getSunBrightness());
+        buffer.put(this.getFogManager().getColor().y * this.getSkyBox().getSun().getSunBrightness());
+        buffer.put(this.getFogManager().getColor().z * this.getSkyBox().getSun().getSunBrightness());
+        buffer.put(!JGemsConfig.DEBUG.FULL_BRIGHT ? this.getFogManager().getDensity() : 0.0f);
+        buffer.flip();
+        ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, 0L, buffer);
     }
 
     @Override

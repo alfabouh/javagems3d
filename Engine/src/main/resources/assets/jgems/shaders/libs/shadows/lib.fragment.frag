@@ -3,9 +3,9 @@ struct CascadeShadow {
     mat4 projection_view;
 };
 
-uniform CascadeShadow cascade_shadow[3];
-uniform samplerCube point_light_cubemap[3];
-uniform sampler2D sun_shadow_map[3];
+uniform CascadeShadow cascade_shadow[CONST.SUN_SHADOW_CASCADES];
+uniform sampler2D sun_shadow_map[CONST.SUN_SHADOW_CASCADES];
+uniform samplerCube point_light_cubemap[CONST.MAX_POINT_LIGHTS_SHADOWS];
 uniform float far_plane;
 
 uniform float PosExp;

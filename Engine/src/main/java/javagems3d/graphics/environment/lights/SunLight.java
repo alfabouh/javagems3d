@@ -8,11 +8,13 @@ public class SunLight extends Light {
     private Vector3f sunPos;
     private Vector3f sunColor;
     private float sunBrightness;
+    public boolean update;
 
     public SunLight(@NotNull Vector3f sunPos, Vector3f sunColor, float sunBrightness) {
         this.sunPos = sunPos;
         this.sunColor = sunColor == null ? new Vector3f(1.0f) : sunColor;
         this.sunBrightness = sunBrightness;
+        this.update = true;
     }
 
     @Override
@@ -21,22 +23,25 @@ public class SunLight extends Light {
 
     public void setSunColor(Vector3f sunColor) {
         this.sunColor = sunColor;
+        this.update = true;
     }
 
     public void setSunBrightness(float sunBrightness) {
         this.sunBrightness = sunBrightness;
+        this.update = true;
     }
 
     public void setSunPosition(@NotNull Vector3f sunPos) {
         this.sunPos = sunPos;
+        this.update = true;
     }
 
     public Vector3f getSunPosition() {
-        return this.sunPos;
+        return new Vector3f(this.sunPos);
     }
 
     public Vector3f getSunColor() {
-        return this.sunColor;
+        return new Vector3f(this.sunColor);
     }
 
     public float getSunBrightness() {

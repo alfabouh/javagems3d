@@ -46,7 +46,7 @@ public class PointLight extends Light {
     }
 
     public float getBrightness() {
-        return !this.isEnabled() ? -1.0f : this.brightness;
+        return !this.isActive() ? -1.0f : this.brightness;
     }
 
     public PointLight setBrightness(float brightness) {

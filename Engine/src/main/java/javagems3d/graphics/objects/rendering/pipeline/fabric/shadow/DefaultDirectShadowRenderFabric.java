@@ -1,6 +1,6 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.shadow;
 
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.IRendered;
@@ -41,7 +41,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
     }
 
     protected void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, Model3D model) {
-        shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsConfiguration.RENDERING.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
+        shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
         JGemsShadersHelper.performAnimationsInfo(shaderManager, animated);
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {

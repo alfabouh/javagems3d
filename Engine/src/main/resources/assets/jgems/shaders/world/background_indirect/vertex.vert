@@ -4,34 +4,6 @@ layout (location=2) in vec3 aNormal;
 layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
 
-layout (std140, binding = 0) uniform SunLight {
-    vec4 sunPos;
-    vec4 sunColor;
-    vec2 sunMeta;
-};
-
-layout (std140, binding = 3) uniform Fog {
-    vec4 fogColor;
-    float fogDensity;
-};
-
-out vec2 uv_coordinates;
-
-out vec3 modelview_vertex_normal;
-out vec3 model_vertex_normal;
-out vec3 modelview_vertex_pos;
-out vec4 model_vertex_pos;
-
-out mat3 TBN;
-out mat4 out_view_matrix;
-
-out flat uint matertial_id;
-out flat uint ent_id;
-
-uniform mat4 view_matrix;
-uniform mat4 projection_matrix;
-
-
 layout(std430, binding = 1) buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
@@ -40,6 +12,19 @@ layout(std430, binding = 1) buffer IndirectBufferData {
     int animationOffsetPrev[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     float animationFrameDelta[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
 };
+
+out vec2 uv_coordinates;
+out vec3 modelview_vertex_normal;
+out vec3 model_vertex_normal;
+out vec3 modelview_vertex_pos;
+out vec4 model_vertex_pos;
+out mat3 TBN;
+out mat4 out_view_matrix;
+out flat uint matertial_id;
+out flat uint ent_id;
+
+uniform mat4 view_matrix;
+uniform mat4 projection_matrix;
 
 void main()
 {

@@ -1,6 +1,6 @@
 package javagems3d.graphics.particles;
 
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
@@ -54,7 +54,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     @Override
     public void emitParticle(ParticleFX particleFX) {
         this.getParticlesSet().add(particleFX);
-        if (this.getParticlesSet().size() > JGemsConfiguration.SYSTEM.MAX_PARTICLES) {
+        if (this.getParticlesSet().size() > JGemsConfig.SYSTEM.MAX_PARTICLES) {
             this.getParticlesSet().remove(this.getParticlesSet().stream().findFirst().get());
         }
     }

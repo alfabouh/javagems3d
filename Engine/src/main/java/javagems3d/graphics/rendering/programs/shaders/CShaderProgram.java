@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.programs.shaders;
 
+import javagems3d.help.JGemsUtils;
 import logger.Log;
 import org.lwjgl.opengl.GL46;
 import javagems3d.system.resources.assets.shaders.base.ShaderObject;
@@ -36,7 +37,7 @@ public class CShaderProgram implements IShaderProgram {
         GL46.glShaderSource(id, shader);
         GL46.glCompileShader(id);
         if (GL46.glGetShaderi(id, GL46.GL_COMPILE_STATUS) == 0) {
-            Log.get().warn(shader);
+            Log.get().warn(JGemsUtils.getTextWithLines(shader));
             throw new JGemsRuntimeException("Compile shader error: " + GL46.glGetShaderInfoLog(id, 4096));
         }
         GL46.glAttachShader(this.programId, id);

@@ -1,5 +1,6 @@
 package workbench;
 
+import com.google.gson.JsonSyntaxException;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
@@ -58,7 +59,7 @@ public final class WBench {
 
         try {
             this.settings = WBenchSettings.load(new JGemsPath(WBench.getFilesFolder()));
-        } catch (JGemsIOException | IllegalStateException e) {
+        } catch (JGemsIOException | IllegalStateException | JsonSyntaxException e) {
             Log.get().exception(e);
         }
 
@@ -116,6 +117,7 @@ public final class WBench {
             JGemsCore.printSystemInfo();
 
             WBench.get().getResourceManager().initGlobalResources();
+            WBench.get().getResourceManager().initLocalResources();
 
             WBench.get().getScreen().createScreenAndContext();
             WBench.get().getScreen().createObjects(WBench.get().getScreen().getWindow());

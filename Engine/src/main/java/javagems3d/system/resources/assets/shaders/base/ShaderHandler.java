@@ -10,10 +10,8 @@ import javagems3d.graphics.rendering.programs.shaders.IShaderProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ShaderHandler {
     private final Map<UniformBufferObject, UniformBufferProgram> uniformBufferProgramMap;
@@ -67,7 +65,7 @@ public class ShaderHandler {
     }
 
     private void initUniformBuffers(Set<UniformBufferObject> uniformBufferObjects) {
-        for (UniformBufferObject uniformBufferObject : uniformBufferObjects) {
+        for (UniformBufferObject uniformBufferObject : uniformBufferObjects.stream().filter(Objects::nonNull).collect(Collectors.toList())) {
             UniformBufferProgram uniformBufferProgram = new UniformBufferProgram(shaderProgram.getProgramId(), uniformBufferObject.getId());
             if (uniformBufferProgram.createUniformBuffer(uniformBufferObject.getBinding(), uniformBufferObject.getBufferSize())) {
                 Log.get().info("[" + this.id + "] Linked UBO " + uniformBufferObject.getId() + " at " + uniformBufferObject.getBinding());
@@ -87,7 +85,9 @@ public class ShaderHandler {
     }
 
     public void clear() {
-        this.getShaderProgram().clear();
+        if (this.getShaderProgram() != null) {
+            this.getShaderProgram().clear();
+        }
     }
 
     public boolean checkUniformInProgram(UniformString uniformString) {

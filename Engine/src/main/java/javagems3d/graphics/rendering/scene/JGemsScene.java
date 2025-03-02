@@ -38,7 +38,9 @@ public class JGemsScene implements IScene {
     @SuppressWarnings("all")
     public void renderScene(float frameDeltaTime) throws InterruptedException {
         if (JGemsWindowHelper.isWindowActive()) {
-            JGemsOpenGLRenderer.UBOShader().beginShading();
+            if (JGemsOpenGLRenderer.UBOShader() != null) {
+                JGemsOpenGLRenderer.UBOShader().beginShading();
+            }
             if (this.getCamera() != null) {
                 this.elapsedTime += frameDeltaTime / JGemsPhysics.getFrameTime();
                 if (this.elapsedTime > 1.0d) {
@@ -51,7 +53,9 @@ public class JGemsScene implements IScene {
                 this.elapsedTime = 0.0f;
             }
             this.getSceneRenderer().onRender(new FrameTicking(this.elapsedTime, frameDeltaTime));
-            JGemsOpenGLRenderer.UBOShader().endShading();
+            if (JGemsOpenGLRenderer.UBOShader() != null) {
+                JGemsOpenGLRenderer.UBOShader().endShading();
+            }
         }
     }
 

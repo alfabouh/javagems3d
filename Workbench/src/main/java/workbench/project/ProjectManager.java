@@ -2,7 +2,10 @@ package workbench.project;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonSerializationContext;
-import javagems3d.JGems3D;
+import com.google.gson.JsonSyntaxException;
+import javagems3d.graphics.camera.ControlledCamera;
+import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
@@ -10,44 +13,22 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
-import logger.SystemLogging;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.world.WBenchWorld;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Objects;
 
 public final class ProjectManager {
     private Project currentProject;
     private WBenchWorld world;
 
     public static final String extension = ".wbpj";
-    private static JSONFileManaging.SerializationRules<Project> rules;
-
-    static {
-        ProjectManager.rules = new JSONFileManaging.SerializationRules<Project>() {
-            @Override
-            public String write(Project toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) {
-                return toWrite.toString();
-            }
-
-            @Override
-            public Project read(String readString, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) {
-                String[] strings = readString.split("&");
-                try {
-                    return new Project(strings[1], strings[0]);
-                } catch (Exception e) {
-                    throw new JGemsIOException("Couldn't read file", e);
-                }
-            }
-        };
-    }
 
     public ProjectManager() {
         this.currentProject = null;
@@ -63,14 +44,17 @@ public final class ProjectManager {
     }
 
     @SuppressWarnings("all")
-    public boolean createProject(JGemsPath path, String name) {
+    public boolean createProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
-            JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(Project.class, ProjectManager.rules));
+            JSONFileManaging jsonFileManaging = JSONFileManaging.create();
             Project project = new Project(JGemsCore.ENG_VER, name);
             jsonFileManaging.writeToFile(project, new File(path.toString()), null);
             this.setCurrentProject(project);
-            this.createProjectSystemFiles(path, name);
+            this.createProjectSystemFiles(absPath, name);
             Log.get().debug("Created project: " + project);
+
+            this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
+
             return true;
         } catch (JGemsIOException e) {
             Log.get().showExceptionDialog("Internal error! Couldn't create project!\n" + e.getMessage());
@@ -88,6 +72,10 @@ public final class ProjectManager {
         resources.mkdirs();
         compiled.mkdirs();
         scripts.mkdirs();
+    }
+
+    public void closeProject() {
+
     }
 
     @SuppressWarnings("all")
@@ -108,10 +96,10 @@ public final class ProjectManager {
             if (project == null) {
                 return false;
             }
-            Log.get().debug("Read project: " + project);
             this.createProjectSystemFiles(path, project.getProjectName());
+            Log.get().debug("Opened project: " + project);
 
-            WBench.get().openInterface(WBenchOpenGLRenderer.editorInterface);
+            this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
 
             return true;
         } catch (JGemsIOException e) {
@@ -123,15 +111,25 @@ public final class ProjectManager {
 
     public Project readMainFile(JGemsPath path) {
         try {
-            JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(Project.class, ProjectManager.rules));
+            JSONFileManaging jsonFileManaging = JSONFileManaging.create();
             Project project = jsonFileManaging.readFromFile(new File(path.toString()), Project.class, null);
             this.setCurrentProject(project);
             return project;
-        } catch (JGemsIOException e) {
+        } catch (JGemsIOException | JsonSyntaxException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't open project!\n" + e.getMessage());
             Log.get().exception(e);
             return null;
         }
+    }
+
+    private void initWorkingSpace(WBenchWorld world, DearUIInterface dearUIInterface) {
+        world.setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
+        WBench.get().openInterface(dearUIInterface);
+    }
+
+    private void closeWorkingSpace(DearUIInterface dearUIInterface) {
+        world.setCamera(null);
+        WBench.get().openInterface(dearUIInterface);
     }
 
     public WBenchWorld getWorld() {

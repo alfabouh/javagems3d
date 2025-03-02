@@ -1,11 +1,7 @@
 package workbench.resources.initialization;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.graphics.objects.rendering.data.EntityRenderData;
-import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import workbench.resources.WBenchResourceManager;
 
 public class RenderDataInitializer implements IAssetsInitializer {
    // public EntityRenderData entityCube;

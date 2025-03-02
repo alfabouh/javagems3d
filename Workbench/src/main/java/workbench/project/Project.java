@@ -1,9 +1,12 @@
 package workbench.project;
 
-import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 
-public class Project {
+import java.io.Serializable;
+
+public class Project implements Serializable {
+    private static final long serialVersionUID = -2138L;
+
     private final String projectName;
     private final String version;
 
@@ -21,6 +24,6 @@ public class Project {
     }
 
     public String toString() {
-        return this.getProjectName() + "&" + this.getVersion();
+        return this.getProjectName() + " - " + this.getVersion();
     }
 }

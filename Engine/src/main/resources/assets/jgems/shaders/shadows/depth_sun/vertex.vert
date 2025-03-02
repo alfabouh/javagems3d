@@ -3,38 +3,29 @@ layout (location=1) in vec2 texture;
 layout (location=5) in ivec4 aBoneIndexes;
 layout (location=6) in vec4 aBoneWeights;
 
-const int MAX_WEIGHTS = CONST.ANIM_MAX_WEIGHTS;
+out vec2 uv_coordinates;
 
 uniform mat4 projection_view_matrix;
 uniform mat4 model_matrix;
-
-layout(std430, binding = 0) buffer BoneMatrices {
-    mat4 bone_matrices[64];
-};
 uniform bool hasAnimations;
 
-out vec2 uv_coordinates;
+struct AnimationData {
+    int currAnimationOffset;
+    int currAnimationOffsetPrev;
+    float deltaFrame;
+};
+uniform AnimationData animationData;
+
+#include "assets/jgems/shaders/libs/animations"
 
 void main()
 {
-    vec4 startPos = vec4(0.);
-    int j = 0;
-    if (hasAnimations) {
-        for (int i = 0; i < MAX_WEIGHTS; i++) {
-            float weight = aBoneWeights[i];
-            if (weight > 0.) {
-                j += 1;
-                int boneId = aBoneIndexes[i];
-                vec4 tempPos = bone_matrices[boneId] * vec4(aPosition, 1.);
-                startPos += weight * tempPos;
-            }
-        }
-    }
+    vec4 position = vec4(aPosition, 1.0);
+    vec4 tempNormal = vec4(0.0);
+    vec4 tempTangent = vec4(0.0);
+    vec4 tempBiTangent = vec4(0.0);
+    perform_animation(position, tempNormal, tempTangent, tempBiTangent, aBoneIndexes, aBoneWeights, animationData.currAnimationOffset, animationData.currAnimationOffsetPrev, animationData.deltaFrame);
 
-    if (j == 0) {
-        startPos = vec4(aPosition, 1.0);
-    }
-
-    gl_Position = projection_view_matrix * model_matrix * startPos;
+    gl_Position = projection_view_matrix * model_matrix * position;
     uv_coordinates = texture;
 }

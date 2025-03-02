@@ -1,35 +1,35 @@
 in vec2 uv_coordinates;
-
 in vec3 model_vertex_normal;
 in vec4 model_vertex_pos;
 in vec3 modelview_vertex_normal;
 in vec3 modelview_vertex_pos;
-
 in mat3 TBN;
 in mat4 out_view_matrix;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
-layout (std140, binding = 0) uniform SunLight {
-    vec4 sunPos;
-    vec4 sunColor;
-    vec2 sunMeta;
+struct Sun {
+    vec3 position;
+    float _padding0;
+    vec3 color;
+    float ambient;
+    float brightness;
+};
+layout (std430, binding = 5) buffer SunLight {
+    Sun sun;
 };
 
-layout (std140, binding = 3) uniform Fog {
-    vec4 fogColor;
-    float fogDensity;
+struct Fog {
+    vec3 color;
+    float density;
 };
-
-uniform vec3 camera_pos;
-
-uniform int texturing_code;
-uniform int lighting_code;
+layout (std430, binding = 7) buffer WorldFog {
+    Fog fog;
+};
 
 const int light_opacity_code = 1 << 2;
 const int light_bright_code = 1 << 3;
-
 const int diffuse_code = 1 << 2;
 const int emission_code = 1 << 3;
 const int metallic_code = 1 << 4;
@@ -43,8 +43,10 @@ uniform sampler2D normals_map;
 uniform sampler2D emissive_map;
 uniform sampler2D specular_map;
 uniform sampler2D metallic_map;
-
 uniform float alpha_discard;
+uniform vec3 camera_pos;
+uniform int texturing_code;
+uniform int lighting_code;
 
 vec4 calc_sun_light(vec3, vec3, vec3);
 vec4 calc_light_factor(vec3, float, vec3, vec3, vec3);
@@ -58,7 +60,7 @@ bool checkCode(int i1, int i2) {
 }
 
 vec4 refract_cubemap(vec3 normal, float cnst) {
-    float fogFactor = fogDensity * 100;
+    float fogFactor = fog.density * 100;
     float f = 1.0 - clamp(fogFactor, 0.0, 0.7);
 
     float ratio = 1.0 / cnst;
@@ -96,9 +98,9 @@ void main()
 }
 
 vec4 calc_light(vec3 frag_pos, vec3 normal) {
-    vec4 lightFactors = vec4(sunColor.xyz * sunMeta.x, 1.0);
-    vec3 sunPos = normalize(sunPos.xyz);
-    vec4 sunFactor = calc_sun_light(sunPos, frag_pos, normal);
+    vec4 lightFactors = vec4(sun.color * sun.ambient, 1.0);
+    vec3 position = normalize(sun.position);
+    vec4 sunFactor = calc_sun_light(position, frag_pos, normal);
     return lightFactors + sunFactor;
 }
 
@@ -124,17 +126,17 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     return diffuseC + (specularC * specularFactor);
 }
 
-vec4 calc_sun_light(vec3 sunPos, vec3 vPos, vec3 vNormal) {
-    return calc_light_factor(sunColor.xyz, sunMeta.y, vPos, normalize(sunPos), vNormal);
+vec4 calc_sun_light(vec3 position, vec3 vPos, vec3 vNormal) {
+    return calc_light_factor(sun.color, sun.brightness, vPos, normalize(position), vNormal);
 }
 
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
-    if (fogDensity <= 0) {
+    if (fog.density <= 0) {
         return color;
     }
-    vec3 fog_color = fogColor.xyz;
+    vec3 fog_color = fog.color;
     float distance = length(frag_pos);
-    float fogFactor = 1. / exp((distance * fogDensity) * (distance * fogDensity));
+    float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
     fogFactor = clamp(fogFactor, 0., 1.);
 
     vec3 result = mix(fog_color, color.xyz, fogFactor);

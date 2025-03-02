@@ -41,11 +41,11 @@ public class ItemZippo extends InventoryItem {
         this.openCd -= 1;
         if (!isCurrent) {
             if (this.isOpened()) {
-                this.pointLight.setEnabled(false);
+                this.pointLight.off();
             }
         } else {
             if (this.isOpened()) {
-                this.pointLight.setEnabled(true);
+                this.pointLight.on();
             }
         }
     }
@@ -55,7 +55,7 @@ public class ItemZippo extends InventoryItem {
         this.pointLight = (PointLight) new PointLight().setLightColor(new Vector3f(1.0f, 0.475f, 0.375f));
         pointLight.setBrightness(this.zippoBrightness());
         JGemsWorldHelper.addPointLight((WorldItem) this.itemOwner(), pointLight, 0);
-        this.pointLight.setEnabled(false);
+        this.pointLight.off();
     }
 
     public String getDescription() {
@@ -72,13 +72,13 @@ public class ItemZippo extends InventoryItem {
 
     protected void close() {
         JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.zippo_c, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
-        this.pointLight.setEnabled(false);
+        this.pointLight.off();
         this.isOpened = false;
     }
 
     protected void open() {
         JGems3D.get().getSoundManager().playLocalSound(JGemsResourceManager.globalSoundAssets.zippo_o, SoundType.BACKGROUND_SOUND, 1.5f, 0.5f);
-        this.pointLight.setEnabled(true);
+        this.pointLight.on();
         this.isOpened = true;
     }
 

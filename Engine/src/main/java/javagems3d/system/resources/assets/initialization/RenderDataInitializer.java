@@ -26,6 +26,9 @@ public class RenderDataInitializer implements IAssetsInitializer {
     public LiquidRenderData water;
 
     public RenderDataInitializer() {
+    }
+
+    public static void setDefaultRenderTableValues() {
         JGemsShaderManager DEFAULT_SCENE_SHADER = JGemsResourceManager.globalShaderAssets.world_gbuffer;
         JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER = JGemsResourceManager.globalShaderAssets.depth_sun;
         JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER = JGemsResourceManager.globalShaderAssets.depth_plight;

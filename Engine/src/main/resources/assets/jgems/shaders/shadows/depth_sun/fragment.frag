@@ -95,16 +95,15 @@ void Shadows() {
 }
 */
 
+in vec2 uv_coordinates;
+
 layout (location = 0) out vec4 frag_color0;
 
 uniform float alpha_discard;
 uniform sampler2D texture_sampler;
 uniform bool use_texture;
-
 uniform float PosExp;
 uniform float NegExp;
-
-in vec2 uv_coordinates;
 
 void Shadows() {
     float positiveExponent = PosExp;

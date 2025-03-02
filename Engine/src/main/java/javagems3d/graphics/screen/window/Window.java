@@ -1,7 +1,7 @@
 package javagems3d.graphics.screen.window;
 
 import com.google.common.io.ByteStreams;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -206,9 +206,9 @@ public class Window implements IWindow {
         if (vidMode == null) {
             throw new JGemsNullException("Null Monitor");
         }
-        int x = (vidMode.width() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH) / 2;
-        int y = (vidMode.height() - JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT) / 2;
-        GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_WIDTH, JGemsConfiguration.SYSTEM.DEFAULT_SCREEN_HEIGHT, GLFW.GLFW_DONT_CARE);
+        int x = (vidMode.width() - JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH) / 2;
+        int y = (vidMode.height() - JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT) / 2;
+        GLFW.glfwSetWindowMonitor(this.getDescriptor(), 0, x, y, JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT, GLFW.GLFW_DONT_CARE);
         Log.get().trace("DefaultScreen mode");
     }
 

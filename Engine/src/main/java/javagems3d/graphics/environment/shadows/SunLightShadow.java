@@ -1,6 +1,6 @@
 package javagems3d.graphics.environment.shadows;
 
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -27,7 +27,7 @@ public class SunLightShadow extends Shadow {
 
     private void initCascades() {
         this.cascades = new ArrayList<>();
-        for (int i = 0; i < JGemsConfiguration.RENDERING.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
             this.cascades.add(new Cascade());
         }
     }
@@ -72,10 +72,10 @@ public class SunLightShadow extends Shadow {
         Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getSunPosition(), 0.0f);
 
         float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
-        float[] cascadeSplits = new float[JGemsConfiguration.RENDERING.CASCADE_SPLITS];
+        float[] cascadeSplits = new float[JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES];
 
-        float nearClip = JGemsConfiguration.RENDERING.Z_NEAR;
-        float farClip = JGemsConfiguration.RENDERING.Z_FAR;
+        float nearClip = JGemsConfig.SYSTEM.Z_NEAR;
+        float farClip = JGemsConfig.SYSTEM.Z_FAR;
         float clipRange = farClip - nearClip;
 
         float minZ = nearClip;
@@ -84,8 +84,8 @@ public class SunLightShadow extends Shadow {
         float range = maxZ - minZ;
         float ratio = maxZ / minZ;
 
-        for (int i = 0; i < JGemsConfiguration.RENDERING.CASCADE_SPLITS; i++) {
-            float p = (i + 1) / (float) JGemsConfiguration.RENDERING.CASCADE_SPLITS;
+        for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
+            float p = (i + 1) / (float) JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES;
             float log = (float) (minZ * Math.pow(ratio, p));
             float uniform = minZ + range * p;
             float d = cascadeSplitLambda[i] * (log - uniform) + uniform;
@@ -93,7 +93,7 @@ public class SunLightShadow extends Shadow {
         }
 
         float lastSplitDist = 0.0f;
-        for (int i = 0; i < JGemsConfiguration.RENDERING.CASCADE_SPLITS; i++) {
+        for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
             float splitDist = cascadeSplits[i];
 
             Vector3f[] frustumCorners = new Vector3f[]{

@@ -21,7 +21,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     @Override
     public void load(SystemResources systemResources) {
         this.createDefaults(systemResources);
-        this.grassCube = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "sponza/sponza.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
+        this.grassCube = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
         this.ground2 = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map04/map04.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
         this.ground3 = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map05/map05.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
         this.test_anim = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);

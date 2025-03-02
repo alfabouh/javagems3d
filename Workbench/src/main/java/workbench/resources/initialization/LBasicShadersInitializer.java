@@ -8,7 +8,7 @@ import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import workbench.resources.shaders.WBenchShaderManager;
 
-public final class BasicShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
+public final class LBasicShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
     public WBenchShaderManager imgui;
 
     @Override

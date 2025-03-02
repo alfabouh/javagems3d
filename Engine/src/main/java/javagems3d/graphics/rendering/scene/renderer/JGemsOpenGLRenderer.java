@@ -47,6 +47,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionsCallback {
+    public static JGemsShaderManager UBO_SHADER = null;
+
     public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
     public static final NodeID FORWARD_RENDER_PASS = new NodeID("f-pass", 1);
     public static final NodeID TRANSPARENCY_RENDER_PASS = new NodeID("transparency-pass", 2);
@@ -230,7 +232,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     public void onMapLoaded(IMapLoader loader, JGemsResourceManager resourceManager) {
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
         resourceManager.loadMeshMaterialsIsSSBO(JGemsResourceManager.globalShaderAssets.MaterialsData);
-        resourceManager.loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
+        resourceManager.loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
         resourceManager.loadModelAnimationsInTexture();
     }
 
@@ -313,7 +315,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     public static JGemsShaderManager UBOShader() {
-        return JGemsResourceManager.globalShaderAssets.gameUbo;
+        return JGemsOpenGLRenderer.UBO_SHADER;
     }
 
     public static JGemsShaderManager SkyBoxShader() {

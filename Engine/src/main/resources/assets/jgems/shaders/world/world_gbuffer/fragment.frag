@@ -5,6 +5,20 @@ in vec3 modelview_vertex_pos;
 in vec3 model_vertex_normal;
 in vec4 model_vertex_pos;
 
+layout (early_fragment_tests) in;
+layout (location = 0) out vec4 gPosition;
+layout (location = 1) out vec4 gNormal;
+layout (location = 2) out vec4 gColor;
+layout (location = 3) out vec4 gEmission;
+layout (location = 4) out vec4 gSpecular;
+
+const int diffuse_code = 1 << 2;
+const int emission_code = 1 << 3;
+const int metallic_code = 1 << 4;
+const int normals_code = 1 << 5;
+const int specular_code = 1 << 6;
+const int light_bright_code = 1 << 2;
+
 uniform float alpha_discard;
 uniform vec4 diffuse_color;
 uniform samplerCube ambient_cube_map;
@@ -16,20 +30,6 @@ uniform sampler2D metallic_map;
 uniform int texturing_code;
 uniform int lighting_code;
 uniform vec3 camera_pos;
-
-const int diffuse_code = 1 << 2;
-const int emission_code = 1 << 3;
-const int metallic_code = 1 << 4;
-const int normals_code = 1 << 5;
-const int specular_code = 1 << 6;
-const int light_bright_code = 1 << 2;
-
-layout (early_fragment_tests) in;
-layout (location = 0) out vec4 gPosition;
-layout (location = 1) out vec4 gNormal;
-layout (location = 2) out vec4 gColor;
-layout (location = 3) out vec4 gEmission;
-layout (location = 4) out vec4 gSpecular;
 
 bool checkCode(int i1, int i2) {
     int i3 = i1 & i2;

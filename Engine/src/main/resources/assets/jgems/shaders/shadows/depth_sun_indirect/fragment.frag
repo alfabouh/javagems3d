@@ -94,7 +94,6 @@ void Shadows() {
     frag_color0 = vec4(d, moment2, 0., 0.);
 }
 */
-
 layout (location = 0) out vec4 frag_color0;
 
 uniform float alpha_discard;
@@ -120,10 +119,10 @@ void Shadows() {
 
 void main()
 {
-  // vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, uv_coordinates);
-  // if (v.a < alpha_discard) {
-  //     discard;
-  // }
+    // vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, uv_coordinates);
+    // if (v.a < alpha_discard) {
+    //     discard;
+    // }
 
     Shadows();
 }

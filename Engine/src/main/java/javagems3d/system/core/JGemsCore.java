@@ -18,6 +18,7 @@ import javagems3d.system.map.IMapActionsCallback;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -74,7 +75,7 @@ public class JGemsCore implements ICore {
         this.mapLoader = null;
 
         this.requestsFromThreads = new RequestsFromThreads();
-        this.exceptionsBuffer = new HashSet<>();
+        this.exceptionsBuffer = SyncManager.createSyncronisedSet();
     }
 
     public void update() {
@@ -249,8 +250,12 @@ public class JGemsCore implements ICore {
     }
 
     private void destroyWorlds() {
-        this.getPhysics().getPhysicsWorld().onWorldEnd();
-        this.getScreen().getSceneWorld().onWorldEnd();
+        if (this.getPhysics().getPhysicsWorld() != null) {
+            this.getPhysics().getPhysicsWorld().onWorldEnd();
+        }
+        if (this.getScreen().getSceneWorld() != null) {
+            this.getScreen().getSceneWorld().onWorldEnd();
+        }
     }
 
     @SuppressWarnings("all")
@@ -274,6 +279,7 @@ public class JGemsCore implements ICore {
                 this.engineState().engineIsReady = true;
                 this.getScreen().runRenderThread();
             } catch (Exception e) {
+                JGems3D.close(null);
                 this.appendException(err, e);
                 Log.get().exception(e);
             } finally {
@@ -282,7 +288,9 @@ public class JGemsCore implements ICore {
                     if (!this.getPhysics().waitForFullTermination()) {
                         Log.get().error("Waited for physics termination too long...");
                     }
-                    this.getScreen().getScene().getSceneRenderer().destroySceneIndirectRenderBuffer();
+                    if (this.getScreen().getScene() != null) {
+                        this.getScreen().getScene().getSceneRenderer().destroySceneIndirectRenderBuffer();
+                    }
                     this.destroyWorlds();
                     this.getSoundManager().stopAllSounds();
                     this.getResourceManager().destroy();

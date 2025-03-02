@@ -50,8 +50,8 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         deferredShader.performUniformTexture(new UniformString("gSpecular"), gBuffer.getTextureByIndex(4));
         deferredShader.performUniformTexture(new UniformString("ssaoSampler"), ssaoBuffer.getTextureByIndex(0));
         deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(this.isSsaoValid()));
-        JGemsShadersHelper.performShadowsInfo(deferredShader);
         deferredShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        JGemsShadersHelper.performShadowsInfo(deferredShader);
         JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         deferredShader.endShading();
     }

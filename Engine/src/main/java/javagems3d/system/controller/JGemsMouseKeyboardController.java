@@ -1,7 +1,7 @@
 package javagems3d.system.controller;
 
 import javagems3d.help.JGemsCameraHelper;
-import javagems3d.system.global.JGemsConfiguration;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.base.IInventoryController;
@@ -24,7 +24,7 @@ public class JGemsMouseKeyboardController extends MouseKeyboardController implem
 
     @Override
     public float getCamSensitivity() {
-        return JGemsConfiguration.SYSTEM.CAM_SENS;
+        return JGemsConfig.SYSTEM.CAM_SENS;
     }
 
     public void updateItemWithInventory(IInventoryOwner hasInventory) {
