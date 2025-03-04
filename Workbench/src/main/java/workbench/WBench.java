@@ -127,8 +127,9 @@ public final class WBench {
             Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
         } finally {
+            WBench.get().getProjectManager().closeProject(true);
             WBench.get().getResourceManager().destroy();
-            Log.get().info("Cleared resources!");
+            Log.get().info("Cleared resources");
             Log.get().debug("END");
         }
     }

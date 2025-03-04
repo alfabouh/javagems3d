@@ -12,7 +12,7 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import workbench.WBench;
-import workbench.graphics.scene.renderer.IProjectActrionsCallback;
+import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
@@ -69,8 +69,16 @@ public final class ProjectManager {
         scripts.mkdirs();
     }
 
-    public void closeProject() {
-
+    public void closeProject(boolean total) {
+        Log.get().info("Closing project " + this.getCurrentProject());
+        if (this.getCurrentProject() != null) {
+            this.destroyLocalResources(this.getCurrentProject());
+            if (!total) {
+                this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
+            }
+            this.currentProject = null;
+        }
+        Log.get().info("Project successfully closed");
     }
 
     @SuppressWarnings("all")
@@ -123,13 +131,13 @@ public final class ProjectManager {
         WBench.get().getResourceManager().loadLocalResources();
         WBenchResourceManager.createLocalShaders();
         this.getWorld().onWorldStart();
-        ((IProjectActrionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpenedProject(WBench.get().getResourceManager(), project);
+        ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpeningProject(WBench.get().getResourceManager(), project);
     }
 
     private void destroyLocalResources(Project project) {
+        ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onClosingProject(WBench.get().getResourceManager(), project);
         this.getWorld().onWorldEnd();
         WBench.get().getResourceManager().destroyLocalResources();
-        ((IProjectActrionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onClosingProject(WBench.get().getResourceManager(), project);
     }
 
     private void initWorkingSpace(WBenchWorld world, DearUIInterface dearUIInterface) {

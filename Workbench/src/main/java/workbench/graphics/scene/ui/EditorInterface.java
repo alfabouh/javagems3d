@@ -1,16 +1,13 @@
 package workbench.graphics.scene.ui;
 
 import imgui.ImGui;
-import imgui.extension.imguizmo.ImGuizmo;
-import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImBoolean;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
+import workbench.WBench;
 import workbench.project.ProjectManager;
 
 public class EditorInterface implements DearUIInterface {
@@ -26,6 +23,22 @@ public class EditorInterface implements DearUIInterface {
             ImGui.setNextWindowFocus();
             ImGui.showDemoWindow();
         }
+
+        ImGui.beginMainMenuBar();
+        if (ImGui.beginMenu("Project")) {
+            if (ImGui.menuItem("Compile")) {
+
+            }
+            if (ImGui.menuItem("Exit")) {
+                if (LoggingManager.showConfirmationWindowDialog("Are you sure?")) {
+                    WBench.get().getProjectManager().closeProject(false);
+                }
+            }
+            ImGui.endMenu();
+        }
+        ImGui.endMainMenuBar();
+        final float YOffset = ImGui.getFrameHeight();
+
         final float sceneWindowSizeX = windowSize.x * 0.6f;
         final float sceneWindowSizeY = windowSize.y * 0.7f;
 
@@ -43,8 +56,8 @@ public class EditorInterface implements DearUIInterface {
         final float propertiesWindowSizeY =  windowSize.y;
 
         ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
-        ImGui.setWindowSize(sceneWindowSizeX, sceneWindowSizeY);
-        ImGui.setWindowPos(sceneWindowOffset, 0);
+        ImGui.setWindowSize(sceneWindowSizeX, sceneWindowSizeY - YOffset);
+        ImGui.setWindowPos(sceneWindowOffset, YOffset);
         this.sceneContent();
         ImGui.end();
 
@@ -55,8 +68,8 @@ public class EditorInterface implements DearUIInterface {
         ImGui.end();
 
         ImGui.begin("Items", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
-        ImGui.setWindowSize(entitiesWindowSizeX, entitiesWindowSizeY);
-        ImGui.setWindowPos(0, 0);
+        ImGui.setWindowSize(entitiesWindowSizeX, entitiesWindowSizeY - YOffset);
+        ImGui.setWindowPos(0, YOffset);
         this.itemsContent();
         ImGui.end();
 
@@ -67,8 +80,8 @@ public class EditorInterface implements DearUIInterface {
         ImGui.end();
 
         ImGui.begin("Properties", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
-        ImGui.setWindowSize(propertiesWindowSizeX, propertiesWindowSizeY);
-        ImGui.setWindowPos(sceneWindowSizeX + sceneWindowOffset, 0);
+        ImGui.setWindowSize(propertiesWindowSizeX, propertiesWindowSizeY - YOffset);
+        ImGui.setWindowPos(sceneWindowSizeX + sceneWindowOffset, YOffset);
         this.propertiesContent();
         ImGui.end();
     }

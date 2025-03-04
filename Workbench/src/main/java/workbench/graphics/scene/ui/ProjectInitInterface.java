@@ -14,6 +14,7 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.joml.Vector2i;
+import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.project.ProjectManager;
 import workbench.settings.WBenchSettings;
@@ -36,6 +37,7 @@ public class ProjectInitInterface implements DearUIInterface {
 
     @Override
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
+        GL46.glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         ImGui.begin(this + " | " + WBench.get().toString(), ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
         ImGui.setWindowSize(windowSize.x * 0.5f, windowSize.y * 0.5f);
         ImGui.setWindowPos(windowSize.x * 0.25f, windowSize.y * 0.25f);
