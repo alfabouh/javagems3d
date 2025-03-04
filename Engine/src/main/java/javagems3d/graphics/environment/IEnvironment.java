@@ -1,16 +1,11 @@
 package javagems3d.graphics.environment;
 
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.fog.FogManager;
-import javagems3d.graphics.environment.fog.IFogManager;
-import javagems3d.graphics.environment.lights.scene.ILightsScene;
-import javagems3d.graphics.environment.lights.scene.LightsScene;
+import javagems3d.graphics.environment.fog.IFogScene;
+import javagems3d.graphics.environment.lights.scene.ILightScene;
 import javagems3d.graphics.environment.shadows.scene.IShadowScene;
-import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
-import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 
 public interface IEnvironment {
@@ -20,7 +15,7 @@ public interface IEnvironment {
 
     IWorld getWorld();
     IShadowScene getShadowScene();
-    ILightsScene getLightManager();
-    IFogManager getFogManager();
+    ILightScene getLightManager();
+    IFogScene getFogManager();
     ISkyBox getSkyBox();
 }

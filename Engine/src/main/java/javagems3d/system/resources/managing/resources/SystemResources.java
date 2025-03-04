@@ -1,5 +1,6 @@
 package javagems3d.system.resources.managing.resources;
 
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * The SystemResources class contains a cache, as well as tools for loading resources
  */
-public abstract class SystemResources implements IGameResources {
+public abstract class SystemResources implements ISystemResources {
     private final ResourceCache resourceCache;
     private final Set<IAssetsInitializer> assetsLoaderSet;
     private final ResourcesDataArrays resourcesDataArrays;
@@ -60,24 +61,24 @@ public abstract class SystemResources implements IGameResources {
         return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer, memMode));
     }
 
-    public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
+    public ITextureProgram createTexture(@Nullable ITextureProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this, path.toString()).createImageTexture(textureProperties, path));
     }
 
-    public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
+    public ITextureProgram createTexture(@Nullable ITextureProgram returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, new ImageTexture.Data(buffer, size)));
     }
 
-    public ImageTexture createTexture(@Nullable ImageTexture returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
+    public ITextureProgram createTexture(@Nullable ITextureProgram returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, stream));
     }
 
-    public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture returnDefault, @NotNull String name, @NotNull ImageTexture.Data[] dataSet, @Nullable CubeMapTexture.Properties textureProperties) {
-        return this.loadCubeMap(returnDefault, name, () -> new CubeMapsLoader(this, name).createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet)));
+    public ITextureProgram createCubeMapTexture(@Nullable ITextureProgram returnDefault, @NotNull String name, @NotNull ImageTexture.Data[] dataSet, @Nullable CubeMapTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, name, () -> new CubeMapsLoader(this, name).createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet)));
     }
 
-    public CubeMapTexture createCubeMapTexture(@Nullable CubeMapTexture returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
-        return this.loadCubeMap(returnDefault, pathToCubeMapFile.toString(), () -> new CubeMapsLoader(this, pathToCubeMapFile.toString()).createCubeMapTexture(textureProperties, pathToCubeMapFile, textureDescriptor));
+    public ITextureProgram createCubeMapTexture(@Nullable ITextureProgram returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
+        return this.loadTexture(returnDefault, pathToCubeMapFile.toString(), () -> new CubeMapsLoader(this, pathToCubeMapFile.toString()).createCubeMapTexture(textureProperties, pathToCubeMapFile, textureDescriptor));
     }
 
     protected abstract void handlePreProcessingMessage(String message);
@@ -96,37 +97,14 @@ public abstract class SystemResources implements IGameResources {
         }
     }
 
-    private ImageTexture loadTexture(@Nullable ImageTexture returnDefault, @Nullable String name, Supplier<ImageTexture> textureLoader) {
+    private ITextureProgram loadTexture(@Nullable ITextureProgram returnDefault, @Nullable String name, Supplier<ITextureProgram> textureLoader) {
         this.handlePreProcessingMessage("Loading texture: " + name);
         try {
-            ImageTexture t = textureLoader.get();
+            ITextureProgram t = textureLoader.get();
             this.handleSuccessfulProcessingMessage("Successfully loaded texture");
             return t;
         } catch (Exception e) {
             this.handleFailedProcessingMessage("Error, while loading texture: " + name + ". Default returned");
-
-          // JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-          // Log.get().error("Couldn't load: " + name + ". Default returned");
-
-            if (returnDefault != null) {
-                return returnDefault;
-            } else {
-                throw new JGemsRuntimeException(e);
-            }
-        }
-    }
-
-    private CubeMapTexture loadCubeMap(@Nullable CubeMapTexture returnDefault, @Nullable String name, Supplier<CubeMapTexture> textureLoader) {
-        this.handlePreProcessingMessage("Loading texture: " + name);
-        try {
-            CubeMapTexture t = textureLoader.get();
-            this.handleSuccessfulProcessingMessage("Successfully loaded cube-map texture");
-            return t;
-        } catch (Exception e) {
-            this.handleFailedProcessingMessage("Error, while loading cube-map texture: " + name + ". Default returned");
-
-           // JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, "Couldn't load: " + name);
-           // Log.get().error("Couldn't load: " + name + ". Default returned");
             if (returnDefault != null) {
                 return returnDefault;
             } else {

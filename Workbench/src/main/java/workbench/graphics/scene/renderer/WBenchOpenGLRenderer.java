@@ -5,7 +5,6 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
@@ -36,11 +35,12 @@ import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.ui.EditorInterface;
 import workbench.graphics.scene.ui.ProjectInitInterface;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.project.Project;
 import workbench.resources.WBenchResourceManager;
 
 import java.util.*;
 
-public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
+public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, IProjectActrionsCallback {
     public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
     public static final NodeID FORWARD_RENDER_PASS = new NodeID("f-pass", 1);
     public static final NodeID TRANSPARENCY_RENDER_PASS = new NodeID("transparency-pass", 2);
@@ -75,7 +75,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
     }
 
     protected void setDefaultNodes() {
-        IDeferredRenderNode defaultDeferredNode = new DeferredRenderNode(this);
+        IDeferredRenderNode defaultDeferredNode = new DeferredRenderNode(new FBOTexture2DProgram(true), this);
         IForwardRenderNode forwardRenderNode = new ForwardRenderNode(this);
         ITransparencyRenderNode transparencyRenderNode = new TransparencyRenderNode(this);
         IGluingRenderNode gluingRenderNode = new GluingRenderNode(this);
@@ -138,24 +138,24 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
             uiRenderNode.onRender(frameTicking);
             return;
         }
-        //  this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
-        //  OpenGLRenderer.setViewPort(this.getRenderingResolution());
-//
+          this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
+          OpenGLRenderer.setViewPort(this.getRenderingResolution());
+
         //  Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
         //  this.getSceneCulling().cull(toRender);
-//
+
         //  Map<Stage, List<SceneObject>> dividedGroups = toRender.stream().filter(Objects::nonNull).collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
         //  deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
         //  deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
         //  forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
-//
+
         //  deferredRenderNode.onRender(frameTicking);
         //  forwardRenderNode.onRender(frameTicking);
-//
+
         //  Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
         //  Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
         //  rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
-//
+
         //  transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
         //  transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
         //  transparencyRenderNode.onRender(frameTicking);
@@ -182,8 +182,29 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
         }
         this.getSceneIndirectBuffer().clear();
         this.getDearUIRenderer().destroyUI();
-        this.getConveyorNodes().clear();
         this.destroyResources();
+        this.getConveyorNodes().clear();
+    }
+
+    @Override
+    public void onOpenedProject(WBenchResourceManager resourceManager, @NotNull Project project) {
+        this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
+        resourceManager.loadMeshMaterialsIsSSBO(WBenchResourceManager.localShaderAssets.MaterialsData);
+        resourceManager.loadBindlessHandlersInSSBO(WBenchResourceManager.localShaderAssets.BindlessTexturesData);
+        resourceManager.loadModelAnimationsInTexture();
+
+        this.getWorld().getEnvironment().createEnvironment(this);
+        this.getConveyorNodes().values().stream().filter(e -> !(e instanceof IUIRenderNode)).forEach(IRenderNode::createResources);
+        this.getSceneCulling().createResources();
+    }
+
+    @Override
+    public void onClosingProject(WBenchResourceManager resourceManager, @NotNull Project project) {
+        this.destroySceneIndirectRenderBuffer();
+
+        this.getWorld().getEnvironment().destroyEnvironment();
+        this.getConveyorNodes().values().stream().filter(e -> !(e instanceof IUIRenderNode)).forEach(IRenderNode::destroyResources);
+        this.getSceneCulling().destroyResources();
     }
 
     protected void constructScreenModel() {
@@ -197,19 +218,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
     public @NotNull Model2D getScreenModel() {
         return this.screenModel;
     }
-
-  //  @Override
-  //  public void onMapLoaded(IMapLoader loader, JGemsResourceManager resourceManager) {
-  //      this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
-  //      resourceManager.loadMeshMaterialsIsSSBO(JGemsResourceManager.globalShaderAssets.MaterialsData);
-  //      resourceManager.loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTextures);
-  //      resourceManager.loadModelAnimationsInTexture();
-  //  }
-
-  //  @Override
-  //  public void onMapDestroyed(IMapLoader loader, JGemsResourceManager resourceManager) {
-  //      this.destroySceneIndirectRenderBuffer();
-  //  }
 
     public void initSceneIndirectRenderBuffer(MeshBuffersDataCache meshBuffersDataCache) {
         this.getSceneIndirectBuffer().init(meshBuffersDataCache);
@@ -225,15 +233,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp {
     }
 
     public void createResources() {
-       // this.getWorld().getEnvironment().createEnvironment(this);
-        this.getConveyorNodes().values().forEach(IRenderNode::createResources);
-        this.getSceneCulling().createResources();
+        this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS).createResources();
     }
 
     public void destroyResources() {
-        //   this.getWorld().getEnvironment().destroyEnvironment();
-        this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
-        this.getSceneCulling().destroyResources();
+        this.getRenderNodeByPass(WBenchOpenGLRenderer.UI_RENDER_PASS).destroyResources();
     }
 
     @Override

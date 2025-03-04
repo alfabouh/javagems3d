@@ -4,6 +4,7 @@ import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.profiler.SpeedProfiler;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import logger.Log;
@@ -83,6 +84,7 @@ public class JGemsScreen implements IScreen {
             if (JGems3D.DEBUG_MODE) {
                 OpenGLSysUtils.registerOGLDebugOutput();
             }
+            ResourceManager.initDefaultTexture();
             JGemsResourceManager.createShaders();
 
             this.showGameLoadingScreen("System01");

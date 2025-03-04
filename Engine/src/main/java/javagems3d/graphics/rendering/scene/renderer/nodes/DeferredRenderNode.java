@@ -9,6 +9,7 @@ import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentConta
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.programs.indirect.commands.BaseIndirectCommandsProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
@@ -22,7 +23,6 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
@@ -122,7 +122,7 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
             final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
-            final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
+            final ITextureProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
             if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
@@ -210,7 +210,7 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
             final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
-            final CubeMapTexture cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getSky2DTexture();
+            final ITextureProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
             if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {

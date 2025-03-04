@@ -1,6 +1,7 @@
 package javagems3d.help;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
@@ -12,7 +13,6 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.RGBAColor;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
@@ -40,7 +40,7 @@ public abstract class JGemsShadersHelper {
         ImageBasedTexture metallic = material.getMetallicMap();
         ImageBasedTexture normals = material.getNormalsMap();
         ImageBasedTexture specular = material.getSpecularMap();
-        CubeMapTexture cubeMapProgram = JGemsEnvironmentHelper.getWorldEnvironment().getSkyBox().getSky2DTexture();
+        ITextureProgram cubeMapProgram = JGemsEnvironmentHelper.getWorldEnvironment().getSkyBox().getTexture();
 
         int texturing_code = 0;
 

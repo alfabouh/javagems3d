@@ -10,6 +10,7 @@ import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.profiler.SpeedProfiler;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
@@ -44,7 +45,6 @@ public class WBenchScreen implements IScreen {
     public void createObjects(IWindow window) {
         this.controllerDispatcher = new WBenchControllerDispatcher(window);
         this.scene = new WBenchScene(window, new WBenchWorld());
-
         WBench.get().getProjectManager().setWorld(this.getScene().getWorld());
     }
 
@@ -61,7 +61,8 @@ public class WBenchScreen implements IScreen {
             if (JGems3D.DEBUG_MODE) {
                 OpenGLSysUtils.registerOGLDebugOutput();
             }
-            WBenchResourceManager.createShaders();
+            ResourceManager.initDefaultTexture();
+            WBenchResourceManager.createGlobalShaders();
             this.setScreenCallbacks();
             OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
         } else {

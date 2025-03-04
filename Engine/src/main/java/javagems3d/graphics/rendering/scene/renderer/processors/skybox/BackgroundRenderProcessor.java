@@ -8,6 +8,7 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
@@ -17,7 +18,6 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -49,7 +49,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
             final ICamera camera = this.getSkyBox().getBackground().getScaledCameraBackground();
             final Matrix4f cameraMatrix = TransformUtils.getViewMatrix(camera);
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
-            final CubeMapTexture cubeMapProgram = this.getSkyBox().getSky2DTexture();
+            final ITextureProgram cubeMapProgram = this.getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
             if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {

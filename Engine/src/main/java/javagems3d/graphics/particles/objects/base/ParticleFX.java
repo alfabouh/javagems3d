@@ -1,5 +1,6 @@
 package javagems3d.graphics.particles.objects.base;
 
+import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
 import javagems3d.help.JGemsCoreHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +91,7 @@ public abstract class ParticleFX implements IWorldObject {
         return this.getParticleTexturePack() != null;
     }
 
-    public ImageBasedTexture getCurrentFrame() {
+    public ITextureProgram getCurrentFrame() {
         return this.getParticleTexturePack().getTextureSamples()[this.currentFrame];
     }
 

@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.programs.ssbo;
 
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.*;
@@ -11,7 +12,7 @@ import java.util.Map;
 public abstract class ShaderStorageBufferProgram {
     private static final Map<ShaderStorageBufferObject, Integer> shaderStorageBuffers = new HashMap<>();
 
-    public static void mapBuffer(ShaderStorageBufferObject shaderStorageBufferObject, int access) {
+    public static void mapBuffer(@NotNull ShaderStorageBufferObject shaderStorageBufferObject, int access) {
         int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
         ByteBuffer buffer = GL46.glMapBufferRange(GL46.GL_SHADER_STORAGE_BUFFER, 0, shaderStorageBufferObject.getBufferSize(), access);
@@ -19,7 +20,7 @@ public abstract class ShaderStorageBufferProgram {
         shaderStorageBufferObject.setMappedBuffer(buffer);
     }
 
-    public static void createSSBOData(ShaderStorageBufferObject shaderStorageBufferObject, int usage) {
+    public static void createSSBOData(@NotNull ShaderStorageBufferObject shaderStorageBufferObject, int usage) {
         if (ShaderStorageBufferProgram.shaderStorageBuffers.containsKey(shaderStorageBufferObject)) {
             throw new JGemsRuntimeException("SSBO-container already keeps buffer with binding: " + shaderStorageBufferObject.getBinding());
         }
@@ -31,7 +32,7 @@ public abstract class ShaderStorageBufferProgram {
         ShaderStorageBufferProgram.shaderStorageBuffers.put(shaderStorageBufferObject, ssboID);
     }
 
-    public static void createSSBOStorage(ShaderStorageBufferObject shaderStorageBufferObject, int usage) {
+    public static void createSSBOStorage(@NotNull ShaderStorageBufferObject shaderStorageBufferObject, int usage) {
         if (ShaderStorageBufferProgram.shaderStorageBuffers.containsKey(shaderStorageBufferObject)) {
             throw new JGemsRuntimeException("SSBO-container already keeps buffer with binding: " + shaderStorageBufferObject.getBinding());
         }
@@ -44,7 +45,7 @@ public abstract class ShaderStorageBufferProgram {
         ShaderStorageBufferProgram.shaderStorageBuffers.put(shaderStorageBufferObject, ssboID);
     }
 
-    public static void updateSubDataSSBO(ShaderStorageBufferObject shaderStorageBufferObject, long offset, Buffer buffer) {
+    public static void updateSubDataSSBO(@NotNull ShaderStorageBufferObject shaderStorageBufferObject, long offset, Buffer buffer) {
         int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
 
@@ -63,7 +64,7 @@ public abstract class ShaderStorageBufferProgram {
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
     }
 
-    public static void clearBufferData(ShaderStorageBufferObject shaderStorageBufferObject) {
+    public static void clearBufferData(@NotNull ShaderStorageBufferObject shaderStorageBufferObject) {
         GL46.glMemoryBarrier(GL46.GL_SHADER_STORAGE_BARRIER_BIT);
         ByteBuffer buffer = shaderStorageBufferObject.getMappedBuffer();
         if (buffer == null) {
@@ -75,7 +76,7 @@ public abstract class ShaderStorageBufferProgram {
         GL46.glMemoryBarrier(GL46.GL_SHADER_STORAGE_BARRIER_BIT);
     }
 
-    public static ByteBuffer readData(ShaderStorageBufferObject shaderStorageBufferObject) {
+    public static ByteBuffer readData(@NotNull ShaderStorageBufferObject shaderStorageBufferObject) {
         GL46.glMemoryBarrier(GL46.GL_SHADER_STORAGE_BARRIER_BIT);
         return shaderStorageBufferObject.getMappedBuffer();
     }
@@ -91,7 +92,7 @@ public abstract class ShaderStorageBufferProgram {
     }
      */
 
-    public static int getSSBO_ID(ShaderStorageBufferObject shaderStorageBufferObject) {
+    public static int getSSBO_ID(@NotNull ShaderStorageBufferObject shaderStorageBufferObject) {
         return ShaderStorageBufferProgram.shaderStorageBuffers.get(shaderStorageBufferObject);
     }
 

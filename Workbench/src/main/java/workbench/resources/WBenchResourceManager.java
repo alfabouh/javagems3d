@@ -9,8 +9,8 @@ import workbench.resources.initialization.*;
 
 public final class WBenchResourceManager extends ResourceManager {
     public static GBasicShadersInitializer globalShaderAssets = null;
+    public static LBasicShadersInitializer localShaderAssets = null;
 
-    public static TextureAssetsInitializer localShaderAssets = null;
     public static TextureAssetsInitializer localTextureAssets = null;
     public static ModelAssetsInitializer localModelAssets = null;
     public static RenderDataInitializer localRenderDataAssets = null;
@@ -18,14 +18,29 @@ public final class WBenchResourceManager extends ResourceManager {
     public WBenchResourceManager() {
         super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL));
         WBenchResourceManager.globalShaderAssets = new GBasicShadersInitializer();
+        WBenchResourceManager.localShaderAssets = new LBasicShadersInitializer();
     }
 
-    public static void createShaders() {
+    public static void createGlobalShaders() {
         WBenchResourceManager.globalShaderAssets.createShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
+        RenderDataInitializer.setDefaultRenderTableValues();
+    }
+
+    public static void reloadGlobalShaders() {
+        WBenchResourceManager.globalShaderAssets.reloadShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
+    }
+
+    public static void createLocalShaders() {
+        WBenchResourceManager.localShaderAssets.createShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
+    }
+
+    public static void reloadLocalShaders() {
+        WBenchResourceManager.localShaderAssets.reloadShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
     }
 
     public static void reloadShaders() {
-        WBenchResourceManager.globalShaderAssets.reloadShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
+        WBenchResourceManager.reloadLocalShaders();
+        WBenchResourceManager.reloadGlobalShaders();
     }
 
     public static SystemResources getGlobalGameResources() {
@@ -34,6 +49,14 @@ public final class WBenchResourceManager extends ResourceManager {
 
     public static ITextureProgram getAnimationsTextureBuffer() {
         return WBench.get().getResourceManager().getAnimationMatricesTexture();
+    }
+
+    public void loadLocalResources() {
+        this.getLocalResources().loadResources();
+    }
+
+    public void destroyLocalResources() {
+        this.getLocalResources().destroy();
     }
 
     public void loadGlobalResources() {
@@ -49,10 +72,6 @@ public final class WBenchResourceManager extends ResourceManager {
         WBenchResourceManager.localModelAssets = new ModelAssetsInitializer();
         WBenchResourceManager.localRenderDataAssets = new RenderDataInitializer();
         this.getLocalResources().addAssetsLoaders(WBenchResourceManager.localTextureAssets, WBenchResourceManager.localModelAssets, WBenchResourceManager.localRenderDataAssets);
-    }
-
-    public void clearGlobalCache() {
-        this.getGlobalResources().destroy();
     }
 
     public void reloadTexturesInGlobalCache() {

@@ -18,16 +18,18 @@ import java.util.List;
 public class SunLightShadow extends Shadow {
     private final FBOTexture2DProgram sunShadowFBO;
     private List<Cascade> cascades;
+    private final int totalCascades;
 
-    public SunLightShadow(IEnvironment environment, Vector2i shadowMapResolution) {
+    public SunLightShadow(IEnvironment environment, Vector2i shadowMapResolution, int totalCascades) {
         super(environment, shadowMapResolution);
+        this.totalCascades = totalCascades;
         this.sunShadowFBO = new FBOTexture2DProgram(true);
         this.initCascades();
     }
 
     private void initCascades() {
         this.cascades = new ArrayList<>();
-        for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
+        for (int i = 0; i < this.getTotalCascades(); i++) {
             this.cascades.add(new Cascade());
         }
     }
@@ -72,7 +74,7 @@ public class SunLightShadow extends Shadow {
         Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getSunPosition(), 0.0f);
 
         float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
-        float[] cascadeSplits = new float[JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES];
+        float[] cascadeSplits = new float[this.getTotalCascades()];
 
         float nearClip = JGemsConfig.SYSTEM.Z_NEAR;
         float farClip = JGemsConfig.SYSTEM.Z_FAR;
@@ -84,8 +86,8 @@ public class SunLightShadow extends Shadow {
         float range = maxZ - minZ;
         float ratio = maxZ / minZ;
 
-        for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
-            float p = (i + 1) / (float) JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES;
+        for (int i = 0; i < this.getTotalCascades(); i++) {
+            float p = (i + 1) / (float) this.getTotalCascades();
             float log = (float) (minZ * Math.pow(ratio, p));
             float uniform = minZ + range * p;
             float d = cascadeSplitLambda[i] * (log - uniform) + uniform;
@@ -93,7 +95,7 @@ public class SunLightShadow extends Shadow {
         }
 
         float lastSplitDist = 0.0f;
-        for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
+        for (int i = 0; i < this.getTotalCascades(); i++) {
             float splitDist = cascadeSplits[i];
 
             Vector3f[] frustumCorners = new Vector3f[]{
@@ -191,6 +193,10 @@ public class SunLightShadow extends Shadow {
 
     public FBOTexture2DProgram getSunShadowFBO() {
         return this.sunShadowFBO;
+    }
+
+    public int getTotalCascades() {
+        return this.totalCascades;
     }
 
     public static class Cascade {

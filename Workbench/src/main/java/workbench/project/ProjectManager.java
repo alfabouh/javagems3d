@@ -1,28 +1,23 @@
 package workbench.project;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.core.JGemsCore;
-import javagems3d.system.service.args.ArbitraryArguments;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import workbench.WBench;
+import workbench.graphics.scene.renderer.IProjectActrionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.resources.WBenchResourceManager;
 
 import java.io.File;
-import java.lang.reflect.Type;
 
 public final class ProjectManager {
     private Project currentProject;
@@ -100,6 +95,7 @@ public final class ProjectManager {
             Log.get().debug("Opened project: " + project);
 
             this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
+            this.initLocalResources(project);
 
             return true;
         } catch (JGemsIOException e) {
@@ -120,6 +116,20 @@ public final class ProjectManager {
             Log.get().exception(e);
             return null;
         }
+    }
+
+    private void initLocalResources(Project project) {
+        WBench.get().getResourceManager().initLocalResources();
+        WBench.get().getResourceManager().loadLocalResources();
+        WBenchResourceManager.createLocalShaders();
+        this.getWorld().onWorldStart();
+        ((IProjectActrionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpenedProject(WBench.get().getResourceManager(), project);
+    }
+
+    private void destroyLocalResources(Project project) {
+        this.getWorld().onWorldEnd();
+        WBench.get().getResourceManager().destroyLocalResources();
+        ((IProjectActrionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onClosingProject(WBench.get().getResourceManager(), project);
     }
 
     private void initWorkingSpace(WBenchWorld world, DearUIInterface dearUIInterface) {

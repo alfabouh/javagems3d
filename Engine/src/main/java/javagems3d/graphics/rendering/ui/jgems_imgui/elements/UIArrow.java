@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -20,7 +21,7 @@ public class UIArrow extends UIInteractiveElement {
         super(null, zValue);
         this.position = position;
         this.size = new Vector2i(4, 8);
-        this.imageStaticUI = new UIPictureStaticSelectable(JGemsResourceManager.globalTextureAssets.gui1, position, new Vector2f(vector == -1 ? 5.0f : 0.0f, 22.0f), new Vector2f(this.size), zValue);
+        this.imageStaticUI = new UIPictureStaticSelectable((ImageTexture) JGemsResourceManager.globalTextureAssets.gui1, position, new Vector2f(vector == -1 ? 5.0f : 0.0f, 22.0f), new Vector2f(this.size), zValue);
         this.settingIntSlots = settingIntSlots;
         this.vector = vector;
     }

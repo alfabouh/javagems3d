@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.joml.Vector2i;
 import javagems3d.JGems3D;
 import javagems3d.physics.world.basic.WorldItem;
@@ -45,7 +46,7 @@ public class DefaultGamePanel extends AbstractPanelUI {
 
        //        TextureSample sample = inventoryItemRenderData == null ? null : inventoryItemRenderData.getInventoryIcon();
        //        if (sample == null) {
-       //            sample = TextureAssetsInitializer.DEFAULT;
+       //            sample = ResourceManager.DEFAULT_TEXTURE();
        //        }
        //        JGemsUI.imageUI(sample, new Vector2i(64 + (96 * j++), windowH - 112), new Vector2i(96), 0.5f);
 
@@ -60,6 +61,6 @@ public class DefaultGamePanel extends AbstractPanelUI {
         int windowH = window.getWindowSize().y;
 
         int crossSize = 32;
-        JGemsUI.imageUI(JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
+        JGemsUI.imageUI((ImageTexture) JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
     }
 }

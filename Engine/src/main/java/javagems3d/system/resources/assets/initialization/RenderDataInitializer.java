@@ -8,6 +8,7 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 
@@ -53,7 +54,7 @@ public class RenderDataInitializer implements IAssetsInitializer {
 
         //this.zippo_world.getObjectRenderSettings().setOverlappingMaterial(zwMat);
 
-        this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
+        this.water = new LiquidRenderData(new Material((ImageTexture) JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
         this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
         this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
         this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect()).setAlphaDiscardValue(0.25f));

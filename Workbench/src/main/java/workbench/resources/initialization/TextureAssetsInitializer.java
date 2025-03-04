@@ -12,15 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 
 public class TextureAssetsInitializer implements IAssetsInitializer {
-    public static ImageTexture DEFAULT;
 
     public void load(SystemResources systemResources) {
-        TextureAssetsInitializer.DEFAULT = systemResources.createTexture(null, new JGemsPath(JGems3D.DEF_PATHS.TEXTURES, "default.png"), new ImageTexture.Properties(false, false, true, false, false));
-    }
-
-    @NotNull
-    public static ImageTexture DEFAULT_2D_TEXTURE() {
-        return TextureAssetsInitializer.DEFAULT;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package javagems3d.help;
 
 import javagems3d.graphics.environment.JGemsEnvironment;
-import javagems3d.graphics.environment.fog.FogManager;
+import javagems3d.graphics.environment.fog.FogScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
 
 public abstract class JGemsEnvironmentHelper {
@@ -9,7 +9,7 @@ public abstract class JGemsEnvironmentHelper {
         return getWorldEnvironment().getSkyBox();
     }
 
-    public static FogManager getFog() {
+    public static FogScene getFog() {
         return getWorldEnvironment().getFogManager();
     }
 

@@ -18,9 +18,11 @@ import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
@@ -32,6 +34,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class ResourceManager {
+    private static ITextureProgram DEFAULT_TEXTURE = null;
+
     public static final String GLOBAL = "Global";
     public static final String LOCAL = "Local";
     private final Map<String, SystemResources> gameResourcesMap;
@@ -101,6 +105,7 @@ public abstract class ResourceManager {
     }
 
     public void destroy() {
+        ResourceManager.destroyDefaultTexture();
         ShaderStorageBufferProgram.clearAll();
         this.getResourceDataCache().clearAll();
         this.clearAll();
@@ -160,6 +165,30 @@ public abstract class ResourceManager {
 
     public ResourcesDataCache getResourceDataCache() {
         return this.resourcesDataCache;
+    }
+
+    public static void destroyDefaultTexture() {
+        if (ResourceManager.DEFAULT_TEXTURE != null) {
+            ResourceManager.DEFAULT_TEXTURE.clear();
+            ResourceManager.DEFAULT_TEXTURE = null;
+        }
+    }
+
+    public static void initDefaultTexture() {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer buffer = stack.mallocFloat(3 * 4);
+            buffer.put(new float[] {0.0f, 0.0f, 0.0f});
+            buffer.put(new float[] {1.0f, 0.0f, 1.0f});
+            buffer.put(new float[] {0.0f, 0.0f, 0.0f});
+            buffer.put(new float[] {1.0f, 0.0f, 1.0f});
+            ResourceManager.DEFAULT_TEXTURE = new Texture2DProgram();
+            Texture2DProgram texture2DProgram = (Texture2DProgram) ResourceManager.DEFAULT_TEXTURE;
+            texture2DProgram.createTexture(new Vector2i(2), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
+        }
+    }
+
+    public static @NotNull ITextureProgram DEFAULT_TEXTURE() {
+        return ResourceManager.DEFAULT_TEXTURE;
     }
 
     public interface Factory {

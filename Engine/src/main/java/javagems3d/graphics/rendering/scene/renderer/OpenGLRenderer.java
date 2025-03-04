@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL46;
 
 import java.util.Map;
 
-public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit{
+public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit {
     private final IWindow window;
     private final IWorld world;
 

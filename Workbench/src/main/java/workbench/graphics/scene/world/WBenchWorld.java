@@ -11,6 +11,7 @@ import javagems3d.physics.world.basic.IWorldTicked;
 import logger.Log;
 import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
+import workbench.graphics.environment.WBenchEnvironment;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 public class WBenchWorld implements IWorld {
     private ICamera camera;
-   // private final JGemsEnvironment environment;
+    private WBenchEnvironment environment;
     private final Set<SceneObject> toRenderSet;
     private int ticks;
 
@@ -29,6 +30,7 @@ public class WBenchWorld implements IWorld {
 
     @Override
     public void onWorldStart() {
+        this.environment = new WBenchEnvironment(this);
         WBench.get().getScreen().zeroRenderTick();
         this.ticks = 0;
     }
@@ -41,6 +43,7 @@ public class WBenchWorld implements IWorld {
     @Override
     public void onWorldEnd() {
         this.clearAll();
+        this.environment = null;
     }
 
     public void updateWorldObjects(FrameTicking frameTicking) {
@@ -66,16 +69,16 @@ public class WBenchWorld implements IWorld {
     }
 
     public void removeLight(Light light) {
-    //    this.getEnvironment().getLightManager().removeLight(light);
+        this.getEnvironment().getLightManager().removeLight(light);
     }
 
     public void addLight(Light light) {
-    //    this.getEnvironment().getLightManager().addLight(light);
+        this.getEnvironment().getLightManager().addLight(light);
     }
 
     public void addItemLight(ILighted keepLights, Light light) {
         keepLights.addLight(light);
-    //    this.getEnvironment().getLightManager().addLight(light);
+        this.getEnvironment().getLightManager().addLight(light);
     }
 
     public void removeLightFromById(ILighted keepLights, int i) {
@@ -108,11 +111,9 @@ public class WBenchWorld implements IWorld {
         this.camera = camera;
     }
 
-   //public JGemsEnvironment getEnvironment() {
-   //    synchronized (this) {
-   //        return this.environment;
-   //    }
-   //}
+    public WBenchEnvironment getEnvironment() {
+        return this.environment;
+    }
 
     public ICamera getCamera() {
         return this.camera;

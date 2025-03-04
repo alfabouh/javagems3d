@@ -207,8 +207,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.getSceneIndirectBuffer().clear();
         this.getJGemsUI().destroyUI();
         this.getDearUIRenderer().destroyUI();
-        this.getConveyorNodes().clear();
         this.destroyResources();
+        this.getConveyorNodes().clear();
     }
 
     protected void constructScreenModel() {
