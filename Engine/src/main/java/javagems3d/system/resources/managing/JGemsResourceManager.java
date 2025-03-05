@@ -2,13 +2,17 @@ package javagems3d.system.resources.managing;
 
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
+import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.JGemsSystemResources;
 import javagems3d.system.resources.managing.resources.SystemResources;
+
+import java.util.function.Function;
 
 public final class JGemsResourceManager extends ResourceManager {
     public static BasicShadersInitializer globalShaderAssets = null;
@@ -46,7 +50,7 @@ public final class JGemsResourceManager extends ResourceManager {
         return JGems3D.get().getResourceManager().getGlobalResources();
     }
 
-    public static ITextureProgram getAnimationsTextureBuffer() {
+    public static ITexture2DProgram getAnimationsTextureBuffer() {
         return JGems3D.get().getResourceManager().getAnimationMatricesTexture();
     }
 
@@ -75,12 +79,25 @@ public final class JGemsResourceManager extends ResourceManager {
         this.getLocalResources().destroy();
     }
 
+    private Function<ISample.IProperties, ISample.IProperties> getTexturePropertiesProcessing() {
+        return (e) -> {
+            if (e instanceof ImageTexture) {
+                ImageTexture imageTexture = (ImageTexture) e;
+                ImageTexture.Properties properties = (ImageTexture.Properties) imageTexture.getProperties();
+                boolean linear = properties.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
+                boolean anisotropic = properties.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
+                return new ImageTexture.Properties(properties.isMipMap(), linear, properties.isShouldBeRepeated(), anisotropic, properties.isQualityAffected());
+            }
+            return null;
+        };
+    }
+
     public void reloadTexturesInGlobalCache() {
-        this.getGlobalResources().reloadTexturesInCache();
+        this.getGlobalResources().reloadSamplesInCache(this.getTexturePropertiesProcessing(), false);
     }
 
     public void reloadTexturesInLocalCache() {
-        this.getLocalResources().reloadTexturesInCache();
+        this.getLocalResources().reloadSamplesInCache(this.getTexturePropertiesProcessing(), false);
     }
 
     public void recreateTexturesInAllCaches() {

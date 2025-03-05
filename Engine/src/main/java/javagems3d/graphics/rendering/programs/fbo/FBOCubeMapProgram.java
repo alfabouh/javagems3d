@@ -2,16 +2,16 @@ package javagems3d.graphics.rendering.programs.fbo;
 
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.rendering.programs.textures.CubeMapTextureProgram;
+import javagems3d.graphics.rendering.programs.textures.CubeMapProgram;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
 public class FBOCubeMapProgram {
-    private final CubeMapTextureProgram cubeMapTextureProgram;
+    private final CubeMapProgram cubeMapTextureProgram;
     private int frameBufferId;
     private int renderBufferId;
 
     public FBOCubeMapProgram() {
-        this.cubeMapTextureProgram = new CubeMapTextureProgram();
+        this.cubeMapTextureProgram = new CubeMapProgram();
     }
 
     public void createFrameBufferCubeMapDepth(Vector2i size, int filtering, int clamp) {
@@ -19,7 +19,7 @@ public class FBOCubeMapProgram {
         this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
-        this.getCubeMapProgram().createTexture(size, new CubeMapTextureProgram.Properties(GL46.GL_DEPTH_COMPONENT, GL46.GL_DEPTH_COMPONENT, filtering, filtering, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, clamp, clamp, clamp, null), null);
+        this.getCubeMapProgram().createTexture(size, new CubeMapProgram.Properties(GL46.GL_DEPTH_COMPONENT, GL46.GL_DEPTH_COMPONENT, filtering, filtering, GL46.GL_COMPARE_REF_TO_TEXTURE, GL46.GL_LESS, clamp, clamp, clamp, null), null);
         GL46.glFramebufferTexture(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_ATTACHMENT, this.getCubeMapProgram().getTextureId(), 0);
 
         GL46.glDrawBuffer(GL46.GL_NONE);
@@ -37,7 +37,7 @@ public class FBOCubeMapProgram {
         this.renderBufferId = GL46.glGenRenderbuffers();
         this.bindFBO();
 
-        this.getCubeMapProgram().createTexture(size, new CubeMapTextureProgram.Properties(textureFormat, internalFormat, filtering, filtering, GL46.GL_NONE, GL46.GL_LESS, clamp, clamp, clamp, null), null);
+        this.getCubeMapProgram().createTexture(size, new CubeMapProgram.Properties(textureFormat, internalFormat, filtering, filtering, GL46.GL_NONE, GL46.GL_LESS, clamp, clamp, clamp, null), null);
         for (int i = 0; i < 6; i++) {
             GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, this.getCubeMapProgram().getTextureId(), 0);
         }
@@ -61,7 +61,7 @@ public class FBOCubeMapProgram {
         GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, this.getCubeMapProgram().getTextureId(), 0);
     }
 
-    public CubeMapTextureProgram getCubeMapProgram() {
+    public CubeMapProgram getCubeMapProgram() {
         return this.cubeMapTextureProgram;
     }
 

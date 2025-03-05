@@ -74,6 +74,7 @@ public abstract class LightScene implements ILightScene {
     @Override
     public void updateBuffers(MemoryStack stack, IWorld world, Matrix4f viewMatrix) {
         this.getPointLightList().forEach(e -> e.onUpdate(world));
+        this.getEnvironment().getSkyBox().getSun().setSunBrightness(0.1f);
         if (this.getEnvironment().getSkyBox().getSun().update) {
             this.updateSunBuffer(this.getSunBuffer(), stack, viewMatrix);
             this.getEnvironment().getSkyBox().getSun().update = false;
@@ -82,8 +83,6 @@ public abstract class LightScene implements ILightScene {
     }
 
     public void updateSunBuffer(ShaderStorageBufferObject sunBuffer, MemoryStack stack, Matrix4f viewMatrix) {
-        this.getEnvironment().getSkyBox().getSun().setSunBrightness(0.1f);
-
         Vector3f angle = LightScene.passVectorInViewSpace(this.getEnvironment().getSkyBox().getSun().getSunPosition(), viewMatrix, 0.0f);
         FloatBuffer buffer = stack.mallocFloat(JGemsConfig.SYSTEM.SUN_LIGHT_BUFFER_PACK_SIZE);
         buffer.put(angle.x);

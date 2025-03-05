@@ -1,22 +1,23 @@
 package javagems3d.graphics.rendering.programs.textures;
 
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
-import java.util.Objects;
 
-public class Texture2DMSAAProgram implements ITextureProgram, ITextureBindless {
+public class Texture2DMSAAProgram implements ITexture2DProgram, ITextureBindless {
     private final int msaa;
     private int textureId;
     private int samplerId;
     private long bindlessHandler;
+    private Vector2i size;
 
     public Texture2DMSAAProgram(int msaa) {
+        this.size = null;
         this.msaa = msaa;
         this.bindlessHandler = 0;
         this.textureId = 0;
@@ -26,6 +27,7 @@ public class Texture2DMSAAProgram implements ITextureProgram, ITextureBindless {
     public void createTexture(Vector2i size, @NotNull Texture2DMSAAProgram.Properties properties, FloatBuffer pixels) {
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
+        this.size = size;
         GL46.glTexImage2DMultisample(this.getTextureAttachment(), this.msaa, properties.getInternalFormat(), size.x, size.y, true);
         this.createSampler(properties);
         this.unBindTexture();
@@ -85,6 +87,11 @@ public class Texture2DMSAAProgram implements ITextureProgram, ITextureBindless {
     @Override
     public long getBindingHandler() {
         return this.bindlessHandler;
+    }
+
+    @Override
+    public Vector2i getSize() {
+        return this.size;
     }
 
     public static class Properties implements ISample.IProperties {

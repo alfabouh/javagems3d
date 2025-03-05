@@ -6,7 +6,8 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.ITransparencyRenderNode;
@@ -83,7 +84,7 @@ public final class TransparencyRenderNode extends IRenderNode.Template implement
             final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
-            final ITextureProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
+            final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
             if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {

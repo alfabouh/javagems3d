@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model2D;
@@ -16,16 +17,16 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class UIPictureStatic extends UIElement {
-    protected final ImageTexture iImageSample;
+    protected final ITexture2DProgram iImageSample;
     private final Vector2i position;
     private final Vector2i size;
     private final Vector2f textureXY;
     private final Vector2f textureWH;
     protected Model2D imageModel;
 
-    public UIPictureStatic(@NotNull ImageTexture iImageSample, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
+    public UIPictureStatic(@NotNull ITexture2DProgram texture2DProgram, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_image, zValue);
-        this.iImageSample = iImageSample;
+        this.iImageSample = texture2DProgram;
         this.position = position;
         this.textureXY = textureXY;
         this.textureWH = textureWH;

@@ -1,11 +1,12 @@
 package javagems3d.system.resources.assets.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
 import org.joml.Matrix4f;
 import javagems3d.graphics.transformation.TransformUtils;
-import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 
@@ -28,13 +29,13 @@ public class JGemsShaderManager extends ShaderManager {
     }
 
     public void performUniformSample(UniformString uniform, ISample sample) {
-        if (sample instanceof RGBAColor) {
-            RGBAColor color = (RGBAColor) sample;
+        if (sample instanceof Color4Texture) {
+            Color4Texture color = (Color4Texture) sample;
             this.performUniform(uniform, UniformFunctions.VEC4F(color.getColor()));
         } else {
-            if (sample instanceof ImageTexture) {
-                ImageTexture textureSample = (ImageTexture) sample;
-                this.performUniformTexture(uniform, textureSample.getSamplerId(), textureSample.getTextureId(), textureSample.getTextureAttachment());
+            if (sample instanceof ITextureProgram) {
+                ITextureProgram textureProgram = (ITextureProgram) sample;
+                this.performUniformTexture(uniform, textureProgram.getSamplerId(), textureProgram.getTextureId(), textureProgram.getTextureAttachment());
             }
         }
     }

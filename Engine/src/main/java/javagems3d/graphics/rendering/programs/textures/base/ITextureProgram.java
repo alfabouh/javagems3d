@@ -1,8 +1,9 @@
-package javagems3d.graphics.rendering.programs.textures;
+package javagems3d.graphics.rendering.programs.textures.base;
 
+import javagems3d.system.resources.assets.texturing.base.ISample;
 import org.lwjgl.opengl.GL46;
 
-public interface ITextureProgram {
+public interface ITextureProgram extends ISample {
     default void bindSampler(int unit) {
         GL46.glBindSampler(unit, this.getSamplerId());
     }

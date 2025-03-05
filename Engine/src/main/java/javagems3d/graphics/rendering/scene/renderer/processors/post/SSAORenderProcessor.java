@@ -6,7 +6,7 @@ import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.TextureSimple2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -30,9 +30,9 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     private final FBOTexture2DProgram gBuffer;
     private final JGemsShaderManager ssaoComputing;
 
-    private ITextureProgram ssaoNoiseTexture;
-    private ITextureProgram ssaoKernelTexture;
-    private ITextureProgram ssaoBufferTexture;
+    private ITexture2DProgram ssaoNoiseTexture;
+    private ITexture2DProgram ssaoKernelTexture;
+    private ITexture2DProgram ssaoBufferTexture;
 
     public SSAORenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull JGemsShaderManager ssaoComputing) {
         super(openGLRenderer);
@@ -152,7 +152,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         return texture2DProgram;
     }
 
-    protected ITextureProgram createSSAOBuffer(Vector2i size) {
+    protected ITexture2DProgram createSSAOBuffer(Vector2i size) {
         TextureSimple2DProgram texture2DProgram = new TextureSimple2DProgram();
         texture2DProgram.createTexture(size, new Texture2DProgram.Properties(GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_LINEAR, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), null);
         return texture2DProgram;
@@ -184,15 +184,15 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         return this.gBuffer;
     }
 
-    public ITextureProgram getSsaoNoiseTexture() {
+    public ITexture2DProgram getSsaoNoiseTexture() {
         return this.ssaoNoiseTexture;
     }
 
-    public ITextureProgram getSsaoKernelTexture() {
+    public ITexture2DProgram getSsaoKernelTexture() {
         return this.ssaoKernelTexture;
     }
 
-    public ITextureProgram getSsaoBufferTexture() {
+    public ITexture2DProgram getSsaoBufferTexture() {
         return this.ssaoBufferTexture;
     }
 

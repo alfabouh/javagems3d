@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model2D;
@@ -8,7 +9,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.UIElement;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -16,14 +16,14 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class UIPictureSizable extends UIElement {
-    protected final ImageBasedTexture iImageSample;
+    protected final ITexture2DProgram texture2DProgram;
     private final Vector2i position;
     private final Vector2i size;
     protected Model2D imageModel;
 
-    public UIPictureSizable(@NotNull ImageBasedTexture iImageSample, @NotNull Vector2i position, @NotNull Vector2i size, float zValue) {
+    public UIPictureSizable(@NotNull ITexture2DProgram texture2DProgram, @NotNull Vector2i position, @NotNull Vector2i size, float zValue) {
         super(JGemsResourceManager.globalShaderAssets.gui_image, zValue);
-        this.iImageSample = iImageSample;
+        this.texture2DProgram = texture2DProgram;
         this.position = position;
         this.size = size;
     }
@@ -35,7 +35,7 @@ public class UIPictureSizable extends UIElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.iImageSample);
+        shaderManager.performUniformTexture(new UniformString("texture_sampler"), this.texture2DProgram);
         JGemsRenderingHelper.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
@@ -67,7 +67,7 @@ public class UIPictureSizable extends UIElement {
     public int calcUIHashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + this.iImageSample.hashCode();
+        result = prime * result + this.texture2DProgram.hashCode();
         result = prime * result + this.getSize().hashCode();
         result = prime * result + this.getPosition().hashCode();
         return result;

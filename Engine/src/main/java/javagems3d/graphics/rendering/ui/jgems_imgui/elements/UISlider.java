@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.help.JGemsMathHelper;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.jetbrains.annotations.NotNull;
@@ -32,8 +33,8 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
     @Override
     public void render(float frameDeltaTicks) {
         super.render(frameDeltaTicks);
-        UIPictureStatic line = new UIPictureStatic((ImageTexture) JGemsResourceManager.globalTextureAssets.gui1, new Vector2i(this.getPosition()).add(0, (int) (3.0f * this.getScaling().y)), new Vector2f(0.0f, 13.0f), new Vector2f(100.0f, 1.0f), this.getZValue());
-        UIPictureStaticSelectable brick = new UIPictureStaticSelectable((ImageTexture) JGemsResourceManager.globalTextureAssets.gui1, new Vector2i(this.getPosition()).add((int) (this.getOptionValue() * this.getScaling().mul(98).x), 0), new Vector2f(0.0f, 14.0f), new Vector2f(2.0f, 7.0f), this.getZValue());
+        UIPictureStatic line = new UIPictureStatic((ITexture2DProgram) JGemsResourceManager.globalTextureAssets.gui1, new Vector2i(this.getPosition()).add(0, (int) (3.0f * this.getScaling().y)), new Vector2f(0.0f, 13.0f), new Vector2f(100.0f, 1.0f), this.getZValue());
+        UIPictureStaticSelectable brick = new UIPictureStaticSelectable((ITexture2DProgram) JGemsResourceManager.globalTextureAssets.gui1, new Vector2i(this.getPosition()).add((int) (this.getOptionValue() * this.getScaling().mul(98).x), 0), new Vector2f(0.0f, 14.0f), new Vector2f(2.0f, 7.0f), this.getZValue());
         brick.setSelected(this.isSelected());
 
         line.build();

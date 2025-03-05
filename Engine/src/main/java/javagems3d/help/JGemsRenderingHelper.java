@@ -1,6 +1,7 @@
 package javagems3d.help;
 
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
@@ -9,7 +10,6 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL46;
 
@@ -62,7 +62,7 @@ public abstract class JGemsRenderingHelper {
 
     public static int getTexturingCodeForShader(Material material) {
         int code = 0;
-        if (material.getDiffuse() instanceof ImageBasedTexture) {
+        if (material.getDiffuse() instanceof ITextureProgram) {
             code |= 1 << 2;
         }
         if (material.getNormalsMap() != null) {

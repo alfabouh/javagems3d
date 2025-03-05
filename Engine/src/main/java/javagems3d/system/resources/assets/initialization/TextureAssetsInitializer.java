@@ -1,7 +1,8 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
@@ -11,32 +12,29 @@ import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
 public class TextureAssetsInitializer implements IAssetsInitializer {
     public static JGemsPath defaultSkyCubeMapPath = new JGemsPath(JGems3D.DEF_PATHS.CUBE_MAPS, "default", "sky_");
 
-    public ITextureProgram waterTexture;
-    public ITextureProgram waterNormals;
+    public ITexture2DProgram waterTexture;
+    public ITexture2DProgram waterNormals;
     public ParticleTexturesPack particleTexturesPack;
-    public ITextureProgram defaultSkyboxCubeMap;
-    public ITextureProgram skyboxCubeMap;
-    public ITextureProgram skyboxCubeMap2;
+    public ICubeMapProgram defaultSkyboxCubeMap;
+    public ICubeMapProgram skyboxCubeMap;
+    public ICubeMapProgram skyboxCubeMap2;
     public GuiFont standardFont2;
     public GuiFont standardFont;
     public GuiFont buttonFont;
-    public ITextureProgram crosshair;
-    public ITextureProgram gui1;
+    public ITexture2DProgram crosshair;
+    public ITexture2DProgram gui1;
 
-    public ITextureProgram zippo1;
-    public ITextureProgram zippo1_1;
-    public ITextureProgram zippo2;
+    public ITexture2DProgram zippo1;
+    public ITexture2DProgram zippo1_1;
+    public ITexture2DProgram zippo2;
 
     public void load(SystemResources systemResources) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loading textures...");
-
         Font gameFont = SystemResources.createFontFromJAR(new JGemsPath("/assets/jgems/gamefont.ttf"));
 
         this.standardFont2 = new GuiFont(systemResources, gameFont.deriveFont(Font.PLAIN, 18), FontCode.Window);

@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
@@ -15,8 +16,8 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 public class UIPictureStaticSelectable extends UIPictureStatic {
     private boolean selected;
 
-    public UIPictureStaticSelectable(@NotNull ImageTexture iImageSample, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
-        super(iImageSample, position, textureXY, textureWH, zValue);
+    public UIPictureStaticSelectable(@NotNull ITexture2DProgram texture2DProgram, @NotNull Vector2i position, @NotNull Vector2f textureXY, @NotNull Vector2f textureWH, float zValue) {
+        super(texture2DProgram, position, textureXY, textureWH, zValue);
     }
 
     public boolean isSelected() {

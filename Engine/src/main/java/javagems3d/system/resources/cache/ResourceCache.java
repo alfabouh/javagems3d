@@ -61,7 +61,7 @@ public class ResourceCache {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ICached> List<T> getAllCachedObjectsCollection(Class<T> tClass) {
+    public <T> List<T> getAllCachedObjectsCollection(Class<T> tClass) {
         return this.cache.values().stream().filter(tClass::isInstance).map(e -> (T) e).collect(Collectors.toList());
     }
 

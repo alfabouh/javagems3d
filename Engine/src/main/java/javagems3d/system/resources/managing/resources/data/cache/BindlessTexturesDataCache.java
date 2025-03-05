@@ -1,6 +1,6 @@
 package javagems3d.system.resources.managing.resources.data.cache;
 
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 

@@ -46,7 +46,6 @@ public class RenderDataInitializer implements IAssetsInitializer {
 
     @Override
     public void load(SystemResources systemResources) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building render data...");
         IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
             MeshGroup meshGroup = new MeshGroup(new MeshNode3D<RenderMesh>(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f))));
             return meshGroup;

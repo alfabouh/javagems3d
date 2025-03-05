@@ -1,20 +1,21 @@
 package javagems3d.system.resources.assets.texturing;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.system.resources.assets.texturing.base.IModifiableSample;
+import javagems3d.system.resources.cache.ICached;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-public class ImageTexture implements ImageBasedTexture, ITextureBindless {
+public class ImageTexture implements ICached, IModifiableSample, ITexture2DProgram, ITextureBindless {
     protected IProperties properties;
     protected Vector2i size;
     protected int textureId;
@@ -29,9 +30,7 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         this.init(textureProperties, data);
     }
 
-    @Override
-    public void init(IProperties properties, @NotNull IData iData) {
-        Data data = (Data) iData;
+    private void init(IProperties properties, @NotNull Data data) {
         this.size = data.getSize();
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
@@ -47,19 +46,19 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         }
         this.unBindTexture();
         data.clear();
-        this.setProperties(properties);
+        this.setProperties(properties, true);
 
         this.createBindlessHandling();
     }
 
-    public void setProperties(IProperties properties) {
-        if (properties != null) {
+    public void setProperties(IProperties properties, boolean update) {
+        if (properties != null && update) {
             this.properties = properties;
         }
-        Properties properties1 = (Properties) this.properties;
+        Properties properties1 = (Properties) this.getProperties();
         //int quality = properties1.isQualityAffected() ? (2 - JGems3D.get().getGameSettings().texturesQuality.getValue()) : 0;
-        boolean linear = properties1.isLinearFiltration() && JGems3D.get().getGameSettings().texturesFiltering.getValue() == 1;
-        boolean anisotropic = properties1.isAnisotropicFiltration() && JGems3D.get().getGameSettings().anisotropic.getValue() == 1;
+        boolean linear = properties1.isLinearFiltration();
+        boolean anisotropic = properties1.isAnisotropicFiltration();
 
         if (this.getSamplerId() != 0) {
             GL46.glDeleteSamplers(this.getSamplerId());
@@ -85,8 +84,13 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
     }
 
     @Override
-    public void reload(@Nullable IProperties properties) {
-        this.setProperties(properties);
+    public void reload(@Nullable IProperties properties, boolean update) {
+        this.setProperties(properties, update);
+    }
+
+    @Override
+    public IProperties getProperties() {
+        return this.properties;
     }
 
     @Override
@@ -171,7 +175,7 @@ public class ImageTexture implements ImageBasedTexture, ITextureBindless {
         }
     }
 
-    public static final class Data implements IData {
+    public static final class Data {
         private ByteBuffer buffer;
         private final Vector2i size;
 

@@ -1,7 +1,8 @@
 package javagems3d.help;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
@@ -13,9 +14,8 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public abstract class JGemsShadersHelper {
@@ -36,11 +36,11 @@ public abstract class JGemsShadersHelper {
         }
 
         ISample diffuse = material.getDiffuse();
-        ImageBasedTexture emission = material.getEmissionMap();
-        ImageBasedTexture metallic = material.getMetallicMap();
-        ImageBasedTexture normals = material.getNormalsMap();
-        ImageBasedTexture specular = material.getSpecularMap();
-        ITextureProgram cubeMapProgram = JGemsEnvironmentHelper.getWorldEnvironment().getSkyBox().getTexture();
+        ITexture2DProgram emission = material.getEmissionMap();
+        ITexture2DProgram metallic = material.getMetallicMap();
+        ITexture2DProgram normals = material.getNormalsMap();
+        ITexture2DProgram specular = material.getSpecularMap();
+        ICubeMapProgram cubeMapProgram = JGemsEnvironmentHelper.getWorldEnvironment().getSkyBox().getTexture();
 
         int texturing_code = 0;
 
@@ -50,11 +50,11 @@ public abstract class JGemsShadersHelper {
         }
 
         if (diffuse != null) {
-            if (diffuse instanceof ImageBasedTexture) {
+            if (diffuse instanceof ITexture2DProgram) {
                 shaderManager.performUniformSample(new UniformString("diffuse_map"), diffuse);
                 texturing_code |= 1 << 2;
             } else {
-                if (diffuse instanceof RGBAColor) {
+                if (diffuse instanceof Color4Texture) {
                     shaderManager.performUniformSample(new UniformString("diffuse_color"), diffuse);
                 }
             }

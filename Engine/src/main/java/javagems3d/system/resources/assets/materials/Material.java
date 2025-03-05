@@ -1,19 +1,19 @@
 package javagems3d.system.resources.assets.materials;
 
-import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import org.joml.Vector4f;
 
 @SuppressWarnings("all")
 public class Material {
     private float fullOpacity;
     private ISample diffuse;
-    private ImageBasedTexture opacityMap;
-    private ImageBasedTexture normalsMap;
-    private ImageBasedTexture emissionMap;
-    private ImageBasedTexture specularMap;
-    private ImageBasedTexture metallicMap;
+    private ITexture2DProgram opacityMap;
+    private ITexture2DProgram normalsMap;
+    private ITexture2DProgram emissionMap;
+    private ITexture2DProgram specularMap;
+    private ITexture2DProgram metallicMap;
 
     public Material(ISample diffuse) {
         this();
@@ -45,7 +45,7 @@ public class Material {
     }
 
     public Material setDefaultDiffuse() {
-        this.diffuse = new RGBAColor(new Vector4f(1.0f, 0.0f, 1.0f, 1.0f));
+        this.diffuse = new Color4Texture(new Vector4f(1.0f, 0.0f, 1.0f, 1.0f));
         return this;
     }
 
@@ -69,38 +69,38 @@ public class Material {
         return this;
     }
 
-    public ImageBasedTexture getEmissionMap() {
+    public ITexture2DProgram getEmissionMap() {
         return this.emissionMap;
     }
 
-    public Material setEmissionMap(ImageBasedTexture emissionMap) {
+    public Material setEmissionMap(ITexture2DProgram emissionMap) {
         this.emissionMap = emissionMap;
         return this;
     }
 
-    public ImageBasedTexture getMetallicMap() {
+    public ITexture2DProgram getMetallicMap() {
         return this.metallicMap;
     }
 
-    public Material setMetallicMap(ImageBasedTexture metallicMap) {
+    public Material setMetallicMap(ITexture2DProgram metallicMap) {
         this.metallicMap = metallicMap;
         return this;
     }
 
-    public ImageBasedTexture getNormalsMap() {
+    public ITexture2DProgram getNormalsMap() {
         return this.normalsMap;
     }
 
-    public Material setNormalsMap(ImageBasedTexture normalsMap) {
+    public Material setNormalsMap(ITexture2DProgram normalsMap) {
         this.normalsMap = normalsMap;
         return this;
     }
 
-    public ImageBasedTexture getSpecularMap() {
+    public ITexture2DProgram getSpecularMap() {
         return this.specularMap;
     }
 
-    public Material setSpecularMap(ImageBasedTexture specularMap) {
+    public Material setSpecularMap(ITexture2DProgram specularMap) {
         this.specularMap = specularMap;
         return this;
     }
@@ -114,19 +114,19 @@ public class Material {
         return this;
     }
 
-    public ISample getOpacityMap() {
+    public ITexture2DProgram getOpacityMap() {
         return this.opacityMap;
     }
 
-    public Material setOpacityMap(ImageBasedTexture opacityMap) {
+    public Material setOpacityMap(ITexture2DProgram opacityMap) {
         this.opacityMap = opacityMap;
         return this;
     }
 
     public float getFullOpacity() {
         float w1 = 1.0f;
-        if (this.getDiffuse() instanceof RGBAColor) {
-            w1 = ((RGBAColor) (this.getDiffuse())).getColor().w;
+        if (this.getDiffuse() instanceof Color4Texture) {
+            w1 = ((Color4Texture) (this.getDiffuse())).getColor().w;
         }
         return this.fullOpacity * w1;
     }

@@ -1,5 +1,6 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.shadow;
 
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IModeled;
@@ -17,7 +18,6 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
@@ -45,8 +45,8 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
         JGemsShadersHelper.performAnimationsInfo(shaderManager, animated);
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
-                if (meshNode3D.getMaterial().getDiffuse() instanceof ImageBasedTexture) {
-                    ImageBasedTexture imageBasedTexture = (ImageBasedTexture) meshNode3D.getMaterial().getDiffuse();
+                if (meshNode3D.getMaterial().getDiffuse() instanceof ITexture2DProgram) {
+                    ITexture2DProgram imageBasedTexture = (ITexture2DProgram) meshNode3D.getMaterial().getDiffuse();
                     shaderManager.performUniformTexture(new UniformString("texture_sampler"), imageBasedTexture);
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                 } else {

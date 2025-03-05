@@ -1,6 +1,8 @@
 package javagems3d.system.resources.managing.resources;
 
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
@@ -9,9 +11,12 @@ import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.base.IModifiableSample;
+import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataArrays;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +37,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -61,50 +68,54 @@ public abstract class SystemResources implements ISystemResources {
         return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer, memMode));
     }
 
-    public ITextureProgram createTexture(@Nullable ITextureProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
+    public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, path.toString(), () -> new TexturesLoader(this, path.toString()).createImageTexture(textureProperties, path));
     }
 
-    public ITextureProgram createTexture(@Nullable ITextureProgram returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
+    public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @Nullable String name, @NotNull ByteBuffer buffer, @NotNull Vector2i size, @Nullable ImageTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, new ImageTexture.Data(buffer, size)));
     }
 
-    public ITextureProgram createTexture(@Nullable ITextureProgram returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
+    public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @Nullable String name, @NotNull InputStream stream, @Nullable ImageTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, name, () -> new TexturesLoader(this, name).createImageTexture(textureProperties, stream));
     }
 
-    public ITextureProgram createCubeMapTexture(@Nullable ITextureProgram returnDefault, @NotNull String name, @NotNull ImageTexture.Data[] dataSet, @Nullable CubeMapTexture.Properties textureProperties) {
+    public ICubeMapProgram createCubeMapTexture(@Nullable ICubeMapProgram returnDefault, @NotNull String name, @NotNull ImageTexture.Data[] dataSet, @Nullable CubeMapTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, name, () -> new CubeMapsLoader(this, name).createCubeMapTexture(textureProperties, new CubeMapTexture.Data(dataSet)));
     }
 
-    public ITextureProgram createCubeMapTexture(@Nullable ITextureProgram returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
+    public ICubeMapProgram createCubeMapTexture(@Nullable ICubeMapProgram returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
         return this.loadTexture(returnDefault, pathToCubeMapFile.toString(), () -> new CubeMapsLoader(this, pathToCubeMapFile.toString()).createCubeMapTexture(textureProperties, pathToCubeMapFile, textureDescriptor));
     }
 
-    protected abstract void handlePreProcessingMessage(String message);
-    protected abstract void handleFailedProcessingMessage(String message);
-    protected abstract void handleSuccessfulProcessingMessage(String message);
+    protected abstract @Nullable Consumer<Pair<String, Integer>> getMessagesConsumer();
+
+    public void processMessage(String text, int color) {
+        if (this.getMessagesConsumer() != null) {
+            this.getMessagesConsumer().accept(new Pair<>(text, color));
+        }
+    }
 
     private <T> T loadModel(@NotNull JGemsPath modelPath, Supplier<T> modelLoader) {
-        this.handlePreProcessingMessage("Loading model: " + modelPath);
+        this.processMessage("Loading model: " + modelPath, 0xffffff);
         try {
             T t = modelLoader.get();
-            this.handleSuccessfulProcessingMessage("Successfully loaded model");
+            this.processMessage("Successfully loaded model", 0x00ff00);
             return t;
         } catch (Exception e) {
-            this.handleFailedProcessingMessage("Error, while loading model: " + modelPath);
+            this.processMessage("Error, while loading model: " + modelPath, 0xff0000);
             throw e;
         }
     }
 
-    private ITextureProgram loadTexture(@Nullable ITextureProgram returnDefault, @Nullable String name, Supplier<ITextureProgram> textureLoader) {
-        this.handlePreProcessingMessage("Loading texture: " + name);
+    private <T extends ITextureProgram> T loadTexture(@Nullable T returnDefault, @Nullable String name, Supplier<T> textureLoader) {
+        this.processMessage("Loading texture: " + name, 0xffffff);
         try {
-            ITextureProgram t = textureLoader.get();
-            this.handleSuccessfulProcessingMessage("Successfully loaded texture");
+            T t = textureLoader.get();
+            this.processMessage("Successfully loaded texture", 0x00ff00);
             return t;
         } catch (Exception e) {
-            this.handleFailedProcessingMessage("Error, while loading texture: " + name + ". Default returned");
+            this.processMessage("Error, while loading texture: " + name + ". Default returned", 0xff0000);
             if (returnDefault != null) {
                 return returnDefault;
             } else {
@@ -148,9 +159,9 @@ public abstract class SystemResources implements ISystemResources {
         System.gc();
     }
 
-    public void reloadTexturesInCache() {
-        for (ImageTexture cached : this.getResourceCache().getAllCachedObjectsCollection(ImageTexture.class)) {
-            cached.reload(null);
+    public void reloadSamplesInCache(@Nullable Function<ISample.IProperties, ISample.IProperties> processProperties, boolean updateProperties) {
+        for (IModifiableSample cached : this.getResourceCache().getAllCachedObjectsCollection(IModifiableSample.class)) {
+            cached.reload(processProperties == null ? null : processProperties.apply(cached.getProperties()), updateProperties);
         }
     }
 

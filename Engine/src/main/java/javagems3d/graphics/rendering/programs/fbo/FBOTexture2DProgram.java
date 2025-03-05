@@ -6,7 +6,7 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachment;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DMSAAProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FBOTexture2DProgram {
-    private final List<ITextureProgram> texturePrograms;
+    private final List<ITexture2DProgram> texturePrograms;
     private final boolean drawColor;
     private int frameBufferId;
     private int renderBufferId;
@@ -121,7 +121,7 @@ public class FBOTexture2DProgram {
         GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, attachment, GL46.GL_TEXTURE_2D, this.getTexturePrograms().get(i).getTextureId(), 0);
     }
 
-    public List<ITextureProgram> getTexturePrograms() {
+    public List<ITexture2DProgram> getTexturePrograms() {
         return this.texturePrograms;
     }
 
@@ -145,7 +145,7 @@ public class FBOTexture2DProgram {
         return this.getTexturePrograms().get(i).getTextureId();
     }
 
-    public ITextureProgram getTextureByIndex(int i) {
+    public ITexture2DProgram getTextureByIndex(int i) {
         return this.getTexturePrograms().get(i);
     }
 
@@ -165,7 +165,7 @@ public class FBOTexture2DProgram {
         if (!this.isValid()) {
             return;
         }
-        for (ITextureProgram textureProgram : this.getTexturePrograms()) {
+        for (ITexture2DProgram textureProgram : this.getTexturePrograms()) {
             textureProgram.clear();
         }
         this.getTexturePrograms().clear();

@@ -4,7 +4,8 @@ import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.physics.world.IWorld;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -13,12 +14,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class SkyBox implements ISkyBox {
-    private ITextureProgram sky2DTexture;
+    private ICubeMapProgram sky2DTexture;
     private final Background background;
     private final SunLight sunLight;
     private boolean isSkyCoveredByFog;
 
-    public SkyBox(float backGroundViewScaling, IWorld world, @Nullable ITextureProgram sky2DTexture) {
+    public SkyBox(float backGroundViewScaling, IWorld world, @Nullable ICubeMapProgram sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
         this.sunLight = new SunLight(new Vector3f(1.0f), null, 1.0f);
         this.isSkyCoveredByFog = false;
@@ -29,7 +30,7 @@ public abstract class SkyBox implements ISkyBox {
         this.isSkyCoveredByFog = skyCoveredByFog;
     }
 
-    public void setSky2DTexture(@Nullable ITextureProgram sky2DTexture) {
+    public void setSky2DTexture(@Nullable ICubeMapProgram sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
     }
 
@@ -45,7 +46,7 @@ public abstract class SkyBox implements ISkyBox {
         return this.sunLight;
     }
 
-    public ITextureProgram getTexture() {
+    public ICubeMapProgram getTexture() {
         return this.sky2DTexture;
     }
 

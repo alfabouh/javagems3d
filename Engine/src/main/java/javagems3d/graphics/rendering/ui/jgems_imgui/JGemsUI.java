@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui;
 
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.*;
@@ -141,11 +142,11 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         return this.checkUIInCacheAndRender(UIText.class, new UIText(text, guiFont, hexColor, position, zValue));
     }
 
-    public UIPictureStatic imageUI(ImageTexture iImageSample, Vector2i position, Vector2f textureXY, Vector2f textureWH, float zValue) {
+    public UIPictureStatic imageUI(ITexture2DProgram iImageSample, Vector2i position, Vector2f textureXY, Vector2f textureWH, float zValue) {
         return this.checkUIInCacheAndRender(UIPictureStatic.class, new UIPictureStatic(iImageSample, position, textureXY, textureWH, zValue));
     }
 
-    public UIPictureSizable imageUI(ImageTexture iImageSample, Vector2i position, Vector2i size, float zValue) {
+    public UIPictureSizable imageUI(ITexture2DProgram iImageSample, Vector2i position, Vector2i size, float zValue) {
         return this.checkUIInCacheAndRender(UIPictureSizable.class, new UIPictureSizable(iImageSample, position, size, zValue));
     }
 

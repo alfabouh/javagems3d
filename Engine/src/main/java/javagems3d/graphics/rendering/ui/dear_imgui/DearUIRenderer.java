@@ -4,7 +4,7 @@ import api.events.EventBus;
 import imgui.*;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
@@ -34,7 +34,7 @@ import java.nio.ByteBuffer;
 public class DearUIRenderer implements IWindow.ResizeEvent {
     private final JGemsShaderManager shaderManager;
     private DearUIMesh dearImGuiMesh;
-    private ITextureProgram textureSample;
+    private ITexture2DProgram textureSample;
     private GLFWKeyCallback prevKeyCallback;
     private final IWindow window;
 
@@ -229,7 +229,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         return this.shaderManager;
     }
 
-    public ITextureProgram getTextureSample() {
+    public ITexture2DProgram getTextureSample() {
         return this.textureSample;
     }
 

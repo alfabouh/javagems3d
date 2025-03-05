@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.loading.models.MemMode;
@@ -25,7 +26,6 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
         this.ground2 = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map04/map04.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
         this.ground3 = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "map05/map05.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
         this.test_anim = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
-
         // systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.ModelLoaderFlags.LOAD_IN_INDIRECT_BUFFER);
         //systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.ModelLoaderFlags.DEFAULT);
     }

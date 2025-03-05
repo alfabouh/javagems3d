@@ -3,15 +3,15 @@ package javagems3d.system.resources.managing;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
-import javagems3d.system.resources.assets.texturing.RGBAColor;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
@@ -34,13 +34,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class ResourceManager {
-    private static ITextureProgram DEFAULT_TEXTURE = null;
+    private static ITexture2DProgram DEFAULT_TEXTURE = null;
 
     public static final String GLOBAL = "Global";
     public static final String LOCAL = "Local";
     private final Map<String, SystemResources> gameResourcesMap;
     private final ResourcesDataCache resourcesDataCache;
-    private ITextureProgram animationMatricesTexture;
+    private ITexture2DProgram animationMatricesTexture;
 
     public ResourceManager(Factory... factories) {
         this.gameResourcesMap = new HashMap<>();
@@ -68,11 +68,11 @@ public abstract class ResourceManager {
             ISample emission = material.getEmissionMap();
             ISample specular = material.getSpecularMap();
             ISample metallic = material.getMetallicMap();
-            if (diffuse instanceof RGBAColor) {
-                RGBAColor rgbaColor = (RGBAColor) diffuse;
-                byteBuffer.putFloat(rgbaColor.getColor().x);
-                byteBuffer.putFloat(rgbaColor.getColor().y);
-                byteBuffer.putFloat(rgbaColor.getColor().z);
+            if (diffuse instanceof Color4Texture) {
+                Color4Texture color4Texture = (Color4Texture) diffuse;
+                byteBuffer.putFloat(color4Texture.getColor().x);
+                byteBuffer.putFloat(color4Texture.getColor().y);
+                byteBuffer.putFloat(color4Texture.getColor().z);
                 byteBuffer.putFloat(material.getFullOpacity());
             } else {
                 byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
@@ -159,7 +159,7 @@ public abstract class ResourceManager {
         return this.gameResourcesMap.get(id);
     }
 
-    public ITextureProgram getAnimationMatricesTexture() {
+    public ITexture2DProgram getAnimationMatricesTexture() {
         return this.animationMatricesTexture;
     }
 
@@ -187,7 +187,7 @@ public abstract class ResourceManager {
         }
     }
 
-    public static @NotNull ITextureProgram DEFAULT_TEXTURE() {
+    public static @NotNull ITexture2DProgram DEFAULT_TEXTURE() {
         return ResourceManager.DEFAULT_TEXTURE;
     }
 

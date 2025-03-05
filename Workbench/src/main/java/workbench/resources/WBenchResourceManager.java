@@ -1,6 +1,6 @@
 package workbench.resources;
 
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -47,7 +47,7 @@ public final class WBenchResourceManager extends ResourceManager {
         return WBench.get().getResourceManager().getGlobalResources();
     }
 
-    public static ITextureProgram getAnimationsTextureBuffer() {
+    public static ITexture2DProgram getAnimationsTextureBuffer() {
         return WBench.get().getResourceManager().getAnimationMatricesTexture();
     }
 
@@ -75,7 +75,7 @@ public final class WBenchResourceManager extends ResourceManager {
     }
 
     public void reloadTexturesInGlobalCache() {
-        this.getGlobalResources().reloadTexturesInCache();
+        this.getGlobalResources().reloadSamplesInCache(null, false);
     }
 
     public SystemResources getGlobalResources() {

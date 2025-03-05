@@ -2,7 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL46;
 public class SkyboxRenderProcessor extends IRenderProcessor.Template {
     private final Model3D skyBoxModel;
     private final SkyBox skyBox;
-    private ITextureProgram backgroundTexture;
+    private ITexture2DProgram backgroundTexture;
 
     public SkyboxRenderProcessor(@NotNull SkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
@@ -68,11 +68,11 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         GL46.glEnable(GL46.GL_CULL_FACE);
     }
 
-    public void setBackgroundTexture(ITextureProgram backgroundTexture) {
+    public void setBackgroundTexture(ITexture2DProgram backgroundTexture) {
         this.backgroundTexture = backgroundTexture;
     }
 
-    protected ITextureProgram getBackgroundTexture() {
+    protected ITexture2DProgram getBackgroundTexture() {
         return this.backgroundTexture;
     }
 

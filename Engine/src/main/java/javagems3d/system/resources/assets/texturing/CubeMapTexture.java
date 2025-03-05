@@ -1,16 +1,18 @@
 package javagems3d.system.resources.assets.texturing;
 
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.system.resources.assets.texturing.base.IModifiableSample;
 import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
-public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
-    protected Vector2i[] size6;
+public class CubeMapTexture implements ICached, IModifiableSample, ICubeMapProgram, ITextureBindless {
+    protected Vector2i[] size6x;
     protected int textureId;
     protected int samplerId;
     protected long bindlessHandler;
@@ -24,28 +26,26 @@ public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
         this.init(textureProperties, data);
     }
 
-    @Override
-    public void init(@Nullable IProperties properties, @NotNull IData iData) {
-        Data data = (Data) iData;
-        this.size6 = new Vector2i[6];
+    private void init(@Nullable IProperties properties, @NotNull Data data) {
+        this.size6x = new Vector2i[6];
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
         for (int i = 0; i < 6; i++) {
-            this.size6[i] = data.getDataSet()[i].getSize();
+            this.size6x[i] = data.getDataSet()[i].getSize();
             GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16, this.getSize()[i].x, this.getSize()[i].y, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.getDataSet()[i].getBuffer());
         }
         data.clear();
         this.unBindTexture();
-        this.setProperties(properties);
+        this.setProperties(properties, true);
 
         this.createBindlessHandling();
     }
 
-    public void setProperties(IProperties properties) {
-        if (properties != null) {
+    public void setProperties(IProperties properties, boolean update) {
+        if (properties != null && update) {
             this.properties = properties;
         }
-        CubeMapTexture.Properties properties1 = (CubeMapTexture.Properties) this.properties;
+        CubeMapTexture.Properties properties1 = (CubeMapTexture.Properties) this.getProperties();
         if (this.getSamplerId() != 0) {
             GL46.glDeleteSamplers(this.getSamplerId());
         }
@@ -68,8 +68,13 @@ public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
     }
 
     @Override
-    public void reload(@Nullable IProperties properties) {
-        this.setProperties(properties);
+    public void reload(@Nullable IProperties properties, boolean update) {
+        this.setProperties(properties, update);
+    }
+
+    @Override
+    public IProperties getProperties() {
+        return this.properties;
     }
 
     public void clear() {
@@ -87,7 +92,7 @@ public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
     }
 
     public Vector2i[] getSize() {
-        return this.size6;
+        return this.size6x;
     }
 
     @Override
@@ -109,7 +114,7 @@ public class CubeMapTexture implements ImageBasedTexture, ITextureBindless {
         return this.bindlessHandler;
     }
 
-    public static final class Data implements IData {
+    public static final class Data {
         private final ImageTexture.Data[] dataSet;
 
         public Data(ImageTexture.Data[] dataSet) {

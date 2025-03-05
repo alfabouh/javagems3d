@@ -2,7 +2,8 @@ package javagems3d.system.resources.assets.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;

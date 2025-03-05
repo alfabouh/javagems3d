@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.programs.textures.ext;
+package javagems3d.graphics.rendering.programs.textures.base;
 
 import org.lwjgl.opengl.ARBBindlessTexture;
 

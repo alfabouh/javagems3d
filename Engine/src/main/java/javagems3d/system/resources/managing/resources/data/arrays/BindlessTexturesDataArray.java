@@ -1,6 +1,6 @@
 package javagems3d.system.resources.managing.resources.data.arrays;
 
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 
 import java.util.ArrayList;
 import java.util.List;

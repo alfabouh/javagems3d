@@ -20,11 +20,13 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ModelMeshLoader implements ILoadingHelper {
     private final JGemsPath path;
@@ -148,7 +151,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         List<Animation> finalAnimations = animations;
         Arrays.asList(meshStructures).stream().filter(Objects::nonNull).forEach(e -> e.loadAnimations(finalAnimations));
         Log.get().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPath());
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Loaded animation(size:" + animations.size() + ")");
+        systemResources.processMessage("Loaded animation(size:" + animations.size() + ")", 0xff00ff);
         return skeletonData;
     }
 
@@ -172,7 +175,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                 materialList.add(material);
             }
 
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building Mesh Group...");
+            systemResources.processMessage("Building Mesh Group...", 0x00ff00);
 
             int totalMeshes = aiScene.mNumMeshes();
             PointerBuffer aiMeshes = aiScene.mMeshes();
@@ -225,7 +228,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                 materialList.add(material);
             }
 
-            JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Building Mesh Buffer...");
+            systemResources.processMessage("Building Mesh Buffer...", 0x00ff00);
 
             int totalMeshes = aiScene.mNumMeshes();
             PointerBuffer aiMeshes = aiScene.mMeshes();
@@ -249,7 +252,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             Assimp.aiReleaseImport(aiScene);
 
         } catch (Exception e) {
-            Log.get().error(e.getMessage());
+            Log.get().exception(e);
             return null;
         }
 

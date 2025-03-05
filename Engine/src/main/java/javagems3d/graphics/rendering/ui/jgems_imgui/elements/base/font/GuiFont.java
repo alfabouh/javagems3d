@@ -1,6 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font;
 
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.texturing.ImageTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -14,15 +14,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class GuiFont {
     private static int globalFonts = 0;
     private final FontCode fontCode;
     private final Map<Character, CharInfo> charMap = new HashMap<>();
-    private ITextureProgram texture;
+    private ITexture2DProgram texture;
     private int height;
     private int width;
 
@@ -88,7 +86,7 @@ public class GuiFont {
         return this.charMap.get(c);
     }
 
-    public ITextureProgram getTexture() {
+    public ITexture2DProgram getTexture() {
         return this.texture;
     }
 

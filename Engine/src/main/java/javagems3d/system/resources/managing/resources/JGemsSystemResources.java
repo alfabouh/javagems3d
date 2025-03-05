@@ -2,7 +2,11 @@ package javagems3d.system.resources.managing.resources;
 
 import javagems3d.JGems3D;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class JGemsSystemResources extends SystemResources {
     public JGemsSystemResources(@NotNull ResourceCache resourceCache) {
@@ -10,17 +14,7 @@ public class JGemsSystemResources extends SystemResources {
     }
 
     @Override
-    protected void handlePreProcessingMessage(String message) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xffffff, message);
-    }
-
-    @Override
-    protected void handleFailedProcessingMessage(String message) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0xff0000, message);
-    }
-
-    @Override
-    protected void handleSuccessfulProcessingMessage(String message) {
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, message);
+    protected @Nullable Consumer<Pair<String, Integer>> getMessagesConsumer() {
+        return (e) ->  JGems3D.get().getScreen().tryAddLineInLoadingScreen(e.getSecond(), e.getFirst());
     }
 }

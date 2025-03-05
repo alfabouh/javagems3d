@@ -48,6 +48,7 @@ public final class ProjectManager {
             this.createProjectSystemFiles(absPath, name);
             Log.get().debug("Created project: " + project);
 
+            this.initLocalResources(project);
             this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
 
             return true;
@@ -70,15 +71,15 @@ public final class ProjectManager {
     }
 
     public void closeProject(boolean total) {
-        Log.get().info("Closing project " + this.getCurrentProject());
         if (this.getCurrentProject() != null) {
+            Log.get().info("Closing project " + this.getCurrentProject());
             this.destroyLocalResources(this.getCurrentProject());
             if (!total) {
                 this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
             }
             this.currentProject = null;
+            Log.get().info("Project successfully closed");
         }
-        Log.get().info("Project successfully closed");
     }
 
     @SuppressWarnings("all")
@@ -102,8 +103,8 @@ public final class ProjectManager {
             this.createProjectSystemFiles(path, project.getProjectName());
             Log.get().debug("Opened project: " + project);
 
-            this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
             this.initLocalResources(project);
+            this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
 
             return true;
         } catch (JGemsIOException e) {
@@ -127,6 +128,7 @@ public final class ProjectManager {
     }
 
     private void initLocalResources(Project project) {
+        WBench.get().openInterface(WBenchOpenGLRenderer.getLoadingInterface());
         WBench.get().getResourceManager().initLocalResources();
         WBench.get().getResourceManager().loadLocalResources();
         WBenchResourceManager.createLocalShaders();

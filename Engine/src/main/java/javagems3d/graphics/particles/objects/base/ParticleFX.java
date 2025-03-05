@@ -1,6 +1,6 @@
 package javagems3d.graphics.particles.objects.base;
 
-import javagems3d.graphics.rendering.programs.textures.ITextureProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.help.JGemsCoreHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +12,6 @@ import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
-import javagems3d.system.resources.assets.texturing.base.ImageBasedTexture;
 import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 
 public abstract class ParticleFX implements IWorldObject {
@@ -91,7 +90,7 @@ public abstract class ParticleFX implements IWorldObject {
         return this.getParticleTexturePack() != null;
     }
 
-    public ITextureProgram getCurrentFrame() {
+    public ITexture2DProgram getCurrentFrame() {
         return this.getParticleTexturePack().getTextureSamples()[this.currentFrame];
     }
 

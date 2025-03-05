@@ -1,21 +1,22 @@
 package javagems3d.graphics.rendering.programs.textures;
 
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
-import java.util.Objects;
 
-public class Texture2DProgram implements ITextureProgram, ITextureBindless {
+public class Texture2DProgram implements ITexture2DProgram, ITextureBindless {
     private int textureId;
     private int samplerId;
     private long bindlessHandler;
+    private Vector2i size;
 
     public Texture2DProgram() {
+        this.size = null;
         this.bindlessHandler = 0;
         this.textureId = 0;
         this.samplerId = 0;
@@ -24,7 +25,8 @@ public class Texture2DProgram implements ITextureProgram, ITextureBindless {
     public void createTexture(Vector2i size, @NotNull Properties properties, FloatBuffer pixels) {
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
-        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.getTextureFormat(), size.x, size.y, 0, properties.getInternalFormat(), GL46.GL_FLOAT, pixels);
+        this.size = size;
+        GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.getTextureFormat(), this.getSize().x, this.getSize().y, 0, properties.getInternalFormat(), GL46.GL_FLOAT, pixels);
         this.createSampler(properties);
         this.unBindTexture();
         this.createBindlessHandling();
@@ -66,6 +68,10 @@ public class Texture2DProgram implements ITextureProgram, ITextureBindless {
         this.samplerId = 0;
     }
 
+    public Vector2i getSize() {
+        return this.size;
+    }
+
     public int getTextureId() {
         return this.textureId;
     }
@@ -85,7 +91,7 @@ public class Texture2DProgram implements ITextureProgram, ITextureBindless {
         return this.bindlessHandler;
     }
 
-    public static class Properties implements ISample.IProperties {
+    public static class Properties implements IProperties {
         private final int textureFormat;
         private final int internalFormat;
         private final int filteringMag;

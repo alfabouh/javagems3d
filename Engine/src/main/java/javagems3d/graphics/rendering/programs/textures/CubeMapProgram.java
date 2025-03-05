@@ -1,6 +1,8 @@
 package javagems3d.graphics.rendering.programs.textures;
 
-import javagems3d.graphics.rendering.programs.textures.ext.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
@@ -8,25 +10,26 @@ import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.Arrays;
-import java.util.Objects;
 
-public class CubeMapTextureProgram implements ITextureProgram, ITextureBindless {
+public class CubeMapProgram implements ICubeMapProgram, ITextureBindless {
     private int textureId;
     private int samplerId;
     private long bindlessHandler;
+    private Vector2i[] size;
 
-    public CubeMapTextureProgram() {
+    public CubeMapProgram() {
         this.bindlessHandler = 0;
         this.textureId = 0;
         this.samplerId = 0;
+        this.size = new Vector2i[6];
     }
 
-    public void createTexture(Vector2i size, @NotNull CubeMapTextureProgram.Properties properties, FloatBuffer pixels) {
+    public void createTexture(Vector2i size6x, @NotNull CubeMapProgram.Properties properties, FloatBuffer pixels) {
         this.textureId = GL46.glGenTextures();
         this.bindTexture();
         for (int i = 0; i < 6; i++) {
-            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, properties.getInternalFormat(), size.x, size.y, 0, properties.getTextureFormat(), GL46.GL_FLOAT, (ByteBuffer) null);
+            this.size[i] = size6x;
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, properties.getInternalFormat(), size6x.x, size6x.y, 0, properties.getTextureFormat(), GL46.GL_FLOAT, (ByteBuffer) null);
         }
         this.createSampler(properties);
         this.unBindTexture();
@@ -34,7 +37,7 @@ public class CubeMapTextureProgram implements ITextureProgram, ITextureBindless 
         this.createBindlessHandling();
     }
 
-    protected void createSampler(@NotNull CubeMapTextureProgram.Properties properties) {
+    protected void createSampler(@NotNull CubeMapProgram.Properties properties) {
         if (this.getSamplerId() != 0) {
             GL46.glDeleteSamplers(this.getSamplerId());
         }
@@ -87,6 +90,11 @@ public class CubeMapTextureProgram implements ITextureProgram, ITextureBindless 
     @Override
     public long getBindingHandler() {
         return this.bindlessHandler;
+    }
+
+    @Override
+    public Vector2i[] getSize() {
+        return this.size;
     }
 
     public static class Properties implements ISample.IProperties {
