@@ -33,7 +33,6 @@ import workbench.WBench;
 import workbench.graphics.scene.nodes.templates.*;
 import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.ui.EditorInterface;
-import workbench.graphics.scene.ui.LoadingInterface;
 import workbench.graphics.scene.ui.ProjectInitInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.project.Project;
@@ -50,7 +49,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
     private static DearUIInterface editorInterface;
     private static DearUIInterface projectInterface;
-    private static DearUIInterface loadingInterface;
 
     protected Map<NodeID, IRenderNode> conveyorNodes;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
@@ -64,7 +62,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
         WBenchOpenGLRenderer.editorInterface = new EditorInterface(WBench.get().getProjectManager());
         WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
-        WBenchOpenGLRenderer.loadingInterface = new LoadingInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
@@ -304,9 +301,5 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
     public static DearUIInterface getProjectInterface() {
         return WBenchOpenGLRenderer.projectInterface;
-    }
-
-    public static DearUIInterface getLoadingInterface() {
-        return WBenchOpenGLRenderer.loadingInterface;
     }
 }

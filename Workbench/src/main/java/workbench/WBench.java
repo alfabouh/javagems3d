@@ -19,6 +19,7 @@ import workbench.controller.WBenchControllerDispatcher;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
 import workbench.resources.WBenchResourceManager;
+import workbench.resources.frame.LoadingInterfaceSwing;
 import workbench.settings.WBenchSettings;
 
 import java.io.File;
@@ -129,6 +130,7 @@ public final class WBench {
         } finally {
             WBench.get().getProjectManager().closeProject(true);
             WBench.get().getResourceManager().destroy();
+            LoadingInterfaceSwing.dispose();
             Log.get().info("Cleared resources");
             Log.get().debug("END");
         }

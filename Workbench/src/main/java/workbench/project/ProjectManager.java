@@ -16,6 +16,7 @@ import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
+import workbench.resources.frame.LoadingInterfaceSwing;
 
 import java.io.File;
 
@@ -50,6 +51,7 @@ public final class ProjectManager {
 
             this.initLocalResources(project);
             this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
+            LoadingInterfaceSwing.dispose();
 
             return true;
         } catch (JGemsIOException e) {
@@ -105,6 +107,7 @@ public final class ProjectManager {
 
             this.initLocalResources(project);
             this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
+            LoadingInterfaceSwing.dispose();
 
             return true;
         } catch (JGemsIOException e) {
@@ -128,7 +131,7 @@ public final class ProjectManager {
     }
 
     private void initLocalResources(Project project) {
-        WBench.get().openInterface(WBenchOpenGLRenderer.getLoadingInterface());
+        LoadingInterfaceSwing.invoke();
         WBench.get().getResourceManager().initLocalResources();
         WBench.get().getResourceManager().loadLocalResources();
         WBenchResourceManager.createLocalShaders();
