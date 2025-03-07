@@ -75,10 +75,10 @@ public final class ProjectManager {
     public void closeProject(boolean total) {
         if (this.getCurrentProject() != null) {
             Log.get().info("Closing project " + this.getCurrentProject());
-            this.destroyLocalResources(this.getCurrentProject());
             if (!total) {
                 this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
             }
+            this.destroyLocalResources(this.getCurrentProject());
             this.currentProject = null;
             Log.get().info("Project successfully closed");
         }

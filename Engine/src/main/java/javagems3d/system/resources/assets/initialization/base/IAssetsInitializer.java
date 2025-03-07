@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.initialization.base;
 
 import javagems3d.help.JGemsUtils;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -8,6 +9,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffe
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.resources.managing.resources.SystemResources;
 
 public interface IAssetsInitializer {
@@ -46,7 +48,7 @@ public interface IAssetsInitializer {
         try (RenderMesh renderMesh = new RenderMesh()) {
             renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS).putArray(IAssetsInitializer.CubeModelPos));
             renderMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
-            MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, null);
+            MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, new Material(new Color4Texture(1.0f, 0.0f, 0.0f)));
             return new MeshGroup(meshBufferMeshNode3D);
         }
     }

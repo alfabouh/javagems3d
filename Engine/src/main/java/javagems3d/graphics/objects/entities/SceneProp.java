@@ -23,8 +23,8 @@ public abstract class SceneProp extends SceneObject implements IWorldObject, IWo
     private boolean isVisible;
     private boolean isDead;
 
-    public SceneProp(@NotNull SceneWorld sceneWorld, @Nullable Model3D model, @NotNull RenderAttributes objectRenderingConfiguration) {
-        super(sceneWorld, model, objectRenderingConfiguration);
+    public SceneProp(@NotNull IWorld world, @Nullable Model3D model, @NotNull RenderAttributes objectRenderingConfiguration) {
+        super(world, model, objectRenderingConfiguration);
         this.lightList = new ArrayList<>();
         this.isVisible = true;
         this.isDead = false;

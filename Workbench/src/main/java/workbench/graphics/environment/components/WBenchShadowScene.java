@@ -9,6 +9,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.help.JGemsMathHelper;
 import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -40,6 +41,16 @@ public class WBenchShadowScene extends ShadowScene {
 
     @Override
     protected void blurShadows(FBOTexture2DProgram sunShadowFBO) {
+    }
+
+    @Override
+    protected @NotNull ShaderStorageBufferObject getIndirectSSBO() {
+        return WBenchResourceManager.localShaderAssets.IndirectBufferData;
+    }
+
+    @Override
+    protected @NotNull ShaderStorageBufferObject getPropertiesSSBO() {
+        return WBenchResourceManager.localShaderAssets.PropertiesData;
     }
 
     @Override

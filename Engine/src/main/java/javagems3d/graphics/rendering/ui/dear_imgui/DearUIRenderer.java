@@ -235,6 +235,9 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
 
     public void destroyUI() {
         this.getImguiMesh().clear();
+        if (this.getTextureSample() != null) {
+            this.getTextureSample().clear();
+        }
         if (this.prevKeyCallback != null) {
             this.prevKeyCallback.free();
         }

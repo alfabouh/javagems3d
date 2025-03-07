@@ -37,7 +37,6 @@ public final class IndirectBufferProgram {
 
     public void init(MeshBuffersDataCache meshBuffersDataCache) {
         this.meshBuffers = meshBuffersDataCache.getMeshBuffers();
-
         this.forStatic(meshBuffersDataCache, this.getMeshBuffers());
         //this.forAnimated(meshBuffersDataCache, this.getAllAnimatedMeshBuffers());
     }

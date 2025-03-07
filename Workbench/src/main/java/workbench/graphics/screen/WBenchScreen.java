@@ -181,9 +181,8 @@ public class WBenchScreen implements IScreen {
                 WBench.get().close();
                 break;
             }
-
             this.updateController();
-            this.getWindow().refreshFocusState();
+            this.getWindow().setCursorFocused(false);
             this.getTimerPool().update();
             this.renderGameScene(deltaTimer.getDeltaTime());
             if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsConfig.SYSTEM.RENDER_TICKS_UPD_RATE)) {

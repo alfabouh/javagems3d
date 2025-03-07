@@ -9,6 +9,7 @@ import javagems3d.graphics.rendering.programs.indirect.commands.BaseIndirectComm
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommandsProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -22,8 +23,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
-    public GroupedIndirectRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull Pipeline pipeline, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
-        super(openGLRenderer, pipeline, usePropertiesSSBO, useMaterialsSSBO);
+    public GroupedIndirectRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull Pipeline pipeline, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
+        super(openGLRenderer, indirectSSBO, propertiesSSBO, pipeline, usePropertiesSSBO, useMaterialsSSBO);
     }
 
     public void processAndRender(@Nullable ArbitraryArguments metaData) {
@@ -34,10 +35,10 @@ public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
         Map<Operator, Set<SceneObject>> map = this.groupObjects(this.getIndirectMeshObjects(), this.getPipeline());
         for (Map.Entry<Operator, Set<SceneObject>> sceneObjects : map.entrySet()) {
             Operator operator = sceneObjects.getKey();
-            IntBuffer indexes = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
-            IntBuffer materialIds = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
+            IntBuffer indexes = MemoryUtil.memAllocInt(GroupedIndirectRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
+            IntBuffer materialIds = MemoryUtil.memAllocInt(GroupedIndirectRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
             IndirectCommandsProgram indirectCommandsProgram = this.createCommands(this.getMode(), indexes, materialIds, renderBuffer, this.getIndirectMeshObjects());
-            this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData);
+            this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects());
             this.render(operator, indirectCommandsProgram, renderBuffer, metaData);
             indirectCommandsProgram.destroyBuffer();
         }

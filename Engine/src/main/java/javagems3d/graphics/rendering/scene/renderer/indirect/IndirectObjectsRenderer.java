@@ -39,11 +39,17 @@ public abstract class IndirectObjectsRenderer {
     protected final boolean usePropertiesSSBO;
     protected final boolean useMaterialsSSBO;
 
-    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull Pipeline pipeline, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
+    private final ShaderStorageBufferObject indirectSSBO;
+    private final ShaderStorageBufferObject propertiesSSBO;
+
+    public IndirectObjectsRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull Pipeline pipeline, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
         this.pipeline = pipeline;
         this.openGLRenderer = openGLRenderer;
         this.usePropertiesSSBO = usePropertiesSSBO;
         this.useMaterialsSSBO = useMaterialsSSBO;
+
+        this.indirectSSBO = indirectSSBO;
+        this.propertiesSSBO = propertiesSSBO;
 
         this.rejected = new HashSet<>();
     }
@@ -55,7 +61,7 @@ public abstract class IndirectObjectsRenderer {
         operator.getRenderingFunction().func(operator.getIndirectShader(), indirectCommandsProgram, renderBuffer, metaData == null ? ArbitraryArguments.empty() : metaData);
     }
 
-    protected void fillSSBOWithInformation(@NotNull IntBuffer indexes, @NotNull IntBuffer materialIds, Collection<SceneObject> sceneObjects, ShaderStorageBufferObject indirectBufferData, ShaderStorageBufferObject objectProperties) {
+    protected void fillSSBOWithInformation(@NotNull IntBuffer indexes, @NotNull IntBuffer materialIds, Collection<SceneObject> sceneObjects) {
         ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
         FloatBuffer modelMatrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
         FloatBuffer deltaFrames = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
@@ -81,11 +87,11 @@ public abstract class IndirectObjectsRenderer {
             }
         }
 
-        this.passBuffersInSSBO(indirectBufferData, indexes, materialIds, modelMatrices, animationMatricesOffsets, animationMatricesOffsetsPrev, deltaFrames);
+        this.passBuffersInSSBO(this.getIndirectSSBO(), indexes, materialIds, modelMatrices, animationMatricesOffsets, animationMatricesOffsetsPrev, deltaFrames);
 
         if (properties != null) {
             properties.flip();
-            ShaderStorageBufferProgram.updateSubDataSSBO(objectProperties, 0L, properties);
+            ShaderStorageBufferProgram.updateSubDataSSBO(this.getPropertiesSSBO(), 0L, properties);
             MemoryUtil.memFree(properties);
         }
     }
@@ -163,6 +169,14 @@ public abstract class IndirectObjectsRenderer {
                 return Mode.ONLY_SOLID;
             }
         }
+    }
+
+    public ShaderStorageBufferObject getIndirectSSBO() {
+        return this.indirectSSBO;
+    }
+
+    public ShaderStorageBufferObject getPropertiesSSBO() {
+        return this.propertiesSSBO;
     }
 
     public interface IRenderingFunction {

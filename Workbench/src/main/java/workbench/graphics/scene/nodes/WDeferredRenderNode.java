@@ -1,6 +1,7 @@
 package workbench.graphics.scene.nodes;
 
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
@@ -12,14 +13,18 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGe
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsShadersHelper;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
-import workbench.graphics.scene.nodes.templates.IDeferredRenderNode;
-import workbench.graphics.scene.processors.DeferredColorRenderProcessor;
+import workbench.graphics.scene.nodes.templates.WIDeferredRenderNode;
+import workbench.graphics.scene.processors.WDeferredColorRenderProcessor;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 
@@ -27,18 +32,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
-public final class DeferredRenderNode extends IRenderNode.Template implements IDeferredRenderNode {
+public final class WDeferredRenderNode extends IRenderNode.Template implements WIDeferredRenderNode {
     private final FBOTexture2DProgram startColorFBO;
     private FBOTexture2DProgram gBuffer;
 
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
-    private DeferredColorRenderProcessor rawColorRenderProcessor;
+    private WDeferredColorRenderProcessor rawColorRenderProcessor;
 
     private Collection<SceneObject> indirectDeferredRenderingObjects;
     private Collection<SceneObject> directDeferredRenderingObjects;
 
-    public DeferredRenderNode(@NotNull FBOTexture2DProgram startColorFbo, OpenGLRenderer openGLRenderer) {
+    public WDeferredRenderNode(@NotNull FBOTexture2DProgram startColorFbo, OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.indirectDeferredRenderingObjects = new HashSet<>();
         this.directDeferredRenderingObjects = new HashSet<>();
@@ -56,6 +61,7 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
 
     @Override
     public void onRender(FrameTicking frameTicking) {
+        GL46.glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         this.getOutGBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
@@ -91,15 +97,21 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
         this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
     }
 
+    public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(WBenchWorld wBenchWorld) {
+        return (pair) -> {
+            JGemsShadersHelper.performModelMaterialOnShader(wBenchWorld.getEnvironment(), pair.getFirst(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+        };
+    }
+
     @Override
     public void createResources() {
         this.initFBOs();
-        final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
-            final WBenchWorld sceneWorld = (WBenchWorld) this.getSceneWorld();
+        final WBenchWorld wBenchWorld = (WBenchWorld) this.getWBenchWorld();
+        final Consumer<JGemsShaderManager> uniformsHandlerI = (shaderManager) -> {
             final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
-            final CubeMapTexture cubeMapProgram = (CubeMapTexture) sceneWorld.getEnvironment().getSkyBox().getTexture();
+            final CubeMapTexture cubeMapProgram = (CubeMapTexture) wBenchWorld.getEnvironment().getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
             if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
@@ -109,10 +121,11 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
             shaderManager.performUniformTexture(new UniformString("animationsMatrix"), WBenchResourceManager.getAnimationsTextureBuffer());
         };
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = WDeferredRenderNode.getDefaultConsumerForDirectObjects(wBenchWorld);
 
-        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
-        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, Pipeline.SCENE, this.getOpenGLRenderer());
-        this.rawColorRenderProcessor = new DeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), WBenchResourceManager.localShaderAssets.world_deferred);
+        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
+        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, WBenchResourceManager.localShaderAssets.IndirectBufferData, WBenchResourceManager.localShaderAssets.PropertiesData, Pipeline.SCENE, this.getOpenGLRenderer());
+        this.rawColorRenderProcessor = new WDeferredColorRenderProcessor(this.getOpenGLRenderer(), this.getOutGBuffer(), WBenchResourceManager.localShaderAssets.world_deferred);
 
         this.getDirectGeometryRenderProcessor().createResources();
         this.getIndirectGeometryRenderProcessor().createResources();
@@ -159,7 +172,7 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
         return this.getDirectGeometryRenderProcessor().getRejected();
     }
 
-    public DeferredColorRenderProcessor getRawColorRenderProcessor() {
+    public WDeferredColorRenderProcessor getRawColorRenderProcessor() {
         return this.rawColorRenderProcessor;
     }
 

@@ -7,6 +7,7 @@ import javagems3d.graphics.rendering.scene.IScene;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import logger.Log;
 import org.joml.Vector3f;
@@ -48,6 +49,9 @@ public class WBenchScene implements IScene {
     public void updateSceneComponents(final FrameTicking frameTicking) throws InterruptedException {
         this.getWorld().updateWorldObjects(frameTicking);
         this.getWorld().onWorldUpdate();
+
+        ((Window) this.getWindow()).setInFocus(true);
+
         if (this.getCamera() != null) {
             this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
             JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());

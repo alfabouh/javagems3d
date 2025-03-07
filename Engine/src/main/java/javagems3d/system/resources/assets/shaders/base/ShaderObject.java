@@ -48,7 +48,7 @@ public class ShaderObject {
     public void init() {
         this.shaderText = this.fillShader(this.readShaderText(this.getShaderPath()));
         this.loadStructs(this.getShaderText());
-        this.loadUniforms(this.getShaderText());
+        this.loadUniforms(this.getStructs(), this.getShaderText());
     }
 
     public void clear() {
@@ -94,9 +94,9 @@ public class ShaderObject {
         }
     }
 
-    private void loadUniforms(String shaderText) {
+    private void loadUniforms(Map<String, Set<String>> structs, String shaderText) {
         String[] lines = shaderText.split("\n");
-        Pattern uniformPattern = Pattern.compile("\\s*(?:layout\\s*\\([^)]*\\)\\s*)?uniform\\s+(\\w+)\\s+(\\w+)\\s*(\\[\\s*\\d*\\s*\\])?\\s*;?\\s*");
+        Pattern uniformPattern = Pattern.compile("\\s*(?:layout\\s*\\([^)]*\\)\\s*)?uniform\\s+(\\w+)\\s+(\\w+)(\\[\\s*\\d+\\s*])?\\s*;?\\s*");
 
         for (String line : lines) {
             line = line.trim();
@@ -113,19 +113,36 @@ public class ShaderObject {
                 String arraySize = uniformMatcher.group(3);
 
                 int size = 1;
-                if (arraySize != null && !arraySize.isEmpty()) {
+                if (arraySize != null) {
                     size = Integer.parseInt(arraySize.replaceAll("[\\[\\]\\s]", ""));
                 }
 
-                Uniform uniform = new Uniform(name, size);
-                Set<String> fields = this.structs.get(type);
+                Set<String> fields = structs.get(type);
                 if (fields != null) {
-                    uniform.getFields().addAll(fields);
+                    if (size > 1) {
+                        for (int i = 0; i < size; i++) {
+                            for (String field : fields) {
+                                this.getUniforms().add(new Uniform(name + "[" + i + "]." + field, 1));
+                            }
+                        }
+                    } else {
+                        for (String field : fields) {
+                            this.getUniforms().add(new Uniform(name + "." + field, 1));
+                        }
+                    }
+                } else {
+                    if (size > 1) {
+                        for (int i = 0; i < size; i++) {
+                            this.getUniforms().add(new Uniform(name + "[" + i + "]", 1));
+                        }
+                    } else {
+                        this.getUniforms().add(new Uniform(name, 1));
+                    }
                 }
-                this.getUniforms().add(uniform);
             }
         }
     }
+
 
     private String readShaderText(JGemsPath shaderPath) {
         StringBuilder textBuilder = new StringBuilder();

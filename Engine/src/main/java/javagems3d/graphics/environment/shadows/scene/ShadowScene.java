@@ -18,6 +18,7 @@ import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -57,8 +58,8 @@ public abstract class ShadowScene implements IShadowScene {
         this.getPointLightShadows().forEach(e -> e.setShadowMapResolution(this.getShadowResolution()));
 
         this.openGLRenderer = openGLRenderer;
-        this.pointLightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, Pipeline.POINT_LIGHT_SHADOW_MAP, false, true);
-        this.sunlightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, Pipeline.SUN_LIGHT_SHADOW_MAP, false, true);
+        this.pointLightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getIndirectSSBO(), this.getPropertiesSSBO(), Pipeline.POINT_LIGHT_SHADOW_MAP, false, true);
+        this.sunlightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getIndirectSSBO(), this.getPropertiesSSBO(), Pipeline.SUN_LIGHT_SHADOW_MAP, false, true);
         this.getPointLightShadows().forEach(PointLightShadow::createResources);
         this.getSunLightShadow().createResources();
     }
@@ -67,6 +68,9 @@ public abstract class ShadowScene implements IShadowScene {
         this.getPointLightShadows().forEach(PointLightShadow::destroyResources);
         this.getSunLightShadow().destroyResources();
     }
+
+    protected abstract @NotNull ShaderStorageBufferObject getIndirectSSBO();
+    protected abstract @NotNull ShaderStorageBufferObject getPropertiesSSBO();
 
     protected abstract @NotNull Vector2i getShadowResolution();
     protected abstract int getMaxPointLightShadows();
@@ -185,7 +189,6 @@ public abstract class ShadowScene implements IShadowScene {
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
-            functionToHandleUniforms.accept(shaderManager);
             for (SceneObject modeledSceneObject : entry.getValue()) {
                 Model3D model = modeledSceneObject.getModel();
                 if (model == null || !model.isValid()) {
@@ -193,7 +196,7 @@ public abstract class ShadowScene implements IShadowScene {
                 }
                 DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderingTable().getRenderFabric(pipeline);
                 directRenderFabric.onPreRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
-                directRenderFabric.onRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
+                directRenderFabric.onRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, ArbitraryArguments.pass(functionToHandleUniforms));
                 directRenderFabric.onPostRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
             }
             shaderManager.endShading();

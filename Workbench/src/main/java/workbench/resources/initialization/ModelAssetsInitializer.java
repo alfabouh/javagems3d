@@ -13,16 +13,16 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
 
-    public MeshBuffer grassCube;
+    public MeshBuffer test;
 
     @Override
     public void load(SystemResources systemResources) {
+        this.test = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "sponza/sponza.obj"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, MemMode.ERASE_NODES_DATA);
+
         this.createDefaults(systemResources);
     }
 
     private void createDefaults(SystemResources systemResources) {
-        this.grassCube = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "sponza/sponza.obj"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, MemMode.ERASE_NODES_DATA);
-
         this.defaultCube_bff = IAssetsInitializer.createDefaultCubeBuffer();
         systemResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_BFF", this.defaultCube_bff);
         systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(this.defaultCube_bff);

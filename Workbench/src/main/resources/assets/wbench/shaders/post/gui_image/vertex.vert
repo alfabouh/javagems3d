@@ -1,6 +1,5 @@
 layout (location=0) in vec3 position;
 layout (location=1) in vec2 texture;
-
 out vec2 uv_coordinates;
 uniform mat4 projection_model_matrix;
 

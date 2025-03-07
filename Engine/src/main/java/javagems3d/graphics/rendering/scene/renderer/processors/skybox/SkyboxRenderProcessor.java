@@ -12,6 +12,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -24,12 +25,14 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
     private final Model3D skyBoxModel;
     private final SkyBox skyBox;
     private ITexture2DProgram backgroundTexture;
+    private final JGemsShaderManager skyBoxShader;
 
-    public SkyboxRenderProcessor(@NotNull SkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
+    public SkyboxRenderProcessor(@NotNull SkyBox skyBox, JGemsShaderManager skyBoxShader, MeshGroup cube, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
+        this.skyBoxShader = skyBoxShader;
         this.skyBox = skyBox;
         this.backgroundTexture = null;
-        this.skyBoxModel = new Model3D(new Pose3D(), JGemsResourceManager.globalModelAssets.defaultCube_gr);
+        this.skyBoxModel = new Model3D(new Pose3D(), cube);
     }
 
     @Override
@@ -42,10 +45,13 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        this.renderSkyBox(JGemsOpenGLRenderer.SkyBoxShader());
+        this.renderSkyBox(this.getSkyBoxShader());
     }
 
     protected void renderSkyBox(JGemsShaderManager skyShaderManager) {
+        if (this.getSkyBox().getTexture() == null) {
+            return;
+        }
         Model3D model = this.skyBoxModel;
         skyShaderManager.beginShading();
         GL46.glDisable(GL46.GL_CULL_FACE);
@@ -70,6 +76,10 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
 
     public void setBackgroundTexture(ITexture2DProgram backgroundTexture) {
         this.backgroundTexture = backgroundTexture;
+    }
+
+    public JGemsShaderManager getSkyBoxShader() {
+        return this.skyBoxShader;
     }
 
     protected ITexture2DProgram getBackgroundTexture() {

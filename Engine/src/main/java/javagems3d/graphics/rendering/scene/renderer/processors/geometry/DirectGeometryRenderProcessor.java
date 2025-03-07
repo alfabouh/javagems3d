@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.geometry;
 
+import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
@@ -10,20 +11,26 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.service.args.ArbitraryArguments;
+import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
     private Collection<SceneObject> sceneObjects;
     private final Pipeline pipeline;
     private final Set<SceneObject> rejected;
+    private Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandler;
 
-    public DirectGeometryRenderProcessor(@NotNull Pipeline pipeline, @NotNull OpenGLRenderer openGLRenderer) {
+    public DirectGeometryRenderProcessor(@Nullable Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandler, @NotNull Pipeline pipeline, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.pipeline = pipeline;
         this.rejected = new HashSet<>();
+        this.uniformsHandler = uniformsHandler;
     }
 
     @Override
@@ -56,7 +63,7 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
                 }
                 DirectRenderFabric directRenderFabric = sceneObject.getRenderingTable().getRenderFabric(pipeline);
                 directRenderFabric.onPreRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);
-                directRenderFabric.onRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);
+                directRenderFabric.onRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, ArbitraryArguments.pass(this.getUniformsHandler()));
                 directRenderFabric.onPostRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);
             }
             shaderManager.endShading();
@@ -69,6 +76,14 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
 
     public void setDirectMeshObjects(@NotNull Collection<SceneObject> sceneObjects) {
         this.sceneObjects = sceneObjects;
+    }
+
+    public void setUniformsHandler(Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandler) {
+        this.uniformsHandler = uniformsHandler;
+    }
+
+    public Consumer<Pair<JGemsShaderManager, IRendered>> getUniformsHandler() {
+        return this.uniformsHandler;
     }
 
     public Pipeline getPipeline() {

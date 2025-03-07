@@ -53,7 +53,7 @@ public class RenderDataInitializer implements IAssetsInitializer {
 
         //this.zippo_world.getObjectRenderSettings().setOverlappingMaterial(zwMat);
 
-        this.water = new LiquidRenderData(new Material((ImageTexture) JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
+        this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setFullOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
         this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
         this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
         this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect()).setAlphaDiscardValue(0.25f));
@@ -68,5 +68,4 @@ public class RenderDataInitializer implements IAssetsInitializer {
     public LoadPriority loadPriority() {
         return LoadPriority.LOW;
     }
-
 }

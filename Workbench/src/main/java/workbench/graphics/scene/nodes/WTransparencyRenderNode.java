@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes;
+package workbench.graphics.scene.nodes;
 
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.IRendered;
@@ -10,26 +10,28 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.ITransparencyRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.IndirectGeometryRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.graphics.world.SceneWorld;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.help.JGemsShadersHelper;
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
+import workbench.graphics.scene.nodes.templates.WITransparencyRenderNode;
+import workbench.graphics.scene.world.WBenchWorld;
+import workbench.resources.WBenchResourceManager;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
-public final class TransparencyRenderNode extends IRenderNode.Template implements ITransparencyRenderNode {
+public final class WTransparencyRenderNode extends IRenderNode.Template implements WITransparencyRenderNode {
     private final FBOTexture2DProgram outColor;
     private final FBOTexture2DProgram inColor;
 
@@ -39,7 +41,7 @@ public final class TransparencyRenderNode extends IRenderNode.Template implement
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
 
-    public TransparencyRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
+    public WTransparencyRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.indirectDeferredRenderingObjects = new HashSet<>();
         this.directDeferredRenderingObjects = new HashSet<>();
@@ -81,12 +83,12 @@ public final class TransparencyRenderNode extends IRenderNode.Template implement
         }};
         this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
 
-        final SceneWorld sceneWorld = (SceneWorld) this.getWBenchWorld();
-        final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+        final WBenchWorld wBenchWorld = (WBenchWorld) this.getWBenchWorld();
+        final Consumer<JGemsShaderManager> uniformsHandlerI = (shaderManager) -> {
             final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
-            final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
+            final ICubeMapProgram cubeMapProgram = wBenchWorld.getEnvironment().getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
             if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
@@ -94,12 +96,12 @@ public final class TransparencyRenderNode extends IRenderNode.Template implement
             }
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
-            JGemsShadersHelper.performShadowsInfo(sceneWorld.getEnvironment(), shaderManager);
+            JGemsShadersHelper.performShadowsInfo(wBenchWorld.getEnvironment(), shaderManager);
         };
-        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(sceneWorld);
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = WDeferredRenderNode.getDefaultConsumerForDirectObjects(wBenchWorld);
 
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.TRANSPARENCY, this.getOpenGLRenderer());
-        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, Pipeline.TRANSPARENCY, this.getOpenGLRenderer());
+        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, WBenchResourceManager.localShaderAssets.IndirectBufferData, WBenchResourceManager.localShaderAssets.PropertiesData, Pipeline.TRANSPARENCY, this.getOpenGLRenderer());
         this.getDirectGeometryRenderProcessor().createResources();
         this.getIndirectGeometryRenderProcessor().createResources();
     }

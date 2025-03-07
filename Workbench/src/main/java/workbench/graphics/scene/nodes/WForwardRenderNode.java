@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes;
+package workbench.graphics.scene.nodes;
 
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
@@ -6,29 +6,29 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IForwardRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
+import workbench.graphics.scene.nodes.templates.WIForwardRenderNode;
+import workbench.graphics.scene.world.WBenchWorld;
+import workbench.resources.WBenchResourceManager;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public final class ForwardRenderNode extends IRenderNode.Template implements IForwardRenderNode {
+public final class WForwardRenderNode extends IRenderNode.Template implements WIForwardRenderNode {
     private Collection<SceneObject> forwardRenderingObjects;
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private SkyboxRenderProcessor skyboxRenderProcessor;
     private BackgroundRenderProcessor backgroundRenderProcessor;
     private final FBOTexture2DProgram inColor;
 
-    public ForwardRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
+    public WForwardRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.inColor = inColor;
     }
@@ -56,27 +56,15 @@ public final class ForwardRenderNode extends IRenderNode.Template implements IFo
         this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
         this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);
         this.getOutColorBuffer().unBindFBO();
-
-        // GL46.glDisable(GL46.GL_DEPTH_TEST);
-        // if (true) {
-        //     for (SceneObject sceneObject : this.getSceneWorld().getSceneObjects()) {
-        //         CullingAABB cullingAABB = sceneObject.getCullingData();
-        //         if (cullingAABB == null) {
-        //             continue;
-        //         }
-        //         JGemsDebugGlobalConstants.linesDebugDraw.drawAABB(DynamicsUtils.convertV3F_JME(cullingAABB.getAabbMin()), DynamicsUtils.convertV3F_JME(cullingAABB.getAabbMax()));
-        //     }
-        // }
-        // GL46.glEnable(GL46.GL_DEPTH_TEST);
     }
 
     public void initProcessors() {
-        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects((SceneWorld) this.getWBenchWorld());
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = WDeferredRenderNode.getDefaultConsumerForDirectObjects((WBenchWorld) this.getWBenchWorld());
 
-        SceneWorld sceneWorld = (SceneWorld) this.getWBenchWorld();
+        WBenchWorld wBenchWorld = (WBenchWorld) this.getWBenchWorld();
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
-        this.skyboxRenderProcessor = new SkyboxRenderProcessor(sceneWorld.getEnvironment().getSkyBox(), JGemsResourceManager.globalShaderAssets.skybox, JGemsResourceManager.globalModelAssets.defaultCube_gr, this.getOpenGLRenderer());
-        this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, sceneWorld.getEnvironment().getSkyBox(), this.getOpenGLRenderer());
+        this.skyboxRenderProcessor = new SkyboxRenderProcessor(wBenchWorld.getEnvironment().getSkyBox(), WBenchResourceManager.localShaderAssets.skybox, WBenchResourceManager.localModelAssets.defaultCube_gr, this.getOpenGLRenderer());
+        this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), WBenchResourceManager.localShaderAssets.IndirectBufferData, WBenchResourceManager.localShaderAssets.PropertiesData, wBenchWorld.getEnvironment().getSkyBox(), this.getOpenGLRenderer());
     }
 
     public void initFBOs() {

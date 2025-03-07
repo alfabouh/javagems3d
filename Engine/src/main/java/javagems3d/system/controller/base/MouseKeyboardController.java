@@ -7,7 +7,6 @@ import org.joml.Vector3f;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.devices.MouseKeyboard;
-import toolbox.render.scene.dear_imgui.content.EditorContent;
 
 public abstract class MouseKeyboardController implements IController {
     private final Vector2i prevMouseCoord;

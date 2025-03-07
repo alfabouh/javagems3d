@@ -8,6 +8,9 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import workbench.WBench;
+import workbench.graphics.scene.nodes.WDeferredRenderNode;
+import workbench.graphics.scene.nodes.templates.WIGluingRenderNode;
+import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.project.ProjectManager;
 
 public class EditorInterface implements DearUIInterface {
@@ -19,6 +22,9 @@ public class EditorInterface implements DearUIInterface {
 
     @Override
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
+        if (this.getProjectManager().getCurrentProject() == null) {
+            return;
+        }
         if (false) {
             ImGui.setNextWindowFocus();
             ImGui.showDemoWindow();
@@ -32,6 +38,9 @@ public class EditorInterface implements DearUIInterface {
             if (ImGui.menuItem("Exit")) {
                 if (LoggingManager.showConfirmationWindowDialog("Are you sure?")) {
                     WBench.get().getProjectManager().closeProject(false);
+                    ImGui.endMenu();
+                    ImGui.endMainMenuBar();
+                    return;
                 }
             }
             ImGui.endMenu();
@@ -58,7 +67,7 @@ public class EditorInterface implements DearUIInterface {
         ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
         ImGui.setWindowSize(sceneWindowSizeX, sceneWindowSizeY - YOffset);
         ImGui.setWindowPos(sceneWindowOffset, YOffset);
-        this.sceneContent();
+        this.sceneContent(sceneWindowSizeX, sceneWindowSizeY - YOffset);
         ImGui.end();
 
         ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
@@ -90,12 +99,33 @@ public class EditorInterface implements DearUIInterface {
     }
 
     private void resourcesContent() {
+        if (ImGui.collapsingHeader("Models")) {
+            if (ImGui.button("+")) {
+            }
+            ImGui.sameLine();
+            if (ImGui.button("-")) {
+            }
+        }
+
+        if (ImGui.collapsingHeader("Sounds")) {
+        }
+
+        if (ImGui.collapsingHeader("Scripts")) {
+        }
+
+        ImGui.separator();
     }
 
     private void propertiesContent() {
     }
 
-    private void sceneContent() {
+    private void sceneContent(float sizeX, float sizeY) {
+        WBenchOpenGLRenderer wBenchOpenGLRenderer = (WBenchOpenGLRenderer) WBench.get().getScreen().getScene().getSceneRenderer();
+        //WIGluingRenderNode gluingRenderNode = (WIGluingRenderNode) wBenchOpenGLRenderer.getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
+        WDeferredRenderNode gluingRenderNode = (WDeferredRenderNode) wBenchOpenGLRenderer.getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
+        float availableX = ImGui.getContentRegionAvailX();
+        float availableY = ImGui.getContentRegionAvailY();
+        ImGui.image(gluingRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
     }
 
     private void consoleContent() {

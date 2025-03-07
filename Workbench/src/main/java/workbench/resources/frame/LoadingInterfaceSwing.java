@@ -15,7 +15,7 @@ public class LoadingInterfaceSwing {
 
     private static void create() {
         LoadingInterfaceSwing.loadingFrame = new JFrame("Loading...");
-        LoadingInterfaceSwing.loadingFrame.setSize(400, 200);
+        LoadingInterfaceSwing.loadingFrame.setSize(500, 150);
         LoadingInterfaceSwing.loadingFrame.setLocationRelativeTo(null);
         LoadingInterfaceSwing.loadingFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         LoadingInterfaceSwing.loadingFrame.setResizable(false);
@@ -26,6 +26,7 @@ public class LoadingInterfaceSwing {
 
         LoadingInterfaceSwing.loadingFrame.setVisible(true);
     }
+
     private static void close() {
         if (LoadingInterfaceSwing.loadingFrame != null) {
             LoadingInterfaceSwing.loadingFrame.dispose();

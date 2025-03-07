@@ -19,6 +19,8 @@ const int normals_code = 1 << 5;
 const int specular_code = 1 << 6;
 const int light_bright_code = 1 << 2;
 
+uniform bool use_cubemap;
+
 uniform float alpha_discard;
 uniform vec4 diffuse_color;
 uniform samplerCube ambient_cube_map;
@@ -43,11 +45,11 @@ vec3 calc_normal_map() {
     return normal;
 }
 
-vec4 refract_cubemap(vec3 normal, float cnst) {
+vec3 refract_cubemap(vec3 normal, float cnst) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(model_vertex_pos.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(ambient_cube_map, R).rgb, 1.0);
+    return texture(ambient_cube_map, R).rgb;
 }
 
 void main()
@@ -71,6 +73,8 @@ void main()
     gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? emissive_texture : vec4(vec3(0.0), 1.0);
     gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, uv_coordinates) : vec4(vec3(0.0), 1.0);
 
-    vec4 gMetallic = (checkCode(texturing_code, metallic_code) ? texture(metallic_map, uv_coordinates) : vec4(0.)) * refract_cubemap(model_vertex_normal, 1.73);
+    vec3 metallicColor = texture(metallic_map, uv_coordinates).rgb;
+    vec3 refractColor = vec3(1.);
+    vec4 gMetallic = checkCode(texturing_code, metallic_code) ? vec4(metallicColor * refractColor, 1.0) : vec4(0.);
     gColor += vec4(gMetallic.xyz, 0.0);
 }

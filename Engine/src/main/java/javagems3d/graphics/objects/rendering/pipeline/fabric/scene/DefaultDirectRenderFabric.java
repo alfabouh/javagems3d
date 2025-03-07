@@ -2,20 +2,27 @@ package javagems3d.graphics.objects.rendering.pipeline.fabric.scene;
 
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.IRendered;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.service.args.ArbitraryArguments;
+import javagems3d.system.service.collections.Pair;
 import org.lwjgl.opengl.GL46;
+
+import java.util.function.Consumer;
 
 public class DefaultDirectRenderFabric extends DirectRenderFabric {
     public DefaultDirectRenderFabric(Stage stage) {
@@ -33,12 +40,14 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
             IModeled modeled = (IModeled) renderedItem;
             if (renderedItem.canBeRendered()) {
                 Model3D model = modeled.getModel();
+                Consumer<Pair<JGemsShaderManager, IRendered>> functionToHandleUniforms = metaData.getterFunc().getObject(0);
+                if (functionToHandleUniforms != null) {
+                    functionToHandleUniforms.accept(new Pair<>(shaderManager, renderedItem));
+                }
                 shaderManager.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
                 shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
                 shaderManager.performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
-                if (model.getMeshStructure().isAnimatedStructure()) {
-                    JGemsShadersHelper.performAnimationsInfo(shaderManager, modeled);
-                }
+                JGemsShadersHelper.performAnimationsInfo(shaderManager, modeled);
                 JGemsRenderingHelper.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             }
         }

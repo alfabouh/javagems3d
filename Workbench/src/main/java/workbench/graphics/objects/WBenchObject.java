@@ -6,9 +6,10 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.models.Model3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import workbench.graphics.scene.world.WBenchWorld;
 
 public class WBenchObject extends SceneProp {
-    public WBenchObject(@NotNull SceneWorld sceneWorld, @Nullable Model3D model, @NotNull RenderAttributes objectRenderingConfiguration) {
-        super(sceneWorld, model, objectRenderingConfiguration);
+    public WBenchObject(@NotNull WBenchWorld wBenchWorld, @Nullable Model3D model, @NotNull RenderAttributes objectRenderingConfiguration) {
+        super(wBenchWorld, model, objectRenderingConfiguration);
     }
 }

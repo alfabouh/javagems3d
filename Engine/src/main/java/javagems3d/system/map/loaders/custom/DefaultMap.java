@@ -3,6 +3,7 @@ package javagems3d.system.map.loaders.custom;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
+import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.help.JGemsWorldHelper;
@@ -47,6 +48,8 @@ public class DefaultMap implements IMapLoader {
 
         Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
         JGemsWorldHelper.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
+
+        JGemsWorldHelper.addPropInScene(new SceneWorldProp(sceneWorld, new Model3D(new Pose3D(), JGemsResourceManager.globalModelAssets.defaultCube_gr), RenderAttributes.get(RenderTable.getDefaultDirect())));
 
         PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
         pointLight.on();

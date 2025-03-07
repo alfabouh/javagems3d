@@ -23,7 +23,6 @@ public final class WBenchResourceManager extends ResourceManager {
 
     public static void createGlobalShaders() {
         WBenchResourceManager.globalShaderAssets.createShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
-        RenderDataInitializer.setDefaultRenderTableValues();
     }
 
     public static void reloadGlobalShaders() {
@@ -32,6 +31,7 @@ public final class WBenchResourceManager extends ResourceManager {
 
     public static void createLocalShaders() {
         WBenchResourceManager.localShaderAssets.createShaders(WBenchResourceManager.getGlobalGameResources().getResourceCache());
+        RenderDataInitializer.setDefaultRenderTableValues();
     }
 
     public static void reloadLocalShaders() {

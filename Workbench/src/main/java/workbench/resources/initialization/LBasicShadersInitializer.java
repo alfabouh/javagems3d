@@ -30,7 +30,7 @@ public final class LBasicShadersInitializer extends ShadersInitializer<WBenchSha
     public WBenchShaderManager depth_sun;
     public WBenchShaderManager depth_sun_indirect;
     public WBenchShaderManager depth_plight;
-    public WBenchShaderManager imgui;
+    public WBenchShaderManager gui_image;
 
     public ShaderStorageBufferObject IndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
@@ -58,8 +58,6 @@ public final class LBasicShadersInitializer extends ShadersInitializer<WBenchSha
     }
 
     protected void initObjects(ResourceCache resourceCache) {
-        this.imgui = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/imgui"));
-
         this.TimerData = new ShaderStorageBufferObject(0, Float.BYTES);
         ShaderStorageBufferProgram.createSSBOStorage(this.TimerData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
@@ -84,7 +82,7 @@ public final class LBasicShadersInitializer extends ShadersInitializer<WBenchSha
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-
+        this.gui_image = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/post/gui_image"));
         this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/post/scene_gluing"));
         this.skybox = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/skybox"));
         this.background = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/background"));

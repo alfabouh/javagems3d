@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -17,8 +18,14 @@ import javagems3d.graphics.rendering.scene.renderer.processors.geometry.Indirect
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.graphics.world.SceneWorld;
+import javagems3d.help.JGemsShadersHelper;
+import javagems3d.system.resources.assets.materials.Material;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.Color4Texture;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -37,16 +44,22 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
     private FBOTexture2DProgram background;
 
-    public BackgroundRenderProcessor(@NotNull FBOTexture2DProgram inColor, @NotNull SkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
+    private final ShaderStorageBufferObject indirectSSBO;
+    private final ShaderStorageBufferObject propertiesSSBO;
+
+    public BackgroundRenderProcessor(@NotNull FBOTexture2DProgram inColor, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull SkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.skyBox = skyBox;
         this.inColor = inColor;
+
+        this.indirectSSBO = indirectSSBO;
+        this.propertiesSSBO = propertiesSSBO;
     }
 
     @SuppressWarnings("all")
     @Override
     public void createResources() {
-        final Consumer<JGemsShaderManager> uniformsHandler = (shaderManager) -> {
+        final Consumer<JGemsShaderManager> uniformsHandlerI = (shaderManager) -> {
             final ICamera camera = this.getSkyBox().getBackground().getScaledCameraBackground();
             final Matrix4f cameraMatrix = TransformUtils.getViewMatrix(camera);
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
@@ -59,9 +72,13 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
         };
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = (pair) -> {
+            final SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
+            JGemsShadersHelper.performModelMaterialOnShader(sceneWorld.getEnvironment(), pair.getFirst(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+        };
 
-        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(Pipeline.SCENE, this.getOpenGLRenderer());
-        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandler, Pipeline.SCENE, this.getOpenGLRenderer());
+        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
+        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.indirectSSBO, this.propertiesSSBO, Pipeline.SCENE, this.getOpenGLRenderer());
 
         this.getDirectGeometryRenderProcessor().createResources();
         this.getIndirectGeometryRenderProcessor().createResources();

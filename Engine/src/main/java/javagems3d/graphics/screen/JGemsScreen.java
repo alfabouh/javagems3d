@@ -244,7 +244,7 @@ public class JGemsScreen implements IScreen {
             JGems3D.get().getCore().update();
 
             this.updateController();
-            this.getWindow().refreshFocusState();
+            this.getWindow().setCursorFocused(this.getWindow().isWindowInFocus());
             this.getTimerPool().update();
             this.renderGameScene(deltaTimer.getDeltaTime());
             if (renderTimer.resetTimerAfterReachedSeconds(1.0d / JGemsConfig.SYSTEM.RENDER_TICKS_UPD_RATE)) {

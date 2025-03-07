@@ -129,8 +129,8 @@ public class Window implements IWindow {
         this.isInFocus = !this.isInFocus;
     }
 
-    public void refreshFocusState() {
-        GLFW.glfwSetInputMode(this.getDescriptor(), GLFW.GLFW_CURSOR, !this.isWindowInFocus() ? GLFW.GLFW_CURSOR_NORMAL : GLFW.GLFW_CURSOR_DISABLED);
+    public void setCursorFocused(boolean focus) {
+        GLFW.glfwSetInputMode(this.getDescriptor(), GLFW.GLFW_CURSOR, focus ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
     }
 
     public int monitorRefreshRate() {

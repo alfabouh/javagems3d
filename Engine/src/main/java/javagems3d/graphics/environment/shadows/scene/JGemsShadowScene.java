@@ -13,6 +13,7 @@ import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -32,6 +33,16 @@ public class JGemsShadowScene extends ShadowScene {
     public static float qualityMultiplier() {
         int i = (int) JGemsMathHelper.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
+    }
+
+    @Override
+    protected @NotNull ShaderStorageBufferObject getIndirectSSBO() {
+        return JGemsResourceManager.globalShaderAssets.IndirectBufferData;
+    }
+
+    @Override
+    protected @NotNull ShaderStorageBufferObject getPropertiesSSBO() {
+        return JGemsResourceManager.globalShaderAssets.PropertiesData;
     }
 
     protected @NotNull Vector2i getShadowResolution() {

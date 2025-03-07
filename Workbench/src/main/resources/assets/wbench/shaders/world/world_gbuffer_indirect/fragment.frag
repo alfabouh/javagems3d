@@ -60,11 +60,11 @@ vec3 calc_normal_map(int normalsMapId) {
     return normal;
 }
 
-vec4 refract_cubemap(vec3 normal, float cnst) {
+vec3 refract_cubemap(vec3 normal, float cnst) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(model_vertex_pos.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(ambient_cube_map, R).rgb, 1.0);
+    return texture(ambient_cube_map, R).rgb;
 }
 
 bool checkCode(int i1, int i2) {
@@ -94,6 +94,8 @@ void main()
     gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(sampler2D(textures[mat.emissive_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
     gSpecular = checkCode(texturing_code, specular_code) ? texture(sampler2D(textures[mat.specular_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
 
-    vec4 gMetallic = (checkCode(texturing_code, metallic_code) ? texture(sampler2D(textures[mat.metallic_map_id]), uv_coordinates) : vec4(0.)) * refract_cubemap(model_vertex_normal, 1.73);
+    vec3 metallicColor = texture(sampler2D(textures[mat.metallic_map_id]), uv_coordinates).rgb;
+    vec3 refractColor = refract_cubemap(model_vertex_normal, 1.73);
+    vec4 gMetallic = checkCode(texturing_code, metallic_code) ? vec4(metallicColor * refractColor, 1.0) : vec4(0.);
     gColor += vec4(gMetallic.xyz, 0.0);
 }

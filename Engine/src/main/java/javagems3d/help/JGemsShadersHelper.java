@@ -1,6 +1,8 @@
 package javagems3d.help;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
@@ -30,7 +32,7 @@ public abstract class JGemsShadersHelper {
         shaderManager.performUniform(new UniformString("lighting_code"), UniformFunctions.INTEGER(lighting_code));
     }
 
-    public static void performModelMaterialOnShader(JGemsShaderManager shaderManager, Material material) {
+    public static void performModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material) {
         if (material == null) {
             return;
         }
@@ -40,12 +42,12 @@ public abstract class JGemsShadersHelper {
         ITexture2DProgram metallic = material.getMetallicMap();
         ITexture2DProgram normals = material.getNormalsMap();
         ITexture2DProgram specular = material.getSpecularMap();
-        ICubeMapProgram cubeMapProgram = JGemsEnvironmentHelper.getWorldEnvironment().getSkyBox().getTexture();
+        ICubeMapProgram cubeMapProgram = environment.getSkyBox().getTexture();
 
         int texturing_code = 0;
 
         shaderManager.disableWarns();
-        if (shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
+        if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
             shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
         }
 
@@ -86,24 +88,23 @@ public abstract class JGemsShadersHelper {
 
     public static boolean performAnimationsInfo(JGemsShaderManager shaderManager, IAnimated animated) {
         shaderManager.disableWarns();
+        shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
+        shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
         if (animated.hasAnimationData()) {
             shaderManager.performUniformTexture(new UniformString("animationsMatrix"), JGemsResourceManager.getAnimationsTextureBuffer());
-            shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
-            shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
             shaderManager.performUniform(new UniformString("animationData.deltaFrame"), UniformFunctions.FLOAT(animated.getAnimationData().getAnimationFrameDelta()));
         }
         shaderManager.enableWarns();
         return false;
     }
 
-    public static void performShadowsInfo(JGemsShaderManager shaderManager) {
+    public static void performShadowsInfo(IEnvironment environment, JGemsShaderManager shaderManager) {
         shaderManager.disableWarns();
-        JGemsScene scene = JGems3D.get().getScreen().getScene();
-        SceneWorld sceneWorld = (SceneWorld) scene.getSceneRenderer().getWorld();
+        ShadowScene shadowScene = (ShadowScene) environment.getShadowScene();
         for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
-            SunLightShadow.Cascade cascade = sceneWorld.getEnvironment().getShadowScene().getSunLightShadow().getCascades().get(i);
+            SunLightShadow.Cascade cascade = shadowScene.getSunLightShadow().getCascades().get(i);
             if (shaderManager.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                shaderManager.performUniformTexture(new UniformString("sun_shadow_map", i), sceneWorld.getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
+                shaderManager.performUniformTexture(new UniformString("sun_shadow_map", i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
                 shaderManager.performUniform(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
                 shaderManager.performUniform(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
                 shaderManager.performUniform(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
@@ -111,7 +112,7 @@ public abstract class JGemsShadersHelper {
             }
         }
         for (int i = 0; i < JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS; i++) {
-            PointLightShadow pointLightShadow = sceneWorld.getEnvironment().getShadowScene().getPointLightShadows().get(i);
+            PointLightShadow pointLightShadow = shadowScene.getPointLightShadows().get(i);
             shaderManager.performUniform(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
             if (shaderManager.isUniformExist(new UniformString("point_light_cubemap", i))) {
                 shaderManager.performUniformTexture(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());

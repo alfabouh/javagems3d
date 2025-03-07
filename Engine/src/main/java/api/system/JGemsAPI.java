@@ -25,7 +25,7 @@ public final class JGemsAPI {
     private static JGemsAPI INSTANCE;
     private static JGemsAPIManager M_INSTANCE;
 
-    static {
+    public static void INIT_JGEMS() {
         JGemsAPI.INSTANCE = new JGemsAPI();
         JGemsAPI.M_INSTANCE = new JGemsAPIManager();
     }
@@ -34,6 +34,10 @@ public final class JGemsAPI {
 
     private JGemsAPI() {
         this.reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(JGemsAPI.DEF_API_PACKAGE)).setScanners(Scanners.SubTypes.filterResultsBy(s -> s.startsWith(JGemsAPI.DEF_API_PACKAGE)), Scanners.TypesAnnotated));
+    }
+
+    public static boolean isValid() {
+        return JGemsAPI.get() != null;
     }
 
     public static JGemsAPIManager getManager() {

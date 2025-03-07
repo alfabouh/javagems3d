@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public interface IForwardRenderNode extends IRenderNode {
+public interface WIForwardRenderNode extends IRenderNode {
     FBOTexture2DProgram getInColorBuffer();
     FBOTexture2DProgram getOutColorBuffer();
 

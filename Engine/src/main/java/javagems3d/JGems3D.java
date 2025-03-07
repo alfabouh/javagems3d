@@ -60,6 +60,7 @@ public final class JGems3D {
     private JGems3D() throws JGemsRuntimeException {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("JGemsLogger"));
+            JGemsAPI.INIT_JGEMS();
             JGemsAPI.get().launchAPI();
             JGems3D.checkFilesDirectory();
         } catch (IOException e) {

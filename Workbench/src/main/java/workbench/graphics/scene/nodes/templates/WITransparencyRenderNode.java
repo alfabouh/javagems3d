@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public interface ITransparencyRenderNode extends IRenderNode {
+public interface WITransparencyRenderNode extends IRenderNode {
     FBOTexture2DProgram getOutColorBuffer();
     FBOTexture2DProgram getInColorBuffer();
 

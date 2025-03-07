@@ -317,8 +317,4 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     public static JGemsShaderManager UBOShader() {
         return JGemsOpenGLRenderer.UBO_SHADER;
     }
-
-    public static JGemsShaderManager SkyBoxShader() {
-        return JGemsResourceManager.globalShaderAssets.skybox;
-    }
 }

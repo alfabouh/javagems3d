@@ -6,6 +6,7 @@ import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgra
 import javagems3d.graphics.rendering.programs.indirect.commands.BaseIndirectCommandsProgram;
 import javagems3d.graphics.rendering.programs.indirect.commands.IndirectCommandsProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.jetbrains.annotations.NotNull;
@@ -18,8 +19,8 @@ import java.util.Collection;
 public class SinglePassIndirectRenderer extends IndirectObjectsRenderer {
     private final Operator operator;
 
-    public SinglePassIndirectRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull Operator operator, @NotNull Pipeline pipeline, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
-        super(openGLRenderer, pipeline, usePropertiesSSBO, useMaterialsSSBO);
+    public SinglePassIndirectRenderer(@NotNull OpenGLRenderer openGLRenderer, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull Operator operator, @NotNull Pipeline pipeline, boolean usePropertiesSSBO, boolean useMaterialsSSBO) {
+        super(openGLRenderer, indirectSSBO, propertiesSSBO, pipeline, usePropertiesSSBO, useMaterialsSSBO);
         this.operator = operator;
     }
 
@@ -31,7 +32,7 @@ public class SinglePassIndirectRenderer extends IndirectObjectsRenderer {
         IntBuffer indexes = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
         IntBuffer materialIds = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
         IndirectCommandsProgram indirectCommandsProgram = this.createCommands(this.getMode(), indexes, materialIds, renderBuffer, this.getIndirectMeshObjects());
-        this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData);
+        this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects());
         this.render(this.getOperator(), indirectCommandsProgram, renderBuffer, metaData);
         indirectCommandsProgram.destroyBuffer();
     }
