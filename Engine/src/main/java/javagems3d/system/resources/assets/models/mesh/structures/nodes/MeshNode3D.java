@@ -9,25 +9,25 @@ public class MeshNode3D<T extends IMesh> extends MeshNode<T> {
     private Material material;
 
     public MeshNode3D(@NotNull T meshData) {
-        super(meshData);
-        this.material = null;
+        this(meshData, new Material(null));
     }
 
-    public MeshNode3D(@NotNull T meshData, @Nullable Material material) {
+    public MeshNode3D(@NotNull T meshData, @NotNull Material material) {
         super(meshData);
         this.material = material;
     }
 
     @Override
     public void clear() {
+        super.clear();
         this.material = null;
     }
 
     public boolean hasTransparency() {
-        return this.getMaterial() != null && this.getMaterial().hasTransparency();
+        return this.getMaterial().hasTransparency();
     }
 
-    public void setMaterial(@Nullable Material material) {
+    public void setMaterial(@NotNull Material material) {
         this.material = material;
     }
 

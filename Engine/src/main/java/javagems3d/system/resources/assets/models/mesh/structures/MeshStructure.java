@@ -6,6 +6,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -26,8 +27,11 @@ public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> imp
         }
     }
 
-    public static int chooseLayer(Material material) {
-        return material != null && material.hasTransparency() ? MeshStructure3D.TRANSPARENCY_LAYER : MeshStructure3D.SOLID_LAYER;
+    public static int chooseLayer(@NotNull Material material) {
+        if (material.hasTransparency()) {
+            return MeshStructure3D.TRANSPARENCY_LAYER;
+        }
+        return MeshStructure3D.SOLID_LAYER;
     }
 
     public void putNode(int layer, R r) {

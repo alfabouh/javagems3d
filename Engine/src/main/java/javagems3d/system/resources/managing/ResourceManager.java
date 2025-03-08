@@ -73,7 +73,7 @@ public abstract class ResourceManager {
                 byteBuffer.putFloat(color4Texture.getColor().x);
                 byteBuffer.putFloat(color4Texture.getColor().y);
                 byteBuffer.putFloat(color4Texture.getColor().z);
-                byteBuffer.putFloat(material.getFullOpacity());
+                byteBuffer.putFloat(material.getTransparency().getOpacity());
             } else {
                 byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
             }
@@ -176,14 +176,19 @@ public abstract class ResourceManager {
 
     public static void initDefaultTexture() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer buffer = stack.mallocFloat(3 * 4);
-            buffer.put(new float[] {0.0f, 0.0f, 0.0f});
-            buffer.put(new float[] {1.0f, 0.0f, 1.0f});
-            buffer.put(new float[] {0.0f, 0.0f, 0.0f});
-            buffer.put(new float[] {1.0f, 0.0f, 1.0f});
+            FloatBuffer buffer = stack.mallocFloat(16 * 3);
+            for (int y = 0; y < 4; y++) {
+                for (int x = 0; x < 4; x++) {
+                    boolean isPink = ((x ^ y) & 1) == 0;
+                    buffer.put((isPink ? 1.0f : 0.0f));
+                    buffer.put(0.0f);
+                    buffer.put((isPink ? 1.0f : 0.0f));
+                }
+            }
+            buffer.flip();
             ResourceManager.DEFAULT_TEXTURE = new Texture2DProgram();
             Texture2DProgram texture2DProgram = (Texture2DProgram) ResourceManager.DEFAULT_TEXTURE;
-            texture2DProgram.createTexture(new Vector2i(2), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
+            texture2DProgram.createTexture(new Vector2i(4, 4), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
         }
     }
 

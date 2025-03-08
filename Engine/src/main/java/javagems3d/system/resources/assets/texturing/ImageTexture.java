@@ -1,6 +1,5 @@
 package javagems3d.system.resources.assets.texturing;
 
-import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 import javagems3d.system.resources.assets.texturing.base.IModifiableSample;

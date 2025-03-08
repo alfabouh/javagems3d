@@ -64,7 +64,9 @@ public class EditorInterface implements DearUIInterface {
         final float propertiesWindowSizeX = (windowSize.x - sceneWindowSizeX) - sceneWindowOffset;
         final float propertiesWindowSizeY =  windowSize.y;
 
+
         ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
+        WBench.get().getScreen().getWindow().setInFocus(ImGui.isWindowFocused());
         ImGui.setWindowSize(sceneWindowSizeX, sceneWindowSizeY - YOffset);
         ImGui.setWindowPos(sceneWindowOffset, YOffset);
         this.sceneContent(sceneWindowSizeX, sceneWindowSizeY - YOffset);

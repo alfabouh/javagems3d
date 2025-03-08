@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh.structures.solid;
 
+import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -24,7 +25,7 @@ public class MeshGroup extends MeshStructure3D<RenderMesh> {
     }
 
     public MeshGroup(RenderMesh renderMesh) {
-        this(new MeshNode3D<>(renderMesh, null));
+        this(new MeshNode3D<>(renderMesh, new Material(null)));
     }
 
     public MeshGroup() {

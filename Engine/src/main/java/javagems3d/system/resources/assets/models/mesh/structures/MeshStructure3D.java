@@ -57,7 +57,7 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         }
     }
 
-    public void putTransparencyNodes(List<MeshNode3D<T>> list) {
+    public void putBlendedTransparencyNodes(List<MeshNode3D<T>> list) {
         for (MeshNode3D<T> m : list) {
             this.putNode(MeshStructure3D.TRANSPARENCY_LAYER, m);
         }
@@ -67,7 +67,7 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         this.putNode(MeshStructure3D.SOLID_LAYER, meshNode3D);
     }
 
-    public void putTransparencyNode(MeshNode3D<T> meshNode3D) {
+    public void putBlendedTransparencyNode(MeshNode3D<T> meshNode3D) {
         this.putNode(MeshStructure3D.TRANSPARENCY_LAYER, meshNode3D);
     }
 
@@ -75,12 +75,12 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         return this.getNodes(MeshStructure3D.SOLID_LAYER);
     }
 
-    public List<MeshNode3D<T>> getTransparencyNodes() {
+    public List<MeshNode3D<T>> getBlendedTransparencyNodes() {
         return this.getNodes(MeshStructure3D.TRANSPARENCY_LAYER);
     }
 
     public boolean hasTransparency() {
-        return !this.getTransparencyNodes().isEmpty();
+        return !this.getBlendedTransparencyNodes().isEmpty();
     }
 
     public void clear() {

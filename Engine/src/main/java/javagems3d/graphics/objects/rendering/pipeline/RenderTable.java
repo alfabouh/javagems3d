@@ -10,7 +10,6 @@ import javagems3d.graphics.objects.rendering.pipeline.fabric.scene.DefaultIndire
 import javagems3d.graphics.objects.rendering.pipeline.fabric.shadow.DefaultDirectShadowRenderFabric;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.shadow.DefaultIndirectShadowRenderFabric;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,18 +31,18 @@ public class RenderTable {
     public static JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND = null;
     public static JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER_IND = null;
 
-    public static void SET_DEFAULT_SHADERS_INDIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER_IND) {
+    public static void SET_DEFAULT_SHADERS_INDIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_BLENDED_TRANSPARENCY_SHADER_IND) {
         RenderTable.DEFAULT_SCENE_SHADER_IND = DEFAULT_SCENE_SHADER_IND;
         RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND = DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND;
         RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND = DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND;
-        RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND = DEFAULT_TRANSPARENCY_SHADER_IND;
+        RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND = DEFAULT_BLENDED_TRANSPARENCY_SHADER_IND;
     }
 
-    public static void SET_DEFAULT_SHADERS_DIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER) {
+    public static void SET_DEFAULT_SHADERS_DIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_BLENDED_TRANSPARENCY_SHADER) {
         RenderTable.DEFAULT_SCENE_SHADER = DEFAULT_SCENE_SHADER;
         RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER = DEFAULT_SUN_L_SHADOW_MAP_SHADER;
         RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER = DEFAULT_POINT_L_SHADOW_MAP_SHADER;
-        RenderTable.DEFAULT_TRANSPARENCY_SHADER = DEFAULT_TRANSPARENCY_SHADER;
+        RenderTable.DEFAULT_TRANSPARENCY_SHADER = DEFAULT_BLENDED_TRANSPARENCY_SHADER;
     }
 
     public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC = new DefaultDirectRenderFabric(Stage.DEFERRED_DIRECT);
@@ -119,8 +118,8 @@ public class RenderTable {
     }
 
     @SuppressWarnings("all")
-    public RenderTable setTransparencyRenderMatch(@NotNull JGemsShaderManager sLightStageShaderManager, @NotNull IRenderFabric sLightStageRenderFabric) {
-        this.setMatch(Pipeline.TRANSPARENCY, new Data(sLightStageShaderManager, sLightStageRenderFabric));
+    public RenderTable setTransparencyRenderMatch(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull IRenderFabric transparencyRenderFabric) {
+        this.setMatch(Pipeline.TRANSPARENCY, new Data(transparencyShaderManager, transparencyRenderFabric));
         return this;
     }
 

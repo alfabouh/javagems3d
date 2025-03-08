@@ -55,7 +55,7 @@ public abstract class IndirectObjectsRenderer {
     }
 
     protected abstract void processAndRender(@Nullable ArbitraryArguments metaData);
-    protected abstract IndirectCommandsProgram createCommands(Mode mode, IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects);
+    protected abstract IndirectCommandsProgram createCommands(Mode mode, @NotNull IntBuffer indexes, @Nullable IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects);
 
     protected void render(Operator operator, IndirectCommandsProgram indirectCommandsProgram, IndirectBufferProgram renderBuffer, @Nullable ArbitraryArguments metaData) {
         operator.getRenderingFunction().func(operator.getIndirectShader(), indirectCommandsProgram, renderBuffer, metaData == null ? ArbitraryArguments.empty() : metaData);
@@ -222,6 +222,7 @@ public abstract class IndirectObjectsRenderer {
     public enum Mode {
         ALL,
         ONLY_SOLID,
+        ONLY_BLENDED_TRANSPARENT,
         ONLY_TRANSPARENT
     }
 }

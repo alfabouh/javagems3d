@@ -1,7 +1,7 @@
-layout (location = 0) in vec3 aPosition;
-layout (location = 1) in vec2 texture;
-layout (location = 5) in ivec4 aBoneIndexes;
-layout (location = 6) in vec4 aBoneWeights;
+layout (location=0) in vec3 aPosition;
+layout (location=1) in vec2 texture;
+layout (location=5) in ivec4 aBoneIndexes;
+layout (location=6) in vec4 aBoneWeights;
 
 out vec2 uv_coordinates;
 

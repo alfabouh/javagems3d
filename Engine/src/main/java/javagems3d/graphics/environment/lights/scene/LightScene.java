@@ -74,10 +74,7 @@ public abstract class LightScene implements ILightScene {
     @Override
     public void updateBuffers(MemoryStack stack, IWorld world, Matrix4f viewMatrix) {
         this.getPointLightList().forEach(e -> e.onUpdate(world));
-        if (this.getEnvironment().getSkyBox().getSun().update) {
-            this.updateSunBuffer(this.getSunBuffer(), stack, viewMatrix);
-            this.getEnvironment().getSkyBox().getSun().update = false;
-        }
+        this.updateSunBuffer(this.getSunBuffer(), stack, viewMatrix);
         this.updatePointLightsBuffer(this.getPointLightsBuffer(), stack, viewMatrix);
     }
 

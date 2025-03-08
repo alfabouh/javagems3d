@@ -119,10 +119,10 @@ void Shadows() {
 
 void main()
 {
-// vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, uv_coordinates);
-// if (v.a < alpha_discard) {
-//     //discard;
-// }
+    vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, uv_coordinates);
+    if (v.a < alpha_discard) {
+        discard;
+    }
 
     Shadows();
 }

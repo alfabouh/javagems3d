@@ -40,27 +40,27 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
         }
     }
 
-    protected void renderModelForShadow(IAnimated animated, JGemsShaderManager shaderManager, Model3D model) {
-     //   shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
-     //   JGemsShadersHelper.performAnimationsInfo(shaderManager, animated);
-     //   try {
-     //       for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
-     //           if (meshNode3D.getMaterial().getDiffuse() instanceof ITexture2DProgram) {
-     //               ITexture2DProgram imageBasedTexture = (ITexture2DProgram) meshNode3D.getMaterial().getDiffuse();
-     //               shaderManager.performUniformTexture(new UniformString("texture_sampler"), imageBasedTexture);
-     //               shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
-     //           } else {
-     //               shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
-     //           }
-     //           GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
-     //           meshNode3D.getMeshData().enableAllMeshAttributes();
-     //           GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
-     //           meshNode3D.getMeshData().disableAllMeshAttributes();
-     //           GL46.glBindVertexArray(0);
-     //       }
-     //   } catch (Exception e) {
-     //       Log.get().exception(e);
-     //       throw new JGemsRuntimeException("There was an error, while rendering model for shadows. ");
-     //   }
+    protected void renderModelForShadow(IModeled modeled, JGemsShaderManager shaderManager, Model3D model) {
+        shaderManager.performUniform(new UniformString("alpha_discard"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.MAX_ALPHA_TO_DISCARD_SHADOW_FRAGMENT));
+        JGemsShadersHelper.performAnimationsInfo(shaderManager, modeled);
+        try {
+            for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
+                if (meshNode3D.getMaterial().getDiffuse() instanceof ITexture2DProgram) {
+                    ITexture2DProgram imageBasedTexture = (ITexture2DProgram) meshNode3D.getMaterial().getDiffuse();
+                    shaderManager.performUniformTexture(new UniformString("texture_sampler"), imageBasedTexture);
+                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
+                } else {
+                    shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
+                }
+                GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
+                meshNode3D.getMeshData().enableAllMeshAttributes();
+                GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+                meshNode3D.getMeshData().disableAllMeshAttributes();
+                GL46.glBindVertexArray(0);
+            }
+        } catch (Exception e) {
+            Log.get().exception(e);
+            throw new JGemsRuntimeException("There was an error, while rendering model for shadows. ");
+        }
     }
 }

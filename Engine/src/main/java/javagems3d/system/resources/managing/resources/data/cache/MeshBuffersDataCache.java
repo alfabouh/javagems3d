@@ -18,12 +18,13 @@ public final class MeshBuffersDataCache implements IDataCache {
     }
 
     public void writeData(Set<MeshBuffersDataArray> arraySet) {
-        int i = 0;
-        for (MeshBuffersDataArray bindlessTexturesDataArray : arraySet) {
-            for (MeshBuffer meshBuffer : bindlessTexturesDataArray.getMeshBuffers()) {
+        this.addMaterial(new Material(null));
+        int i = this.getMaterials().size();
+        for (MeshBuffersDataArray meshBuffersDataArray : arraySet) {
+            for (MeshBuffer meshBuffer : meshBuffersDataArray.getMeshBuffers()) {
                 this.addMeshBuffer(meshBuffer);
             }
-            for (Material material : bindlessTexturesDataArray.getMaterials()) {
+            for (Material material : meshBuffersDataArray.getMaterials()) {
                 this.materialsIdMap.put(material, i++);
                 this.addMaterial(material);
             }
@@ -37,7 +38,7 @@ public final class MeshBuffersDataCache implements IDataCache {
     }
 
     public int getMaterialId(Material material) {
-        return this.materialsIdMap.get(material);
+        return this.materialsIdMap.getOrDefault(material, 0);
     }
 
     public void addMeshBuffer(MeshBuffer meshBuffer) {

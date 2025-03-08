@@ -40,7 +40,7 @@ public interface IAssetsInitializer {
         DataMesh dataMesh = new DataMesh();
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsUtils.convertFloatsList(IAssetsInitializer.CubeModelPos));
         dataMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
-        MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, null);
+        MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
         return new MeshBuffer(meshBufferMeshNode3D);
     }
 
@@ -48,7 +48,7 @@ public interface IAssetsInitializer {
         try (RenderMesh renderMesh = new RenderMesh()) {
             renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS).putArray(IAssetsInitializer.CubeModelPos));
             renderMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
-            MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, new Material(new Color4Texture(1.0f, 0.0f, 0.0f)));
+            MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
             return new MeshGroup(meshBufferMeshNode3D);
         }
     }

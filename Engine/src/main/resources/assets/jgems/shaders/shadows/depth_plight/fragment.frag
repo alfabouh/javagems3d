@@ -1,7 +1,7 @@
 in vec2 uv_coordinates;
 in vec4 frag_pos;
-layout (location = 0) out vec4 frag_color0;
 
+layout (location = 0) out vec4 frag_color0;
 
 uniform float alpha_discard;
 uniform sampler2D texture_sampler;

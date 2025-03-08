@@ -70,7 +70,7 @@ public final class IndirectBufferProgram {
             }
             firstIndexOffset += collect;
             collect = 0;
-            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getTransparencyNodes()) {
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getBlendedTransparencyNodes()) {
                 DataMesh dataMesh = meshNode3D.getMeshData();
                 int posLength = dataMesh.numPositions();
                 indexesSize += dataMesh.numVertexIndexes();
@@ -90,7 +90,7 @@ public final class IndirectBufferProgram {
                 DataMesh dataMesh = meshNode3D.getMeshData();
                 this.populateMeshBuffer(meshesBuffer, dataMesh);
             }
-            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getTransparencyNodes()) {
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getBlendedTransparencyNodes()) {
                 DataMesh dataMesh = meshNode3D.getMeshData();
                 this.populateMeshBuffer(meshesBuffer, dataMesh);
             }
@@ -112,7 +112,7 @@ public final class IndirectBufferProgram {
                     indexesBuffer.put(i);
                 }
             }
-            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getTransparencyNodes()) {
+            for (MeshNode3D<DataMesh> meshNode3D : meshBuffer.getBlendedTransparencyNodes()) {
                 DataMesh dataMesh = meshNode3D.getMeshData();
                 for (int i : dataMesh.getIndexesBuffer().getValues()) {
                     indexesBuffer.put(i);

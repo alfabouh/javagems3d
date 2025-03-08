@@ -162,7 +162,7 @@ public class TestTBoxApp implements JGemsTBoxApplication {
 
     @Override
     public void initEntitiesUserData(JGemsResourceManager jGemsResourceManager, TBoxEntitiesUserData tBoxEntitiesUserData) {
-        tBoxEntitiesUserData.add("cube", new TUserData(new TDefaultRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer"), new MeshRenderAttributes())));
+        tBoxEntitiesUserData.add("cube", new TUserData(new TDefaultRenderContainer(new RenderEntity(), EntityObject.class, new JGemsPath("/assets/jgems/models/cube/cube.obj"), new JGemsPath(JGems3D.Paths.SHADERS, "world/world_gbuffer_earlyz"), new MeshRenderAttributes())));
     }
 }
 ```

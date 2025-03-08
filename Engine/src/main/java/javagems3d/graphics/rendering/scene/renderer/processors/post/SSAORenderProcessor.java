@@ -97,7 +97,9 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
         ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture());
         ssaoComputeShader.performUniformTexture(new UniformString("ssaoKernel"), this.getSsaoKernelTexture());
         GL46.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16F);
-        ssaoComputeShader.dispatchComputeShader(windowSize.x / 8, windowSize.y / 8, 1, GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        int groupCountX = (windowSize.x + 16 - 1) / 16;
+        int groupCountY = (windowSize.y + 16 - 1) / 16;
+        ssaoComputeShader.dispatchComputeShader(groupCountX, groupCountY, 1, GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         ssaoComputeShader.endComputing();
 
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;

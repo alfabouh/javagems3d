@@ -119,7 +119,7 @@ public class RenderAttributes implements IRenderConfiguration {
         return this;
     }
 
-    public boolean isDefaultBrightLighted() {
+    public boolean isDefaultBrightnessLighted() {
         return this.defaultBrightLighted;
     }
 
@@ -156,7 +156,7 @@ public class RenderAttributes implements IRenderConfiguration {
         this.setShadowCaster(this.isShadowCaster());
         this.setShadowReceiver(this.isShadowReceiver());
         this.setAllowMoveMeshesIntoTransparencyPass(this.isAllowedMoveMeshesIntoTransparencyPass());
-        this.setDefaultBrightLighted(this.isDefaultBrightLighted());
+        this.setDefaultBrightLighted(this.isDefaultBrightnessLighted());
         return objectRenderingConfiguration;
     }
 }

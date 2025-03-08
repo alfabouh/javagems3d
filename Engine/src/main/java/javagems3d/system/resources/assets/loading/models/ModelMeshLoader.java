@@ -18,7 +18,9 @@ import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerV
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -41,23 +43,26 @@ import java.util.function.Consumer;
 public class ModelMeshLoader implements ILoadingHelper {
     private final JGemsPath path;
     private final SystemResources systemResources;
+    private JGemsShaderManager shaderToDetermineTexturesWithTransparency;
 
     public ModelMeshLoader(@NotNull SystemResources systemResources, @NotNull JGemsPath modelPath) {
         this.path = modelPath;
         this.systemResources = systemResources;
+        this.shaderToDetermineTexturesWithTransparency = null;
     }
 
     public MeshGroup createMeshGroup(int Flags, boolean attachMeshBuffer, MemMode mode) {
         boolean animated = (Flags & ModelLoaderFlags.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & ModelLoaderFlags.CREATE_COLLISION_UD) != 0;
         boolean createAabb = (Flags & ModelLoaderFlags.CREATE_AABB_UD) != 0;
+        boolean determineTransparency = (Flags & ModelLoaderFlags.DETERMINE_TEXTURES_WITH_TRANSPARENCY) != 0;
         MeshGroup meshGroup = null;
         String grString = this.getStr(MeshGroup.POSTFIX);
         if (this.getResourceCache().checkObjectInCache(grString)) {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
             Log.get().info("Mesh " + this.getPath() + " picked from cache");
         } else {
-            meshGroup = this.processMeshGroup(this.getGameResources(), animated, attachMeshBuffer);
+            meshGroup = this.processMeshGroup(!determineTransparency ? null : this.getShaderToDetermineTexturesWithTransparency(), this.getGameResources(), animated, attachMeshBuffer);
             this.getResourceCache().addObjectInBuffer(grString, meshGroup);
             Log.get().info("Mesh " + this.getPath() + " successfully created");
         }
@@ -81,13 +86,15 @@ public class ModelMeshLoader implements ILoadingHelper {
         boolean animated = (Flags & ModelLoaderFlags.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & ModelLoaderFlags.CREATE_COLLISION_UD) != 0;
         boolean createAabb = (Flags & ModelLoaderFlags.CREATE_AABB_UD) != 0;
+        boolean determineTransparency = (Flags & ModelLoaderFlags.DETERMINE_TEXTURES_WITH_TRANSPARENCY) != 0;
+
         String bffString = this.getStr(MeshBuffer.POSTFIX);
         MeshBuffer meshBuffer = null;
         if (this.isCacheValid() && this.getResourceCache().checkObjectInCache(bffString)) {
             meshBuffer = this.getResourceCache().getCachedObjectUnSafeCast(bffString);
             Log.get().info("Mesh " + this.getPath() + " picked from cache");
         } else {
-            meshBuffer = this.processMeshBuffer(this.getGameResources(), animated);
+            meshBuffer = this.processMeshBuffer(!determineTransparency ? null : this.getShaderToDetermineTexturesWithTransparency(), this.getGameResources(), animated);
             this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
             Log.get().info("Mesh " + this.getPath() + " successfully created");
         }
@@ -156,7 +163,7 @@ public class ModelMeshLoader implements ILoadingHelper {
     }
 
 
-    private MeshGroup processMeshGroup(SystemResources systemResources, boolean isAnimated, boolean attachMeshBuffer) {
+    private MeshGroup processMeshGroup(@Nullable JGemsShaderManager computeTransparentPixels, SystemResources systemResources, boolean isAnimated, boolean attachMeshBuffer) {
         MeshGroup meshGroup = new MeshGroup();
         MeshBuffer meshBuffer = attachMeshBuffer ? new MeshBuffer() : null;
 
@@ -168,7 +175,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
-                Material material = ModelLoadingUtils.readMaterial(systemResources, aiMaterial, this.getPath().getParentPath());
+                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getParentPath());
                 if (meshBuffer != null) {
                     systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
                 }
@@ -190,7 +197,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
-                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
+                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material(null);
 
                 RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
                 meshGroup.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
@@ -212,7 +219,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         return meshGroup;
     }
 
-    private MeshBuffer processMeshBuffer(SystemResources systemResources, boolean isAnimated) {
+    private MeshBuffer processMeshBuffer(@Nullable JGemsShaderManager computeTransparentPixels, SystemResources systemResources, boolean isAnimated) {
         MeshBuffer meshBuffer = new MeshBuffer();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -223,7 +230,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
-                Material material = ModelLoadingUtils.readMaterial(systemResources, aiMaterial, this.getPath().getParentPath());
+                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getParentPath());
                 systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
                 materialList.add(material);
             }
@@ -243,7 +250,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
-                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
+                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material(null);
 
                DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
                meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
@@ -334,6 +341,14 @@ public class ModelMeshLoader implements ILoadingHelper {
 
         renderMesh.bakeMesh();
         return renderMesh;
+    }
+
+    public JGemsShaderManager getShaderToDetermineTexturesWithTransparency() {
+        return this.shaderToDetermineTexturesWithTransparency;
+    }
+
+    public void setShaderToDetermineTexturesWithTransparency(JGemsShaderManager shaderToDetermineTexturesWithTransparency) {
+        this.shaderToDetermineTexturesWithTransparency = shaderToDetermineTexturesWithTransparency;
     }
 
     public SystemResources getGameResources() {

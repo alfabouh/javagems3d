@@ -31,13 +31,13 @@ public class SinglePassIndirectRenderer extends IndirectObjectsRenderer {
         IndirectBufferProgram renderBuffer = this.getOpenGLRenderer().getSceneIndirectBuffer();
         IntBuffer indexes = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
         IntBuffer materialIds = MemoryUtil.memAllocInt(SinglePassIndirectRenderer.SSBO_DATASETS_MATERIAL_IDS_SIZE);
-        IndirectCommandsProgram indirectCommandsProgram = this.createCommands(this.getMode(), indexes, materialIds, renderBuffer, this.getIndirectMeshObjects());
+        IndirectCommandsProgram indirectCommandsProgram = this.createCommands(this.getMode(), indexes, this.isUseMaterialsSSBO() ? materialIds : null, renderBuffer, this.getIndirectMeshObjects());
         this.fillSSBOWithInformation(indexes, materialIds, this.getIndirectMeshObjects());
         this.render(this.getOperator(), indirectCommandsProgram, renderBuffer, metaData);
         indirectCommandsProgram.destroyBuffer();
     }
 
-    protected IndirectCommandsProgram createCommands(Mode mode, IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects) {
+    protected IndirectCommandsProgram createCommands(Mode mode, @NotNull IntBuffer indexes, IntBuffer materialIds, IndirectBufferProgram renderBuffer, Collection<SceneObject> sceneObjects) {
         BaseIndirectCommandsProgram baseIndirectCommandProgram1 = new BaseIndirectCommandsProgram(renderBuffer);
         baseIndirectCommandProgram1.createBuffer();
         baseIndirectCommandProgram1.buildCommands(indexes, materialIds, sceneObjects, mode);

@@ -49,7 +49,7 @@ public class DefaultMap implements IMapLoader {
         Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
         JGemsWorldHelper.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
-        JGemsWorldHelper.addPropInScene(new SceneWorldProp(sceneWorld, new Model3D(new Pose3D(), JGemsResourceManager.globalModelAssets.defaultCube_gr), RenderAttributes.get(RenderTable.getDefaultDirect())));
+        JGemsWorldHelper.addPropInScene(new SceneWorldProp(sceneWorld, new Model3D(new Pose3D(), JGemsResourceManager.globalModelAssets.defaultCube_bff), RenderAttributes.get(RenderTable.getDefaultIndirect())));
 
         PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
         pointLight.on();

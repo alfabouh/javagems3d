@@ -9,7 +9,6 @@ import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;

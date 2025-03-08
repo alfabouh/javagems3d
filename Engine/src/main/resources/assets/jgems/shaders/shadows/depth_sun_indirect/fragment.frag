@@ -94,16 +94,43 @@ void Shadows() {
     frag_color0 = vec4(d, moment2, 0., 0.);
 }
 */
-layout (location = 0) out vec4 frag_color0;
 
-uniform float alpha_discard;
-uniform sampler2D texture_sampler;
-uniform bool use_texture;
+#extension GL_ARB_bindless_texture : require
+layout (location = 0) out vec4 frag_color0;
 
 uniform float PosExp;
 uniform float NegExp;
 
 in vec2 uv_coordinates;
+in flat uint matertial_id;
+in flat uint ent_id;
+
+struct Properties {
+    float alpha_discard;
+    int lighting_code;
+};
+
+struct Material {
+    vec4 diffuse_color;
+    int diffuse_map_id;
+    int normals_map_id;
+    int emissive_map_id;
+    int specular_map_id;
+    int metallic_map_id;
+    int texturing_code;
+};
+
+layout(std430, binding = 2) buffer BindlessTextures {
+    uvec2 textures[CONST.MAX_BINDLESS_TEXTURES];
+};
+
+layout(std430, binding = 3) buffer MaterialsData {
+    Material materials[256];
+};
+
+layout(std430, binding = 4) buffer RenderPropertiesData {
+    Properties properties[512];
+};
 
 void Shadows() {
     float positiveExponent = PosExp;
@@ -117,12 +144,25 @@ void Shadows() {
     frag_color0 = vec4(warpDepth, warpDepth * warpDepth);
 }
 
+const int diffuse_code = 1 << 2;
+
+bool checkCode(int i1, int i2) {
+    int i3 = i1 & i2;
+    return bool(i3 != 0);
+}
+
 void main()
 {
-    // vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, uv_coordinates);
-    // if (v.a < alpha_discard) {
-    //     discard;
-    // }
+    Material mat = materials[matertial_id];
+    Properties property = properties[ent_id];
+    float alpha_discard = property.alpha_discard;
+    int texturing_code = mat.texturing_code;
+    int lighting_code = property.lighting_code;
+
+    vec4 diffuse = checkCode(texturing_code, diffuse_code) ? texture(sampler2D(textures[mat.diffuse_map_id]), uv_coordinates) : mat.diffuse_color;
+    if (diffuse.a < alpha_discard) {
+        discard;
+    }
 
     Shadows();
 }

@@ -17,7 +17,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
 
     @Override
     public void load(SystemResources systemResources) {
-        this.test = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEF_PATHS.MODELS, "sponza/sponza.obj"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, MemMode.ERASE_NODES_DATA);
+        this.test = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.obj"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, MemMode.ERASE_NODES_DATA);
 
         this.createDefaults(systemResources);
     }

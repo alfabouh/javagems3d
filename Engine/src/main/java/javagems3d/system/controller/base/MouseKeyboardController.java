@@ -70,12 +70,15 @@ public abstract class MouseKeyboardController implements IController {
         this.getRotationInput().set(0.0d);
         this.normalizedPositionInput.set(0.0d);
         this.normalizedRotationInput.set(0.0d);
+
+        double[] xy = this.getMouseAndKeyboard().getCursorCoordinates();
         if (!window.isWindowInFocus()) {
+            this.prevMouseCoord.set((int) xy[0], (int) xy[1]);
             return;
         }
+
         boolean isCenterScanning = this.getScanningMode().equals(ScanningMode.CENTER);
         Vector2i posM = isCenterScanning ? new Vector2i((int) (window.getWindowSize().x / 2.0f), (int) (window.getWindowSize().y / 2.0f)) : this.prevMouseCoord;
-        double[] xy = this.getMouseAndKeyboard().getCursorCoordinates();
         float d1 = (float) (xy[0] - posM.x);
         float d2 = (float) (xy[1] - posM.y);
         this.prevMouseCoord.set((int) xy[0], (int) xy[1]);

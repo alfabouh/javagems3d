@@ -5,7 +5,6 @@ in vec3 modelview_vertex_pos;
 in vec3 model_vertex_normal;
 in vec4 model_vertex_pos;
 
-layout (early_fragment_tests) in;
 layout (location = 0) out vec4 gPosition;
 layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gColor;

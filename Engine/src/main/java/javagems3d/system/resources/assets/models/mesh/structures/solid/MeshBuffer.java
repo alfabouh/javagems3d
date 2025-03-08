@@ -5,20 +5,26 @@ import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class MeshBuffer extends MeshStructure3D<DataMesh> {
     public static final String POSTFIX = "_buffer";
-    private final List<PassData> passData;
-    private final List<PassData> passDataTransparent;
+    private final Map<Integer, List<PassData>> meshPassData;
 
     public MeshBuffer(@Nullable List<MeshNode3D<DataMesh>> meshNodes) {
-        this.passData = new ArrayList<>();
-        this.passDataTransparent = new ArrayList<>();
+        this.meshPassData = new HashMap<>();
+        this.initPassDataLayers();
         if (meshNodes != null) {
             this.putNodes(meshNodes);
+        }
+    }
+
+    protected void initPassDataLayers() {
+        for (int i : this.getLayersToInit()) {
+            this.meshPassData.put(i, new ArrayList<>());
+        }
+        if (this.meshPassData.isEmpty()) {
+            this.meshPassData.put(0, new ArrayList<>());
         }
     }
 
@@ -34,8 +40,7 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
     @Override
     public void clear() {
         super.clear();
-        this.getSolidPassData().clear();
-        this.getTransparentPassData().clear();
+        this.meshPassData.clear();
     }
 
     @Override
@@ -48,20 +53,40 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
         return true;
     }
 
-    public List<PassData> getTransparentPassData() {
-        return this.passDataTransparent;
+    public void putSolidPassData(PassData passData) {
+        this.getSolidPassData().add(passData);
+    }
+
+    public void putBlendedTransparentPassData(PassData passData) {
+        this.getTransparentPassData().add(passData);
     }
 
     public List<PassData> getSolidPassData() {
-        return this.passData;
+        return this.getPassData(MeshStructure3D.SOLID_LAYER);
+    }
+
+    public List<PassData> getTransparentPassData() {
+        return this.getPassData(MeshStructure3D.TRANSPARENCY_LAYER);
+    }
+
+    public List<PassData> getPassData(int layer) {
+        return this.meshPassData.get(layer);
+    }
+
+    public Map<Integer, List<PassData>> getMeshPassDataMap() {
+        return this.meshPassData;
     }
 
     public List<PassData> getAllPassData() {
-        int capacity = this.getSolidPassData().size() + this.getTransparentPassData().size();
-        List<PassData> passData1 = new ArrayList<>(capacity);
-        passData1.addAll(this.getSolidPassData());
-        passData1.addAll(this.getTransparentPassData());
-        return passData1;
+        int capacity = 0;
+        for (List<PassData> layer : this.meshPassData.values()) {
+            capacity += layer.size();
+        }
+        List<PassData> list = new ArrayList<>(capacity);
+        for (List<PassData> layer : this.meshPassData.values()) {
+            list.addAll(layer);
+        }
+        return list;
     }
 
     public static final class PassData {

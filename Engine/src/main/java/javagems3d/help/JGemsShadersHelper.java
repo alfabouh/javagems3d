@@ -1,6 +1,5 @@
 package javagems3d.help;
 
-import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
@@ -11,8 +10,6 @@ import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
-import javagems3d.graphics.rendering.scene.JGemsScene;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -26,7 +23,7 @@ public abstract class JGemsShadersHelper {
             return;
         }
         int lighting_code = 0;
-        if (objectRenderingConfiguration.isDefaultBrightLighted()) {
+        if (objectRenderingConfiguration.isDefaultBrightnessLighted()) {
             lighting_code |= 1 << 2;
         }
         shaderManager.performUniform(new UniformString("lighting_code"), UniformFunctions.INTEGER(lighting_code));

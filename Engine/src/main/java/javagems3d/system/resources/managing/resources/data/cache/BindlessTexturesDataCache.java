@@ -1,6 +1,8 @@
 package javagems3d.system.resources.managing.resources.data.cache;
 
+import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
+import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 
@@ -16,6 +18,7 @@ public final class BindlessTexturesDataCache implements IDataCache {
     }
 
     public void writeData(Set<BindlessTexturesDataArray> arraySet) {
+        this.add((Texture2DProgram) ResourceManager.DEFAULT_TEXTURE());
         for (BindlessTexturesDataArray bindlessTexturesDataArray : arraySet) {
             for (ITextureBindless bindlessTexture : bindlessTexturesDataArray.getBindlessTextureList()) {
                 this.add(bindlessTexture);

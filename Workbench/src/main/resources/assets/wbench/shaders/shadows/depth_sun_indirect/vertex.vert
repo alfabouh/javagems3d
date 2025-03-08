@@ -1,7 +1,7 @@
-layout (location = 0) in vec3 aPosition;
-layout (location = 1) in vec2 aTexture;
-layout (location = 5) in ivec4 aBoneIndexes;
-layout (location = 6) in vec4 aBoneWeights;
+layout (location=0) in vec3 aPosition;
+layout (location=1) in vec2 aTexture;
+layout (location=5) in ivec4 aBoneIndexes;
+layout (location=6) in vec4 aBoneWeights;
 
 out vec2 uv_coordinates;
 out flat uint matertial_id;
@@ -9,7 +9,7 @@ out flat uint ent_id;
 
 uniform mat4 projection_view_matrix;
 
-layout (std430, binding = 1) buffer IndirectBufferData {
+layout(std430, binding = 1) buffer IndirectBufferData {
     int entityId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     int materialId[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];
     mat4 modelMatrix[CONST.MAX_INDIRECT_RENDERING_MESH_DATASETS];

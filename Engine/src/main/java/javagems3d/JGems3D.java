@@ -340,7 +340,7 @@ public final class JGems3D {
         return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " | appId = " + JGems3D.getAPIAppData().getId();
     }
 
-    public static abstract class DEF_PATHS {
+    public static abstract class DEFAULT_PATHS {
         public static final String PARTICLES = "/assets/jgems/textures/particles/";
         public static final String CUBE_MAPS = "/assets/jgems/textures/cubemaps/";
         public static final String TEXTURES = "/assets/jgems/textures/";
