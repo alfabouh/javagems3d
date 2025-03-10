@@ -1,7 +1,6 @@
 package javagems3d.system.global;
 
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.scene.renderer.debug.LinesDebugDraw;
 import org.joml.Vector2f;
 
 public abstract class JGemsConfig {
@@ -9,7 +8,6 @@ public abstract class JGemsConfig {
         public static float PATH_GEN_GRAPH_GAP = 1.0f;
         public static boolean FULL_BRIGHT;
         public static boolean SHOW_DEBUG_LINES;
-        public static LinesDebugDraw linesDebugDraw = new LinesDebugDraw();
 
         static {
             reset();

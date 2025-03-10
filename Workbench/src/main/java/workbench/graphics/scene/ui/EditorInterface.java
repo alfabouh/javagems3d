@@ -1,23 +1,46 @@
 package workbench.graphics.scene.ui;
 
 import imgui.ImGui;
+import imgui.ImVec2;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImBoolean;
+import javagems3d.graphics.camera.FixedCamera;
+import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.controller.base.MouseKeyboardController;
+import javagems3d.system.service.collections.Pair;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2i;
+import org.jetbrains.annotations.Nullable;
+import org.joml.*;
 import workbench.WBench;
+import workbench.graphics.environment.WBenchEnvironment;
 import workbench.graphics.scene.nodes.WDeferredRenderNode;
-import workbench.graphics.scene.nodes.templates.WIGluingRenderNode;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
 
 public class EditorInterface implements DearUIInterface {
     private final ProjectManager projectManager;
+    private boolean openEnvironmentFogSettings;
+    private boolean openEnvironmentSkySettings;
+    private boolean openProjectSettings;
+
+    private boolean cameraCheckBox;
+    private final FixedCamera sunCamera;
+    private ICamera oldCamera;
 
     public EditorInterface(@NotNull ProjectManager projectManager) {
         this.projectManager = projectManager;
+        this.openEnvironmentFogSettings = false;
+        this.openEnvironmentSkySettings = false;
+        this.openProjectSettings = false;
+
+        this.sunCamera = new FixedCamera(new Vector3f(), new Vector3f());
+        this.oldCamera = null;
+        this.cameraCheckBox = false;
     }
 
     @Override
@@ -45,6 +68,19 @@ public class EditorInterface implements DearUIInterface {
             }
             ImGui.endMenu();
         }
+        if (ImGui.beginMenu("Environment")) {
+            if (ImGui.menuItem("Fog")) {
+                this.openEnvironmentFogSettings = !this.openEnvironmentFogSettings;
+            }
+            if (ImGui.menuItem("SkyBox")) {
+                this.openEnvironmentSkySettings = !this.openEnvironmentSkySettings;
+            }
+            ImGui.endMenu();
+        }
+        if (ImGui.beginMenu("View")) {
+
+            ImGui.endMenu();
+        }
         ImGui.endMainMenuBar();
         final float YOffset = ImGui.getFrameHeight();
 
@@ -64,57 +100,174 @@ public class EditorInterface implements DearUIInterface {
         final float propertiesWindowSizeX = (windowSize.x - sceneWindowSizeX) - sceneWindowOffset;
         final float propertiesWindowSizeY =  windowSize.y;
 
+        ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        Vector3f camPos = WBench.get().getScreen().getScene().getCamera().getCamPosition();
 
-        ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
+        ImGui.text("FPS: " + WBenchScreen.RENDER_FPS);
+        ImGui.sameLine();
+        ImGui.text("[" + camPos.x + ", " + camPos.y + ", " + camPos.z + "]");
+
         WBench.get().getScreen().getWindow().setInFocus(ImGui.isWindowFocused());
         ImGui.setWindowSize(sceneWindowSizeX, sceneWindowSizeY - YOffset);
         ImGui.setWindowPos(sceneWindowOffset, YOffset);
         this.sceneContent(sceneWindowSizeX, sceneWindowSizeY - YOffset);
         ImGui.end();
 
-        ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
+        ImGui.begin("Output", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(consoleWindowSizeX, consoleWindowSizeY);
         ImGui.setWindowPos(sceneWindowOffset, windowSize.y - consoleWindowSizeY);
         this.consoleContent();
         ImGui.end();
 
-        ImGui.begin("Items", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
+        ImGui.begin("Items", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(entitiesWindowSizeX, entitiesWindowSizeY - YOffset);
         ImGui.setWindowPos(0, YOffset);
         this.itemsContent();
         ImGui.end();
 
-        ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
+        ImGui.begin("Resources", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(resourcesWindowSizeX, resourcesWindowSizeY);
         ImGui.setWindowPos(0, windowSize.y - entitiesWindowSizeY);
         this.resourcesContent();
         ImGui.end();
 
-        ImGui.begin("Properties", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove);
+        ImGui.begin("Properties", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(propertiesWindowSizeX, propertiesWindowSizeY - YOffset);
         ImGui.setWindowPos(sceneWindowSizeX + sceneWindowOffset, YOffset);
         this.propertiesContent();
         ImGui.end();
+
+        this.context();
     }
+
+    private void context() {
+        WBenchEnvironment environment = WBench.get().getScreen().getScene().getWorld().getEnvironment();
+        ImVec2 screenSize = ImGui.getIO().getDisplaySize();
+
+        if (this.openEnvironmentFogSettings) {
+            ImVec2 windowSize = new ImVec2(400, 200);
+            ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
+            ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
+            ImBoolean opened = new ImBoolean(true);
+            if (ImGui.begin("Fog", opened, ImGuiWindowFlags.NoResize)) {
+                float[] fogIntensity = new float[] {environment.getFogManager().getDensity()};
+                if (ImGui.sliderFloat("Fog Intensity", fogIntensity, 0.0f, 1.0f)) {
+                    environment.getFogManager().setDensity(fogIntensity[0]);
+                }
+
+                float[] fogColor = new float[] {environment.getFogManager().getColor().x, environment.getFogManager().getColor().y, environment.getFogManager().getColor().z};
+                if (ImGui.colorEdit3("Fog Color", fogColor)) {
+                    environment.getFogManager().setColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
+                }
+            }
+            ImGui.end();
+            if (!opened.get()) {
+                this.openEnvironmentFogSettings = false;
+            }
+        }
+
+        if (this.openEnvironmentSkySettings) {
+            ImVec2 windowSize = new ImVec2(400, 200);
+            ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
+            ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
+            ImBoolean opened = new ImBoolean(true);
+            if (ImGui.begin("SkyBox", opened, ImGuiWindowFlags.NoResize)) {
+                ImGui.text("Sun");
+
+                if (ImGui.checkbox("Sun's View", this.cameraCheckBox)) {
+                    if (this.cameraCheckBox) {
+                        this.cameraCheckBox = false;
+                        this.setNewCamera(null);
+                    } else {
+                        this.cameraCheckBox = true;
+                        Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
+                        this.sunCamera.setCameraPosition(camData.getFirst());
+                        this.sunCamera.setLookAt(camData.getSecond());
+                        this.setNewCamera(this.sunCamera);
+                    }
+                }
+
+                float[] brightness = new float[] {environment.getSkyBox().getSun().getSunBrightness()};
+                if (ImGui.sliderFloat("Sun Brightness", brightness, 0.0f, 1.0f)) {
+                    environment.getSkyBox().getSun().setSunBrightness(brightness[0]);
+                }
+
+                float[] fogColor = new float[] {environment.getSkyBox().getSun().getLightColor().x, environment.getSkyBox().getSun().getLightColor().y, environment.getSkyBox().getSun().getLightColor().z};
+                if (ImGui.colorEdit3("Sun Color", fogColor)) {
+                    environment.getSkyBox().getSun().setLightColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
+                }
+
+                float[] sunPosition = {
+                        environment.getSkyBox().getSun().getLightPosition().x,
+                        environment.getSkyBox().getSun().getLightPosition().y,
+                        environment.getSkyBox().getSun().getLightPosition().z
+                };
+                if (ImGui.sliderFloat3("Position", sunPosition, -1.0f, 1.0f)) {
+                    environment.getSkyBox().getSun().setLightPosition(new Vector3f(sunPosition[0], sunPosition[1], sunPosition[2]));
+                    Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
+                    this.sunCamera.setCameraPosition(camData.getFirst());
+                    this.sunCamera.setLookAt(camData.getSecond());
+                }
+
+                ImGui.separator();
+                ImGui.text("Sky Texture");
+            }
+            ImGui.end();
+            if (!opened.get()) {
+                this.openEnvironmentSkySettings = false;
+                this.cameraCheckBox = false;
+            }
+        }
+
+        if (this.openProjectSettings) {
+            ImVec2 windowSize = new ImVec2(400, 300);
+            ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
+            ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
+            ImBoolean opened = new ImBoolean(true);
+            if (ImGui.begin("Project", opened, ImGuiWindowFlags.NoResize)) {
+                ImGui.text("Map Size");
+
+            }
+            ImGui.end();
+            if (!opened.get()) {
+                this.openProjectSettings = false;
+            }
+        }
+    }
+
+    private Pair<Vector3f, Vector3f> adjustCamera(SunLight sun) {
+        Vector3f sunPos = sun.getLightPosition().normalize().mul(100f);
+        return new Pair<>(sunPos, new Vector3f(0.0f));
+    }
+
+    private void setNewCamera(@Nullable ICamera camera) {
+        if (camera == null) {
+            WBench.get().getScreen().getScene().setCamera(this.oldCamera);
+            this.oldCamera = null;
+        } else {
+            this.oldCamera = WBench.get().getScreen().getScene().getCamera();
+            WBench.get().getScreen().getScene().setCamera(camera);
+        }
+    }
+
+    //===============================================
 
     private void itemsContent() {
     }
 
     private void resourcesContent() {
-        if (ImGui.collapsingHeader("Models")) {
-            if (ImGui.button("+")) {
-            }
-            ImGui.sameLine();
-            if (ImGui.button("-")) {
-            }
-        }
+        if (ImGui.collapsingHeader("Entities")) {
 
+        }
+        if (ImGui.collapsingHeader("Props")) {
+
+        }
         if (ImGui.collapsingHeader("Sounds")) {
-        }
 
+        }
         if (ImGui.collapsingHeader("Scripts")) {
-        }
 
+        }
         ImGui.separator();
     }
 

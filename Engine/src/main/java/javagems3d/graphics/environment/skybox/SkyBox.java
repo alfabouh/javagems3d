@@ -21,7 +21,7 @@ public abstract class SkyBox implements ISkyBox {
 
     public SkyBox(float backGroundViewScaling, IWorld world, @Nullable ICubeMapProgram sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
-        this.sunLight = new SunLight(new Vector3f(1.0f), null, 1.0f);
+        this.sunLight = new SunLight(new Vector3f(1.0f), new Vector3f(1.0f), 1.0f);
         this.isSkyCoveredByFog = false;
         this.background = new Background(world, backGroundViewScaling);
     }

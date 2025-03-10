@@ -1,6 +1,7 @@
 package javagems3d.graphics.environment.lights;
 
 import javagems3d.graphics.objects.entities.SceneEntity;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.physics.world.basic.IWorldTicked;
 
@@ -22,7 +23,7 @@ public abstract class Light implements IWorldTicked {
         this(lightPos, new Vector3f(1.0f), new Vector3f(0.0f));
     }
 
-    public Light(Vector3f lightPos, Vector3f lightColor, Vector3f offset) {
+    public Light(@NotNull Vector3f lightPos, @NotNull Vector3f lightColor, @NotNull Vector3f offset) {
         this.lightColor = new Vector3f(lightColor);
         this.lightPos = new Vector3f(lightPos);
         this.offset = new Vector3f(offset);
@@ -64,11 +65,11 @@ public abstract class Light implements IWorldTicked {
         return this;
     }
 
-    public Vector3f getLightPos() {
+    public Vector3f getLightPosition() {
         return new Vector3f(this.lightPos).add(this.getOffset());
     }
 
-    public Light setPosition(Vector3f lightPos) {
+    public Light setLightPosition(Vector3f lightPos) {
         this.lightPos.set(lightPos);
         return this;
     }

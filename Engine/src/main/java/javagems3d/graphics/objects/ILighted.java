@@ -14,7 +14,7 @@ public interface ILighted {
 
     default void adjustLightsTranslation(Vector3f pos, Vector3f offset) {
         for (Light l : this.getLightsList()) {
-            l.setPosition(pos);
+            l.setLightPosition(pos);
             l.setOffset(offset);
         }
     }

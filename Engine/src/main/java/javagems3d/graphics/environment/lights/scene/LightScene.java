@@ -79,15 +79,15 @@ public abstract class LightScene implements ILightScene {
     }
 
     public void updateSunBuffer(ShaderStorageBufferObject sunBuffer, MemoryStack stack, Matrix4f viewMatrix) {
-        Vector3f angle = LightScene.passVectorInViewSpace(this.getEnvironment().getSkyBox().getSun().getSunPosition(), viewMatrix, 0.0f);
+        Vector3f angle = LightScene.passVectorInViewSpace(this.getEnvironment().getSkyBox().getSun().getLightPosition(), viewMatrix, 0.0f);
         FloatBuffer buffer = stack.mallocFloat(JGemsConfig.SYSTEM.SUN_LIGHT_BUFFER_PACK_SIZE);
         buffer.put(angle.x);
         buffer.put(angle.y);
         buffer.put(angle.z);
         buffer.put(0f); //_padding0
-        buffer.put(this.getEnvironment().getSkyBox().getSun().getSunColor().x);
-        buffer.put(this.getEnvironment().getSkyBox().getSun().getSunColor().y);
-        buffer.put(this.getEnvironment().getSkyBox().getSun().getSunColor().z);
+        buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().x);
+        buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().y);
+        buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().z);
         buffer.put(this.calcAmbientLight());
         buffer.put(this.getEnvironment().getSkyBox().getSun().getSunBrightness());
         buffer.flip();
@@ -102,10 +102,10 @@ public abstract class LightScene implements ILightScene {
 
         int total = pointLights.size();
         for (PointLight pointLight : pointLights) {
-            Vector3f lightViewPos = LightScene.passVectorInViewSpace(pointLight.getLightPos(), viewMatrix, 1.0f);
-            buffer.putFloat(pointLight.getLightPos().x);
-            buffer.putFloat(pointLight.getLightPos().y);
-            buffer.putFloat(pointLight.getLightPos().z);
+            Vector3f lightViewPos = LightScene.passVectorInViewSpace(pointLight.getLightPosition(), viewMatrix, 1.0f);
+            buffer.putFloat(pointLight.getLightPosition().x);
+            buffer.putFloat(pointLight.getLightPosition().y);
+            buffer.putFloat(pointLight.getLightPosition().z);
             buffer.putFloat(0.0f); //_padding0
 
             buffer.putFloat(lightViewPos.x);

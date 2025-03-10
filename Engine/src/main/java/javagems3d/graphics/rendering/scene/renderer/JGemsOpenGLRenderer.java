@@ -9,6 +9,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
+import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
@@ -41,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.*;
@@ -65,6 +67,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     protected DearUIRenderer dearUIRenderer;
     protected Model2D screenModel;
 
+    private final DebugLinesDrawer debugLinesDrawer;
+
     public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
         super(window, sceneWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
@@ -76,6 +80,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.screenModel = null;
 
         this.sceneCulling = new SceneCulling(this, null);
+        this.debugLinesDrawer = new DebugLinesDrawer(JGemsResourceManager.globalShaderAssets.debug);
     }
 
     @Override
@@ -181,13 +186,18 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
         transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
         transparencyRenderNode.onRender(frameTicking);
+        GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);
         postRenderNode.onRender(frameTicking);
+        GL46.glDepthMask(true);
 
         OpenGLRenderer.setViewPort(this.getWindowSize());
         this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
         uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
         uiRenderNode.onRender(frameTicking);
+
+        forwardRenderNode.getOutColorBuffer().copyFBOtoFBODepth(0, this.getRenderingResolution());
+        JGemsOpenGLRenderer.DebugLinesDrawer().render();
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
@@ -255,12 +265,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     public void createResources() {
+        this.getDebugLinesDrawer().setup();
         this.getWorld().getEnvironment().createEnvironment(this);
         this.getConveyorNodes().values().forEach(IRenderNode::createResources);
         this.getSceneCulling().createResources();
     }
 
     public void destroyResources() {
+        this.getDebugLinesDrawer().clear();
         this.getWorld().getEnvironment().destroyEnvironment();
         this.getConveyorNodes().values().forEach(IRenderNode::destroyResources);
         this.getSceneCulling().destroyResources();
@@ -279,6 +291,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         }
         this.constructScreenModel();
         this.getConveyorNodes().values().stream().filter(Objects::nonNull).forEach(e -> e.onWindowResize(window));
+    }
+
+    public static DebugLinesDrawer DebugLinesDrawer() {
+        return ((JGemsOpenGLRenderer) JGems3D.get().getScreen().getScene().getSceneRenderer()).getDebugLinesDrawer();
+    }
+
+    public DebugLinesDrawer getDebugLinesDrawer() {
+        return this.debugLinesDrawer;
     }
 
     @Override

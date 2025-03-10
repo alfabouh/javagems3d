@@ -26,7 +26,26 @@ public abstract class TransformUtils {
     public static Matrix4f getViewMatrix(ICamera camera) {
         Vector3f cameraPos = camera.getCamPosition();
         Vector3f cameraRot = camera.getCamRotation();
-        return new Matrix4f().identity().rotateXYZ(cameraRot.x, cameraRot.y, cameraRot.z).translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+        Matrix4f matrix4f = new Matrix4f().identity();
+        if (camera.getLookAtPosition() != null) {
+            Vector3f lookUp;
+            float threshold = (1.0f - 1.0e-6f);
+            Vector3f nPos = new Vector3f(cameraPos).normalize();
+            Vector3f vY = new Vector3f(0.0f, 1.0f, 0.0f);
+            Vector3f vX = new Vector3f(1.0f, 0.0f, 0.0f);
+            Vector3f vZ = new Vector3f(0.0f, 0.0f, 1.0f);
+            if (nPos.dot(vY) < threshold) {
+                lookUp = vY;
+            } else if (nPos.dot(vX) < threshold) {
+                lookUp = vX;
+            } else {
+                lookUp = vZ;
+            }
+            matrix4f.lookAt(cameraPos, camera.getLookAtPosition(), lookUp);
+        } else {
+            matrix4f.rotateXYZ(cameraRot.x, cameraRot.y, cameraRot.z);
+        }
+        return matrix4f.translate(new Vector3f(cameraPos).negate());
     }
 
     public static Matrix4f getModelMatrix(Pose3D pose) {

@@ -25,11 +25,17 @@ public class ControlledCamera extends FixedCamera {
 
     @Override
     public void updateCamera(float frameDeltaTime) {
+        super.updateCamera(frameDeltaTime);
         if (this.getController() != null) {
             this.moveCamera(this.moveCameraPosInput().mul(frameDeltaTime));
             this.moveCameraRot(this.moveCameraRotInput());
         }
-        super.updateCamera(frameDeltaTime);
+        if (this.camRotation.x > Math.PI / 2.0f) {
+            this.camRotation.x = (float) Math.PI / 2.0f;
+        }
+        if (this.camRotation.x < -Math.PI / 2.0f) {
+            this.camRotation.x = (float) -Math.PI / 2.0f;
+        }
     }
 
     protected Vector3f moveCameraPosInput() {

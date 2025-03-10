@@ -162,8 +162,8 @@ public class JGemsCore implements ICore {
             if (cubeMapProgram != null) {
                 environment.getSkyBox().setSky2DTexture(cubeMapProgram);
             }
-            environment.getSkyBox().getSun().setSunPosition(skyProp.getSunPos());
-            environment.getSkyBox().getSun().setSunColor(skyProp.getSunColor());
+            environment.getSkyBox().getSun().setLightPosition(skyProp.getSunPos());
+            environment.getSkyBox().getSun().setLightColor(skyProp.getSunColor());
             environment.getSkyBox().getSun().setSunBrightness(skyProp.getSunBrightness());
         }
 

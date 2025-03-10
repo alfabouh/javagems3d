@@ -10,6 +10,7 @@ import workbench.resources.shaders.WBenchShaderManager;
 
 public final class GBasicShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
     public WBenchShaderManager imgui;
+    public WBenchShaderManager debug;
 
     @Override
     protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
@@ -26,6 +27,7 @@ public final class GBasicShadersInitializer extends ShadersInitializer<WBenchSha
 
     protected void initObjects(ResourceCache resourceCache) {
         this.imgui = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/imgui"));
+        this.debug = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/debug"));
     }
 
     @Override

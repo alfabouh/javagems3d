@@ -1,5 +1,6 @@
 package workbench.graphics.scene.renderer;
 
+import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
@@ -10,7 +11,9 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
@@ -66,6 +69,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     protected Model2D screenModel;
     private final ISceneCulling sceneCulling;
 
+    private final DebugLinesDrawer debugLinesDrawer;
+
     public WBenchOpenGLRenderer(IWindow window, WBenchWorld wBenchWorld) {
         super(window, wBenchWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
@@ -77,6 +82,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.screenModel = null;
 
         this.sceneCulling = new SceneCulling(this, null);
+        this.debugLinesDrawer = new DebugLinesDrawer(WBenchResourceManager.globalShaderAssets.debug);
     }
 
     @Override
@@ -176,10 +182,19 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
         transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
         transparencyRenderNode.onRender(frameTicking);
+        GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);
+        GL46.glDepthMask(true);
+
+        forwardRenderNode.getOutColorBuffer().copyFBOtoFBODepth(gluingRenderNode.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
+        gluingRenderNode.getOutColorBuffer().bindFBO();
+        WBenchOpenGLRenderer.DebugLinesDrawer().render();
+        gluingRenderNode.getOutColorBuffer().unBindFBO();
 
         OpenGLRenderer.setViewPort(this.getWindowSize());
         uiRenderNode.onRender(frameTicking);
+
+        //  WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(new Vector3f(), new Vector3f(2.0f, 12.0f, 2.0f), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
 
       //  JGemsShaderManager imgShader = WBenchResourceManager.localShaderAssets.gui_image;
       //  imgShader.beginShading();
@@ -203,6 +218,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     @Override
     public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull Project project) {
         this.setNodes();
+        this.getDebugLinesDrawer().setup();
 
         resourceManager.writeResourcesDataCache();
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
@@ -216,15 +232,13 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
         Log.get().info("Created scene data");
 
-        this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, 0.0f, 10.0f)), WBenchResourceManager.localModelAssets.defaultCube_bff), RenderAttributes.get(RenderTable.getDefaultIndirect())));
-        this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, 0.0f, -10.0f), new Vector3f(0.0f), new Vector3f(0.02f)), WBenchResourceManager.localModelAssets.test), RenderAttributes.get(RenderTable.getDefaultIndirect())));
-        this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(10.0f, 0.0f, 0.0f)), WBenchResourceManager.localModelAssets.defaultCube_gr), RenderAttributes.get(RenderTable.getDefaultDirect())));
-        this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(-10.0f, 0.0f, 0.0f)), WBenchResourceManager.localModelAssets.defaultCube_gr), RenderAttributes.get(RenderTable.getDefaultDirect())));
+        this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.0f), new Vector3f(0.02f)), WBenchResourceManager.localModelAssets.test), RenderAttributes.get(RenderTable.getDefaultIndirect())));
     }
 
     @Override
     public void onClosingProject(WBenchResourceManager resourceManager, @NotNull Project project) {
         this.destroySceneIndirectRenderBuffer();
+        this.getDebugLinesDrawer().clear();
 
         if (this.getWorld().getEnvironment() != null) {
             this.getWorld().getEnvironment().destroyEnvironment();
@@ -279,6 +293,14 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         }
         this.constructScreenModel();
         this.getConveyorNodes().values().stream().filter(Objects::nonNull).forEach(e -> e.onWindowResize(window));
+    }
+
+    public static DebugLinesDrawer DebugLinesDrawer() {
+        return ((WBenchOpenGLRenderer) WBench.get().getScreen().getScene().getSceneRenderer()).getDebugLinesDrawer();
+    }
+
+    public DebugLinesDrawer getDebugLinesDrawer() {
+        return this.debugLinesDrawer;
     }
 
     @Override

@@ -71,7 +71,7 @@ public class SunLightShadow extends Shadow {
         Matrix4f view = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
         Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
 
-        Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getSunPosition(), 0.0f);
+        Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getLightPosition(), 0.0f);
 
         float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
         float[] cascadeSplits = new float[this.getTotalCascades()];

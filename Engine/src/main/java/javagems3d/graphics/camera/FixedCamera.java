@@ -24,16 +24,6 @@ public class FixedCamera extends CameraBase {
         super.setCameraRotation(vector3f);
     }
 
-    @Override
-    public void updateCamera(float frameDeltaTime) {
-        if (this.camRotation.x > Math.toRadians(90.0f)) {
-            this.camRotation.x = (float) Math.toRadians(90.0f);
-        }
-        if (this.camRotation.x < -Math.toRadians(90.0f)) {
-            this.camRotation.x = (float) -Math.toRadians(90.0f);
-        }
-    }
-
     public void addCameraPos(Vector3f vector3f) {
         super.setCameraPosition(this.getCamPosition().add(vector3f));
     }

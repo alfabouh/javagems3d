@@ -11,7 +11,7 @@ public abstract class FogScene implements IFogScene {
     public boolean update;
 
     public FogScene() {
-        this.density = -1.0f;
+        this.density = 0.0f;
         this.color = new Vector3f(0.85f);
         this.update = true;
     }
@@ -29,7 +29,7 @@ public abstract class FogScene implements IFogScene {
     }
 
     public void disable() {
-        this.setDensity(-1.0f);
+        this.setDensity(0.0f);
     }
 
     public Vector3f getColor() {

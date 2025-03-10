@@ -1,7 +1,6 @@
 package javagems3d.graphics.environment.shadows;
 
 import javagems3d.graphics.environment.IEnvironment;
-import javagems3d.graphics.environment.JGemsEnvironment;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -27,7 +26,7 @@ public class PointLightShadow extends Shadow {
     }
 
     public void configureMatrices() {
-        this.shadowDirections = TransformUtils.getAllDirectionViewSpaces(this.getPointLight().getLightPos(), this.nearPlane(), this.farPlane());
+        this.shadowDirections = TransformUtils.getAllDirectionViewSpaces(this.getPointLight().getLightPosition(), this.nearPlane(), this.farPlane());
     }
 
     public void setPointLight(PointLight pointLight) {

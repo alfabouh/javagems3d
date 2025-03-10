@@ -65,11 +65,6 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void removeNavGraph() {
-        if (JGems3D.DEBUG_MODE) {
-            if (this.mapNavGraph != null) {
-                JGemsConfig.DEBUG.linesDebugDraw.destroyNavMeshFloatBuffer();
-            }
-        }
         synchronized (this) {
             this.mapNavGraph = null;
         }
@@ -84,11 +79,6 @@ public final class PhysicsWorld implements IWorld {
     public void setMapNavGraph(Graph mapNavGraph) {
         synchronized (this) {
             this.mapNavGraph = mapNavGraph;
-        }
-        if (JGems3D.DEBUG_MODE) {
-            if (mapNavGraph != null) {
-                JGemsConfig.DEBUG.linesDebugDraw.constructNavMeshFloatBuffer(mapNavGraph);
-            }
         }
     }
 
