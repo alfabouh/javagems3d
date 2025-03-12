@@ -3,6 +3,9 @@ package jgems_app;
 import api.application.JGemsApplication;
 import api.application.events.IAppEventSubscriber;
 import api.application.resources.IAppResources;
+import api.application.workbench.manager.IAPIWBenchDataManager;
+import api.application.workbench.resources.data.JGemsEntityData;
+import api.application.workbench.resources.data.WBenchObjectData;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
 import javagems3d.JGems3D;
@@ -48,5 +51,14 @@ public class AppTest extends JGemsApplication {
     @Override
     public @NotNull Window.WindowProperties getWindowProperties() {
         return new Window.WindowProperties("DefaultGame", new JGemsPath(Window.DEFAULT_ICON));
+    }
+
+    @Override
+    public void setupEditorResources(IAPIWBenchDataManager manager) {
+        final JGemsPath path = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.obj");
+        manager.addResourceEntity("sponza",
+                () -> new WBenchObjectData(path),
+                () -> new JGemsEntityData(false)
+        );
     }
 }

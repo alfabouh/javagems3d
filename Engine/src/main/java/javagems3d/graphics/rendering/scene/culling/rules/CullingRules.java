@@ -1,8 +1,9 @@
 package javagems3d.graphics.rendering.scene.culling.rules;
 
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import org.jetbrains.annotations.NotNull;
 
-public class CullingRules {
+public class CullingRules implements ICopyable<CullingRules> {
     private boolean ignoreDistanceCulling;
     private boolean ignoreFrustumCulling;
 
@@ -33,5 +34,9 @@ public class CullingRules {
 
     public void setIgnoreFrustumCulling(boolean ignoreFrustumCulling) {
         this.ignoreFrustumCulling = ignoreFrustumCulling;
+    }
+
+    public CullingRules copy() {
+        return new CullingRules(this.isIgnoreDistanceCulling(), this.isIgnoreFrustumCulling());
     }
 }

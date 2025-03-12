@@ -54,7 +54,7 @@ public abstract class JGemsRenderingHelper {
 
     public static int getLightingCodeForShader(RenderAttributes configuration) {
         int code = 0;
-        if (configuration.isDefaultBrightnessLighted()) {
+        if (configuration.getProperties().isDefaultBrightLighted()) {
             code |= 1 << 2;
         }
         return code;

@@ -4,7 +4,6 @@ import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
@@ -60,12 +59,12 @@ public abstract class SystemResources implements ISystemResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, int modelLoadingFlags, MemMode memMode) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(modelLoadingFlags, memMode));
+    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(modelLoadingFlags, keepNodesInMemory));
     }
 
-    public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean attachMeshBuffer, MemMode memMode) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer, memMode));
+    public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean attachMeshBuffer) {
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer));
     }
 
     public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {
@@ -165,37 +164,23 @@ public abstract class SystemResources implements ISystemResources {
         }
     }
 
-    private Set<Thread> initAssets() {
-        Set<Thread> set = new HashSet<>();
-        for (IAssetsInitializer assets : this.getAssetsLoaderSet()) {
-            if (assets.loadMode() == IAssetsInitializer.LaunchMode.ASYNC) {
-                Thread thread = new Thread(() -> {
-                    try {
-                        assets.load(this);
-                    } catch (Exception e) {
-                        Log.get().exception(e);
-                    }
-                });
-                thread.setDaemon(true);
-                set.add(thread);
-            }
-        }
-        return set;
-    }
-
     public void loadResources() {
-        Set<Thread> threads = this.initAssets();
-        threads.forEach(Thread::start);
-        List<IAssetsInitializer> normalLoad = this.getAssetsLoaderSet().stream().filter(e -> e.loadMode() == IAssetsInitializer.LaunchMode.REGULAR).collect(Collectors.toList());
-        threads.forEach(e -> {
+        List<Thread> threads = this.getAssetsLoaderSet().stream().filter(assets -> assets.loadMode() == IAssetsInitializer.LaunchMode.ASYNC).map(assets -> new Thread(() -> {
             try {
-                e.join();
-            } catch (InterruptedException ex) {
-                throw new JGemsRuntimeException(ex);
+                assets.load(this);
+            } catch (Exception e) {
+                Log.get().exception(e);
             }
-        });
-        for (IAssetsInitializer assets : normalLoad) {
-            assets.load(this);
+        })).collect(Collectors.toList());
+
+        threads.forEach(Thread::start);
+        this.getAssetsLoaderSet().stream().filter(assets -> assets.loadMode() == IAssetsInitializer.LaunchMode.REGULAR).sorted(Comparator.comparingInt(e -> e.loadPriority().getPriority())).forEach(assets -> assets.load(this));
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new JGemsRuntimeException(e);
+            }
         }
         Log.get().info("Initialized rendering resources " + this.getResourceCache());
     }

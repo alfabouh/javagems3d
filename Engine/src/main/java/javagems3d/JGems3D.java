@@ -4,6 +4,7 @@ import api.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.help.JGemsCoreHelper;
+import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
 import logger.Log;
@@ -63,7 +64,7 @@ public final class JGems3D {
             JGemsAPI.INIT_JGEMS();
             JGemsAPI.get().launchAPI();
             JGems3D.checkFilesDirectory();
-        } catch (IOException e) {
+        } catch (IOException | JGemsAPIException e) {
             throw new JGemsRuntimeException(e);
         }
         this.os = SysOSValidation.getCurrentOS();
@@ -128,6 +129,8 @@ public final class JGems3D {
         } catch (Exception e) {
             Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
+        } finally {
+            JGemsAPI.get().close();
         }
     }
 

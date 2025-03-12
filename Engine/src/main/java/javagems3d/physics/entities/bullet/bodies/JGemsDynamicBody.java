@@ -22,6 +22,10 @@ public class JGemsDynamicBody extends JGemsAbstractDynamicBody {
         this(colliderConstructor, world, pos, new Vector3f(0.0f), new Vector3f(1.0f), itemName);
     }
 
+    public JGemsDynamicBody(IColliderConstructor colliderConstructor, PhysicsWorld world, String itemName) {
+        this(colliderConstructor, world, new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(1.0f), itemName);
+    }
+
     @Override
     protected IColliderConstructor getColliderConstructor() {
         return this.colliderConstructor;

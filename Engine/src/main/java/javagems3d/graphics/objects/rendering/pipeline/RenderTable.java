@@ -1,5 +1,6 @@
 package javagems3d.graphics.objects.rendering.pipeline;
 
+import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
@@ -10,17 +11,15 @@ import javagems3d.graphics.objects.rendering.pipeline.fabric.scene.DefaultIndire
 import javagems3d.graphics.objects.rendering.pipeline.fabric.shadow.DefaultDirectShadowRenderFabric;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.shadow.DefaultIndirectShadowRenderFabric;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class RenderTable {
+public class RenderTable implements ICopyable<RenderTable> {
     public static JGemsShaderManager DEFAULT_SCENE_SHADER = null;
     public static JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER = null;
     public static JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER = null;
@@ -56,6 +55,10 @@ public class RenderTable {
     public static IRenderFabric DEFAULT_SHADOW_RENDER_FABRIC_IND = new DefaultIndirectShadowRenderFabric(IndirectRenderFabric.DEFAULT_FUNC);
 
     private final Map<Pipeline, Data> dataMap;
+
+    private RenderTable(@NotNull Map<Pipeline, Data> dataMap) {
+        this.dataMap = dataMap;
+    }
 
     protected RenderTable(@NotNull JGemsShaderManager sceneStageShaderManager, @NotNull IRenderFabric sceneStageRenderFabric) {
         this.dataMap = new EnumMap<>(Pipeline.class);
@@ -171,6 +174,11 @@ public class RenderTable {
 
     public Map<Pipeline, Data> getDataMap() {
         return new EnumMap<>(this.dataMap);
+    }
+
+    @Override
+    public RenderTable copy() {
+        return new RenderTable(new HashMap<>(this.getDataMap()));
     }
 
     public static class Data {

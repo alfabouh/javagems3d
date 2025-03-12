@@ -8,21 +8,16 @@ import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import workbench.resources.shaders.WBenchShaderManager;
 
-public final class GBasicShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
+public final class GlobalShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
     public WBenchShaderManager imgui;
     public WBenchShaderManager debug;
 
     @Override
     protected void initStaticConstants(ShaderStaticConstants shaderStaticConstants) {
-      //  shaderStaticConstants.putConstant("MAX_BINDLESS_TEXTURES", String.valueOf(JGemsGlobalConfiguration.MAX_BINDLESS_TEXTURES));
-      //  shaderStaticConstants.putConstant("MAX_INDIRECT_RENDERING_MESH_DATASETS", String.valueOf(JGemsGlobalConfiguration.MAX_INDIRECT_RENDERING_MESH_DATASETS));
-      //  shaderStaticConstants.putConstant("ANIM_MAX_WEIGHTS", String.valueOf(JGemsGlobalConfiguration.ANIM_MAX_WEIGHTS));
-      //  shaderStaticConstants.putConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsGlobalConfiguration.MAX_POINT_LIGHTS));
     }
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
-        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
     }
 
     protected void initObjects(ResourceCache resourceCache) {

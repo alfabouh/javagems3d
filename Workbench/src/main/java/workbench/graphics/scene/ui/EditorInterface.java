@@ -17,10 +17,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
+import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.nodes.WDeferredRenderNode;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
+
+import java.util.Map;
+import java.util.Set;
 
 public class EditorInterface implements DearUIInterface {
     private final ProjectManager projectManager;
@@ -31,6 +35,8 @@ public class EditorInterface implements DearUIInterface {
     private boolean cameraCheckBox;
     private final FixedCamera sunCamera;
     private ICamera oldCamera;
+
+    private WBenchObjectTemplate currentTemplate;
 
     public EditorInterface(@NotNull ProjectManager projectManager) {
         this.projectManager = projectManager;
@@ -197,11 +203,7 @@ public class EditorInterface implements DearUIInterface {
                     environment.getSkyBox().getSun().setLightColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
                 }
 
-                float[] sunPosition = {
-                        environment.getSkyBox().getSun().getLightPosition().x,
-                        environment.getSkyBox().getSun().getLightPosition().y,
-                        environment.getSkyBox().getSun().getLightPosition().z
-                };
+                float[] sunPosition = {environment.getSkyBox().getSun().getLightPosition().x, environment.getSkyBox().getSun().getLightPosition().y, environment.getSkyBox().getSun().getLightPosition().z};
                 if (ImGui.sliderFloat3("Position", sunPosition, -1.0f, 1.0f)) {
                     environment.getSkyBox().getSun().setLightPosition(new Vector3f(sunPosition[0], sunPosition[1], sunPosition[2]));
                     Pair<Vector3f, Vector3f> camData = this.adjustCamera(environment.getSkyBox().getSun());
@@ -257,7 +259,35 @@ public class EditorInterface implements DearUIInterface {
 
     private void resourcesContent() {
         if (ImGui.collapsingHeader("Entities")) {
+            Map<String, Set<WBenchObjectTemplate>> objectTemplates = WBench.get().getProjectObjects().getEntityGroups();
+            for (Map.Entry<String, Set<WBenchObjectTemplate>> entry : objectTemplates.entrySet()) {
+                String groupName = entry.getKey();
+                Set<WBenchObjectTemplate> objects = entry.getValue();
 
+                if (groupName != null) {
+                    if (ImGui.collapsingHeader(groupName)) {
+                        for (WBenchObjectTemplate object : objects) {
+                            if (ImGui.selectable(object.getId(), this.currentTemplate == object)) {
+                                this.currentTemplate = object;
+                            }
+                        }
+                    }
+                } else {
+                    for (WBenchObjectTemplate object : objects) {
+                        if (ImGui.selectable(object.getId(), this.currentTemplate == object)) {
+                            this.currentTemplate = object;
+                        }
+                    }
+                }
+            }
+
+          //  if (selectedObject != null) {
+          //      ImGui.separator();
+          //      ImGui.text("Selected Object: " + selectedObject.getName());
+          //      if (ImGui.button("Spawn")) {
+          //          spawnObject(selectedObject);
+          //      }
+          //  }
         }
         if (ImGui.collapsingHeader("Props")) {
 
@@ -272,6 +302,9 @@ public class EditorInterface implements DearUIInterface {
     }
 
     private void propertiesContent() {
+        if (this.currentTemplate != null) {
+            ImGui.text(this.currentTemplate.getId());
+        }
     }
 
     private void sceneContent(float sizeX, float sizeY) {

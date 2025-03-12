@@ -1,6 +1,6 @@
 package workbench.resources.initialization;
 
-import javagems3d.JGems3D;
+import api.application.workbench.manager.IAPIWBenchDataManager;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
@@ -8,13 +8,12 @@ import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
-import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import org.lwjgl.opengl.GL46;
 import workbench.resources.shaders.WBenchShaderManager;
 
-public final class LBasicShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
+public final class LocalShadersInitializer extends ShadersInitializer<WBenchShaderManager> {
     public WBenchShaderManager scene_gluing;
     public WBenchShaderManager skybox;
     public WBenchShaderManager background;
@@ -90,8 +89,8 @@ public final class LBasicShadersInitializer extends ShadersInitializer<WBenchSha
         this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/oit/weighted_liquid_oit"));
         this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/oit/weighted_oit"));
         this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/oit/weighted_oit_indirect"));
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/world_gbuffer"));
-        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/world_gbuffer_indirect"));
+        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(IAPIWBenchDataManager.DEFAULT_WORKBENCH_DIRECT_SHADER));
+        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(IAPIWBenchDataManager.DEFAULT_WORKBENCH_INDIRECT_SHADER));
         this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/world_deferred"));
         this.simple_gbuffer = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_gbuffer"));
         this.simple = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple"));

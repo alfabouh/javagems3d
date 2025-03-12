@@ -2,13 +2,14 @@ package api.application;
 
 import api.application.events.IAppEventSubscriber;
 import api.application.resources.IAppResources;
+import api.application.workbench.IWorkBenchSetup;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.core.JGemsCore;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class JGemsApplication {
+public abstract class JGemsApplication implements IWorkBenchSetup {
     protected JGemsApplication() {
     }
 

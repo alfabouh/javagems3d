@@ -12,6 +12,7 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import workbench.WBench;
+import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.world.WBenchWorld;
@@ -19,14 +20,19 @@ import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class ProjectManager {
+    private final ProjectObjects projectObjects;
+
     private Project currentProject;
     private WBenchWorld world;
 
     public static final String extension = ".wbpj";
 
     public ProjectManager() {
+        this.projectObjects = new ProjectObjects();
         this.currentProject = null;
         this.world = null;
     }
@@ -132,9 +138,9 @@ public final class ProjectManager {
 
     private void initLocalResources(Project project) {
         LoadingInterfaceSwing.invoke();
-        WBench.get().getResourceManager().initLocalResources();
-        WBench.get().getResourceManager().loadLocalResources();
         WBenchResourceManager.createLocalShaders();
+        WBenchResourceManager.setDefaultRenderTableValues();
+        WBench.get().getResourceManager().loadLocalResources();
         this.getWorld().onWorldStart();
         ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpeningProject(WBench.get().getResourceManager(), project);
     }
@@ -143,11 +149,16 @@ public final class ProjectManager {
         ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onClosingProject(WBench.get().getResourceManager(), project);
         this.getWorld().onWorldEnd();
         WBench.get().getResourceManager().destroyLocalResources();
+        this.getProjectObjects().clear();
     }
 
     private void initWorkingSpace(WBenchWorld world, DearUIInterface dearUIInterface) {
         world.setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
         WBench.get().openInterface(dearUIInterface);
+    }
+
+    public ProjectObjects getProjectObjects() {
+        return this.projectObjects;
     }
 
     private void closeWorkingSpace(DearUIInterface dearUIInterface) {

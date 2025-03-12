@@ -95,7 +95,7 @@ public class ProjectInitInterface implements DearUIInterface {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.1f, 0.2f, 0.9f, 1.0f);
         if (ImGui.button("Open project", 120, 30)) {
             String projectPath = JGemsFilesHelper.openFolderViewer("");
-            if (!projectPath.isEmpty()) {
+            if (!projectPath.isEmpty() && WBench.get().getProjectManager().getCurrentProject() == null) {
                 WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
                 WBench.get().getSettings().addPath(projectPath);
 
@@ -115,7 +115,7 @@ public class ProjectInitInterface implements DearUIInterface {
             for (String projectPath : wBenchSettings.getRecentProjects()) {
                 ImGui.text(projectPath);
                 ImGui.sameLine();
-                if (ImGui.button("Open##" + projectPath)) {
+                if (ImGui.button("Open##" + projectPath) && WBench.get().getProjectManager().getCurrentProject() == null) {
                     WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
                 }
             }

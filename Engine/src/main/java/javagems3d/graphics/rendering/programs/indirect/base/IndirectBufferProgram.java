@@ -1,6 +1,5 @@
 package javagems3d.graphics.rendering.programs.indirect.base;
 
-import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
@@ -129,7 +128,7 @@ public final class IndirectBufferProgram {
         GL46.glBindVertexArray(0);
 
         obj.forEach(e -> {
-            if (e.getMemMode().equals(MemMode.ERASE_NODES_DATA)) {
+            if (!e.isKeepNodesInMemory()) {
                 e.clearNodesData();
             }
         });

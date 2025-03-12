@@ -1,162 +1,59 @@
 package javagems3d.graphics.objects.rendering.configuration;
 
-import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
 @SuppressWarnings("all")
-public class RenderAttributes implements IRenderConfiguration {
+public class RenderAttributes implements IRenderConfiguration, ICopyable<RenderAttributes> {
     private RenderTable renderTable;
-    private CullingRules cullingRules;
-
-    private float renderDistance;
-    private float alphaDiscardValue;
-
-    private boolean allowMoveMeshesIntoTransparencyPass;
-    private boolean lightsAffected;
-    private boolean shadowCaster;
-    private boolean shadowReceiver;
-    private boolean defaultBrightLighted;
-    private boolean allowMovementInterpolation;
-    private boolean disableFaceCulling;
+    private RenderProperties renderProperties;
 
     public RenderAttributes(@NotNull RenderTable renderTable) {
-        this(renderTable, CullingRules.get());
+        this(renderTable, RenderProperties.get());
     }
 
-    public RenderAttributes(@NotNull RenderTable renderTable, @NotNull CullingRules cullingRules) {
+    public RenderAttributes(@NotNull RenderTable renderTable, @NotNull RenderProperties renderProperties) {
         this.renderTable = renderTable;
-
-        this.alphaDiscardValue = JGemsConfig.SYSTEM.DEFAULT_ALPHA_DISCARD;
-        this.renderDistance = -1.0f;
-
-        this.allowMoveMeshesIntoTransparencyPass = true;
-        this.lightsAffected = true;
-        this.shadowCaster = true;
-        this.shadowReceiver = true;
-        this.defaultBrightLighted = false;
-        this.allowMovementInterpolation = true;
-        this.disableFaceCulling = false;
-
-        this.cullingRules = cullingRules;
+        this.renderProperties = renderProperties;
     }
 
     public static @NotNull RenderAttributes get(@Nullable RenderTable renderTable) {
         return renderTable == null ? null : new RenderAttributes(renderTable);
     }
 
-    public @NotNull CullingRules getCullingRules() {
-        return cullingRules;
+    public static @NotNull RenderAttributes get(@Nullable RenderTable renderTable, @NotNull RenderProperties renderProperties) {
+        return (renderTable == null || renderProperties == null) ? null : new RenderAttributes(renderTable, renderProperties);
     }
 
-    public void setCullingRules(@NotNull CullingRules cullingRules) {
-        this.cullingRules = cullingRules;
-    }
-
-    public @NotNull RenderTable getRenderingTable() {
-        return this.renderTable;
-    }
-
-    public RenderAttributes setRenderingTable(RenderTable renderTable) {
+    public RenderAttributes setRenderTable(@NotNull RenderTable renderTable) {
         this.renderTable = renderTable;
         return this;
     }
 
-    public float getRenderDistance() {
-        return this.renderDistance;
-    }
-
-    public RenderAttributes setRenderDistance(float renderDistance) {
-        this.renderDistance = renderDistance;
+    public RenderAttributes setRenderProperties(@NotNull RenderProperties renderProperties) {
+        this.renderProperties = renderProperties;
         return this;
     }
 
-    public float getAlphaDiscardValue() {
-        return this.alphaDiscardValue;
+    public RenderTable getRenderTable() {
+        return this.renderTable;
     }
 
-    public RenderAttributes setAlphaDiscardValue(float alphaDiscardValue) {
-        this.alphaDiscardValue = alphaDiscardValue;
-        return this;
+    public RenderProperties getProperties() {
+        return this.renderProperties;
     }
 
-    public boolean isAllowedMoveMeshesIntoTransparencyPass() {
-        return this.allowMoveMeshesIntoTransparencyPass;
-    }
-
-    public RenderAttributes setAllowMoveMeshesIntoTransparencyPass(boolean allowMoveMeshesIntoTransparencyPass) {
-        this.allowMoveMeshesIntoTransparencyPass = allowMoveMeshesIntoTransparencyPass;
-        return this;
-    }
-
-    public boolean isLightsAffected() {
-        return this.lightsAffected;
-    }
-
-    public RenderAttributes setLightsAffected(boolean lightsAffected) {
-        this.lightsAffected = lightsAffected;
-        return this;
-    }
-
-    public boolean isShadowCaster() {
-        return this.shadowCaster;
-    }
-
-    public RenderAttributes setShadowCaster(boolean shadowCaster) {
-        this.shadowCaster = shadowCaster;
-        return this;
-    }
-
-    public boolean isShadowReceiver() {
-        return this.shadowReceiver;
-    }
-
-    public RenderAttributes setShadowReceiver(boolean shadowReceiver) {
-        this.shadowReceiver = shadowReceiver;
-        return this;
-    }
-
-    public boolean isDefaultBrightnessLighted() {
-        return this.defaultBrightLighted;
-    }
-
-    public RenderAttributes setDefaultBrightLighted(boolean defaultBrightLighted) {
-        this.defaultBrightLighted = defaultBrightLighted;
-        return this;
-    }
-
-    public boolean isAllowedMovementInterpolation() {
-        return this.allowMovementInterpolation;
-    }
-
-    public RenderAttributes setAllowMovementInterpolation(boolean allowMovementInterpolation) {
-        this.allowMovementInterpolation = allowMovementInterpolation;
-        return this;
-    }
-
-    public boolean isDisabledFaceCulling() {
-        return this.disableFaceCulling;
-    }
-
-    public RenderAttributes setDisableFaceCulling(boolean disableFaceCulling) {
-        this.disableFaceCulling = disableFaceCulling;
-        return this;
-    }
 
     @Override
     public @NotNull RenderAttributes copy() {
-        RenderAttributes objectRenderingConfiguration = new RenderAttributes(this.getRenderingTable());
-        objectRenderingConfiguration.setAllowMovementInterpolation(this.isAllowedMovementInterpolation());
-        this.setDisableFaceCulling(this.isDisabledFaceCulling());
-        this.setLightsAffected(this.isLightsAffected());
-        this.setAllowMovementInterpolation(this.isAllowedMovementInterpolation());
-        this.setShadowCaster(this.isShadowCaster());
-        this.setShadowReceiver(this.isShadowReceiver());
-        this.setAllowMoveMeshesIntoTransparencyPass(this.isAllowedMoveMeshesIntoTransparencyPass());
-        this.setDefaultBrightLighted(this.isDefaultBrightnessLighted());
-        return objectRenderingConfiguration;
+        return new RenderAttributes(this.getRenderTable().copy(), this.getProperties().copy());
+    }
+
+    public @NotNull CullingRules getCullingRules() {
+        return this.getProperties().getCullingRules();
     }
 }

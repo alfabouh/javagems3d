@@ -46,7 +46,7 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
         this.getRejected().clear();
 
         Pipeline pipeline = this.getPipeline();
-        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = this.getSceneObjects().stream().collect(Collectors.groupingBy(e -> e.getRenderingTable().getShaderManager(pipeline)));
+        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = this.getSceneObjects().stream().collect(Collectors.groupingBy(e -> e.getRenderTable().getShaderManager(pipeline)));
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
@@ -60,7 +60,7 @@ public class DirectGeometryRenderProcessor extends IRenderProcessor.Template {
                         this.getRejected().add(sceneObject);
                     }
                 }
-                DirectRenderFabric directRenderFabric = sceneObject.getRenderingTable().getRenderFabric(pipeline);
+                DirectRenderFabric directRenderFabric = sceneObject.getRenderTable().getRenderFabric(pipeline);
                 directRenderFabric.onPreRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);
                 directRenderFabric.onRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, ArbitraryArguments.pass(this.getUniformsHandler()));
                 directRenderFabric.onPostRender(pipeline, shaderManager, this.getOpenGLRenderer(), sceneObject, null);

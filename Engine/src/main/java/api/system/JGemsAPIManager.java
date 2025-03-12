@@ -1,10 +1,11 @@
 package api.system;
 
+import api.application.workbench.manager.APIWBenchDataManager;
 import api.events.EventBus;
 import api.application.JGemsApplication;
 import api.application.resources.AppResources;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import javagems3d.system.service.exceptions.JGemsAPIException;
 import api.application.events.AppEventSubscriber;
 import api.application.events.SubscribeEvent;
 import logger.Log;
@@ -25,7 +26,7 @@ public final class JGemsAPIManager {
         this.eventMap = new HashMap<>();
     }
 
-    void pullDataFromApplication(JGemsAPIData appData, Pair<JGemsApplication, JGemsAppEntry> pair) {
+    void pullDataFromApplication(JGemsAPIEditorResources apiEditorResources, JGemsAPIData appData, Pair<JGemsApplication, JGemsAppEntry> pair) {
         JGemsApplication jGemsApplication = pair.getFirst();
         JGemsAppEntry jGemsAppEntry = pair.getSecond();
 
@@ -37,9 +38,17 @@ public final class JGemsAPIManager {
         this.initEvents(EventBus.class, appEventSubscriber.getClassesWithEvents());
 
         appData.setApplication(pair.getFirst());
-        appData.setId(pair.getSecond().id());
+        appData.setId(jGemsAppEntry.id());
         appData.setAppResources(appResources);
         appData.setAppEventSubscriber(appEventSubscriber);
+
+        this.pullDataForEditor(jGemsApplication, apiEditorResources);
+    }
+
+    public void pullDataForEditor(JGemsApplication jGemsApplication, JGemsAPIEditorResources apiEditorResources) {
+        APIWBenchDataManager APIWBenchDataManager = new APIWBenchDataManager();
+        jGemsApplication.setupEditorResources(APIWBenchDataManager);
+        apiEditorResources.setEditorResourcesManager(APIWBenchDataManager);
     }
 
     public void pushEvent(EventBus.IEvent event) {
@@ -55,7 +64,7 @@ public final class JGemsAPIManager {
             try {
                 method.invoke(EventBus.IEvent.class, event);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new JGemsRuntimeException(e);
+                throw new JGemsAPIException(e);
             }
         }
     }

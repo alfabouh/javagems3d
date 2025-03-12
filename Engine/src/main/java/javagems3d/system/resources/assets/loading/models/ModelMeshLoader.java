@@ -51,7 +51,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         this.shaderToDetermineTexturesWithTransparency = null;
     }
 
-    public MeshGroup createMeshGroup(int Flags, boolean attachMeshBuffer, MemMode mode) {
+    public MeshGroup createMeshGroup(int Flags, boolean attachMeshBuffer) {
         boolean animated = (Flags & ModelLoaderFlags.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & ModelLoaderFlags.CREATE_COLLISION_UD) != 0;
         boolean createAabb = (Flags & ModelLoaderFlags.CREATE_AABB_UD) != 0;
@@ -75,14 +75,10 @@ public class ModelMeshLoader implements ILoadingHelper {
         if (createAabb) {
             JGemsUtils.createMeshAABBData(meshGroup);
         }
-        meshGroup.setMemMode(mode);
-        if (meshGroup.getMemMode().equals(MemMode.ERASE_NODES_DATA)) {
-            meshGroup.clearNodesData();
-        }
         return meshGroup;
     }
 
-    public MeshBuffer createMeshBuffer(int Flags, MemMode mode) {
+    public MeshBuffer createMeshBuffer(int Flags, boolean keepNodesInMemory) {
         boolean animated = (Flags & ModelLoaderFlags.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & ModelLoaderFlags.CREATE_COLLISION_UD) != 0;
         boolean createAabb = (Flags & ModelLoaderFlags.CREATE_AABB_UD) != 0;
@@ -107,7 +103,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         if (createAabb) {
             JGemsUtils.createMeshAABBData(meshBuffer);
         }
-        meshBuffer.setMemMode(mode);
+        meshBuffer.setKeepNodesInMemory(keepNodesInMemory);
         return meshBuffer;
     }
 

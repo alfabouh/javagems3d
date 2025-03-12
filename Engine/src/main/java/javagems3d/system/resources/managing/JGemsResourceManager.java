@@ -15,7 +15,7 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import java.util.function.Function;
 
 public final class JGemsResourceManager extends ResourceManager {
-    public static BasicShadersInitializer globalShaderAssets = null;
+    public static GlobalShadersInitializer globalShaderAssets = null;
     public static TextureAssetsInitializer globalTextureAssets = null;
     public static ModelAssetsInitializer globalModelAssets = null;
     public static RenderDataInitializer globalRenderDataAssets = null;
@@ -23,7 +23,7 @@ public final class JGemsResourceManager extends ResourceManager {
 
     public JGemsResourceManager() {
         super(new Factory(ResourceManager.GLOBAL), new Factory(ResourceManager.LOCAL));
-        JGemsResourceManager.globalShaderAssets = new BasicShadersInitializer();
+        JGemsResourceManager.globalShaderAssets = new GlobalShadersInitializer();
     }
 
     public static void createShaders() {

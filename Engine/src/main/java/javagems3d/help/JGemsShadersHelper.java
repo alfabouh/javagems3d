@@ -23,7 +23,7 @@ public abstract class JGemsShadersHelper {
             return;
         }
         int lighting_code = 0;
-        if (objectRenderingConfiguration.isDefaultBrightnessLighted()) {
+        if (objectRenderingConfiguration.getProperties().isDefaultBrightLighted()) {
             lighting_code |= 1 << 2;
         }
         shaderManager.performUniform(new UniformString("lighting_code"), UniformFunctions.INTEGER(lighting_code));

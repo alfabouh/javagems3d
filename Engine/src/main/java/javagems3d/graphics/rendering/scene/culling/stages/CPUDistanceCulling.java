@@ -49,7 +49,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
             return false;
         }
         RenderAttributes renderAttributes = sceneObject.getRenderAttributes();
-        return !(renderAttributes.getRenderDistance() > 0.0f) || !(position.distance(camera.getCamPosition()) >= renderAttributes.getRenderDistance());
+        return !(renderAttributes.getProperties().getRenderDistance() > 0.0f) || !(position.distance(camera.getCamPosition()) >= renderAttributes.getProperties().getRenderDistance());
     }
 
     @Override

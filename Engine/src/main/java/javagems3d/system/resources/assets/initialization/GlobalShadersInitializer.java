@@ -13,7 +13,7 @@ import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import org.lwjgl.opengl.GL46;
 
-public final class BasicShadersInitializer extends ShadersInitializer<JGemsShaderManager> {
+public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShaderManager> {
     public JGemsShaderManager menu;
     public JGemsShaderManager gui_text;
     public JGemsShaderManager gui_noised;

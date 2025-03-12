@@ -1,24 +1,28 @@
 package workbench.resources.initialization;
 
-import javagems3d.JGems3D;
+import api.application.workbench.manager.APIWBenchDataManager;
+import api.application.workbench.resources.ResourceEntity;
+import api.application.workbench.resources.data.WBenchObjectData;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.path.JGemsPath;
+import workbench.WBench;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
 
-    public MeshBuffer test;
+    public ModelAssetsInitializer() {
+    }
 
     @Override
     public void load(SystemResources systemResources) {
-        this.test = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.obj"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, MemMode.ERASE_NODES_DATA);
-
         this.createDefaults(systemResources);
     }
 

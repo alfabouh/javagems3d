@@ -1,10 +1,13 @@
 package workbench;
 
+import api.system.JGemsAPI;
+import api.system.JGemsAPIEditorResources;
 import com.google.gson.JsonSyntaxException;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.core.JGemsCore;
+import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
@@ -18,6 +21,7 @@ import org.lwjgl.glfw.GLFW;
 import workbench.controller.WBenchControllerDispatcher;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
+import workbench.project.ProjectObjects;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 import workbench.settings.WBenchSettings;
@@ -44,11 +48,15 @@ public final class WBench {
     private WBenchSettings settings;
     private final ProjectManager projectManager;
 
+    private static JGemsAPIEditorResources apiEditorResources;
+
     private WBench() {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("WorkbenchLogger"));
+            JGemsAPI.INIT_JGEMS();
+            WBench.apiEditorResources = JGemsAPI.get().launchAPIAndGetOnlyEditorData();
             WBench.checkFilesDirectory();
-        } catch (IOException e) {
+        } catch (IOException | JGemsAPIException e) {
             throw new JGemsRuntimeException(e);
         }
         this.os = SysOSValidation.getCurrentOS();
@@ -73,6 +81,10 @@ public final class WBench {
 
     public OS getOS() {
         return this.os;
+    }
+
+    public static JGemsAPIEditorResources APIEditorResources() {
+        return WBench.apiEditorResources;
     }
 
     public static long systemTime() {
@@ -131,6 +143,7 @@ public final class WBench {
             WBench.get().getProjectManager().closeProject(true);
             WBench.get().getResourceManager().destroy();
             LoadingInterfaceSwing.dispose();
+            JGemsAPI.get().close();
             Log.get().info("Cleared resources");
             Log.get().debug("END");
         }
@@ -147,6 +160,10 @@ public final class WBench {
 
     public WBenchSettings getSettings() {
         return this.settings;
+    }
+
+    public ProjectObjects getProjectObjects() {
+        return this.getProjectManager().getProjectObjects();
     }
 
     public ProjectManager getProjectManager() {

@@ -22,18 +22,18 @@ public interface IRendered extends ICulled {
     }
 
     default boolean canBeRendered(Pipeline pipeline) {
-        return this.canBeRendered() && this.getRenderingTable().getRenderingData(pipeline).getRenderFabric() != null;
+        return this.canBeRendered() && this.getRenderTable().getRenderingData(pipeline).getRenderFabric() != null;
     }
 
     default Set<IRenderFabric> getRenderFabricsSet() {
-        return this.getRenderingTable().getRenderFabricsSet();
+        return this.getRenderTable().getRenderFabricsSet();
     }
 
     default IRenderFabric getRenderFabric(Pipeline pipeline) {
-        return this.getRenderingTable().getRenderFabric(pipeline);
+        return this.getRenderTable().getRenderFabric(pipeline);
     }
 
-    default RenderTable getRenderingTable() {
-        return this.getRenderAttributes().getRenderingTable();
+    default RenderTable getRenderTable() {
+        return this.getRenderAttributes().getRenderTable();
     }
 }

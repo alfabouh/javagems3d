@@ -8,6 +8,7 @@ import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import logger.Log;
 import org.lwjgl.opengl.GL46;
 import javagems3d.graphics.rendering.programs.shaders.CShaderProgram;
@@ -25,7 +26,7 @@ import java.util.*;
 /**
  * ShaderManager objects are shader packages that have functions for managing the state of the shader, its uniforms and uni-buffers
  */
-public abstract class ShaderManager implements ICached {
+public abstract class ShaderManager implements ICached, ICopyable<ShaderManager> {
     private final Set<UniformBufferObject> uniformBufferObjects;
     private final ShadersContainer shadersContainer;
     private ActiveShader activeShader;
@@ -55,8 +56,6 @@ public abstract class ShaderManager implements ICached {
     public void clearUsedTextureSlots() {
         this.usedTextureUnits = 0;
     }
-
-    public abstract ShaderManager copy();
 
     public ShaderManager attachUBOs(UniformBufferObject... uniformBufferObjects) {
         this.uniformBufferObjects.addAll(Arrays.asList(uniformBufferObjects));

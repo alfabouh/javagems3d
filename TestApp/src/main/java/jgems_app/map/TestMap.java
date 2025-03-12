@@ -7,7 +7,6 @@ import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.map.MapInfo;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
-import javagems3d.system.resources.assets.loading.models.MemMode;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
@@ -21,7 +20,7 @@ import org.joml.Vector3f;
 public class TestMap implements IMapLoader {
     @Override
     public void createMap(SystemResources globalResources, SystemResources localResources, PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshBuffer meshGroup = localResources.createMeshBuffer(new JGemsPath("/assets/models/sponza/sponza.obj"), ModelLoaderFlags.DEFAULT, MemMode.ERASE_NODES_DATA);
+        MeshBuffer meshGroup = localResources.createMeshBuffer(new JGemsPath("/assets/models/sponza/sponza.obj"), ModelLoaderFlags.DEFAULT, false);
         //sceneWorld.addObjectInWorld(new SceneWorldProp(sceneWorld, new Model3D(new Pose3D(new Vector3f(), new Vector3f(), new Vector3f(0.01f)), meshGroup), RenderAttributes.get()));
 
         //MeshBuffer meshGroup = localResources.createMeshBuffer(new JGemsPath("/assets/models/map01/map01.obj"), ModelMeshLoader.ModelLoaderFlags.DEFAULT);

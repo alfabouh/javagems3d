@@ -232,7 +232,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
         Log.get().info("Created scene data");
 
-        this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.0f), new Vector3f(0.02f)), WBenchResourceManager.localModelAssets.test), RenderAttributes.get(RenderTable.getDefaultIndirect())));
+     //   this.getWorld().addObjectInWorld(new WBenchObject(this.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.0f), new Vector3f(0.02f)), WBenchResourceManager.localModelAssets.test), RenderAttributes.get(RenderTable.getDefaultIndirect())));
     }
 
     @Override

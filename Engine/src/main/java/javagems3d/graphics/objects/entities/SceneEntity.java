@@ -104,7 +104,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
-        if (!this.canBeRendered() || this.getRenderAttributes().isAllowedMovementInterpolation()) {
+        if (!this.canBeRendered() || this.getRenderAttributes().getProperties().isAllowMovementInterpolation()) {
             this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);

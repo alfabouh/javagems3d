@@ -19,6 +19,9 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class RenderDataInitializer implements IAssetsInitializer {
+    public EntityRenderData defaultIndirect;
+    public EntityRenderData defaultDirect;
+
     public EntityRenderData entityCube;
     public EntityRenderData defaultPlayer;
     public EntityRenderData ground;
@@ -54,7 +57,10 @@ public class RenderDataInitializer implements IAssetsInitializer {
         this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
         this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
         this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
-        this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect()).setAlphaDiscardValue(0.25f));
+        this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect()));
+
+        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect()));
+        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultDirect()));
     }
 
     @Override

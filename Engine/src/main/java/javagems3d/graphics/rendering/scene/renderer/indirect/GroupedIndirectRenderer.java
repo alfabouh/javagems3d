@@ -53,7 +53,7 @@ public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
 
     protected Map<IndirectObjectsRenderer.Operator, Set<SceneObject>> groupObjects(@NotNull Collection<SceneObject> sceneObjects, Pipeline pipeline) {
         return sceneObjects.stream().collect(Collectors.groupingBy(e -> {
-            RenderTable.Data renderingData = e.getRenderingTable().getRenderingData(pipeline);
+            RenderTable.Data renderingData = e.getRenderTable().getRenderingData(pipeline);
             if (renderingData.getRenderFabric() == null) {
                 throw new JGemsNullException("RenderFabric should not be NULL");
             }

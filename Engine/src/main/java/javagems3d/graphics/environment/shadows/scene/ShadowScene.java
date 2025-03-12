@@ -1,7 +1,6 @@
 package javagems3d.graphics.environment.shadows.scene;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
-import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.PointLight;
@@ -10,25 +9,17 @@ import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
-import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
-import javagems3d.graphics.transformation.TransformUtils;
 
-import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
@@ -97,7 +88,7 @@ public abstract class ShadowScene implements IShadowScene {
             return;
         }
         this.getSunLightShadow().refreshCascades();
-        Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().isShadowCaster()).collect(Collectors.toSet());
+        Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().isShadowCaster()).collect(Collectors.toSet());
         boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
         if (JGemsConfig.SYSTEM.DRAW_BACK_FACES_FOR_SHADOWS) {
             GL46.glDisable(GL46.GL_CULL_FACE);
@@ -185,7 +176,7 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
-        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getRenderingTable().getShaderManager(pipeline)));
+        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getRenderTable().getShaderManager(pipeline)));
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
@@ -194,7 +185,7 @@ public abstract class ShadowScene implements IShadowScene {
                 if (model == null || !model.isValid()) {
                     continue;
                 }
-                DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderingTable().getRenderFabric(pipeline);
+                DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderTable().getRenderFabric(pipeline);
                 directRenderFabric.onPreRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
                 directRenderFabric.onRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, ArbitraryArguments.pass(functionToHandleUniforms));
                 directRenderFabric.onPostRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
