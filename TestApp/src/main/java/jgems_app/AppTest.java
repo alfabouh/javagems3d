@@ -55,9 +55,15 @@ public class AppTest extends JGemsApplication {
 
     @Override
     public void setupEditorResources(IAPIWBenchDataManager manager) {
-        final JGemsPath path = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.obj");
+        final JGemsPath sponza = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.obj");
+        final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.obj");
+
         manager.addResourceEntity("sponza",
-                () -> new WBenchObjectData(path),
+                () -> new WBenchObjectData(sponza),
+                () -> new JGemsEntityData(false)
+        );
+        manager.addResourceEntity("test", "cube",
+                () -> new WBenchObjectData(cube),
                 () -> new JGemsEntityData(false)
         );
     }

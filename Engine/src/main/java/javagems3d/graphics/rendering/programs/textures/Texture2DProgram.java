@@ -60,6 +60,7 @@ public class Texture2DProgram implements ITexture2DProgram, ITextureBindless {
 
     @Override
     public void clear() {
+        this.size = null;
         this.removeARB64Handling();
         GL46.glDeleteTextures(this.getTextureId());
         GL46.glDeleteSamplers(this.getSamplerId());

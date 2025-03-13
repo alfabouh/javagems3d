@@ -191,6 +191,8 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
         GL46.glActiveTexture(GL46.GL_TEXTURE0 + textureUnit);
         if (program.isSamplerValid()) {
             program.bindSampler(textureUnit);
+        } else {
+            program.unBindSampler(textureUnit);
         }
         program.bindTexture();
         this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));

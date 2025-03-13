@@ -1,18 +1,9 @@
 package workbench.resources.initialization;
 
-import api.application.workbench.manager.APIWBenchDataManager;
-import api.application.workbench.resources.ResourceEntity;
-import api.application.workbench.resources.data.WBenchObjectData;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import workbench.WBench;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;

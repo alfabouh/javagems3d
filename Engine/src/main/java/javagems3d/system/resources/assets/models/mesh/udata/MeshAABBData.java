@@ -5,7 +5,6 @@ import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -71,7 +70,7 @@ public class MeshAABBData implements IMeshUserData {
         return new CullingAABB(newMin, newMax);
     }
     
-    public CullingAABB getCullingAABB(Pose3D pose) {
+    public CullingAABB getNormalizedAABB(Pose3D pose) {
         return this.transformAABB(this.cullingAABB, pose);
     }
 }

@@ -30,6 +30,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
     public WBenchShaderManager depth_sun_indirect;
     public WBenchShaderManager depth_plight;
     public WBenchShaderManager gui_image;
+    public WBenchShaderManager preview;
 
     public ShaderStorageBufferObject IndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
@@ -97,6 +98,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/shadows/depth_sun"));
         this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/shadows/depth_sun_indirect"));
         this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/shadows/depth_plight"));
+        this.preview = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/preview"));
     }
 
     @Override

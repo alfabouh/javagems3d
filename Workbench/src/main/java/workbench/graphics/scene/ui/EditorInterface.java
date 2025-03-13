@@ -8,21 +8,40 @@ import imgui.type.ImBoolean;
 import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.SunLight;
+import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.controller.base.MouseKeyboardController;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.mesh.RenderMesh;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.collections.Pair;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
+import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
+import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.nodes.WDeferredRenderNode;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
+import workbench.resources.WBenchResourceManager;
+import workbench.resources.shaders.WBenchShaderManager;
 
+import java.lang.Math;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,8 +56,10 @@ public class EditorInterface implements DearUIInterface {
     private ICamera oldCamera;
 
     private WBenchObjectTemplate currentTemplate;
+    private final FBOTexture2DProgram scenePreview;
+    private float previewDistance;
 
-    public EditorInterface(@NotNull ProjectManager projectManager) {
+    public EditorInterface(FBOTexture2DProgram scenePreview, @NotNull ProjectManager projectManager) {
         this.projectManager = projectManager;
         this.openEnvironmentFogSettings = false;
         this.openEnvironmentSkySettings = false;
@@ -47,6 +68,9 @@ public class EditorInterface implements DearUIInterface {
         this.sunCamera = new FixedCamera(new Vector3f(), new Vector3f());
         this.oldCamera = null;
         this.cameraCheckBox = false;
+
+        this.scenePreview = scenePreview;
+        this.previewDistance = 1.0f;
     }
 
     @Override
@@ -237,6 +261,10 @@ public class EditorInterface implements DearUIInterface {
         }
     }
 
+    private void zeroPreviewParams() {
+        this.previewDistance = 1.0f;
+    }
+
     private Pair<Vector3f, Vector3f> adjustCamera(SunLight sun) {
         Vector3f sunPos = sun.getLightPosition().normalize().mul(100f);
         return new Pair<>(sunPos, new Vector3f(0.0f));
@@ -264,21 +292,33 @@ public class EditorInterface implements DearUIInterface {
                 String groupName = entry.getKey();
                 Set<WBenchObjectTemplate> objects = entry.getValue();
 
+                ImGui.treePush();
                 if (groupName != null) {
-                    if (ImGui.collapsingHeader(groupName)) {
+                    if (ImGui.treeNode(groupName)) {
+                        ImGui.treePush();
                         for (WBenchObjectTemplate object : objects) {
                             if (ImGui.selectable(object.getId(), this.currentTemplate == object)) {
                                 this.currentTemplate = object;
+                                this.zeroPreviewParams();
                             }
                         }
+                        ImGui.treePop();
+                        ImGui.treePop();
                     }
                 } else {
-                    for (WBenchObjectTemplate object : objects) {
-                        if (ImGui.selectable(object.getId(), this.currentTemplate == object)) {
-                            this.currentTemplate = object;
+                    if (ImGui.treeNode("Other")) {
+                        ImGui.treePush();
+                        for (WBenchObjectTemplate object : objects) {
+                            if (ImGui.selectable(object.getId(), this.currentTemplate == object)) {
+                                this.currentTemplate = object;
+                                this.zeroPreviewParams();
+                            }
                         }
+                        ImGui.treePop();
+                        ImGui.treePop();
                     }
                 }
+                ImGui.treePop();
             }
 
           //  if (selectedObject != null) {
@@ -303,7 +343,18 @@ public class EditorInterface implements DearUIInterface {
 
     private void propertiesContent() {
         if (this.currentTemplate != null) {
-            ImGui.text(this.currentTemplate.getId());
+            float available = Math.min(ImGui.getContentRegionAvailX(), 256);
+            ImGui.text("Preview: " + this.currentTemplate.getId());
+            ImGui.image(this.scenePreview.getTextureIDByIndex(0), available, available, 0.0f, 1.0f, 1.0f, 0.0f);
+
+            float[] scaling = new float[] {this.previewDistance};
+            if (ImGui.sliderFloat("Distance", scaling, 1.0f, 10.0f)) {
+                this.previewDistance = scaling[0];
+            }
+            if (ImGui.button("Spawn")) {
+                WBench.get().getScreen().getScene().getWorld().addObjectInWorld(new WBenchObject(WBench.get().getScreen().getScene().getWorld(), new Model3D(new Pose3D(), this.currentTemplate.getMeshGroup()), this.currentTemplate.getRenderAttributes()));
+            }
+            ImGui.separator();
         }
     }
 
@@ -314,6 +365,46 @@ public class EditorInterface implements DearUIInterface {
         float availableX = ImGui.getContentRegionAvailX();
         float availableY = ImGui.getContentRegionAvailY();
         ImGui.image(gluingRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
+    }
+
+    public void renderPreviewItem() {
+        if (this.currentTemplate == null) {
+            return;
+        }
+        OpenGLRenderer.setViewPort(new Vector2i(256, 256));
+        this.scenePreview.bindFBO();
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+        this.renderPreviewItem(this.previewDistance, WBenchResourceManager.localShaderAssets.preview, this.currentTemplate.getMeshGroup());
+        this.scenePreview.unBindFBO();
+        OpenGLRenderer.setViewPort(WBench.get().getScreen().getScene().getSceneRenderer().getRenderingResolution());
+    }
+
+    private void renderPreviewItem(float distance, WBenchShaderManager shaderManager, MeshGroup meshGroup) {
+        final Pose3D pose3D = new Pose3D(new Vector3f(0.0f, 0.0f, -3.5f));
+        MeshAABBData meshAABBData = (MeshAABBData) meshGroup.getMeshUserData(MeshStructure3D.MESH_AABB_UD);
+        CullingAABB cullingAABB = meshAABBData.getNormalizedAABB(pose3D);
+        float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
+        float scale = diagonal / 5.0f;
+        pose3D.setScaling(new Vector3f(1.0f / scale).mul(distance));
+
+        shaderManager.beginShading();
+        shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(TransformUtils.getPerspectiveMatrix(1.0f, (float) (Math.PI / 2.0f), 0.01f, 100.0f)));
+        shaderManager.performModel3DMatrix(new UniformString("model_matrix"), TransformUtils.getModelMatrix(pose3D).lookAt(new Vector3f(1.0f), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
+        for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
+            if (meshNode3D.getMaterial().getDiffuse() instanceof ITexture2DProgram) {
+                ITexture2DProgram imageBasedTexture = (ITexture2DProgram) meshNode3D.getMaterial().getDiffuse();
+                shaderManager.performUniformTexture(new UniformString("diffuse_map"), imageBasedTexture);
+                shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
+            } else {
+                shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));
+            }
+            GL46.glBindVertexArray(meshNode3D.getMeshData().getVao());
+            meshNode3D.getMeshData().enableAllMeshAttributes();
+            GL46.glDrawElements(GL46.GL_TRIANGLES, meshNode3D.getMeshData().getTotalVertices(), GL46.GL_UNSIGNED_INT, 0);
+            meshNode3D.getMeshData().disableAllMeshAttributes();
+            GL46.glBindVertexArray(0);
+        }
+        shaderManager.endShading();
     }
 
     private void consoleContent() {

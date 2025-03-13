@@ -35,9 +35,36 @@ public interface IAssetsInitializer {
             2, 1, 6, 2, 6, 7,
             7, 6, 4, 7, 4, 5
     };
+    float[] CubeModelNorm = new float[]{
+            0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, -1.0f,
+            0.0f, 0.0f, -1.0f,
+            0.0f, 0.0f, -1.0f,
+            0.0f, 0.0f, -1.0f,
+            0.0f, -1.0f, 0.0f,
+            0.0f, -1.0f, 0.0f,
+            0.0f, -1.0f, 0.0f,
+            0.0f, -1.0f, 0.0f,
+            -1.0f, 0.0f, 0.0f,
+            -1.0f, 0.0f, 0.0f,
+            -1.0f, 0.0f, 0.0f,
+            -1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f
+    };
 
     static MeshBuffer createDefaultCubeBuffer() {
         DataMesh dataMesh = new DataMesh();
+        dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_NORMALS, JGemsUtils.convertFloatsList(IAssetsInitializer.CubeModelNorm));
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsUtils.convertFloatsList(IAssetsInitializer.CubeModelPos));
         dataMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
         MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
@@ -46,6 +73,7 @@ public interface IAssetsInitializer {
 
     static MeshGroup createDefaultCubeGroup() {
         try (RenderMesh renderMesh = new RenderMesh()) {
+            renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_NORMALS).putArray(IAssetsInitializer.CubeModelNorm));
             renderMesh.putVertexAttribute(new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS).putArray(IAssetsInitializer.CubeModelPos));
             renderMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
             MeshNode3D<RenderMesh> meshBufferMeshNode3D = new MeshNode3D<>(renderMesh, new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
