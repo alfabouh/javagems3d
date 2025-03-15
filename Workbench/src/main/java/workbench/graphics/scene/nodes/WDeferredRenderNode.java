@@ -26,6 +26,7 @@ import org.lwjgl.opengl.GL46;
 import workbench.graphics.scene.nodes.templates.WIDeferredRenderNode;
 import workbench.graphics.scene.processors.WDeferredColorRenderProcessor;
 import workbench.graphics.scene.world.WBenchWorld;
+import workbench.graphics.screen.WBenchScreen;
 import workbench.resources.WBenchResourceManager;
 
 import java.util.Collection;
@@ -61,7 +62,7 @@ public final class WDeferredRenderNode extends IRenderNode.Template implements W
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        GL46.glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+        WBenchScreen.clearColor();
         this.getOutGBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
@@ -89,8 +90,8 @@ public final class WDeferredRenderNode extends IRenderNode.Template implements W
             add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
         }};
         T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
-            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB16F, GL46.GL_RGB);
-            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
+            add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGBA16F, GL46.GL_RGBA);
         }};
 
         this.getOutGBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), gBuffer, true, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);

@@ -2,21 +2,29 @@ package workbench.graphics.scene.ui;
 
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.extension.imguizmo.ImGuizmo;
+import imgui.extension.imguizmo.flag.Mode;
+import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.SunLight;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.mapping.tags.Tag;
+import javagems3d.mapping.tags.items.TagItem;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -34,7 +42,7 @@ import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
-import workbench.graphics.scene.nodes.WDeferredRenderNode;
+import workbench.graphics.scene.nodes.templates.WIGluingRenderNode;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
@@ -42,10 +50,13 @@ import workbench.resources.WBenchResourceManager;
 import workbench.resources.shaders.WBenchShaderManager;
 
 import java.lang.Math;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
 public class EditorInterface implements DearUIInterface {
+    public static boolean isCursorInsideScene;
+
     private final ProjectManager projectManager;
     private boolean openEnvironmentFogSettings;
     private boolean openEnvironmentSkySettings;
@@ -55,15 +66,23 @@ public class EditorInterface implements DearUIInterface {
     private final FixedCamera sunCamera;
     private ICamera oldCamera;
 
-    private WBenchObjectTemplate currentTemplate;
+    private WBenchObject currentSelectedObject;
+    private WBenchObjectTemplate currentSelectedTemplate;
     private final FBOTexture2DProgram scenePreview;
     private float previewDistance;
 
-    public EditorInterface(FBOTexture2DProgram scenePreview, @NotNull ProjectManager projectManager) {
+    private int currentOperation;
+    private final WBenchOpenGLRenderer openGLRenderer;
+
+    public EditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull ProjectManager projectManager) {
+        this.currentSelectedObject = null;
+        this.currentSelectedTemplate = null;
+
         this.projectManager = projectManager;
         this.openEnvironmentFogSettings = false;
         this.openEnvironmentSkySettings = false;
         this.openProjectSettings = false;
+        this.openGLRenderer = openGLRenderer;
 
         this.sunCamera = new FixedCamera(new Vector3f(), new Vector3f());
         this.oldCamera = null;
@@ -71,6 +90,8 @@ public class EditorInterface implements DearUIInterface {
 
         this.scenePreview = scenePreview;
         this.previewDistance = 1.0f;
+
+        this.currentOperation = Operation.TRANSLATE;
     }
 
     @Override
@@ -131,7 +152,12 @@ public class EditorInterface implements DearUIInterface {
         final float propertiesWindowSizeY =  windowSize.y;
 
         ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
-        Vector3f camPos = WBench.get().getScreen().getScene().getCamera().getCamPosition();
+        if (ImGui.isWindowHovered()) {
+            EditorInterface.isCursorInsideScene = true;
+        } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
+            EditorInterface.isCursorInsideScene = false;
+        }
+        Vector3f camPos = this.getOpenGLRenderer().getCamera().getCamPosition();
 
         ImGui.text("FPS: " + WBenchScreen.RENDER_FPS);
         ImGui.sameLine();
@@ -171,7 +197,7 @@ public class EditorInterface implements DearUIInterface {
     }
 
     private void context() {
-        WBenchEnvironment environment = WBench.get().getScreen().getScene().getWorld().getEnvironment();
+        WBenchEnvironment environment = this.getOpenGLRenderer().getWorld().getEnvironment();
         ImVec2 screenSize = ImGui.getIO().getDisplaySize();
 
         if (this.openEnvironmentFogSettings) {
@@ -272,10 +298,10 @@ public class EditorInterface implements DearUIInterface {
 
     private void setNewCamera(@Nullable ICamera camera) {
         if (camera == null) {
-            WBench.get().getScreen().getScene().setCamera(this.oldCamera);
+            this.getOpenGLRenderer().getWorld().setCamera(this.oldCamera);
             this.oldCamera = null;
         } else {
-            this.oldCamera = WBench.get().getScreen().getScene().getCamera();
+            this.oldCamera = this.getOpenGLRenderer().getCamera();
             WBench.get().getScreen().getScene().setCamera(camera);
         }
     }
@@ -283,6 +309,14 @@ public class EditorInterface implements DearUIInterface {
     //===============================================
 
     private void itemsContent() {
+        for (SceneObject wBenchObject : this.getOpenGLRenderer().getWorld().getSceneObjects()) {
+            WBenchObject wBenchObject1 = (WBenchObject) wBenchObject;
+            boolean flag = this.currentSelectedObject == wBenchObject1;
+            if (ImGui.selectable("(" + wBenchObject1.getId() + ") " + wBenchObject1.getName(), flag)) {
+                this.currentSelectedObject = !flag ? wBenchObject1 : null;
+                this.currentOperation = this.chooseDefaultGuizmoOperation();
+            }
+        }
     }
 
     private void resourcesContent() {
@@ -293,30 +327,22 @@ public class EditorInterface implements DearUIInterface {
                 Set<WBenchObjectTemplate> objects = entry.getValue();
 
                 ImGui.treePush();
-                if (groupName != null) {
-                    if (ImGui.treeNode(groupName)) {
-                        ImGui.treePush();
-                        for (WBenchObjectTemplate object : objects) {
-                            if (ImGui.selectable(object.getId(), this.currentTemplate == object)) {
-                                this.currentTemplate = object;
+                String groupNameTree = groupName != null ? groupName : "Other";
+                if (ImGui.treeNode(groupNameTree)) {
+                    ImGui.treePush();
+                    for (WBenchObjectTemplate object : objects) {
+                        boolean flag = this.currentSelectedTemplate == object;
+                        if (ImGui.selectable(object.getId(), flag)) {
+                            if (!flag) {
+                                this.currentSelectedTemplate = object;
                                 this.zeroPreviewParams();
+                            } else {
+                                this.currentSelectedTemplate = null;
                             }
                         }
-                        ImGui.treePop();
-                        ImGui.treePop();
                     }
-                } else {
-                    if (ImGui.treeNode("Other")) {
-                        ImGui.treePush();
-                        for (WBenchObjectTemplate object : objects) {
-                            if (ImGui.selectable(object.getId(), this.currentTemplate == object)) {
-                                this.currentTemplate = object;
-                                this.zeroPreviewParams();
-                            }
-                        }
-                        ImGui.treePop();
-                        ImGui.treePop();
-                    }
+                    ImGui.treePop();
+                    ImGui.treePop();
                 }
                 ImGui.treePop();
             }
@@ -342,41 +368,246 @@ public class EditorInterface implements DearUIInterface {
     }
 
     private void propertiesContent() {
-        if (this.currentTemplate != null) {
-            float available = Math.min(ImGui.getContentRegionAvailX(), 256);
-            ImGui.text("Preview: " + this.currentTemplate.getId());
-            ImGui.image(this.scenePreview.getTextureIDByIndex(0), available, available, 0.0f, 1.0f, 1.0f, 0.0f);
+        if (ImGui.collapsingHeader("Preview", ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (this.currentSelectedTemplate != null) {
+                float available = Math.min(ImGui.getContentRegionAvailX(), 256);
+                ImGui.text("Preview: " + this.currentSelectedTemplate.getId());
+                ImGui.image(this.scenePreview.getTextureIDByIndex(0), available, available, 0.0f, 1.0f, 1.0f, 0.0f);
 
-            float[] scaling = new float[] {this.previewDistance};
-            if (ImGui.sliderFloat("Distance", scaling, 1.0f, 10.0f)) {
-                this.previewDistance = scaling[0];
-            }
-            if (ImGui.button("Spawn")) {
-                WBench.get().getScreen().getScene().getWorld().addObjectInWorld(new WBenchObject(WBench.get().getScreen().getScene().getWorld(), new Model3D(new Pose3D(), this.currentTemplate.getMeshGroup()), this.currentTemplate.getRenderAttributes()));
+                float[] scaling = new float[]{this.previewDistance};
+                if (ImGui.sliderFloat("Distance", scaling, 1.0f, 10.0f)) {
+                    this.previewDistance = scaling[0];
+                }
+                if (ImGui.button("Generate")) {
+                    WBenchObject wBenchObject = new WBenchObject(this.getOpenGLRenderer().getWorld(), this.currentSelectedTemplate);
+                    wBenchObject.setId(this.getOpenGLRenderer().getWorld().getSceneObjects().size());
+                    this.getOpenGLRenderer().getWorld().addObjectInWorld(wBenchObject);
+                }
             }
             ImGui.separator();
+        }
+        if (this.currentSelectedObject != null) {
+            if (ImGui.collapsingHeader("Object", ImGuiTreeNodeFlags.DefaultOpen)) {
+                int objectFlagTranslate = this.currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag();
+                int objectFlagRotate = this.currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag();
+                int objectFlagScaling = this.currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag();
+
+                if (objectFlagTranslate != 0) {
+                    if (ImGui.radioButton("Translate", (this.currentOperation & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
+                        this.currentOperation = this.chooseGuizmoOperation(true, false, false);
+                    }
+                }
+
+                if (objectFlagRotate != 0) {
+                    if (ImGui.radioButton("Rotation", (this.currentOperation & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
+                        this.currentOperation = this.chooseGuizmoOperation(false, true, false);
+                    }
+                }
+
+                if (objectFlagScaling != 0) {
+                    if (ImGui.radioButton("Scaling", (this.currentOperation & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
+                        this.currentOperation = this.chooseGuizmoOperation(false, false, true);
+                    }
+                }
+
+                this.processTranslations();
+                Collection<Tag<? extends TagItem>> tags = this.currentSelectedObject.getTagsContainer().getTagCollection();
+                for (Tag<? extends TagItem> tag : tags) {
+                    this.processTag(tag);
+                }
+            }
         }
     }
 
     private void sceneContent(float sizeX, float sizeY) {
-        WBenchOpenGLRenderer wBenchOpenGLRenderer = (WBenchOpenGLRenderer) WBench.get().getScreen().getScene().getSceneRenderer();
-        //WIGluingRenderNode gluingRenderNode = (WIGluingRenderNode) wBenchOpenGLRenderer.getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
-        WDeferredRenderNode gluingRenderNode = (WDeferredRenderNode) wBenchOpenGLRenderer.getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
+        float[] view = JGemsTransformManager.INSTANCE.getCameraViewMatrix().get(new float[16]);
+        float[] projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix().get(new float[16]);
+        float[] model = TransformUtils.getModelMatrix(new Pose3D()).get(new float[16]);
+        ImGuizmo.setAllowAxisFlip(true);
+        ImGuizmo.setOrthographic(false);
+        ImGuizmo.setEnabled(true);
+        ImGuizmo.setDrawList();
+
         float availableX = ImGui.getContentRegionAvailX();
         float availableY = ImGui.getContentRegionAvailY();
+
+        if (!this.cameraCheckBox) {
+            ImGuizmo.drawGrid(view, projection, model, (int) WBench.MAP_SIZE);
+        }
+
+        WIGluingRenderNode gluingRenderNode = (WIGluingRenderNode) this.getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
         ImGui.image(gluingRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
+
+        if (!this.cameraCheckBox) {
+            ImVec2 imageSize = ImGui.getItemRectSize();
+            ImVec2 imagePos = ImGui.getItemRectMin();
+
+            float imGuizmoX = imageSize.x;
+            float imGuizmoY = imageSize.y;
+            ImGuizmo.setRect(imagePos.x, imagePos.y, imGuizmoX, imGuizmoY);
+
+            float windowWidth = ImGui.getWindowWidth();
+            float viewManipulateRight = ImGui.getWindowPosX() + windowWidth;
+            float viewManipulateTop = ImGui.getWindowPosY();
+          // ImGuizmo.viewManipulate(view, 1f, new float[]{viewManipulateRight - 128, viewManipulateTop + 24}, new float[]{128f, 128f}, 0x10101010);
+          // ((ControlledCamera) this.getOpenGLRenderer().getCamera()).setCameraRotation(this.getRotationsFromMatrix(this.getMatrixFromArray(view)));
+
+            if (this.currentSelectedObject != null) {
+                MeshAABBData meshAABBData = (MeshAABBData) this.currentSelectedObject.getModel().getMeshStructure().getMeshUserData(MeshStructure3D.MESH_AABB_UD);
+                CullingAABB cullingAABB = meshAABBData.getNormalizedAABB(this.currentSelectedObject.getModel().getPose());
+
+                WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+
+                float[] modelMatrix = TransformUtils.getModelMatrix(this.currentSelectedObject.getModel().getPose()).get(new float[16]);
+                ImGuizmo.manipulate(view, projection, modelMatrix, this.currentOperation, Mode.WORLD);
+
+                Vector3f position = new Vector3f();
+                Vector3f rotation = new Vector3f();
+                Vector3f scaling = new Vector3f();
+                Matrix4f newMatrix = this.getMatrixFromArray(modelMatrix);
+                newMatrix.getTranslation(position);
+                newMatrix.getScale(scaling);
+                newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
+
+                this.currentSelectedObject.setPosition(position);
+                this.currentSelectedObject.setRotation(rotation.negate());
+                this.currentSelectedObject.setScaling(scaling);
+            }
+        }
+    }
+
+    private void processTranslations() {
+        int operationFlag = this.currentOperation;
+
+        float[] posArrayX = new float[] {this.currentSelectedObject.getPosition().x};
+        float[] posArrayY = new float[] {this.currentSelectedObject.getPosition().y};
+        float[] posArrayZ = new float[] {this.currentSelectedObject.getPosition().z};
+
+        float[] rotArrayX = new float[] {this.currentSelectedObject.getRotation().x};
+        float[] rotArrayY = new float[] {this.currentSelectedObject.getRotation().y};
+        float[] rotArrayZ = new float[] {this.currentSelectedObject.getRotation().z};
+
+        float[] sclArrayX = new float[] {this.currentSelectedObject.getScaling().x};
+        float[] sclArrayY = new float[] {this.currentSelectedObject.getScaling().y};
+        float[] sclArrayZ = new float[] {this.currentSelectedObject.getScaling().z};
+
+        if ((operationFlag & Operation.TRANSLATE_X) != 0) {
+            ImGui.dragFloat("Pos X", posArrayX, 0.01f);
+        }
+        if ((operationFlag & Operation.TRANSLATE_Y) != 0) {
+            ImGui.dragFloat("Pos Y", posArrayY, 0.01f);
+        }
+        if ((operationFlag & Operation.TRANSLATE_Z) != 0) {
+            ImGui.dragFloat("Pos Z", posArrayZ, 0.01f);
+        }
+
+        if ((operationFlag & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0) {
+            ImGui.separator();
+        }
+
+        if ((operationFlag & Operation.ROTATE_X) != 0) {
+            ImGui.sliderAngle("Rot X", rotArrayX, -180.0f, 180.0f);
+        }
+        if ((operationFlag & Operation.ROTATE_Y) != 0) {
+            ImGui.sliderAngle("Rot Y", rotArrayY, -180.0f, 180.0f);
+        }
+        if ((operationFlag & Operation.ROTATE_Z) != 0) {
+            ImGui.sliderAngle("Rot Z", rotArrayZ, -180.0f, 180.0f);
+        }
+
+        if ((operationFlag & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0) {
+            ImGui.separator();
+        }
+
+        if ((operationFlag & Operation.SCALE_X) != 0) {
+            ImGui.dragFloat("Scale X", sclArrayX, 0.01f);
+        }
+        if ((operationFlag & Operation.SCALE_Y) != 0) {
+            ImGui.dragFloat("Scale Y", sclArrayY, 0.01f);
+        }
+        if ((operationFlag & Operation.SCALE_Z) != 0) {
+            ImGui.dragFloat("Scale Z", sclArrayZ, 0.01f);
+        }
+
+        if ((operationFlag & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0) {
+            ImGui.separator();
+        }
+
+        currentSelectedObject.setPosition(new Vector3f(posArrayX[0], posArrayY[0], posArrayZ[0]));
+        currentSelectedObject.setRotation(new Vector3f(rotArrayX[0], rotArrayY[0], rotArrayZ[0]));
+        currentSelectedObject.setScaling(new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]));
+    }
+
+    private void processTag(Tag<? extends TagItem> tag) {
+        ImGui.text(tag.getTagID().getDescription());
+
+        ImGui.separator();
+    }
+
+    private int chooseDefaultGuizmoOperation() {
+        int f1 = this.getOperationMask(this.currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
+        if (f1 != 0) {
+            return f1;
+        }
+        int f2 = this.getOperationMask(this.currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
+        if (f2 != 0) {
+            return f2;
+        }
+        return this.getOperationMask(this.currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
+    }
+
+    private int chooseGuizmoOperation(boolean translation, boolean rotation, boolean scaling) {
+        if (translation) {
+            return this.getOperationMask(this.currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag(), Operation.TRANSLATE_X, Operation.TRANSLATE_Y, Operation.TRANSLATE_Z);
+        }
+        if (rotation) {
+            return this.getOperationMask(this.currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag(), Operation.ROTATE_X, Operation.ROTATE_Y, Operation.ROTATE_Z);
+        }
+        return this.getOperationMask(this.currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag(), Operation.SCALE_X, Operation.SCALE_Y, Operation.SCALE_Z);
+    }
+
+    private int getOperationMask(int flag, int xOp, int yOp, int zOp) {
+        if (flag == 0) {
+            return 0;
+        }
+        int result = 0;
+        if ((flag & 1) != 0) {
+            result |= xOp;
+        }
+        if ((flag & 2) != 0) {
+            result |= yOp;
+        }
+        if ((flag & 4) != 0) {
+            result |= zOp;
+        }
+        return result;
+    }
+
+    private Matrix4f getMatrixFromArray(float[] arr) {
+        return new Matrix4f(arr[0], arr[1], arr[2], arr[3],
+                            arr[4], arr[5], arr[6], arr[7],
+                            arr[8], arr[9], arr[10], arr[11],
+                            arr[12], arr[13], arr[14], arr[15]);
+    }
+
+    private Vector3f getRotationsFromMatrix(Matrix4f matrix4f) {
+        Vector3f rotations = new Vector3f();
+        Quaternionf quaternionf = new Quaternionf();
+        matrix4f.getNormalizedRotation(quaternionf);
+        quaternionf.getEulerAnglesXYZ(rotations);
+        return rotations;
     }
 
     public void renderPreviewItem() {
-        if (this.currentTemplate == null) {
+        if (this.currentSelectedTemplate == null) {
             return;
         }
         OpenGLRenderer.setViewPort(new Vector2i(256, 256));
         this.scenePreview.bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-        this.renderPreviewItem(this.previewDistance, WBenchResourceManager.localShaderAssets.preview, this.currentTemplate.getMeshGroup());
+        this.renderPreviewItem(this.previewDistance, WBenchResourceManager.localShaderAssets.preview, this.currentSelectedTemplate.getMeshGroup());
         this.scenePreview.unBindFBO();
-        OpenGLRenderer.setViewPort(WBench.get().getScreen().getScene().getSceneRenderer().getRenderingResolution());
+        OpenGLRenderer.setViewPort(this.getOpenGLRenderer().getRenderingResolution());
     }
 
     private void renderPreviewItem(float distance, WBenchShaderManager shaderManager, MeshGroup meshGroup) {
@@ -419,6 +650,10 @@ public class EditorInterface implements DearUIInterface {
             ImGui.setScrollHereY(1.0f);
             LoggingManager.markConsoleDirty = false;
         }
+    }
+
+    public WBenchOpenGLRenderer getOpenGLRenderer() {
+        return this.openGLRenderer;
     }
 
     public ProjectManager getProjectManager() {

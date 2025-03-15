@@ -16,7 +16,7 @@ public class TBoxMapSaver {
         SerializeHelper.saveToJSON(toSave, "map_prop.json", TBoxMapContainer.getSaveMapProperties());
         SerializeHelper.saveToBytes(toSave, "objects.ser", TBoxMapContainer.getSaveObjectsSet());
 
-        SystemLogging.get().getLogManager().info("Saved map path: " + file);
-        LoggingManager.showWindowInfo("Successfully saved map");
+        SystemLogging.get().getLogManager().info("Saved mapping path: " + file);
+        LoggingManager.showWindowInfo("Successfully saved mapping");
     }
 }

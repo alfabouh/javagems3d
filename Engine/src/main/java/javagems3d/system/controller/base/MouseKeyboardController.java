@@ -8,8 +8,10 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.devices.MouseKeyboard;
 
+import java.util.function.Predicate;
+
 public abstract class MouseKeyboardController implements IController {
-    private final Vector2i prevMouseCoord;
+    private final Vector2i prevMouseCoordinates;
 
     protected final Vector2f normalizedRotationInput;
     protected final Vector3f normalizedPositionInput;
@@ -22,7 +24,7 @@ public abstract class MouseKeyboardController implements IController {
         this.window = window;
         this.mouseAndKeyboard = new MouseKeyboard(window);
         this.xyzInput = new Vector3f(0.0f);
-        this.prevMouseCoord = new Vector2i(0);
+        this.prevMouseCoordinates = new Vector2i(0);
         this.normalizedRotationInput = new Vector2f();
         this.normalizedPositionInput = new Vector3f();
         this.bindingManager = bindingManager;
@@ -73,22 +75,22 @@ public abstract class MouseKeyboardController implements IController {
 
         double[] xy = this.getMouseAndKeyboard().getCursorCoordinates();
         if (!window.isWindowInFocus()) {
-            this.prevMouseCoord.set((int) xy[0], (int) xy[1]);
+            this.prevMouseCoordinates.set((int) xy[0], (int) xy[1]);
             return;
         }
 
         boolean isCenterScanning = this.getScanningMode().equals(ScanningMode.CENTER);
-        Vector2i posM = isCenterScanning ? new Vector2i((int) (window.getWindowSize().x / 2.0f), (int) (window.getWindowSize().y / 2.0f)) : this.prevMouseCoord;
+        Vector2i posM = isCenterScanning ? new Vector2i((int) (window.getWindowSize().x / 2.0f), (int) (window.getWindowSize().y / 2.0f)) : this.prevMouseCoordinates;
         float d1 = (float) (xy[0] - posM.x);
         float d2 = (float) (xy[1] - posM.y);
-        this.prevMouseCoord.set((int) xy[0], (int) xy[1]);
+        this.prevMouseCoordinates.set((int) xy[0], (int) xy[1]);
 
-        if (this.disableScanning()) {
-            return;
+        if (!this.disableMouseScanning()) {
+            this.scanMouse(isCenterScanning, d1, d2);
         }
-
-        this.scanMouse(isCenterScanning, d1, d2);
-        this.scanKeyBoard();
+        if (!this.disableKeyboardScanning()) {
+            this.scanKeyBoard();
+        }
 
         this.normalizedPositionInput.set(new Vector3f(this.getPositionInput().x == 0 ? 0 : this.getPositionInput().x > 0 ? 1 : -1, this.getPositionInput().y == 0 ? 0 : this.getPositionInput().y > 0 ? 1 : -1, this.getPositionInput().z == 0 ? 0 : this.getPositionInput().z > 0 ? 1 : -1));
         this.normalizedRotationInput.set(new Vector2f(this.getRotationInput()).mul(this.getCamSensitivity()));
@@ -98,8 +100,25 @@ public abstract class MouseKeyboardController implements IController {
         if (isCenterScanning) {
             this.getRotationInput().set(new Vector2f(d2, d1));
             this.setCursorInCenter();
-        } else if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
-            this.getRotationInput().set(new Vector2f(d2, d1));
+        } else {
+            Predicate<Void> predicate = null;
+            switch (this.getScanningMode()) {
+                case POS_RELATIVE_LMK: {
+                    predicate = (e) -> this.getMouseAndKeyboard().isLeftKeyPressed();
+                    break;
+                }
+                case POS_RELATIVE_RMK: {
+                    predicate = (e) -> this.getMouseAndKeyboard().isRightKeyPressed();
+                    break;
+                }
+                case POS_RELATIVE_MMK: {
+                    predicate = (e) -> this.getMouseAndKeyboard().isMiddleKeyPressed();
+                    break;
+                }
+            }
+            if (predicate != null && predicate.test(null)) {
+                this.getRotationInput().set(new Vector2f(d2, d1));
+            }
         }
     }
 
@@ -126,7 +145,11 @@ public abstract class MouseKeyboardController implements IController {
 
     public abstract ScanningMode getScanningMode();
 
-    public boolean disableScanning() {
+    public boolean disableMouseScanning() {
+        return false;
+    }
+
+    public boolean disableKeyboardScanning() {
         return false;
     }
 

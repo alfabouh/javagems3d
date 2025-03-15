@@ -23,7 +23,7 @@ public class TBoxMapReader {
         TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
         TBoxMapContainer.setSaveObjectSet(saveObjectSet);
 
-        SystemLogging.get().getLogManager().trace("Read map path: " + file);
+        SystemLogging.get().getLogManager().trace("Read mapping path: " + file);
         return TBoxMapContainer;
     }
 
@@ -40,7 +40,7 @@ public class TBoxMapReader {
         TBoxMapContainer TBoxMapContainer = new TBoxMapContainer(mapProperties);
         TBoxMapContainer.setSaveObjectSet(saveObjectSet);
 
-        SystemLogging.get().getLogManager().trace("Read map path(from jar): " + pathToMap);
+        SystemLogging.get().getLogManager().trace("Read mapping path(from jar): " + pathToMap);
         return TBoxMapContainer;
     }
 }

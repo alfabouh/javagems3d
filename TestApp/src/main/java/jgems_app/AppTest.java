@@ -11,6 +11,8 @@ import api.system.JGemsAppInstance;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
+import javagems3d.mapping.tags.Tag;
+import javagems3d.mapping.tags.TagID;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.binding.DefaultBindings;
 import javagems3d.system.service.path.JGemsPath;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import jgems_app.events.TestEvents;
 import jgems_app.gui.TestMainMenuPanel;
 import jgems_app.resources.ModelInitializer;
+import org.joml.Vector3f;
 
 @JGemsAppEntry(id = "DefaultGame")
 public class AppTest extends JGemsApplication {

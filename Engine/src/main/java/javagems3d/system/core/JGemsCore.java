@@ -93,7 +93,7 @@ public class JGemsCore implements ICore {
             return;
         }
         if (this.getMapLoader() != null) {
-            Log.get().error("Firstly, the current map should be destroyed");
+            Log.get().error("Firstly, the current mapping should be destroyed");
             return;
         }
         this.mapLoader = mapLoader;
@@ -106,7 +106,7 @@ public class JGemsCore implements ICore {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
-        Log.get().trace("Exit map");
+        Log.get().trace("Exit mapping");
         EventLauncher.pushEvent(new EventBus.MapDestroy(EventBus.Run.PRE, mapLoader));
         this.pauseGame();
         this.getScreen().showGameLoadingScreen("Exiting world...");
@@ -124,11 +124,11 @@ public class JGemsCore implements ICore {
 
     private void readAndProcessMapData() {
         if (!this.engineState().isEngineIsReady()) {
-            throw new JGemsRuntimeException("Attempted to load map, before initialization");
+            throw new JGemsRuntimeException("Attempted to load mapping, before initialization");
         }
 
         if (this.getMapLoader() == null) {
-            Log.get().error("Invalid map");
+            Log.get().error("Invalid mapping");
             return;
         }
 
@@ -137,7 +137,7 @@ public class JGemsCore implements ICore {
 
         this.getScreen().showGameLoadingScreen("Loading Map...");
         this.createWorlds();
-        Log.get().trace("Loading map: " + this.currentMapName());
+        Log.get().trace("Loading mapping: " + this.currentMapName());
         PhysicsWorld physicsWorld = this.getPhysics().getPhysicsProcessor().getPhysicsWorld();
         SceneWorld sceneWorld = this.getScreen().getSceneWorld();
         EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.PRE, mapLoader));
@@ -181,7 +181,7 @@ public class JGemsCore implements ICore {
         } else {
             JGemsCameraHelper.enableFreeCamera(JGemsControllerHelper.getCurrentController(), startPos, startRot);
         }
-        Log.get().info("Successfully loaded map: " + this.currentMapName());
+        Log.get().info("Successfully loaded mapping: " + this.currentMapName());
         JGemsControllerHelper.setCursorInCenter();
 
         if (true) {//TODO

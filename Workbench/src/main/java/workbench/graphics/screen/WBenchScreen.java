@@ -70,8 +70,12 @@ public class WBenchScreen implements IScreen {
         }
     }
 
+    public static void clearColor() {
+        GL46.glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
+    }
+
     private void showScreen() {
-        GL46.glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+        WBenchScreen.clearColor();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
         this.getWindow().showWindow();
         GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());

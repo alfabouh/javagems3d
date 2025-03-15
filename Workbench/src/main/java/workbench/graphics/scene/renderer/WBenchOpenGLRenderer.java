@@ -78,7 +78,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
         this.editorScenePreview = new FBOTexture2DProgram(true);
-        WBenchOpenGLRenderer.editorInterface = new EditorInterface(this.editorScenePreview, WBench.get().getProjectManager());
+        WBenchOpenGLRenderer.editorInterface = new EditorInterface(this, this.editorScenePreview, WBench.get().getProjectManager());
         WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
@@ -202,12 +202,12 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         ((EditorInterface) WBenchOpenGLRenderer.editorInterface).renderPreviewItem();
         //  WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(new Vector3f(), new Vector3f(2.0f, 12.0f, 2.0f), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
 
-       // JGemsShaderManager imgShader = WBenchResourceManager.localShaderAssets.gui_image;
-       // imgShader.beginShading();
-       // imgShader.performUniformTexture(new UniformString("texture_sampler"), editorScenePreview.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
-       // imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-       // JGemsRenderingHelper.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
-       // imgShader.endShading();
+        //JGemsShaderManager imgShader = WBenchResourceManager.localShaderAssets.gui_image;
+        //imgShader.beginShading();
+        //imgShader.performUniformTexture(new UniformString("texture_sampler"), deferredRenderNode.getOutColorBuffer().getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
+        //imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
+        //JGemsRenderingHelper.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
+        //imgShader.endShading();
     }
 
     @Override
