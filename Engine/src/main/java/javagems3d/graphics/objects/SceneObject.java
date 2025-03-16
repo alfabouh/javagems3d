@@ -2,7 +2,7 @@ package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
 import javagems3d.system.global.JGemsConfig;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.models.Model3D;

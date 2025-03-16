@@ -1,6 +1,6 @@
 package javagems3d.graphics.objects;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;

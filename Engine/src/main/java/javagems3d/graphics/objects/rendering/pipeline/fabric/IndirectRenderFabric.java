@@ -1,7 +1,7 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric;
 
 import javagems3d.graphics.objects.IRendered;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Type;

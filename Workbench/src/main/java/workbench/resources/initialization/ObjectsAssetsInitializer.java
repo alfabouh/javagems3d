@@ -3,7 +3,7 @@ package workbench.resources.initialization;
 import api.application.workbench.manager.APIWBenchDataManager;
 import api.application.workbench.resources.ResourceEntity;
 import api.application.workbench.resources.data.WBenchObjectData;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
@@ -29,7 +29,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
 
     private WBenchObjectTemplate constructObjectTemplate(SystemResources systemResources, String id, WBenchObjectData wBenchObjectData) {
         MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true);
-        return new WBenchObjectTemplate(id, meshGroup, RenderAttributes.get(RenderTable.getDefaultIndirect(), wBenchObjectData.getRenderProperties()), wBenchObjectData.getTagsContainer(), wBenchObjectData.getTranslationConstraints());
+        return new WBenchObjectTemplate(id, meshGroup, RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties()), wBenchObjectData.getTagsContainer(), wBenchObjectData.getTranslationConstraints());
     }
 
     @Override

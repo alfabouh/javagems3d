@@ -1,6 +1,7 @@
 package javagems3d.help;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model2D;
@@ -54,7 +55,7 @@ public abstract class JGemsRenderingHelper {
 
     public static int getLightingCodeForShader(RenderAttributes configuration) {
         int code = 0;
-        if (configuration.getProperties().isDefaultBrightLighted()) {
+        if (configuration.getProperties().getBool(JGemsRenderProperties.KEY_LIGHT_BRIGHTNESS)) {
             code |= 1 << 2;
         }
         return code;

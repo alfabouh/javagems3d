@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.initialization;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
@@ -55,12 +56,12 @@ public class RenderDataInitializer implements IAssetsInitializer {
         //this.zippo_world.getObjectRenderSettings().setOverlappingMaterial(zwMat);
 
         this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
-        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
+        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
         this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
-        this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect()));
+        this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()));
 
-        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultIndirect()));
-        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), RenderAttributes.get(RenderTable.getDefaultDirect()));
+        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()));
+        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getDirect(), JGemsRenderProperties.getDefault()));
     }
 
     @Override

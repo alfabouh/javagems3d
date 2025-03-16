@@ -2,12 +2,11 @@ package javagems3d.graphics.objects.entities.background;
 
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.entities.SceneProp;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

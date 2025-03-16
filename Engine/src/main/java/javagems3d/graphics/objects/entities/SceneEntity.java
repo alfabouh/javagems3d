@@ -4,6 +4,7 @@ import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.properties.controller.IControllable;
@@ -104,7 +105,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldObject, I
     public void updateRenderPos(float physicsSyncTicks) {
         Vector3f pos = this.getFixedPosition();
         Vector3f rot = this.getFixedRotation();
-        if (!this.canBeRendered() || this.getRenderAttributes().getProperties().isAllowMovementInterpolation()) {
+        if (!this.canBeRendered() || this.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_ALLOW_MOVEMENT_INTERPOLATION)) {
             this.renderPosition.set(this.getCurrentPosState().interpolatedPoint(physicsSyncTicks));
             if (this.isEntityUnderUserControl()) {
                 this.renderRotation.set(rot);

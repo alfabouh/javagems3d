@@ -19,7 +19,6 @@ const int specular_code = 1 << 6;
 const int light_bright_code = 1 << 2;
 
 uniform bool use_cubemap;
-
 uniform float alpha_discard;
 uniform vec4 diffuse_color;
 uniform samplerCube ambient_cube_map;

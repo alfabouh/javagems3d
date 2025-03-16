@@ -1,5 +1,6 @@
 package javagems3d.graphics.environment.shadows.scene;
 
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
@@ -88,7 +89,7 @@ public abstract class ShadowScene implements IShadowScene {
             return;
         }
         this.getSunLightShadow().refreshCascades();
-        Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().isShadowCaster()).collect(Collectors.toSet());
+        Set<SceneObject> filtered = modeledSceneObjectSet.stream().filter(e -> e.hasModel() && e.getRenderAttributes().getProperties().getBool(JGemsRenderProperties.KEY_SHADOW_CASTER)).collect(Collectors.toSet());
         boolean oldV = GL46.glIsEnabled(GL46.GL_CULL_FACE);
         if (JGemsConfig.SYSTEM.DRAW_BACK_FACES_FOR_SHADOWS) {
             GL46.glDisable(GL46.GL_CULL_FACE);

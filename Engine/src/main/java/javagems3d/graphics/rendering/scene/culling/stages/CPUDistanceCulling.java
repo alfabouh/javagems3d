@@ -3,7 +3,8 @@ package javagems3d.graphics.rendering.scene.culling.stages;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import logger.Log;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -49,7 +50,8 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
             return false;
         }
         RenderAttributes renderAttributes = sceneObject.getRenderAttributes();
-        return !(renderAttributes.getProperties().getRenderDistance() > 0.0f) || !(position.distance(camera.getCamPosition()) >= renderAttributes.getProperties().getRenderDistance());
+        float distance = renderAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE);
+        return !(distance > 0.0f) || !(position.distance(camera.getCamPosition()) >= distance);
     }
 
     @Override

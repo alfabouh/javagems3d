@@ -2,8 +2,7 @@ package javagems3d.graphics.objects.rendering.data;
 
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.world.SceneWorldEntity;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,5 +1,7 @@
-package javagems3d.graphics.objects.rendering.configuration;
+package javagems3d.graphics.objects.rendering.attributes;
 
+import javagems3d.graphics.objects.rendering.attributes.base.IRenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
 import javagems3d.system.resources.managing.resources.data.ICopyable;
@@ -8,21 +10,13 @@ import org.jetbrains.annotations.Nullable;
 
 
 @SuppressWarnings("all")
-public class RenderAttributes implements IRenderConfiguration, ICopyable<RenderAttributes> {
+public class RenderAttributes implements IRenderAttributes, ICopyable<RenderAttributes> {
     private RenderTable renderTable;
     private RenderProperties renderProperties;
-
-    public RenderAttributes(@NotNull RenderTable renderTable) {
-        this(renderTable, RenderProperties.get());
-    }
 
     public RenderAttributes(@NotNull RenderTable renderTable, @NotNull RenderProperties renderProperties) {
         this.renderTable = renderTable;
         this.renderProperties = renderProperties;
-    }
-
-    public static @NotNull RenderAttributes get(@Nullable RenderTable renderTable) {
-        return renderTable == null ? null : new RenderAttributes(renderTable);
     }
 
     public static @NotNull RenderAttributes get(@Nullable RenderTable renderTable, @NotNull RenderProperties renderProperties) {

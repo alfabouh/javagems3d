@@ -2,13 +2,14 @@ package javagems3d.help;
 
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -19,14 +20,9 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public abstract class JGemsShadersHelper {
     public static void performRenderDataOnShader(JGemsShaderManager shaderManager, RenderAttributes objectRenderingConfiguration) {
-        if (!shaderManager.isUniformExist(new UniformString("lighting_code"))) {
-            return;
+        if (shaderManager.isUniformExist(new UniformString("lighting_code"))) {
+            shaderManager.performUniform(new UniformString("lighting_code"), UniformFunctions.INTEGER(JGemsRenderingHelper.getLightingCodeForShader(objectRenderingConfiguration)));
         }
-        int lighting_code = 0;
-        if (objectRenderingConfiguration.getProperties().isDefaultBrightLighted()) {
-            lighting_code |= 1 << 2;
-        }
-        shaderManager.performUniform(new UniformString("lighting_code"), UniformFunctions.INTEGER(lighting_code));
     }
 
     public static void performModelMaterialOnShader(IEnvironment environment, JGemsShaderManager shaderManager, Material material) {

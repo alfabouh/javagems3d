@@ -15,6 +15,7 @@ import workbench.WBench;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.graphics.scene.ui.EditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
@@ -140,6 +141,7 @@ public final class ProjectManager {
         LoadingInterfaceSwing.invoke();
         WBenchResourceManager.createLocalShaders();
         WBenchResourceManager.setDefaultRenderTableValues();
+        WBench.get().getResourceManager().initLocalResources();
         WBench.get().getResourceManager().loadLocalResources();
         this.getWorld().onWorldStart();
         ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpeningProject(WBench.get().getResourceManager(), project);
@@ -150,10 +152,11 @@ public final class ProjectManager {
         this.getWorld().onWorldEnd();
         WBench.get().getResourceManager().destroyLocalResources();
         this.getProjectObjects().clear();
+        ((EditorInterface) WBenchOpenGLRenderer.getEditorInterface()).clear();
     }
 
     private void initWorkingSpace(WBenchWorld world, DearUIInterface dearUIInterface) {
-        world.setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(), new Vector3f()));
+        world.setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(0.0f, 5.0f, 0.0f), new Vector3f()));
         WBench.get().openInterface(dearUIInterface);
     }
 

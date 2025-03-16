@@ -1,6 +1,7 @@
 package api.application.workbench.resources.data;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderProperties;
+import api.application.workbench.resources.data.properties.WBenchRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.AxisConstraints;
@@ -28,7 +29,7 @@ public final class WBenchObjectData {
     }
 
     public WBenchObjectData(@NotNull JGemsPath pathToModel) {
-        this(pathToModel, RenderProperties.get());
+        this(pathToModel, WBenchRenderProperties.getDefault());
     }
 
     @SafeVarargs

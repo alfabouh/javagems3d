@@ -1,7 +1,8 @@
 package javagems3d.graphics.objects.rendering.pipeline.fabric.scene;
 
 import javagems3d.graphics.objects.IRendered;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
@@ -25,7 +26,7 @@ public class DefaultIndirectRenderFabric extends IndirectRenderFabric {
 
     @Override
     public void onFillBufferWithProperties(Pipeline pipeline, IRendered renderedItem, RenderAttributes defaultAttributes, ByteBuffer properties, ArbitraryArguments metaData) {
-        properties.putFloat(defaultAttributes.getProperties().getAlphaDiscardValue());
+        properties.putFloat(defaultAttributes.getProperties().getFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD));
         properties.putInt(JGemsRenderingHelper.getLightingCodeForShader(defaultAttributes));
     }
 

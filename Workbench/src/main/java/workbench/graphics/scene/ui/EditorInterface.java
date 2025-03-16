@@ -75,22 +75,22 @@ public class EditorInterface implements DearUIInterface {
     private final WBenchOpenGLRenderer openGLRenderer;
 
     public EditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull ProjectManager projectManager) {
+        this.projectManager = projectManager;
+        this.openGLRenderer = openGLRenderer;
+        this.scenePreview = scenePreview;
+        this.sunCamera = new FixedCamera(new Vector3f(), new Vector3f());
+        this.clear();
+    }
+
+    public void clear() {
         this.currentSelectedObject = null;
         this.currentSelectedTemplate = null;
-
-        this.projectManager = projectManager;
         this.openEnvironmentFogSettings = false;
         this.openEnvironmentSkySettings = false;
         this.openProjectSettings = false;
-        this.openGLRenderer = openGLRenderer;
-
-        this.sunCamera = new FixedCamera(new Vector3f(), new Vector3f());
         this.oldCamera = null;
         this.cameraCheckBox = false;
-
-        this.scenePreview = scenePreview;
         this.previewDistance = 1.0f;
-
         this.currentOperation = Operation.TRANSLATE;
     }
 
@@ -157,8 +157,8 @@ public class EditorInterface implements DearUIInterface {
         } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
             EditorInterface.isCursorInsideScene = false;
         }
-        Vector3f camPos = this.getOpenGLRenderer().getCamera().getCamPosition();
 
+        Vector3f camPos = this.getOpenGLRenderer().getCamera().getCamPosition();
         ImGui.text("FPS: " + WBenchScreen.RENDER_FPS);
         ImGui.sameLine();
         ImGui.text("[" + camPos.x + ", " + camPos.y + ", " + camPos.z + "]");
@@ -187,10 +187,10 @@ public class EditorInterface implements DearUIInterface {
         this.resourcesContent();
         ImGui.end();
 
-        ImGui.begin("Properties", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Actions", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(propertiesWindowSizeX, propertiesWindowSizeY - YOffset);
         ImGui.setWindowPos(sceneWindowSizeX + sceneWindowOffset, YOffset);
-        this.propertiesContent();
+        this.actionsContent();
         ImGui.end();
 
         this.context();
@@ -266,6 +266,9 @@ public class EditorInterface implements DearUIInterface {
             }
             ImGui.end();
             if (!opened.get()) {
+                if (this.oldCamera != null) {
+                    this.setNewCamera(null);
+                }
                 this.openEnvironmentSkySettings = false;
                 this.cameraCheckBox = false;
             }
@@ -287,25 +290,6 @@ public class EditorInterface implements DearUIInterface {
         }
     }
 
-    private void zeroPreviewParams() {
-        this.previewDistance = 1.0f;
-    }
-
-    private Pair<Vector3f, Vector3f> adjustCamera(SunLight sun) {
-        Vector3f sunPos = sun.getLightPosition().normalize().mul(100f);
-        return new Pair<>(sunPos, new Vector3f(0.0f));
-    }
-
-    private void setNewCamera(@Nullable ICamera camera) {
-        if (camera == null) {
-            this.getOpenGLRenderer().getWorld().setCamera(this.oldCamera);
-            this.oldCamera = null;
-        } else {
-            this.oldCamera = this.getOpenGLRenderer().getCamera();
-            WBench.get().getScreen().getScene().setCamera(camera);
-        }
-    }
-
     //===============================================
 
     private void itemsContent() {
@@ -313,8 +297,12 @@ public class EditorInterface implements DearUIInterface {
             WBenchObject wBenchObject1 = (WBenchObject) wBenchObject;
             boolean flag = this.currentSelectedObject == wBenchObject1;
             if (ImGui.selectable("(" + wBenchObject1.getId() + ") " + wBenchObject1.getName(), flag)) {
-                this.currentSelectedObject = !flag ? wBenchObject1 : null;
-                this.currentOperation = this.chooseDefaultGuizmoOperation();
+                if (!flag) {
+                    this.currentSelectedObject = wBenchObject1;
+                    this.currentOperation = this.chooseDefaultGuizmoOperation();
+                } else {
+                    this.currentSelectedObject = null;
+                }
             }
         }
     }
@@ -346,14 +334,6 @@ public class EditorInterface implements DearUIInterface {
                 }
                 ImGui.treePop();
             }
-
-          //  if (selectedObject != null) {
-          //      ImGui.separator();
-          //      ImGui.text("Selected Object: " + selectedObject.getName());
-          //      if (ImGui.button("Spawn")) {
-          //          spawnObject(selectedObject);
-          //      }
-          //  }
         }
         if (ImGui.collapsingHeader("Props")) {
 
@@ -367,54 +347,70 @@ public class EditorInterface implements DearUIInterface {
         ImGui.separator();
     }
 
-    private void propertiesContent() {
-        if (ImGui.collapsingHeader("Preview", ImGuiTreeNodeFlags.DefaultOpen)) {
-            if (this.currentSelectedTemplate != null) {
-                float available = Math.min(ImGui.getContentRegionAvailX(), 256);
-                ImGui.text("Preview: " + this.currentSelectedTemplate.getId());
-                ImGui.image(this.scenePreview.getTextureIDByIndex(0), available, available, 0.0f, 1.0f, 1.0f, 0.0f);
+    private void actionsContent() {
+        if (this.currentSelectedTemplate != null && ImGui.collapsingHeader("Preview", ImGuiTreeNodeFlags.DefaultOpen)) {
+            float available = Math.min(ImGui.getContentRegionAvailX(), 256);
+            ImGui.text("Preview: " + this.currentSelectedTemplate.getId());
+            ImGui.image(this.scenePreview.getTextureIDByIndex(0), available, available, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                float[] scaling = new float[]{this.previewDistance};
-                if (ImGui.sliderFloat("Distance", scaling, 1.0f, 10.0f)) {
-                    this.previewDistance = scaling[0];
-                }
-                if (ImGui.button("Generate")) {
-                    WBenchObject wBenchObject = new WBenchObject(this.getOpenGLRenderer().getWorld(), this.currentSelectedTemplate);
-                    wBenchObject.setId(this.getOpenGLRenderer().getWorld().getSceneObjects().size());
-                    this.getOpenGLRenderer().getWorld().addObjectInWorld(wBenchObject);
-                }
+            float[] scaling = new float[]{this.previewDistance};
+            if (ImGui.sliderFloat("Distance", scaling, 1.0f, 10.0f)) {
+                this.previewDistance = scaling[0];
+            }
+            if (ImGui.button("Generate")) {
+                WBenchObject wBenchObject = new WBenchObject(this.getOpenGLRenderer().getWorld(), this.currentSelectedTemplate);
+                wBenchObject.setId(this.getOpenGLRenderer().getWorld().getSceneObjects().size());
+                this.getOpenGLRenderer().getWorld().addObjectInWorld(wBenchObject);
             }
             ImGui.separator();
         }
         if (this.currentSelectedObject != null) {
             if (ImGui.collapsingHeader("Object", ImGuiTreeNodeFlags.DefaultOpen)) {
-                int objectFlagTranslate = this.currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag();
-                int objectFlagRotate = this.currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag();
-                int objectFlagScaling = this.currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag();
-
-                if (objectFlagTranslate != 0) {
-                    if (ImGui.radioButton("Translate", (this.currentOperation & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
-                        this.currentOperation = this.chooseGuizmoOperation(true, false, false);
+                ImGui.treePush();
+                if (ImGui.treeNode("Usage")) {
+                    if (ImGui.button("Remove")) {
+                        this.getOpenGLRenderer().getWorld().removeObjectFromWorld(this.currentSelectedObject);
+                        this.currentSelectedObject = null;
+                        ImGui.treePop();
+                        ImGui.treePop();
+                        return;
                     }
+                    ImGui.treePop();
                 }
+                if (this.currentSelectedObject.hasTranslationConstraints() && ImGui.treeNode("Transformation")) {
+                    int objectFlagTranslate = this.currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag();
+                    int objectFlagRotate = this.currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag();
+                    int objectFlagScaling = this.currentSelectedObject.getTranslationConstraints().getScalingConstraints().getFlag();
 
-                if (objectFlagRotate != 0) {
-                    if (ImGui.radioButton("Rotation", (this.currentOperation & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
-                        this.currentOperation = this.chooseGuizmoOperation(false, true, false);
+                    if (objectFlagTranslate != 0) {
+                        if (ImGui.radioButton("Translate", (this.currentOperation & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
+                            this.currentOperation = this.chooseGuizmoOperation(true, false, false);
+                        }
                     }
-                }
 
-                if (objectFlagScaling != 0) {
-                    if (ImGui.radioButton("Scaling", (this.currentOperation & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
-                        this.currentOperation = this.chooseGuizmoOperation(false, false, true);
+                    if (objectFlagRotate != 0) {
+                        if (ImGui.radioButton("Rotation", (this.currentOperation & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
+                            this.currentOperation = this.chooseGuizmoOperation(false, true, false);
+                        }
                     }
-                }
 
-                this.processTranslations();
+                    if (objectFlagScaling != 0) {
+                        if (ImGui.radioButton("Scaling", (this.currentOperation & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
+                            this.currentOperation = this.chooseGuizmoOperation(false, false, true);
+                        }
+                    }
+
+                    this.processTranslations();
+                    ImGui.treePop();
+                }
                 Collection<Tag<? extends TagItem>> tags = this.currentSelectedObject.getTagsContainer().getTagCollection();
-                for (Tag<? extends TagItem> tag : tags) {
-                    this.processTag(tag);
+                if (!tags.isEmpty() && ImGui.treeNode("Tags")) {
+                    for (Tag<? extends TagItem> tag : tags) {
+                        this.processTag(tag);
+                    }
+                    ImGui.treePop();
                 }
+                ImGui.treePop();
             }
         }
     }
@@ -449,8 +445,7 @@ public class EditorInterface implements DearUIInterface {
             float windowWidth = ImGui.getWindowWidth();
             float viewManipulateRight = ImGui.getWindowPosX() + windowWidth;
             float viewManipulateTop = ImGui.getWindowPosY();
-          // ImGuizmo.viewManipulate(view, 1f, new float[]{viewManipulateRight - 128, viewManipulateTop + 24}, new float[]{128f, 128f}, 0x10101010);
-          // ((ControlledCamera) this.getOpenGLRenderer().getCamera()).setCameraRotation(this.getRotationsFromMatrix(this.getMatrixFromArray(view)));
+           // ImGuizmo.viewManipulate(view, 1f, new float[]{viewManipulateRight - 128, viewManipulateTop + 24}, new float[]{128f, 128f}, 0x10101010);
 
             if (this.currentSelectedObject != null) {
                 MeshAABBData meshAABBData = (MeshAABBData) this.currentSelectedObject.getModel().getMeshStructure().getMeshUserData(MeshStructure3D.MESH_AABB_UD);
@@ -501,10 +496,6 @@ public class EditorInterface implements DearUIInterface {
             ImGui.dragFloat("Pos Z", posArrayZ, 0.01f);
         }
 
-        if ((operationFlag & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0) {
-            ImGui.separator();
-        }
-
         if ((operationFlag & Operation.ROTATE_X) != 0) {
             ImGui.sliderAngle("Rot X", rotArrayX, -180.0f, 180.0f);
         }
@@ -515,10 +506,6 @@ public class EditorInterface implements DearUIInterface {
             ImGui.sliderAngle("Rot Z", rotArrayZ, -180.0f, 180.0f);
         }
 
-        if ((operationFlag & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0) {
-            ImGui.separator();
-        }
-
         if ((operationFlag & Operation.SCALE_X) != 0) {
             ImGui.dragFloat("Scale X", sclArrayX, 0.01f);
         }
@@ -527,10 +514,6 @@ public class EditorInterface implements DearUIInterface {
         }
         if ((operationFlag & Operation.SCALE_Z) != 0) {
             ImGui.dragFloat("Scale Z", sclArrayZ, 0.01f);
-        }
-
-        if ((operationFlag & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0) {
-            ImGui.separator();
         }
 
         currentSelectedObject.setPosition(new Vector3f(posArrayX[0], posArrayY[0], posArrayZ[0]));
@@ -593,7 +576,7 @@ public class EditorInterface implements DearUIInterface {
     private Vector3f getRotationsFromMatrix(Matrix4f matrix4f) {
         Vector3f rotations = new Vector3f();
         Quaternionf quaternionf = new Quaternionf();
-        matrix4f.getNormalizedRotation(quaternionf);
+        matrix4f.getUnnormalizedRotation(quaternionf);
         quaternionf.getEulerAnglesXYZ(rotations);
         return rotations;
     }
@@ -636,6 +619,26 @@ public class EditorInterface implements DearUIInterface {
             GL46.glBindVertexArray(0);
         }
         shaderManager.endShading();
+    }
+
+
+    private void zeroPreviewParams() {
+        this.previewDistance = 1.0f;
+    }
+
+    private Pair<Vector3f, Vector3f> adjustCamera(SunLight sun) {
+        Vector3f sunPos = sun.getLightPosition().normalize().mul(100f);
+        return new Pair<>(sunPos, new Vector3f(0.0f));
+    }
+
+    private void setNewCamera(@Nullable ICamera camera) {
+        if (camera == null) {
+            this.getOpenGLRenderer().getWorld().setCamera(this.oldCamera);
+            this.oldCamera = null;
+        } else {
+            this.oldCamera = this.getOpenGLRenderer().getCamera();
+            WBench.get().getScreen().getScene().setCamera(camera);
+        }
     }
 
     private void consoleContent() {

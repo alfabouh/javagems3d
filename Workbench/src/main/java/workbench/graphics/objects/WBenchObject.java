@@ -62,6 +62,10 @@ public class WBenchObject extends SceneProp {
         return this;
     }
 
+    public boolean hasTranslationConstraints() {
+        return this.getTranslationConstraints().getPositionConstraints().getFlag() + this.getTranslationConstraints().getRotationConstraints().getFlag() + this.getTranslationConstraints().getScalingConstraints().getFlag() > 0;
+    }
+
     public TranslationConstraints getTranslationConstraints() {
         return this.translationConstraints;
     }

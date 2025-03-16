@@ -1,11 +1,9 @@
 package workbench.graphics.objects.templates;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.AxisConstraints;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import org.jetbrains.annotations.NotNull;
 
 public final class WBenchObjectTemplate {
     private final String id;

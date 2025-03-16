@@ -2,7 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.indirect;
 
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;

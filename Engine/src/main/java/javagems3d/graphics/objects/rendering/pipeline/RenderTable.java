@@ -1,6 +1,5 @@
 package javagems3d.graphics.objects.rendering.pipeline;
 
-import javagems3d.graphics.objects.rendering.configuration.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
@@ -60,73 +59,49 @@ public class RenderTable implements ICopyable<RenderTable> {
         this.dataMap = dataMap;
     }
 
-    protected RenderTable(@NotNull JGemsShaderManager sceneStageShaderManager, @NotNull IRenderFabric sceneStageRenderFabric) {
+    protected RenderTable() {
         this.dataMap = new EnumMap<>(Pipeline.class);
-        this.setSceneRenderMatch(sceneStageShaderManager, sceneStageRenderFabric);
     }
 
-    public static RenderTable get(@NotNull JGemsShaderManager sceneStageShaderManager, @NotNull IRenderFabric sceneStageRenderFabric) {
-        return new RenderTable(sceneStageShaderManager, sceneStageRenderFabric);
+    public static RenderTable getIndirect() {
+        return new RenderTable().setDefaultTableValues(true);
     }
 
-    public static RenderTable getDefaultIndirect() {
-        return RenderTable.get(RenderTable.DEFAULT_SCENE_SHADER_IND, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND).setDefaultTableValues(true);
-    }
-
-    public static RenderTable getDefaultDirect() {
-        return RenderTable.get(RenderTable.DEFAULT_SCENE_SHADER, RenderTable.DEFAULT_SCENE_RENDER_FABRIC).setDefaultTableValues(false);
+    public static RenderTable getDirect() {
+        return new RenderTable().setDefaultTableValues(false);
     }
 
     public RenderTable setDefaultTableValues(boolean indirect) {
         if (indirect) {
-            if (!this.hasValue(Pipeline.POINT_LIGHT_SHADOW_MAP)) {
-                this.setPointLightShadowRenderMatch(RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
-            }
-            if (!this.hasValue(Pipeline.SUN_LIGHT_SHADOW_MAP)) {
-                this.setSunLightShadowRenderMatch(RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
-            }
-            if (!this.hasValue(Pipeline.TRANSPARENCY)) {
-                this.setTransparencyRenderMatch(RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND);
-            }
+            this.setMatch(Pipeline.SCENE, RenderTable.DEFAULT_SCENE_SHADER_IND, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND);
+            this.setMatch(Pipeline.POINT_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
+            this.setMatch(Pipeline.SUN_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
+            this.setMatch(Pipeline.TRANSPARENCY, RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND);
         } else {
-            if (!this.hasValue(Pipeline.POINT_LIGHT_SHADOW_MAP)) {
-                this.setPointLightShadowRenderMatch(RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
-            }
-            if (!this.hasValue(Pipeline.SUN_LIGHT_SHADOW_MAP)) {
-                this.setSunLightShadowRenderMatch(RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
-            }
-            if (!this.hasValue(Pipeline.TRANSPARENCY)) {
-                this.setTransparencyRenderMatch(RenderTable.DEFAULT_TRANSPARENCY_SHADER, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC);
-            }
+            this.setMatch(Pipeline.SCENE, RenderTable.DEFAULT_SCENE_SHADER, RenderTable.DEFAULT_SCENE_RENDER_FABRIC);
+            this.setMatch(Pipeline.POINT_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
+            this.setMatch(Pipeline.SUN_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
+            this.setMatch(Pipeline.TRANSPARENCY, RenderTable.DEFAULT_TRANSPARENCY_SHADER, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC);
         }
         return this;
     }
 
-    @SuppressWarnings("all")
-    public RenderTable setSceneRenderMatch(@NotNull JGemsShaderManager sceneStageShaderManager, @NotNull IRenderFabric sceneStageRenderFabric) {
-        this.setMatch(Pipeline.SCENE, new Data(sceneStageShaderManager, sceneStageRenderFabric));
+    public RenderTable setMatch(@NotNull Pipeline pipeline, @NotNull JGemsShaderManager shaderManager) {
+        this.setMatch(pipeline, new Data(shaderManager, this.getRenderFabric(pipeline)));
         return this;
     }
 
-    @SuppressWarnings("all")
-    public RenderTable setPointLightShadowRenderMatch(@NotNull JGemsShaderManager pLightStageShaderManager, @NotNull IRenderFabric pLightStageRenderFabric) {
-        this.setMatch(Pipeline.POINT_LIGHT_SHADOW_MAP, new Data(pLightStageShaderManager, pLightStageRenderFabric));
+    public RenderTable setMatch(@NotNull Pipeline pipeline, @NotNull IRenderFabric renderFabric) {
+        this.setMatch(pipeline, new Data(this.getShaderManager(pipeline), renderFabric));
         return this;
     }
 
-    @SuppressWarnings("all")
-    public RenderTable setSunLightShadowRenderMatch(@NotNull JGemsShaderManager sLightStageShaderManager, @NotNull IRenderFabric sLightStageRenderFabric) {
-        this.setMatch(Pipeline.SUN_LIGHT_SHADOW_MAP, new Data(sLightStageShaderManager, sLightStageRenderFabric));
+    public RenderTable setMatch(@NotNull Pipeline pipeline, @NotNull JGemsShaderManager shaderManager, @NotNull IRenderFabric renderFabric) {
+        this.setMatch(pipeline, new Data(shaderManager, renderFabric));
         return this;
     }
 
-    @SuppressWarnings("all")
-    public RenderTable setTransparencyRenderMatch(@NotNull JGemsShaderManager transparencyShaderManager, @NotNull IRenderFabric transparencyRenderFabric) {
-        this.setMatch(Pipeline.TRANSPARENCY, new Data(transparencyShaderManager, transparencyRenderFabric));
-        return this;
-    }
-
-    protected void setMatch(@NotNull Pipeline pipeline, @NotNull Data data) {
+    public RenderTable setMatch(@NotNull Pipeline pipeline, @NotNull Data data) {
         IRenderFabric renderFabric = data.getRenderFabric();
         if (renderFabric != null) {
             switch (renderFabric.getRenderingType()) {
@@ -145,6 +120,7 @@ public class RenderTable implements ICopyable<RenderTable> {
             }
         }
         this.dataMap.put(pipeline, data);
+        return this;
     }
 
     public Set<IRenderFabric> getRenderFabricsSet() {
