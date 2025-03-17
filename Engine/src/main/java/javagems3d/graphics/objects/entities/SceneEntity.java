@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class SceneEntity extends SceneObject implements IWorldObject, IWorldTicked {
+public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     private final IEntityModelConstructor<WorldItem> entityModelConstructor;
     private final List<Light> lightList;
     private final WorldItem worldItem;

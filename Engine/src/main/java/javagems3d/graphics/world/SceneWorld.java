@@ -94,26 +94,32 @@ public final class SceneWorld implements IWorld {
         EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.POST, this));
     }
 
-    //section WorldUpdObj
     public void updateWorldObjects(boolean refresh, FrameTicking frameTicking) {
         this.getParticlesEmitter().onUpdateParticles(frameTicking.getFrameDeltaTime(), this);
 
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject sceneObject = iterator.next();
+
+            if (sceneObject.isDead()) {
+                if (sceneObject instanceof SceneEntity) {
+                    SceneEntity abstractSceneEntity = (SceneEntity) sceneObject;
+                    this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
+                    abstractSceneEntity.onDestroy(this);
+                }
+                iterator.remove();
+                continue;
+            }
+
             sceneObject.updateAnimation();
+
             if (sceneObject instanceof IWorldTicked) {
                 IWorldTicked worldTicked = (IWorldTicked) sceneObject;
                 worldTicked.onUpdate(this);
             }
+
             if (sceneObject instanceof SceneEntity) {
                 SceneEntity abstractSceneEntity = (SceneEntity) sceneObject;
-                if (abstractSceneEntity.isDead()) {
-                    this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
-                    abstractSceneEntity.onDestroy(this);
-                    iterator.remove();
-                    continue;
-                }
                 if (refresh) {
                     abstractSceneEntity.refreshInterpolatingState();
                 }
@@ -122,14 +128,13 @@ public final class SceneWorld implements IWorld {
             }
         }
 
-        Iterator<SceneWorldLiquid> iterator2 = this.getLiquids().iterator();
-        while (iterator2.hasNext()) {
-            SceneWorldLiquid sceneWorldLiquid = iterator2.next();
-            if (sceneWorldLiquid.getLiquid().isDead()) {
-                sceneWorldLiquid.getModel().clear();
-                iterator2.remove();
+        this.getLiquids().removeIf(liquid -> {
+            if (liquid.getLiquid().isDead()) {
+                liquid.getModel().clear();
+                return true;
             }
-        }
+            return false;
+        });
     }
 
     //section WorldClean

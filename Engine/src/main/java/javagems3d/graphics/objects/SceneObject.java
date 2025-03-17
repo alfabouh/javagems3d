@@ -1,6 +1,7 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
+import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
@@ -9,7 +10,7 @@ import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import logger.Log;
 
-public abstract class SceneObject implements IModeled, IRendered, ILighted {
+public abstract class SceneObject implements IModeled, IRendered, ILighted, IWorldObject {
     private AnimationData animationData;
     private final IWorld world;
     private RenderAttributes renderAttributes;

@@ -6,6 +6,7 @@ import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiSelectableFlags;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
@@ -291,12 +292,13 @@ public class EditorInterface implements DearUIInterface {
     }
 
     //===============================================
-
     private void itemsContent() {
         for (SceneObject wBenchObject : this.getOpenGLRenderer().getWorld().getSceneObjects()) {
             WBenchObject wBenchObject1 = (WBenchObject) wBenchObject;
             boolean flag = this.currentSelectedObject == wBenchObject1;
-            if (ImGui.selectable("(" + wBenchObject1.getId() + ") " + wBenchObject1.getName(), flag)) {
+            float x = ImGui.getContentRegionAvailX() - 30f;
+            ImGui.pushID(wBenchObject1.getId());
+            if (ImGui.selectable("(" + wBenchObject1.getId() + ") " + wBenchObject1.getName(), flag, ImGuiSelectableFlags.AllowItemOverlap, x, 18f)) {
                 if (!flag) {
                     this.currentSelectedObject = wBenchObject1;
                     this.currentOperation = this.chooseDefaultGuizmoOperation();
@@ -304,6 +306,17 @@ public class EditorInterface implements DearUIInterface {
                     this.currentSelectedObject = null;
                 }
             }
+            ImGui.sameLine();
+            if (ImGui.button("X")) {
+                if (wBenchObject1.equals(this.currentSelectedObject)) {
+                    this.currentSelectedObject = null;
+                }
+                wBenchObject1.setDead();
+            }
+            if (ImGui.isItemHovered()) {
+                ImGui.setTooltip("id: " + wBenchObject1.getId());
+            }
+            ImGui.popID();
         }
     }
 
@@ -367,16 +380,6 @@ public class EditorInterface implements DearUIInterface {
         if (this.currentSelectedObject != null) {
             if (ImGui.collapsingHeader("Object", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.treePush();
-                if (ImGui.treeNode("Usage")) {
-                    if (ImGui.button("Remove")) {
-                        this.getOpenGLRenderer().getWorld().removeObjectFromWorld(this.currentSelectedObject);
-                        this.currentSelectedObject = null;
-                        ImGui.treePop();
-                        ImGui.treePop();
-                        return;
-                    }
-                    ImGui.treePop();
-                }
                 if (this.currentSelectedObject.hasTranslationConstraints() && ImGui.treeNode("Transformation")) {
                     int objectFlagTranslate = this.currentSelectedObject.getTranslationConstraints().getPositionConstraints().getFlag();
                     int objectFlagRotate = this.currentSelectedObject.getTranslationConstraints().getRotationConstraints().getFlag();
@@ -487,33 +490,33 @@ public class EditorInterface implements DearUIInterface {
         float[] sclArrayZ = new float[] {this.currentSelectedObject.getScaling().z};
 
         if ((operationFlag & Operation.TRANSLATE_X) != 0) {
-            ImGui.dragFloat("Pos X", posArrayX, 0.01f);
+            ImGui.dragFloat("X", posArrayX, 0.01f);
         }
         if ((operationFlag & Operation.TRANSLATE_Y) != 0) {
-            ImGui.dragFloat("Pos Y", posArrayY, 0.01f);
+            ImGui.dragFloat("Y", posArrayY, 0.01f);
         }
         if ((operationFlag & Operation.TRANSLATE_Z) != 0) {
-            ImGui.dragFloat("Pos Z", posArrayZ, 0.01f);
+            ImGui.dragFloat("Z", posArrayZ, 0.01f);
         }
 
         if ((operationFlag & Operation.ROTATE_X) != 0) {
-            ImGui.sliderAngle("Rot X", rotArrayX, -180.0f, 180.0f);
+            ImGui.sliderAngle("X", rotArrayX, -180.0f, 180.0f);
         }
         if ((operationFlag & Operation.ROTATE_Y) != 0) {
-            ImGui.sliderAngle("Rot Y", rotArrayY, -180.0f, 180.0f);
+            ImGui.sliderAngle("Y", rotArrayY, -180.0f, 180.0f);
         }
         if ((operationFlag & Operation.ROTATE_Z) != 0) {
-            ImGui.sliderAngle("Rot Z", rotArrayZ, -180.0f, 180.0f);
+            ImGui.sliderAngle("Z", rotArrayZ, -180.0f, 180.0f);
         }
 
         if ((operationFlag & Operation.SCALE_X) != 0) {
-            ImGui.dragFloat("Scale X", sclArrayX, 0.01f);
+            ImGui.dragFloat("X", sclArrayX, 0.01f, 0.001f, 1000.0f);
         }
         if ((operationFlag & Operation.SCALE_Y) != 0) {
-            ImGui.dragFloat("Scale Y", sclArrayY, 0.01f);
+            ImGui.dragFloat("Y", sclArrayY, 0.01f, 0.001f, 1000.0f);
         }
         if ((operationFlag & Operation.SCALE_Z) != 0) {
-            ImGui.dragFloat("Scale Z", sclArrayZ, 0.01f);
+            ImGui.dragFloat("Z", sclArrayZ, 0.01f, 0.001f, 1000.0f);
         }
 
         currentSelectedObject.setPosition(new Vector3f(posArrayX[0], posArrayY[0], posArrayZ[0]));

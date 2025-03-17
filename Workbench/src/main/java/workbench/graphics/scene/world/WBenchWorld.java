@@ -47,12 +47,16 @@ public class WBenchWorld implements IWorld {
     }
 
     public void updateWorldObjects(FrameTicking frameTicking) {
-        for (SceneObject sceneObject : this.getSceneObjects()) {
-            sceneObject.updateAnimation();
-            if (sceneObject instanceof IWorldTicked) {
-                IWorldTicked worldTicked = (IWorldTicked) sceneObject;
-                worldTicked.onUpdate(this);
+        Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
+        while (iterator.hasNext()) {
+            SceneObject sceneObject = iterator.next();
+            if (sceneObject.isDead()) {
+                iterator.remove();
+                continue;
             }
+            sceneObject.updateAnimation();
+            IWorldTicked worldTicked = (IWorldTicked) sceneObject;
+            worldTicked.onUpdate(this);
         }
     }
 
@@ -60,10 +64,6 @@ public class WBenchWorld implements IWorld {
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject modeledSceneObject = iterator.next();
-            if (modeledSceneObject instanceof SceneEntity) {
-                SceneEntity abstractSceneEntity = (SceneEntity) modeledSceneObject;
-                abstractSceneEntity.onDestroy(this);
-            }
             iterator.remove();
         }
     }

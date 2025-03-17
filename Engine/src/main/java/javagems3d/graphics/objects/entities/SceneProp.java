@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class SceneProp extends SceneObject implements IWorldObject, IWorldTicked {
+public abstract class SceneProp extends SceneObject implements IWorldTicked {
     private final List<Light> lightList;
     private boolean isVisible;
     private boolean isDead;
