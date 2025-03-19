@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh;
 
+import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +19,8 @@ public interface IMesh {
     default int numPositions() {
         return this.getVertexPositions().size();
     }
+
+    SkeletonData getSkeletonData();
 
     void clearData();
     void clearMesh();

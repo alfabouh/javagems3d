@@ -46,6 +46,9 @@ public class MeshGroup extends MeshStructure3D<RenderMesh> {
     @Override
     public void clearNodesData() {
         super.clearNodesData();
+    }
+
+    public void clearLinkedMeshBufferNodesData() {
         if (this.canBeUsedInIndirectRendering()) {
             this.getLinkedMeshBuffer().clearNodesData();
         }

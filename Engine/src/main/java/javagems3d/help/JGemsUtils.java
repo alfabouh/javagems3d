@@ -98,7 +98,7 @@ public abstract class JGemsUtils {
         if (meshStructure != null) {
             meshStructure.setMeshAABBData(new MeshAABBData(MeshAABBHelper.createMultiThread(meshStructure, 4)));
             if (meshStructure.isAnimatedStructure()) {
-                for (Map.Entry<Animation, CullingAABB> aabbEntry : MeshAABBHelper.createAnimatedMultiThread(meshStructure).entrySet()) {
+                for (Map.Entry<Animation, CullingAABB> aabbEntry : MeshAABBHelper.createAnimatedMultiThread(meshStructure, 4).entrySet()) {
                     meshStructure.setMeshAABBDataForAnimationFrame(aabbEntry.getKey(), new MeshAABBData(aabbEntry.getValue()));
                 }
             }

@@ -93,6 +93,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         if (createAabb) {
             JGemsUtils.createMeshAABBData(meshGroup);
         }
+        meshGroup.clearNodesData();
         return meshGroup;
     }
 
@@ -154,11 +155,16 @@ public class ModelMeshLoader implements ILoadingHelper {
     }
 
     @SuppressWarnings("all")
-    private SkeletonData readSkeleton(List<Bone> bonesList, AIScene scene, AIMesh aiMesh, MeshStructure3D... meshStructures) {
+    private SkeletonData readSkeleton(List<Bone> bonesList, AIScene scene, AIMesh aiMesh) {
         SkeletonData skeletonData = AnimationLoadingUtils.readSkeleton(aiMesh, bonesList);
         if (skeletonData == null) {
             throw new JGemsIOException("Failed to read bones in animated model");
         }
+        return skeletonData;
+    }
+
+    @SuppressWarnings("all")
+    private void readAnimations(List<Bone> bonesList, AIScene scene, MeshStructure3D<?>... meshStructures) {
         List<Animation> animations = new ArrayList<>();
         int totalAnimations = scene.mNumAnimations();
         if (totalAnimations > 0) {
@@ -170,12 +176,10 @@ public class ModelMeshLoader implements ILoadingHelper {
             }
         }
         List<Animation> finalAnimations = animations;
-        Arrays.asList(meshStructures).stream().filter(Objects::nonNull).forEach(e -> e.loadAnimations(finalAnimations));
+        Arrays.stream(meshStructures).filter(Objects::nonNull).forEach(e -> e.loadAnimations(finalAnimations));
         Log.get().info("Loaded animation (size:" + animations.size() + ") for: " + this.getPath());
         systemResources.processMessage("Loaded animation(size:" + animations.size() + ")", 0xff00ff);
-        return skeletonData;
     }
-
 
     private MeshGroup processMeshGroup(@Nullable JGemsShaderManager computeTransparentPixels, SystemResources systemResources, boolean isAnimated, boolean attachMeshBuffer) {
         MeshGroup meshGroup = new MeshGroup();
@@ -207,7 +211,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             for (int i = 0; i < totalMeshes; i++) {
                 AIMesh aiMesh = AIMesh.create(Objects.requireNonNull(aiMeshes).get(i));
                 if (isAnimated) {
-                    skeletonData = this.readSkeleton(bonesList, aiScene, aiMesh, meshGroup, meshBuffer);
+                    skeletonData = this.readSkeleton(bonesList, aiScene, aiMesh);
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
@@ -223,8 +227,8 @@ public class ModelMeshLoader implements ILoadingHelper {
                     meshGroup.setLinkedMeshBuffer(meshBuffer);
                 }
             }
+            this.readAnimations(bonesList, aiScene, meshGroup, meshBuffer);
             Assimp.aiReleaseImport(aiScene);
-
         } catch (Exception e) {
             Log.get().error(e.getMessage());
             return null;
@@ -260,7 +264,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             for (int i = 0; i < totalMeshes; i++) {
                 AIMesh aiMesh = AIMesh.create(Objects.requireNonNull(aiMeshes).get(i));
                 if (isAnimated) {
-                    skeletonData = this.readSkeleton(bonesList, aiScene, aiMesh, meshBuffer);
+                    skeletonData = this.readSkeleton(bonesList, aiScene, aiMesh);
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
@@ -270,8 +274,8 @@ public class ModelMeshLoader implements ILoadingHelper {
                meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
                systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
             }
+            this.readAnimations(bonesList, aiScene, meshBuffer);
             Assimp.aiReleaseImport(aiScene);
-
         } catch (Exception e) {
             Log.get().exception(e);
             return null;
@@ -298,6 +302,8 @@ public class ModelMeshLoader implements ILoadingHelper {
         }
 
         DataMesh dataMesh = new DataMesh();
+        dataMesh.setSkeletonData(skeletonData);
+
         dataMesh.putVertexIndexes(vertices);
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, positions);
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, textureCoordinates);
@@ -331,6 +337,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         }
 
         RenderMesh renderMesh = new RenderMesh();
+        renderMesh.setSkeletonData(skeletonData);
 
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);

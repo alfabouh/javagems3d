@@ -1,4 +1,5 @@
 package javagems3d.system.resources.assets.models.mesh;
+import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.buffers.VertexBuffer;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.RenderAttributePointer;
 import org.jetbrains.annotations.NotNull;
@@ -14,10 +15,12 @@ public class DataMesh implements IMesh {
 
     private final Map<Integer, VertexBuffer<Float>> bufferMap;
     private VertexBuffer<Integer> indexes;
+    private SkeletonData skeletonData;
 
     public DataMesh() {
         this.positionsIdx = IMesh.DEFAULT_POS_IDX;
         this.bufferMap = new HashMap<>();
+        this.skeletonData = null;
     }
 
     public void putVertexIndexes(List<Integer> indexes) {
@@ -69,6 +72,7 @@ public class DataMesh implements IMesh {
 
     @Override
     public void clearData() {
+        this.setSkeletonData(null);
         this.getIndexesBuffer().getValues().clear();
         this.getBufferMap().values().forEach(e -> e.getValues().clear());
         this.getBufferMap().clear();
@@ -77,6 +81,15 @@ public class DataMesh implements IMesh {
     @Override
     public void clearMesh() {
         this.clearData();
+    }
+
+    public SkeletonData getSkeletonData() {
+        return this.skeletonData;
+    }
+
+    public DataMesh setSkeletonData(SkeletonData skeletonData) {
+        this.skeletonData = skeletonData;
+        return this;
     }
 
     public void setPositionsIdx(int idx) {

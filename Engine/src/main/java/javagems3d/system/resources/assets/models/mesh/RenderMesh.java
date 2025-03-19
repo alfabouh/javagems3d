@@ -1,5 +1,6 @@
 package javagems3d.system.resources.assets.models.mesh;
 
+import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.VertexAttribute;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
@@ -22,11 +23,13 @@ public class RenderMesh implements IMesh, AutoCloseable {
     private final Map<Integer, VertexAttribute<?>> vertexAttributesMap;
 
     private boolean baked;
+    private SkeletonData skeletonData;
 
     public RenderMesh() {
         this.positionsIdx = IMesh.DEFAULT_POS_IDX;
         this.vertexIndexes = new ArrayList<>();
 
+        this.skeletonData = null;
         this.baked = false;
         this.vertexAttributesMap = new HashMap<>();
         this.vboMap = new HashMap<>();
@@ -123,6 +126,7 @@ public class RenderMesh implements IMesh, AutoCloseable {
     }
 
     public void clearData() {
+        this.setSkeletonData(null);
         this.getVertexIndexes().clear();
         this.vertexAttributesMap.values().forEach(VertexAttribute::clearData);
         this.vertexAttributesMap.clear();
@@ -139,6 +143,15 @@ public class RenderMesh implements IMesh, AutoCloseable {
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
         GL46.glBindVertexArray(0);
         GL46.glDeleteVertexArrays(this.getVao());
+    }
+
+    public SkeletonData getSkeletonData() {
+        return this.skeletonData;
+    }
+
+    public RenderMesh setSkeletonData(SkeletonData skeletonData) {
+        this.skeletonData = skeletonData;
+        return this;
     }
 
     public void setPositionsIdx(int idx) {

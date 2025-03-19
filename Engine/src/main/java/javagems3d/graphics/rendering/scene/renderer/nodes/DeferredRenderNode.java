@@ -11,7 +11,10 @@ import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgra
 import javagems3d.graphics.rendering.programs.indirect.commands.BaseIndirectCommandsProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IDeferredRenderNode;
@@ -32,6 +35,7 @@ import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;
@@ -74,6 +78,13 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
 
     @Override
     public void onRender(FrameTicking frameTicking) {
+        for (SceneObject sceneObject : this.getIndirectDeferredRenderingObjects()) {
+            CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
+            if (cullingAABB != null) {
+                JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+            }
+        }
+
         this.getOutGBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
