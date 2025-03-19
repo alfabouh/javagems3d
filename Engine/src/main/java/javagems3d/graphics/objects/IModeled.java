@@ -3,8 +3,8 @@ package javagems3d.graphics.objects;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.Nullable;
 
 public interface IModeled extends IAnimated {
@@ -15,10 +15,15 @@ public interface IModeled extends IAnimated {
         if (!this.hasModel()) {
             return null;
         }
-        if (!this.getModel().getMeshStructure().hasMeshUserData(MeshStructure3D.MESH_AABB_UD)) {
+        Pose3D pose3D = this.getModel().getPose();
+        if (this.hasAnimationData()) {
+            return this.getModel().getMeshStructure().getMeshAABBDataForAnimation(this.getAnimationData().getCurrentAnimation()).getNormalizedAABB(pose3D);
+        }
+        MeshAABBData meshAABBData = this.getModel().getMeshStructure().getMeshAABBData();
+        if (meshAABBData == null) {
             return null;
         }
-        return this.getModel().getMeshStructure().getMeshUserData(MeshStructure3D.MESH_AABB_UD, MeshAABBData.class).getNormalizedAABB(this.getModel().getPose());
+        return meshAABBData.getNormalizedAABB(pose3D);
     }
 
     default boolean hasModel() {

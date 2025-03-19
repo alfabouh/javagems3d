@@ -130,7 +130,6 @@ public final class WBench {
             Log.get().info(WBench.get().toString());
             Log.get().info("===============================================================");
             JGemsCore.printSystemInfo();
-
             WBench.get().getResourceManager().initGlobalResources();
 
             WBench.get().getScreen().createScreenAndContext();

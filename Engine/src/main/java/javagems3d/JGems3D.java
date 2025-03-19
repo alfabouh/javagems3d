@@ -129,8 +129,6 @@ public final class JGems3D {
         } catch (Exception e) {
             Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
-        } finally {
-            JGemsAPI.get().close();
         }
     }
 

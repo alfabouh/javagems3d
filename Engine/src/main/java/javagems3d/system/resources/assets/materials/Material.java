@@ -8,6 +8,7 @@ import javagems3d.system.resources.assets.texturing.Color4Texture;
 import javagems3d.system.resources.assets.texturing.base.ISample;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
+import javagems3d.system.service.synchronizing.GPUSyncer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
@@ -92,17 +93,19 @@ public class Material {
         }
 
         public static boolean scanForAlphaPixels(@NotNull JGemsShaderManager computing, ITexture2DProgram imageTexture) {
-            ShaderStorageBufferProgram.clearBufferData(JGemsResourceManager.globalShaderAssets.TextureScan, GL46.GL_R32UI, GL46.GL_RED, GL46.GL_UNSIGNED_INT, null);
-
             int texWidth = imageTexture.getSize().x;
             int texHeight = imageTexture.getSize().y;
-            computing.beginComputing();
-            computing.performUniformTexture(new UniformString("inputTexture"), imageTexture);
-            computing.dispatchComputeShader((texWidth + 15) / 16, (texHeight + 15) / 16, 1, GL46.GL_SHADER_STORAGE_BARRIER_BIT);
-            computing.endComputing();
+
+            ShaderStorageBufferProgram.clearBufferData(JGemsResourceManager.globalShaderAssets.TextureScan, GL46.GL_R32UI, GL46.GL_RED, GL46.GL_UNSIGNED_INT, null);
+            try (GPUSyncer.SyncObj syncObj = GPUSyncer.create(1000)) {
+                computing.beginComputing();
+                computing.performUniformTexture(new UniformString("inputTexture"), imageTexture);
+                computing.dispatchComputeShader((texWidth + 15) / 16, (texHeight + 15) / 16, 1, GL46.GL_SHADER_STORAGE_BARRIER_BIT);
+                computing.endComputing();
+            }
+
             ByteBuffer buffer = ShaderStorageBufferProgram.readData(JGemsResourceManager.globalShaderAssets.TextureScan);
             buffer.rewind();
-
             return buffer.getInt(0) > 1;
         }
 

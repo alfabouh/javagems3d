@@ -12,6 +12,9 @@ import javagems3d.system.service.collections.Pair;
 import vhacd.VHACD;
 import vhacd.VHACDHull;
 import vhacd.VHACDParameters;
+import vhacd4.Vhacd4;
+import vhacd4.Vhacd4Hull;
+import vhacd4.Vhacd4Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +35,10 @@ public class MeshCollisionData implements IMeshUserData {
     }
 
     private CompoundCollisionShape optimizedShape(float[] meshPositions, int[] meshIndices) {
-        VHACDParameters parms = new VHACDParameters();
-        List<VHACDHull> vhacdHulls = VHACD.compute(meshPositions, meshIndices, parms);
+        Vhacd4Parameters parms = new Vhacd4Parameters();
+        List<Vhacd4Hull> vhacdHulls = Vhacd4.compute(meshPositions, meshIndices, parms);
         CompoundCollisionShape compound2 = new CompoundCollisionShape();
-        for (VHACDHull vhacdHull : vhacdHulls) {
+        for (Vhacd4Hull vhacdHull : vhacdHulls) {
             HullCollisionShape hullShape = new HullCollisionShape(vhacdHull);
             compound2.addChildShape(hullShape);
         }

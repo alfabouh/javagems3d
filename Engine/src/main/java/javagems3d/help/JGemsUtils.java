@@ -1,6 +1,9 @@
 package javagems3d.help;
 
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.system.resources.assets.models.animation.Animation;
+import javagems3d.system.resources.assets.models.helper.MeshAABBHelper;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
@@ -81,39 +84,24 @@ public abstract class JGemsUtils {
         return a;
     }
 
-    public static Vector3f convertV3DV3F(Vector3f vector3f) {
-        return new Vector3f(vector3f.x, vector3f.y, vector3f.z);
-    }
-
-    public static Vector3f convertV3FV3D(Vector3f vector3f) {
-        return new Vector3f(vector3f);
-    }
-
     public static Vector3f calcLookVector(Vector3f rotations) {
         float x = rotations.x;
         float y = rotations.y;
-        float lX = org.joml.Math.sin(y) * org.joml.Math.cos(x);
-        float lY = -org.joml.Math.sin(x);
-        float lZ = -org.joml.Math.cos(y) * Math.cos(x);
+        float lX = Math.sin(y) * Math.cos(x);
+        float lY = -Math.sin(x);
+        float lZ = -Math.cos(y) * Math.cos(x);
         return new Vector3f(lX, lY, lZ);
-    }
-
-    public static void createMeshCollisionData(MeshStructure3D... m) {
-        for (MeshStructure3D<?> o : m) {
-            createMeshCollisionData(o);
-        }
-    }
-
-    public static void createMeshAABBData(MeshStructure3D<?>... m) {
-        for (MeshStructure3D<?> o : m) {
-            createMeshAABBData(o);
-        }
     }
 
     @SuppressWarnings("all")
     public static boolean createMeshAABBData(MeshStructure3D<?> meshStructure) {
-        if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure3D.MESH_AABB_UD) == null) {
-            meshStructure.setMeshUserData(MeshStructure3D.MESH_AABB_UD, MeshAABBData.create(meshStructure));
+        if (meshStructure != null) {
+            meshStructure.setMeshAABBData(new MeshAABBData(MeshAABBHelper.createMultiThread(meshStructure, 4)));
+            if (meshStructure.isAnimatedStructure()) {
+                for (Map.Entry<Animation, CullingAABB> aabbEntry : MeshAABBHelper.createAnimatedMultiThread(meshStructure).entrySet()) {
+                    meshStructure.setMeshAABBDataForAnimationFrame(aabbEntry.getKey(), new MeshAABBData(aabbEntry.getValue()));
+                }
+            }
             return true;
         }
         return false;

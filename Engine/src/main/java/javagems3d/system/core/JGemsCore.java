@@ -297,6 +297,7 @@ public class JGemsCore implements ICore {
                     this.getSoundManager().destroy();
                     this.getPhysics().getPhysicsProcessor().clearResources();
                     this.localPlayer = null;
+                    JGemsAPI.get().close();
                     Log.get().debug("END");
                 } catch (Exception e) {
                     this.appendException(err, e);

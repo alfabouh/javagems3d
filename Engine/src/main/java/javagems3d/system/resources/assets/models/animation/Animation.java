@@ -10,21 +10,12 @@ public final class Animation {
     private final double duration;
     private final double fps;
     private final List<AnimationFrame> frameList;
-    private int offset;
 
     public Animation(String name, double duration, double fps, List<AnimationFrame> frameList) {
         this.name = name;
         this.duration = duration;
         this.frameList = frameList;
         this.fps = fps;
-    }
-
-    public int getOffset() {
-        return this.offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
     }
 
     public String getName() {
@@ -37,6 +28,11 @@ public final class Animation {
 
     public double getDuration() {
         return this.duration;
+    }
+
+    public void clear() {
+        this.getFrameList().forEach(AnimationFrame::clear);
+        this.getFrameList().clear();
     }
 
     public List<AnimationFrame> getFrameList() {

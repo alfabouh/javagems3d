@@ -4,6 +4,7 @@ import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.udata.IMeshUserData;
+import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -16,10 +17,12 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
     public static final int TRANSPARENCY_LAYER = 1;
 
     public static final String MESH_COLLISION_UD = "mesh_collision";
-    public static final String MESH_AABB_UD = "mesh_aabb";
 
     private final Map<String, IMeshUserData> meshUserData;
     private final List<Animation> animationsList;
+
+    private MeshAABBData meshAABBData;
+    private final Map<Animation, MeshAABBData> frameMeshAABBDataMap;
 
     private boolean keepNodesInMemory;
 
@@ -27,6 +30,9 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         this.meshUserData = new HashMap<>();
         this.animationsList = new ArrayList<>();
         this.keepNodesInMemory = false;
+
+        this.meshAABBData = null;
+        this.frameMeshAABBDataMap = new HashMap<>();
     }
 
     public abstract boolean canBeUsedInIndirectRendering();
@@ -36,7 +42,6 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
     }
 
     public void loadAnimations(List<Animation> animations) {
-        this.getAnimationsList().clear();
         this.getAnimationsList().addAll(animations);
     }
 
@@ -85,6 +90,8 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
     public void clear() {
         super.clear();
         this.meshUserData.clear();
+        this.frameMeshAABBDataMap.clear();
+        this.getAnimationsList().forEach(Animation::clear);
         this.getAnimationsList().clear();
     }
 
@@ -110,6 +117,23 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
             return (E) this.getMeshUserData(key);
         }
         return null;
+    }
+
+    public void setMeshAABBDataForAnimationFrame(Animation animation, MeshAABBData meshAABBData) {
+        this.frameMeshAABBDataMap.put(animation, meshAABBData);
+    }
+
+    public MeshAABBData getMeshAABBDataForAnimation(Animation animation) {
+        return this.frameMeshAABBDataMap.get(animation);
+    }
+
+    public MeshStructure3D<T> setMeshAABBData(MeshAABBData meshAABBData) {
+        this.meshAABBData = meshAABBData;
+        return this;
+    }
+
+    public MeshAABBData getMeshAABBData() {
+        return this.meshAABBData;
     }
 
     public boolean isAnimatedStructure() {

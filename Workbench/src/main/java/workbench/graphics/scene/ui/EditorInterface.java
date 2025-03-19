@@ -451,10 +451,10 @@ public class EditorInterface implements DearUIInterface {
            // ImGuizmo.viewManipulate(view, 1f, new float[]{viewManipulateRight - 128, viewManipulateTop + 24}, new float[]{128f, 128f}, 0x10101010);
 
             if (this.currentSelectedObject != null) {
-                MeshAABBData meshAABBData = (MeshAABBData) this.currentSelectedObject.getModel().getMeshStructure().getMeshUserData(MeshStructure3D.MESH_AABB_UD);
-                CullingAABB cullingAABB = meshAABBData.getNormalizedAABB(this.currentSelectedObject.getModel().getPose());
-
-                WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                CullingAABB cullingAABB = this.currentSelectedObject.pickAABBDataFromMesh();
+                if (cullingAABB != null) {
+                    WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                }
 
                 float[] modelMatrix = TransformUtils.getModelMatrix(this.currentSelectedObject.getModel().getPose()).get(new float[16]);
                 ImGuizmo.manipulate(view, projection, modelMatrix, this.currentOperation, Mode.WORLD);
@@ -598,8 +598,7 @@ public class EditorInterface implements DearUIInterface {
 
     private void renderPreviewItem(float distance, WBenchShaderManager shaderManager, MeshGroup meshGroup) {
         final Pose3D pose3D = new Pose3D(new Vector3f(0.0f, 0.0f, -3.5f));
-        MeshAABBData meshAABBData = (MeshAABBData) meshGroup.getMeshUserData(MeshStructure3D.MESH_AABB_UD);
-        CullingAABB cullingAABB = meshAABBData.getNormalizedAABB(pose3D);
+        CullingAABB cullingAABB = meshGroup.getMeshAABBData().getNormalizedAABB(pose3D);
         float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
         float scale = diagonal / 5.0f;
         pose3D.setScaling(new Vector3f(1.0f / scale).mul(distance));

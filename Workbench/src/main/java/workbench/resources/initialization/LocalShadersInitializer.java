@@ -53,8 +53,8 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
-        shaderLibrary.initLibrary(new JGemsPath("/assets/wbench/shaders/libs/shadows"));
-        shaderLibrary.initLibrary(new JGemsPath("/assets/wbench/shaders/libs/animations"));
+        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
+        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/animations"));
     }
 
     protected void initObjects(ResourceCache resourceCache) {

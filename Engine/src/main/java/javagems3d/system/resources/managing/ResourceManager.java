@@ -123,7 +123,6 @@ public abstract class ResourceManager {
         int totalMatrices = 0;
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
             for (Animation animation : meshStructure3D.getAnimationsList()) {
-                animation.setOffset(totalMatrices);
                 for (AnimationFrame animationFrame : animation.getFrameList()) {
                     animationFrame.setOffset(totalMatrices);
                     totalMatrices += animationFrame.getBoneMatrices().length;

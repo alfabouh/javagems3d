@@ -1,7 +1,12 @@
 package javagems3d.system.resources.assets.loading.models;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.graphics.rendering.programs.textures.Texture2DProgram;
+import javagems3d.graphics.rendering.programs.textures.TextureSimple2DProgram;
 import javagems3d.help.JGemsUtils;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.loading.models.utils.AnimationLoadingUtils;
 import javagems3d.system.resources.assets.materials.Material;
@@ -9,46 +14,59 @@ import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.components.Bone;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
 import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
+import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.IntegerVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
+import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
+import javagems3d.system.service.synchronizing.GPUSyncer;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ModelMeshLoader implements ILoadingHelper {
     private final JGemsPath path;
     private final SystemResources systemResources;
     private JGemsShaderManager shaderToDetermineTexturesWithTransparency;
+    public int countVertexes;
 
     public ModelMeshLoader(@NotNull SystemResources systemResources, @NotNull JGemsPath modelPath) {
         this.path = modelPath;
         this.systemResources = systemResources;
         this.shaderToDetermineTexturesWithTransparency = null;
+        this.countVertexes = 0;
     }
 
     public MeshGroup createMeshGroup(int Flags, boolean attachMeshBuffer) {
@@ -264,6 +282,10 @@ public class ModelMeshLoader implements ILoadingHelper {
 
     private DataMesh createDataMesh(AIMesh aiMesh, SkeletonData skeletonData) {
         List<Integer> vertices = ModelLoadingUtils.readVertices(aiMesh);
+        this.countVertexes += vertices.size();
+        if (this.countVertexes > JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL) {
+            throw new JGemsRuntimeException("Reached max vertexes in model: " + JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL);
+        }
         List<Float> textureCoordinates = ModelLoadingUtils.readTextureCoordinates(aiMesh);
         List<Float> positions = ModelLoadingUtils.readPositions(aiMesh);
         List<Float> normals = ModelLoadingUtils.readNormals(aiMesh);
@@ -293,6 +315,10 @@ public class ModelMeshLoader implements ILoadingHelper {
 
     private RenderMesh createRenderMesh(AIMesh aiMesh, SkeletonData skeletonData) {
         List<Integer> vertices = ModelLoadingUtils.readVertices(aiMesh);
+        this.countVertexes += vertices.size();
+        if (this.countVertexes > JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL) {
+            throw new JGemsRuntimeException("Reached max vertexes in model: " + JGemsConfig.SYSTEM.MAX_VERTEXES_IN_MODEL);
+        }
         List<Float> textureCoordinates = ModelLoadingUtils.readTextureCoordinates(aiMesh);
         List<Float> positions = ModelLoadingUtils.readPositions(aiMesh);
         List<Float> normals = ModelLoadingUtils.readNormals(aiMesh);

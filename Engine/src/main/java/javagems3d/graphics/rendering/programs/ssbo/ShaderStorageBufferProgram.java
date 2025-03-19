@@ -6,6 +6,7 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.*;
 import java.util.HashMap;
@@ -74,41 +75,34 @@ public abstract class ShaderStorageBufferProgram {
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
         GL46.glClearBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, internalFormat, 0L, shaderStorageBufferObject.getBufferSize(), format, type, data);
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
-
-       // ByteBuffer buffer = shaderStorageBufferObject.getMappedBuffer();
-       // if (buffer == null) {
-       //     throw new JGemsRuntimeException("SSBO is not mapped");
-       // }
-       // for (int i = 0; i < buffer.capacity(); i++) {
-       //     buffer.put(i, (byte) 0);
-       // }
-
-       // int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
-       // GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
-       // GL46.glFlushMappedBufferRange(GL46.GL_SHADER_STORAGE_BUFFER, 0, shaderStorageBufferObject.getBufferSize());
-       // GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
     }
 
     public static ByteBuffer readData(@NotNull ShaderStorageBufferObject shaderStorageBufferObject) {
         if (shaderStorageBufferObject.getMappedBuffer() == null) {
-            throw new JGemsRuntimeException("SSBO is not mapped");
+            int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
+            GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
+            ByteBuffer buffer = MemoryUtil.memAlloc(shaderStorageBufferObject.getBufferSize());
+            GL46.glGetBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, 0, buffer);
+            GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
+            return buffer;
         }
         return shaderStorageBufferObject.getMappedBuffer();
     }
 
-    /*
-    public static ByteBuffer readData(ShaderStorageBufferObject shaderStorageBufferObject) {
+    public static void flush(@NotNull ShaderStorageBufferObject shaderStorageBufferObject) {
         int ssboID = ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject);
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, ssboID);
-        ByteBuffer buffer = GL46.glMapBuffer(GL46.GL_SHADER_STORAGE_BUFFER, GL46.GL_READ_ONLY);
-        GL46.glUnmapBuffer(GL46.GL_SHADER_STORAGE_BUFFER);
+        GL46.glFlushMappedBufferRange(GL46.GL_SHADER_STORAGE_BUFFER, 0, shaderStorageBufferObject.getBufferSize());
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
-        return buffer;
     }
-     */
 
     public static int getSSBO_ID(@NotNull ShaderStorageBufferObject shaderStorageBufferObject) {
         return ShaderStorageBufferProgram.shaderStorageBuffers.get(shaderStorageBufferObject);
+    }
+
+    public static void clear(ShaderStorageBufferObject shaderStorageBufferObject) {
+        GL46.glDeleteBuffers(ShaderStorageBufferProgram.getSSBO_ID(shaderStorageBufferObject));
+        ShaderStorageBufferProgram.shaderStorageBuffers.remove(shaderStorageBufferObject);
     }
 
     public static void clearAll() {

@@ -12,34 +12,11 @@ import org.joml.Vector4f;
 
 import java.util.List;
 
-public class MeshAABBData implements IMeshUserData {
+public class MeshAABBData {
     private final CullingAABB cullingAABB;
 
     public MeshAABBData(CullingAABB cullingAABB) {
         this.cullingAABB = cullingAABB;
-    }
-
-    public static MeshAABBData create(MeshStructure3D<? extends IMesh> meshStructure) {
-        List<? extends MeshNode3D<?>> list = meshStructure.getAllNodes();
-        if (list.isEmpty()) {
-            return null;
-        }
-
-        Vector3f min = new Vector3f(Float.POSITIVE_INFINITY);
-        Vector3f max = new Vector3f(Float.NEGATIVE_INFINITY);
-
-        for (MeshNode3D<?> meshNode3D : list) {
-            IMesh mesh = meshNode3D.getMeshData();
-            List<Float> positions = mesh.getVertexPositions();
-
-            for (int i = 0; i < positions.size(); i += 3) {
-                Vector3f vertex = new Vector3f(positions.get(i), positions.get(i + 1), positions.get(i + 2));
-                min.min(vertex);
-                max.max(vertex);
-            }
-        }
-
-        return new MeshAABBData(new CullingAABB(min, max));
     }
 
     public CullingAABB transformAABB(CullingAABB aabb, Pose3D transform) {

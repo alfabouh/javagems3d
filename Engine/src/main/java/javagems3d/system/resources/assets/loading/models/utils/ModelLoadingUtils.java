@@ -225,6 +225,7 @@ public abstract class ModelLoadingUtils {
                     if (textureSample.isValid()) {
                         if (computeTransparentPixels != null) {
                             textureIsImageAndHasAlphaPixels = Material.Transparency.scanForAlphaPixels(computeTransparentPixels, textureSample);
+                            Log.get().info("Transparency: " + textureIsImageAndHasAlphaPixels);
                         }
                         diffuseSample = textureSample;
                     }
