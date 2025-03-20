@@ -183,10 +183,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         WBenchOpenGLRenderer.DebugLinesDrawer().render();
         gluingRenderNode.getOutColorBuffer().unBindFBO();
 
+        EditorInterface editorInterface1 = ((EditorInterface) WBenchOpenGLRenderer.editorInterface);
+        editorInterface1.setVisibleObjects(toRender);
         OpenGLRenderer.setViewPort(this.getWindowSize());
         uiRenderNode.onRender(frameTicking);
-
-        ((EditorInterface) WBenchOpenGLRenderer.editorInterface).renderPreviewItem();
+        editorInterface1.renderPreviewItem();
         //  WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(new Vector3f(), new Vector3f(2.0f, 12.0f, 2.0f), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
 
         //JGemsShaderManager imgShader = WBenchResourceManager.localShaderAssets.gui_image;

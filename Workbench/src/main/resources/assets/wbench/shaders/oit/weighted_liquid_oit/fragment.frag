@@ -100,7 +100,7 @@ uniform float metallic_factor;
 uniform float alpha_factor;
 uniform vec2 texture_scaling;
 
-#include "assets/wbench/shaders/libs/shadows"
+#include "/assets/jgems/shaders/libs/shadows"
 
 vec4 calc_sun_light(vec3, vec3, vec3);
 vec4 calc_point_light(PointLight, vec3, vec3, float, float, float, float);

@@ -63,8 +63,8 @@ public abstract class SystemResources implements ISystemResources {
         return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(modelLoadingFlags, keepNodesInMemory));
     }
 
-    public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean attachMeshBuffer) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer));
+    public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean attachMeshBuffer, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer, keepNodesInMemory));
     }
 
     public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {

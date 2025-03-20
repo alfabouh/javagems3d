@@ -69,7 +69,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         this.countVertexes = 0;
     }
 
-    public MeshGroup createMeshGroup(int Flags, boolean attachMeshBuffer) {
+    public MeshGroup createMeshGroup(int Flags, boolean attachMeshBuffer, boolean keepNodesInMemory) {
         boolean animated = (Flags & ModelLoaderFlags.LOAD_ANIMATIONS) != 0;
         boolean createCollision = (Flags & ModelLoaderFlags.CREATE_COLLISION_UD) != 0;
         boolean createAabb = (Flags & ModelLoaderFlags.CREATE_AABB_UD) != 0;
@@ -93,7 +93,9 @@ public class ModelMeshLoader implements ILoadingHelper {
         if (createAabb) {
             JGemsUtils.createMeshAABBData(meshGroup);
         }
-        meshGroup.clearNodesData();
+        if (!keepNodesInMemory) {
+            meshGroup.clearNodesData();
+        }
         return meshGroup;
     }
 
@@ -227,7 +229,9 @@ public class ModelMeshLoader implements ILoadingHelper {
                     meshGroup.setLinkedMeshBuffer(meshBuffer);
                 }
             }
-            this.readAnimations(bonesList, aiScene, meshGroup, meshBuffer);
+            if (isAnimated) {
+                this.readAnimations(bonesList, aiScene, meshGroup, meshBuffer);
+            }
             Assimp.aiReleaseImport(aiScene);
         } catch (Exception e) {
             Log.get().error(e.getMessage());
@@ -274,7 +278,9 @@ public class ModelMeshLoader implements ILoadingHelper {
                meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
                systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
             }
-            this.readAnimations(bonesList, aiScene, meshBuffer);
+            if (isAnimated) {
+                this.readAnimations(bonesList, aiScene, meshBuffer);
+            }
             Assimp.aiReleaseImport(aiScene);
         } catch (Exception e) {
             Log.get().exception(e);

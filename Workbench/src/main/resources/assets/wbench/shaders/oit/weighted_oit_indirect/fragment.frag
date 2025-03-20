@@ -84,7 +84,7 @@ layout (std430, binding = 7) buffer WorldFog {
 uniform vec3 camera_pos;
 uniform samplerCube ambient_cube_map;
 
-#include "assets/wbench/shaders/libs/shadows"
+#include "/assets/jgems/shaders/libs/shadows"
 
 vec4 calc_sun_light(vec3, vec3, vec3, vec4);
 vec4 calc_point_light(PointLight, vec3, vec3, float, float, float, float, vec4);

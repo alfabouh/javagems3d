@@ -27,7 +27,7 @@ struct AnimationData {
 };
 uniform AnimationData animationData;
 
-#include "assets/wbench/shaders/libs/animations"
+#include "/assets/jgems/shaders/libs/animations"
 
 void main()
 {

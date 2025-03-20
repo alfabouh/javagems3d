@@ -129,12 +129,12 @@ public class RenderMesh implements IMesh, AutoCloseable {
         this.setSkeletonData(null);
         this.getVertexIndexes().clear();
         this.vertexAttributesMap.values().forEach(VertexAttribute::clearData);
-        this.vertexAttributesMap.clear();
     }
 
     @Override
     public void clearMesh() {
         this.clearData();
+        this.vertexAttributesMap.clear();
         for (int a : this.vboMap.values()) {
             GL46.glDeleteBuffers(a);
         }

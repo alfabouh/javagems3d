@@ -28,7 +28,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
     }
 
     private WBenchObjectTemplate constructObjectTemplate(SystemResources systemResources, String id, WBenchObjectData wBenchObjectData) {
-        MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true);
+        MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true, true);
         return new WBenchObjectTemplate(id, meshGroup, RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties()), wBenchObjectData.getTagsContainer(), wBenchObjectData.getTranslationConstraints());
     }
 

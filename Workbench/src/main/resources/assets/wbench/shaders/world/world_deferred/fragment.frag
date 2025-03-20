@@ -47,7 +47,7 @@ uniform sampler2D gTexture;
 uniform sampler2D gEmission;
 uniform sampler2D gSpecular;
 
-#include "assets/wbench/shaders/libs/shadows"
+#include "/assets/jgems/shaders/libs/shadows"
 
 vec4 calc_sun_light(vec3, vec3, vec3);
 vec4 calc_point_light(PointLight, vec3, vec3, float, float, float, float);

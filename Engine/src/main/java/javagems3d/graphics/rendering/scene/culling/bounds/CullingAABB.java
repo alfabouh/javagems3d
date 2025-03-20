@@ -19,7 +19,7 @@ public class CullingAABB {
     }
 
     public Vector3f getAabbMin() {
-        return aabbMin;
+        return new Vector3f(this.aabbMin);
     }
 
     public void setAabbMin(Vector3f aabbMin) {
@@ -27,7 +27,7 @@ public class CullingAABB {
     }
 
     public Vector3f getAabbMax() {
-        return aabbMax;
+        return new Vector3f(this.aabbMax);
     }
 
     public void setAabbMax(Vector3f aabbMax) {

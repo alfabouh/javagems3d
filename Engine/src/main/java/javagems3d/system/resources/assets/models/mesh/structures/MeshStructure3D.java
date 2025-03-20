@@ -24,12 +24,9 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
     private MeshAABBData meshAABBData;
     private final Map<Animation, MeshAABBData> frameMeshAABBDataMap;
 
-    private boolean keepNodesInMemory;
-
     public MeshStructure3D() {
         this.meshUserData = new HashMap<>();
         this.animationsList = new ArrayList<>();
-        this.keepNodesInMemory = false;
 
         this.meshAABBData = null;
         this.frameMeshAABBDataMap = new HashMap<>();
@@ -93,14 +90,6 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         this.frameMeshAABBDataMap.clear();
         this.getAnimationsList().forEach(Animation::clear);
         this.getAnimationsList().clear();
-    }
-
-    public boolean isKeepNodesInMemory() {
-        return this.keepNodesInMemory;
-    }
-
-    public void setKeepNodesInMemory(boolean keepNodesInMemory) {
-        this.keepNodesInMemory = keepNodesInMemory;
     }
 
     @SuppressWarnings("all")

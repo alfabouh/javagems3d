@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.models.mesh.structures.solid;
 
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,8 +11,10 @@ import java.util.*;
 public class MeshBuffer extends MeshStructure3D<DataMesh> {
     public static final String POSTFIX = "_buffer";
     private final Map<Integer, List<PassData>> meshPassData;
+    private boolean keepNodesInMemory;
 
     public MeshBuffer(@Nullable List<MeshNode3D<DataMesh>> meshNodes) {
+        this.keepNodesInMemory = false;
         this.meshPassData = new HashMap<>();
         this.initPassDataLayers();
         if (meshNodes != null) {
@@ -35,6 +38,20 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
 
     public MeshBuffer() {
         this((List<MeshNode3D<DataMesh>>) null);
+    }
+
+    public boolean isKeepNodesInMemory() {
+        return this.keepNodesInMemory;
+    }
+
+    public void setKeepNodesInMemory(boolean keepNodesInMemory) {
+        this.keepNodesInMemory = keepNodesInMemory;
+    }
+
+    @Override
+    public void clearNodesData() {
+        super.clearNodesData();
+        this.nodesLayers.values().forEach(List::clear);
     }
 
     @Override
