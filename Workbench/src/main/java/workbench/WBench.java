@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 import java.util.Random;
 
 public final class WBench {
-    public static final float MAP_SIZE = 128.0f;
+    public static final float MAP_SIZE = JGems3D.MAP_MAX_SIZE;
 
     private final OS os;
     public static final String ID = "wbench";

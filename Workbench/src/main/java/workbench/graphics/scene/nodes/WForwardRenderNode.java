@@ -4,16 +4,29 @@ import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsRenderingHelper;
+import javagems3d.help.JGemsShadersHelper;
+import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.helper.MeshHelper;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
+import workbench.WBench;
 import workbench.graphics.scene.nodes.templates.WIForwardRenderNode;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
@@ -46,6 +59,7 @@ public final class WForwardRenderNode extends IRenderNode.Template implements WI
     @Override
     public void onRender(FrameTicking frameTicking) {
         GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         this.getBackgroundRenderProcessor().runProcessorRendering(frameTicking);
         GL46.glDisable(GL46.GL_BLEND);
 
@@ -55,7 +69,20 @@ public final class WForwardRenderNode extends IRenderNode.Template implements WI
 
         this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
         this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);
-        this.getOutColorBuffer().unBindFBO();
+
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+        try (Model3D model3D = MeshHelper.generatePlane3DModel(new Vector3f(-WBench.MAP_SIZE, 0.0f, -WBench.MAP_SIZE), new Vector3f(-WBench.MAP_SIZE, 0.0f, WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, 0.0f, -WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, 0.0f, WBench.MAP_SIZE))) {
+            WBenchResourceManager.localShaderAssets.simple.beginShading();
+            WBenchResourceManager.localShaderAssets.simple.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+            WBenchResourceManager.localShaderAssets.simple.performModel3DMatrix(new UniformString("model_matrix"), TransformUtils.getModelMatrix(model3D.getPose()));
+            WBenchResourceManager.localShaderAssets.simple.performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+            WBenchResourceManager.localShaderAssets.simple.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
+            JGemsRenderingHelper.renderModel3D(model3D, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
+            WBenchResourceManager.localShaderAssets.simple.endShading();
+            this.getOutColorBuffer().unBindFBO();
+            GL46.glDisable(GL46.GL_BLEND);
+        }
     }
 
     public void initProcessors() {

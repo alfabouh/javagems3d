@@ -13,6 +13,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
+import javagems3d.mapping.tags.items.TagRadioBoolean;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.binding.DefaultBindings;
 import javagems3d.system.service.path.JGemsPath;
@@ -58,6 +59,8 @@ public class AppTest extends JGemsApplication {
 
     @Override
     public void setupEditorResources(IAPIWBenchDataManager manager) {
+        final Tag<TagRadioBoolean> tagPhysics = new Tag<>(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Is Static", true), new TagRadioBoolean.Info("Is Dynamic", false)));
+
         final JGemsPath sponza = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.obj");
         final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.obj");
 
@@ -66,8 +69,10 @@ public class AppTest extends JGemsApplication {
                 () -> new JGemsEntityData(false)
         );
         manager.addResourceEntity("test", "cube",
-                () -> new WBenchObjectData(cube),
+                () -> new WBenchObjectData(cube).addTag(tagPhysics),
                 () -> new JGemsEntityData(false)
         );
+
+        manager.addResourceSkyCubeMap("SkyDay1", "png", new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"));
     }
 }

@@ -51,6 +51,7 @@ public class WBenchWorld implements IWorld {
         while (iterator.hasNext()) {
             SceneObject sceneObject = iterator.next();
             if (sceneObject.isDead()) {
+                Log.get().info("Removed object: " + sceneObject);
                 iterator.remove();
                 continue;
             }
@@ -70,23 +71,18 @@ public class WBenchWorld implements IWorld {
 
     public void removeLight(Light light) {
         this.getEnvironment().getLightManager().removeLight(light);
+        Log.get().info("Removed light: " + light);
     }
 
     public void addLight(Light light) {
         this.getEnvironment().getLightManager().addLight(light);
+        Log.get().info("Created new light: " + light);
     }
 
     public void addItemLight(ILighted keepLights, Light light) {
         keepLights.addLight(light);
         this.getEnvironment().getLightManager().addLight(light);
-    }
-
-    public void removeLightFromById(ILighted keepLights, int i) {
-        if (keepLights == null) {
-            Log.get().error("Couldn't attach light. Invalid entity");
-            return;
-        }
-        keepLights.removeLightById(i);
+        Log.get().info("Added light: " + light + " to: " + keepLights);
     }
 
     public void removeLightFrom(ILighted keepLights, Light light) {
@@ -95,15 +91,19 @@ public class WBenchWorld implements IWorld {
             return;
         }
         keepLights.removeLight(light);
+        Log.get().info("Removed light: " + light + " from: " + keepLights);
     }
 
     public void addObjectInWorld(SceneObject renderObject) {
         this.getSceneObjects().add(renderObject);
+        Log.get().info("Created object: " + renderObject);
     }
 
     public void removeObjectFromWorld(SceneObject renderObject) {
         if (!this.getSceneObjects().remove(renderObject)) {
             Log.get().warn("Couldn't remove a render object from SceneWorld");
+        } else {
+            Log.get().info("Removed object: " + renderObject);
         }
     }
 

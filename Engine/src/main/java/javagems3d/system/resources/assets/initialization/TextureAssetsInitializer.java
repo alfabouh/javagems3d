@@ -53,8 +53,8 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
         this.particleTexturesPack = new ParticleTexturesPack(new JGemsPath(JGems3D.DEFAULT_PATHS.PARTICLES, "flame"), ".png", 4, 0.25f);
 
         this.defaultSkyboxCubeMap = systemResources.createCubeMapTexture(null, TextureAssetsInitializer.defaultSkyCubeMapPath, "png", new CubeMapTexture.Properties(true));
-        this.skyboxCubeMap = systemResources.createCubeMapTexture(null, new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay", "sky_"), "png", new CubeMapTexture.Properties(true));
-        this.skyboxCubeMap2 = systemResources.createCubeMapTexture(null, new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyNight", "sky_"), "bmp", new CubeMapTexture.Properties(true));
+        this.skyboxCubeMap = systemResources.createCubeMapTexture(null, new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"), "png", new CubeMapTexture.Properties(true));
+        this.skyboxCubeMap2 = systemResources.createCubeMapTexture(null, new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyNight"), "bmp", new CubeMapTexture.Properties(true));
     }
 
     @Override

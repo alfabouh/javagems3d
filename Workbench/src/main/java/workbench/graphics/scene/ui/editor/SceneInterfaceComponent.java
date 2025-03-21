@@ -15,6 +15,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.collections.Pair;
 import org.joml.*;
+import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.nodes.templates.WIGluingRenderNode;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SceneInterfaceComponent {
     private final EditorInterface editorInterface;
     private AtomicBoolean isThreadInProcess;
+    private boolean usedGuizmoLastFrame;
 
     public SceneInterfaceComponent(EditorInterface editorInterface) {
         this.editorInterface = editorInterface;
@@ -39,21 +41,19 @@ public class SceneInterfaceComponent {
 
     public void clear() {
         this.isThreadInProcess.set(false);
+        this.usedGuizmoLastFrame = false;
     }
 
     public void sceneContent() {
-        float[] view = JGemsTransformManager.INSTANCE.getCameraViewMatrix().get(new float[16]);
-        float[] projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix().get(new float[16]);
-        float[] model = TransformUtils.getModelMatrix(new Pose3D()).get(new float[16]);
+        final float[] view = JGemsTransformManager.INSTANCE.getCameraViewMatrix().get(new float[16]);
+        final float[] projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix().get(new float[16]);
         ImGuizmo.setAllowAxisFlip(true);
         ImGuizmo.setOrthographic(false);
         ImGuizmo.setEnabled(true);
         ImGuizmo.setDrawList();
 
-        float availableX = ImGui.getContentRegionAvailX();
-        float availableY = ImGui.getContentRegionAvailY();
-
-        ImGuizmo.drawGrid(view, projection, model, (int) WBench.MAP_SIZE);
+        final float availableX = ImGui.getContentRegionAvailX();
+        final float availableY = ImGui.getContentRegionAvailY();
 
         WIGluingRenderNode gluingRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
         ImGui.image(gluingRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
@@ -62,7 +62,9 @@ public class SceneInterfaceComponent {
         int imageSizeX = (int) (ImGui.getItemRectSizeX());
         int imageSizeY = (int) (ImGui.getItemRectSizeY());
 
-        if (!this.getEditorInterface().getContextComponent().isCameraCheckBox() && EditorInterface.isCursorInsideScene) {
+        ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
+
+        if (!this.usedGuizmoLastFrame && !this.getEditorInterface().getContextComponent().isCameraCheckBox() && EditorInterface.isCursorInsideScene) {
             if (ImGui.isMouseReleased(0)) {
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 if (!this.isThreadInProcess.get()) {
@@ -80,20 +82,19 @@ public class SceneInterfaceComponent {
             }
         }
 
-        ImVec2 imageSize = ImGui.getItemRectSize();
-        ImVec2 imagePos = ImGui.getItemRectMin();
-
-        float imGuizmoX = imageSize.x;
-        float imGuizmoY = imageSize.y;
-        ImGuizmo.setRect(imagePos.x, imagePos.y, imGuizmoX, imGuizmoY);
-
+        this.usedGuizmoLastFrame = false;
         if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
             if (this.getEditorInterface().getCurrentSelectedObject() != null) {
                 CullingAABB cullingAABB = this.getEditorInterface().getCurrentSelectedObject().pickAABBDataFromMesh();
                 if (cullingAABB != null) {
                     WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
                     float[] modelMatrix = TransformUtils.getModelMatrix(this.getEditorInterface().getCurrentSelectedObject().getModel().getPose()).get(new float[16]);
+                    float[] oldMatrix = new float[16];
+                    System.arraycopy(modelMatrix, 0, oldMatrix, 0, 16);
                     ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getCurrentOperation(), Mode.WORLD, new float[]{0.01f, 0.01f, 0.01f});
+                    if (!Arrays.equals(oldMatrix, modelMatrix)) {
+                        this.usedGuizmoLastFrame = true;
+                    }
 
                     Vector3f position = new Vector3f();
                     Vector3f rotation = new Vector3f();

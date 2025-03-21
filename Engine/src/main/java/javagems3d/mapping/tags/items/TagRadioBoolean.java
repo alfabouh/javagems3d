@@ -8,21 +8,21 @@ import javagems3d.system.service.json.JSONFileManaging;
 import java.lang.reflect.Type;
 
 public class TagRadioBoolean implements TagItem {
-    private final RadioBooleanInfo[] values;
+    private final Info[] values;
 
-    public TagRadioBoolean(RadioBooleanInfo[] values) {
+    public TagRadioBoolean(Info... values) {
         this.values = values;
     }
 
-    public RadioBooleanInfo[] getValues() {
+    public Info[] getValues() {
         return this.values;
     }
 
-    public RadioBooleanInfo[] getCopiedValues() {
-        RadioBooleanInfo[] copy = new RadioBooleanInfo[this.values.length];
+    public Info[] getCopiedValues() {
+        Info[] copy = new Info[this.values.length];
         for (int i = 0; i < this.values.length; i++) {
-            RadioBooleanInfo original = this.values[i];
-            copy[i] = new RadioBooleanInfo(original.getName(), original.isFlag());
+            Info original = this.values[i];
+            copy[i] = new Info(original.getName(), original.isFlag());
         }
         return copy;
     }
@@ -32,17 +32,22 @@ public class TagRadioBoolean implements TagItem {
         return new TagRadioBoolean(this.getCopiedValues());
     }
 
-    public static final class RadioBooleanInfo {
+    public static final class Info {
         private final String name;
-        private final boolean flag;
+        private boolean flag;
 
-        public RadioBooleanInfo(String name, boolean flag) {
+        public Info(String name, boolean flag) {
             this.name = name;
             this.flag = flag;
         }
 
         public String getName() {
             return this.name;
+        }
+
+        public Info setFlag(boolean flag) {
+            this.flag = flag;
+            return this;
         }
 
         public boolean isFlag() {
@@ -57,7 +62,7 @@ public class TagRadioBoolean implements TagItem {
             public String write(TagItem toWrite, Type typeOfSrc, JsonSerializationContext context, ArbitraryArguments metaData) throws JGemsIOException {
                 TagRadioBoolean tag = (TagRadioBoolean) toWrite;
                 JsonArray jsonArray = new JsonArray();
-                for (RadioBooleanInfo info : tag.getValues()) {
+                for (Info info : tag.getValues()) {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("name", info.getName());
                     jsonObject.addProperty("flag", info.isFlag());
@@ -69,12 +74,12 @@ public class TagRadioBoolean implements TagItem {
             @Override
             public TagItem read(String readString, Type typeOfT, JsonDeserializationContext context, ArbitraryArguments metaData) throws JGemsIOException {
                 JsonArray jsonArray = JsonParser.parseString(readString).getAsJsonArray();
-                RadioBooleanInfo[] values = new RadioBooleanInfo[jsonArray.size()];
+                Info[] values = new Info[jsonArray.size()];
                 for (int i = 0; i < jsonArray.size(); i++) {
                     JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
                     String name = jsonObject.get("name").getAsString();
                     boolean flag = jsonObject.get("flag").getAsBoolean();
-                    values[i] = new RadioBooleanInfo(name, flag);
+                    values[i] = new Info(name, flag);
                 }
                 return new TagRadioBoolean(values);
             }

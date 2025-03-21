@@ -1,6 +1,8 @@
 package workbench.project;
 
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.help.JGemsUtils;
+import javagems3d.system.service.collections.Pair;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 
 import java.util.HashMap;
@@ -10,9 +12,11 @@ import java.util.Set;
 
 public class ProjectObjects {
     private final Map<String, Set<WBenchObjectTemplate>> entityGroups;
+    private final Set<Pair<String, ICubeMapProgram>> skyBoxes;
 
     public ProjectObjects() {
         this.entityGroups = new HashMap<>();
+        this.skyBoxes = new HashSet<>();
     }
 
     public void addEntity(String group, WBenchObjectTemplate wBenchObjectTemplate) {
@@ -22,8 +26,17 @@ public class ProjectObjects {
         }, wBenchObjectTemplate);
     }
 
+    public void addSkyBox(String name, ICubeMapProgram cubeMapProgram) {
+        this.getSkyBoxes().add(new Pair<>(name, cubeMapProgram));
+    }
+
     public void clear() {
         this.getEntityGroups().clear();
+        this.getSkyBoxes().clear();
+    }
+
+    public Set<Pair<String, ICubeMapProgram>> getSkyBoxes() {
+        return this.skyBoxes;
     }
 
     public Map<String, Set<WBenchObjectTemplate>> getEntityGroups() {

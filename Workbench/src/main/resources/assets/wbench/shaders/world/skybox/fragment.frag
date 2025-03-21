@@ -28,7 +28,7 @@ uniform bool covered_by_fog;
 
 void main()
 {
-    const float brightness = 2.;
+    const float brightness = sun.brightness;
 
     vec4 diffuse = texture(skybox, uv_coordinates_cube);
 
@@ -45,7 +45,7 @@ void main()
     vec2 texel_size = textureSize(skybox_background_sampler, 0);
     vec4 background = texture(skybox_background_sampler, gl_FragCoord.xy / texel_size);
 
-    vec3 sunEffect = color.xyz * sun.brightness * sunFactor;
+    vec3 sunEffect = color.xyz * brightness * sunFactor;
     vec4 tex2d_colors = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * brightness) + sunEffect, 1.0);
     frag_color = background + tex2d_colors * (1. - background.a);
 }

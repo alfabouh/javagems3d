@@ -3,14 +3,22 @@ package workbench.graphics.scene.ui.editor;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiSelectableFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.environment.lights.SunLight;
+import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
+import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
 import workbench.graphics.scene.ui.EditorInterface;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ContextComponent {
     private final EditorInterface editorInterface;
@@ -100,6 +108,27 @@ public class ContextComponent {
 
                 ImGui.separator();
                 ImGui.text("Sky Texture");
+                Set<Pair<String, ICubeMapProgram>> skyBoxes = WBench.get().getProjectObjects().getSkyBoxes();
+                if (!skyBoxes.isEmpty()) {
+                    SkyBox skyBox = this.getEditorInterface().getOpenGLRenderer().getWorld().getEnvironment().getSkyBox();
+                    ICubeMapProgram currentSky = skyBox.getTexture();
+                    ImGui.treePush();
+                    for (Pair<String, ICubeMapProgram> cubeMapProgramPair : skyBoxes) {
+                        boolean flag = currentSky == cubeMapProgramPair.getSecond();
+                        ImGui.pushID(cubeMapProgramPair.getFirst());
+                        if (ImGui.selectable(cubeMapProgramPair.getFirst(), flag, ImGuiSelectableFlags.AllowItemOverlap)) {
+                            if (!flag) {
+                                skyBox.setSky2DTexture(cubeMapProgramPair.getSecond());
+                            } else {
+                                skyBox.setSky2DTexture(null);
+                            }
+                        }
+                        ImGui.popID();
+                    }
+                    ImGui.treePop();
+                } else {
+                    ImGui.text("Empty");
+                }
             }
             ImGui.end();
             if (!opened.get()) {
@@ -126,7 +155,7 @@ public class ContextComponent {
     }
 
     private Pair<Vector3f, Vector3f> adjustCamera(SunLight sun) {
-        Vector3f sunPos = sun.getLightPosition().normalize().mul(100f);
+        Vector3f sunPos = sun.getLightPosition().normalize().mul(64f);
         return new Pair<>(sunPos, new Vector3f(0.0f));
     }
 

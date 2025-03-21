@@ -8,7 +8,9 @@ import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.help.JGemsMathHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
+import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.items.TagItem;
+import javagems3d.mapping.tags.items.TagRadioBoolean;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.EditorInterface;
@@ -57,34 +59,37 @@ public class ActionsInterfaceComponent {
         if (this.getEditorInterface().getCurrentSelectedObject() != null) {
             if (ImGui.collapsingHeader("Object", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.treePush();
-                if (this.getEditorInterface().getCurrentSelectedObject().hasTranslationConstraints() && ImGui.treeNode("Transformation")) {
-                    int objectFlagTranslate = this.getEditorInterface().getCurrentSelectedObject().getTranslationConstraints().getPositionConstraints().getFlag();
-                    int objectFlagRotate = this.getEditorInterface().getCurrentSelectedObject().getTranslationConstraints().getRotationConstraints().getFlag();
-                    int objectFlagScaling = this.getEditorInterface().getCurrentSelectedObject().getTranslationConstraints().getScalingConstraints().getFlag();
+                if (this.getEditorInterface().getCurrentSelectedObject().hasTranslationConstraints()) {
+                    if (ImGui.treeNodeEx("Transformation", ImGuiTreeNodeFlags.DefaultOpen)) {
+                        int objectFlagTranslate = this.getEditorInterface().getCurrentSelectedObject().getTranslationConstraints().getPositionConstraints().getFlag();
+                        int objectFlagRotate = this.getEditorInterface().getCurrentSelectedObject().getTranslationConstraints().getRotationConstraints().getFlag();
+                        int objectFlagScaling = this.getEditorInterface().getCurrentSelectedObject().getTranslationConstraints().getScalingConstraints().getFlag();
 
-                    if (objectFlagTranslate != 0) {
-                        if (ImGui.radioButton("Translate", (this.getEditorInterface().getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
-                            this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseGuizmoOperation(true, false, false));
+                        if (objectFlagTranslate != 0) {
+                            if (ImGui.radioButton("Translate", (this.getEditorInterface().getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
+                                this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseGuizmoOperation(true, false, false));
+                            }
                         }
-                    }
 
-                    if (objectFlagRotate != 0) {
-                        if (ImGui.radioButton("Rotation", (this.getEditorInterface().getCurrentOperation() & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
-                            this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseGuizmoOperation(false, true, false));
+                        if (objectFlagRotate != 0) {
+                            if (ImGui.radioButton("Rotation", (this.getEditorInterface().getCurrentOperation() & (Operation.ROTATE_X | Operation.ROTATE_Y | Operation.ROTATE_Z)) != 0)) {
+                                this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseGuizmoOperation(false, true, false));
+                            }
                         }
-                    }
 
-                    if (objectFlagScaling != 0) {
-                        if (ImGui.radioButton("Scaling", (this.getEditorInterface().getCurrentOperation() & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
-                            this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseGuizmoOperation(false, false, true));
+                        if (objectFlagScaling != 0) {
+                            if (ImGui.radioButton("Scaling", (this.getEditorInterface().getCurrentOperation() & (Operation.SCALE_X | Operation.SCALE_Y | Operation.SCALE_Z)) != 0)) {
+                                this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseGuizmoOperation(false, false, true));
+                            }
                         }
-                    }
 
-                    this.processTranslations();
-                    ImGui.treePop();
+                        this.processTranslations();
+                        ImGui.treePop();
+                    }
+                    ImGui.separator();
                 }
                 Collection<Tag<? extends TagItem>> tags = this.getEditorInterface().getCurrentSelectedObject().getTagsContainer().getTagCollection();
-                if (!tags.isEmpty() && ImGui.treeNode("Tags")) {
+                if (!tags.isEmpty() && ImGui.treeNodeEx("Tags", ImGuiTreeNodeFlags.DefaultOpen)) {
                     for (Tag<? extends TagItem> tag : tags) {
                         this.processTag(tag);
                     }
@@ -96,8 +101,30 @@ public class ActionsInterfaceComponent {
     }
 
     private void processTag(Tag<? extends TagItem> tag) {
-        ImGui.text(tag.getTagID().getDescription());
+        final TagID tagID = tag.getTagID();
+        TagItem tagItem = tag.getTagItem();
 
+        if (ImGui.treeNode(tagID.getDescription())) {
+            if (tagItem instanceof TagRadioBoolean) {
+                TagRadioBoolean tagRadioBoolean = (TagRadioBoolean) tagItem;
+                TagRadioBoolean.Info[] infos = tagRadioBoolean.getValues();
+                for (int i = 0; i < infos.length; i++) {
+                    boolean selected = infos[i].isFlag();
+                    if (ImGui.radioButton(infos[i].getName(), selected)) {
+                        for (int j = 0; j < infos.length; j++) {
+                            infos[j].setFlag(j == i);
+                        }
+                    }
+                }
+            }
+            ImGui.treePop();
+        }
+
+        if (tagID.getToolTip() != null && ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.setTooltip(tagID.getToolTip());
+            ImGui.endTooltip();
+        }
         ImGui.separator();
     }
 

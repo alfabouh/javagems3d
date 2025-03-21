@@ -84,7 +84,8 @@ public abstract class SystemResources implements ISystemResources {
     }
 
     public ICubeMapProgram createCubeMapTexture(@Nullable ICubeMapProgram returnDefault, @NotNull JGemsPath pathToCubeMapFile, @NotNull String textureDescriptor, @Nullable CubeMapTexture.Properties textureProperties) {
-        return this.loadTexture(returnDefault, pathToCubeMapFile.toString(), () -> new CubeMapsLoader(this, pathToCubeMapFile.toString()).createCubeMapTexture(textureProperties, pathToCubeMapFile, textureDescriptor));
+        JGemsPath path = new JGemsPath(pathToCubeMapFile, "sky_");
+        return this.loadTexture(returnDefault, path.toString(), () -> new CubeMapsLoader(this, path.toString()).createCubeMapTexture(textureProperties, path, textureDescriptor));
     }
 
     protected abstract @Nullable Consumer<Pair<String, Integer>> getMessagesConsumer();

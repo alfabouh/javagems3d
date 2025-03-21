@@ -1,14 +1,23 @@
 package javagems3d.mapping.tags;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 
 public final class TagID {
     private final String id;
     private final String description;
+    private final String toolTip;
 
-    public TagID(String id, String description) {
+    public TagID(@NotNull String id, @NotNull String description) {
+        this(id, description, null);
+    }
+
+    public TagID(@NotNull String id, @NotNull String description, @Nullable String toolTip) {
         this.id = id;
         this.description = description;
+        this.toolTip = toolTip;
     }
 
     @Override
@@ -21,6 +30,10 @@ public final class TagID {
         }
         TagID tagID = (TagID) o;
         return Objects.equals(this.id, tagID.id);
+    }
+
+    public String getToolTip() {
+        return this.toolTip;
     }
 
     @Override
@@ -37,8 +50,7 @@ public final class TagID {
     }
 
     public static class DEFAULT {
-        public static final TagID IS_STATIC = new TagID("is_static_bl", "Static");
-        public static final TagID IS_DYNAMIC = new TagID("is_dynamic_bl", "Dynamic");
+        public static final TagID PHYSICS_STATE = new TagID("phys_state", "Physics State", "Determines the physical condition of the object. \nStatic=stationary \nDynamic=gravity affected");
 
         public static final TagID POSITION_X = new TagID("position_x", "Translate X");
         public static final TagID POSITION_Y = new TagID("position_y", "Translate Y");

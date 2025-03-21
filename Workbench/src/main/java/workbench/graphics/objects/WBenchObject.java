@@ -83,6 +83,11 @@ public class WBenchObject extends SceneProp {
     }
 
     @Override
+    public String toString() {
+        return this.getName() + " " + this.getPosition();
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hashCode(this.id);
     }
