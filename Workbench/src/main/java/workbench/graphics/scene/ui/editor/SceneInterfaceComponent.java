@@ -21,18 +21,24 @@ import workbench.graphics.scene.nodes.templates.WIGluingRenderNode;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.EditorInterface;
 
+import java.lang.Math;
+import java.lang.Runtime;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SceneInterfaceComponent {
     private final EditorInterface editorInterface;
+    private AtomicBoolean isThreadInProcess;
 
     public SceneInterfaceComponent(EditorInterface editorInterface) {
         this.editorInterface = editorInterface;
+        this.isThreadInProcess = new AtomicBoolean();
         this.clear();
     }
 
     public void clear() {
-
+        this.isThreadInProcess.set(false);
     }
 
     public void sceneContent() {
@@ -47,9 +53,7 @@ public class SceneInterfaceComponent {
         float availableX = ImGui.getContentRegionAvailX();
         float availableY = ImGui.getContentRegionAvailY();
 
-        if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
-            ImGuizmo.drawGrid(view, projection, model, (int) WBench.MAP_SIZE);
-        }
+        ImGuizmo.drawGrid(view, projection, model, (int) WBench.MAP_SIZE);
 
         WIGluingRenderNode gluingRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
         ImGui.image(gluingRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
@@ -57,26 +61,33 @@ public class SceneInterfaceComponent {
         int imagePosY = (int) ImGui.getItemRectMinY();
         int imageSizeX = (int) (ImGui.getItemRectSizeX());
         int imageSizeY = (int) (ImGui.getItemRectSizeY());
-        if (EditorInterface.isCursorInsideScene) {
-            if (ImGui.isMouseClicked(0)) {
-                WBenchObject wBenchObject = this.tryToSelectObjectFromMouse(new Vector2i(imagePosX, imagePosY), new Vector2i(imageSizeX, imageSizeY), new Vector2i((int) ImGui.getMousePos().x, (int) ImGui.getMousePos().y));
-                this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
+
+        if (!this.getEditorInterface().getContextComponent().isCameraCheckBox() && EditorInterface.isCursorInsideScene) {
+            if (ImGui.isMouseReleased(0)) {
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                if (!this.isThreadInProcess.get()) {
+                    executor.execute(() -> {
+                        try {
+                            this.isThreadInProcess.set(true);
+                            WBenchObject wBenchObject = this.tryToSelectObjectFromMouse(new Vector2i(imagePosX, imagePosY), new Vector2i(imageSizeX, imageSizeY), new Vector2i((int) ImGui.getMousePos().x, (int) ImGui.getMousePos().y));
+                            this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
+                        } finally {
+                            this.isThreadInProcess.set(false);
+                            executor.shutdown();
+                        }
+                    });
+                }
             }
         }
 
+        ImVec2 imageSize = ImGui.getItemRectSize();
+        ImVec2 imagePos = ImGui.getItemRectMin();
+
+        float imGuizmoX = imageSize.x;
+        float imGuizmoY = imageSize.y;
+        ImGuizmo.setRect(imagePos.x, imagePos.y, imGuizmoX, imGuizmoY);
+
         if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
-            ImVec2 imageSize = ImGui.getItemRectSize();
-            ImVec2 imagePos = ImGui.getItemRectMin();
-
-            float imGuizmoX = imageSize.x;
-            float imGuizmoY = imageSize.y;
-            ImGuizmo.setRect(imagePos.x, imagePos.y, imGuizmoX, imGuizmoY);
-
-            // float windowWidth = ImGui.getWindowWidth();
-            // float viewManipulateRight = ImGui.getWindowPosX() + windowWidth;
-            // float viewManipulateTop = ImGui.getWindowPosY();
-            // ImGuizmo.viewManipulate(view, 1f, new float[]{viewManipulateRight - 128, viewManipulateTop + 24}, new float[]{128f, 128f}, 0x10101010);
-
             if (this.getEditorInterface().getCurrentSelectedObject() != null) {
                 CullingAABB cullingAABB = this.getEditorInterface().getCurrentSelectedObject().pickAABBDataFromMesh();
                 if (cullingAABB != null) {
@@ -101,13 +112,10 @@ public class SceneInterfaceComponent {
     }
 
     private WBenchObject tryToSelectObjectFromMouse(Vector2i sceneWindowPos, Vector2i sceneWindowSize, Vector2i mouseCoordinates) {
-        Vector2i screenSize = this.getEditorInterface().getOpenGLRenderer().getWindowSize();
         Vector2i mousePosRelatedToWindow = mouseCoordinates.sub(sceneWindowPos);
 
         float ndcMouseX = ((float) (2 * mousePosRelatedToWindow.x) / sceneWindowSize.x) - 1.0f;
         float ndcMouseY = 1.0f - ((float) (2 * mousePosRelatedToWindow.y) / sceneWindowSize.y);
-
-        System.out.println(ndcMouseX + " " + ndcMouseY);
 
         Matrix4f viewMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
         Matrix4f projectionMatrix = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
@@ -138,7 +146,8 @@ public class SceneInterfaceComponent {
 
         List<Pair<SceneObject, Float>> sceneObjects = new ArrayList<>();
         for (SceneObject object : intersectedAabbs) {
-            Vector3f intersection = this.findClosesPointRayIntersectMesh(object.getModel(), origin, camRay);
+            int optimalThreads = Runtime.getRuntime().availableProcessors();
+            Vector3f intersection = this.findClosesPointRayIntersectMesh(object.getModel(), origin, camRay, optimalThreads);
             if (intersection != null) {
                 sceneObjects.add(new Pair<>(object, origin.distance(intersection)));
             }
@@ -147,39 +156,69 @@ public class SceneInterfaceComponent {
         return sceneObjects.isEmpty() ? null : (WBenchObject) sceneObjects.get(0).getFirst();
     }
 
-    public Vector3f findClosesPointRayIntersectMesh(Model3D model3D, Vector3f rayStart, Vector3f rayEnd) {
-        Vector3f closestVector = null;
+    public Vector3f findClosesPointRayIntersectMesh(Model3D model3D, Vector3f rayStart, Vector3f rayEnd, int threads) {
         MeshStructure3D<?> meshStructure3D = model3D.getMeshStructure();
         Matrix4f modelMatrix = TransformUtils.getModelMatrix(model3D.getPose());
 
-        for (MeshNode3D<?> meshNode3D : meshStructure3D.getAllNodes()) {
-            List<Float> floats = meshNode3D.getMeshData().getVertexPositions();
-            for (int i = 0; i < meshNode3D.getMeshData().numVertexIndexes(); i += 3) {
-                int i1 = meshNode3D.getMeshData().getVertexIndexes().get(i) * 3;
-                int i2 = meshNode3D.getMeshData().getVertexIndexes().get(i + 1) * 3;
-                int i3 = meshNode3D.getMeshData().getVertexIndexes().get(i + 2) * 3;
-                Vector4f Vector4f1 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMatrix);
-                Vector4f Vector4f2 = new Vector4f(floats.get(i2), floats.get(i2 + 1), floats.get(i2 + 2), 1.0f).mul(modelMatrix);
-                Vector4f Vector4f3 = new Vector4f(floats.get(i3), floats.get(i3 + 1), floats.get(i3 + 2), 1.0f).mul(modelMatrix);
+        List<? extends MeshNode3D<?>> allNodes = meshStructure3D.getAllNodes();
 
-                Vector3f vertex1 = new Vector3f(Vector4f1.x, Vector4f1.y, Vector4f1.z);
-                Vector3f vertex2 = new Vector3f(Vector4f2.x, Vector4f2.y, Vector4f2.z);
-                Vector3f vertex3 = new Vector3f(Vector4f3.x, Vector4f3.y, Vector4f3.z);
+        int totalNodes = allNodes.size();
+        int effectiveThreads = Math.min(totalNodes, threads);
+        int nodesInGroup = allNodes.size() / effectiveThreads;
+        int restNodesInGroup = allNodes.size() % effectiveThreads;
+        List<Future<Vector3f>> futures = new ArrayList<>();
 
-                float d = Intersectionf.intersectRayTriangleFront(rayStart, rayEnd, vertex1, vertex2, vertex3, 1.0e-4f);
-                if (d > 0.0f) {
-                    Vector3f vector3f = new Vector3f(rayStart).add(new Vector3f(rayEnd).mul(d));
-                    if (closestVector == null || rayStart.distance(vector3f) < rayStart.distance(closestVector)) {
-                        closestVector = vector3f;
+        ExecutorService executorService = Executors.newFixedThreadPool(effectiveThreads);
+        try {
+            for (int z = 0; z < effectiveThreads; z++) {
+                int start = z * (nodesInGroup);
+                int end = z * (nodesInGroup) + nodesInGroup + ((z == effectiveThreads - 1) ? restNodesInGroup : 0);
+                futures.add(executorService.submit(() -> {
+                    Vector3f closestVector = null;
+                    for (int k = start; k < end; k++) {
+                        MeshNode3D<?> meshNode3D = allNodes.get(k);
+                        List<Float> floats = meshNode3D.getMeshData().getVertexPositions();
+                        for (int i = 0; i < meshNode3D.getMeshData().numVertexIndexes(); i += 3) {
+                            int i1 = meshNode3D.getMeshData().getVertexIndexes().get(i) * 3;
+                            int i2 = meshNode3D.getMeshData().getVertexIndexes().get(i + 1) * 3;
+                            int i3 = meshNode3D.getMeshData().getVertexIndexes().get(i + 2) * 3;
+                            Vector4f Vector4f1 = new Vector4f(floats.get(i1), floats.get(i1 + 1), floats.get(i1 + 2), 1.0f).mul(modelMatrix);
+                            Vector4f Vector4f2 = new Vector4f(floats.get(i2), floats.get(i2 + 1), floats.get(i2 + 2), 1.0f).mul(modelMatrix);
+                            Vector4f Vector4f3 = new Vector4f(floats.get(i3), floats.get(i3 + 1), floats.get(i3 + 2), 1.0f).mul(modelMatrix);
+
+                            Vector3f vertex1 = new Vector3f(Vector4f1.x, Vector4f1.y, Vector4f1.z);
+                            Vector3f vertex2 = new Vector3f(Vector4f2.x, Vector4f2.y, Vector4f2.z);
+                            Vector3f vertex3 = new Vector3f(Vector4f3.x, Vector4f3.y, Vector4f3.z);
+
+                            float d = Intersectionf.intersectRayTriangleFront(rayStart, rayEnd, vertex1, vertex2, vertex3, 1.0e-4f);
+                            if (d > 0.0f) {
+                                Vector3f vector3f = new Vector3f(rayStart).add(new Vector3f(rayEnd).mul(d));
+                                if (closestVector == null || rayStart.distance(vector3f) < rayStart.distance(closestVector)) {
+                                    closestVector = vector3f;
+                                }
+                            }
+                        }
                     }
+                    return closestVector;
+                }));
+            }
+            Vector3f finalClosestVector = null;
+            for (Future<Vector3f> future : futures) {
+                try {
+                    Vector3f vector3f = future.get();
+                    if (vector3f != null) {
+                        if (finalClosestVector == null || vector3f.distance(rayStart) < finalClosestVector.distance(rayStart)) {
+                            finalClosestVector = vector3f;
+                        }
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
                 }
             }
+            return finalClosestVector;
+        } finally {
+            executorService.shutdown();
         }
-        return closestVector;
-    }
-
-    public boolean isRayIntersectObjectAABB(CullingAABB cullingAABB, Vector3f rayStart, Vector3f rayEnd) {
-        return Intersectionf.testRayAab(rayStart, rayEnd, cullingAABB.getAabbMin(), cullingAABB.getAabbMax());
     }
 
     public EditorInterface getEditorInterface() {

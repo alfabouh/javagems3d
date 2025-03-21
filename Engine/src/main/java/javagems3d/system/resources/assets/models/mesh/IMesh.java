@@ -12,6 +12,10 @@ public interface IMesh {
     @NotNull List<Integer> getVertexIndexes();
     @NotNull List<Float> getVertexPositions();
 
+    default int totalVertexes() {
+        return this.getVertexPositions().size() / 3;
+    }
+
     default int numVertexIndexes() {
         return this.getVertexIndexes().size();
     }

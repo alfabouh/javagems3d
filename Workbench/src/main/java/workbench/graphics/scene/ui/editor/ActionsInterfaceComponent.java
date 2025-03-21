@@ -3,6 +3,10 @@ package workbench.graphics.scene.ui.editor;
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiTreeNodeFlags;
+import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.help.JGemsMathHelper;
+import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.items.TagItem;
 import org.joml.Vector3f;
@@ -36,7 +40,16 @@ public class ActionsInterfaceComponent {
             if (ImGui.button("Generate")) {
                 WBenchObject wBenchObject = new WBenchObject(this.getEditorInterface().getOpenGLRenderer().getWorld(), this.getEditorInterface().getCurrentSelectedTemplate());
                 wBenchObject.setId(this.getEditorInterface().getOpenGLRenderer().getWorld().getSceneObjects().size());
-                this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(wBenchObject);
+
+                CullingAABB cullingAABB = wBenchObject.getCullingData();
+                if (cullingAABB != null) {
+                    ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
+                    float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
+                    Vector3f posToSpawn = camera.getCamPosition();
+                    posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul(diagonal + 1.0f));
+                    wBenchObject.setPosition(posToSpawn);
+                    this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(wBenchObject);
+                }
             }
             ImGui.separator();
         }

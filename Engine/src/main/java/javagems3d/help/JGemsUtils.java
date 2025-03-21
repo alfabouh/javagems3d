@@ -95,10 +95,11 @@ public abstract class JGemsUtils {
 
     @SuppressWarnings("all")
     public static boolean createMeshAABBData(MeshStructure3D<?> meshStructure) {
+        int optimalThreads = Runtime.getRuntime().availableProcessors();
         if (meshStructure != null) {
-            meshStructure.setMeshAABBData(new MeshAABBData(MeshAABBHelper.createMultiThread(meshStructure, 4)));
+            meshStructure.setMeshAABBData(new MeshAABBData(MeshAABBHelper.createMultiThread(meshStructure, optimalThreads)));
             if (meshStructure.isAnimatedStructure()) {
-                for (Map.Entry<Animation, CullingAABB> aabbEntry : MeshAABBHelper.createAnimatedMultiThread(meshStructure, 4).entrySet()) {
+                for (Map.Entry<Animation, CullingAABB> aabbEntry : MeshAABBHelper.createAnimatedMultiThread(meshStructure, optimalThreads).entrySet()) {
                     meshStructure.setMeshAABBDataForAnimationFrame(aabbEntry.getKey(), new MeshAABBData(aabbEntry.getValue()));
                 }
             }

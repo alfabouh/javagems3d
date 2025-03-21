@@ -48,39 +48,33 @@ public abstract class MeshAABBHelper {
             return null;
         }
 
+        int totalMeshes = list.size();
+        int effectiveThreads = Math.min(threads, totalMeshes);
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
+
         List<Future<CullingAABB>> futures = new ArrayList<>();
-
-        int totalVertices = 0;
-        for (MeshNode3D<?> meshNode3D : list) {
-            IMesh mesh = meshNode3D.getMeshData();
-            totalVertices += mesh.getVertexPositions().size() / 3;
-        }
-
-        int effectiveThreads = Math.min(threads, totalVertices);
-        int verticesPerThread = totalVertices / effectiveThreads;
-        int remainingVertices = totalVertices % effectiveThreads;
-        int startVertex = 0;
+        int meshesPerThread = totalMeshes / effectiveThreads;
+        int restMeshes = totalMeshes % effectiveThreads;
 
         for (int i = 0; i < effectiveThreads; i++) {
-            final int threadStart = startVertex;
-            final int threadEnd = threadStart + verticesPerThread + (i < remainingVertices ? 1 : 0);
+            int start = i * (meshesPerThread);
+            int end = i * (meshesPerThread) + meshesPerThread + ((i == effectiveThreads - 1) ? restMeshes : 0);
+
             futures.add(executorService.submit(() -> {
                 Vector3f localMin = new Vector3f(Float.POSITIVE_INFINITY);
                 Vector3f localMax = new Vector3f(Float.NEGATIVE_INFINITY);
-                for (MeshNode3D<?> meshNode3D : list) {
+                for (int k = start; k < end; k++) {
+                    MeshNode3D<?> meshNode3D = list.get(k);
                     IMesh mesh = meshNode3D.getMeshData();
                     List<Float> positions = mesh.getVertexPositions();
-                    for (int k = threadStart * 3; k < threadEnd * 3 && k + 2 < positions.size(); k += 3) {
-                        Vector3f vertex = new Vector3f(positions.get(k), positions.get(k + 1), positions.get(k + 2));
+                    for (int j = 0; j < positions.size(); j += 3) {
+                        Vector3f vertex = new Vector3f(positions.get(j), positions.get(j + 1), positions.get(j + 2));
                         localMin.min(vertex);
                         localMax.max(vertex);
                     }
                 }
                 return new CullingAABB(localMin, localMax);
             }));
-
-            startVertex = threadEnd;
         }
 
         Vector3f finalMin = new Vector3f(Float.POSITIVE_INFINITY);
@@ -95,8 +89,9 @@ public abstract class MeshAABBHelper {
             }
         } catch (InterruptedException | ExecutionException e) {
             throw new JGemsRuntimeException(e);
+        } finally {
+            executorService.shutdown();
         }
-        executorService.shutdown();
 
         return new CullingAABB(finalMin, finalMax);
     }
@@ -116,80 +111,82 @@ public abstract class MeshAABBHelper {
 
         for (Animation animation : meshStructure.getAnimationsList()) {
             futureMap.put(animation, executorService.submit(() -> {
-                ForkJoinPool forkJoinPool = new ForkJoinPool(innerThreads);
                 List<Future<CullingAABB>> innerFutures = new ArrayList<>();
-
                 int totalMeshes = list.size();
                 int effectiveThreads = Math.min(innerThreads, totalMeshes);
+                ForkJoinPool forkJoinPool = new ForkJoinPool(innerThreads);
+
                 int totalInGroup = totalMeshes / effectiveThreads;
                 int restInGroup = totalMeshes % effectiveThreads;
 
-                int startPoint = 0;
-                for (int part = 0; part < effectiveThreads; part++) {
-                    final int startIndex = startPoint;
-                    final int endIndex = startIndex + totalInGroup + (part < restInGroup ? 1 : 0);
+                try {
+                    for (int part = 0; part < effectiveThreads; part++) {
+                        int start = part * (totalInGroup);
+                        int end = part * (totalInGroup) + totalInGroup + ((part == effectiveThreads - 1) ? restInGroup : 0);
 
-                    innerFutures.add(forkJoinPool.submit(() -> {
-                        Vector3f localMin = new Vector3f(Float.POSITIVE_INFINITY);
-                        Vector3f localMax = new Vector3f(Float.NEGATIVE_INFINITY);
+                        innerFutures.add(forkJoinPool.submit(() -> {
+                            Vector3f localMin = new Vector3f(Float.POSITIVE_INFINITY);
+                            Vector3f localMax = new Vector3f(Float.NEGATIVE_INFINITY);
 
-                        for (int meshIndex = startIndex; meshIndex < endIndex; meshIndex++) {
-                            MeshNode3D<?> meshNode3D = list.get(meshIndex);
-                            IMesh mesh = meshNode3D.getMeshData();
-                            List<Float> positions = mesh.getVertexPositions();
-                            for (int k = 0; k < positions.size(); k += 3) {
-                                Vector3f tempVertex = new Vector3f(positions.get(k), positions.get(k + 1), positions.get(k + 2));
-                                for (AnimationFrame animationFrame : animation.getFrameList()) {
-                                    Vector3f positionStart = new Vector3f(0.0f);
-                                    for (int i = 0; i < JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS; i++) {
-                                        SkeletonData skeletonData = mesh.getSkeletonData();
-                                        if (skeletonData == null) {
-                                            throw new JGemsRuntimeException("Couldn't calculate animated model's AABB! It's skeleton is NULL!");
+                            for (int meshIndex = start; meshIndex < end; meshIndex++) {
+                                MeshNode3D<?> meshNode3D = list.get(meshIndex);
+                                IMesh mesh = meshNode3D.getMeshData();
+                                List<Float> positions = mesh.getVertexPositions();
+                                for (int k = 0; k < positions.size(); k += 3) {
+                                    Vector3f tempVertex = new Vector3f(positions.get(k), positions.get(k + 1), positions.get(k + 2));
+                                    for (AnimationFrame animationFrame : animation.getFrameList()) {
+                                        Vector3f positionStart = new Vector3f(0.0f);
+                                        for (int i = 0; i < JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS; i++) {
+                                            SkeletonData skeletonData = mesh.getSkeletonData();
+                                            if (skeletonData == null) {
+                                                throw new JGemsRuntimeException("Couldn't calculate animated model's AABB! It's skeleton is NULL!");
+                                            }
+                                            int vertexIndex = k / 3;
+                                            float weight = skeletonData.getWeights().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
+                                            if (weight > 0.f) {
+                                                int boneId = skeletonData.getBoneIds().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
+                                                Matrix4f boneMatrix = animationFrame.getBoneMatrices()[boneId];
+                                                Vector3f newPosition = new Vector3f(tempVertex).mulPosition(boneMatrix);
+                                                newPosition.mul(weight);
+                                                positionStart.add(newPosition);
+                                            }
                                         }
-                                        int vertexIndex = k / 3;
-                                        float weight = skeletonData.getWeights().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
-                                        if (weight > 0.f) {
-                                            int boneId = skeletonData.getBoneIds().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);
-                                            Matrix4f boneMatrix = animationFrame.getBoneMatrices()[boneId];
-                                            Vector3f newPosition = new Vector3f(tempVertex).mulPosition(boneMatrix);
-                                            newPosition.mul(weight);
-                                            positionStart.add(newPosition);
-                                        }
+                                        localMin = localMin.min(positionStart);
+                                        localMax = localMax.max(positionStart);
                                     }
-                                    localMin = localMin.min(positionStart);
-                                    localMax = localMax.max(positionStart);
                                 }
                             }
-                        }
-                        return new CullingAABB(localMin, localMax);
-                    }));
-                    startPoint = endIndex;
-                }
-
-                Vector3f finalMin = new Vector3f(Float.POSITIVE_INFINITY);
-                Vector3f finalMax = new Vector3f(Float.NEGATIVE_INFINITY);
-                for (Future<CullingAABB> innerFuture : innerFutures) {
-                    CullingAABB localAABB = innerFuture.get();
-                    if (localAABB != null) {
-                        finalMin.min(localAABB.getAabbMin());
-                        finalMax.max(localAABB.getAabbMax());
+                            return new CullingAABB(localMin, localMax);
+                        }));
                     }
+
+                    Vector3f finalMin = new Vector3f(Float.POSITIVE_INFINITY);
+                    Vector3f finalMax = new Vector3f(Float.NEGATIVE_INFINITY);
+                    for (Future<CullingAABB> innerFuture : innerFutures) {
+                        CullingAABB localAABB = innerFuture.get();
+                        if (localAABB != null) {
+                            finalMin.min(localAABB.getAabbMin());
+                            finalMax.max(localAABB.getAabbMax());
+                        }
+                    }
+                    return new CullingAABB(finalMin, finalMax);
+                } finally {
+                    forkJoinPool.shutdown();
                 }
-                forkJoinPool.shutdown();
-                return new CullingAABB(finalMin, finalMax);
             }));
         }
 
         Map<Animation, CullingAABB> result = new HashMap<>();
-        for (Map.Entry<Animation, Future<CullingAABB>> entry : futureMap.entrySet()) {
-            try {
+        try {
+            for (Map.Entry<Animation, Future<CullingAABB>> entry : futureMap.entrySet()) {
                 result.put(entry.getKey(), entry.getValue().get());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new JGemsRuntimeException(e);
             }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new JGemsRuntimeException(e);
+        } finally {
+            executorService.shutdown();
         }
 
-        executorService.shutdown();
         return result;
     }
 }
