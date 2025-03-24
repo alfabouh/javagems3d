@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGems3D;
+import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
@@ -145,16 +146,7 @@ public class ShaderObject {
 
 
     private String readShaderText(JGemsPath shaderPath) {
-        StringBuilder textBuilder = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.loadFileFromJar(new JGemsPath(shaderPath, this.getShaderType().getFile())), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                textBuilder.append(line).append(System.lineSeparator());
-            }
-        } catch (IOException e) {
-            throw new JGemsIOException(e);
-        }
-        return textBuilder.toString();
+        return JGemsFilesHelper.readTextFromFile(new JGemsPath(shaderPath, this.getShaderType().getFile()));
     }
 
     private String processIncludes(String shaderCode) {

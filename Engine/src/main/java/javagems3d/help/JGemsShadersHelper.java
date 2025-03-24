@@ -2,7 +2,6 @@ package javagems3d.help;
 
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.shadows.scene.ShadowScene;
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
@@ -31,7 +30,7 @@ public abstract class JGemsShadersHelper {
         }
 
         ISample diffuse = material.getDiffuse();
-        ITexture2DProgram emission = material.getEmissionMap();
+        ITexture2DProgram emission = material.getEmission();
         ITexture2DProgram metallic = material.getMetallicMap();
         ITexture2DProgram normals = material.getNormalsMap();
         ITexture2DProgram specular = material.getSpecularMap();
@@ -56,7 +55,7 @@ public abstract class JGemsShadersHelper {
         }
 
         if (emission != null) {
-            shaderManager.performUniformSample(new UniformString("emissive_map"), emission);
+            shaderManager.performUniformSample(new UniformString("emission_map"), emission);
             texturing_code |= 1 << 3;
         }
 

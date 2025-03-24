@@ -4,8 +4,11 @@ uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
+out vec3 vertex_position;
+
 void main()
 {
     vec4 mv_pos = model_matrix * view_matrix * vec4(aPosition, 1.0f);
+    vertex_position = aPosition.xyz;
     gl_Position = projection_matrix * mv_pos;
 }

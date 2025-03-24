@@ -1,21 +1,26 @@
+#extension GL_ARB_bindless_texture : require
+
 in vec2 uv_coordinates;
 in vec4 frag_pos;
 
 layout (location = 0) out vec4 frag_color0;
 
 uniform float alpha_discard;
-uniform sampler2D texture_sampler;
+uniform vec4 diffuse_color;
+uniform uvec2 diffuse_map_bindless;
 uniform bool use_texture;
 uniform vec3 lightPos;
 uniform float far_plane;
 
 void main()
 {
-    vec4 v = !use_texture ? vec4(1.0) : texture(texture_sampler, uv_coordinates);
-    if (v.a < alpha_discard) {
+    float diffuse_a = diffuse_color.a;
+    if (use_texture) {
+        diffuse_a *= texture(sampler2D(diffuse_map_bindless), uv_coordinates).a;
+    }
+    if (diffuse_a < alpha_discard) {
         discard;
     }
-
     float lightDistance = length(frag_pos.xyz - lightPos);
     lightDistance /= far_plane;
 

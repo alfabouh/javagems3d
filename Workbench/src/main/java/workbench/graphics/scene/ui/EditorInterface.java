@@ -183,8 +183,6 @@ public class EditorInterface implements DearUIInterface {
         ImGui.text("FPS: " + WBenchScreen.RENDER_FPS);
         ImGui.sameLine();
         ImGui.text("[" + camPos.x + ", " + camPos.y + ", " + camPos.z + "]");
-
-        WBench.get().getScreen().getWindow().setInFocus(ImGui.isWindowFocused());
         int posX = (int) sceneWindowOffset;
         int posY = (int) YOffset;
         int sizeX = (int) sceneWindowSizeX;

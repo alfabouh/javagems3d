@@ -19,24 +19,20 @@ import java.nio.ByteBuffer;
 public class Material {
     private final Transparency transparency;
     private final ISample diffuse;
-    private final ITexture2DProgram opacityMap;
+    private final ISample emission;
+    private final ITexture2DProgram specularMetallicMap;
     private final ITexture2DProgram normalsMap;
-    private final ITexture2DProgram emissionMap;
-    private final ITexture2DProgram specularMap;
-    private final ITexture2DProgram metallicMap;
 
-    public Material(@NotNull ISample diffuse, @Nullable ITexture2DProgram opacityMap, @Nullable ITexture2DProgram normalsMap, @Nullable ITexture2DProgram emissionMap, @Nullable ITexture2DProgram specularMap, @Nullable ITexture2DProgram metallicMap) {
+    public Material(@NotNull ISample diffuse, @Nullable ITexture2DProgram normalsMap, @Nullable ISample emission, @Nullable ITexture2DProgram specularMetallicMap) {
         this.diffuse = diffuse;
-        this.opacityMap = opacityMap;
         this.normalsMap = normalsMap;
-        this.emissionMap = emissionMap;
-        this.specularMap = specularMap;
-        this.metallicMap = metallicMap;
-        this.transparency = new Transparency(opacityMap, diffuse);
+        this.emission = emission;
+        this.specularMetallicMap = specularMetallicMap;
+        this.transparency = new Transparency(diffuse);
     }
 
     public Material(@Nullable ISample diffuse) {
-        this(diffuse == null ? ResourceManager.DEFAULT_TEXTURE() : diffuse, null, null, null, null, null);
+        this(diffuse == null ? ResourceManager.DEFAULT_TEXTURE() : diffuse, null, null, null);
     }
 
     public float getOpacity() {
@@ -60,33 +56,24 @@ public class Material {
         return this.diffuse;
     }
 
-    public ITexture2DProgram getOpacityMap() {
-        return this.opacityMap;
-    }
-
     public ITexture2DProgram getNormalsMap() {
         return this.normalsMap;
     }
 
-    public ITexture2DProgram getEmissionMap() {
-        return this.emissionMap;
+    public ISample getEmission() {
+        return this.emission;
     }
 
-    public ITexture2DProgram getSpecularMap() {
-        return this.specularMap;
-    }
-
-    public ITexture2DProgram getMetallicMap() {
-        return this.metallicMap;
+    public ITexture2DProgram getSpecularMetallicMap() {
+        return this.specularMetallicMap;
     }
 
     public static class Transparency {
         private boolean hasTransparentPixels;
         private float opacity;
         private ISample diffuse;
-        private ITexture2DProgram opacityMap;
 
-        public Transparency(@Nullable ITexture2DProgram opacityMap, @NotNull ISample diffuse) {
+        public Transparency(@NotNull ISample diffuse) {
             this.opacity = 1.0f;
             this.diffuse = diffuse;
             this.hasTransparentPixels = false;
@@ -118,7 +105,7 @@ public class Material {
         }
 
         public boolean hasTransparency() {
-            if (this.getOpacity() < 1.0f || this.getOpacityMap() != null) {
+            if (this.getOpacity() < 1.0f) {
                 return true;
             }
             if (this.hasTransparentPixels()) {
@@ -137,10 +124,6 @@ public class Material {
 
         public void setOpacity(float opacity) {
             this.opacity = opacity;
-        }
-
-        public ITexture2DProgram getOpacityMap() {
-            return this.opacityMap;
         }
 
         public ISample getDiffuse() {

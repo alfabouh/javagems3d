@@ -65,7 +65,7 @@ public abstract class ResourceManager {
         for (Material material : this.getResourceDataCache().getMeshBuffersDataCache().getMaterials()) {
             ISample diffuse = material.getDiffuse();
             ISample normals = material.getNormalsMap();
-            ISample emission = material.getEmissionMap();
+            ISample emission = material.getEmission();
             ISample specular = material.getSpecularMap();
             ISample metallic = material.getMetallicMap();
             if (diffuse instanceof Color4Texture) {

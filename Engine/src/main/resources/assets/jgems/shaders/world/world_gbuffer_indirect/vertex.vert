@@ -16,7 +16,6 @@ layout(std430, binding = 1) buffer IndirectBufferData {
 };
 
 out vec2 uv_coordinates;
-out vec3 model_vertex_normal;
 out vec4 model_vertex_pos;
 out vec3 modelview_vertex_normal;
 out vec3 modelview_vertex_pos;
@@ -58,7 +57,6 @@ void main()
 
     uv_coordinates = aTexture;
     modelview_vertex_normal = normalize(model_view_matrix * normal).xyz;
-    model_vertex_normal = normalize(model * normal).xyz;
     modelview_vertex_pos = mv_pos.xyz;
 
     model_vertex_pos = model * position;

@@ -1,3 +1,5 @@
+#extension GL_ARB_bindless_texture : require
+
 in vec3 uv_coordinates_cube;
 
 layout (location = 0) out vec4 frag_color;
@@ -22,16 +24,16 @@ layout (std430, binding = 7) buffer WorldFog {
     Fog fog;
 };
 
-uniform sampler2D skybox_background_sampler;
+uniform uvec2 skybox_background_bindless;
+uniform uvec2 skybox_cube_bindless;
 uniform mat4 view_mat_inverted;
-uniform samplerCube skybox;
 uniform bool covered_by_fog;
 
 void main()
 {
     const float brightness = sun.brightness;
 
-    vec4 diffuse = texture(skybox, uv_coordinates_cube);
+    vec4 diffuse = texture(samplerCubeEXT(skybox_cube_bindless), uv_coordinates_cube);
 
     vec3 sunDirection = (view_mat_inverted * vec4(normalize(sun.position), 0.0)).rgb;
 
@@ -43,8 +45,8 @@ void main()
     float fogFactor = fog.density * 100.0;
     float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
 
-    vec2 texel_size = textureSize(skybox_background_sampler, 0);
-    vec4 background = texture(skybox_background_sampler, gl_FragCoord.xy / texel_size);
+    vec2 texel_size = textureSize(sampler2D(skybox_background_bindless), 0);
+    vec4 background = texture(sampler2D(skybox_background_bindless), gl_FragCoord.xy / texel_size);
 
     vec3 sunEffect = color.xyz * brightness * sunFactor;
     vec4 tex2d_colors = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * brightness) + sunEffect, 1.0);

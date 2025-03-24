@@ -39,7 +39,6 @@ const int normals_code = 1 << 3;
 const int emission_code = 1 << 4;
 const int specular_code = 1 << 5;
 const int metallic_code = 1 << 6;
-const int light_bright_code = 1 << 2;
 
 layout (location = 0) out vec4 accumulated;
 layout (location = 1) out float reveal;
@@ -96,16 +95,17 @@ float calc_fog_float(vec3, float);
 
 struct Properties {
     float alpha_discard;
-    int lighting_code;
 };
 
 struct Material {
     vec4 diffuse_color;
+    vec3 emission_color;
+    float metallic_factor;
+    float roughness_factor;
     int diffuse_map_id;
     int normals_map_id;
-    int emissive_map_id;
-    int specular_map_id;
-    int metallic_map_id;
+    int emission_map_id;
+    int metallic_roughness_map_id;
     int texturing_code;
 };
 
@@ -153,7 +153,7 @@ void main()
     vec3 frag_pos = modelview_vertex_pos;
     vec4 g_texture = checkCode(texturing_code, diffuse_code) ? texture(sampler2D(textures[mat.specular_map_id]), uv_coordinates) : mat.diffuse_color;
     vec3 normals = normalize(checkCode(texturing_code, normals_code) ? calc_normal_map(mat.normals_map_id) : modelview_vertex_normal);
-    vec4 emission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(sampler2D(textures[mat.emissive_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
+    vec4 emission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? texture(sampler2D(textures[mat.emission_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
     vec4 specular = checkCode(texturing_code, specular_code) ? texture(sampler2D(textures[mat.specular_map_id]), uv_coordinates) : vec4(vec3(0.0), 1.0);
     vec4 metallic = (checkCode(texturing_code, metallic_code) ? texture(sampler2D(textures[mat.metallic_map_id]), uv_coordinates) : vec4(0.)) * refract_cubemap(model_vertex_normal, 1.73);
 
@@ -165,8 +165,8 @@ void main()
 
     float depthFactor = exp(-60. * gl_FragCoord.z);
     float a_factor = frag_color.a;
-    //float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * a_factor), a_factor) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
-    float weight = gl_FragCoord.z;
+    float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * a_factor), a_factor) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
+
     accumulated = vec4(frag_color.rgb * a_factor, a_factor) * weight;
     reveal = a_factor;
     reveal = calc_fog_float(frag_pos.xyz, reveal);
@@ -260,3 +260,5 @@ float calc_fog_float(vec3 frag_pos, float f) {
     fogFactor = clamp(fogFactor, 0., 1.);
     return f * fogFactor;
 }
+
+#extension GL_ARB_bindless_texture : require

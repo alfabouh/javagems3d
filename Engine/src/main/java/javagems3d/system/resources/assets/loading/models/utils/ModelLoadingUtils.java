@@ -264,7 +264,7 @@ public abstract class ModelLoadingUtils {
                 Log.get().exception(e);
             }
         }
-        Material material = new Material(diffuseSample == null ? ResourceManager.DEFAULT_TEXTURE() : diffuseSample, opacitySample, normalsSample, emissionSample, specularSample, metallicSample);
+        Material material = new Material(diffuseSample == null ? ResourceManager.DEFAULT_TEXTURE() : diffuseSample, normalsSample, emissionSample, specularSample);
         material.getTransparency().setHasTransparentPixels(textureIsImageAndHasAlphaPixels);
         material.getTransparency().setOpacity(opacityConstant);
         return material;

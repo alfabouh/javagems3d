@@ -57,7 +57,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
 
         if (pathToJarFont != null) {
             try (InputStream stream = JGems3D.loadFileFromJar(pathToJarFont)) {
-                byte[] fontData = JGemsFilesHelper.toByteArray(stream);
+                byte[] fontData = JGemsFilesHelper.toByteArray(stream, 8 * 1024);
                 ImFontConfig fontConfig = new ImFontConfig();
                 fontConfig.setGlyphRanges(fontAtlas.getGlyphRangesCyrillic());
                 fontAtlas.addFontFromMemoryTTF(fontData, 12, fontConfig);

@@ -96,6 +96,7 @@ void Shadows() {
 */
 
 #extension GL_ARB_bindless_texture : require
+
 layout (location = 0) out vec4 frag_color0;
 
 uniform float PosExp;
@@ -107,16 +108,17 @@ in flat uint ent_id;
 
 struct Properties {
     float alpha_discard;
-    int lighting_code;
 };
 
 struct Material {
     vec4 diffuse_color;
+    vec3 emission_color;
+    float metallic_factor;
+    float roughness_factor;
     int diffuse_map_id;
     int normals_map_id;
-    int emissive_map_id;
-    int specular_map_id;
-    int metallic_map_id;
+    int emission_map_id;
+    int metallic_roughness_map_id;
     int texturing_code;
 };
 
@@ -156,11 +158,12 @@ void main()
     Material mat = materials[matertial_id];
     Properties property = properties[ent_id];
     float alpha_discard = property.alpha_discard;
-    int texturing_code = mat.texturing_code;
-    int lighting_code = property.lighting_code;
 
-    vec4 diffuse = checkCode(texturing_code, diffuse_code) ? texture(sampler2D(textures[mat.diffuse_map_id]), uv_coordinates) : mat.diffuse_color;
-    if (diffuse.a < alpha_discard) {
+    float diffuse_a = mat.diffuse_color.a;
+    if (checkCode(mat.texturing_code, diffuse_code)) {
+        diffuse_a *= texture(sampler2D(mat.diffuse_map_id), uv_coordinates).a;
+    }
+    if (diffuse_a < alpha_discard) {
         discard;
     }
 

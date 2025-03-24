@@ -1,6 +1,7 @@
 package javagems3d.graphics.environment.shadows.scene;
 
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
@@ -24,10 +25,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -94,20 +92,18 @@ public abstract class ShadowScene implements IShadowScene {
         if (JGemsConfig.SYSTEM.DRAW_BACK_FACES_FOR_SHADOWS) {
             GL46.glDisable(GL46.GL_CULL_FACE);
         }
-        Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(filtered);
-        this.sunShadows(groups);
-        this.pointLightShadows(groups);
+        this.sunShadows(this.divideSet2Groups(filtered, Pipeline.SUN_LIGHT_SHADOW_MAP));
+        this.pointLightShadows(this.divideSet2Groups(filtered, Pipeline.POINT_LIGHT_SHADOW_MAP));
         if (oldV) {
             GL46.glEnable(GL46.GL_CULL_FACE);
         }
-
         this.blurShadows(this.getSunLightShadow().getSunShadowFBO());
     }
 
     protected abstract void blurShadows(FBOTexture2DProgram sunShadowFBO);
 
-    protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<SceneObject> filteredObjectsSet) {
-        Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> e.getModel().getMeshStructure().canBeUsedInIndirectRendering()));
+    protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<SceneObject> filteredObjectsSet, Pipeline pipeline) {
+        Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> Objects.requireNonNull(e.getRenderTable().getRenderingData(pipeline).getRenderFabric()).getRenderingType() == Type.INDIRECT));
         return new Pair<>(partitionedModels.get(false), partitionedModels.get(true));
     }
 

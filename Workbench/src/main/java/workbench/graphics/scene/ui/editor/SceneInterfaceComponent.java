@@ -32,6 +32,7 @@ public class SceneInterfaceComponent {
     private final EditorInterface editorInterface;
     private AtomicBoolean isThreadInProcess;
     private boolean usedGuizmoLastFrame;
+    private boolean wasWindowFocused;
 
     public SceneInterfaceComponent(EditorInterface editorInterface) {
         this.editorInterface = editorInterface;
@@ -41,6 +42,7 @@ public class SceneInterfaceComponent {
 
     public void clear() {
         this.isThreadInProcess.set(false);
+        this.wasWindowFocused = false;
         this.usedGuizmoLastFrame = false;
     }
 
@@ -64,24 +66,25 @@ public class SceneInterfaceComponent {
 
         ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
 
-        if (!this.usedGuizmoLastFrame && !this.getEditorInterface().getContextComponent().isCameraCheckBox() && EditorInterface.isCursorInsideScene) {
-            if (ImGui.isMouseReleased(0)) {
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                if (!this.isThreadInProcess.get()) {
-                    executor.execute(() -> {
-                        try {
-                            this.isThreadInProcess.set(true);
-                            WBenchObject wBenchObject = this.tryToSelectObjectFromMouse(new Vector2i(imagePosX, imagePosY), new Vector2i(imageSizeX, imageSizeY), new Vector2i((int) ImGui.getMousePos().x, (int) ImGui.getMousePos().y));
-                            this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
-                        } finally {
-                            this.isThreadInProcess.set(false);
-                            executor.shutdown();
-                        }
-                    });
+        if (!this.wasWindowFocused && !this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
+            if (!this.usedGuizmoLastFrame && EditorInterface.isCursorInsideScene) {
+                if (ImGui.isMouseReleased(0)) {
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    if (!this.isThreadInProcess.get()) {
+                        executor.execute(() -> {
+                            try {
+                                this.isThreadInProcess.set(true);
+                                WBenchObject wBenchObject = this.tryToSelectObjectFromMouse(new Vector2i(imagePosX, imagePosY), new Vector2i(imageSizeX, imageSizeY), new Vector2i((int) ImGui.getMousePos().x, (int) ImGui.getMousePos().y));
+                                this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
+                            } finally {
+                                this.isThreadInProcess.set(false);
+                                executor.shutdown();
+                            }
+                        });
+                    }
                 }
             }
         }
-
         this.usedGuizmoLastFrame = false;
         if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
             if (this.getEditorInterface().getCurrentSelectedObject() != null) {
@@ -109,6 +112,16 @@ public class SceneInterfaceComponent {
                     this.getEditorInterface().getCurrentSelectedObject().setScaling(scaling);
                 }
             }
+        }
+
+        if (ImGui.isWindowFocused()) {
+            if (ImGui.isMouseReleased(0)) {
+                this.wasWindowFocused = false;
+            }
+            WBench.get().getScreen().getWindow().setInFocus(true);
+        } else {
+            this.wasWindowFocused = true;
+            WBench.get().getScreen().getWindow().setInFocus(false);
         }
     }
 

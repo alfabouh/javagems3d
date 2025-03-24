@@ -1,11 +1,10 @@
 package javagems3d.system.service.path;
 
 import java.io.Serializable;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 public final class JGemsPath implements Serializable {
-    public static final long serialVersionUID = 142L;
+    private static final long serialVersionUID = 142L;
     private final String fullPath;
 
     public JGemsPath(JGemsPath path, String... other) {
@@ -45,12 +44,8 @@ public final class JGemsPath implements Serializable {
         return normalizedPath;
     }
 
-    public String getParentPath() {
-        return this.getPath().getParent().toString() + "/";
-    }
-
-    public Path getPath() {
-        return FileSystems.getDefault().getPath(this.getFullPath());
+    public JGemsPath getDirectory() {
+        return new JGemsPath(this.getFullPath().substring(0, this.getFullPath().lastIndexOf('/')));
     }
 
     public String getFullPath() {

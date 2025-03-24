@@ -69,7 +69,7 @@ public abstract class JGemsRenderingHelper {
         if (material.getNormalsMap() != null) {
             code |= 1 << 3;
         }
-        if (material.getEmissionMap() != null) {
+        if (material.getEmission() != null) {
             code |= 1 << 4;
         }
         if (material.getSpecularMap() != null) {

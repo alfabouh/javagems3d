@@ -1,3 +1,5 @@
+#extension GL_ARB_bindless_texture : require
+
 in mat3 TBN;
 in vec2 uv_coordinates;
 in vec3 modelview_vertex_normal;
@@ -5,31 +7,27 @@ in vec3 modelview_vertex_pos;
 in vec3 model_vertex_normal;
 in vec4 model_vertex_pos;
 
-layout (location = 0) out vec4 gPosition;
-layout (location = 1) out vec4 gNormal;
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec4 gColor;
-layout (location = 3) out vec4 gEmission;
-layout (location = 4) out vec4 gSpecular;
+layout (location = 3) out vec3 gEmission;
+layout (location = 4) out vec2 gMetallicRoughness;
 
 const int diffuse_code = 1 << 2;
-const int emission_code = 1 << 3;
-const int metallic_code = 1 << 4;
-const int normals_code = 1 << 5;
-const int specular_code = 1 << 6;
-const int light_bright_code = 1 << 2;
+const int normals_code = 1 << 3;
+const int emission_code = 1 << 4;
+const int metallic_roughness_code = 1 << 5;
 
-uniform bool use_cubemap;
 uniform float alpha_discard;
 uniform vec4 diffuse_color;
-uniform samplerCube ambient_cube_map;
-uniform sampler2D diffuse_map;
-uniform sampler2D normals_map;
-uniform sampler2D emissive_map;
-uniform sampler2D specular_map;
-uniform sampler2D metallic_map;
+uniform vec3 emission_color;
+uniform float metallic_factor;
+uniform float roughness_factor;
+uniform uvec2 diffuse_map_bindless;
+uniform uvec2 normals_map_bindless;
+uniform uvec2 emission_map_bindless;
+uniform uvec2 metallic_roughness_map_bindless;
 uniform int texturing_code;
-uniform int lighting_code;
-uniform vec3 camera_pos;
 
 bool checkCode(int i1, int i2) {
     int i3 = i1 & i2;
@@ -37,42 +35,44 @@ bool checkCode(int i1, int i2) {
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture(normals_map, uv_coordinates).rgb;
+    vec3 normal = texture(sampler2D(normals_map_bindless), uv_coordinates).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
 }
 
-vec3 refract_cubemap(vec3 normal, float cnst) {
-    float ratio = 1.0 / cnst;
-    vec3 I = normalize(model_vertex_pos.xyz - camera_pos);
-    vec3 R = refract(I, normalize(normal), ratio);
-    return texture(ambient_cube_map, R).rgb;
-}
-
 void main()
 {
-    vec4 diffuse_texture = texture(diffuse_map, uv_coordinates);
-    vec4 emissive_texture = texture(emissive_map, uv_coordinates);
+    bool useDiffuseTexture = checkCode(texturing_code, diffuse_code);
+    bool useEmissionTexture = checkCode(texturing_code, emission_code);
+    bool useNormalsTexture = checkCode(texturing_code, normals_code);
+    bool useRoughnessMetallicTexture = checkCode(texturing_code, metallic_roughness_code);
 
-    vec4 diffuse = checkCode(texturing_code, diffuse_code) ? diffuse_texture : diffuse_color;
+    vec4 diffuse = vec4(diffuse_color);
+    vec3 normals = vec3(modelview_vertex_normal);
+    vec3 emission = vec3(emission_color);
+    vec2 metallic_roughness = vec2(metallic_factor, roughness_factor);
 
+    if (useDiffuseTexture) {
+        diffuse *= texture(sampler2D(diffuse_map_bindless), uv_coordinates);
+    }
     if (diffuse.a < alpha_discard) {
         discard;
     }
+    if (useEmissionTexture) {
+        emission = texture(sampler2D(emission_map_bindless), uv_coordinates);
+    }
+    if (useNormalsTexture) {
+        normals = calc_normal_map();
+    }
+    if (useRoughnessMetallicTexture) {
+        vec4 mr = texture(sampler2D(metallic_roughness_map_bindless), uv_coordinates);
+        metallic_roughness *= vec2(mr.b, mr.g);
+    }
 
-    diffuse += vec4(1.0 - diffuse.a) * alpha_discard + vec4(1.0 - diffuse.a) * diffuse;
-
-    vec3 normals = normalize(checkCode(texturing_code, normals_code) ? calc_normal_map() : modelview_vertex_normal);
-    gNormal = vec4(normals, 1.0);
-
-    gPosition = vec4(modelview_vertex_pos, 1.0);
+    gPosition = modelview_vertex_pos;
+    gNormal = normals;
     gColor = diffuse;
-    gEmission = checkCode(lighting_code, light_bright_code) ? vec4(1.0) : checkCode(texturing_code, emission_code) ? emissive_texture : vec4(vec3(0.0), 1.0);
-    gSpecular = checkCode(texturing_code, specular_code) ? texture(specular_map, uv_coordinates) : vec4(vec3(0.0), 1.0);
-
-    vec3 metallicColor = texture(metallic_map, uv_coordinates).rgb;
-    vec3 refractColor = vec3(1.);
-    vec4 gMetallic = checkCode(texturing_code, metallic_code) ? vec4(metallicColor * refractColor, 1.0) : vec4(0.);
-    gColor += vec4(gMetallic.xyz, 0.0);
+    gEmission = emission;
+    gMetallicRoughness = metallic_roughness;
 }

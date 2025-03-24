@@ -1,6 +1,7 @@
 package workbench.resources.initialization;
 
 import api.application.workbench.manager.IAPIWBenchDataManager;
+import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
@@ -8,6 +9,7 @@ import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.path.JGemsPath;
 import org.lwjgl.opengl.GL46;
@@ -31,6 +33,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
     public WBenchShaderManager depth_plight;
     public WBenchShaderManager gui_image;
     public WBenchShaderManager preview;
+    public WBenchShaderManager simple_flat;
 
     public ShaderStorageBufferObject IndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
@@ -82,23 +85,25 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         this.FogData = new ShaderStorageBufferObject(7, Float.BYTES * JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
         ShaderStorageBufferProgram.createSSBOStorage(this.FogData, GL46.GL_DYNAMIC_STORAGE_BIT);
 
-        this.gui_image = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/post/gui_image"));
-        this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/post/scene_gluing"));
-        this.skybox = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/skybox"));
-        this.background = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/background"));
-        this.background_indirect = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/background_indirect"));
-        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/oit/weighted_liquid_oit"));
-        this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/oit/weighted_oit"));
-        this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/oit/weighted_oit_indirect"));
-        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(IAPIWBenchDataManager.DEFAULT_WORKBENCH_DIRECT_SHADER));
-        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(IAPIWBenchDataManager.DEFAULT_WORKBENCH_INDIRECT_SHADER));
-        this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/world_deferred"));
-        this.simple_gbuffer = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_gbuffer"));
-        this.simple = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple"));
-        this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/shadows/depth_sun"));
-        this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/shadows/depth_sun_indirect"));
-        this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/shadows/depth_plight"));
+        this.gui_image = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/gui_image"));
+        this.scene_gluing = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/scene_gluing"));
+        this.skybox = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/skybox"));
+        this.background = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background"));
+        this.background_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background_indirect"));
+        this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_liquid_oit"));
+        this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit"));
+        this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_indirect"));
+        this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer"));
+        this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer_indirect"));
+        this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred"));
+        this.simple_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple_gbuffer"));
+        this.simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/simple"));
+        this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun"));
+        this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"));
+        this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"));
+
         this.preview = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/preview"));
+        this.simple_flat = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_flat"));
     }
 
     @Override

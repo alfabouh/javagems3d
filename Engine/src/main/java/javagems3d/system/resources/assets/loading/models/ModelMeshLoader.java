@@ -195,7 +195,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
-                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getParentPath());
+                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getDirectory().getFullPath());
                 if (meshBuffer != null) {
                     systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
                 }
@@ -227,6 +227,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                     meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData2, material));
                     systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
                     meshGroup.setLinkedMeshBuffer(meshBuffer);
+                    meshBuffer.setKeepNodesInMemory(false);
                 }
             }
             if (isAnimated) {
@@ -252,7 +253,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
-                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getParentPath());
+                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getDirectory().getFullPath());
                 systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
                 materialList.add(material);
             }

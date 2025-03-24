@@ -10,8 +10,11 @@ import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.items.TagRadioBoolean;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
+import javagems3d.system.resources.assets.loading.models.ModelMeshLoader2;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.parsing.space.ParserSpace;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.path.JGemsPath;
 import workbench.WBench;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 
@@ -31,7 +34,11 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
     }
 
     private WBenchObjectTemplate constructObjectTemplate(SystemResources systemResources, String id, WBenchObjectData wBenchObjectData) {
-        MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true, true);
+        MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true, false);
+
+        ModelMeshLoader2 modelMeshLoader2 = new ModelMeshLoader2(ParserSpace.Type.GLTF2, new JGemsPath("/assets/jgems/models/gltest/teste.gltf"));
+        meshGroup = modelMeshLoader2.createMeshGroup();
+
         return new WBenchObjectTemplate(id, meshGroup, RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties()), wBenchObjectData.getTagsContainer(), wBenchObjectData.getTranslationConstraints());
     }
 
