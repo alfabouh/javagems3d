@@ -141,7 +141,7 @@ public final class GLTF2Parser implements IParser {
             }
 
             Vector4f diffuseColor = null;
-            Vector3f emissionColor = new Vector3f(0.f);
+            Vector3f emissionColor = new Vector3f(1.f);
 
             String emissionTexture = null;
             String normalsTexture = null;

@@ -209,7 +209,7 @@ void main()
         discard;
     }
     if (useEmissionTexture) {
-        emission = texture(sampler2D(emission_map_bindless), uv_coordinates);
+        emission *= texture(sampler2D(emission_map_bindless), uv_coordinates).rgb;
     }
     if (useNormalsTexture) {
         normals = calc_normal_map();

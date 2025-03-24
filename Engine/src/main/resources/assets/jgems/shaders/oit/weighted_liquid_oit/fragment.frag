@@ -191,7 +191,7 @@ void main()
         discard;
     }
     if (useEmissionTexture) {
-        emission = texture(sampler2D(emission_map_bindless), getScaledTexture());
+        emission *= texture(sampler2D(emission_map_bindless), getScaledTexture()).rgb;
     }
     if (useNormalsTexture) {
         normals = calc_normal_map();
