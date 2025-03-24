@@ -1,7 +1,7 @@
 in vec2 uv_coordinates;
 layout (location = 0) out vec4 frag_color;
 
-uniform sampler2D texture_sampler;
+uniform sampler2D texture_bindless;
 uniform sampler2D bloom_sampler;
 uniform bool use_hdr;
 
@@ -25,5 +25,5 @@ vec4 no_hdr(vec4 in_col) {
 }
 
 void main() {
-    frag_color = use_hdr ? hdr(texture(texture_sampler, uv_coordinates), exposure, gamma) : no_hdr(texture(texture_sampler, uv_coordinates));
+    frag_color = use_hdr ? hdr(texture(texture_bindless, uv_coordinates), exposure, gamma) : no_hdr(texture(texture_bindless, uv_coordinates));
 }

@@ -53,7 +53,7 @@ uniform uvec2 gNormals;
 uniform uvec2 gTexture;
 uniform uvec2 gEmission;
 uniform uvec2 gMetallicRoughness;
-uniform uvec2 ssaoSampler;
+uniform uvec2 ssao_bindless_sampler;
 
 #include "assets/jgems/shaders/libs/shadows"
 
@@ -137,7 +137,7 @@ vec4 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(ambient_cube_bindless, R).rgb, 1.0);
+    return vec4(texture(samplerCubeEXT(ambient_cube_bindless), R).rgb, 1.0);
 }
 
 void main()
@@ -145,7 +145,7 @@ void main()
     vec3 frag_pos = texture(sampler2D(gPositions), uv_coordinates).xyz;
     vec3 normals = texture(sampler2D(gNormals), uv_coordinates).xyz;
     vec4 g_texture = texture(sampler2D(gTexture), uv_coordinates);
-    vec3 emission = texture(sampler2D(gEmission), uv_coordinates).rgb * vec3(5.);
+    vec3 emission = texture(sampler2D(gEmission), uv_coordinates).rgb;
     vec2 metallic_roughness = texture(sampler2D(gMetallicRoughness), uv_coordinates).rg;
 
     vec4 view_pos = vec4(frag_pos, 1.0);
@@ -159,7 +159,7 @@ void main()
     float f1 = 1.0;
     if (isSsaoValid) {
         float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
-        float AO = texture(ssaoSampler, uv_coordinates).r;
+        float AO = texture(sampler2D(ssao_bindless_sampler), uv_coordinates).r;
         float f1 = pow(AO, (1.0 - gray) * 3.);
     }
 

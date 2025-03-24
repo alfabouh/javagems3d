@@ -93,7 +93,7 @@ void main()
         discard;
     }
     if (useEmissionTexture) {
-        emission = texture(sampler2D(textures[mat.emission_map_id]), uv_coordinates);
+        emission *= texture(sampler2D(textures[mat.emission_map_id]), uv_coordinates).rgb;
     }
     if (useNormalsTexture) {
         normals = calc_normal_map(mat.normals_map_id);

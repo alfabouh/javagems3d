@@ -3,7 +3,7 @@ in vec2 uv_coordinates;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bloom_color;
 
-uniform sampler2D texture_sampler;
+uniform sampler2D texture_bindless;
 uniform sampler2D bloom_sampler;
 uniform sampler2D bloom_sampler2;
 
@@ -30,7 +30,7 @@ void main() {
 
     mixedTransparency = isApproximatelyEqual(reveal, 1.0f) ? vec4(0.) : mixedTransparency;
 
-    vec4 sceneColor = texture(texture_sampler, uv_coordinates) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
+    vec4 sceneColor = texture(texture_bindless, uv_coordinates) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
 
     vec3 accumBloomColor = accum_blur.rgb / max(accum_blur.a, 1e-5f);
     vec4 mixedBloomTransparency = vec4(accumBloomColor, reveal <= 0.0 ? 1. : reveal);

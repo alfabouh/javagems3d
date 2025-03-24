@@ -5,14 +5,10 @@ layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
 
 out vec2 uv_coordinates;
-
 out vec3 modelview_vertex_normal;
-out vec3 model_vertex_normal;
 out vec3 modelview_vertex_pos;
 out vec4 model_vertex_pos;
-
 out mat3 TBN;
-out mat4 out_view_matrix;
 
 uniform mat4 view_matrix;
 uniform mat4 model_matrix;
@@ -27,7 +23,6 @@ void main()
     uv_coordinates = aTexture;
 
     modelview_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;
-    model_vertex_normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;
     modelview_vertex_pos = mv_pos.xyz;
     model_vertex_pos = model_matrix * vec4(aPosition, 1.0f);
 
@@ -35,6 +30,4 @@ void main()
     vec3 B = normalize(vec3(model_view_matrix * (vec4(aBitangent, 0.0))));
     vec3 N = normalize(vec3(model_view_matrix * (vec4(aNormal, 0.0))));
     TBN = mat3(T, B, N);
-
-    out_view_matrix = view_matrix;
 }

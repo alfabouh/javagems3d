@@ -35,7 +35,7 @@ public class WGluingRenderProcessor extends IRenderProcessor.Template {
     public void runProcessorRendering(FrameTicking frameTicking) {
         JGemsShaderManager gluing = this.getGluingShader();
         gluing.beginShading();
-        gluing.performUniformTexture(new UniformString("texture_sampler"), this.getInColorScene().getTextureByIndex(0));
+        gluing.performUniformTexture(new UniformString("texture_bindless"), this.getInColorScene().getTextureByIndex(0));
         gluing.performUniformTexture(new UniformString("accumulated_alpha"), this.getInColorTransparency().getTextureByIndex(0));
         gluing.performUniformTexture(new UniformString("reveal_alpha"), this.getInColorTransparency().getTextureByIndex(1));
         gluing.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
