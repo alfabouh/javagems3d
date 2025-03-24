@@ -4,8 +4,8 @@ struct CascadeShadow {
 };
 
 uniform CascadeShadow cascade_shadow[CONST.SUN_SHADOW_CASCADES];
-uniform sampler2D sun_shadow_map[CONST.SUN_SHADOW_CASCADES];
-uniform samplerCube point_light_cubemap[CONST.MAX_POINT_LIGHTS_SHADOWS];
+uniform uvec2 sun_shadow_map[CONST.SUN_SHADOW_CASCADES];
+uniform uvec2 point_light_cubemap[CONST.MAX_POINT_LIGHTS_SHADOWS];
 uniform float far_plane;
 
 uniform float PosExp;
@@ -35,7 +35,7 @@ float EVSM(int idx, vec4 shadow_coord, float bias) {
     float negativeExponent = NegExp;
     vec2 exponents = vec2(positiveExponent, negativeExponent);
 
-    vec4 moments = texture(sun_shadow_map[idx], shadow_coord.xy).xyzw;
+    vec4 moments = texture(sampler2D(sun_shadow_map[idx]), shadow_coord.xy).xyzw;
     vec2 posMoments = vec2(moments.x, moments.z);
     vec2 negMoments = vec2(moments.y, moments.w);
     vec2 wDepth = warp(exponents, shadow_coord.z);
@@ -78,13 +78,13 @@ float vsmFixLightBleed(float pMax, float amount) {
     return clamp((pMax - amount) / (1.0 - amount), 0.0, 1.0);
 }
 
-float calculate_point_light_shadows(samplerCube vsmCubemap, vec3 fragPosition, vec3 lightPos)
+float calculate_point_light_shadows(uvec2 vsmCubemap, vec3 fragPosition, vec3 lightPos)
 {
     vec3 fragToLight = fragPosition - lightPos;
     float currentDepth = length(fragToLight);
     currentDepth /= far_plane;
 
-    vec4 vsm = texture(vsmCubemap, normalize(fragToLight));
+    vec4 vsm = texture(samplerCubeEXT(vsmCubemap), normalize(fragToLight));
 
     float E_x2 = vsm.y;
     float Ex_2 = vsm.x * vsm.x;

@@ -1,8 +1,10 @@
+#extension GL_ARB_bindless_texture : require
+
 layout (location = 0) out vec4 frag_color;
 in vec2 uv_coordinates;
 
 uniform vec4 color;
-uniform sampler2D texture_sampler;
+uniform uvec2 texture_bindless;
 
 layout (std430, binding = 0) buffer Timer {
     float w_tick;
@@ -15,7 +17,7 @@ float rand(vec2 co)
 
 void main()
 {
-    vec2 tex = gl_FragCoord.xy / textureSize(texture_sampler, 0);
-    vec4 v4 = color * texture(texture_sampler, uv_coordinates);
+    vec2 tex = gl_FragCoord.xy / textureSize(sampler2D(texture_bindless), 0);
+    vec4 v4 = color * texture(sampler2D(texture_bindless), uv_coordinates);
     frag_color = vec4(v4.x * (rand(vec2(tex)) * 0.25 + 0.75), v4.y * (rand(vec2(tex)) * 0.25 + 0.75), v4.z * (rand(vec2(tex)) * 0.25 + 0.75), v4.a);
 }

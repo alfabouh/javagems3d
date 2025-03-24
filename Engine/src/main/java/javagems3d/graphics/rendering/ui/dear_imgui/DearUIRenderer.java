@@ -143,7 +143,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
 
         this.getShaderManager().beginShading();
         this.getShaderManager().performUniform(new UniformString("scale"), UniformFunctions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
-        this.getShaderManager().performUniform(new UniformString("texture_sampler"), UniformFunctions.INTEGER(0));
+        this.getShaderManager().performUniform(new UniformString("texture_bindless"), UniformFunctions.INTEGER(0));
 
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendEquation(GL46.GL_FUNC_ADD);

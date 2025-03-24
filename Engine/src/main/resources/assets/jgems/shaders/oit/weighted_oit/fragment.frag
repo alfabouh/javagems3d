@@ -1,8 +1,10 @@
 #extension GL_ARB_bindless_texture : require
 
 in vec2 uv_coordinates;
-in mat4 out_view_matrix;
-in mat4 out_inversed_view_matrix;
+in vec3 modelview_vertex_normal;
+in vec3 modelview_vertex_pos;
+in vec4 model_vertex_pos;
+in mat3 TBN;
 
 layout (location = 0) out vec4 accumulated;
 layout (location = 1) out float reveal;
@@ -49,12 +51,23 @@ uniform vec3 camera_pos;
 uniform uvec2 ambient_cube_bindless;
 uniform bool useCubeMap;
 uniform bool isSsaoValid;
-uniform uvec2 gPositions;
-uniform uvec2 gNormals;
-uniform uvec2 gTexture;
-uniform uvec2 gEmission;
-uniform uvec2 gMetallicRoughness;
-uniform uvec2 ssaoSampler;
+
+const int diffuse_code = 1 << 2;
+const int normals_code = 1 << 3;
+const int emission_code = 1 << 4;
+const int metallic_roughness_code = 1 << 5;
+
+uniform uvec2 ssao_bindless_sampler;
+uniform float alpha_discard;
+uniform vec4 diffuse_color;
+uniform vec3 emission_color;
+uniform float metallic_factor;
+uniform float roughness_factor;
+uniform uvec2 diffuse_map_bindless;
+uniform uvec2 normals_map_bindless;
+uniform uvec2 emission_map_bindless;
+uniform uvec2 metallic_roughness_map_bindless;
+uniform int texturing_code;
 
 #include "assets/jgems/shaders/libs/shadows"
 
@@ -138,41 +151,76 @@ vec4 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(ambient_cube_bindless, R).rgb, 1.0);
+    return vec4(texture(samplerCubeEXT(ambient_cube_bindless), R).rgb, 1.0);
+}
+
+bool checkCode(int i1, int i2) {
+    int i3 = i1 & i2;
+    return bool(i3 != 0);
+}
+
+vec3 calc_normal_map() {
+    vec3 normal = texture(sampler2D(normals_map_bindless), uv_coordinates).rgb;
+    normal = normalize(normal * 2.0 - 1.0);
+    normal = normalize(TBN * normal);
+    return normal;
 }
 
 void main()
 {
-    vec3 frag_pos = texture(sampler2D(gPositions), uv_coordinates).xyz;
-    vec3 normals = texture(sampler2D(gNormals), uv_coordinates).xyz;
-    vec4 g_texture = texture(sampler2D(gTexture), uv_coordinates);
-    vec3 emission = texture(sampler2D(gEmission), uv_coordinates).rgb * vec3(5.);
-    vec2 metallic_roughness = texture(sampler2D(gMetallicRoughness), uv_coordinates).rg;
+    bool useDiffuseTexture = checkCode(texturing_code, diffuse_code);
+    bool useEmissionTexture = checkCode(texturing_code, emission_code);
+    bool useNormalsTexture = checkCode(texturing_code, normals_code);
+    bool useRoughnessMetallicTexture = checkCode(texturing_code, metallic_roughness_code);
 
-    vec4 view_pos = vec4(frag_pos, 1.0);
-    vec4 world_position = out_inversed_view_matrix * view_pos;
-    world_position /= world_position.w;
+    vec4 diffuse = vec4(diffuse_color);
+    vec3 normals = vec3(modelview_vertex_normal);
+    vec3 emission = vec3(emission_color);
+    vec2 metallic_roughness = vec2(metallic_factor, roughness_factor);
+
+    if (useDiffuseTexture) {
+        diffuse *= texture(sampler2D(diffuse_map_bindless), uv_coordinates);
+    }
+    if (diffuse.a < alpha_discard) {
+        discard;
+    }
+    if (useEmissionTexture) {
+        emission = texture(sampler2D(emission_map_bindless), uv_coordinates);
+    }
+    if (useNormalsTexture) {
+        normals = calc_normal_map();
+    }
+    if (useRoughnessMetallicTexture) {
+        vec4 mr = texture(sampler2D(metallic_roughness_map_bindless), uv_coordinates);
+        metallic_roughness *= vec2(mr.b, mr.g);
+    }
+
+    vec3 gPosition = modelview_vertex_pos;
+    vec3 gNormal = normals;
+    vec4 gColor = diffuse;
+    vec3 gEmission = emission;
+    vec2 gMetallicRoughness = metallic_roughness;
 
     if (useCubeMap) {
-        g_texture *= (refract_cubemap(normals, 1.73, world_position) * metallic_roughness.r);
+        gColor *= (refract_cubemap(gNormal, 1.73, model_vertex_pos) * gMetallicRoughness.r);
     }
 
     float f1 = 1.0;
     if (isSsaoValid) {
-        float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
-        float AO = texture(ssaoSampler, uv_coordinates).r;
+        float gray = dot(gColor.rgb, vec3(0.299, 0.587, 0.114));
+        float AO = texture(sampler2D(ssao_bindless_sampler), uv_coordinates).r;
         float f1 = pow(AO, (1.0 - gray) * 3.);
     }
 
-    vec4 lights = calc_light(frag_pos, normals, metallic_roughness.g) * vec4(f1);
-    vec4 frag_color = g_texture * (lights + emission);
-    frag_color = calc_fog(frag_pos.xyz, frag_color);
+    vec4 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g) * vec4(f1);
+    vec4 frag_color = gColor * (lights + gEmission);
+    frag_color = calc_fog(gPosition frag_color);
 
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
     accumulated = vec4(frag_color.rgb * frag_color.a, frag_color.a) * weight;
     reveal = frag_color.a;
-    reveal = calc_fog_float(frag_pos.xyz, frag_color.a);
+    reveal = calc_fog_float(gPosition, frag_color.a);
 
-    float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
+    float brightness = dot(frag_color.rgb + (gEmission), vec3(0.2126, 0.7152, 0.0722));
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 }

@@ -141,7 +141,7 @@ public final class GLTF2Parser implements IParser {
             }
 
             Vector4f diffuseColor = null;
-            Vector3f emissionColor = null;
+            Vector3f emissionColor = new Vector3f(0.f);
 
             String emissionTexture = null;
             String normalsTexture = null;
@@ -151,6 +151,13 @@ public final class GLTF2Parser implements IParser {
             float metallicFactor = 0.0f;
             float roughnessFactor = 1.0f;
 
+            float emissionIntensity = 1.0f;
+
+            if (material.has("EXTENTIONS")) {
+                JsonObject object = material.getAsJsonObject("EXTENTIONS");
+                emissionIntensity = object.get("emissionIntensity").getAsFloat();
+            }
+
             if (material.has("normalTexture")) {
                 JsonObject object = material.getAsJsonObject("normalTexture");
                 int index = object.get("index").getAsInt();
@@ -158,10 +165,10 @@ public final class GLTF2Parser implements IParser {
             }
             if (material.has("emissiveFactor")) {
                 JsonArray array = material.getAsJsonArray("emissiveFactor");
-                for (int k = 0; k < array.size(); k++) {
-                    emissionColor = new Vector3f(array.get(0).getAsFloat(), array.get(1).getAsFloat(), array.get(2).getAsFloat());
-                }
+                emissionColor = new Vector3f(array.get(0).getAsFloat(), array.get(1).getAsFloat(), array.get(2).getAsFloat());
             }
+            emissionColor.mul(emissionIntensity);
+
             if (material.has("emissiveTexture")) {
                 JsonObject object = material.getAsJsonObject("emissiveTexture");
                 int index = object.get("index").getAsInt();
@@ -175,9 +182,7 @@ public final class GLTF2Parser implements IParser {
             }
             if (pbrMaterialObject.has("baseColorFactor")) {
                 JsonArray array = pbrMaterialObject.getAsJsonArray("baseColorFactor");
-                for (int k = 0; k < array.size(); k++) {
-                    diffuseColor = new Vector4f(array.get(0).getAsFloat(), array.get(1).getAsFloat(), array.get(2).getAsFloat(), array.get(3).getAsFloat());
-                }
+                diffuseColor = new Vector4f(array.get(0).getAsFloat(), array.get(1).getAsFloat(), array.get(2).getAsFloat(), array.get(3).getAsFloat());
             }
             if (pbrMaterialObject.has("baseColorTexture")) {
                 JsonObject object = pbrMaterialObject.getAsJsonObject("baseColorTexture");

@@ -47,7 +47,7 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
                 if (meshNode3D.getMaterial().getDiffuse() instanceof ITexture2DProgram) {
                     ITexture2DProgram imageBasedTexture = (ITexture2DProgram) meshNode3D.getMaterial().getDiffuse();
-                    shaderManager.performUniformTexture(new UniformString("texture_sampler"), imageBasedTexture);
+                    shaderManager.performUniformTexture(new UniformString("texture_bindless"), imageBasedTexture);
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                 } else {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));

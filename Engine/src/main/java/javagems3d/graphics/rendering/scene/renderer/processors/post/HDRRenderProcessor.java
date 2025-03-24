@@ -40,7 +40,7 @@ public class HDRRenderProcessor extends IRenderProcessor.Template {
         hdr.performUniform(new UniformString("exposure"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_EXPOSURE));
         hdr.performUniform(new UniformString("gamma"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_GAMMA));
         hdr.performUniform(new UniformString("use_hdr"), UniformFunctions.BOOLEAN(JGemsConfig.SYSTEM.USE_HDR));
-        hdr.performUniformTexture(new UniformString("texture_sampler"), this.getInColor().getTextureByIndex(0));
+        hdr.performUniformTexture(new UniformString("texture_bindless"), this.getInColor().getTextureByIndex(0));
         hdr.performUniformTexture(new UniformString("bloom_sampler"), this.getInBloomColor().getTextureByIndex(0));
         hdr.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);

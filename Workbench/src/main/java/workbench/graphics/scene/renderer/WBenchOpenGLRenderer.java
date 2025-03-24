@@ -192,7 +192,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
         //JGemsShaderManager imgShader = WBenchResourceManager.localShaderAssets.gui_image;
         //imgShader.beginShading();
-        //imgShader.performUniformTexture(new UniformString("texture_sampler"), deferredRenderNode.getOutColorBuffer().getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
+        //imgShader.performUniformTexture(new UniformString("texture_bindless"), deferredRenderNode.getOutColorBuffer().getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         //imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         //JGemsRenderingHelper.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         //imgShader.endShading();

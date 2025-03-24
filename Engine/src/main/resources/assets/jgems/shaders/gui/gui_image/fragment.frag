@@ -1,10 +1,12 @@
+#extension GL_ARB_bindless_texture : require
+
 layout (location = 0) out vec4 frag_color;
 in vec2 uv_coordinates;
 
-uniform sampler2D texture_sampler;
+uniform uvec2 texture_bindless;
 
 void main()
 {
-    vec4 tex = texture(texture_sampler, uv_coordinates);
+    vec4 tex = texture(sampler2D(texture_bindless), uv_coordinates);
     frag_color = tex;
 }
