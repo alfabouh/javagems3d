@@ -1,6 +1,6 @@
 package javagems3d.graphics.rendering.programs.textures.base;
 
-import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.ISample;
 import org.lwjgl.opengl.GL46;
 
 public interface ITextureProgram extends ISample {

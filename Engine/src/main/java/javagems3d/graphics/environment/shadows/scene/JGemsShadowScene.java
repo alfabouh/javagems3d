@@ -76,7 +76,7 @@ public class JGemsShadowScene extends ShadowScene {
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             sunShadowFBO.connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(blurringConst));
-            blurring.performUniformTexture(new UniformString("texture_bindless"), sunShadowFBO.getTextureByIndex(i));
+            blurring.performUniformTextureBindless(new UniformString("texture_map"), sunShadowFBO.getTextureByIndex(i));
             JGemsRenderingHelper.renderModel2D(screenModel, GL46.GL_TRIANGLES);
         }
         blurring.endShading();
@@ -89,7 +89,7 @@ public class JGemsShadowScene extends ShadowScene {
             shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
             shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
             shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
-            shaderManager.performUniformTexture(new UniformString("animationsMatrix"), JGemsResourceManager.getAnimationsTextureBuffer());
+            shaderManager.performUniformTextureBindless(new UniformString("animations_matrix"), JGemsResourceManager.getAnimationsTextureBuffer());
         };
     }
 

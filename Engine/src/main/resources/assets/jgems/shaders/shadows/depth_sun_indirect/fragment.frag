@@ -113,6 +113,7 @@ struct Properties {
 struct Material {
     vec4 diffuse_color;
     vec3 emission_color;
+    float _padding000; //PADDING
     float metallic_factor;
     float roughness_factor;
     int diffuse_map_id;
@@ -161,7 +162,7 @@ void main()
 
     float diffuse_a = mat.diffuse_color.a;
     if (checkCode(mat.texturing_code, diffuse_code)) {
-        diffuse_a *= texture(sampler2D(mat.diffuse_map_id), uv_coordinates).a;
+        diffuse_a *= texture(sampler2D(textures[mat.diffuse_map_id]), uv_coordinates).a;
     }
     if (diffuse_a < alpha_discard) {
         discard;

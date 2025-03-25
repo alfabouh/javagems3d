@@ -28,7 +28,6 @@ public abstract class JGemsConfig {
         public static float Z_FAR = (float) JGems3D.MAP_MAX_SIZE * 2.0f;
         public static float DEFAULT_ALPHA_DISCARD = 0.7f;
 
-
         public static final Vector2f NEUTRAL_SHADOWS = new Vector2f();
         public static final int MAX_POINT_LIGHTS = 128;
         public static final int MAX_POINT_LIGHTS_SHADOWS = 3;
@@ -46,8 +45,7 @@ public abstract class JGemsConfig {
         public static int SUN_LIGHT_BUFFER_PACK_SIZE = 16;
         public static int FOG_BUFFER_PACK_SIZE = 8 + (1);
 
-
-        public static int INDIRECT_RENDERING_MATERIALS_PACK_SIZE = 10 + (2);
+        public static int INDIRECT_RENDERING_MATERIALS_PACK_SIZE = 15 + (1) + 1;
         public static int INDIRECT_RENDERING_PROPERTIES_PACK_SIZE = 2;
 
         public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 22);

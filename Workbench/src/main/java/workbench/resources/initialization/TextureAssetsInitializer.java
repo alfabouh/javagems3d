@@ -3,7 +3,7 @@ package workbench.resources.initialization;
 import api.application.workbench.manager.APIWBenchDataManager;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.collections.Triple;
 import javagems3d.system.service.path.JGemsPath;

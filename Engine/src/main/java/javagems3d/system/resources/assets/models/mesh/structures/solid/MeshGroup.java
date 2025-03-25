@@ -25,7 +25,7 @@ public class MeshGroup extends MeshStructure3D<RenderMesh> {
     }
 
     public MeshGroup(RenderMesh renderMesh) {
-        this(new MeshNode3D<>(renderMesh, new Material(null)));
+        this(new MeshNode3D<>(renderMesh, new Material()));
     }
 
     public MeshGroup() {

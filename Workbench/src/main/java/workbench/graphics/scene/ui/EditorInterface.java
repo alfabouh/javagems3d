@@ -35,6 +35,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.service.collections.Pair;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -292,9 +293,11 @@ public class EditorInterface implements DearUIInterface {
         shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(TransformUtils.getPerspectiveMatrix(1.0f, (float) (Math.PI / 2.0f), 0.01f, 100.0f)));
         shaderManager.performModel3DMatrix(new UniformString("model_matrix"), TransformUtils.getModelMatrix(pose3D).lookAt(new Vector3f(1.0f), new Vector3f(0.0f), new Vector3f(0.0f, 1.0f, 0.0f)));
         for (MeshNode3D<RenderMesh> meshNode3D : meshGroup.getAllNodes()) {
-            if (meshNode3D.getMaterial().getDiffuse() instanceof ITexture2DProgram) {
-                ITexture2DProgram imageBasedTexture = (ITexture2DProgram) meshNode3D.getMaterial().getDiffuse();
-                shaderManager.performUniformTexture(new UniformString("diffuse_map"), imageBasedTexture);
+            ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
+            ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
+            shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.getColor()));
+            if (diffuseMap != null) {
+                shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
                 shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
             } else {
                 shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));

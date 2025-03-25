@@ -10,7 +10,7 @@ in vec3 modelview_vertex_pos;
 void main()
 {
     gNormal = vec3(0.);
-    gPosition = vec3(modelview_vertex_pos, 1.0);
+    gPosition = modelview_vertex_pos;
     gColor = vec4(vec3(gl_FragCoord.x, 1.0, 1.0), 1.);
     gEmission = vec3(0.);
     gMetallicRoughness = vec2(0.);

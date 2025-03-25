@@ -89,8 +89,8 @@ public final class TransparencyRenderNode extends IRenderNode.Template implement
             final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
-                shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
+            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
+                shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
             }
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));

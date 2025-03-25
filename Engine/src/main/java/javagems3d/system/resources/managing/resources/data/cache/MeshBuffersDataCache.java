@@ -18,7 +18,7 @@ public final class MeshBuffersDataCache implements IDataCache {
     }
 
     public void writeData(Set<MeshBuffersDataArray> arraySet) {
-        this.addMaterial(new Material(null));
+        this.addMaterial(new Material());
         int i = this.getMaterials().size();
         for (MeshBuffersDataArray meshBuffersDataArray : arraySet) {
             for (MeshBuffer meshBuffer : meshBuffersDataArray.getMeshBuffers()) {

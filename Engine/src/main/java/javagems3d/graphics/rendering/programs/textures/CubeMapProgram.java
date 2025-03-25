@@ -2,8 +2,7 @@ package javagems3d.graphics.rendering.programs.textures;
 
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
-import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.ISample;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;

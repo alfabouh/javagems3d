@@ -9,7 +9,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffe
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.assets.texturing.Color4Texture;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.resources.managing.resources.SystemResources;
 
 public interface IAssetsInitializer {

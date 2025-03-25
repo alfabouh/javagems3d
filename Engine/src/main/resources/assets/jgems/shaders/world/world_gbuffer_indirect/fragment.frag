@@ -21,6 +21,7 @@ struct Properties {
 struct Material {
     vec4 diffuse_color;
     vec3 emission_color;
+    float _padding000; //PADDING
     float metallic_factor;
     float roughness_factor;
     int diffuse_map_id;
@@ -42,13 +43,10 @@ layout(std430, binding = 4) buffer RenderPropertiesData {
     Properties properties[512];
 };
 
-const int diffuse_code = 1 << 2;
-const int normals_code = 1 << 3;
-const int emission_code = 1 << 4;
-const int metallic_roughness_code = 1 << 5;
-
-//uniform vec3 camera_pos;
-//uniform samplerCube ambient_cube_map;
+const int diffuse_code = CONST.DIFFUSE_CODE;
+const int normals_code = CONST.NORMALS_CODE;
+const int emission_code = CONST.EMISSION_CODE;
+const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
 vec3 calc_normal_map(int normalsMapId) {
     vec3 normal = texture(sampler2D(textures[normalsMapId]), uv_coordinates).rgb;
@@ -56,13 +54,6 @@ vec3 calc_normal_map(int normalsMapId) {
     normal = normalize(TBN * normal);
     return normal;
 }
-
-//vec4 refract_cubemap(vec3 normal, float cnst) {
-//    float ratio = 1.0 / cnst;
-//    vec3 I = normalize(model_vertex_pos.xyz - camera_pos);
-//    vec3 R = refract(I, normalize(normal), ratio);
-//    return vec4(texture(ambient_cube_map, R).rgb, 1.0);
-//}
 
 bool checkCode(int i1, int i2) {
     int i3 = i1 & i2;
@@ -89,9 +80,9 @@ void main()
     if (useDiffuseTexture) {
         diffuse *= texture(sampler2D(textures[mat.diffuse_map_id]), uv_coordinates);
     }
-    if (diffuse.a < alpha_discard) {
-        discard;
-    }
+  // if (diffuse.a < alpha_discard) {
+  //     discard;
+  // }
     if (useEmissionTexture) {
         emission *= texture(sampler2D(textures[mat.emission_map_id]), uv_coordinates).rgb;
     }

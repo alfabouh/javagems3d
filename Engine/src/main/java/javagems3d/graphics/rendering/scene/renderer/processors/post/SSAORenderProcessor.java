@@ -92,10 +92,10 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
         ssaoComputeShader.performUniform(new UniformString("noiseScale"), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsConfig.SYSTEM.SSAO_NOISE_SIZE)));
         ssaoComputeShader.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
-        ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
-        ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
-        ssaoComputeShader.performUniformTexture(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture());
-        ssaoComputeShader.performUniformTexture(new UniformString("ssaoKernel"), this.getSsaoKernelTexture());
+        ssaoComputeShader.performUniformTextureBindless(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
+        ssaoComputeShader.performUniformTextureBindless(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
+        ssaoComputeShader.performUniformTextureBindless(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture());
+        ssaoComputeShader.performUniformTextureBindless(new UniformString("ssaoKernel"), this.getSsaoKernelTexture());
         GL46.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16F);
         int groupCountX = (windowSize.x + 16 - 1) / 16;
         int groupCountY = (windowSize.y + 16 - 1) / 16;
@@ -104,7 +104,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
         JGemsShaderManager ssaoBlur = JGemsResourceManager.globalShaderAssets.blur_ssao;
         ssaoBlur.beginShading();
-        ssaoBlur.performUniformTexture(new UniformString("texture_bindless"), this.getSsaoBufferTexture());
+        ssaoBlur.performUniformTexture(new UniformString("texture_map"), this.getSsaoBufferTexture());
         ssaoBlur.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         ssaoBlur.endShading();

@@ -1,10 +1,7 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.joml.Vector2i;
-import javagems3d.JGems3D;
-import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;

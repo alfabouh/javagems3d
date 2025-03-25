@@ -40,7 +40,7 @@ public class ModelMeshLoader2 implements ILoadingHelper {
         for (List<ParsedVertexData> list : parsedMeshTable.values()) {
             for (ParsedVertexData parsedVertexData1 : list) {
                 RenderMesh meshData = this.createRenderMesh(parsedVertexData1);
-                meshGroup.putNode(0, new MeshNode3D<>(meshData, new Material(null)));
+                meshGroup.putNode(0, new MeshNode3D<>(meshData, new Material()));
             }
         }
 

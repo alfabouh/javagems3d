@@ -3,6 +3,7 @@ package javagems3d.system.resources.assets.shaders.manager;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.shaders.base.*;
@@ -226,6 +227,33 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
         }
         GL46.glBindTexture(textureAttachment, textureID);
         this.performUniform(uniform, UniformFunctions.INTEGER(textureUnit));
+    }
+
+    public void performUniformTextureBindless(UniformString uniform, ITextureProgram program) {
+        if (!this.isUniformExist(uniform)) {
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            }
+            return;
+        }
+        if (!(program instanceof ITextureBindless) || !((ITextureBindless) program).isHandlerExists()) {
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Texture is not bindless! Uniform: " + uniform);
+            }
+            return;
+        }
+        ITextureBindless textureBindless = (ITextureBindless) program;
+        this.performUniform(uniform, UniformFunctions.TEXTURE64ARB(textureBindless.getBindingHandler()));
+    }
+
+    public void performUniformTextureBindless(UniformString uniform, long arbHandler) {
+        if (!this.isUniformExist(uniform)) {
+            if (this.isWarnsEnabled()) {
+                Log.get().warn("[" + this + "] Unknown uniform " + uniform);
+            }
+            return;
+        }
+        this.performUniform(uniform, UniformFunctions.TEXTURE64ARB(arbHandler));
     }
 
     private void initShaders(ShadersContainer shadersContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {

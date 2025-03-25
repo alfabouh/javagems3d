@@ -29,7 +29,7 @@ import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.Color4Texture;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
@@ -115,7 +115,7 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB32F, GL46.GL_RGB);
             add(GL46.GL_COLOR_ATTACHMENT2, GL46.GL_RGBA, GL46.GL_RGBA);
             add(GL46.GL_COLOR_ATTACHMENT3, GL46.GL_RGB, GL46.GL_RGB);
-            add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RGB, GL46.GL_RGB);
+            add(GL46.GL_COLOR_ATTACHMENT4, GL46.GL_RG, GL46.GL_RG);
         }};
         T2DAttachmentContainer ssao = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_R16F, GL46.GL_RED);
@@ -145,14 +145,13 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
             final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
-
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
-                shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
+            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
+                shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
             }
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
-            shaderManager.performUniformTexture(new UniformString("animationsMatrix"), JGemsResourceManager.getAnimationsTextureBuffer());
+            shaderManager.performUniformTextureBindless(new UniformString("animations_matrix"), JGemsResourceManager.getAnimationsTextureBuffer());
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(sceneWorld);
 
@@ -236,8 +235,8 @@ public final class DeferredRenderNode extends IRenderNode.Template implements ID
             final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
 
             shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
-                shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
+            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
+                shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
             }
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));

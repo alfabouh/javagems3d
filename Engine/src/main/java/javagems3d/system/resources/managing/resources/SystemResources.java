@@ -9,9 +9,9 @@ import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
-import javagems3d.system.resources.assets.texturing.base.IModifiableSample;
-import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.IPropertiesSample;
+import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataArrays;
 import javagems3d.system.resources.managing.resources.data.arrays.BindlessTexturesDataArray;
 import javagems3d.system.resources.managing.resources.data.arrays.MeshBuffersDataArray;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.SoundBuffer;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -160,7 +160,7 @@ public abstract class SystemResources implements ISystemResources {
     }
 
     public void reloadSamplesInCache(@Nullable Function<ISample.IProperties, ISample.IProperties> processProperties, boolean updateProperties) {
-        for (IModifiableSample cached : this.getResourceCache().getAllCachedObjectsCollection(IModifiableSample.class)) {
+        for (IPropertiesSample cached : this.getResourceCache().getAllCachedObjectsCollection(IPropertiesSample.class)) {
             cached.reload(processProperties == null ? null : processProperties.apply(cached.getProperties()), updateProperties);
         }
     }

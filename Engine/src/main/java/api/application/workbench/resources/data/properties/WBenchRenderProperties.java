@@ -18,7 +18,6 @@ public class WBenchRenderProperties extends RenderProperties {
         this.setValueFloat(JGemsRenderProperties.KEY_RENDER_DISTANCE, -1.0f);
         this.setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 1.0f);
         this.setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, true);
-        this.setValueBool(JGemsRenderProperties.KEY_LIGHT_BRIGHTNESS, false);
     }
 
     @Override

@@ -1,10 +1,12 @@
+#extension GL_ARB_bindless_texture : enable
+
 layout (location = 0) out vec4 frag_color;
 
 const float FXAA_REDUCE_MIN = (1.0/128.0);
 const float FXAA_REDUCE_MUL = (1.0/8.0);
 const float FXAA_THRESHOLD = (1.0/256.0);
 
-uniform sampler2D texture_bindless;
+uniform sampler2D texture_map;
 uniform vec2 resolution;
 uniform float FXAA_SPAN_MAX;
 uniform bool use_fxaa;
@@ -12,11 +14,11 @@ uniform bool use_fxaa;
 vec4 calcFxaa(vec2 inverse_resolution) {
     vec3 luma = vec3(0.2126, 0.7152, 0.0722);
 
-    vec3 rgbNW = texture(texture_bindless, (gl_FragCoord.xy + vec2(-1.0, -1.0)) * inverse_resolution).xyz;
-    vec3 rgbNE = texture(texture_bindless, (gl_FragCoord.xy + vec2(1.0, -1.0)) * inverse_resolution).xyz;
-    vec3 rgbSW = texture(texture_bindless, (gl_FragCoord.xy + vec2(-1.0, 1.0)) * inverse_resolution).xyz;
-    vec3 rgbSE = texture(texture_bindless, (gl_FragCoord.xy + vec2(1.0, 1.0)) * inverse_resolution).xyz;
-    vec3 rgbM = texture(texture_bindless, gl_FragCoord.xy * inverse_resolution).xyz;
+    vec3 rgbNW = texture(texture_map, (gl_FragCoord.xy + vec2(-1.0, -1.0)) * inverse_resolution).xyz;
+    vec3 rgbNE = texture(texture_map, (gl_FragCoord.xy + vec2(1.0, -1.0)) * inverse_resolution).xyz;
+    vec3 rgbSW = texture(texture_map, (gl_FragCoord.xy + vec2(-1.0, 1.0)) * inverse_resolution).xyz;
+    vec3 rgbSE = texture(texture_map, (gl_FragCoord.xy + vec2(1.0, 1.0)) * inverse_resolution).xyz;
+    vec3 rgbM = texture(texture_map, gl_FragCoord.xy * inverse_resolution).xyz;
 
     float lumaNW = dot(rgbNW, luma);
     float lumaNE = dot(rgbNE, luma);
@@ -41,8 +43,8 @@ vec4 calcFxaa(vec2 inverse_resolution) {
     float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
     dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX), max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX), dir * rcpDirMin)) * inverse_resolution;
 
-    vec3 rgbA = 0.5 * (texture(texture_bindless, gl_FragCoord.xy * inverse_resolution + dir * (1.0 / 3.0 - 0.5)).xyz + texture(texture_bindless, gl_FragCoord.xy * inverse_resolution + dir * (2.0 / 3.0 - 0.5)).xyz);
-    vec3 rgbB = rgbA * 0.5 + 0.25 * (texture(texture_bindless, gl_FragCoord.xy * inverse_resolution + dir * -0.5).xyz + texture(texture_bindless, gl_FragCoord.xy * inverse_resolution + dir * 0.5).xyz);
+    vec3 rgbA = 0.5 * (texture(texture_map, gl_FragCoord.xy * inverse_resolution + dir * (1.0 / 3.0 - 0.5)).xyz + texture(texture_map, gl_FragCoord.xy * inverse_resolution + dir * (2.0 / 3.0 - 0.5)).xyz);
+    vec3 rgbB = rgbA * 0.5 + 0.25 * (texture(texture_map, gl_FragCoord.xy * inverse_resolution + dir * -0.5).xyz + texture(texture_map, gl_FragCoord.xy * inverse_resolution + dir * 0.5).xyz);
 
     return vec4(rgbB, 1.0);
 }
@@ -50,5 +52,5 @@ vec4 calcFxaa(vec2 inverse_resolution) {
 void main()
 {
     vec2 inverse_resolution = vec2(1.0 / resolution.x, 1.0 / resolution.y);
-    frag_color = use_fxaa ? calcFxaa(inverse_resolution) : texture(texture_bindless, gl_FragCoord.xy * inverse_resolution);
+    frag_color = use_fxaa ? calcFxaa(inverse_resolution) : texture(texture_map, gl_FragCoord.xy * inverse_resolution);
 }

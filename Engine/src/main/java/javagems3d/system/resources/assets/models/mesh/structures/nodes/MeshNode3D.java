@@ -9,7 +9,7 @@ public class MeshNode3D<T extends IMesh> extends MeshNode<T> {
     private Material material;
 
     public MeshNode3D(@NotNull T meshData) {
-        this(meshData, new Material(null));
+        this(meshData, new Material());
     }
 
     public MeshNode3D(@NotNull T meshData, @NotNull Material material) {

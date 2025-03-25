@@ -1,3 +1,5 @@
+#extension GL_ARB_bindless_texture : require
+
 layout (location=0) in vec3 aPosition;
 layout (location=1) in vec2 aTexture;
 layout (location=5) in ivec4 aBoneIndexes;

@@ -17,8 +17,8 @@ import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.Color4Texture;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
+import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -109,18 +109,11 @@ public final class WDeferredRenderNode extends IRenderNode.Template implements W
         this.initFBOs();
         final WBenchWorld wBenchWorld = (WBenchWorld) this.getWBenchWorld();
         final Consumer<JGemsShaderManager> uniformsHandlerI = (shaderManager) -> {
-            final ICamera camera = this.getOpenGLRenderer().getCamera();
             final Matrix4f cameraMatrix = JGemsTransformManager.INSTANCE.getCameraViewMatrix();
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
-            final CubeMapTexture cubeMapProgram = (CubeMapTexture) wBenchWorld.getEnvironment().getSkyBox().getTexture();
-
-            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
-            if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cube_map"))) {
-                shaderManager.performUniformTexture(new UniformString("ambient_cube_map"), cubeMapProgram);
-            }
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
-            shaderManager.performUniformTexture(new UniformString("animationsMatrix"), WBenchResourceManager.getAnimationsTextureBuffer());
+            shaderManager.performUniformTextureBindless(new UniformString("animations_matrix"), WBenchResourceManager.getAnimationsTextureBuffer());
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = WDeferredRenderNode.getDefaultConsumerForDirectObjects(wBenchWorld);
 

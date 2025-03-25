@@ -7,21 +7,21 @@ public final class ParsedMaterialsData {
     Vector4f diffuseColor = null;
     Vector3f emissionColor = null;
 
-    String emissionTexture = null;
-    String normalsTexture = null;
-    String diffuseTexture = null;
-    String metallicRoughnessTexture = null;
+    String emissionMap = null;
+    String normalsMap = null;
+    String diffuseMap = null;
+    String metallicRoughnessMap = null;
 
     float metallicFactor = 0.0f;
     float roughnessFactor = 1.0f;
 
-    public ParsedMaterialsData(Vector4f diffuseColor, Vector3f emissionColor, String emissionTexture, String normalsTexture, String diffuseTexture, String metallicRoughnessTexture, float metallicFactor, float roughnessFactor) {
+    public ParsedMaterialsData(Vector4f diffuseColor, Vector3f emissionColor, String emissionMap, String normalsMap, String diffuseMap, String metallicRoughnessMap, float metallicFactor, float roughnessFactor) {
         this.diffuseColor = diffuseColor;
         this.emissionColor = emissionColor;
-        this.emissionTexture = emissionTexture;
-        this.normalsTexture = normalsTexture;
-        this.diffuseTexture = diffuseTexture;
-        this.metallicRoughnessTexture = metallicRoughnessTexture;
+        this.emissionMap = emissionMap;
+        this.normalsMap = normalsMap;
+        this.diffuseMap = diffuseMap;
+        this.metallicRoughnessMap = metallicRoughnessMap;
         this.metallicFactor = metallicFactor;
         this.roughnessFactor = roughnessFactor;
     }
@@ -34,20 +34,20 @@ public final class ParsedMaterialsData {
         return this.emissionColor;
     }
 
-    public String getEmissionTexture() {
-        return this.emissionTexture;
+    public String getEmissionMap() {
+        return this.emissionMap;
     }
 
-    public String getNormalsTexture() {
-        return this.normalsTexture;
+    public String getNormalsMap() {
+        return this.normalsMap;
     }
 
-    public String getDiffuseTexture() {
-        return this.diffuseTexture;
+    public String getDiffuseMap() {
+        return this.diffuseMap;
     }
 
-    public String getMetallicRoughnessTexture() {
-        return this.metallicRoughnessTexture;
+    public String getMetallicRoughnessMap() {
+        return this.metallicRoughnessMap;
     }
 
     public float getMetallicFactor() {

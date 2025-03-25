@@ -35,7 +35,7 @@ public class UIPictureSizable extends UIElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        shaderManager.performUniformTexture(new UniformString("texture_bindless"), this.texture2DProgram);
+        shaderManager.performUniformTextureBindless(new UniformString("texture_map"), this.texture2DProgram);
         JGemsRenderingHelper.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }

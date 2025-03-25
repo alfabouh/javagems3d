@@ -1,5 +1,6 @@
 package javagems3d.system.resources.managing;
 
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
@@ -11,8 +12,10 @@ import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
-import javagems3d.system.resources.assets.texturing.Color4Texture;
-import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
+import javagems3d.system.resources.assets.texturing.ISample;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
@@ -63,28 +66,41 @@ public abstract class ResourceManager {
     public void loadMeshMaterialsIsSSBO(ShaderStorageBufferObject shaderStorageBufferObject) {
         ByteBuffer byteBuffer = MemoryUtil.memAlloc(Float.BYTES * JGemsConfig.SYSTEM.INDIRECT_RENDERING_MATERIALS_PACK_SIZE * JGemsConfig.SYSTEM.MAX_INDIRECT_RENDERING_MESH_MATERIALS);
         for (Material material : this.getResourceDataCache().getMeshBuffersDataCache().getMaterials()) {
-            ISample diffuse = material.getDiffuse();
-            ISample normals = material.getNormalsMap();
-            ISample emission = material.getEmission();
-            ISample specular = material.getSpecularMap();
-            ISample metallic = material.getMetallicMap();
-            if (diffuse instanceof Color4Texture) {
-                Color4Texture color4Texture = (Color4Texture) diffuse;
-                byteBuffer.putFloat(color4Texture.getColor().x);
-                byteBuffer.putFloat(color4Texture.getColor().y);
-                byteBuffer.putFloat(color4Texture.getColor().z);
-                byteBuffer.putFloat(material.getTransparency().getOpacity());
-            } else {
-                byteBuffer.putFloat(0.0f).putFloat(0.0f).putFloat(0.0f).putFloat(0.0f);
-            }
-            BindlessTexturesDataCache bindlessTexturesDataCache = this.getResourceDataCache().getBindlessTexturesCache();
-            byteBuffer.putInt(diffuse instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuse) : 0);
-            byteBuffer.putInt(normals instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normals) : 0);
-            byteBuffer.putInt(emission instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emission) : 0);
-            byteBuffer.putInt(specular instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) specular) : 0);
-            byteBuffer.putInt(metallic instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallic) : 0);
+            final BindlessTexturesDataCache bindlessTexturesDataCache = this.getResourceDataCache().getBindlessTexturesCache();
+
+            ITexture2DProgram diffuseMap = material.getDiffuseMap();
+            ISampleColor4 diffuseColor = material.getDiffuseColor();
+            ITexture2DProgram emissionMap = material.getEmissionMap();
+            ISampleColor3 emissionColor = material.getEmissionColor();
+            ITexture2DProgram metallicRoughnessMap = material.getEmissionMap();
+            ITexture2DProgram normalsMap = material.getEmissionMap();
+            float metallicFactor = material.getMetallicFactor();
+            float roughnessFactor = material.getRoughnessFactor();
+
+            //vec4 diffuse_color;
+            byteBuffer.putFloat(diffuseColor.getColor().x);
+            byteBuffer.putFloat(diffuseColor.getColor().y);
+            byteBuffer.putFloat(diffuseColor.getColor().z);
+            byteBuffer.putFloat(material.getTransparency().getOpacity());
+            //vec3 emission_color;
+            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.getColor().x);
+            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.getColor().y);
+            byteBuffer.putFloat(emissionColor == null ? 0.0f : emissionColor.getColor().z);
+            byteBuffer.putFloat(0.0f); //PADDING
+            //float metallic_factor;
+            byteBuffer.putFloat(metallicFactor);
+            //float roughness_factor;
+            byteBuffer.putFloat(roughnessFactor);
+            //int diffuse_map_id;
+            byteBuffer.putInt(diffuseMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuseMap) : 0);
+            //int normals_map_id;
+            byteBuffer.putInt(normalsMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normalsMap) : 0);
+            //int emission_map_id;
+            byteBuffer.putInt(emissionMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emissionMap) : 0);
+            //int metallic_roughness_map_id;
+            byteBuffer.putInt(metallicRoughnessMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallicRoughnessMap) : 0);
+            //int texturing_code;
             byteBuffer.putInt(JGemsRenderingHelper.getTexturingCodeForShader(material));
-            byteBuffer.putInt(0);
             byteBuffer.putInt(0);
         }
         byteBuffer.flip();

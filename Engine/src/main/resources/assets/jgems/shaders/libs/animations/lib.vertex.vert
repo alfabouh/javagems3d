@@ -1,6 +1,4 @@
-#extension GL_ARB_bindless_texture : require
-
-uniform uvec2 animationsMatrix;
+uniform sampler2D animations_matrix;
 const int MAX_WEIGHTS = CONST.ANIM_MAX_WEIGHTS;
 
 ivec2 pickUV(int globalOffset, int arrI, int textureWidth) {
@@ -10,12 +8,12 @@ ivec2 pickUV(int globalOffset, int arrI, int textureWidth) {
 }
 
 mat4 getBoneMatrix(int baseOffset, int boneIndex) {
-    int textureWidth = textureSize(sampler2D(animationsMatrix), 0).x;
+    int textureWidth = textureSize(animations_matrix, 0).x;
     int globalOffset = (baseOffset + boneIndex) * 4;
-    vec4 row0 = texelFetch(sampler2D(animationsMatrix), pickUV(globalOffset, 0, textureWidth), 0);
-    vec4 row1 = texelFetch(sampler2D(animationsMatrix), pickUV(globalOffset, 1, textureWidth), 0);
-    vec4 row2 = texelFetch(sampler2D(animationsMatrix), pickUV(globalOffset, 2, textureWidth), 0);
-    vec4 row3 = texelFetch(sampler2D(animationsMatrix), pickUV(globalOffset, 3, textureWidth), 0);
+    vec4 row0 = texelFetch(animations_matrix, pickUV(globalOffset, 0, textureWidth), 0);
+    vec4 row1 = texelFetch(animations_matrix, pickUV(globalOffset, 1, textureWidth), 0);
+    vec4 row2 = texelFetch(animations_matrix, pickUV(globalOffset, 2, textureWidth), 0);
+    vec4 row3 = texelFetch(animations_matrix, pickUV(globalOffset, 3, textureWidth), 0);
     return mat4(row0, row1, row2, row3);
 }
 

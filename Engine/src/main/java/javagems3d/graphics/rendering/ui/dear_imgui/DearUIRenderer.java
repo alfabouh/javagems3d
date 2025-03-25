@@ -5,6 +5,8 @@ import imgui.*;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IDeferredRenderNode;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
@@ -18,12 +20,13 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 
@@ -143,7 +146,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
 
         this.getShaderManager().beginShading();
         this.getShaderManager().performUniform(new UniformString("scale"), UniformFunctions.VEC2F(new Vector2f(2.0f / dSize.x, -2.0f / dSize.y)));
-        this.getShaderManager().performUniform(new UniformString("texture_bindless"), UniformFunctions.INTEGER(0));
+        this.getShaderManager().performUniform(new UniformString("texture_map"), UniformFunctions.INTEGER(0));
 
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendEquation(GL46.GL_FUNC_ADD);
@@ -180,13 +183,14 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
                 int textureId = drawData.getCmdListCmdBufferTextureId(i, j);
                 GL46.glActiveTexture(GL46.GL_TEXTURE0);
                 if (textureId > 0) {
+                    IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) JGems3D.get().getScreen().getScene().getSceneRenderer().getConveyorNodes().get(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
+                    GL46.glBindSampler(0, iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(0).getSamplerId());
                     GL46.glBindTexture(GL46.GL_TEXTURE_2D, textureId);
                 } else {
                     this.getTextureSample().bindTexture();
                 }
 
                 ImVec4 clipRect = drawData.getCmdListCmdBufferClipRect(i, j);
-
                 final float clipMinX = (clipRect.x - clipOffX) * clipScaleX;
                 final float clipMinY = (clipRect.y - clipOffY) * clipScaleY;
                 final float clipMaxX = (clipRect.z - clipOffX) * clipScaleX;

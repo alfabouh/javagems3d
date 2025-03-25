@@ -50,10 +50,10 @@ layout (std430, binding = 7) buffer WorldFog {
 };
 
 uniform vec3 camera_pos;
-uniform uvec2 ambient_cube_bindless;
+uniform samplerCube ambient_cubemap;
 uniform bool useCubeMap;
 uniform bool isSsaoValid;
-uniform uvec2 ssao_bindless_sampler;
+uniform sampler2D ssao_map;
 
 struct Properties {
     float alpha_discard;
@@ -62,6 +62,7 @@ struct Properties {
 struct Material {
     vec4 diffuse_color;
     vec3 emission_color;
+    float _padding000; //PADDING
     float metallic_factor;
     float roughness_factor;
     int diffuse_map_id;
@@ -83,38 +84,12 @@ layout(std430, binding = 4) buffer RenderPropertiesData {
     Properties properties[512];
 };
 
-const int diffuse_code = 1 << 2;
-const int normals_code = 1 << 3;
-const int emission_code = 1 << 4;
-const int metallic_roughness_code = 1 << 5;
+const int diffuse_code = CONST.DIFFUSE_CODE;
+const int normals_code = CONST.NORMALS_CODE;
+const int emission_code = CONST.EMISSION_CODE;
+const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
 #include "assets/jgems/shaders/libs/shadows"
-
-vec4 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
-    vec4 lightFactors = vec4(sun.color * sun.ambient, 1.0);
-    vec3 position = normalize(sun.position);
-
-    float sun_shadow = calc_sun_shadows(world_position, frag_pos);
-    vec4 sunFactor = calc_sun_light(position, frag_pos, normal);
-
-    vec4 point_light_factor = vec4(0.0);
-    for (int i = 0; i < total_plights; i++) {
-        PointLight p = p_l[i];
-        float p_brightness = p.brightness;
-        float at_base = 1.0;
-        float linear = 0.1 * p_brightness;
-        float expo = 0.032 / sqrt(p_brightness);
-        float p_id = p.attachedShadowSceneId;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz)) : vec4(1.0);
-        point_light_factor += calc_point_light(p, frag_pos, normal, at_base, linear, expo, p_brightness) * 1.;
-    }
-
-    float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
-    lightFactors += sunFactor * clamp(sun_shadow + brightness, 0.0, 1.0);
-    lightFactors += point_light_factor;
-
-    return lightFactors;
-}
 
 vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal, float specularFactor) {
     if (dot(vNormal, light_dir) + 1.e-5 < 0) {
@@ -152,6 +127,39 @@ vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, 
     return light_c / attenuation_factor;
 }
 
+vec4 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
+    vec4 lightFactors = vec4(sun.color * sun.ambient, 1.0);
+    vec3 position = normalize(sun.position);
+
+    float sun_shadow = calc_sun_shadows(world_position, frag_pos);
+    vec4 sunFactor = calc_sun_light(position, frag_pos, normal, specularFactor);
+
+    vec4 point_light_factor = vec4(0.0);
+    for (int i = 0; i < total_plights; i++) {
+        PointLight p = p_l[i];
+        float p_brightness = p.brightness;
+        float at_base = 1.0;
+        float linear = 0.1 * p_brightness;
+        float expo = 0.032 / sqrt(p_brightness);
+        float p_id = p.attachedShadowSceneId;
+        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz)) : vec4(1.0);
+        point_light_factor += calc_point_light(p, frag_pos, normal, at_base, linear, expo, p_brightness, specularFactor) * 1.;
+    }
+
+    float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
+    lightFactors += sunFactor * clamp(sun_shadow + brightness, 0.0, 1.0);
+    lightFactors += point_light_factor;
+
+    return lightFactors;
+}
+
+float calc_fog_float(vec3 frag_pos, float f) {
+    float distance = length(frag_pos);
+    float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
+    fogFactor = clamp(fogFactor, 0., 1.);
+    return f * fogFactor;
+}
+
 vec4 calc_fog(vec3 frag_pos, vec4 color) {
     if (fog.density <= 0) {
         return color;
@@ -170,7 +178,7 @@ vec4 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(samplerCubeEXT(ambient_cube_bindless), R).rgb, 1.0);
+    return vec4(texture(ambient_cubemap, R).rgb, 1.0);
 }
 
 bool checkCode(int i1, int i2) {
@@ -178,8 +186,8 @@ bool checkCode(int i1, int i2) {
     return bool(i3 != 0);
 }
 
-vec3 calc_normal_map() {
-    vec3 normal = texture(sampler2D(normals_map_bindless), uv_coordinates).rgb;
+vec3 calc_normal_map(int normalsMapId) {
+    vec3 normal = texture(sampler2D(textures[normalsMapId]), uv_coordinates).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -203,19 +211,19 @@ void main()
     vec2 metallic_roughness = vec2(mat.metallic_factor, mat.roughness_factor);
 
     if (useDiffuseTexture) {
-        diffuse *= texture(sampler2D(diffuse_map_bindless), uv_coordinates);
+        diffuse *= texture(sampler2D(textures[mat.diffuse_map_id]), uv_coordinates);
     }
     if (diffuse.a < alpha_discard) {
         discard;
     }
     if (useEmissionTexture) {
-        emission *= texture(sampler2D(emission_map_bindless), uv_coordinates).rgb;
+        emission *= texture(sampler2D(textures[mat.emission_map_id]), uv_coordinates).rgb;
     }
     if (useNormalsTexture) {
-        normals = calc_normal_map();
+        normals = calc_normal_map(mat.normals_map_id);
     }
     if (useRoughnessMetallicTexture) {
-        vec4 mr = texture(sampler2D(metallic_roughness_map_bindless), uv_coordinates);
+        vec4 mr = texture(sampler2D(textures[mat.metallic_roughness_map_id]), uv_coordinates);
         metallic_roughness *= vec2(mr.b, mr.g);
     }
 
@@ -232,13 +240,13 @@ void main()
     float f1 = 1.0;
     if (isSsaoValid) {
         float gray = dot(gColor.rgb, vec3(0.299, 0.587, 0.114));
-        float AO = texture(sampler2D(ssao_bindless_sampler), uv_coordinates).r;
-        float f1 = pow(AO, (1.0 - gray) * 3.);
+        float AO = texture(ssao_map, uv_coordinates).r;
+        f1 = pow(AO, (1.0 - gray) * 3.);
     }
 
-    vec4 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g) * vec4(f1);
-    vec4 frag_color = gColor * (lights + gEmission);
-    frag_color = calc_fog(gPosition frag_color);
+    vec4 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos) * vec4(f1);
+    vec4 frag_color = gColor * (lights + vec4(gEmission, 0.));
+    frag_color = calc_fog(gPosition, frag_color);
 
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
     accumulated = vec4(frag_color.rgb * frag_color.a, frag_color.a) * weight;

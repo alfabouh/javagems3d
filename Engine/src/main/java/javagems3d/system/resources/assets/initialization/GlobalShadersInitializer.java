@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
@@ -37,7 +38,6 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     public JGemsShaderManager world_deferred;
     public JGemsShaderManager weighted_oit;
     public JGemsShaderManager weighted_oit_indirect;
-    public JGemsShaderManager weighted_particle_oit;
     public JGemsShaderManager weighted_liquid_oit;
     public JGemsShaderManager simple;
     public JGemsShaderManager simple_gbuffer;
@@ -69,6 +69,11 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         shaderStaticConstants.putConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
         shaderStaticConstants.putConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
         shaderStaticConstants.putConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
+
+        shaderStaticConstants.putConstant("DIFFUSE_CODE", String.valueOf(JGemsRenderingHelper.DIFFUSE_CODE));
+        shaderStaticConstants.putConstant("NORMALS_CODE", String.valueOf(JGemsRenderingHelper.NORMALS_CODE));
+        shaderStaticConstants.putConstant("EMISSION_CODE", String.valueOf(JGemsRenderingHelper.EMISSION_CODE));
+        shaderStaticConstants.putConstant("METALLIC_ROUGHNESS_CODE", String.valueOf(JGemsRenderingHelper.METALLIC_ROUGHNESS_CODE));
     }
 
     @Override
@@ -126,11 +131,10 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
         this.skybox = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/skybox"));
         this.background = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background"));
         this.background_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background_indirect"));
-        this.world_ssao = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/screen_ssao"));
+        this.world_ssao = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "computing/screen_ssao"));
         this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_liquid_oit"));
         this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit"));
         this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_indirect"));
-        this.weighted_particle_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_particle_oit"));
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer"));
         this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer_indirect"));
         this.world_deferred = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_deferred"));

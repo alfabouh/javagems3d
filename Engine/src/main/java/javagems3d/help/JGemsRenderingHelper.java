@@ -1,8 +1,5 @@
 package javagems3d.help;
 
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
-import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
-import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
@@ -17,6 +14,11 @@ import org.lwjgl.opengl.GL46;
 import java.util.List;
 
 public abstract class JGemsRenderingHelper {
+    public static final int DIFFUSE_CODE = 1 << 2;
+    public static final int NORMALS_CODE = 1 << 3;
+    public static final int EMISSION_CODE = 1 << 4;
+    public static final int METALLIC_ROUGHNESS_CODE = 1 << 5;
+
     public static int getMaxTextureUnits() {
         return GL46.glGetInteger(GL46.GL_MAX_TEXTURE_IMAGE_UNITS);
     }
@@ -53,30 +55,19 @@ public abstract class JGemsRenderingHelper {
         }
     }
 
-    public static int getLightingCodeForShader(RenderAttributes configuration) {
-        int code = 0;
-        if (configuration.getProperties().getBool(JGemsRenderProperties.KEY_LIGHT_BRIGHTNESS)) {
-            code |= 1 << 2;
-        }
-        return code;
-    }
-
     public static int getTexturingCodeForShader(Material material) {
         int code = 0;
-        if (material.getDiffuse() instanceof ITextureProgram) {
-            code |= 1 << 2;
+        if (material.getDiffuseMap() != null) {
+            code |= JGemsRenderingHelper.DIFFUSE_CODE;
         }
         if (material.getNormalsMap() != null) {
-            code |= 1 << 3;
+            code |= JGemsRenderingHelper.NORMALS_CODE;
         }
-        if (material.getEmission() != null) {
-            code |= 1 << 4;
+        if (material.getEmissionMap() != null) {
+            code |= JGemsRenderingHelper.EMISSION_CODE;
         }
-        if (material.getSpecularMap() != null) {
-            code |= 1 << 5;
-        }
-        if (material.getMetallicMap() != null) {
-            code |= 1 << 6;
+        if (material.getMetallicRoughnessMap() != null) {
+            code |= JGemsRenderingHelper.METALLIC_ROUGHNESS_CODE;
         }
         return code;
     }

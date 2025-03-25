@@ -1,12 +1,13 @@
+#extension GL_ARB_bindless_texture : enable
+
 in vec2 uv_coordinates;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bloom_color;
 
-uniform sampler2D texture_bindless;
-uniform sampler2D bloom_sampler;
-uniform sampler2D bloom_sampler2;
-
+uniform sampler2D texture_map;
+uniform sampler2D bloom_map1;
+uniform sampler2D bloom_map2;
 uniform sampler2D accumulated_alpha;
 uniform sampler2D reveal_alpha;
 
@@ -20,7 +21,7 @@ float max3(vec3 v) {
 
 void main() {
     vec4 accum = texture(accumulated_alpha, uv_coordinates);
-    vec4 accum_blur = texture(bloom_sampler2, uv_coordinates);
+    vec4 accum_blur = texture(bloom_map2, uv_coordinates);
     float reveal = texture(reveal_alpha, uv_coordinates).r;
 
     accum.rgb = isinf(max3(abs(accum.rgb))) ? vec3(accum.a) : accum.rgb;
@@ -30,7 +31,7 @@ void main() {
 
     mixedTransparency = isApproximatelyEqual(reveal, 1.0f) ? vec4(0.) : mixedTransparency;
 
-    vec4 sceneColor = texture(texture_bindless, uv_coordinates) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
+    vec4 sceneColor = texture(texture_map, uv_coordinates) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
 
     vec3 accumBloomColor = accum_blur.rgb / max(accum_blur.a, 1e-5f);
     vec4 mixedBloomTransparency = vec4(accumBloomColor, reveal <= 0.0 ? 1. : reveal);
@@ -38,6 +39,6 @@ void main() {
     frag_color = sceneColor;
 
     vec4 transparencyBloom = mixedBloomTransparency * mixedBloomTransparency.a;
-    vec4 sceneBloom = texture(bloom_sampler, uv_coordinates) * (length(mixedTransparency) <= 0 ? vec4(1.) : vec4(mixedTransparency.xyz, 1.0 - mixedTransparency.a));
+    vec4 sceneBloom = texture(bloom_map1, uv_coordinates) * (length(mixedTransparency) <= 0 ? vec4(1.) : vec4(mixedTransparency.xyz, 1.0 - mixedTransparency.a));
     bloom_color = sceneBloom + transparencyBloom;
 }

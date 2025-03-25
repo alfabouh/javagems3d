@@ -1,7 +1,7 @@
 package javagems3d.system.resources.assets.texturing.packs;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.path.JGemsPath;

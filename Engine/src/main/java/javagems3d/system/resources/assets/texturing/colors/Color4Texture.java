@@ -1,9 +1,9 @@
-package javagems3d.system.resources.assets.texturing;
+package javagems3d.system.resources.assets.texturing.colors;
 
+import javagems3d.system.resources.assets.texturing.ISample;
 import org.joml.Vector4f;
-import javagems3d.system.resources.assets.texturing.base.ISample;
 
-public final class Color4Texture implements ISample {
+public final class Color4Texture implements ISampleColor4 {
     private final Vector4f color;
 
     public Color4Texture(float r, float g, float b) {
@@ -22,6 +22,7 @@ public final class Color4Texture implements ISample {
         this.color.set(color);
     }
 
+    @Override
     public Vector4f getColor() {
         return new Vector4f(this.color);
     }

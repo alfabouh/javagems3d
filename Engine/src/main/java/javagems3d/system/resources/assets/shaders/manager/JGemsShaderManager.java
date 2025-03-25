@@ -2,13 +2,16 @@ package javagems3d.system.resources.assets.shaders.manager;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor2;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import org.joml.Matrix4f;
 import javagems3d.graphics.transformation.TransformUtils;
-import javagems3d.system.resources.assets.texturing.Color4Texture;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
-import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
+import javagems3d.system.resources.assets.texturing.ISample;
 
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
@@ -29,13 +32,19 @@ public class JGemsShaderManager extends ShaderManager {
     }
 
     public void performUniformSample(UniformString uniform, ISample sample) {
-        if (sample instanceof Color4Texture) {
-            Color4Texture color = (Color4Texture) sample;
+        if (sample instanceof ISampleColor4) {
+            ISampleColor4 color = (ISampleColor4) sample;
             this.performUniform(uniform, UniformFunctions.VEC4F(color.getColor()));
+        } else if (sample instanceof ISampleColor3) {
+            ISampleColor3 color = (ISampleColor3) sample;
+            this.performUniform(uniform, UniformFunctions.VEC3F(color.getColor()));
+        } else if (sample instanceof ISampleColor2) {
+            ISampleColor2 color = (ISampleColor2) sample;
+            this.performUniform(uniform, UniformFunctions.VEC2F(color.getColor()));
         } else {
             if (sample instanceof ITextureProgram) {
                 ITextureProgram textureProgram = (ITextureProgram) sample;
-                this.performUniformTexture(uniform, textureProgram.getSamplerId(), textureProgram.getTextureId(), textureProgram.getTextureAttachment());
+                this.performUniformTextureBindless(uniform, textureProgram);
             }
         }
     }

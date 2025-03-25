@@ -1,9 +1,8 @@
-package javagems3d.system.resources.assets.texturing;
+package javagems3d.system.resources.assets.texturing.maps;
 
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
-import javagems3d.system.resources.assets.texturing.base.IModifiableSample;
-import javagems3d.system.resources.assets.texturing.base.ISample;
+import javagems3d.system.resources.assets.texturing.IPropertiesSample;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
-public class CubeMapTexture implements ICached, IModifiableSample, ICubeMapProgram, ITextureBindless {
+public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgram, ITextureBindless {
     protected Vector2i[] size6x;
     protected int textureId;
     protected int samplerId;
@@ -132,7 +131,7 @@ public class CubeMapTexture implements ICached, IModifiableSample, ICubeMapProgr
         }
     }
 
-    public static final class Properties implements ISample.IProperties {
+    public static final class Properties implements IProperties {
         private final boolean linearFiltration;
 
         public Properties(boolean linearFilter) {

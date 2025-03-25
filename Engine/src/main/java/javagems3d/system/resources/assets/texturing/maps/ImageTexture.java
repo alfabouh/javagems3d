@@ -1,8 +1,8 @@
-package javagems3d.system.resources.assets.texturing;
+package javagems3d.system.resources.assets.texturing.maps;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
-import javagems3d.system.resources.assets.texturing.base.IModifiableSample;
+import javagems3d.system.resources.assets.texturing.IPropertiesSample;
 import javagems3d.system.resources.cache.ICached;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 
-public class ImageTexture implements ICached, IModifiableSample, ITexture2DProgram, ITextureBindless {
+public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgram, ITextureBindless {
     protected IProperties properties;
     protected Vector2i size;
     protected int textureId;

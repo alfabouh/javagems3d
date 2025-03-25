@@ -2,15 +2,14 @@ package javagems3d.system.resources.assets.loading.models.utils;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.assets.texturing.Color4Texture;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
-import javagems3d.system.resources.assets.texturing.base.ISample;
-import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
+import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsException;
@@ -18,9 +17,9 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -186,7 +185,8 @@ public abstract class ModelLoadingUtils {
     public static Material readMaterial(@Nullable JGemsShaderManager computeTransparentPixels, SystemResources systemResources, AIMaterial aiMaterial, String fullPath) {
         float opacityConstant = 1.0f;
         boolean textureIsImageAndHasAlphaPixels = false;
-        ISample diffuseSample = null;
+        Color4Texture color4Texture = new Color4Texture(new Vector4f(1f));
+        ITexture2DProgram diffuseSample = null;
         ITexture2DProgram emissionSample = null;
         ITexture2DProgram metallicSample = null;
         ITexture2DProgram specularSample = null;
@@ -196,7 +196,7 @@ public abstract class ModelLoadingUtils {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4Dd = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
-                diffuseSample = new Color4Texture(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a());
+                color4Texture = new Color4Texture(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a());
             }
 
             PointerBuffer properties = aiMaterial.mProperties();
@@ -264,7 +264,8 @@ public abstract class ModelLoadingUtils {
                 Log.get().exception(e);
             }
         }
-        Material material = new Material(diffuseSample == null ? ResourceManager.DEFAULT_TEXTURE() : diffuseSample, normalsSample, emissionSample, specularSample);
+
+        Material material = new Material(diffuseSample, color4Texture, null, null, null, normalsSample, 0.5f, 0f);
         material.getTransparency().setHasTransparentPixels(textureIsImageAndHasAlphaPixels);
         material.getTransparency().setOpacity(opacityConstant);
         return material;

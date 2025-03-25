@@ -6,8 +6,8 @@ import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.FontCode;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.base.font.GuiFont;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.texturing.CubeMapTexture;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
+import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
+import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.assets.texturing.packs.ParticleTexturesPack;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -16,7 +16,7 @@ import javagems3d.system.service.path.JGemsPath;
 import java.awt.*;
 
 public class TextureAssetsInitializer implements IAssetsInitializer {
-    public static JGemsPath defaultSkyCubeMapPath = new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default", "sky_");
+    public static JGemsPath defaultSkyCubeMapPath = new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "default");
 
     public ITexture2DProgram waterTexture;
     public ITexture2DProgram waterNormals;

@@ -18,6 +18,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
+import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
@@ -45,9 +46,11 @@ public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
         JGemsShadersHelper.performAnimationsInfo(shaderManager, modeled);
         try {
             for (MeshNode3D<RenderMesh> meshNode3D : model.<MeshGroup>getMeshStructureCast().getAllNodes()) {
-                if (meshNode3D.getMaterial().getDiffuse() instanceof ITexture2DProgram) {
-                    ITexture2DProgram imageBasedTexture = (ITexture2DProgram) meshNode3D.getMaterial().getDiffuse();
-                    shaderManager.performUniformTexture(new UniformString("texture_bindless"), imageBasedTexture);
+                ITexture2DProgram diffuseMap = meshNode3D.getMaterial().getDiffuseMap();
+                ISampleColor4 diffuseColor = meshNode3D.getMaterial().getDiffuseColor();
+                shaderManager.performUniform(new UniformString("diffuse_color"), UniformFunctions.VEC4F(diffuseColor.getColor()));
+                if (diffuseMap != null) {
+                    shaderManager.performUniformTextureBindless(new UniformString("diffuse_map"), diffuseMap);
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(true));
                 } else {
                     shaderManager.performUniform(new UniformString("use_texture"), UniformFunctions.BOOLEAN(false));

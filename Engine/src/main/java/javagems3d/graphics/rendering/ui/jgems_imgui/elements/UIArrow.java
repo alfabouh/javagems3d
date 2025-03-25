@@ -1,7 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;

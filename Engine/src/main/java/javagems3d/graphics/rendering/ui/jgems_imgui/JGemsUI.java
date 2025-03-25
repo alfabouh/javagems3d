@@ -5,7 +5,6 @@ import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.*;
 import javagems3d.graphics.screen.window.IWindow;
-import javagems3d.system.resources.assets.texturing.ImageTexture;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;

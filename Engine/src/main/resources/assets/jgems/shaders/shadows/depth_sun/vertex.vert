@@ -1,3 +1,5 @@
+#extension GL_ARB_bindless_texture : require
+
 layout (location=0) in vec3 aPosition;
 layout (location=1) in vec2 texture;
 layout (location=5) in ivec4 aBoneIndexes;
@@ -7,7 +9,6 @@ out vec2 uv_coordinates;
 
 uniform mat4 projection_view_matrix;
 uniform mat4 model_matrix;
-uniform bool hasAnimations;
 
 struct AnimationData {
     int currAnimationOffset;

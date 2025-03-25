@@ -1,5 +1,7 @@
+#extension GL_ARB_bindless_texture : enable
+
 layout (location = 0) out vec4 frag_color;
-uniform sampler2D texture_bindless;
+uniform sampler2D texture_map;
 uniform vec2 resolution;
 uniform vec2 direction;
 
@@ -20,6 +22,6 @@ vec4 blur(sampler2D txt, vec2 uv, vec2 res) {
 
 void main()
 {
-    vec2 texel_size = textureSize(texture_bindless, 0);
-    frag_color = blur(texture_bindless, gl_FragCoord.xy / texel_size, resolution);
+    vec2 texel_size = textureSize(texture_map, 0);
+    frag_color = blur(texture_map, gl_FragCoord.xy / texel_size, resolution);
 }

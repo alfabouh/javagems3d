@@ -44,7 +44,7 @@ public class UIText extends UIElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.textModel.getModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        shaderManager.performUniformTexture(new UniformString("texture_bindless"), this.getFontTexture().getTexture());
+        shaderManager.performUniformTextureBindless(new UniformString("texture_map"), this.getFontTexture().getTexture());
         shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
         JGemsRenderingHelper.renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();

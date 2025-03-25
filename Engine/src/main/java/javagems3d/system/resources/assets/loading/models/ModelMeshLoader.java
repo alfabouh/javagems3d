@@ -217,7 +217,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
-                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material(null);
+                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
 
                 RenderMesh meshData = this.createRenderMesh(aiMesh, skeletonData);
                 meshGroup.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
@@ -273,7 +273,7 @@ public class ModelMeshLoader implements ILoadingHelper {
                 }
 
                 int matIdx = aiMesh.mMaterialIndex();
-                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material(null);
+                Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
 
                DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
                meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));

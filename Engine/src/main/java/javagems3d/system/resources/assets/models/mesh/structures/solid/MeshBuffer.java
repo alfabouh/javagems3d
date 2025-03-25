@@ -50,14 +50,15 @@ public class MeshBuffer extends MeshStructure3D<DataMesh> {
 
     @Override
     public void clearNodesData() {
-        super.clearNodesData();
-        this.nodesLayers.values().forEach(List::clear);
+        //super.clearNodesData();
+        //this.nodesLayers.values().forEach(List::clear);
     }
 
     @Override
     public void clear() {
         super.clear();
         this.meshPassData.clear();
+        this.initPassDataLayers();
     }
 
     @Override

@@ -149,13 +149,16 @@ public final class GLTF2Parser implements IParser {
             String metallicRoughnessTexture = null;
 
             float metallicFactor = 0.0f;
-            float roughnessFactor = 1.0f;
+            float roughnessFactor = 0.0f;
 
-            float emissionIntensity = 1.0f;
+            float emissionIntensity = 5.0f;
 
-            if (material.has("EXTENTIONS")) {
-                JsonObject object = material.getAsJsonObject("EXTENTIONS");
-                emissionIntensity = object.get("emissionIntensity").getAsFloat();
+            if (material.has("extensions")) {
+                JsonObject object = material.getAsJsonObject("extensions");
+                if (object.has("KHR_materials_emissive_strength")) {
+                    JsonObject object1 = material.getAsJsonObject("KHR_materials_emissive_strength");
+                    emissionIntensity = object1.get("emissiveStrength").getAsFloat();
+                }
             }
 
             if (material.has("normalTexture")) {

@@ -22,8 +22,8 @@ public class UniformProgram {
         return uniformLocation >= 0;
     }
 
-    public boolean setUniform(@NotNull UniformString uniformName, @NotNull UniformProgram.UFunction UFUnction) {
-        return UFUnction.performUniform(this.getUniforms().get(uniformName));
+    public boolean setUniform(@NotNull UniformString uniformName, @NotNull UniformProgram.UFunction function) {
+        return function.performUniform(this.getUniforms().get(uniformName));
     }
 
     public Map<UniformString, Integer> getUniforms() {

@@ -1,4 +1,4 @@
-package javagems3d.system.resources.assets.texturing.base;
+package javagems3d.system.resources.assets.texturing;
 
 public interface ISample {
     interface IProperties {

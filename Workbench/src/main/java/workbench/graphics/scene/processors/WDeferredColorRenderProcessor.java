@@ -38,11 +38,11 @@ public class WDeferredColorRenderProcessor extends IRenderProcessor.Template {
         JGemsShaderManager deferredShader = this.getLightPassShader();
         deferredShader.beginShading();
         deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix()));
-        deferredShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
-        deferredShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
-        deferredShader.performUniformTexture(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));
-        deferredShader.performUniformTexture(new UniformString("gEmission"), gBuffer.getTextureByIndex(3));
-        deferredShader.performUniformTexture(new UniformString("gSpecular"), gBuffer.getTextureByIndex(4));
+        deferredShader.performUniformTextureBindless(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
+        deferredShader.performUniformTextureBindless(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
+        deferredShader.performUniformTextureBindless(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));
+        deferredShader.performUniformTextureBindless(new UniformString("gEmission"), gBuffer.getTextureByIndex(3));
+        deferredShader.performUniformTextureBindless(new UniformString("gMetallicRoughness"), gBuffer.getTextureByIndex(4));
         deferredShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsShadersHelper.performShadowsInfo(((WBenchWorld) this.getOpenGLRenderer().getWorld()).getEnvironment(), deferredShader);
         JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
