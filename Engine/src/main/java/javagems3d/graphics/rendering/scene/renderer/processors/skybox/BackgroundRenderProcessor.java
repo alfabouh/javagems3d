@@ -1,7 +1,7 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     private final FBOTexture2DProgram inColor;
-    private final SkyBox skyBox;
+    private final ISkyBox skyBox;
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private IndirectGeometryRenderProcessor indirectGeometryRenderProcessor;
     private FBOTexture2DProgram background;
@@ -45,7 +45,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     private final ShaderStorageBufferObject indirectSSBO;
     private final ShaderStorageBufferObject propertiesSSBO;
 
-    public BackgroundRenderProcessor(@NotNull FBOTexture2DProgram inColor, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull SkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
+    public BackgroundRenderProcessor(@NotNull FBOTexture2DProgram inColor, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull ISkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.skyBox = skyBox;
         this.inColor = inColor;
@@ -71,7 +71,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = (pair) -> {
-            final SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
+            final SceneWorld sceneWorld = (SceneWorld) this.getWorld();
             JGemsShadersHelper.performModelMaterialOnShader(sceneWorld.getEnvironment(), pair.getFirst(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
         };
 
@@ -146,7 +146,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         return this.indirectGeometryRenderProcessor;
     }
 
-    public SkyBox getSkyBox() {
+    public ISkyBox getSkyBox() {
         return this.skyBox;
     }
 

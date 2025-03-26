@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes;
+package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions;
 
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
@@ -6,14 +6,14 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IForwardRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IForwardRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.BackgroundRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.skybox.SkyboxRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.graphics.world.SceneWorld;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL46;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public final class ForwardRenderNode extends IRenderNode.Template implements IForwardRenderNode {
+public abstract class ForwardRenderNode extends IRenderNode.Template implements IForwardRenderNode {
     private Collection<SceneObject> forwardRenderingObjects;
     private DirectGeometryRenderProcessor directGeometryRenderProcessor;
     private SkyboxRenderProcessor skyboxRenderProcessor;
@@ -57,28 +57,19 @@ public final class ForwardRenderNode extends IRenderNode.Template implements IFo
         this.getSkyboxRenderProcessor().setBackgroundTexture(this.getBackgroundRenderProcessor().getBackground().getTextureByIndex(0));
         this.getSkyboxRenderProcessor().runProcessorRendering(frameTicking);
         this.getOutColorBuffer().unBindFBO();
-
-        // GL46.glDisable(GL46.GL_DEPTH_TEST);
-        // if (true) {
-        //     for (SceneObject sceneObject : this.getSceneWorld().getSceneObjects()) {
-        //         CullingAABB cullingAABB = sceneObject.getCullingData();
-        //         if (cullingAABB == null) {
-        //             continue;
-        //         }
-        //         JGemsDebugGlobalConstants.linesDebugDraw.drawAABB(DynamicsUtils.convertV3F_JME(cullingAABB.getAabbMin()), DynamicsUtils.convertV3F_JME(cullingAABB.getAabbMax()));
-        //     }
-        // }
-        // GL46.glEnable(GL46.GL_DEPTH_TEST);
     }
 
     public void initProcessors() {
-        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects((SceneWorld) this.getWBenchWorld());
-
-        SceneWorld sceneWorld = (SceneWorld) this.getWBenchWorld();
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
-        this.skyboxRenderProcessor = new SkyboxRenderProcessor(sceneWorld.getEnvironment().getSkyBox(), JGemsResourceManager.globalShaderAssets.skybox, JGemsResourceManager.globalModelAssets.defaultCube_gr, this.getOpenGLRenderer());
-        this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), JGemsResourceManager.globalShaderAssets.IndirectBufferData, JGemsResourceManager.globalShaderAssets.PropertiesData, sceneWorld.getEnvironment().getSkyBox(), this.getOpenGLRenderer());
+        this.skyboxRenderProcessor = new SkyboxRenderProcessor(this.getWorld().getEnvironment().getSkyBox(), this.getSkyBoxShader(), this.getCube(), this.getOpenGLRenderer());
+        this.backgroundRenderProcessor = new BackgroundRenderProcessor(this.getInColorBuffer(), this.getIndirectBufferData(), this.getPropertiesData(), this.getWorld().getEnvironment().getSkyBox(), this.getOpenGLRenderer());
     }
+
+    public abstract @NotNull ShaderStorageBufferObject getIndirectBufferData();
+    public abstract @NotNull ShaderStorageBufferObject getPropertiesData();
+    public abstract @NotNull MeshGroup getCube();
+    public abstract @NotNull JGemsShaderManager getSkyBoxShader();
 
     public void initFBOs() {
     }

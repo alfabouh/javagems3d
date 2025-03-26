@@ -2,7 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.nodes;
 
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IUIRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IUIRenderNode;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
@@ -13,13 +13,13 @@ import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
-public final class UIRenderNode implements IUIRenderNode {
+public final class JGemsUIRenderNode implements IUIRenderNode {
     private final OpenGLRenderer openGLRenderer;
     private final JGemsUI jGemsUI;
     private final DearUIRenderer dearUIRenderer;
     private DearUIInterface anInterface;
 
-    public UIRenderNode(DearUIRenderer dearUIRenderer, JGemsUI JGemsUI, OpenGLRenderer openGLRenderer) {
+    public JGemsUIRenderNode(DearUIRenderer dearUIRenderer, JGemsUI JGemsUI, OpenGLRenderer openGLRenderer) {
         this.openGLRenderer = openGLRenderer;
         this.dearUIRenderer = dearUIRenderer;
         this.jGemsUI = JGemsUI;

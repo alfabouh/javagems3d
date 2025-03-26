@@ -1,19 +1,21 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes;
+package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions;
 
+import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IPostFXRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.BloomRenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.FXAARenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.HDRRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
-public final class PostFXRenderNode extends IRenderNode.Template implements IPostFXRenderNode {
+public abstract class PostFXRenderNode extends IRenderNode.Template implements IPostFXRenderNode {
     private final FBOTexture2DProgram inColorScene;
     private FBOTexture2DProgram outColor;
     private BloomRenderProcessor bloomRenderProcessor;
@@ -44,6 +46,7 @@ public final class PostFXRenderNode extends IRenderNode.Template implements IPos
         this.getOutColorBuffer().unBindFBO();
 
         this.getOutColorBuffer().bindFBO();
+        this.getFxaaRenderProcessor().setValue((float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2));
         this.getFxaaRenderProcessor().runProcessorRendering(frameTicking);
         this.getOutColorBuffer().unBindFBO();
     }
@@ -60,14 +63,18 @@ public final class PostFXRenderNode extends IRenderNode.Template implements IPos
     public void createResources() {
         this.initFBOs();
 
-        this.bloomRenderProcessor = new BloomRenderProcessor(this.getOutColorBuffer(), this.getInColorBuffer(), this.getOpenGLRenderer(), JGemsResourceManager.globalShaderAssets.blur13, 6);
-        this.hdrRenderProcessor = new HDRRenderProcessor(this.getOpenGLRenderer(), this.getInColorBuffer(), this.getOutColorBuffer(), JGemsResourceManager.globalShaderAssets.hdr);
-        this.fxaaRenderProcessor = new FXAARenderProcessor(this.getOpenGLRenderer(), this.getOutColorBuffer(), JGemsResourceManager.globalShaderAssets.fxaa);
+        this.bloomRenderProcessor = new BloomRenderProcessor(this.getOutColorBuffer(), this.getInColorBuffer(), this.getOpenGLRenderer(), this.getBlurringShader(), 6);
+        this.hdrRenderProcessor = new HDRRenderProcessor(this.getOpenGLRenderer(), this.getInColorBuffer(), this.getOutColorBuffer(), this.getHDRShader());
+        this.fxaaRenderProcessor = new FXAARenderProcessor(this.getOpenGLRenderer(), this.getOutColorBuffer(), this.getFXAAShader());
 
         this.getBloomRenderProcessor().createResources();
         this.getHdrRenderProcessor().createResources();
         this.getFxaaRenderProcessor().createResources();
     }
+
+    public abstract @NotNull JGemsShaderManager getBlurringShader();
+    public abstract @NotNull JGemsShaderManager getHDRShader();
+    public abstract @NotNull JGemsShaderManager getFXAAShader();
 
     @Override
     public void destroyResources() {

@@ -32,7 +32,7 @@ public abstract class JGemsCoreHelper {
     }
 
     public static SceneWorld getSceneWorld() {
-        return getMainObject().getCore().getScreen().getSceneWorld();
+        return (SceneWorld) getMainObject().getCore().getScreen().getSceneWorld();
     }
 
     public static PhysicsWorld getPhysicsWorld() {

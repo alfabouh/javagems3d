@@ -14,6 +14,6 @@ public abstract class JGemsEnvironmentHelper {
     }
 
     public static JGemsEnvironment getWorldEnvironment() {
-        return JGemsCoreHelper.getSceneWorld().getEnvironment();
+        return (JGemsEnvironment) JGemsCoreHelper.getSceneWorld().getEnvironment();
     }
 }

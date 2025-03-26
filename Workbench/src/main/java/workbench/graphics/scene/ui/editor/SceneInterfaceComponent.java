@@ -1,24 +1,21 @@
 package workbench.graphics.scene.ui.editor;
 
 import imgui.ImGui;
-import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IGluingRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.service.collections.Pair;
 import org.joml.*;
-import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
-import workbench.graphics.scene.nodes.templates.WIGluingRenderNode;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.EditorInterface;
 
@@ -57,7 +54,7 @@ public class SceneInterfaceComponent {
         final float availableX = ImGui.getContentRegionAvailX();
         final float availableY = ImGui.getContentRegionAvailY();
 
-        WIGluingRenderNode gluingRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
+        IGluingRenderNode gluingRenderNode = this.getEditorInterface().getOpenGLRenderer().getRenderNodeByPass(WBenchOpenGLRenderer.GLUING_RENDER_PASS);
         ImGui.image(gluingRenderNode.getOutColorBuffer().getTextureByIndex(0).getTextureId(), availableX, availableY, 0.0f, 1.0f, 1.0f, 0.0f);
         int imagePosX = (int) ImGui.getItemRectMinX();
         int imagePosY = (int) ImGui.getItemRectMinY();

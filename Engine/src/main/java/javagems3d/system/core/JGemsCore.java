@@ -138,11 +138,12 @@ public class JGemsCore implements ICore {
         this.createWorlds();
         Log.get().trace("Loading mapping: " + this.currentMapName());
         PhysicsWorld physicsWorld = this.getPhysics().getPhysicsProcessor().getPhysicsWorld();
-        SceneWorld sceneWorld = this.getScreen().getSceneWorld();
+        SceneWorld sceneWorld = (SceneWorld) this.getScreen().getSceneWorld();
+        JGemsEnvironment environment = (JGemsEnvironment) sceneWorld.getEnvironment();
+
         EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.PRE, mapLoader));
         this.getMapLoader().preLoad(physicsWorld, sceneWorld);
 
-        JGemsEnvironment environment = sceneWorld.getEnvironment();
         FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
         SkyProp skyProp = this.getMapLoader().getLevelInfo().getMapProperties().getSkyProp();
 

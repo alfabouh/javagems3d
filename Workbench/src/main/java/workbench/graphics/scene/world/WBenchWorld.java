@@ -6,6 +6,7 @@ import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import logger.Log;
@@ -17,7 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class WBenchWorld implements IWorld {
+public class WBenchWorld implements IRenderWorld {
     private ICamera camera;
     private WBenchEnvironment environment;
     private final Set<SceneObject> toRenderSet;

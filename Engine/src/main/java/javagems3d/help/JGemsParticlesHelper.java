@@ -24,6 +24,6 @@ public abstract class JGemsParticlesHelper {
     }
 
     public static ParticlesEmitter getParticlesEmitter() {
-        return JGemsCoreHelper.getScreen().getScene().getWorld().getParticlesEmitter();
+        return null;
     }
 }

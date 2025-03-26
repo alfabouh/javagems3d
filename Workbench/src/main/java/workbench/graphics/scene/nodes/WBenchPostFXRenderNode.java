@@ -1,0 +1,76 @@
+package workbench.graphics.scene.nodes;
+
+import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
+import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions.PostFXRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.processors.post.BloomRenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.post.FXAARenderProcessor;
+import javagems3d.graphics.rendering.scene.renderer.processors.post.HDRRenderProcessor;
+import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
+import javagems3d.system.resources.managing.JGemsResourceManager;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL46;
+import workbench.resources.WBenchResourceManager;
+
+public class WBenchPostFXRenderNode extends IRenderNode.Template implements IPostFXRenderNode {
+    private final FBOTexture2DProgram inColorScene;
+    private FBOTexture2DProgram outColor;
+    private BloomRenderProcessor bloomRenderProcessor;
+
+    public WBenchPostFXRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
+        super(openGLRenderer);
+        this.inColorScene = inColor;
+    }
+
+    @Override
+    public FBOTexture2DProgram getInColorBuffer() {
+        return this.inColorScene;
+    }
+
+    @Override
+    public FBOTexture2DProgram getOutColorBuffer() {
+        return this.outColor;
+    }
+
+    @Override
+    public void onRender(FrameTicking frameTicking) {
+        this.getBloomRenderProcessor().runProcessorRendering(frameTicking);
+    }
+
+    public void initFBOs() {
+        this.outColor = new FBOTexture2DProgram(true);
+        T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
+            add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
+        }};
+        this.getOutColorBuffer().createFrameBuffer2DTexture(this.getRenderingResolution(), clr, false, GL46.GL_LINEAR, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, null);
+    }
+
+    @Override
+    public void createResources() {
+        this.initFBOs();
+        this.bloomRenderProcessor = new BloomRenderProcessor(this.getOutColorBuffer(), this.getInColorBuffer(), this.getOpenGLRenderer(), this.getBlurringShader(), 6);
+        this.getBloomRenderProcessor().createResources();
+    }
+
+    @Override
+    public void destroyResources() {
+        if (this.getOutColorBuffer() != null) {
+            this.getOutColorBuffer().clearFBO();
+        }
+
+        this.getBloomRenderProcessor().destroyResources();
+    }
+
+    public JGemsShaderManager getBlurringShader() {
+        return WBenchResourceManager.localShaderAssets.blur5;
+    }
+
+    public BloomRenderProcessor getBloomRenderProcessor() {
+        return this.bloomRenderProcessor;
+    }
+}

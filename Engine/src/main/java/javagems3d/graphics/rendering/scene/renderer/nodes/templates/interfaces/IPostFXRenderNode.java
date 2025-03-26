@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes.templates;
+package javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;

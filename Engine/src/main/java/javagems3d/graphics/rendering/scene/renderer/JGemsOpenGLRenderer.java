@@ -13,7 +13,8 @@ import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.*;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions.*;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.*;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIGameInterface;
@@ -25,6 +26,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.map.IMapActionsCallback;
@@ -42,7 +44,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.*;
@@ -69,7 +70,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
     private final DebugLinesDrawer debugLinesDrawer;
 
-    public JGemsOpenGLRenderer(IWindow window, SceneWorld sceneWorld) {
+    public JGemsOpenGLRenderer(IWindow window, IRenderWorld sceneWorld) {
         super(window, sceneWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
@@ -89,12 +90,12 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     protected void setDefaultNodes() {
-        IDeferredRenderNode defaultDeferredNode = new DeferredRenderNode(new FBOTexture2DProgram(true), this);
-        IForwardRenderNode forwardRenderNode = new ForwardRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
-        ITransparencyRenderNode transparencyRenderNode = new TransparencyRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
-        IGluingRenderNode gluingRenderNode = new GluingRenderNode(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
-        IPostFXRenderNode postFXRenderNode = new PostFXRenderNode(gluingRenderNode.getOutColorBuffer(), this);
-        IUIRenderNode iuiRenderNode = new UIRenderNode(this.getDearUIRenderer(), this.getJGemsUI(), this);
+        IDeferredRenderNode defaultDeferredNode = new JGemsDeferredRenderNode(new FBOTexture2DProgram(true), this);
+        IForwardRenderNode forwardRenderNode = new JGemsForwardRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
+        ITransparencyRenderNode transparencyRenderNode = new JGemsTransparencyRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
+        IGluingRenderNode gluingRenderNode = new JGemsGluingRenderNode(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
+        IPostFXRenderNode postFXRenderNode = new JGemsPostFXRenderNode(gluingRenderNode.getOutColorBuffer(), this);
+        IUIRenderNode iuiRenderNode = new JGemsUIRenderNode(this.getDearUIRenderer(), this.getJGemsUI(), this);
 
         this.setDeferredRenderNode(defaultDeferredNode);
         this.setForwardRenderNode(forwardRenderNode);

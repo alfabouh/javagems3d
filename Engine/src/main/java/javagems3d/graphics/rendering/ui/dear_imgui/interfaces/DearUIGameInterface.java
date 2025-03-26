@@ -4,7 +4,8 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.ITransparencyRenderNode;
+import javagems3d.graphics.environment.JGemsEnvironment;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.ITransparencyRenderNode;
 import javagems3d.help.JGemsCameraHelper;
 import javagems3d.help.JGemsControllerHelper;
 import javagems3d.help.JGemsCoreHelper;
@@ -13,7 +14,7 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.IDeferredRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IDeferredRenderNode;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
@@ -237,12 +238,13 @@ public class DearUIGameInterface implements DearUIInterface {
 
             if (ImGui.collapsingHeader("Shadows")) {
                 ImGui.beginChild("Images3", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
+                JGemsEnvironment environment = (JGemsEnvironment)  sceneRender.getWorld().getEnvironment();
 
-                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(0).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(environment.getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(0).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
-                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(1).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(environment.getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(1).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-                ImGui.image(sceneRender.getWorld().getEnvironment().getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(2).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(environment.getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(2).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.endChild();
             }
 

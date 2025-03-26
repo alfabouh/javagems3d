@@ -9,6 +9,9 @@ public interface ISkyBox {
     void updateSkyBox(IWorld world, ICamera camera);
     void destroySkyBox(IWorld world);
 
+    SkyBox.Background getBackground();
     ICubeMapProgram getTexture();
     SunLight getSun();
+
+    boolean isSkyCoveredByFog();
 }

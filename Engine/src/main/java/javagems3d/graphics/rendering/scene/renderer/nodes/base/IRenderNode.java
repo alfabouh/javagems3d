@@ -4,6 +4,7 @@ import javagems3d.graphics.rendering.scene.renderer.IResourceInit;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.IWorld;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
@@ -29,7 +30,7 @@ public interface IRenderNode extends IWindow.ResizeEvent, IResourceInit {
         }
 
         @NotNull
-        public IWorld getWBenchWorld() {
+        public IRenderWorld getWorld() {
             return this.getOpenGLRenderer().getWorld();
         }
 

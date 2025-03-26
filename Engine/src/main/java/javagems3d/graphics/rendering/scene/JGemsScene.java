@@ -5,6 +5,7 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.screen.ticking.FrameTicking;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsWindowHelper;
@@ -14,13 +15,13 @@ import logger.Log;
 
 public class JGemsScene implements IScene {
     private final IWindow window;
-    private final SceneWorld sceneWorld;
+    private final IRenderWorld sceneWorld;
     protected OpenGLRenderer sceneRenderer;
 
     private float elapsedTime;
     private boolean refresh;
 
-    public JGemsScene(IWindow window, SceneWorld sceneWorld) {
+    public JGemsScene(IWindow window, IRenderWorld sceneWorld) {
         this.sceneWorld = sceneWorld;
         this.window = window;
         this.setDefaultRenderer();
@@ -61,9 +62,10 @@ public class JGemsScene implements IScene {
 
     @SuppressWarnings("all")
     public void updateSceneComponents(final FrameTicking frameTicking) throws InterruptedException {
-        this.getWorld().updateWorldObjects(this.refresh, frameTicking);
+        SceneWorld sceneWorld1 = (SceneWorld) this.getWorld();
+        sceneWorld1.updateWorldObjects(this.refresh, frameTicking);
         this.refresh = false;
-        this.getWorld().onWorldUpdate();
+        sceneWorld1.onWorldUpdate();
         this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());
         JGemsTransformManager.INSTANCE.updateCamera(this.getCamera());
     }
@@ -95,7 +97,7 @@ public class JGemsScene implements IScene {
     }
 
     @Override
-    public SceneWorld getWorld() {
+    public IRenderWorld getWorld() {
         return this.sceneWorld;
     }
 

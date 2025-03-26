@@ -3,6 +3,7 @@ package workbench.resources.initialization;
 import api.application.workbench.manager.IAPIWBenchDataManager;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
@@ -34,6 +35,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
     public WBenchShaderManager gui_image;
     public WBenchShaderManager preview;
     public WBenchShaderManager simple_flat;
+    public WBenchShaderManager blur5;
 
     public ShaderStorageBufferObject IndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
@@ -52,12 +54,18 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         shaderStaticConstants.putConstant("MAX_POINT_LIGHTS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS));
         shaderStaticConstants.putConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
         shaderStaticConstants.putConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
+
+        shaderStaticConstants.putConstant("DIFFUSE_CODE", String.valueOf(JGemsRenderingHelper.DIFFUSE_CODE));
+        shaderStaticConstants.putConstant("NORMALS_CODE", String.valueOf(JGemsRenderingHelper.NORMALS_CODE));
+        shaderStaticConstants.putConstant("EMISSION_CODE", String.valueOf(JGemsRenderingHelper.EMISSION_CODE));
+        shaderStaticConstants.putConstant("METALLIC_ROUGHNESS_CODE", String.valueOf(JGemsRenderingHelper.METALLIC_ROUGHNESS_CODE));
     }
 
     @Override
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
         shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
         shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/animations"));
+        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/lighting"));
     }
 
     protected void initObjects(ResourceCache resourceCache) {
@@ -101,6 +109,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         this.depth_sun = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun"));
         this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"));
         this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"));
+        this.blur5 = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/blur5"));
 
         this.preview = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/preview"));
         this.simple_flat = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_flat"));

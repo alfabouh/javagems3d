@@ -3,6 +3,8 @@ package javagems3d.graphics.world;
 import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.IEnvironment;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -30,12 +32,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public final class SceneWorld implements IWorld {
+public final class SceneWorld implements IRenderWorld {
     private ICamera camera;
+    private final IEnvironment environment;
 
     private final ParticlesEmitter particlesEmitter;
-    private final JGemsEnvironment environment;
-
     private final Set<Pair<WorldItem, Light>> lightAttachmentQueue;
     private final Map<Integer, SceneEntity> objectMap;
 
@@ -282,7 +283,7 @@ public final class SceneWorld implements IWorld {
         this.camera = camera;
     }
 
-    public JGemsEnvironment getEnvironment() {
+    public IEnvironment getEnvironment() {
         synchronized (this) {
             return this.environment;
         }

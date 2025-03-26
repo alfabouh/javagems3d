@@ -1,4 +1,4 @@
-package workbench.graphics.scene.nodes.templates;
+package javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces;
 
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public interface WITransparencyRenderNode extends IRenderNode {
+public interface ITransparencyRenderNode extends IRenderNode {
     FBOTexture2DProgram getOutColorBuffer();
     FBOTexture2DProgram getInColorBuffer();
 

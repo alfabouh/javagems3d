@@ -1,6 +1,7 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
@@ -12,7 +13,7 @@ import logger.Log;
 
 public abstract class SceneObject implements IModeled, IRendered, ILighted, IWorldObject {
     private AnimationData animationData;
-    private final IWorld world;
+    private final IRenderWorld world;
     private RenderAttributes renderAttributes;
     protected Model3D model;
     private float animationSpeed;
@@ -20,7 +21,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
     private double lastTick;
     private CullingAABB cullingAABB;
 
-    public SceneObject(IWorld world, Model3D model, RenderAttributes renderAttributes) {
+    public SceneObject(IRenderWorld world, Model3D model, RenderAttributes renderAttributes) {
         this.animationData = null;
         this.cullingAABB = null;
         this.setModel(model);
@@ -105,7 +106,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
         return this.animationData;
     }
 
-    public IWorld getWorld() {
+    public IRenderWorld getWorld() {
         return this.world;
     }
 

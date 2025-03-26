@@ -1,5 +1,6 @@
 package javagems3d.graphics.screen;
 
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -282,7 +283,7 @@ public class JGemsScreen implements IScreen {
         SoundListener.updateListenerGain(JGemsCoreHelper.getMainObject().getGameSettings());
     }
 
-    public SceneWorld getSceneWorld() {
+    public IRenderWorld getSceneWorld() {
         return this.getScene() == null ? null : this.getScene().getWorld();
     }
 

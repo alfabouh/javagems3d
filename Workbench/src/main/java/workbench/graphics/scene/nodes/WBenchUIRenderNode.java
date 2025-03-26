@@ -7,14 +7,14 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
-import workbench.graphics.scene.nodes.templates.WIUIRenderNode;
+import workbench.graphics.scene.nodes.templates.IUIRenderNode;
 
-public final class WUIRenderNode implements WIUIRenderNode {
+public final class WBenchUIRenderNode implements IUIRenderNode {
     private final OpenGLRenderer openGLRenderer;
     private final DearUIRenderer dearUIRenderer;
     private DearUIInterface anInterface;
 
-    public WUIRenderNode(DearUIRenderer dearUIRenderer, OpenGLRenderer openGLRenderer) {
+    public WBenchUIRenderNode(DearUIRenderer dearUIRenderer, OpenGLRenderer openGLRenderer) {
         this.openGLRenderer = openGLRenderer;
         this.dearUIRenderer = dearUIRenderer;
         this.anInterface = null;

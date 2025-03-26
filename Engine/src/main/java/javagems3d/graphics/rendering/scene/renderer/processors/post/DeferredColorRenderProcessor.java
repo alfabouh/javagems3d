@@ -7,26 +7,24 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
 
 public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
     private final JGemsShaderManager lightPassShader;
     private final FBOTexture2DProgram gBuffer;
     private final FBOTexture2DProgram ssaoBuffer;
-    private boolean isSsaoValid;
 
-    public DeferredColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram gBuffer, @NotNull FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
+    public DeferredColorRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @Nullable FBOTexture2DProgram gBuffer, @Nullable FBOTexture2DProgram ssaoBuffer, @NotNull JGemsShaderManager lightPassShader) {
         super(openGLRenderer);
         this.lightPassShader = lightPassShader;
         this.gBuffer = gBuffer;
         this.ssaoBuffer = ssaoBuffer;
-        this.isSsaoValid = false;
     }
 
     @Override
@@ -44,9 +42,8 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
 
         JGemsShaderManager deferredShader = this.getLightPassShader();
         deferredShader.beginShading();
-        SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
-        final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
-        deferredShader.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(sceneWorld.getCamera().getCamPosition()));
+        final ICubeMapProgram cubeMapProgram = this.getWorld().getEnvironment().getSkyBox().getTexture();
+        deferredShader.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(this.getWorld().getCamera().getCamPosition()));
         if (cubeMapProgram != null && deferredShader.isUniformExist(new UniformString("ambient_cubemap"))) {
             deferredShader.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
             if (deferredShader.isUniformExist(new UniformString("useCubeMap"))) {
@@ -63,27 +60,23 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
         deferredShader.performUniformTextureBindless(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));
         deferredShader.performUniformTextureBindless(new UniformString("gEmission"), gBuffer.getTextureByIndex(3));
         deferredShader.performUniformTextureBindless(new UniformString("gMetallicRoughness"), gBuffer.getTextureByIndex(4));
-        deferredShader.performUniformTextureBindless(new UniformString("ssao_map"), ssaoBuffer.getTextureByIndex(0));
-        deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(this.isSsaoValid()));
+        if (ssaoBuffer != null) {
+            deferredShader.performUniformTextureBindless(new UniformString("ssao_map"), ssaoBuffer.getTextureByIndex(0));
+            deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(true));
+        } else {
+            deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(false));
+        }
         deferredShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsShadersHelper.performShadowsInfo(((SceneWorld) this.getOpenGLRenderer().getWorld()).getEnvironment(), deferredShader);
+        JGemsShadersHelper.performShadowsInfo(this.getOpenGLRenderer().getWorld().getEnvironment(), deferredShader);
         JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         deferredShader.endShading();
-    }
-
-    public boolean isSsaoValid() {
-        return this.isSsaoValid;
-    }
-
-    public void setSsaoValidate(boolean ssaoValid) {
-        isSsaoValid = ssaoValid;
     }
 
     protected FBOTexture2DProgram getGBuffer() {
         return this.gBuffer;
     }
 
-    protected FBOTexture2DProgram getSsaoBuffer() {
+    protected @Nullable FBOTexture2DProgram getSsaoBuffer() {
         return this.ssaoBuffer;
     }
 

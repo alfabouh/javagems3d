@@ -17,11 +17,13 @@ import org.lwjgl.opengl.GL46;
 public class FXAARenderProcessor extends IRenderProcessor.Template {
     private final FBOTexture2DProgram inColor;
     private final JGemsShaderManager fxaaShader;
+    private float value;
 
     public FXAARenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram inSceneColor, @NotNull JGemsShaderManager fxaaShader) {
         super(openGLRenderer);
         this.inColor = inSceneColor;
         this.fxaaShader = fxaaShader;
+        this.value = 0;
     }
 
     @Override
@@ -39,10 +41,19 @@ public class FXAARenderProcessor extends IRenderProcessor.Template {
         fxaaFilter.performUniform(new UniformString("use_fxaa"), UniformFunctions.BOOLEAN(JGemsConfig.SYSTEM.USE_FXAA));
         fxaaFilter.performUniform(new UniformString("resolution"), UniformFunctions.VEC2I(this.getRenderingResolution()));
         fxaaFilter.performUniformTextureBindless(new UniformString("texture_map"), this.getInColor().getTextureByIndex(0));
-        fxaaFilter.performUniform(new UniformString("FXAA_SPAN_MAX"), UniformFunctions.FLOAT((float) Math.pow(JGems3D.get().getGameSettings().fxaa.getValue(), 2)));
+        fxaaFilter.performUniform(new UniformString("FXAA_SPAN_MAX"), UniformFunctions.FLOAT(this.getValue()));
         fxaaFilter.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         fxaaFilter.endShading();
+    }
+
+    public float getValue() {
+        return this.value;
+    }
+
+    public FXAARenderProcessor setValue(float value) {
+        this.value = value;
+        return this;
     }
 
     public JGemsShaderManager getFxaaShader() {

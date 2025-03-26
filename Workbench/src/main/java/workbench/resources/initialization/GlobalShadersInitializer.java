@@ -1,5 +1,6 @@
 package workbench.resources.initialization;
 
+import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
@@ -21,8 +22,8 @@ public final class GlobalShadersInitializer extends ShadersInitializer<WBenchSha
     }
 
     protected void initObjects(ResourceCache resourceCache) {
-        this.imgui = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/imgui"));
-        this.debug = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/debug"));
+        this.imgui = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "gui/imgui"));
+        this.debug = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "debug"));
     }
 
     @Override

@@ -7,6 +7,7 @@ import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import logger.Log;
@@ -18,9 +19,9 @@ import java.util.Map;
 
 public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit {
     private final IWindow window;
-    private final IWorld world;
+    private final IRenderWorld world;
 
-    public OpenGLRenderer(@NotNull IWindow window, @NotNull IWorld world) {
+    public OpenGLRenderer(@NotNull IWindow window, @NotNull IRenderWorld world) {
         this.window = window;
         this.world = world;
     }
@@ -40,7 +41,7 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit {
     public abstract ICamera getCamera();
 
     @Override
-    public @NotNull IWorld getWorld() {
+    public @NotNull IRenderWorld getWorld() {
         return this.world;
     }
 
