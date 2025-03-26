@@ -40,18 +40,25 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     private ITexture2DProgram textureSample;
     private GLFWKeyCallback prevKeyCallback;
     private final IWindow window;
+    private int sampler;
 
     public DearUIRenderer(@NotNull IWindow window, @NotNull JGemsShaderManager imguiShader, @Nullable JGemsPath pathToJarFont, @NotNull SystemResources systemResources) {
         this.shaderManager = imguiShader;
         this.window = window;
+        this.sampler = 0;
 
         this.createUIResources(systemResources, pathToJarFont);
         this.createUICallbacks(this.getWindow());
     }
 
     private void createUIResources(SystemResources systemResources, @Nullable JGemsPath pathToJarFont) {
-        ImGui.createContext();
+        this.sampler = GL46.glGenSamplers();
+        GL46.glSamplerParameteri(this.sampler, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
+        GL46.glSamplerParameteri(this.sampler, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
+        GL46.glSamplerParameteri(this.sampler, GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glSamplerParameteri(this.sampler, GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
 
+        ImGui.createContext();
         ImGuiIO imGuiIO = ImGui.getIO();
         imGuiIO.setIniFilename(null);
         imGuiIO.setDisplaySize(this.getWindow().getWindowSize().x, this.getWindow().getWindowSize().y);
@@ -183,8 +190,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
                 int textureId = drawData.getCmdListCmdBufferTextureId(i, j);
                 GL46.glActiveTexture(GL46.GL_TEXTURE0);
                 if (textureId > 0) {
-                    IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) JGems3D.get().getScreen().getScene().getSceneRenderer().getConveyorNodes().get(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
-                    GL46.glBindSampler(0, iDeferredRenderNode.getOutGBuffer().getTexturePrograms().get(0).getSamplerId());
+                    GL46.glBindSampler(0, this.sampler);
                     GL46.glBindTexture(GL46.GL_TEXTURE_2D, textureId);
                 } else {
                     this.getTextureSample().bindTexture();
@@ -238,6 +244,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     }
 
     public void destroyUI() {
+        GL46.glDeleteSamplers(this.sampler);
         this.getImguiMesh().clear();
         if (this.getTextureSample() != null) {
             this.getTextureSample().clear();

@@ -265,7 +265,7 @@ public abstract class ModelLoadingUtils {
             }
         }
 
-        Material material = new Material(diffuseSample, color4Texture, null, null, null, normalsSample, 0.5f, 0f);
+        Material material = new Material(diffuseSample, color4Texture, null, null, null, normalsSample, 0.0f, 0f);
         material.getTransparency().setHasTransparentPixels(textureIsImageAndHasAlphaPixels);
         material.getTransparency().setOpacity(opacityConstant);
         return material;

@@ -80,6 +80,7 @@ public final class GlobalShadersInitializer extends ShadersInitializer<JGemsShad
     protected void initShaderLibraries(ShaderLibrariesManager shaderLibrary) {
         shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/shadows"));
         shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/animations"));
+        shaderLibrary.initLibrary(new JGemsPath("/assets/jgems/shaders/libs/lighting"));
     }
 
     protected void initObjects(ResourceCache resourceCache) {

@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
+import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
@@ -40,9 +41,22 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
     public void runProcessorRendering(FrameTicking frameTicking) {
         FBOTexture2DProgram gBuffer = this.getGBuffer();
         FBOTexture2DProgram ssaoBuffer = this.getSsaoBuffer();
-        
+
         JGemsShaderManager deferredShader = this.getLightPassShader();
         deferredShader.beginShading();
+        SceneWorld sceneWorld = (SceneWorld) this.getSceneWorld();
+        final ICubeMapProgram cubeMapProgram = sceneWorld.getEnvironment().getSkyBox().getTexture();
+        deferredShader.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(sceneWorld.getCamera().getCamPosition()));
+        if (cubeMapProgram != null && deferredShader.isUniformExist(new UniformString("ambient_cubemap"))) {
+            deferredShader.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
+            if (deferredShader.isUniformExist(new UniformString("useCubeMap"))) {
+                deferredShader.performUniform(new UniformString("useCubeMap"), UniformFunctions.BOOLEAN(true));
+            }
+        } else {
+            if (deferredShader.isUniformExist(new UniformString("useCubeMap"))) {
+                deferredShader.performUniform(new UniformString("useCubeMap"), UniformFunctions.BOOLEAN(false));
+            }
+        }
         deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix()));
         deferredShader.performUniformTextureBindless(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
         deferredShader.performUniformTextureBindless(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));

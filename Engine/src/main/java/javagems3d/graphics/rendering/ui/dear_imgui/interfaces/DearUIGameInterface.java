@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.ITransparencyRenderNode;
 import javagems3d.help.JGemsCameraHelper;
 import javagems3d.help.JGemsControllerHelper;
 import javagems3d.help.JGemsCoreHelper;
@@ -201,7 +202,23 @@ public class DearUIGameInterface implements DearUIInterface {
                 ImGui.endChild();
             }
 
-            if (ImGui.collapsingHeader("Scene")) {
+            if (ImGui.collapsingHeader("Bloom")) {
+                IDeferredRenderNode iDeferredRenderNode = (IDeferredRenderNode) sceneRender.getConveyorNodes().get(JGemsOpenGLRenderer.DEFERRED_RENDER_PASS);
+                ImGui.beginChild("Images25", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
+                ImGui.image(iDeferredRenderNode.getOutColorBuffer().getTextureIDByIndex(1), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
+                ImGui.endChild();
+            }
+
+            if (ImGui.collapsingHeader("Transparency")) {
+                ITransparencyRenderNode iDeferredRenderNode = (ITransparencyRenderNode) sceneRender.getConveyorNodes().get(JGemsOpenGLRenderer.TRANSPARENCY_RENDER_PASS);
+                ImGui.beginChild("Images25", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
+                ImGui.image(iDeferredRenderNode.getOutColorBuffer().getTextureIDByIndex(0), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.sameLine();
+                ImGui.endChild();
+            }
+
+            if (ImGui.collapsingHeader("Animations")) {
                 ImGui.beginChild("Images2", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
                 ImGui.image(JGemsResourceManager.getAnimationsTextureBuffer().getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();

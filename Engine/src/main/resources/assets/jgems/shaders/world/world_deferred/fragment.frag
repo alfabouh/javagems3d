@@ -7,35 +7,6 @@ in mat4 out_inversed_view_matrix;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bright_color;
 
-struct Sun {
-    vec3 position;
-    float _padding0; //PAD
-    vec3 color;
-    float ambient;
-    float brightness;
-};
-layout (std430, binding = 5) buffer SunLight {
-    Sun sun;
-};
-
-struct PointLight
-{
-    vec3 position;
-    float _padding0;
-    vec3 view_position;
-    float _padding00;
-    vec3 color;
-    float brightness;
-    int attachedShadowSceneId;
-    int _padding000;
-    int _padding0000;
-    int _padding00000;
-};
-layout (std430, binding = 6) buffer PointLights {
-    PointLight p_l[CONST.MAX_POINT_LIGHTS];
-    int total_plights;
-};
-
 struct Fog {
     vec3 color;
     float density;
@@ -56,60 +27,23 @@ uniform sampler2D gMetallicRoughness;
 uniform sampler2D ssao_map;
 
 #include "assets/jgems/shaders/libs/shadows"
+#include "assets/jgems/shaders/libs/lighting"
 
-vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal, float specularFactor) {
-    if (dot(vNormal, light_dir) + 1.e-5 < 0) {
-        return vec4(0.);
-    }
-    vec4 diffuseC = vec4(0.);
-    vec4 specularC = vec4(0.);
-
-    float specularF = 0.;
-    float diffuseF = max(dot(vNormal, light_dir), 0.);
-    diffuseC = vec4(colors, 1.) * brightness * diffuseF;
-
-    vec3 camDir = normalize(-vPos);
-    vec3 reflectionF = normalize(light_dir + camDir);
-    specularF = max(dot(vNormal, reflectionF), 0.);
-    specularF = pow(specularF, 8.0);
-    specularC = brightness * specularF * vec4(colors, 1.);
-
-    return diffuseC + (specularC * vec4(specularFactor, specularFactor, specularFactor, 1.));
-}
-
-vec4 calc_sun_light(vec3 position, vec3 vPos, vec3 vNormal, float specularFactor) {
-    return calc_light_factor(sun.color, sun.brightness, vPos, normalize(position), vNormal, specularFactor);
-}
-
-vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, float linear, float expo, float bright, float specularFactor) {
-    vec3 pos = light.view_position;
-
-    vec3 light_dir = pos - vPos;
-    vec3 to_light = normalize(light_dir);
-    vec4 light_c = calc_light_factor(light.color, bright, vPos, to_light, vNormal, specularFactor);
-
-    float dist = length(light_dir);
-    float attenuation_factor = at_base + linear * dist + expo * pow(dist, 2);
-    return light_c / attenuation_factor;
-}
-
-vec4 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
-    vec4 lightFactors = vec4(sun.color * sun.ambient, 1.0);
+vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
+    vec3 lightFactors = vec3(sun.color) * sun.ambient;
     vec3 position = normalize(sun.position);
 
     float sun_shadow = calc_sun_shadows(world_position, frag_pos);
-    vec4 sunFactor = calc_sun_light(position, frag_pos, normal, specularFactor);
+    vec3 sunFactor = calc_sun_light(position, frag_pos, normal, specularFactor);
 
-    vec4 point_light_factor = vec4(0.0);
+    vec3 point_light_factor = vec3(0.0);
     for (int i = 0; i < total_plights; i++) {
         PointLight p = p_l[i];
         float p_brightness = p.brightness;
-        float at_base = 1.0;
-        float linear = 0.1 * p_brightness;
-        float expo = 0.032 / sqrt(p_brightness);
+        vec3 params = getParams(p_brightness);
         float p_id = p.attachedShadowSceneId;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz)) : vec4(1.0);
-        point_light_factor += calc_point_light(p, frag_pos, normal, at_base, linear, expo, p_brightness, specularFactor) * 1.;
+        float shadow = p_id >= 0 ? calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz) : 1.;
+        point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * 1.;
     }
 
     float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
@@ -133,11 +67,11 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
     return vec4(result.xyz, color.w);
 }
 
-vec4 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
+vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(ambient_cubemap, R).rgb, 1.0);
+    return texture(ambient_cubemap, R).rgb;
 }
 
 void main()
@@ -153,7 +87,11 @@ void main()
     world_position /= world_position.w;
 
     if (useCubeMap) {
-        g_texture *= (refract_cubemap(normals, 1.73, world_position) * metallic_roughness.r);
+        vec4 model_normal_pos = vec4(normals, 1.0);
+        vec4 world_normal = out_inversed_view_matrix * model_normal_pos;
+        world_normal /= world_normal.w;
+        vec3 refracted_color = refract_cubemap(world_normal.xyz, 1.73, world_position);
+        g_texture.rgb = mix(g_texture.rgb, refracted_color, metallic_roughness.r);
     }
 
     float f1 = 1.0;
@@ -163,11 +101,11 @@ void main()
         f1 = pow(AO, (1.0 - gray) * 3.);
     }
 
-    vec4 lights = calc_light(frag_pos, normals, metallic_roughness.g, world_position) * vec4(f1);
+    vec3 lights = calc_light(frag_pos, normals, metallic_roughness.g, world_position) * vec3(f1);
 
-    frag_color = g_texture * (lights + vec4(emission, 0.));
+    frag_color = g_texture * vec4(lights + emission, 1.0);
     frag_color = calc_fog(frag_pos.xyz, frag_color);
 
-    float brightness = dot(frag_color.rgb + (emission.rgb), vec3(0.2126, 0.7152, 0.0722));
+    float brightness = dot(frag_color.rgb + emission, vec3(0.2126, 0.7152, 0.0722));
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
 }

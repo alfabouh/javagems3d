@@ -4,6 +4,7 @@ in vec2 uv_coordinates;
 in vec3 modelview_vertex_normal;
 in vec3 modelview_vertex_pos;
 in vec4 model_vertex_pos;
+in vec3 model_vertex_normal;
 in mat3 TBN;
 
 layout (location = 0) out vec4 accumulated;
@@ -12,35 +13,6 @@ layout (location = 2) out vec4 bright_color;
 
 layout (std430, binding = 0) buffer Timer {
     float w_tick;
-};
-
-struct Sun {
-    vec3 position;
-    float _padding0; //PAD
-    vec3 color;
-    float ambient;
-    float brightness;
-};
-layout (std430, binding = 5) buffer SunLight {
-    Sun sun;
-};
-
-struct PointLight
-{
-    vec3 position;
-    float _padding0;
-    vec3 view_position;
-    float _padding00;
-    vec3 color;
-    float brightness;
-    int attachedShadowSceneId;
-    int _padding000;
-    int _padding0000;
-    int _padding00000;
-};
-layout (std430, binding = 6) buffer PointLights {
-    PointLight p_l[CONST.MAX_POINT_LIGHTS];
-    int total_plights;
 };
 
 struct Fog {
@@ -73,6 +45,7 @@ uniform int texturing_code;
 uniform vec2 texture_scaling;
 
 #include "assets/jgems/shaders/libs/shadows"
+#include "assets/jgems/shaders/libs/lighting"
 
 vec2 getScaledTexture() {
     const float speed = 5.;
@@ -82,59 +55,21 @@ vec2 getScaledTexture() {
     return (uv_coordinates) * (texture_scaling) + sincosFactor;
 }
 
-vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal, float specularFactor) {
-    if (dot(vNormal, light_dir) + 1.e-5 < 0) {
-        return vec4(0.);
-    }
-    vec4 diffuseC = vec4(0.);
-    vec4 specularC = vec4(0.);
-
-    float specularF = 0.;
-    float diffuseF = max(dot(vNormal, light_dir), 0.);
-    diffuseC = vec4(colors, 1.) * brightness * diffuseF;
-
-    vec3 camDir = normalize(-vPos);
-    vec3 reflectionF = normalize(light_dir + camDir);
-    specularF = max(dot(vNormal, reflectionF), 0.);
-    specularF = pow(specularF, 8.0);
-    specularC = brightness * specularF * vec4(colors, 1.);
-
-    return diffuseC + (specularC * vec4(specularFactor, specularFactor, specularFactor, 1.));
-}
-
-vec4 calc_sun_light(vec3 position, vec3 vPos, vec3 vNormal, float specularFactor) {
-    return calc_light_factor(sun.color, sun.brightness, vPos, normalize(position), vNormal, specularFactor);
-}
-
-vec4 calc_point_light(PointLight light, vec3 vPos, vec3 vNormal, float at_base, float linear, float expo, float bright, float specularFactor) {
-    vec3 pos = light.view_position;
-
-    vec3 light_dir = pos - vPos;
-    vec3 to_light = normalize(light_dir);
-    vec4 light_c = calc_light_factor(light.color, bright, vPos, to_light, vNormal, specularFactor);
-
-    float dist = length(light_dir);
-    float attenuation_factor = at_base + linear * dist + expo * pow(dist, 2);
-    return light_c / attenuation_factor;
-}
-
-vec4 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
-    vec4 lightFactors = vec4(sun.color * sun.ambient, 1.0);
+vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {
+    vec3 lightFactors = vec3(sun.color) * sun.ambient;
     vec3 position = normalize(sun.position);
 
     float sun_shadow = calc_sun_shadows(world_position, frag_pos);
-    vec4 sunFactor = calc_sun_light(position, frag_pos, normal, specularFactor);
+    vec3 sunFactor = calc_sun_light(position, frag_pos, normal, specularFactor);
 
-    vec4 point_light_factor = vec4(0.0);
+    vec3 point_light_factor = vec3(0.0);
     for (int i = 0; i < total_plights; i++) {
         PointLight p = p_l[i];
         float p_brightness = p.brightness;
-        float at_base = 1.0;
-        float linear = 0.1 * p_brightness;
-        float expo = 0.032 / sqrt(p_brightness);
+        vec3 params = getParams(p_brightness);
         float p_id = p.attachedShadowSceneId;
-        vec4 shadow = p_id >= 0 ? vec4(calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz)) : vec4(1.0);
-        point_light_factor += calc_point_light(p, frag_pos, normal, at_base, linear, expo, p_brightness, specularFactor) * 1.;
+        float shadow = p_id >= 0 ? calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz) : 1.;
+        point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * 1.;
     }
 
     float brightness = dot(point_light_factor.rgb, vec3(0.2126, 0.7152, 0.0722)) * 5.0;
@@ -165,11 +100,11 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
     return vec4(result.xyz, color.w);
 }
 
-vec4 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
+vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return vec4(texture(ambient_cubemap, R).rgb, 1.0);
+    return texture(ambient_cubemap, R).rgb;
 }
 
 bool checkCode(int i1, int i2) {
@@ -199,9 +134,6 @@ void main()
     if (useDiffuseTexture) {
         diffuse *= texture(diffuse_map, getScaledTexture());
     }
-    if (diffuse.a < alpha_discard) {
-        discard;
-    }
     if (useEmissionTexture) {
         emission *= texture(emission_map, getScaledTexture()).rgb;
     }
@@ -220,11 +152,12 @@ void main()
     vec2 gMetallicRoughness = metallic_roughness;
 
     if (useCubeMap) {
-        gColor *= (refract_cubemap(gNormal, 1.73, model_vertex_pos) * gMetallicRoughness.r);
+        vec3 refracted_color = refract_cubemap(model_vertex_normal, 1.73, model_vertex_pos);
+        gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r);
     }
 
-    vec4 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
-    vec4 frag_color = gColor * (lights + vec4(gEmission, 0.0));
+    vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
+    vec4 frag_color = gColor * vec4(lights + gEmission, 1.0);
     frag_color = calc_fog(gPosition, frag_color);
 
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
