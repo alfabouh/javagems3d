@@ -82,7 +82,7 @@ public abstract class JGemsShadersHelper {
         shaderManager.performUniform(new UniformString("animationData.currAnimationOffset"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getCurrentAnimationFrame().getOffset()));
         shaderManager.performUniform(new UniformString("animationData.currAnimationOffsetPrev"), UniformFunctions.INTEGER(!animated.hasAnimationData() ? -1 : animated.getAnimationData().getPreviousAnimationFrame().getOffset()));
         if (animated.hasAnimationData()) {
-            shaderManager.performUniformTextureBindless(new UniformString("animations_matrix"), JGemsResourceManager.getAnimationsTextureBuffer());
+            shaderManager.performUniformTexture(new UniformString("animations_matrix"), JGemsResourceManager.getAnimationsTextureBuffer());
             shaderManager.performUniform(new UniformString("animationData.deltaFrame"), UniformFunctions.FLOAT(animated.getAnimationData().getAnimationFrameDelta()));
         }
         shaderManager.enableWarns();

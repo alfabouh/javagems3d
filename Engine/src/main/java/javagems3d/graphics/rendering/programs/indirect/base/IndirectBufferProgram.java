@@ -147,7 +147,7 @@ public final class IndirectBufferProgram {
             if (attributeBuffer != null) {
                 int size = attributeBuffer.getValues().size();
                 if (size % renderAttributePointer.getLengthInMemory() != 0) {
-                    throw new JGemsRuntimeException("MeshBuffer attribute: " + renderAttributePointer.getPointer() + " - doesn't match layout: " + renderAttributePointer.getLengthInMemory());
+                    throw new JGemsRuntimeException("MeshBuffer attribute: " + renderAttributePointer.getIndex() + " - doesn't match layout: " + renderAttributePointer.getLengthInMemory());
                 }
                 structSize[0] += size * renderAttributePointer.getBytes();
             } else {

@@ -72,8 +72,8 @@ public abstract class ResourceManager {
             ISampleColor4 diffuseColor = material.getDiffuseColor();
             ITexture2DProgram emissionMap = material.getEmissionMap();
             ISampleColor3 emissionColor = material.getEmissionColor();
-            ITexture2DProgram metallicRoughnessMap = material.getEmissionMap();
-            ITexture2DProgram normalsMap = material.getEmissionMap();
+            ITexture2DProgram metallicRoughnessMap = material.getMetallicRoughnessMap();
+            ITexture2DProgram normalsMap = material.getNormalsMap();
             float metallicFactor = material.getMetallicFactor();
             float roughnessFactor = material.getRoughnessFactor();
 

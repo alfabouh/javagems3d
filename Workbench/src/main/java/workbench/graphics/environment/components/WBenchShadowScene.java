@@ -56,7 +56,7 @@ public class WBenchShadowScene extends ShadowScene {
             shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
             shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
             shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
-            shaderManager.performUniformTextureBindless(new UniformString("animations_matrix"), WBenchResourceManager.getAnimationsTextureBuffer());
+            shaderManager.performUniformTexture(new UniformString("animations_matrix"), WBenchResourceManager.getAnimationsTextureBuffer());
         };
     }
 

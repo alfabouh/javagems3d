@@ -61,8 +61,8 @@ public class JGemsShadowScene extends ShadowScene {
 
     protected void blurShadows(FBOTexture2DProgram sunShadowFBO) {
         try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
-            final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
-            this.blurSunShadow(screenModel, sunShadowFBO, blurring, 1.0f);
+          //  final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
+          //  this.blurSunShadow(screenModel, sunShadowFBO, blurring, 1.0f);
         }
     }
 
@@ -89,7 +89,7 @@ public class JGemsShadowScene extends ShadowScene {
             shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
             shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
             shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
-            shaderManager.performUniformTextureBindless(new UniformString("animations_matrix"), JGemsResourceManager.getAnimationsTextureBuffer());
+            shaderManager.performUniformTexture(new UniformString("animations_matrix"), JGemsResourceManager.getAnimationsTextureBuffer());
         };
     }
 

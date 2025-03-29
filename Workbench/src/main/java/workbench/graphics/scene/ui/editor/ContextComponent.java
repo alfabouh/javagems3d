@@ -89,7 +89,7 @@ public class ContextComponent {
                 }
 
                 float[] brightness = new float[] {environment.getSkyBox().getSun().getSunBrightness()};
-                if (ImGui.sliderFloat("Sun Brightness", brightness, 0.0f, 1.0f)) {
+                if (ImGui.sliderFloat("Sun Brightness", brightness, 0.0f, 5.0f)) {
                     environment.getSkyBox().getSun().setSunBrightness(brightness[0]);
                 }
 

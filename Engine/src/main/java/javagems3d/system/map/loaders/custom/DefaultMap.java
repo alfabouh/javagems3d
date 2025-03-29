@@ -15,6 +15,7 @@ import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 
 import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.parsing.space.ParserSpace;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -80,15 +81,15 @@ public class DefaultMap implements IMapLoader {
 
     @Override
     public void fillSkyBox(SkyBox.Background background) {
-        //MeshGroup meshGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), ModelMeshLoader.ModelLoaderFlags.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
+        //MeshGroup meshGroup = JGemsResourceManager.getLocalGameResources().createMesh(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), ModelMeshLoader.ModelLoaderFlags.RETURN_BAKED_RENDER_MESH_GROUP).getFirst();
         //SceneProp sceneProp3 = new SceneProp(new RenderSimpleBackgroundProp(background), new Model<>(new Pose3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), JGemsResourceManager.globalShaderAssets.skybox_background);
         //sceneProp3.getRenderAttributes().setAlphaDiscardValue(0.5f);
         //background.addObjectInBackGround(sceneProp3);
 
-        MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.obj"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, false);
+        MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, false);
         RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect().setMatch(Pipeline.SCENE, JGemsResourceManager.globalShaderAssets.background_indirect), JGemsRenderProperties.getDefault());
         renderAttributes.getProperties().setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.5f);
-        SceneBackgroundProp sceneProp3 = new SceneBackgroundProp((SceneWorld) background.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(1.0f)), meshGroup), renderAttributes);
+        SceneBackgroundProp sceneProp3 = new SceneBackgroundProp((SceneWorld) background.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(14.0f)), meshGroup), renderAttributes);
         background.addObjectInBackGround(sceneProp3);
     }
 

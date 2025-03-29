@@ -9,11 +9,16 @@ import java.util.List;
 
 public abstract class VertexAttribute<T> {
     private final RenderAttributePointer attributePointer;
-    private final List<T> values;
+    private List<T> values;
 
     public VertexAttribute(RenderAttributePointer attributePointer) {
         this.attributePointer = attributePointer;
         this.values = new ArrayList<>();
+    }
+
+    public VertexAttribute<T> set(List<T> values) {
+        this.values = values;
+        return this;
     }
 
     public VertexAttribute<T> put(List<T> values) {

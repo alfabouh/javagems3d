@@ -36,7 +36,7 @@ public class ActionsInterfaceComponent {
             ImGui.image(this.getEditorInterface().getScenePreview().getTextureIDByIndex(0), available, available, 0.0f, 1.0f, 1.0f, 0.0f);
 
             float[] scaling = new float[]{this.getEditorInterface().getPreviewDistance()};
-            if (ImGui.sliderFloat("Distance", scaling, 1.0f, 10.0f)) {
+            if (ImGui.sliderFloat("Distance", scaling, 0.1f, 10.0f)) {
                 this.getEditorInterface().setPreviewDistance(scaling[0]);
             }
             if (ImGui.button("Generate")) {

@@ -9,6 +9,7 @@ import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IGluingRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsUtils;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -99,7 +100,7 @@ public class SceneInterfaceComponent {
                     Vector3f position = new Vector3f();
                     Vector3f rotation = new Vector3f();
                     Vector3f scaling = new Vector3f();
-                    Matrix4f newMatrix = this.getEditorInterface().getMatrixFromArray(modelMatrix);
+                    Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
                     newMatrix.getTranslation(position);
                     newMatrix.getScale(scaling);
                     newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);

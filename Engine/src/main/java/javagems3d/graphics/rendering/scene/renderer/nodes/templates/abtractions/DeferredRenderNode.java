@@ -75,12 +75,12 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        for (SceneObject sceneObject : this.getIndirectDeferredRenderingObjects()) {
-            CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
-            if (cullingAABB != null) {
-                JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-            }
-        }
+       //for (SceneObject sceneObject : this.getIndirectDeferredRenderingObjects()) {
+       //    CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
+       //    if (cullingAABB != null) {
+       //        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+       //    }
+       //}
 
         this.getOutGBuffer().bindFBO();
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
@@ -152,7 +152,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             }
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
-            shaderManager.performUniformTextureBindless(new UniformString("animations_matrix"), this.getAnimationsTexture());
+            shaderManager.performUniformTexture(new UniformString("animations_matrix"), this.getAnimationsTexture());
         };
         final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
 

@@ -61,8 +61,8 @@ public class AppTest extends JGemsApplication {
     public void setupEditorResources(IAPIWBenchDataManager manager) {
         final Tag<TagRadioBoolean> tagPhysics = new Tag<>(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Is Static", true), new TagRadioBoolean.Info("Is Dynamic", false)));
 
-        final JGemsPath sponza = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.obj");
-        final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.obj");
+        final JGemsPath sponza = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "test_anim/CharacterKit.gltf");
+        final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf");
 
         manager.addResourceEntity("sponza",
                 () -> new WBenchObjectData(sponza),

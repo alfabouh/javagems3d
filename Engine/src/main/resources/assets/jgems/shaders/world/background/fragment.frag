@@ -38,7 +38,6 @@ uniform sampler2D emission_map;
 uniform sampler2D metallic_roughness_map;
 uniform int texturing_code;
 
-#include "assets/jgems/shaders/libs/shadows"
 #include "assets/jgems/shaders/libs/lighting"
 
 vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_position) {

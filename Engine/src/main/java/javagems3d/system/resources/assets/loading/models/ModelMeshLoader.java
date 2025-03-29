@@ -88,14 +88,12 @@ public class ModelMeshLoader implements ILoadingHelper {
             throw new JGemsNullException("There was an error, while loading the model");
         }
         if (createCollision) {
-            JGemsUtils.createMeshCollisionData(meshGroup);
+        //    JGemsUtils.createMeshCollisionData(meshGroup);
         }
         if (createAabb) {
-            JGemsUtils.createMeshAABBData(meshGroup);
+         //   JGemsUtils.createMeshAABBData(meshGroup);
         }
-        if (!keepNodesInMemory) {
-            meshGroup.clearNodesData();
-        }
+        meshGroup.clearNodesData();
         return meshGroup;
     }
 
@@ -195,7 +193,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
-                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getDirectory().getFullPath());
+                Material material = new Material();
                 if (meshBuffer != null) {
                     systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
                 }
@@ -275,9 +273,9 @@ public class ModelMeshLoader implements ILoadingHelper {
                 int matIdx = aiMesh.mMaterialIndex();
                 Material material = matIdx >= 0 && matIdx < materialList.size() ? materialList.get(matIdx) : new Material();
 
-               DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
-               meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
-               systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
+                DataMesh meshData = this.createDataMesh(aiMesh, skeletonData);
+                meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData, material));
+                systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
             }
             if (isAnimated) {
                 this.readAnimations(bonesList, aiScene, meshBuffer);
@@ -352,12 +350,12 @@ public class ModelMeshLoader implements ILoadingHelper {
         FloatVertexAttribute vaTangents = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TANGENTS);
         FloatVertexAttribute vaBiTangents = new FloatVertexAttribute(DefaultAttributePointers.ATTR_BI_TANGENTS);
 
-        renderMesh.putVertexIndexes(vertices);
-        vaPositions.put(positions);
-        vaNormals.put(normals);
-        vaTextureCoordinates.put(textureCoordinates);
-        vaTangents.put(tangents);
-        vaBiTangents.put(biTangents);
+        renderMesh.setVertexIndexes(vertices);
+        vaPositions.set(positions);
+        vaNormals.set(normals);
+        vaTextureCoordinates.set(textureCoordinates);
+        vaTangents.set(tangents);
+        vaBiTangents.set(biTangents);
 
         renderMesh.putVertexAttribute(vaPositions);
         renderMesh.putVertexAttribute(vaTextureCoordinates);

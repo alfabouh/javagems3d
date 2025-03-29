@@ -20,6 +20,20 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public abstract class JGemsUtils {
+    public static Matrix4f getMatrixFromArray(float[] arr) {
+        return new Matrix4f(arr[0], arr[1], arr[2], arr[3],
+                arr[4], arr[5], arr[6], arr[7],
+                arr[8], arr[9], arr[10], arr[11],
+                arr[12], arr[13], arr[14], arr[15]);
+    }
+
+    public static Matrix4f getMatrixFromArray(List<Float> arr) {
+        return new Matrix4f(arr.get(0), arr.get(1), arr.get(2), arr.get(3),
+                arr.get(4), arr.get(5), arr.get(6), arr.get(7),
+                arr.get(8), arr.get(9), arr.get(10), arr.get(11),
+                arr.get(12), arr.get(13), arr.get(14), arr.get(15));
+    }
+
     public static String getTextWithLines(String text) {
         String[] lines = text.split("\n");
         StringBuilder stringBuilder = new StringBuilder();
@@ -48,21 +62,21 @@ public abstract class JGemsUtils {
 
     public static int[] convertIntsArray(List<Integer> list) {
         if (list == null || list.isEmpty()) {
-            return null;
+            return new int[] {};
         }
         return list.stream().mapToInt( v -> (Integer) v).toArray();
     }
 
     public static double[] convertDoublesArray(List<Double> list) {
         if (list == null || list.isEmpty()) {
-            return null;
+            return new double[] {};
         }
         return list.stream().mapToDouble( v -> (Double) v).toArray();
     }
 
     public static float[] convertFloatsArray(List<Float> list) {
         if (list == null || list.isEmpty()) {
-            return null;
+            return new float[] {};
         }
         float[] a = new float[list.size()];
         for (int i = 0; i < list.size(); i++) {
@@ -73,7 +87,7 @@ public abstract class JGemsUtils {
 
     public static float[] convertFloats3Array(List<Vector3f> list) {
         if (list == null || list.isEmpty()) {
-            return null;
+            return new float[] {};
         }
         float[] a = new float[list.size() * 3];
         for (int i = 0; i < list.size(); i += 3) {

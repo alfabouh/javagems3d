@@ -10,39 +10,27 @@ public final class ParsedVertexData {
     private final List<Float> normals;
     private final List<Float> tangents;
     private final List<Float> biTangents;
+    private final List<Integer> joints;
+    private final List<Float> weights;
     private final int totalVertexes;
+    private final int materialId;
 
-    public ParsedVertexData(List<Integer> indexes, List<Float> vertexes, List<Float> uv, List<Float> normals, List<Float> tangents) {
+    public ParsedVertexData(List<Integer> indexes, List<Float> vertexes, List<Float> uv, List<Float> normals, List<Float> tangents, List<Float> biTangents, List<Integer> joints, List<Float> weights, int materialId) {
+        this.materialId = materialId;
         this.indexes = indexes;
         this.vertexes = vertexes;
         this.uv = uv;
         this.normals = normals;
         this.tangents = tangents;
-        this.biTangents = this.calcBiTangents(normals, tangents);
+        this.biTangents = biTangents;
+        this.joints = joints;
+        this.weights = weights;
 
         this.totalVertexes = vertexes.size() / 3;
     }
 
-    private List<Float> calcBiTangents(List<Float> normals, List<Float> tangents) {
-        List<Float> biTangents = new ArrayList<>();
-        for (int i = 0; i < normals.size(); i += 3) {
-            float nx = normals.get(i);
-            float ny = normals.get(i + 1);
-            float nz = normals.get(i + 2);
-
-            float tx = tangents.get(i);
-            float ty = tangents.get(i + 1);
-            float tz = tangents.get(i + 2);
-
-            float bx = ny * tz - nz * ty;
-            float by = nz * tx - nx * tz;
-            float bz = nx * ty - ny * tx;
-
-            biTangents.add(bx);
-            biTangents.add(by);
-            biTangents.add(bz);
-        }
-        return biTangents;
+    public int getMaterialId() {
+        return this.materialId;
     }
 
     public int getTotalVertexes() {
@@ -71,5 +59,13 @@ public final class ParsedVertexData {
 
     public List<Float> getBiTangents() {
         return this.biTangents;
+    }
+
+    public List<Integer> getJoints() {
+        return this.joints;
+    }
+
+    public List<Float> getWeights() {
+        return this.weights;
     }
 }

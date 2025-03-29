@@ -194,13 +194,6 @@ public class EditorInterface implements DearUIInterface {
         this.getContextComponent().context();
     }
 
-    public Matrix4f getMatrixFromArray(float[] arr) {
-        return new Matrix4f(arr[0], arr[1], arr[2], arr[3],
-                            arr[4], arr[5], arr[6], arr[7],
-                            arr[8], arr[9], arr[10], arr[11],
-                            arr[12], arr[13], arr[14], arr[15]);
-    }
-
     public Vector3f getRotationsFromMatrix(Matrix4f matrix4f) {
         Vector3f rotations = new Vector3f();
         Quaternionf quaternionf = new Quaternionf();
@@ -256,9 +249,11 @@ public class EditorInterface implements DearUIInterface {
         }
         OpenGLRenderer.setViewPort(new Vector2i(256, 256));
         this.scenePreview.bindFBO();
+        GL46.glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.renderPreviewItem(this.getPreviewDistance(), WBenchResourceManager.localShaderAssets.preview, this.currentSelectedTemplate.getMeshGroup());
         this.scenePreview.unBindFBO();
+        WBenchScreen.clearColor();
         OpenGLRenderer.setViewPort(this.getOpenGLRenderer().getRenderingResolution());
     }
 

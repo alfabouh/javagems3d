@@ -1,6 +1,6 @@
 package javagems3d.system.resources.assets.loading.models;
 
-public abstract  class ModelLoaderFlags {
+public abstract class ModelLoaderFlags {
     public static final int
             CREATE_COLLISION_UD = 1 << 2,
             LOAD_ANIMATIONS = 1 << 3,

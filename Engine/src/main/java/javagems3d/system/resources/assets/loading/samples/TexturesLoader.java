@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.loading.samples;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
+import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -69,11 +70,7 @@ public class TexturesLoader implements ILoadingHelper {
             IntBuffer height = stack.mallocInt(1);
             IntBuffer channels = stack.mallocInt(1);
 
-            byte[] stream = ByteStreams.toByteArray(inputStream);
-            ByteBuffer buffer = MemoryUtil.memAlloc(stream.length);
-            buffer.put(stream);
-            buffer.flip();
-
+            ByteBuffer buffer = JGemsFilesHelper.toByteBuffer(inputStream);
             ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
             MemoryUtil.memFree(buffer);
             if (imageBuffer == null) {
@@ -81,7 +78,7 @@ public class TexturesLoader implements ILoadingHelper {
             }
             Vector2i size = new Vector2i(width.get(), height.get());
             return this.createImageTexture(textureProperties, new ImageTexture.Data(imageBuffer, size), this.getHashId());
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new JGemsIOException(e);
         }
     }

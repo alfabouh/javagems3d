@@ -4,9 +4,11 @@ import javagems3d.JGems3D;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.MemoryUtil;
 
 import javax.swing.*;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public abstract class JGemsFilesHelper {
@@ -23,9 +25,9 @@ public abstract class JGemsFilesHelper {
         return textBuilder.toString();
     }
 
-    public static byte[] toByteArray(InputStream inputStream, int size) throws IOException {
+    public static byte[] toByteArray(InputStream inputStream) throws IOException {
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-            byte[] data = new byte[size];
+            byte[] data = new byte[8 * 1024];
             int bytesRead;
             while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
                 buffer.write(data, 0, bytesRead);
@@ -33,6 +35,29 @@ public abstract class JGemsFilesHelper {
             return buffer.toByteArray();
         }
     }
+
+    public static ByteBuffer toByteBuffer(InputStream inputStream) throws IOException {
+        final int BUFFER_SIZE = 8 * 1024;
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(BUFFER_SIZE);
+
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            if (byteBuffer.remaining() < bytesRead) {
+                ByteBuffer newBuffer = MemoryUtil.memAlloc(byteBuffer.capacity() * 2);
+                byteBuffer.flip();
+                newBuffer.put(byteBuffer);
+                MemoryUtil.memFree(byteBuffer);
+                byteBuffer = newBuffer;
+            }
+            byteBuffer.put(buffer, 0, bytesRead);
+        }
+
+        byteBuffer.flip();
+        return byteBuffer;
+    }
+
 
     public static String openFolderViewer(@Nullable String defaultStr) {
         JFileChooser chooser = new JFileChooser();

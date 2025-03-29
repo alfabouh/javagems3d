@@ -6,6 +6,7 @@ in vec3 pos;
 in vec2 uv_texture;
 uniform bool use_texture;
 uniform sampler2D diffuse_map;
+uniform vec4 diffuse_color;
 
 vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal) {
     vec4 diffuseC = vec4(0.);
@@ -25,12 +26,13 @@ vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
 }
 
 vec4 calc_sun_light(vec3 vPos, vec3 vNormal) {
-    return calc_light_factor(vec3(1.), 1., vPos, normalize(vec3(1, 1, 1)), vNormal);
+    return calc_light_factor(vec3(1.), 1.25, vPos, normalize(vec3(1, 1, 1)), vNormal);
 }
 
 void main()
 {
-    float f1 = min(uv_texture.y, uv_texture.x) + 0.25;
+    float f1 = min(uv_texture.y, uv_texture.x) + 0.35;
     frag_color = use_texture ? texture(diffuse_map, uv_texture) : vec4(vec3(f1), 1.0);
+    frag_color *= vec4(diffuse_color.rgb, 1.);
     frag_color *= calc_sun_light(pos, normals);
 }

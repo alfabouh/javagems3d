@@ -11,7 +11,9 @@ public abstract class MeshNode<T extends IMesh> {
     }
 
     public void clear() {
-        this.clearData();
+        if (this.getMeshData() != null) {
+            this.getMeshData().clearMesh();
+        }
         this.meshData = null;
     }
 

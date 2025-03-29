@@ -134,8 +134,9 @@ public abstract class MeshAABBHelper {
                                 List<Float> positions = mesh.getVertexPositions();
                                 for (int k = 0; k < positions.size(); k += 3) {
                                     Vector3f tempVertex = new Vector3f(positions.get(k), positions.get(k + 1), positions.get(k + 2));
+                                    Vector3f positionStart = new Vector3f(0.0f);
                                     for (AnimationFrame animationFrame : animation.getFrameList()) {
-                                        Vector3f positionStart = new Vector3f(0.0f);
+                                        positionStart.set(new Vector3f(0.0f));
                                         for (int i = 0; i < JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS; i++) {
                                             SkeletonData skeletonData = mesh.getSkeletonData();
                                             if (skeletonData == null) {

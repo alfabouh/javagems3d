@@ -5,6 +5,7 @@ import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
+import javagems3d.system.resources.assets.models.parsing.space.ParserSpace;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
 
@@ -14,17 +15,15 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
 
     public MeshBuffer grassCube;
     public MeshBuffer ground2;
-    public MeshBuffer ground3;
     public MeshBuffer test_anim;
 
     @Override
     public void load(SystemResources systemResources) {
         this.createDefaults(systemResources);
-        this.grassCube = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.obj"), ModelLoaderFlags.DEFAULT, false);
-        this.ground2 = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.obj"), ModelLoaderFlags.DEFAULT, false);
-        this.ground3 = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map05/map05.obj"), ModelLoaderFlags.DEFAULT, false);
-        this.test_anim = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "test_anim/boblampclean.md5mesh"), ModelLoaderFlags.DEFAULT | ModelLoaderFlags.LOAD_ANIMATIONS, false);
-        // systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.obj"), ModelMeshLoader.ModelLoaderFlags.LOAD_IN_INDIRECT_BUFFER);
+        this.grassCube = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), ModelLoaderFlags.DEFAULT, false);
+        this.ground2 = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), ModelLoaderFlags.DEFAULT, false);
+        this.test_anim = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "test_anim/CharacterKit.gltf"), ModelLoaderFlags.DEFAULT | ModelLoaderFlags.LOAD_ANIMATIONS, false);
+        // systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), ModelMeshLoader.ModelLoaderFlags.LOAD_IN_INDIRECT_BUFFER);
         //systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.ModelLoaderFlags.DEFAULT);
     }
 

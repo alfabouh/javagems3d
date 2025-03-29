@@ -17,7 +17,7 @@ public class RenderMesh implements IMesh, AutoCloseable {
     private int totalVertices;
 
     private int vertexIndexesIBO;
-    private final List<Integer> vertexIndexes;
+    private List<Integer> vertexIndexes;
 
     private final Map<Integer, Integer> vboMap;
     private final Map<Integer, VertexAttribute<?>> vertexAttributesMap;
@@ -42,6 +42,10 @@ public class RenderMesh implements IMesh, AutoCloseable {
         } catch (ClassCastException e) {
             return null;
         }
+    }
+
+    public void setVertexIndexes(List<Integer> indexes) {
+        this.vertexIndexes = indexes;
     }
 
     public void putVertexIndexes(List<Integer> indexes) {

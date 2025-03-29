@@ -28,9 +28,6 @@ layout (std430, binding = 6) buffer PointLights {
 };
 
 vec3 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal, float specularFactor) {
-    if (dot(vNormal, light_dir) + 1.e-24 < 0) {
-        return vec3(0.);
-    }
     vec3 diffuseC = vec3(0.);
     vec3 specularC = vec3(0.);
     float specularF = 0.;
@@ -38,8 +35,11 @@ vec3 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir,
     diffuseC = vec3(colors) * brightness * diffuseF;
     vec3 camDir = normalize(-vPos);
     vec3 reflectionF = normalize(light_dir + camDir);
-    specularF = max(dot(vNormal, reflectionF), 0.);
-    specularF = pow(specularF, 8.0);
+    specularF = 0.;
+    if (!(dot(vNormal, light_dir) + 1.e-6 < 0)) {
+        specularF = max(dot(vNormal, reflectionF), 0.);
+        specularF = pow(specularF, 8.0);
+    }
     specularC = brightness * specularF * vec3(colors);
     return diffuseC + (specularC * specularFactor);
 }
