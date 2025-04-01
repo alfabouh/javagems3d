@@ -5,12 +5,10 @@ import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
-import javagems3d.system.resources.assets.loading.models.ModelMeshLoader2;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.assets.models.parsing.space.ParserSpace;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.assets.texturing.IPropertiesSample;
 import javagems3d.system.resources.assets.texturing.ISample;
@@ -62,11 +60,11 @@ public abstract class SystemResources implements ISystemResources {
     }
 
     public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader2(ParserSpace.Type.GLTF2, modelPath).createMeshBuffer(this, modelLoadingFlags, keepNodesInMemory));
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(modelLoadingFlags, keepNodesInMemory));
     }
 
     public MeshGroup createMeshGroup(@NotNull JGemsPath modelPath, int modelLoadingFlags, boolean attachMeshBuffer, boolean keepNodesInMemory) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader2(ParserSpace.Type.GLTF2, modelPath).createMeshGroup(this, modelLoadingFlags, attachMeshBuffer, keepNodesInMemory));
+        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(modelLoadingFlags, attachMeshBuffer, keepNodesInMemory));
     }
 
     public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {

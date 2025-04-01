@@ -91,7 +91,7 @@ void main()
         vec4 world_normal = out_inversed_view_matrix * model_normal_pos;
         world_normal /= world_normal.w;
         vec3 refracted_color = refract_cubemap(world_normal.xyz, 1.73, world_position);
-        g_texture.rgb = mix(g_texture.rgb, refracted_color, metallic_roughness.r);
+        g_texture.rgb = mix(g_texture.rgb, refracted_color, metallic_roughness.r * 0.5);
     }
 
     float f1 = 1.0;

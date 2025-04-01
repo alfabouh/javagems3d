@@ -8,7 +8,6 @@ import javagems3d.system.map.MapInfo;
 import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
-import javagems3d.system.resources.assets.models.parsing.space.ParserSpace;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
 import javagems3d.temp.map_sys.save.objects.MapProperties;

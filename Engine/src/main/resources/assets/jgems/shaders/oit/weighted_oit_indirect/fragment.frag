@@ -165,7 +165,7 @@ void main()
 
     if (useCubeMap) {
         vec3 refracted_color = refract_cubemap(model_vertex_normal, 1.73, model_vertex_pos);
-        gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r);
+        gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
     }
 
     vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);

@@ -4,14 +4,10 @@ import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.resources.assets.materials.Material;
-import javagems3d.system.resources.assets.models.parsing.space.ParsedMaterialData;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.texturing.colors.Color3Texture;
 import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
-import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
-import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
-import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsException;
@@ -20,7 +16,9 @@ import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
@@ -185,52 +183,15 @@ public abstract class ModelLoadingUtils {
         return data;
     }
 
-    protected Material readMaterial(@NotNull SystemResources systemResources, ParsedMaterialData parsedMaterialData) {
-        boolean emptyTexture = parsedMaterialData.getDiffuseColor() == null && parsedMaterialData.getDiffuseMapPath() == null;
-
-        Color4Texture diffuseColor = parsedMaterialData.getDiffuseColor() == null ? new Color4Texture(new Vector4f(1.0f)) : new Color4Texture(parsedMaterialData.getDiffuseColor());
-        Color3Texture emissionColor = parsedMaterialData.getEmissionColor() == null ? null : new Color3Texture(parsedMaterialData.getEmissionColor());
-
-        ITexture2DProgram diffuseMap = null;
-        ITexture2DProgram emissionMap = null;
-        ITexture2DProgram normalsMap = null;
-        ITexture2DProgram metallicRoughnessMap = null;
-
-        float metallicFactor = parsedMaterialData.getMetallicFactor();
-        float roughnessFactor = parsedMaterialData.getRoughnessFactor();
-
-        final ImageTexture.Properties imageProperties = new ImageTexture.Properties(true, true);
-        try {
-         // if (parsedMaterialData.getDiffuseMapPath() != null) {
-         //     diffuseMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getDiffuseMapPath()), imageProperties);
-         // } else if (emptyTexture) {
-         //     diffuseMap = ResourceManager.DEFAULT_TEXTURE();
-         // }
-
-         // if (parsedMaterialData.getEmissionMapPath() != null) {
-         //     emissionMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getEmissionMapPath()), imageProperties);
-         // }
-
-         // if (parsedMaterialData.getMetallicRoughnessMapPath() != null) {
-         //     metallicRoughnessMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getMetallicRoughnessMapPath()), imageProperties);
-         // }
-
-         // if (parsedMaterialData.getNormalsMapPath() != null) {
-         //     normalsMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getNormalsMapPath()), imageProperties);
-         // }
-        } catch (JGemsException e) {
-            Log.get().exception(e);
-        }
-
-        return new Material(diffuseMap, diffuseColor, emissionMap, emissionColor, metallicRoughnessMap, normalsMap, metallicFactor, roughnessFactor);
-    }
-
     // section Material
     public static Material readMaterial(@Nullable JGemsShaderManager computeTransparentPixels, SystemResources systemResources, AIMaterial aiMaterial, String fullPath) {
-        float opacityConstant = 1.0f;
+        float opacityConstant;
+        float metallicFactor;
+        float roughnessFactor;
+
         boolean textureIsImageAndHasAlphaPixels = false;
 
-        Color4Texture diffuseColor = new Color4Texture(new Vector4f(1.0f));
+        Color4Texture diffuseColor = null;
         Color3Texture emissionColor = null;
 
         ITexture2DProgram diffuseMap = null;
@@ -238,67 +199,84 @@ public abstract class ModelLoadingUtils {
         ITexture2DProgram normalsMap = null;
         ITexture2DProgram metallicRoughnessMap = null;
 
-        float metallicFactor = 0.0f;
-        float roughnessFactor = 1.0f;
-
         try (MemoryStack stack = MemoryStack.stackPush()) {
             AIColor4D color4Dd = AIColor4D.create();
             if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
                 diffuseColor = new Color4Texture(color4Dd.r(), color4Dd.g(), color4Dd.b(), color4Dd.a());
             }
+            if (Assimp.aiGetMaterialColor(aiMaterial, Assimp.AI_MATKEY_COLOR_EMISSIVE, Assimp.aiTextureType_NONE, 0, color4Dd) == Assimp.aiReturn_SUCCESS) {
+                emissionColor = new Color3Texture(color4Dd.r(), color4Dd.g(), color4Dd.b());
+            }
 
             FloatBuffer out = stack.mallocFloat(1);
             IntBuffer maxCount = stack.ints(1);
-            {
-                int result = Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_OPACITY, 0, 0, out, maxCount);
-                if (result == Assimp.aiReturn_SUCCESS) {
-                    opacityConstant = out.get(0);
-                }
+
+            opacityConstant = 1.0f;
+            if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_OPACITY, 0, 0, out, maxCount) == Assimp.aiReturn_SUCCESS) {
+                opacityConstant = out.get(0);
             }
-            {
-                int result = Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_ROUGHNESS_FACTOR, 0, 0, out, maxCount);
-                if (result == Assimp.aiReturn_SUCCESS) {
-                    roughnessFactor = out.get(0);
-                }
+
+            roughnessFactor = 0.5f;
+            if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_ROUGHNESS_FACTOR, 0, 0, out, maxCount) == Assimp.aiReturn_SUCCESS) {
+                roughnessFactor = out.get(0);
             }
-            {
-                int result = Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_METALLIC_FACTOR, 0, 0, out, maxCount);
-                if (result == Assimp.aiReturn_SUCCESS) {
-                    metallicFactor = out.get(0);
-                }
+
+            FloatBuffer out2 = stack.mallocFloat(1);
+            IntBuffer maxCount2 = stack.ints(1);
+            metallicFactor = -1.0f;
+            if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_METALLIC_FACTOR, 0, 0, out2, maxCount2) == Assimp.aiReturn_SUCCESS) {
+                metallicFactor = out.get(0);
             }
-            diffuseColor.setColor(new Vector4f(diffuseColor.getColor().x, diffuseColor.getColor().y, diffuseColor.getColor().z, diffuseColor.getColor().w * opacityConstant));
+
+            if (diffuseColor != null) {
+                diffuseColor.setColor(new Vector4f(diffuseColor.getColor().x, diffuseColor.getColor().y, diffuseColor.getColor().z, diffuseColor.getColor().w * opacityConstant));
+            }
 
             String emission = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_EMISSIVE);
-         //   String metallicRoughness = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_);
+            String metallicRoughness = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLICROUGHNESS_TEXTURE);
             String normals = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_NORMALS);
             String diffuse = ModelLoadingUtils.tryReadTexture(stack, aiMaterial, Assimp.aiTextureType_DIFFUSE);
 
+            boolean nullColor = diffuseColor == null;
+            if (nullColor) {
+                diffuseColor = new Color4Texture(new Vector4f(1.0f));
+            }
             final ImageTexture.Properties imageProperties = new ImageTexture.Properties(true, true);
             try {
-            //   if (parsedMaterialData.getDiffuseMapPath() != null) {
-            //       diffuseMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getDiffuseMapPath()), imageProperties);
-            //   } else if (emptyTexture) {
-            //       diffuseMap = ResourceManager.DEFAULT_TEXTURE();
-            //   }
+                if (!diffuse.isEmpty()) {
+                    diffuseMap = systemResources.createTexture(nullColor ? ResourceManager.DEFAULT_TEXTURE() : null, new JGemsPath(fullPath, diffuse), imageProperties);
+                    if (computeTransparentPixels != null) {
+                        textureIsImageAndHasAlphaPixels = Material.Transparency.scanForAlphaPixels(computeTransparentPixels, diffuseMap);
+                    }
+                }
 
-            //   if (parsedMaterialData.getEmissionMapPath() != null) {
-            //       emissionMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getEmissionMapPath()), imageProperties);
-            //   }
+                if (!emission.isEmpty()) {
+                    emissionMap = systemResources.createTexture(null, new JGemsPath(fullPath, emission), imageProperties);
+                    if (emissionColor == null) {
+                        emissionColor = new Color3Texture(new Vector3f(1.0f));
+                    }
+                }
 
-            //   if (parsedMaterialData.getMetallicRoughnessMapPath() != null) {
-            //       metallicRoughnessMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getMetallicRoughnessMapPath()), imageProperties);
-            //   }
+                if (!metallicRoughness.isEmpty()) {
+                    metallicRoughnessMap = systemResources.createTexture(null, new JGemsPath(fullPath, metallicRoughness), imageProperties);
+                    if (metallicFactor < 0.0f) {
+                        metallicFactor = 0.5f;
+                    }
+                } else {
+                    if (metallicFactor < 0.0f) {
+                        metallicFactor = 0.0f;
+                    }
+                }
 
-            //   if (parsedMaterialData.getNormalsMapPath() != null) {
-            //       normalsMap = systemResources.createTexture(null, new JGemsPath(this.getPath().getDirectory(), parsedMaterialData.getNormalsMapPath()), imageProperties);
-            //   }
+                if (!normals.isEmpty()) {
+                    normalsMap = systemResources.createTexture(null, new JGemsPath(fullPath, normals), imageProperties);
+                }
             } catch (JGemsException e) {
                 Log.get().exception(e);
             }
         }
 
-        Material material = new Material();
+        Material material = new Material(diffuseMap, diffuseColor, emissionMap, emissionColor, metallicRoughnessMap, normalsMap, metallicFactor, roughnessFactor);
         material.getTransparency().setHasTransparentPixels(textureIsImageAndHasAlphaPixels);
         material.getTransparency().setOpacity(opacityConstant);
         return material;

@@ -15,7 +15,6 @@ import javagems3d.system.core.player.IPlayerConstructor;
 import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.parsing.space.ParserSpace;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.managing.resources.SystemResources;

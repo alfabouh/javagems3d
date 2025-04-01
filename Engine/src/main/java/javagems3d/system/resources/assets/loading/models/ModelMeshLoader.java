@@ -88,12 +88,14 @@ public class ModelMeshLoader implements ILoadingHelper {
             throw new JGemsNullException("There was an error, while loading the model");
         }
         if (createCollision) {
-        //    JGemsUtils.createMeshCollisionData(meshGroup);
+            JGemsUtils.createMeshCollisionData(meshGroup);
         }
         if (createAabb) {
-         //   JGemsUtils.createMeshAABBData(meshGroup);
+            JGemsUtils.createMeshAABBData(meshGroup);
         }
-        meshGroup.clearNodesData();
+        if (!keepNodesInMemory) {
+            meshGroup.clearNodesData();
+        }
         return meshGroup;
     }
 
@@ -193,7 +195,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             List<Bone> bonesList = new ArrayList<>();
             for (int i = 0; i < totalMaterials; i++) {
                 AIMaterial aiMaterial = AIMaterial.create(Objects.requireNonNull(aiScene.mMaterials()).get(i));
-                Material material = new Material();
+                Material material = ModelLoadingUtils.readMaterial(computeTransparentPixels, systemResources, aiMaterial, this.getPath().getDirectory().getFullPath());
                 if (meshBuffer != null) {
                     systemResources.getResourceArrays().getMeshBuffersDataArray().addMaterial(material);
                 }
