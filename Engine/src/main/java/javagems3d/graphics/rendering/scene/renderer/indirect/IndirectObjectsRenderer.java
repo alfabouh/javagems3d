@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.indirect;
 
+import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
@@ -70,8 +71,10 @@ public abstract class IndirectObjectsRenderer {
 
         this.getRejected().clear();
         for (SceneObject sceneObject : sceneObjects) {
-            if (this.getPipeline().equals(Pipeline.SCENE) && sceneObject.getModel().getMeshStructure().hasTransparency()) {
-                this.getRejected().add(sceneObject);
+            if (pipeline.equals(Pipeline.SCENE) && !sceneObject.getRenderTable().isRedirected(Redirections.TRANSPARENCY__IN__SCENE)) {
+                if (sceneObject.getModel().getMeshStructure().hasTransparency()) {
+                    this.getRejected().add(sceneObject);
+                }
             }
             this.passMatricesInBuffer(this.getPipeline(), sceneObject, modelMatrices);
 

@@ -3,6 +3,7 @@ package workbench.graphics.scene.renderer;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -26,6 +27,7 @@ import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -163,7 +165,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
         this.getSceneCulling().cull(toRender);
 
-        Map<Stage, List<SceneObject>> dividedGroups = toRender.stream().filter(Objects::nonNull).collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
+        List<SceneObject> redirectedInTransparency = new ArrayList<>();
+        Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRender, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
         deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
         deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
         forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
@@ -174,9 +177,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
         Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
         rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
+        rejectedDirect.addAll(redirectedInTransparency);
 
         transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
         transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
+
         transparencyRenderNode.onRender(frameTicking);
         GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);

@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SceneInterfaceComponent {
     private final EditorInterface editorInterface;
     private AtomicBoolean isThreadInProcess;
-    private boolean usedGuizmoLastFrame;
     private boolean wasWindowFocused;
 
     public SceneInterfaceComponent(EditorInterface editorInterface) {
@@ -41,7 +40,6 @@ public class SceneInterfaceComponent {
     public void clear() {
         this.isThreadInProcess.set(false);
         this.wasWindowFocused = false;
-        this.usedGuizmoLastFrame = false;
     }
 
     public void sceneContent() {
@@ -65,7 +63,7 @@ public class SceneInterfaceComponent {
         ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
 
         if (!this.wasWindowFocused && !this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
-            if (!this.usedGuizmoLastFrame && EditorInterface.isCursorInsideScene) {
+            if (!ImGuizmo.isUsing() && EditorInterface.isCursorInsideScene) {
                 if (ImGui.isMouseReleased(0)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     if (!this.isThreadInProcess.get()) {
@@ -74,6 +72,9 @@ public class SceneInterfaceComponent {
                                 this.isThreadInProcess.set(true);
                                 WBenchObject wBenchObject = this.tryToSelectObjectFromMouse(new Vector2i(imagePosX, imagePosY), new Vector2i(imageSizeX, imageSizeY), new Vector2i((int) ImGui.getMousePos().x, (int) ImGui.getMousePos().y));
                                 this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
+                                if (wBenchObject != null) {
+                                    this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseDefaultGuizmoOperation());
+                                }
                             } finally {
                                 this.isThreadInProcess.set(false);
                                 executor.shutdown();
@@ -83,19 +84,13 @@ public class SceneInterfaceComponent {
                 }
             }
         }
-        this.usedGuizmoLastFrame = false;
         if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
             if (this.getEditorInterface().getCurrentSelectedObject() != null) {
                 CullingAABB cullingAABB = this.getEditorInterface().getCurrentSelectedObject().pickAABBDataFromMesh();
                 if (cullingAABB != null) {
                     WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
                     float[] modelMatrix = TransformUtils.getModelMatrix(this.getEditorInterface().getCurrentSelectedObject().getModel().getPose()).get(new float[16]);
-                    float[] oldMatrix = new float[16];
-                    System.arraycopy(modelMatrix, 0, oldMatrix, 0, 16);
                     ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getCurrentOperation(), Mode.WORLD, new float[]{0.01f, 0.01f, 0.01f});
-                    if (!Arrays.equals(oldMatrix, modelMatrix)) {
-                        this.usedGuizmoLastFrame = true;
-                    }
 
                     Vector3f position = new Vector3f();
                     Vector3f rotation = new Vector3f();

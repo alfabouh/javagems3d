@@ -44,7 +44,7 @@ public class DefaultDirectRenderFabric extends DirectRenderFabric {
                 shaderManager.performModel3DMatrix(new UniformString("model_matrix"), model);
                 shaderManager.performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
                 JGemsShadersHelper.performAnimationsInfo(shaderManager, modeled);
-                JGemsRenderingHelper.renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
+                JGemsRenderingHelper.renderModel3D(model, MeshStructure3D.TRANSPARENCY_LAYER, GL46.GL_TRIANGLES);
             }
         }
     }

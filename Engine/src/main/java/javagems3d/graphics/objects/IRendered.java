@@ -7,6 +7,7 @@ import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;
 import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
 
 public interface IRendered extends ICulled {
@@ -22,7 +23,7 @@ public interface IRendered extends ICulled {
     }
 
     default boolean canBeRendered(Pipeline pipeline) {
-        return this.canBeRendered() && this.getRenderTable().getRenderingData(pipeline).getRenderFabric() != null;
+        return this.canBeRendered() && this.getRenderTable().validate(pipeline);
     }
 
     default Set<IRenderFabric> getRenderFabricsSet() {
@@ -30,7 +31,7 @@ public interface IRendered extends ICulled {
     }
 
     default IRenderFabric getRenderFabric(Pipeline pipeline) {
-        return this.getRenderTable().getRenderFabric(pipeline);
+        return Objects.requireNonNull(this.getRenderTable().getRenderingData(pipeline)).getRenderFabric();
     }
 
     default RenderTable getRenderTable() {

@@ -31,7 +31,7 @@ vec4 calc_sun_light(vec3 vPos, vec3 vNormal) {
 
 void main()
 {
-    float f1 = min(uv_texture.y, uv_texture.x) + 0.35;
+    float f1 = min(uv_texture.y, uv_texture.x) + 0.5;
     frag_color = use_texture ? texture(diffuse_map, uv_texture) : vec4(vec3(f1), 1.0);
     frag_color *= vec4(diffuse_color.rgb, 1.);
     frag_color *= calc_sun_light(pos, normals);

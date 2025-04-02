@@ -4,8 +4,11 @@ import api.application.JGemsApplication;
 import api.application.events.IAppEventSubscriber;
 import api.application.resources.IAppResources;
 import api.application.workbench.manager.IAPIWBenchDataManager;
-import api.application.workbench.resources.data.JGemsEntityData;
-import api.application.workbench.resources.data.WBenchObjectData;
+import api.application.workbench.resources.data.DefaultMarker;
+import api.application.workbench.resources.data.jgems.JGemsEntityData;
+import api.application.workbench.resources.data.jgems.JGemsPropData;
+import api.application.workbench.resources.data.wbench.WBenchMarkerData;
+import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
 import javagems3d.JGems3D;
@@ -68,9 +71,22 @@ public class AppTest extends JGemsApplication {
                 () -> new WBenchObjectData(sponza),
                 () -> new JGemsEntityData(false)
         );
-        manager.addResourceEntity("test", "cube",
+        manager.addResourceEntity("testPhys", "cube",
                 () -> new WBenchObjectData(cube).addTag(tagPhysics),
                 () -> new JGemsEntityData(false)
+        );
+
+        manager.addResourceProp("testProp", "cube",
+                () -> new WBenchObjectData(cube),
+                () -> new JGemsPropData(cube)
+        );
+
+        manager.addResourceMarker("general", "cube",
+                () -> new WBenchMarkerData(DefaultMarker.POINT, new Vector3f(1.0f, 0.0f, 0.0f), true)
+        );
+
+        manager.addResourceMarker("general", "cone",
+                () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(1.0f, 0.0f, 1.0f), false)
         );
 
         manager.addResourceSkyCubeMap("SkyDay1", "png", new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"));

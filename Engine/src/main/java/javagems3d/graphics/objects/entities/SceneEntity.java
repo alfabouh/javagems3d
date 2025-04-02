@@ -9,13 +9,12 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.IWorld;
-import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
-import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
+import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class SceneEntity extends SceneObject implements IWorldTicked {
-    private final IEntityModelConstructor<WorldItem> entityModelConstructor;
+    private final IModelConstructor<WorldItem> entityModelConstructor;
     private final List<Light> lightList;
     private final WorldItem worldItem;
     private boolean isVisible;
@@ -165,7 +164,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
         Log.get().trace("Removed light from: " + this);
     }
 
-    protected IEntityModelConstructor<WorldItem> getEntityModelConstructor() {
+    protected IModelConstructor<WorldItem> getEntityModelConstructor() {
         return this.entityModelConstructor;
     }
 

@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.materials.Material;
@@ -15,13 +16,16 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
-import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
+import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class RenderDataInitializer implements IAssetsInitializer {
-    public EntityRenderData defaultIndirect;
-    public EntityRenderData defaultDirect;
+    public PropRenderData defaultPropIndirect;
+    public PropRenderData defaultPropDirect;
+
+    public EntityRenderData defaultEntityIndirect;
+    public EntityRenderData defaultEntityDirect;
 
     public EntityRenderData entityCube;
     public EntityRenderData defaultPlayer;
@@ -48,7 +52,7 @@ public class RenderDataInitializer implements IAssetsInitializer {
 
     @Override
     public void load(SystemResources systemResources) {
-        IEntityModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
+        IModelConstructor<WorldItem> itemPickUpModelConstructor = e -> {
             MeshGroup meshGroup = new MeshGroup(new MeshNode3D<RenderMesh>(MeshHelper.generateSimplePlane3DMesh(new Vector3f(-0.5f, -0.5f, 0.0f), new Vector3f(0.5f, -0.5f, 0.0f), new Vector3f(-0.5f, 0.5f, 0.0f), new Vector3f(0.5f, 0.5f, 0.0f))));
             return meshGroup;
         };
@@ -60,8 +64,10 @@ public class RenderDataInitializer implements IAssetsInitializer {
         this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
         this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()));
 
-        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()));
-        this.defaultIndirect = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getDirect(), JGemsRenderProperties.getDefault()));
+        this.defaultEntityIndirect = new EntityRenderData(RenderAttributes.getDefaultIndirect());
+        this.defaultEntityIndirect = new EntityRenderData(RenderAttributes.getDefaultDirect());
+        this.defaultPropIndirect = new PropRenderData(RenderAttributes.getDefaultIndirect());
+        this.defaultPropIndirect = new PropRenderData(RenderAttributes.getDefaultDirect());
     }
 
     @Override

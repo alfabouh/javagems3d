@@ -24,6 +24,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
     public WBenchShaderManager world_gbuffer;
     public WBenchShaderManager world_gbuffer_indirect;
     public WBenchShaderManager world_deferred;
+    public WBenchShaderManager weighted_oit_simple;
     public WBenchShaderManager weighted_oit;
     public WBenchShaderManager weighted_oit_indirect;
     public WBenchShaderManager weighted_liquid_oit;
@@ -100,6 +101,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         this.background_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/background_indirect"));
         this.weighted_liquid_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_liquid_oit"));
         this.weighted_oit = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit"));
+        this.weighted_oit_simple = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_simple"));
         this.weighted_oit_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "oit/weighted_oit_indirect"));
         this.world_gbuffer = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer"));
         this.world_gbuffer_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "world/world_gbuffer_indirect"));

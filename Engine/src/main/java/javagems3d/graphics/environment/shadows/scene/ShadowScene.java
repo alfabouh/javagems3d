@@ -103,7 +103,7 @@ public abstract class ShadowScene implements IShadowScene {
     protected abstract void blurShadows(FBOTexture2DProgram sunShadowFBO);
 
     protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<SceneObject> filteredObjectsSet, Pipeline pipeline) {
-        Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> Objects.requireNonNull(e.getRenderTable().getRenderingData(pipeline).getRenderFabric()).getRenderingType() == Type.INDIRECT));
+        Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> Objects.requireNonNull(e.getRenderTable().getRenderingData(pipeline)).getRenderFabric().getRenderingType().equals(Type.INDIRECT)));
         return new Pair<>(partitionedModels.get(false), partitionedModels.get(true));
     }
 
@@ -173,7 +173,7 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     protected void renderModelsDirect(Consumer<JGemsShaderManager> functionToHandleUniforms, Pipeline pipeline, List<SceneObject> filteredObjectsSet) {
-        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = filteredObjectsSet.stream().collect(Collectors.groupingBy(e -> e.getRenderTable().getShaderManager(pipeline)));
+        Map<JGemsShaderManager, List<SceneObject>> groupedObjects = OpenGLRenderer.groupObjectsFromShaders(filteredObjectsSet, pipeline);
         for (Map.Entry<JGemsShaderManager, List<SceneObject>> entry : groupedObjects.entrySet()) {
             JGemsShaderManager shaderManager = entry.getKey();
             shaderManager.beginShading();
@@ -182,7 +182,7 @@ public abstract class ShadowScene implements IShadowScene {
                 if (model == null || !model.isValid()) {
                     continue;
                 }
-                DirectRenderFabric directRenderFabric = modeledSceneObject.getRenderTable().getRenderFabric(pipeline);
+                DirectRenderFabric directRenderFabric = Objects.requireNonNull(modeledSceneObject.getRenderTable().getRenderingData(pipeline)).getRenderFabric();
                 directRenderFabric.onPreRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);
                 directRenderFabric.onRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, ArbitraryArguments.pass(functionToHandleUniforms));
                 directRenderFabric.onPostRender(pipeline, shaderManager, this.openGLRenderer, modeledSceneObject, null);

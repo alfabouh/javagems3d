@@ -1,8 +1,8 @@
-package javagems3d.system.resources.assets.models.helper.constructor;
+package javagems3d.graphics.objects.rendering.constructors;
 
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 
 @FunctionalInterface
-public interface IEntityModelConstructor<T> {
+public interface IModelConstructor<T> {
     MeshGroup constructMeshDataGroup(T t);
 }

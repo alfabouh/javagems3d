@@ -3,27 +3,36 @@ package javagems3d.graphics.objects.rendering.data;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.world.SceneWorldEntity;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.constructors.ISceneEntityConstructor;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.basic.WorldItem;
-import javagems3d.system.resources.assets.models.helper.constructor.IEntityModelConstructor;
+import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
 
 @SuppressWarnings("all")
 public class EntityRenderData {
-    public static ISceneObjectConstructor DEFAULT_OBJECT_CONSTRUCTOR = (sceneWorld, worldItem, entityRenderData) -> new SceneWorldEntity(sceneWorld, worldItem, entityRenderData);
+    public static ISceneEntityConstructor DEFAULT_OBJECT_CONSTRUCTOR = (sceneWorld, worldItem, entityRenderData) -> new SceneWorldEntity(sceneWorld, worldItem, entityRenderData);
 
-    private final ISceneObjectConstructor sceneObjectConstructor;
-    private IEntityModelConstructor<WorldItem> entityModelConstructor;
+    private final ISceneEntityConstructor sceneObjectConstructor;
+    private IModelConstructor<WorldItem> entityModelConstructor;
     private MeshStructure3D<?> meshStructure;
     private RenderAttributes renderAttributes;
 
-    public EntityRenderData(@NotNull ISceneObjectConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes) {
+    public EntityRenderData(@NotNull ISceneEntityConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes) {
         this(sceneObjectConstructor, renderAttributes, null);
     }
 
-    public EntityRenderData(@NotNull ISceneObjectConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
+    public EntityRenderData(@Nullable RenderAttributes renderAttributes) {
+        this(EntityRenderData.defaultObjectConstructor(), renderAttributes, null);
+    }
+
+    public EntityRenderData(@Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
+        this(EntityRenderData.DEFAULT_OBJECT_CONSTRUCTOR, renderAttributes, meshStructure);
+    }
+
+    public EntityRenderData(@NotNull ISceneEntityConstructor sceneObjectConstructor, @Nullable RenderAttributes renderAttributes, @Nullable MeshStructure3D<?> meshStructure) {
         this.sceneObjectConstructor = sceneObjectConstructor;
         this.entityModelConstructor = null;
         this.meshStructure = meshStructure;
@@ -34,7 +43,7 @@ public class EntityRenderData {
         this(entityRenderData.getSceneObjectConstructor(), entityRenderData.getObjectRenderAttributes(), meshStructure);
     }
 
-    public static ISceneObjectConstructor defaultObjectConstructor() {
+    public static ISceneEntityConstructor defaultObjectConstructor() {
         return EntityRenderData.DEFAULT_OBJECT_CONSTRUCTOR;
     }
 
@@ -56,7 +65,7 @@ public class EntityRenderData {
         return this;
     }
 
-    public EntityRenderData setEntityModelConstructor(IEntityModelConstructor<WorldItem> entityModelConstructor) {
+    public EntityRenderData setEntityModelConstructor(IModelConstructor<WorldItem> entityModelConstructor) {
         if (entityModelConstructor != null) {
             this.meshStructure = null;
         }
@@ -68,7 +77,7 @@ public class EntityRenderData {
         return this.meshStructure;
     }
 
-    public IEntityModelConstructor<WorldItem> getEntityModelConstructor() {
+    public IModelConstructor<WorldItem> getEntityModelConstructor() {
         return this.entityModelConstructor;
     }
 
@@ -76,7 +85,7 @@ public class EntityRenderData {
         return this.renderAttributes;
     }
 
-    protected ISceneObjectConstructor getSceneObjectConstructor() {
+    protected ISceneEntityConstructor getSceneObjectConstructor() {
         return this.sceneObjectConstructor;
     }
 
@@ -87,8 +96,4 @@ public class EntityRenderData {
         return entityRenderData;
     }
 
-    @FunctionalInterface
-    public interface ISceneObjectConstructor {
-        @NotNull SceneEntity createSceneEntity(SceneWorld sceneWorld, WorldItem worldItem, EntityRenderData entityRenderData);
-    }
 }

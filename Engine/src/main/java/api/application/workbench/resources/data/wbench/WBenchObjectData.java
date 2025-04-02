@@ -1,6 +1,6 @@
-package api.application.workbench.resources.data;
+package api.application.workbench.resources.data.wbench;
 
-import api.application.workbench.resources.data.properties.WBenchRenderProperties;
+import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagsContainer;
@@ -10,18 +10,14 @@ import javagems3d.mapping.tags.items.TagItem;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 
-public final class WBenchObjectData {
+public final class WBenchObjectData extends WBenchData {
     private final JGemsPath pathToModel;
     private final RenderProperties renderProperties;
-    private final TagsContainer tagsContainer;
-    private final TranslationConstraints translationConstraints;
 
     public WBenchObjectData(@NotNull JGemsPath pathToModel, @NotNull RenderProperties renderProperties, @NotNull TranslationConstraints translationConstraints) {
+        super(new TagsContainer(), translationConstraints);
         this.pathToModel = pathToModel;
         this.renderProperties = renderProperties;
-        this.tagsContainer = new TagsContainer();
-
-        this.translationConstraints = translationConstraints;
     }
 
     public WBenchObjectData(@NotNull JGemsPath pathToModel, @NotNull RenderProperties renderProperties) {
@@ -32,25 +28,15 @@ public final class WBenchObjectData {
         this(pathToModel, WBenchRenderProperties.getDefault());
     }
 
+    @Override
     @SafeVarargs
     public final WBenchObjectData addTags(Tag<? extends TagItem>... tags) {
-        for (Tag<? extends TagItem> tag : tags) {
-            this.addTag(tag);
-        }
-        return this;
+        return (WBenchObjectData) super.addTags(tags);
     }
 
+    @Override
     public WBenchObjectData addTag(Tag<? extends TagItem> tag) {
-        this.getTagsContainer().addTag(tag);
-        return this;
-    }
-
-    public TranslationConstraints getTranslationConstraints() {
-        return this.translationConstraints;
-    }
-
-    public TagsContainer getTagsContainer() {
-        return this.tagsContainer;
+        return (WBenchObjectData) super.addTag(tag);
     }
 
     public JGemsPath getPathToModel() {

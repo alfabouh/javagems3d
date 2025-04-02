@@ -1,6 +1,10 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
@@ -8,14 +12,17 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.world.IRenderWorld;
-import javagems3d.physics.world.IWorld;
+import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit {
     private final IWindow window;
@@ -48,6 +55,25 @@ public abstract class OpenGLRenderer implements ISceneRenderer, IResourceInit {
     @Override
     public @NotNull IWindow getWindow() {
         return this.window;
+    }
+
+    public static Map<JGemsShaderManager, List<SceneObject>> groupObjectsFromShaders(Collection<SceneObject> collection, Pipeline pipeline) {
+        return collection.stream().filter(Objects::nonNull).filter(e -> e.getRenderTable().validate(pipeline)).collect(Collectors.groupingBy(e -> Objects.requireNonNull(e.getRenderTable().getRenderingData(pipeline)).getShaderManager()));
+    }
+
+    public static Map<Stage, List<SceneObject>> groupObjectsFromStages(Collection<SceneObject> collection, Pipeline pipeline, @Nullable Pair<List<SceneObject>, Redirections> redirectedObjects) {
+        List<SceneObject> filteredCollection = new ArrayList<>();
+        for (SceneObject e : collection) {
+            if (e == null || !e.getRenderTable().validate(pipeline)) {
+                continue;
+            }
+            if (redirectedObjects != null && e.getRenderTable().isRedirected(redirectedObjects.getSecond())) {
+                redirectedObjects.getFirst().add(e);
+            } else {
+                filteredCollection.add(e);
+            }
+        }
+        return filteredCollection.stream().collect(Collectors.groupingBy(e -> e.getRenderFabric(pipeline).getRenderingStage()));
     }
 
     public static void setViewPort(Vector2i resolution) {

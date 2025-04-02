@@ -4,6 +4,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Type;
+import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.programs.indirect.commands.BaseIndirectCommandsProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
@@ -54,14 +55,11 @@ public class GroupedIndirectRenderer extends IndirectObjectsRenderer {
     protected Map<IndirectObjectsRenderer.Operator, Set<SceneObject>> groupObjects(@NotNull Collection<SceneObject> sceneObjects, Pipeline pipeline) {
         return sceneObjects.stream().collect(Collectors.groupingBy(e -> {
             RenderTable.Data renderingData = e.getRenderTable().getRenderingData(pipeline);
-            if (renderingData.getRenderFabric() == null) {
-                throw new JGemsNullException("RenderFabric should not be NULL");
-            }
-            if (!renderingData.getRenderFabric().getRenderingType().equals(Type.INDIRECT)) {
+            IRenderFabric renderFabric = Objects.requireNonNull(renderingData).getRenderFabric();
+            if (!renderFabric.getRenderingType().equals(Type.INDIRECT)) {
                 throw new JGemsRuntimeException("RenderFabric-type should be INDIRECT");
             }
-            IndirectRenderFabric renderFabric = (IndirectRenderFabric) renderingData.getRenderFabric();
-            return new IndirectObjectsRenderer.Operator(renderFabric.getRenderingFunction(), renderingData.getShaderManager());
+            return new IndirectObjectsRenderer.Operator(((IndirectRenderFabric) renderFabric).getRenderingFunction(), renderingData.getShaderManager());
         }, HashMap::new, Collectors.toSet()));
     }
 }

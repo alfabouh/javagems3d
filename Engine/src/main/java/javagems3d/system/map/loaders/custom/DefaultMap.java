@@ -6,6 +6,7 @@ import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.help.JGemsWorldHelper;
@@ -50,7 +51,7 @@ public class DefaultMap implements IMapLoader {
         Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
         JGemsWorldHelper.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
-        JGemsWorldHelper.addPropInScene(new SceneWorldProp(sceneWorld, new Model3D(new Pose3D(), JGemsResourceManager.globalModelAssets.defaultCube_bff), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault())));
+        JGemsWorldHelper.addPropInScene(new SceneWorldProp(sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), JGemsResourceManager.globalModelAssets.defaultCube_bff)));
 
         PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
         pointLight.on();
@@ -86,7 +87,7 @@ public class DefaultMap implements IMapLoader {
         //background.addObjectInBackGround(sceneProp3);
 
         MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, false);
-        RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect().setMatch(Pipeline.SCENE, JGemsResourceManager.globalShaderAssets.background_indirect), JGemsRenderProperties.getDefault());
+        RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect().replaceShaderManager(Pipeline.SCENE, JGemsResourceManager.globalShaderAssets.background_indirect), JGemsRenderProperties.getDefault());
         renderAttributes.getProperties().setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.5f);
         SceneBackgroundProp sceneProp3 = new SceneBackgroundProp((SceneWorld) background.getWorld(), new Model3D(new Pose3D(new Vector3f(0.0f, -3.0f, 0.0f), new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f), new Vector3f(14.0f)), meshGroup), renderAttributes);
         background.addObjectInBackGround(sceneProp3);

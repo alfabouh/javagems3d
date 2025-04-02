@@ -40,7 +40,7 @@ public class ActionsInterfaceComponent {
                 this.getEditorInterface().setPreviewDistance(scaling[0]);
             }
             if (ImGui.button("Generate")) {
-                WBenchObject wBenchObject = new WBenchObject(this.getEditorInterface().getOpenGLRenderer().getWorld(), this.getEditorInterface().getCurrentSelectedTemplate());
+                WBenchObject wBenchObject = this.getEditorInterface().getCurrentSelectedTemplate().createObject(this.getEditorInterface().getOpenGLRenderer().getWorld());
                 wBenchObject.setId(this.getEditorInterface().getOpenGLRenderer().getWorld().getSceneObjects().size());
 
                 CullingAABB cullingAABB = wBenchObject.getCullingData();
@@ -66,7 +66,7 @@ public class ActionsInterfaceComponent {
                         int objectFlagScaling = this.getEditorInterface().getCurrentSelectedObject().getTranslationConstraints().getScalingConstraints().getFlag();
 
                         if (objectFlagTranslate != 0) {
-                            if (ImGui.radioButton("Translate", (this.getEditorInterface().getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
+                            if (ImGui.radioButton("Translation", (this.getEditorInterface().getCurrentOperation() & (Operation.TRANSLATE_X | Operation.TRANSLATE_Y | Operation.TRANSLATE_Z)) != 0)) {
                                 this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseGuizmoOperation(true, false, false));
                             }
                         }

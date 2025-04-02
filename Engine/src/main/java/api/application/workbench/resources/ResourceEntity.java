@@ -1,7 +1,7 @@
 package api.application.workbench.resources;
 
-import api.application.workbench.resources.data.JGemsEntityData;
-import api.application.workbench.resources.data.WBenchObjectData;
+import api.application.workbench.resources.data.jgems.JGemsEntityData;
+import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import org.jetbrains.annotations.NotNull;
 
 public class ResourceEntity extends Resource<WBenchObjectData, JGemsEntityData> {

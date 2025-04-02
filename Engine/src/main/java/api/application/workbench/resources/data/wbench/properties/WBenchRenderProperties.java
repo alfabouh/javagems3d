@@ -1,4 +1,4 @@
-package api.application.workbench.resources.data.properties;
+package api.application.workbench.resources.data.wbench.properties;
 
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.base.RenderProperties;

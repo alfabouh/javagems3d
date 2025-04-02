@@ -19,16 +19,19 @@ public abstract class RenderProperties implements ICopyable<RenderProperties> {
 
     protected abstract void setDefaults();
 
-    public void setValueFloat(String key, float value) {
+    public RenderProperties setValueFloat(String key, float value) {
         this.propertiesMap.put(key, value);
+        return this;
     }
 
-    public void setValueBool(String key, boolean value) {
+    public RenderProperties setValueBool(String key, boolean value) {
         this.propertiesMap.put(key, value);
+        return this;
     }
 
-    public void setValueInt(String key, int value) {
+    public RenderProperties setValueInt(String key, int value) {
         this.propertiesMap.put(key, value);
+        return this;
     }
 
     public float getFloat(String key) {

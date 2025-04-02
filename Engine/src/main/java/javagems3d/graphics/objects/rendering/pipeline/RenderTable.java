@@ -1,6 +1,7 @@
 package javagems3d.graphics.objects.rendering.pipeline;
 
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.DirectRenderFabric;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IRenderFabric;
@@ -54,13 +55,15 @@ public class RenderTable implements ICopyable<RenderTable> {
     public static IRenderFabric DEFAULT_SHADOW_RENDER_FABRIC_IND = new DefaultIndirectShadowRenderFabric(IndirectRenderFabric.DEFAULT_FUNC);
 
     private final Map<Pipeline, Data> dataMap;
+    private final Map<Pipeline, Pipeline> redirectionMap;
 
     private RenderTable(@NotNull Map<Pipeline, Data> dataMap) {
         this.dataMap = dataMap;
+        this.redirectionMap = new HashMap<>();
     }
 
     protected RenderTable() {
-        this.dataMap = new EnumMap<>(Pipeline.class);
+        this(new EnumMap<>(Pipeline.class));
     }
 
     public static RenderTable getIndirect() {
@@ -86,13 +89,36 @@ public class RenderTable implements ICopyable<RenderTable> {
         return this;
     }
 
-    public RenderTable setMatch(@NotNull Pipeline pipeline, @NotNull JGemsShaderManager shaderManager) {
-        this.setMatch(pipeline, new Data(shaderManager, this.getRenderFabric(pipeline)));
+    public RenderTable removeRedirection(@NotNull Redirections redirection) {
+        this.getRedirectionMap().remove(redirection.getFrom(), redirection.getTo());
         return this;
     }
 
-    public RenderTable setMatch(@NotNull Pipeline pipeline, @NotNull IRenderFabric renderFabric) {
-        this.setMatch(pipeline, new Data(this.getShaderManager(pipeline), renderFabric));
+    public RenderTable setRedirection(@NotNull Redirections redirection) {
+        this.getRedirectionMap().put(redirection.getFrom(), redirection.getTo());
+        return this;
+    }
+
+    public RenderTable setMatchNull(@NotNull Pipeline pipeline) {
+        this.getDataMap().replace(pipeline, null);
+        return this;
+    }
+
+    public RenderTable replaceShaderManager(@NotNull Pipeline pipeline, @NotNull JGemsShaderManager shaderManager) {
+        RenderTable.Data data = this.dataMap.get(pipeline);
+        if (data == null) {
+            throw new JGemsRuntimeException("Couldn't replace shader to NULL pipeline data: " + pipeline);
+        }
+        this.setMatch(pipeline, new Data(shaderManager, data.getRenderFabric()));
+        return this;
+    }
+
+    public RenderTable replaceRenderData(@NotNull Pipeline pipeline, @NotNull IRenderFabric renderFabric) {
+        RenderTable.Data data = this.dataMap.get(pipeline);
+        if (data == null) {
+            throw new JGemsRuntimeException("Couldn't replace renderFabric to NULL pipeline data: " + pipeline);
+        }
+        this.setMatch(pipeline, new Data(data.getShaderManager(), renderFabric));
         return this;
     }
 
@@ -101,9 +127,9 @@ public class RenderTable implements ICopyable<RenderTable> {
         return this;
     }
 
-    public RenderTable setMatch(@NotNull Pipeline pipeline, @NotNull Data data) {
+    public RenderTable setMatch(@NotNull Pipeline pipeline, @Nullable Data data) {
+        if (data != null) {
         IRenderFabric renderFabric = data.getRenderFabric();
-        if (renderFabric != null) {
             switch (renderFabric.getRenderingType()) {
                 case DIRECT: {
                     if (!(renderFabric instanceof DirectRenderFabric)) {
@@ -124,31 +150,39 @@ public class RenderTable implements ICopyable<RenderTable> {
     }
 
     public Set<IRenderFabric> getRenderFabricsSet() {
-        return this.getDataMap().values().stream().map(Data::getRenderFabric).filter(Objects::nonNull).collect(Collectors.toSet());
+        return this.getDataMap().values().stream().filter(Objects::nonNull).map(Data::getRenderFabric).map(e -> (IRenderFabric) e).collect(Collectors.toSet());
     }
 
-    public @NotNull JGemsShaderManager getShaderManager(Pipeline pipeline) {
-        return this.getRenderingData(pipeline).getShaderManager();
-    }
-
-    @SuppressWarnings("all")
-    public <T extends IRenderFabric> T getRenderFabric(Pipeline pipeline) {
-        try {
-            return (T) this.getRenderingData(pipeline).getRenderFabric();
-        } catch (ClassCastException e) {
-            throw new JGemsRuntimeException(e);
+    public Pipeline getRedirection(@NotNull Pipeline from) {
+        Pipeline to = this.getRedirectionMap().get(from);
+        if (to == null) {
+            return from;
         }
+        return this.getRedirection(to);
     }
 
-    public @NotNull Data getRenderingData(Pipeline pipeline) {
-        return this.dataMap.get(pipeline);
+    public boolean isRedirected(@NotNull Pipeline from) {
+        return this.getRedirectionMap().get(from) != null;
     }
 
-    public boolean hasValue(Pipeline pipeline) {
-        return this.dataMap.containsKey(pipeline);
+    public boolean isRedirected(Redirections redirection) {
+        return this.getRedirectionMap().get(redirection.getFrom()) == redirection.getTo();
     }
 
-    public Map<Pipeline, Data> getDataMap() {
+    public Map<Pipeline, Pipeline> getRedirectionMap() {
+        return this.redirectionMap;
+    }
+
+    public @Nullable Data getRenderingData(@NotNull Pipeline pipeline) {
+        Pipeline redirected = this.getRedirection(pipeline);
+        return this.dataMap.get(redirected);
+    }
+
+    public boolean validate(Pipeline pipeline) {
+        return this.dataMap.containsKey(pipeline) && this.dataMap.get(pipeline) != null;
+    }
+
+    protected Map<Pipeline, Data> getDataMap() {
         return new EnumMap<>(this.dataMap);
     }
 
@@ -170,8 +204,13 @@ public class RenderTable implements ICopyable<RenderTable> {
             return this.shaderManager;
         }
 
-        public @Nullable IRenderFabric getRenderFabric() {
-            return this.renderFabric;
+        @SuppressWarnings("all")
+        public @NotNull <T extends IRenderFabric> T getRenderFabric() {
+            try {
+                return (T) this.renderFabric;
+            } catch (ClassCastException e) {
+                throw new JGemsRuntimeException(e);
+            }
         }
     }
 }

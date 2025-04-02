@@ -1,16 +1,10 @@
 package workbench.graphics.scene.ui.editor;
 
 import imgui.ImGui;
-import imgui.extension.imguizmo.flag.Operation;
-import imgui.flag.ImGuiTreeNodeFlags;
-import javagems3d.mapping.tags.Tag;
-import javagems3d.mapping.tags.items.TagItem;
 import workbench.WBench;
-import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.ui.EditorInterface;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,43 +22,47 @@ public class ResourcesInterfaceComponent {
 
     public void resourcesContent() {
         if (ImGui.collapsingHeader("Entities")) {
-            Map<String, Set<WBenchObjectTemplate>> objectTemplates = WBench.get().getProjectObjects().getEntityGroups();
-            for (Map.Entry<String, Set<WBenchObjectTemplate>> entry : objectTemplates.entrySet()) {
-                String groupName = entry.getKey();
-                Set<WBenchObjectTemplate> objects = entry.getValue();
-
-                ImGui.treePush();
-                String groupNameTree = groupName != null ? groupName : "Other";
-                if (ImGui.treeNode(groupNameTree)) {
-                    ImGui.treePush();
-                    for (WBenchObjectTemplate object : objects) {
-                        boolean flag = this.getEditorInterface().getCurrentSelectedTemplate() == object;
-                        if (ImGui.selectable(object.getId(), flag)) {
-                            if (!flag) {
-                                this.getEditorInterface().setCurrentSelectedTemplate(object);
-                                this.getEditorInterface().setPreviewDistance(1.0f);
-                            } else {
-                                this.getEditorInterface().setCurrentSelectedObject(null);
-                            }
-                        }
-                    }
-                    ImGui.treePop();
-                    ImGui.treePop();
-                }
-                ImGui.treePop();
-            }
+            this.renderObjectGroupsList(WBench.get().getProjectObjects().getEntityGroups());
         }
         if (ImGui.collapsingHeader("Props")) {
-
+            this.renderObjectGroupsList(WBench.get().getProjectObjects().getPropGroups());
         }
-        if (ImGui.collapsingHeader("Sounds")) {
-
+        if (ImGui.collapsingHeader("Markers")) {
+            this.renderObjectGroupsList(WBench.get().getProjectObjects().getMarkerGroups());
         }
         if (ImGui.collapsingHeader("Scripts")) {
 
         }
         ImGui.separator();
     }
+
+    private <T extends WBenchObjectTemplate> void renderObjectGroupsList(Map<String, Set<T>> map) {
+        for (Map.Entry<String, Set<T>> entry : map.entrySet()) {
+            String groupName = entry.getKey();
+            Set<T> objects = entry.getValue();
+
+            ImGui.treePush();
+            String groupNameTree = groupName != null ? groupName : "Other";
+            if (ImGui.treeNode(groupNameTree)) {
+                ImGui.treePush();
+                for (T object : objects) {
+                    boolean flag = this.getEditorInterface().getCurrentSelectedTemplate() == object;
+                    if (ImGui.selectable(object.getId(), flag)) {
+                        if (!flag) {
+                            this.getEditorInterface().setCurrentSelectedTemplate(object);
+                            this.getEditorInterface().setPreviewDistance(1.0f);
+                        } else {
+                            this.getEditorInterface().setCurrentSelectedObject(null);
+                        }
+                    }
+                }
+                ImGui.treePop();
+                ImGui.treePop();
+            }
+            ImGui.treePop();
+        }
+    }
+
 
     public EditorInterface getEditorInterface() {
         return this.editorInterface;
