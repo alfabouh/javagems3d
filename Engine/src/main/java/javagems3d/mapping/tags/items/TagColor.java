@@ -15,25 +15,29 @@ import org.joml.Vector4f;
 import java.lang.reflect.Type;
 
 public class TagColor implements TagItem {
-    private final Vector4f transformation;
+    private final Vector4f colorVector;
     private final Colors colors;
 
-    public TagColor(Colors colors, @NotNull Vector4f transformation) {
-        this.transformation = transformation;
+    public TagColor(Colors colors, @NotNull Vector4f colorVector) {
+        this.colorVector = colorVector;
         this.colors = colors;
     }
 
-    public Colors getColors() {
+    public Colors getColorMode() {
         return this.colors;
     }
 
-    public Vector4f getTransformation() {
-        return this.transformation;
+    public void setColor(Vector4f color) {
+        this.getColorVector().set(color);
+    }
+
+    public Vector4f getColorVector() {
+        return this.colorVector;
     }
 
     @Override
     public TagItem copy() {
-        return new TagColor(this.getColors(), new Vector4f(this.getTransformation()));
+        return new TagColor(this.getColorMode(), new Vector4f(this.getColorVector()));
     }
 
     @Override
@@ -45,13 +49,13 @@ public class TagColor implements TagItem {
                 JsonObject jsonObject = new JsonObject();
 
                 JsonObject object = new JsonObject();
-                object.addProperty("x", tagColor.getTransformation().x);
-                object.addProperty("y", tagColor.getTransformation().y);
-                object.addProperty("z", tagColor.getTransformation().z);
-                object.addProperty("w", tagColor.getTransformation().w);
+                object.addProperty("x", tagColor.getColorVector().x);
+                object.addProperty("y", tagColor.getColorVector().y);
+                object.addProperty("z", tagColor.getColorVector().z);
+                object.addProperty("w", tagColor.getColorVector().w);
                 jsonObject.add("color", object);
 
-                JsonObject transformationsObject = context.serialize(tagColor.getColors()).getAsJsonObject();
+                JsonObject transformationsObject = context.serialize(tagColor.getColorMode()).getAsJsonObject();
                 jsonObject.add("colors", transformationsObject);
 
                 return jsonObject.toString();

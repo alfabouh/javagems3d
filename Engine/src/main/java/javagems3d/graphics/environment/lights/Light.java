@@ -42,31 +42,21 @@ public abstract class Light implements IWorldTicked {
         this(abstractSceneEntity.getRenderPosition(), lightColor, offset);
     }
 
-    public void on() {
+    public Light on() {
         this.isActive = true;
+        return this;
     }
 
-    public void off() {
+    public Light off() {
         this.isActive = false;
-    }
-
-    public boolean isActive() {
-        return this.isActive;
+        return this;
     }
 
     public abstract LightType getLightType();
 
-    public Vector3f getLightColor() {
-        return new Vector3f(this.lightColor);
-    }
-
     public Light setLightColor(Vector3f lightColor) {
         this.lightColor.set(lightColor);
         return this;
-    }
-
-    public Vector3f getLightPosition() {
-        return new Vector3f(this.lightPos).add(this.getOffset());
     }
 
     public Light setLightPosition(Vector3f lightPos) {
@@ -74,12 +64,29 @@ public abstract class Light implements IWorldTicked {
         return this;
     }
 
+    public Light setOffset(Vector3f offset) {
+        this.offset.set(offset);
+        return this;
+    }
+
+    public boolean isActive() {
+        return this.isActive;
+    }
+
+    public Vector3f getLightColor() {
+        return new Vector3f(this.lightColor);
+    }
+
+    public Vector3f getLightPosition() {
+        return new Vector3f(this.lightPos).add(this.getOffset());
+    }
+
     public Vector3f getOffset() {
         return new Vector3f(this.offset);
     }
 
-    public Light setOffset(Vector3f offset) {
-        this.offset.set(offset);
-        return this;
+    @Override
+    public String toString() {
+        return this.getLightType().toString();
     }
 }

@@ -1,5 +1,6 @@
 package javagems3d.graphics.environment.lights;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.world.IWorld;
@@ -10,30 +11,32 @@ public class PointLight extends Light {
 
     public PointLight() {
         super();
+        this.brightness = 1.0f;
+    }
+
+    public PointLight(@NotNull Vector3f lightPos, @NotNull Vector3f lightColor, @NotNull Vector3f offset) {
+        super(lightPos, lightColor, offset);
+        this.brightness = 1.0f;
     }
 
     public PointLight(Vector3f lightPos, Vector3f lightColor) {
-        super(lightPos, lightColor);
+        this(lightPos, lightColor, new Vector3f(0.0f));
     }
 
     public PointLight(Vector3f lightPos) {
-        super(lightPos);
-    }
-
-    public PointLight(Vector3f lightPos, Vector3f lightColor, Vector3f offset) {
-        super(lightPos, lightColor, offset);
+        this(lightPos, new Vector3f(1.0f), new Vector3f(0.0f));
     }
 
     public PointLight(SceneEntity abstractSceneEntity) {
-        super(abstractSceneEntity);
+        this(abstractSceneEntity.getRenderPosition(), new Vector3f(1.0f), new Vector3f(0.0f));
     }
 
     public PointLight(SceneEntity abstractSceneEntity, Vector3f lightColor) {
-        super(abstractSceneEntity, lightColor);
+        this(abstractSceneEntity.getRenderPosition(), lightColor, new Vector3f(0.0f));
     }
 
     public PointLight(SceneEntity abstractSceneEntity, Vector3f lightColor, Vector3f offset) {
-        super(abstractSceneEntity, lightColor, offset);
+        this(abstractSceneEntity.getRenderPosition(), lightColor, offset);
     }
 
     public int getAttachedShadowSceneId() {
@@ -53,12 +56,14 @@ public class PointLight extends Light {
         return this;
     }
 
-    public void on() {
-        super.on();
+    @Override
+    public PointLight on() {
+        return (PointLight) super.on();
     }
 
-    public void off() {
-        super.off();
+    @Override
+    public PointLight off() {
+        return (PointLight) super.off();
     }
 
     @Override

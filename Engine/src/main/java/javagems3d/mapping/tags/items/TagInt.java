@@ -11,7 +11,7 @@ import javagems3d.system.service.json.JSONFileManaging;
 import java.lang.reflect.Type;
 
 public class TagInt implements TagItem {
-    private final int value;
+    private int value;
     private final int min;
     private final int max;
 
@@ -19,6 +19,11 @@ public class TagInt implements TagItem {
         this.value = value;
         this.min = min;
         this.max = max;
+    }
+
+    public TagInt setValue(int value) {
+        this.value = value;
+        return this;
     }
 
     public int getValue() {

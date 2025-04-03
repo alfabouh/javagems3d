@@ -13,6 +13,7 @@ import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.controller.base.MouseKeyboardController;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
@@ -38,6 +39,10 @@ import java.lang.Math;
 import java.util.*;
 
 public class EditorInterface implements DearUIInterface {
+    public static boolean VIEW_SHADOWS = true;
+    public static boolean VIEW_CHESS_TERRAIN = true;
+    public static boolean FULL_BRIGHT = false;
+
     public static final Object monitor = new Object();
     private final WBenchOpenGLRenderer openGLRenderer;
     private final ProjectManager projectManager;
@@ -100,6 +105,10 @@ public class EditorInterface implements DearUIInterface {
             ImGui.showDemoWindow();
         }
 
+        if (this.getCurrentSelectedObject() != null && this.getCurrentSelectedObject().isDead()) {
+            this.setCurrentSelectedObject(null);
+        }
+
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("Project")) {
             if (ImGui.menuItem("Compile")) {
@@ -124,8 +133,17 @@ public class EditorInterface implements DearUIInterface {
             }
             ImGui.endMenu();
         }
+        JGemsConfig.DEBUG.FULL_BRIGHT = EditorInterface.FULL_BRIGHT;
         if (ImGui.beginMenu("View")) {
-
+            if (ImGui.checkbox("Full Bright", EditorInterface.FULL_BRIGHT)) {
+                EditorInterface.FULL_BRIGHT = !EditorInterface.FULL_BRIGHT;
+            }
+            if (ImGui.checkbox("Shadows", EditorInterface.VIEW_SHADOWS)) {
+                EditorInterface.VIEW_SHADOWS = !EditorInterface.VIEW_SHADOWS;
+            }
+            if (ImGui.checkbox("Chess Terrain", EditorInterface.VIEW_CHESS_TERRAIN)) {
+                EditorInterface.VIEW_CHESS_TERRAIN = !EditorInterface.VIEW_CHESS_TERRAIN;
+            }
             ImGui.endMenu();
         }
         ImGui.endMainMenuBar();

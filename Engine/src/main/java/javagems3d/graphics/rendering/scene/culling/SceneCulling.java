@@ -10,6 +10,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public class SceneCulling implements ISceneCulling {
     }
 
     @Override
-    public void cull(@NotNull Set<SceneObject> sceneObjects) {
+    public void cull(@NotNull Collection<SceneObject> sceneObjects) {
         if (sceneObjects.isEmpty()) {
             return;
         }
@@ -79,7 +80,7 @@ public class SceneCulling implements ISceneCulling {
         this.snapshot = null;
     }
 
-    protected void preFilter(@NotNull Set<SceneObject> sceneObjects) {
+    protected void preFilter(@NotNull Collection<SceneObject> sceneObjects) {
         sceneObjects.removeIf((e) -> {
             if (!e.canBeRendered() || !e.hasModel()) {
                 return true;

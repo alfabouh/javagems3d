@@ -139,6 +139,11 @@ public class SunLightShadow extends Shadow {
             Vector3f lightDir = (new Vector3f(sunPos.x, sunPos.y, sunPos.z).mul(-1.0f)).normalize();
             Vector3f eye = new Vector3f(frustumCenter).sub(new Vector3f(lightDir).mul(-minExtents.z));
             Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+
+            if (Math.abs(lightDir.y) > 0.99f) {
+                up.set(0.0f, 0.0f, 1.0f);
+            }
+
             Matrix4f lightViewMatrix = TransformUtils.getLookAtMatrix(eye, up, frustumCenter);
 
             Matrix4f lightOrthoMatrix = TransformUtils.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);

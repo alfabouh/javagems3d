@@ -4,6 +4,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
+import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
@@ -39,6 +40,7 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -170,23 +172,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
         Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
-        this.getSceneCulling().cull(toRender);
+        JGemsOpenGLRenderer.renderScene(frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, this.getSceneCulling());
 
-        Map<Stage, List<SceneObject>> dividedGroups = toRender.stream().filter(Objects::nonNull).collect(Collectors.groupingBy(e -> e.getRenderFabric(Pipeline.SCENE).getRenderingStage()));
-        deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
-        deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
-        forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
-
-        deferredRenderNode.onRender(frameTicking);
-        forwardRenderNode.onRender(frameTicking);
-
-        Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
-        Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
-        rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
-
-        transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
-        transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
-        transparencyRenderNode.onRender(frameTicking);
         GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);
         postRenderNode.onRender(frameTicking);
@@ -199,6 +186,28 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
         forwardRenderNode.getOutColorBuffer().copyFBOtoFBODepth(0, this.getRenderingResolution());
         JGemsOpenGLRenderer.DebugLinesDrawer().render();
+    }
+
+    public static void renderScene(FrameTicking frameTicking, Collection<SceneObject> toRender, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, ISceneCulling sceneCulling) {
+        sceneCulling.cull(toRender);
+
+        List<SceneObject> redirectedInTransparency = new ArrayList<>();
+        Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRender, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
+        deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
+        deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
+        forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
+
+        deferredRenderNode.onRender(frameTicking);
+        forwardRenderNode.onRender(frameTicking);
+
+        Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
+        Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
+        rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
+        rejectedDirect.addAll(redirectedInTransparency);
+
+        transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
+        transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
+        transparencyRenderNode.onRender(frameTicking);
     }
 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {

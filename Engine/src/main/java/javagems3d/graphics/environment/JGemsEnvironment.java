@@ -42,6 +42,7 @@ public class JGemsEnvironment implements IEnvironment {
 
     @Override
     public void updateEnvironment(ICamera camera) {
+        this.getSkyBox().getSun().onUpdate(this.getWorld());
         this.getSkyBox().updateSkyBox(this.getWorld(), camera);
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {

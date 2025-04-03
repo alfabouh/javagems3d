@@ -3,15 +3,16 @@ package workbench.graphics.scene.ui.editor;
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.type.ImString;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.help.JGemsMathHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
-import javagems3d.mapping.tags.items.TagItem;
-import javagems3d.mapping.tags.items.TagRadioBoolean;
+import javagems3d.mapping.tags.base.Colors;
+import javagems3d.mapping.tags.items.*;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.EditorInterface;
 
@@ -117,6 +118,56 @@ public class ActionsInterfaceComponent {
                     }
                 }
             }
+
+            if (tagItem instanceof TagCheckBoolean) {
+                TagCheckBoolean tagCheckBoolean = (TagCheckBoolean) tagItem;
+                boolean value = tagCheckBoolean.isFlag();
+                if (ImGui.checkbox(tagID.getDescription(), value)) {
+                    tagCheckBoolean.setFlag(!value);
+                }
+            }
+
+            if (tagItem instanceof TagColor) {
+                TagColor tagColor = (TagColor) tagItem;
+                Vector4f color = tagColor.getColorVector();
+                Colors colorMode = tagColor.getColorMode();
+                if (colorMode == Colors.COLOR3) {
+                    float[] colorArray = new float[]{color.x, color.y, color.z};
+                    if (ImGui.colorEdit3(tagID.getDescription(), colorArray)) {
+                        tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], color.w));
+                    }
+                } else {
+                    float[] colorArray = new float[]{color.x, color.y, color.z, color.w};
+                    if (ImGui.colorEdit4(tagID.getDescription(), colorArray)) {
+                        tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], colorArray[3]));
+                    }
+                }
+            }
+
+            if (tagItem instanceof TagFloat) {
+                TagFloat tagFloat = (TagFloat) tagItem;
+                float[] value = new float[] {tagFloat.getValue()};
+                if (ImGui.dragFloat(tagID.getDescription(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
+                    tagFloat.setValue(value[0]);
+                }
+            }
+
+            if (tagItem instanceof TagInt) {
+                TagInt tagInt = (TagInt) tagItem;
+                int[] value = new int[] {tagInt.getValue()};
+                if (ImGui.dragInt(tagID.getDescription(), value, 1, tagInt.getMin(), tagInt.getMax())) {
+                    tagInt.setValue(value[0]);
+                }
+            }
+
+            if (tagItem instanceof TagString) {
+                TagString tagString = (TagString) tagItem;
+                ImString value = new ImString(tagString.getText());
+                if (ImGui.inputText(tagID.getDescription(), value)) {
+                    tagString.setText(value.get());
+                }
+            }
+
             ImGui.treePop();
         }
 
@@ -125,7 +176,6 @@ public class ActionsInterfaceComponent {
             ImGui.setTooltip(tagID.getToolTip());
             ImGui.endTooltip();
         }
-        ImGui.separator();
     }
 
     private void processTranslations() {

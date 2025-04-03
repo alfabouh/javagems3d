@@ -11,7 +11,7 @@ import javagems3d.system.service.json.JSONFileManaging;
 import java.lang.reflect.Type;
 
 public class TagFloat implements TagItem {
-    private final float value;
+    private float value;
     private final float min;
     private final float max;
 
@@ -19,6 +19,11 @@ public class TagFloat implements TagItem {
         this.value = value;
         this.min = min;
         this.max = max;
+    }
+
+    public TagFloat setValue(float value) {
+        this.value = value;
+        return this;
     }
 
     public float getValue() {

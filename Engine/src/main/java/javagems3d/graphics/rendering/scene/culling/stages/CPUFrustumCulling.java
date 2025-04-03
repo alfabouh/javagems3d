@@ -8,6 +8,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +46,7 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
     }
 
     @Override
-    public void filter(Set<SceneObject> sceneObjects) {
+    public void filter(Collection<SceneObject> sceneObjects) {
         sceneObjects.removeIf(e -> !this.test(e));
     }
 }

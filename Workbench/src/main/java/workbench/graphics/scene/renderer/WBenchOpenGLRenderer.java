@@ -10,6 +10,7 @@ import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentConta
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
@@ -163,26 +164,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
         Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
-        this.getSceneCulling().cull(toRender);
+        JGemsOpenGLRenderer.renderScene(frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, this.getSceneCulling());
 
-        List<SceneObject> redirectedInTransparency = new ArrayList<>();
-        Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRender, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
-        deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
-        deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
-        forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
-
-        deferredRenderNode.onRender(frameTicking);
-        forwardRenderNode.onRender(frameTicking);
-
-        Collection<SceneObject> rejectedIndirect = deferredRenderNode.getRejectedIndirectDeferredRenderingObjects();
-        Collection<SceneObject> rejectedDirect = deferredRenderNode.getRejectedDirectDeferredRenderingObjects();
-        rejectedDirect.addAll(forwardRenderNode.getRejectedDirectForwardRenderingObjects());
-        rejectedDirect.addAll(redirectedInTransparency);
-
-        transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
-        transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
-
-        transparencyRenderNode.onRender(frameTicking);
         GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);
         GL46.glDepthMask(true);

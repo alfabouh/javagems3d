@@ -5,6 +5,7 @@ import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import org.jetbrains.annotations.NotNull;
+import workbench.graphics.objects.WBenchCommonObject;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.world.WBenchWorld;
 
@@ -24,7 +25,7 @@ public class WBenchObjectTemplate {
     }
 
     public WBenchObject createObject(@NotNull WBenchWorld world) {
-        return new WBenchObject(world, this);
+        return new WBenchCommonObject(world, this);
     }
 
     public TranslationConstraints getTranslationConstraints() {

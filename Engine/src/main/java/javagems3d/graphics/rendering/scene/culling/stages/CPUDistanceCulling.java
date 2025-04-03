@@ -9,6 +9,7 @@ import logger.Log;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class CPUDistanceCulling implements ICullingAlgorithm {
@@ -55,7 +56,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
     }
 
     @Override
-    public void filter(Set<SceneObject> sceneObjects) {
+    public void filter(Collection<SceneObject> sceneObjects) {
         if (this.getCamera() == null) {
             Log.get().warn("Tried to do distance culling with NULL camera");
             return;

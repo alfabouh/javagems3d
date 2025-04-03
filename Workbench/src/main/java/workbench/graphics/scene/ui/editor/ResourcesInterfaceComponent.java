@@ -1,7 +1,11 @@
 package workbench.graphics.scene.ui.editor;
 
 import imgui.ImGui;
+import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.help.JGemsUtils;
+import org.joml.Vector3f;
 import workbench.WBench;
+import workbench.graphics.objects.WBenchPointLightObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.ui.EditorInterface;
 
@@ -21,6 +25,19 @@ public class ResourcesInterfaceComponent {
     }
 
     public void resourcesContent() {
+        if (ImGui.collapsingHeader("Lights")) {
+            if (ImGui.button("Point Light")) {
+                ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
+                Vector3f posToSpawn = camera.getCamPosition();
+                posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul(3.0f));
+
+                WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("point_light_marker", this.getEditorInterface().getOpenGLRenderer().getWorld());
+                pointLightObject.setId(this.getEditorInterface().getOpenGLRenderer().getWorld().getSceneObjects().size());
+                pointLightObject.setPosition(posToSpawn);
+                this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(pointLightObject);
+            }
+        }
+        ImGui.separator();
         if (ImGui.collapsingHeader("Entities")) {
             this.renderObjectGroupsList(WBench.get().getProjectObjects().getEntityGroups());
         }

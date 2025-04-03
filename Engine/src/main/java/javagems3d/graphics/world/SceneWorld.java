@@ -106,8 +106,8 @@ public final class SceneWorld implements IRenderWorld {
                 if (sceneObject instanceof SceneEntity) {
                     SceneEntity abstractSceneEntity = (SceneEntity) sceneObject;
                     this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
-                    abstractSceneEntity.onDestroy(this);
                 }
+                sceneObject.onDestroy(this);
                 iterator.remove();
                 continue;
             }
@@ -143,11 +143,11 @@ public final class SceneWorld implements IRenderWorld {
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject modeledSceneObject = iterator.next();
+            iterator.remove();
             if (modeledSceneObject instanceof SceneEntity) {
                 SceneEntity abstractSceneEntity = (SceneEntity) modeledSceneObject;
                 abstractSceneEntity.onDestroy(this);
             }
-            iterator.remove();
         }
 
         Iterator<SceneWorldLiquid> iterator1 = this.getLiquids().iterator();
@@ -250,23 +250,21 @@ public final class SceneWorld implements IRenderWorld {
 
     public void addObjectInWorld(SceneObject renderObject) {
         this.getSceneObjects().add(renderObject);
+        renderObject.onSpawn(this);
     }
 
     public void removeObjectFromWorld(SceneObject renderObject) {
-        if (!this.getSceneObjects().remove(renderObject)) {
-            Log.get().warn("Couldn't remove a render object from SceneWorld");
-        }
+        this.getSceneObjects().remove(renderObject);
+        renderObject.onDestroy(this);
     }
 
     public void addEntityInWorld(SceneEntity abstractSceneEntity) {
         this.getObjectMap().put(abstractSceneEntity.getWorldItem().getItemId(), abstractSceneEntity);
-        abstractSceneEntity.onSpawn(this);
         this.addObjectInWorld(abstractSceneEntity);
     }
 
     public void removeEntityFromWorld(SceneEntity abstractSceneEntity) {
         this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
-        abstractSceneEntity.onDestroy(this);
         this.removeObjectFromWorld(abstractSceneEntity);
     }
 

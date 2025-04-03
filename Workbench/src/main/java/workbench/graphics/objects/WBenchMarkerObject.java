@@ -1,6 +1,11 @@
 package workbench.graphics.objects;
 
+import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.mapping.tags.TagsContainer;
+import javagems3d.mapping.tags.base.TranslationConstraints;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.world.WBenchWorld;
@@ -9,10 +14,41 @@ public class WBenchMarkerObject extends WBenchObject {
     private final Vector3f color;
     private final boolean transparent;
 
+    public WBenchMarkerObject(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints, @NotNull Vector3f color, boolean transparent) {
+        super(name, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints);
+        this.color = color;
+        this.transparent = transparent;
+    }
+
     public WBenchMarkerObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @NotNull Vector3f color, boolean transparent) {
         super(wBenchWorld, objectTemplate);
         this.color = color;
         this.transparent = transparent;
+    }
+
+
+    @Override
+    protected void onTranslate(Vector3f position) {
+
+    }
+
+    @Override
+    protected void onRotate(Vector3f rotation) {
+
+    }
+
+    @Override
+    protected void onScale(Vector3f scaling) {
+
+    }
+
+    public boolean isLighted() {
+        return true;
+    }
+
+    @Override
+    public Vector3f textInMenuColor() {
+        return new Vector3f(0.0f, 1.0f, 1.0f);
     }
 
     public boolean isTransparent() {

@@ -11,10 +11,15 @@ import javagems3d.system.service.json.JSONFileManaging;
 import java.lang.reflect.Type;
 
 public class TagCheckBoolean implements TagItem {
-    private final boolean flag;
+    private boolean flag;
 
     public TagCheckBoolean(boolean flag) {
         this.flag = flag;
+    }
+
+    public TagCheckBoolean setFlag(boolean flag) {
+        this.flag = flag;
+        return this;
     }
 
     public boolean isFlag() {

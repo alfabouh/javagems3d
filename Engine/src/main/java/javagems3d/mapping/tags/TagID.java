@@ -76,7 +76,9 @@ public final class TagID {
         public static final TagID SCALING_YZ = new TagID("scaling_yz", "Scaling YZ");
         public static final TagID SCALING_XYZ = new TagID("scaling_xyz", "Scaling XYZ");
 
-        public static final TagID COLOR3 = new TagID("color3", "Color3");
-        public static final TagID COLOR4 = new TagID("color4", "Color4");
+        public static final TagID COLOR3 = new TagID("color3", "Color RGB");
+        public static final TagID COLOR4 = new TagID("color4", "Color RGBA");
+
+        public static final TagID BRIGHTNESS = new TagID("brightness", "Brightness");
     }
 }

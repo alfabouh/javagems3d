@@ -92,17 +92,19 @@ public class SceneInterfaceComponent {
                     float[] modelMatrix = TransformUtils.getModelMatrix(this.getEditorInterface().getCurrentSelectedObject().getModel().getPose()).get(new float[16]);
                     ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getCurrentOperation(), Mode.WORLD, new float[]{0.01f, 0.01f, 0.01f});
 
-                    Vector3f position = new Vector3f();
-                    Vector3f rotation = new Vector3f();
-                    Vector3f scaling = new Vector3f();
-                    Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
-                    newMatrix.getTranslation(position);
-                    newMatrix.getScale(scaling);
-                    newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
+                    if (ImGuizmo.isUsing()) {
+                        Vector3f position = new Vector3f();
+                        Vector3f rotation = new Vector3f();
+                        Vector3f scaling = new Vector3f();
+                        Matrix4f newMatrix = JGemsUtils.getMatrixFromArray(modelMatrix);
+                        newMatrix.getTranslation(position);
+                        newMatrix.getScale(scaling);
+                        newMatrix.getUnnormalizedRotation(new Quaternionf()).getEulerAnglesXYZ(rotation);
 
-                    this.getEditorInterface().getCurrentSelectedObject().setPosition(position);
-                    this.getEditorInterface().getCurrentSelectedObject().setRotation(rotation.negate());
-                    this.getEditorInterface().getCurrentSelectedObject().setScaling(scaling);
+                        this.getEditorInterface().getCurrentSelectedObject().setPosition(position);
+                        this.getEditorInterface().getCurrentSelectedObject().setRotation(rotation.negate());
+                        this.getEditorInterface().getCurrentSelectedObject().setScaling(scaling);
+                    }
                 }
             }
         }

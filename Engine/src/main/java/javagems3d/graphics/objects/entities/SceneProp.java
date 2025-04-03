@@ -24,8 +24,8 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
     private boolean isVisible;
     private boolean isDead;
 
-    public SceneProp(@NotNull IRenderWorld world, @Nullable Model3D model, @NotNull RenderAttributes objectRenderingConfiguration) {
-        super(world, model, objectRenderingConfiguration);
+    public SceneProp(@NotNull IRenderWorld world, @Nullable Model3D model, @NotNull RenderAttributes renderAttributes) {
+        super(world, model, renderAttributes);
         this.lightList = new ArrayList<>();
         this.isVisible = true;
         this.isDead = false;

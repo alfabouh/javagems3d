@@ -210,22 +210,27 @@ public abstract class ModelLoadingUtils {
 
             FloatBuffer out = stack.mallocFloat(1);
             IntBuffer maxCount = stack.ints(1);
+            PointerBuffer pProp = stack.mallocPointer(1);
 
             opacityConstant = 1.0f;
-            if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_OPACITY, 0, 0, out, maxCount) == Assimp.aiReturn_SUCCESS) {
-                opacityConstant = out.get(0);
+            if (Assimp.aiGetMaterialProperty(aiMaterial, Assimp.AI_MATKEY_OPACITY, pProp) == Assimp.aiReturn_SUCCESS) {
+                if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_OPACITY, 0, 0, out, maxCount) == Assimp.aiReturn_SUCCESS) {
+                    opacityConstant = out.get(0);
+                }
             }
 
             roughnessFactor = 0.5f;
-            if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_ROUGHNESS_FACTOR, 0, 0, out, maxCount) == Assimp.aiReturn_SUCCESS) {
-                roughnessFactor = out.get(0);
+            if (Assimp.aiGetMaterialProperty(aiMaterial, Assimp.AI_MATKEY_ROUGHNESS_FACTOR, pProp) == Assimp.aiReturn_SUCCESS) {
+                if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_ROUGHNESS_FACTOR, 0, 0, out, maxCount) == Assimp.aiReturn_SUCCESS) {
+                    roughnessFactor = out.get(0);
+                }
             }
 
-            FloatBuffer out2 = stack.mallocFloat(1);
-            IntBuffer maxCount2 = stack.ints(1);
             metallicFactor = -1.0f;
-            if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_METALLIC_FACTOR, 0, 0, out2, maxCount2) == Assimp.aiReturn_SUCCESS) {
-                metallicFactor = out.get(0);
+            if (Assimp.aiGetMaterialProperty(aiMaterial, Assimp.AI_MATKEY_METALLIC_FACTOR, pProp) == Assimp.aiReturn_SUCCESS) {
+                if (Assimp.aiGetMaterialFloatArray(aiMaterial, Assimp.AI_MATKEY_METALLIC_FACTOR, 0, 0, out, maxCount) == Assimp.aiReturn_SUCCESS) {
+                    metallicFactor = out.get(0);
+                }
             }
 
             if (diffuseColor != null) {

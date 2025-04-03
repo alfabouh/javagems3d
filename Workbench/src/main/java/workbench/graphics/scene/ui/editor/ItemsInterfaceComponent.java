@@ -2,8 +2,10 @@ package workbench.graphics.scene.ui.editor;
 
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiSelectableFlags;
 import javagems3d.graphics.objects.SceneObject;
+import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
@@ -29,6 +31,8 @@ public class ItemsInterfaceComponent {
             boolean flag = this.getEditorInterface().getCurrentSelectedObject() == wBenchObject1;
             float x = ImGui.getContentRegionAvailX() - 30f;
             ImGui.pushID(wBenchObject1.getId());
+            Vector3f color = wBenchObject1.textInMenuColor();
+            ImGui.pushStyleColor(ImGuiCol.Text, color.x, color.y, color.z, 1.0f);
             if (ImGui.selectable("(" + wBenchObject1.getId() + ") " + wBenchObject1.getName(), flag, ImGuiSelectableFlags.AllowItemOverlap, x, 18f)) {
                 if (!flag) {
                     this.getEditorInterface().setCurrentSelectedObject(wBenchObject1);
@@ -37,6 +41,7 @@ public class ItemsInterfaceComponent {
                     this.getEditorInterface().setCurrentSelectedObject(null);
                 }
             }
+            ImGui.popStyleColor();
             ImGui.sameLine();
             if (ImGui.button("X")) {
                 if (wBenchObject1.equals(this.getEditorInterface().getCurrentSelectedObject())) {

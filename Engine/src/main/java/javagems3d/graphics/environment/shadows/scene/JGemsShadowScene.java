@@ -61,8 +61,8 @@ public class JGemsShadowScene extends ShadowScene {
 
     protected void blurShadows(FBOTexture2DProgram sunShadowFBO) {
         try (Model2D screenModel = MeshHelper.generatePlane2DModelInverted(new Vector2f(0.0f), new Vector2f(this.getSunLightShadow().getShadowMapResolution()), 0)) {
-          //  final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
-          //  this.blurSunShadow(screenModel, sunShadowFBO, blurring, 1.0f);
+            final JGemsShaderManager blurring = JGemsResourceManager.globalShaderAssets.blur_box;
+            this.blurSunShadow(screenModel, sunShadowFBO, blurring, 1.0f);
         }
     }
 

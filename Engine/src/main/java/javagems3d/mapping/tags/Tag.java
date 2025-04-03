@@ -13,6 +13,10 @@ public final class Tag <T extends TagItem> implements ICopyable<Tag<?>> {
         this.tagID = tagID;
     }
 
+    public static <E extends TagItem> Tag<E> create(TagID tagID, @NotNull E defaultItem) {
+        return new Tag<>(tagID, defaultItem);
+    }
+
     @SuppressWarnings("all")
     public <R extends TagItem> R getTagItemUnsafeCast() {
         return (R) this.getTagItem();

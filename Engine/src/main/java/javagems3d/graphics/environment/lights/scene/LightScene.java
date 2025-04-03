@@ -88,8 +88,8 @@ public abstract class LightScene implements ILightScene {
         buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().x);
         buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().y);
         buffer.put(this.getEnvironment().getSkyBox().getSun().getLightColor().z);
-        buffer.put(this.calcAmbientLight());
-        buffer.put(this.getEnvironment().getSkyBox().getSun().getSunBrightness());
+        buffer.put(JGemsConfig.DEBUG.FULL_BRIGHT ? 1.0f : this.calcAmbientLight());
+        buffer.put(JGemsConfig.DEBUG.FULL_BRIGHT ? 1.0f : this.getEnvironment().getSkyBox().getSun().getSunBrightness());
         buffer.flip();
         ShaderStorageBufferProgram.updateSubDataSSBO(sunBuffer, 0L, buffer);
     }

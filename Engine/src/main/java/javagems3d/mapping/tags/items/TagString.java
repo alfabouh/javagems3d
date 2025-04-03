@@ -10,10 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Type;
 
 public class TagString implements TagItem {
-    private final String text;
+    private String text;
 
     public TagString(@NotNull String text) {
         this.text = text;
+    }
+
+    public TagString setText(String text) {
+        this.text = text;
+        return this;
     }
 
     public String getText() {

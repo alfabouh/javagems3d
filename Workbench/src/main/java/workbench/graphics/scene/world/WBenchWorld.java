@@ -4,10 +4,8 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.IRenderWorld;
-import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import logger.Log;
 import org.jetbrains.annotations.Nullable;
@@ -54,6 +52,7 @@ public class WBenchWorld implements IRenderWorld {
             if (sceneObject.isDead()) {
                 Log.get().info("Removed object: " + sceneObject);
                 iterator.remove();
+                sceneObject.onDestroy(this);
                 continue;
             }
             sceneObject.updateAnimation();
@@ -65,8 +64,9 @@ public class WBenchWorld implements IRenderWorld {
     private void clearAll() {
         Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
-            SceneObject modeledSceneObject = iterator.next();
+            SceneObject sceneObject = iterator.next();
             iterator.remove();
+            sceneObject.onDestroy(this);
         }
     }
 
@@ -86,7 +86,7 @@ public class WBenchWorld implements IRenderWorld {
         Log.get().info("Added light: " + light + " to: " + keepLights);
     }
 
-    public void removeLightFrom(ILighted keepLights, Light light) {
+    public void removeItemLight(ILighted keepLights, Light light) {
         if (keepLights == null) {
             Log.get().error("Couldn't attach light. Invalid entity");
             return;
@@ -97,15 +97,14 @@ public class WBenchWorld implements IRenderWorld {
 
     public void addObjectInWorld(SceneObject renderObject) {
         this.getSceneObjects().add(renderObject);
+        renderObject.onSpawn(this);
         Log.get().info("Created object: " + renderObject);
     }
 
     public void removeObjectFromWorld(SceneObject renderObject) {
-        if (!this.getSceneObjects().remove(renderObject)) {
-            Log.get().warn("Couldn't remove a render object from SceneWorld");
-        } else {
-            Log.get().info("Removed object: " + renderObject);
-        }
+        this.getSceneObjects().remove(renderObject);
+        renderObject.onDestroy(this);
+        Log.get().info("Removed object: " + renderObject);
     }
 
     public void setCamera(@Nullable ICamera camera) {

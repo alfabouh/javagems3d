@@ -192,7 +192,7 @@ public abstract class ShadowScene implements IShadowScene {
     }
 
     protected void renderNullShadows() {
-        GL46.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        GL46.glClearColor(JGemsConfig.SYSTEM.NEUTRAL_SHADOWS.x, JGemsConfig.SYSTEM.NEUTRAL_SHADOWS.y, JGemsConfig.SYSTEM.NEUTRAL_SHADOWS.x * JGemsConfig.SYSTEM.NEUTRAL_SHADOWS.x, JGemsConfig.SYSTEM.NEUTRAL_SHADOWS.y * JGemsConfig.SYSTEM.NEUTRAL_SHADOWS.y);
         this.getSunLightShadow().getSunShadowFBO().bindFBO();
         for (int i = 0; i < this.getSunLightShadow().getTotalCascades(); i++) {
             this.getSunLightShadow().getSunShadowFBO().connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
