@@ -25,8 +25,9 @@ public class ResourcesInterfaceComponent {
     }
 
     public void resourcesContent() {
-        if (ImGui.collapsingHeader("Lights")) {
-            if (ImGui.button("Point Light")) {
+        if (ImGui.collapsingHeader("Generate Light")) {
+            ImGui.treePush();
+            if (ImGui.selectable("Point Light", false)) {
                 ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
                 Vector3f posToSpawn = camera.getCamPosition();
                 posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul(3.0f));
@@ -36,6 +37,7 @@ public class ResourcesInterfaceComponent {
                 pointLightObject.setPosition(posToSpawn);
                 this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(pointLightObject);
             }
+            ImGui.treePop();
         }
         ImGui.separator();
         if (ImGui.collapsingHeader("Entities")) {

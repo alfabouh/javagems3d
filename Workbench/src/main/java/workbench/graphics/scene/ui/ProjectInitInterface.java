@@ -83,12 +83,6 @@ public class ProjectInitInterface implements DearUIInterface {
             if (!projectPath.isEmpty() && !projectName.isEmpty()) {
                 WBench.get().getProjectManager().createProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + ProjectManager.extension), projectName);
                 WBench.get().getSettings().addPath(projectPath);
-
-                try {
-                    WBenchSettings.save(WBench.get().getSettings(), new JGemsPath(WBench.getFilesFolder()));
-                } catch (JGemsIOException e) {
-                    Log.get().exception(e);
-                }
             }
         }
         ImGui.sameLine();
@@ -98,12 +92,6 @@ public class ProjectInitInterface implements DearUIInterface {
             if (!projectPath.isEmpty() && WBench.get().getProjectManager().getCurrentProject() == null) {
                 WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
                 WBench.get().getSettings().addPath(projectPath);
-
-                try {
-                    WBenchSettings.save(WBench.get().getSettings(), new JGemsPath(WBench.getFilesFolder()));
-                } catch (JGemsIOException e) {
-                    Log.get().exception(e);
-                }
             }
         }
         ImGui.popStyleColor();

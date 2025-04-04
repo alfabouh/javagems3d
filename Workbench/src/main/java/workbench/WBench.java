@@ -19,6 +19,7 @@ import logger.managers.JGemsLogging;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import workbench.controller.WBenchControllerDispatcher;
+import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
 import workbench.project.ProjectObjects;
@@ -140,6 +141,11 @@ public final class WBench {
             Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
         } finally {
+            try {
+                WBenchSettings.save(WBench.get().getSettings(), new JGemsPath(WBench.getFilesFolder()));
+            } catch (JGemsIOException e) {
+                Log.get().exception(e);
+            }
             WBench.get().getProjectManager().closeProject(true);
             WBench.get().getResourceManager().destroy();
             LoadingInterfaceSwing.dispose();
@@ -168,6 +174,10 @@ public final class WBench {
 
     public ProjectManager getProjectManager() {
         return this.projectManager;
+    }
+
+    public WBenchBindingManager getBindingManager() {
+        return (WBenchBindingManager) this.getControllerDispatcher().getCurrentController().getBindingManager();
     }
 
     public WBenchControllerDispatcher getControllerDispatcher() {

@@ -37,6 +37,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
     public WBenchShaderManager preview;
     public WBenchShaderManager simple_flat;
     public WBenchShaderManager blur5;
+    public WBenchShaderManager hdr;
 
     public ShaderStorageBufferObject IndirectBufferData;
     public ShaderStorageBufferObject BindlessTexturesData;
@@ -112,6 +113,7 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         this.depth_sun_indirect = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_sun_indirect"));
         this.depth_plight = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "shadows/depth_plight"));
         this.blur5 = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/blur5"));
+        this.hdr = this.createShaderManager(resourceCache, new JGemsPath(JGems3D.DEFAULT_PATHS.SHADERS, "post/hdr"));
 
         this.preview = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/preview"));
         this.simple_flat = this.createShaderManager(resourceCache, new JGemsPath("/assets/wbench/shaders/world/simple_flat"));

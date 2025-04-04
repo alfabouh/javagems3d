@@ -26,15 +26,15 @@ public class WBenchBindingManager extends BindingManager {
         this.keyDelete = new Key(GLFW.GLFW_KEY_DELETE);
         this.keyEsc = new Key(GLFW.GLFW_KEY_ESCAPE);
 
-        this.addBinding(this.keyA);
-        this.addBinding(this.keyD);
-        this.addBinding(this.keyW);
-        this.addBinding(this.keyS);
-        this.addBinding(this.keyUp);
-        this.addBinding(this.keyShift);
-        this.addBinding(this.keyCtrl);
-        this.addBinding(this.keyDelete);
-        this.addBinding(this.keyEsc);
+        this.addBinding(this.keyA, "Walk Left");
+        this.addBinding(this.keyD, "Walk Right");
+        this.addBinding(this.keyW, "Walk Forward");
+        this.addBinding(this.keyS, "Walk Backward");
+        this.addBinding(this.keyUp, "Fly Up");
+        this.addBinding(this.keyShift, "Fly Down");
+        this.addBinding(this.keyCtrl, "Special Interface Controlling");
+        this.addBinding(this.keyDelete, "Delete");
+        this.addBinding(this.keyEsc, "Cancel");
     }
 
     @Override

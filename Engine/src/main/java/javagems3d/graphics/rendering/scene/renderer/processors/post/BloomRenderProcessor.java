@@ -19,6 +19,7 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
     private final FBOTexture2DProgram inColor;
     private final FBOTexture2DProgram outColor;
     private final JGemsShaderManager blurShader;
+    private boolean useBloom;
     private final int steps;
 
     public BloomRenderProcessor(@NotNull FBOTexture2DProgram outColor, @NotNull FBOTexture2DProgram inColor, @NotNull OpenGLRenderer openGLRenderer, @NotNull JGemsShaderManager blurShader, int steps) {
@@ -27,6 +28,7 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
         this.outColor = outColor;
         this.steps = steps;
         this.blurShader = blurShader;
+        this.useBloom = true;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
 
     @Override
     public void runProcessorRendering(FrameTicking frameTicking) {
-        if (!JGemsConfig.SYSTEM.USE_BLOOM || JGems3D.get().getGameSettings().bloom.getValue() == 0) {
+        if (!JGemsConfig.SYSTEM.USE_BLOOM || !this.isUseBloom()) {
             this.getOutColor().bindFBO();
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
             this.getOutColor().unBindFBO();
@@ -62,6 +64,15 @@ public class BloomRenderProcessor extends IRenderProcessor.Template {
             startBinding = 0;
         }
         blurShader.endShading();
+    }
+
+    public boolean isUseBloom() {
+        return this.useBloom;
+    }
+
+    public BloomRenderProcessor setUseBloom(boolean useBloom) {
+        this.useBloom = useBloom;
+        return this;
     }
 
     public int getSteps() {

@@ -15,12 +15,14 @@ import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
+import workbench.graphics.scene.ui.EditorInterface;
 import workbench.resources.WBenchResourceManager;
 
 public class WBenchPostFXRenderNode extends IRenderNode.Template implements IPostFXRenderNode {
     private final FBOTexture2DProgram inColorScene;
     private FBOTexture2DProgram outColor;
     private BloomRenderProcessor bloomRenderProcessor;
+    private HDRRenderProcessor hdrRenderProcessor;
 
     public WBenchPostFXRenderNode(@NotNull FBOTexture2DProgram inColor, OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
@@ -40,6 +42,11 @@ public class WBenchPostFXRenderNode extends IRenderNode.Template implements IPos
     @Override
     public void onRender(FrameTicking frameTicking) {
         this.getBloomRenderProcessor().runProcessorRendering(frameTicking);
+
+        this.getOutColorBuffer().bindFBO();
+        this.getHdrRenderProcessor().setUseHDR(EditorInterface.VIEW_HDR);
+        this.getHdrRenderProcessor().runProcessorRendering(frameTicking);
+        this.getOutColorBuffer().unBindFBO();
     }
 
     public void initFBOs() {
@@ -54,7 +61,10 @@ public class WBenchPostFXRenderNode extends IRenderNode.Template implements IPos
     public void createResources() {
         this.initFBOs();
         this.bloomRenderProcessor = new BloomRenderProcessor(this.getOutColorBuffer(), this.getInColorBuffer(), this.getOpenGLRenderer(), this.getBlurringShader(), 6);
+        this.hdrRenderProcessor = new HDRRenderProcessor(this.getOpenGLRenderer(), this.getInColorBuffer(), this.getOutColorBuffer(), this.getHDRShader());
+
         this.getBloomRenderProcessor().createResources();
+        this.getHdrRenderProcessor().createResources();
     }
 
     @Override
@@ -64,10 +74,19 @@ public class WBenchPostFXRenderNode extends IRenderNode.Template implements IPos
         }
 
         this.getBloomRenderProcessor().destroyResources();
+        this.getHdrRenderProcessor().destroyResources();
+    }
+
+    public JGemsShaderManager getHDRShader() {
+        return WBenchResourceManager.localShaderAssets.hdr;
     }
 
     public JGemsShaderManager getBlurringShader() {
         return WBenchResourceManager.localShaderAssets.blur5;
+    }
+
+    public HDRRenderProcessor getHdrRenderProcessor() {
+        return this.hdrRenderProcessor;
     }
 
     public BloomRenderProcessor getBloomRenderProcessor() {

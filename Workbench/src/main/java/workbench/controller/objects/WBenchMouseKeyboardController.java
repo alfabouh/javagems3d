@@ -4,6 +4,7 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.system.controller.base.ScanningMode;
 import javagems3d.system.controller.binding.BindingManager;
 import javagems3d.system.controller.base.MouseKeyboardController;
+import workbench.WBench;
 import workbench.global.WBenchConstants;
 import workbench.graphics.scene.ui.EditorInterface;
 
@@ -24,6 +25,6 @@ public class WBenchMouseKeyboardController extends MouseKeyboardController {
 
     @Override
     public float getCamSensitivity() {
-        return WBenchConstants.CAM_SENS;
+        return WBench.get().getSettings().getCamSpeed();
     }
 }

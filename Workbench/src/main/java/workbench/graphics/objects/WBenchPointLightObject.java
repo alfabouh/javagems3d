@@ -41,7 +41,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         final TranslationConstraints translationConstraints = new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NULL, AxisConstraints.NULL);
 
         final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(Colors.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
-        final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 10.0f));
+        final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
 
         final TagsContainer tagsContainer = new TagsContainer();
         tagsContainer.addTag(colorTag);

@@ -3,13 +3,14 @@ package javagems3d.system.controller.binding;
 import javagems3d.system.controller.components.Key;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public abstract class BindingManager {
     private final Set<Binding> bindingSet;
 
     public BindingManager() {
-        this.bindingSet = new HashSet<>();
+        this.bindingSet = new LinkedHashSet<>();
     }
 
     public abstract Key keyMoveLeft();

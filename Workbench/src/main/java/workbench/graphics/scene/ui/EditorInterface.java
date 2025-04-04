@@ -12,7 +12,9 @@ import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsMathHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
+import javagems3d.system.controller.binding.Binding;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -24,8 +26,12 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
+import workbench.controller.WBenchControllerDispatcher;
+import workbench.controller.binding.WBenchBindingManager;
+import workbench.controller.objects.WBenchMouseKeyboardController;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
@@ -41,6 +47,7 @@ import java.util.*;
 public class EditorInterface implements DearUIInterface {
     public static boolean VIEW_SHADOWS = true;
     public static boolean VIEW_CHESS_TERRAIN = true;
+    public static boolean VIEW_HDR = true;
     public static boolean FULL_BRIGHT = false;
 
     public static final Object monitor = new Object();
@@ -105,7 +112,14 @@ public class EditorInterface implements DearUIInterface {
             ImGui.showDemoWindow();
         }
 
-        if (this.getCurrentSelectedObject() != null && this.getCurrentSelectedObject().isDead()) {
+        boolean deleteCurrentObject = ImGui.isKeyPressed(WBench.get().getBindingManager().keyDelete.getKeyCode(), false);
+        if (deleteCurrentObject) {
+            this.getCurrentSelectedObject().setDead();
+        }
+
+        boolean removeObjectSelection1 = this.getCurrentSelectedObject() != null && this.getCurrentSelectedObject().isDead();
+        boolean removeObjectSelection2 = ImGui.isKeyPressed(WBench.get().getBindingManager().keyEsc.getKeyCode(), false);
+        if (removeObjectSelection1 || removeObjectSelection2) {
             this.setCurrentSelectedObject(null);
         }
 
@@ -143,6 +157,35 @@ public class EditorInterface implements DearUIInterface {
             }
             if (ImGui.checkbox("Chess Terrain", EditorInterface.VIEW_CHESS_TERRAIN)) {
                 EditorInterface.VIEW_CHESS_TERRAIN = !EditorInterface.VIEW_CHESS_TERRAIN;
+            }
+            if (ImGui.checkbox("HDR", EditorInterface.VIEW_HDR)) {
+                EditorInterface.VIEW_HDR = !EditorInterface.VIEW_HDR;
+            }
+            ImGui.endMenu();
+        }
+        if (ImGui.beginMenu("Controls")) {
+            WBenchBindingManager wBenchBindingManager = WBench.get().getBindingManager();
+            float camSpeedRaw = WBench.get().getSettings().getCamSpeed();
+            float min = 0.0001f;
+            float max = 0.0025f;
+            float[] camSpeedPercent = new float[] { (camSpeedRaw / max) * 100.0f };
+
+            if (ImGui.treeNode("Options")) {
+                if (ImGui.sliderFloat("Camera Sensitivity", camSpeedPercent, (min / max) * 100.0f, 100.0f, "%.1f%%")) {
+                    float newCamSpeed = JGemsMathHelper.clamp((camSpeedPercent[0] / 100.0f) * max, min, max);
+                    WBench.get().getSettings().setCamSpeed(newCamSpeed);
+                }
+                ImGui.treePop();
+            }
+
+            if (ImGui.treeNode("Keys")) {
+                for (Binding binding : wBenchBindingManager.getBindingSet()) {
+                    ImGui.text(binding.toString());
+                }
+                ImGui.separator();
+                ImGui.text("Left Mouse Key - Select Object");
+                ImGui.text("Right Mouse Key - Drag Camera");
+                ImGui.treePop();
             }
             ImGui.endMenu();
         }
@@ -210,14 +253,6 @@ public class EditorInterface implements DearUIInterface {
         ImGui.end();
 
         this.getContextComponent().context();
-    }
-
-    public Vector3f getRotationsFromMatrix(Matrix4f matrix4f) {
-        Vector3f rotations = new Vector3f();
-        Quaternionf quaternionf = new Quaternionf();
-        matrix4f.getUnnormalizedRotation(quaternionf);
-        quaternionf.getEulerAnglesXYZ(rotations);
-        return rotations;
     }
 
     public int chooseDefaultGuizmoOperation() {

@@ -39,6 +39,7 @@ public abstract class PostFXRenderNode extends IRenderNode.Template implements I
 
     @Override
     public void onRender(FrameTicking frameTicking) {
+        this.getBloomRenderProcessor().setUseBloom(JGems3D.get().getGameSettings().bloom.getValue() != 0);
         this.getBloomRenderProcessor().runProcessorRendering(frameTicking);
 
         this.getOutColorBuffer().bindFBO();

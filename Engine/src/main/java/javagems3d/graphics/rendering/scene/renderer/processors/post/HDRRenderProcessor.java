@@ -17,12 +17,14 @@ public class HDRRenderProcessor extends IRenderProcessor.Template {
     private final FBOTexture2DProgram inColor;
     private final FBOTexture2DProgram inBloomColor;
     private final JGemsShaderManager hdrShader;
+    private boolean useHDR;
 
     public HDRRenderProcessor(@NotNull OpenGLRenderer openGLRenderer, @NotNull FBOTexture2DProgram inSceneColor, @NotNull FBOTexture2DProgram inBloomColor, @NotNull JGemsShaderManager hdrShader) {
         super(openGLRenderer);
         this.inColor = inSceneColor;
         this.inBloomColor = inBloomColor;
         this.hdrShader = hdrShader;
+        this.useHDR = true;
     }
 
     @Override
@@ -39,12 +41,21 @@ public class HDRRenderProcessor extends IRenderProcessor.Template {
         hdr.beginShading();
         hdr.performUniform(new UniformString("exposure"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_EXPOSURE));
         hdr.performUniform(new UniformString("gamma"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.HDR_GAMMA));
-        hdr.performUniform(new UniformString("use_hdr"), UniformFunctions.BOOLEAN(JGemsConfig.SYSTEM.USE_HDR));
+        hdr.performUniform(new UniformString("use_hdr"), UniformFunctions.BOOLEAN(JGemsConfig.SYSTEM.USE_HDR && this.isUseHDR()));
         hdr.performUniformTextureBindless(new UniformString("texture_map"), this.getInColor().getTextureByIndex(0));
         hdr.performUniformTextureBindless(new UniformString("bloom_map"), this.getInBloomColor().getTextureByIndex(0));
         hdr.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         hdr.endShading();
+    }
+
+    public boolean isUseHDR() {
+        return this.useHDR;
+    }
+
+    public HDRRenderProcessor setUseHDR(boolean useHDR) {
+        this.useHDR = useHDR;
+        return this;
     }
 
     public JGemsShaderManager getHdrShader() {

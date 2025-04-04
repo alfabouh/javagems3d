@@ -1,5 +1,6 @@
 package workbench.settings;
 
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
@@ -13,12 +14,14 @@ import java.util.Deque;
 
 public class WBenchSettings implements Serializable {
     public static final String extension = "settings.json";
-
     public static final long serialVersionUID = 143L;
+
     private final Deque<String> recentProjects;
+    private float camSpeed;
 
     public WBenchSettings() {
         this.recentProjects = new ArrayDeque<>();
+        this.camSpeed = JGemsConfig.SYSTEM.CAM_SENS;
     }
 
     public static void save(WBenchSettings wBenchSettings, JGemsPath path) throws JGemsIOException {
@@ -48,6 +51,15 @@ public class WBenchSettings implements Serializable {
         if (this.getRecentProjects().size() > 6) {
             this.getRecentProjects().removeLast();
         }
+    }
+
+    public WBenchSettings setCamSpeed(float camSpeed) {
+        this.camSpeed = camSpeed;
+        return this;
+    }
+
+    public float getCamSpeed() {
+        return this.camSpeed;
     }
 
     public Deque<String> getRecentProjects() {
