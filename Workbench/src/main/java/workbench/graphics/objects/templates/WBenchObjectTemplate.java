@@ -5,27 +5,27 @@ import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import workbench.graphics.objects.WBenchCommonObject;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.world.WBenchWorld;
 
-public class WBenchObjectTemplate {
-    protected final String id;
+public class WBenchObjectTemplate extends WBenchTemplate {
     protected MeshGroup meshGroup;
     protected RenderAttributes renderAttributes;
     protected TagsContainer tagsContainer;
     protected TranslationConstraints translationConstraints;
 
-    public WBenchObjectTemplate(String id, MeshGroup meshGroup, RenderAttributes renderAttributes, TagsContainer tagsContainer, TranslationConstraints translationConstraints) {
-        this.id = id;
+    public WBenchObjectTemplate(@NotNull WBenchObject.ID objectId, MeshGroup meshGroup, RenderAttributes renderAttributes, TagsContainer tagsContainer, TranslationConstraints translationConstraints) {
+        super(objectId);
         this.meshGroup = meshGroup;
         this.renderAttributes = renderAttributes;
         this.tagsContainer = tagsContainer;
         this.translationConstraints = translationConstraints;
     }
 
-    public WBenchObject createObject(@NotNull WBenchWorld world) {
-        return new WBenchCommonObject(world, this);
+    public WBenchObject createObject(@NotNull WBenchWorld world, @Nullable TagsContainer tagsContainer) {
+        return new WBenchCommonObject(world, this, tagsContainer);
     }
 
     public TranslationConstraints getTranslationConstraints() {
@@ -34,10 +34,6 @@ public class WBenchObjectTemplate {
 
     public TagsContainer getTagsContainer() {
         return this.tagsContainer;
-    }
-
-    public String getId() {
-        return this.id;
     }
 
     public MeshGroup getMeshGroup() {

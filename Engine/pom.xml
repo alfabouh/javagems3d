@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.alfabouh</groupId>
+        <groupId>com.github.gltexture</groupId>
         <artifactId>javagems3d</artifactId>
         <version>0.2</version>
         <relativePath>../pom.xml</relativePath>
@@ -15,9 +15,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.alfabouh</groupId>
+            <groupId>com.github.gltexture</groupId>
             <artifactId>SysLogger</artifactId>
             <version>0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stephengold</groupId>
+            <artifactId>Libbulletjme-Windows64</artifactId>
+            <version>22.0.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

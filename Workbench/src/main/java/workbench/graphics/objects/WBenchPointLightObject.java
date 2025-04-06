@@ -11,12 +11,11 @@ import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.AxisConstraints;
-import javagems3d.mapping.tags.base.Colors;
+import javagems3d.mapping.tags.base.ColorMode;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.mapping.tags.items.TagColor;
 import javagems3d.mapping.tags.items.TagFloat;
 import javagems3d.physics.world.IWorld;
-import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,25 +28,28 @@ import workbench.resources.WBenchResourceManager;
 public class WBenchPointLightObject extends WBenchMarkerObject {
     private PointLight pointLight;
 
-    protected WBenchPointLightObject(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints, @NotNull Vector3f color, boolean transparent) {
-        super(name, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints, color, transparent);
+    public WBenchPointLightObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints, @NotNull Vector3f color, boolean transparent) {
+        super(objectId, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints, color, transparent);
     }
 
-    public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld) {
+    public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @NotNull TagsContainer tagsContainer) {
         final MeshStructure3D<?> meshStructure3D = WBenchResourceManager.localModelAssets.markerCube;
         final RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getDirect(), WBenchRenderProperties.getDefault());
         renderAttributes.getProperties().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false);
         renderAttributes.getRenderTable().setMatch(Pipeline.SCENE, new RenderTable.Data(WBenchResourceManager.localShaderAssets.simple, new MarkerSimpleRenderFabric(Stage.FORWARD)));
         final TranslationConstraints translationConstraints = new TranslationConstraints(AxisConstraints.AXIS_XYZ, AxisConstraints.NULL, AxisConstraints.NULL);
 
-        final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(Colors.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
-        final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
+        return new WBenchPointLightObject(new ID(name, null), wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints, new Vector3f(1.0f), false);
+    }
 
+    public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld) {
+        final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(ColorMode.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
+        final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
         final TagsContainer tagsContainer = new TagsContainer();
         tagsContainer.addTag(colorTag);
         tagsContainer.addTag(brightnessTag);
 
-        return new WBenchPointLightObject(name, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints, new Vector3f(1.0f), false);
+        return WBenchPointLightObject.create(WBenchIdentifiers.POINT_LIGHT + name, wBenchWorld, tagsContainer);
     }
 
     @Override

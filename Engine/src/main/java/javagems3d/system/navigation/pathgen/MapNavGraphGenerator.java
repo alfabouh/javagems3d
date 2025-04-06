@@ -1,4 +1,4 @@
-package javagems3d.system.map.navigation.pathgen;
+package javagems3d.system.navigation.pathgen;
 
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.math.Vector3f;

@@ -22,7 +22,7 @@ import workbench.controller.WBenchControllerDispatcher;
 import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.ProjectManager;
-import workbench.project.ProjectObjects;
+import workbench.project.ProjectTemplates;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 import workbench.settings.WBenchSettings;
@@ -168,7 +168,7 @@ public final class WBench {
         return this.settings;
     }
 
-    public ProjectObjects getProjectObjects() {
+    public ProjectTemplates getProjectObjects() {
         return this.getProjectManager().getProjectObjects();
     }
 

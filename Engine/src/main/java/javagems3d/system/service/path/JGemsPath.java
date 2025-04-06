@@ -1,5 +1,6 @@
 package javagems3d.system.service.path;
 
+import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Path;
 
@@ -42,6 +43,10 @@ public final class JGemsPath implements Serializable {
             normalizedPath = "/" + normalizedPath;
         }
         return normalizedPath;
+    }
+
+    public File toFile() {
+        return new File(this.getFullPath());
     }
 
     public JGemsPath getDirectory() {

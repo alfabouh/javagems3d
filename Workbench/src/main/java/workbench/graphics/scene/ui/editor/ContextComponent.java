@@ -17,6 +17,7 @@ import workbench.graphics.environment.WBenchEnvironment;
 import workbench.graphics.scene.ui.EditorInterface;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,11 @@ public class ContextComponent {
                 float[] fogColor = new float[] {environment.getFogManager().getColor().x, environment.getFogManager().getColor().y, environment.getFogManager().getColor().z};
                 if (ImGui.colorEdit3("Fog Color", fogColor)) {
                     environment.getFogManager().setColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
+                }
+
+                ImBoolean fogCoversSky = new ImBoolean(environment.getSkyBox().isSkyCoveredByFog());
+                if (ImGui.checkbox("Cover Sky", fogCoversSky)) {
+                    environment.getSkyBox().setSkyCoveredByFog(!environment.getSkyBox().isSkyCoveredByFog());
                 }
             }
             ImGui.end();
@@ -108,17 +114,17 @@ public class ContextComponent {
 
                 ImGui.separator();
                 ImGui.text("Sky Texture");
-                Set<Pair<String, ICubeMapProgram>> skyBoxes = WBench.get().getProjectObjects().getSkyBoxes();
+                Set<Map.Entry<String, ICubeMapProgram>> skyBoxes = WBench.get().getProjectObjects().getSkyBoxes().entrySet();
                 if (!skyBoxes.isEmpty()) {
                     SkyBox skyBox = this.getEditorInterface().getOpenGLRenderer().getWorld().getEnvironment().getSkyBox();
                     ICubeMapProgram currentSky = skyBox.getTexture();
                     ImGui.treePush();
-                    for (Pair<String, ICubeMapProgram> cubeMapProgramPair : skyBoxes) {
-                        boolean flag = currentSky == cubeMapProgramPair.getSecond();
-                        ImGui.pushID(cubeMapProgramPair.getFirst());
-                        if (ImGui.selectable(cubeMapProgramPair.getFirst(), flag, ImGuiSelectableFlags.AllowItemOverlap)) {
+                    for (Map.Entry<String, ICubeMapProgram> cubeMapProgramPair : skyBoxes) {
+                        boolean flag = currentSky == cubeMapProgramPair.getValue();
+                        ImGui.pushID(cubeMapProgramPair.getKey());
+                        if (ImGui.selectable(cubeMapProgramPair.getKey(), flag, ImGuiSelectableFlags.AllowItemOverlap)) {
                             if (!flag) {
-                                skyBox.setSky2DTexture(cubeMapProgramPair.getSecond());
+                                skyBox.setSky2DTexture(cubeMapProgramPair.getValue());
                             } else {
                                 skyBox.setSky2DTexture(null);
                             }

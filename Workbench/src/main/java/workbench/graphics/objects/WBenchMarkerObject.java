@@ -14,14 +14,14 @@ public class WBenchMarkerObject extends WBenchObject {
     private final Vector3f color;
     private final boolean transparent;
 
-    public WBenchMarkerObject(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints, @NotNull Vector3f color, boolean transparent) {
-        super(name, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints);
+    public WBenchMarkerObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints, @NotNull Vector3f color, boolean transparent) {
+        super(objectId, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints);
         this.color = color;
         this.transparent = transparent;
     }
 
-    public WBenchMarkerObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @NotNull Vector3f color, boolean transparent) {
-        super(wBenchWorld, objectTemplate);
+    public WBenchMarkerObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @Nullable TagsContainer tagsContainer, @NotNull Vector3f color, boolean transparent) {
+        super(wBenchWorld, objectTemplate, tagsContainer);
         this.color = color;
         this.transparent = transparent;
     }

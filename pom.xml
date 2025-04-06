@@ -1,53 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.alfabouh</groupId>
-    <artifactId>javagems3d</artifactId>
-    <version>0.2</version>
-    <packaging>pom</packaging>
-
-    <name>JavaGems3D</name>
-    <description>3-D Java Game Engine</description>
-    <url>https://github.com/alfabouh/javagems3d</url>
-
-    <modules>
-        <module>Engine</module>
-        <module>SysLogger</module>
-        <module>Launcher</module>
-        <module>Workbench</module>
-        <module>TestApp</module>
-    </modules>
-
-    <scm>
-        <url>https://github.com/yourusername/javagems3d</url>
-        <connection>scm:git:git://github.com/alfabouh/javagems3d.git</connection>
-        <developerConnection>scm:git:ssh://github.com/alfabouh/javagems3d.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
-    <licenses>
-        <license>
-            <name>BSD-3-Clause license</name>
-            <url>https://github.com/alfabouh/javagems3d?tab=BSD-3-Clause-1-ov-file</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>alfabouh</id>
-        </developer>
-    </developers>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub alfabouh Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/alfabouh/javagems3d</url>
-        </repository>
-    </distributionManagement>
-
     <properties>
+        <project.groupId>com.github.gltexture</project.groupId>
+        <project.artifactId>javagems3d</project.artifactId>
+        <project.version>0.2</project.version>
+
         <github.global.server>github</github.global.server>
         <lwjgl.version>3.3.6</lwjgl.version>
         <joml.version>1.10.8</joml.version>
@@ -60,6 +17,53 @@
         <bullet.version>22.0.1</bullet.version>
         <bullet.classifier>SpDebug</bullet.classifier>
     </properties>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>${project.version}</version>
+    <packaging>pom</packaging>
+
+    <name>JavaGems3D</name>
+    <description>3-D Java Game Engine</description>
+    <url>https://github.com/gltexture/javagems3d</url>
+
+    <modules>
+        <module>Engine</module>
+        <module>SysLogger</module>
+        <module>Launcher</module>
+        <module>Workbench</module>
+        <module>TestApp</module>
+    </modules>
+
+    <scm>
+        <url>https://github.com/yourusername/javagems3d</url>
+        <connection>scm:git:git://github.com/gltexture/javagems3d.git</connection>
+        <developerConnection>scm:git:ssh://github.com/gltexture/javagems3d.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>BSD-3-Clause license</name>
+            <url>https://github.com/gltexture/javagems3d?tab=BSD-3-Clause-1-ov-file</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>gltexture</id>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub gltexture Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/gltexture/javagems3d</url>
+        </repository>
+    </distributionManagement>
 
     <profiles>
         <profile>
@@ -125,6 +129,23 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <version>${project.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>

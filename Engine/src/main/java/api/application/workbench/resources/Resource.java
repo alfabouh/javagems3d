@@ -6,10 +6,10 @@ public abstract class Resource <T, E> {
     private final WFabric<T> fabricWBench;
     private final WFabric<E> fabricGame;
     private String groupId;
-    private final String id;
+    private final String nameId;
 
-    public Resource(@NotNull String id, @NotNull WFabric<T> fabricWBench, @NotNull WFabric<E> fabricGame) {
-        this.id = id;
+    public Resource(@NotNull String nameId, @NotNull WFabric<T> fabricWBench, @NotNull WFabric<E> fabricGame) {
+        this.nameId = nameId;
         this.fabricGame = fabricGame;
         this.fabricWBench = fabricWBench;
         this.groupId = null;
@@ -31,8 +31,8 @@ public abstract class Resource <T, E> {
         this.groupId = groupId;
     }
 
-    public String getId() {
-        return this.id;
+    public String getNameId() {
+        return this.nameId;
     }
 
     @FunctionalInterface

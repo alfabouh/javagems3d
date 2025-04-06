@@ -7,13 +7,11 @@ import javagems3d.help.JGemsMathHelper;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
@@ -23,20 +21,20 @@ import java.util.Objects;
 
 public abstract class WBenchObject extends SceneProp {
     private int id;
-    private final String name;
+    private final WBenchObject.ID objectId;
     private final TagsContainer tagsContainer;
     private final TranslationConstraints translationConstraints;
 
-    public WBenchObject(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
+    public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
         super(wBenchWorld, new Model3D(new Pose3D(), meshStructure3D), renderAttributes);
         this.id = -1;
-        this.name = name;
-        this.tagsContainer = tagsContainer;
+        this.objectId = objectId;
+        this.tagsContainer = new TagsContainer(tagsContainer);
         this.translationConstraints = translationConstraints;
     }
 
-    public WBenchObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate) {
-        this(objectTemplate.getId(), wBenchWorld, objectTemplate.getMeshGroup(), objectTemplate.getRenderAttributes(), objectTemplate.getTagsContainer(), objectTemplate.getTranslationConstraints());
+    public WBenchObject(@NotNull WBenchWorld wBenchWorld, @NotNull WBenchObjectTemplate objectTemplate, @Nullable TagsContainer tagsContainer) {
+        this(objectTemplate.getObjectId(), wBenchWorld, objectTemplate.getMeshGroup(), objectTemplate.getRenderAttributes(), tagsContainer == null ?objectTemplate.getTagsContainer() : tagsContainer, objectTemplate.getTranslationConstraints());
     }
 
     public void setPosition(Vector3f vector3f) {
@@ -96,16 +94,20 @@ public abstract class WBenchObject extends SceneProp {
         }
     }
 
-    public Vector3f getPosition() {
+    public synchronized Vector3f getPosition() {
         return this.getModel().getPose().getPosition();
     }
 
-    public Vector3f getRotation() {
+    public synchronized Vector3f getRotation() {
         return this.getModel().getPose().getRotation();
     }
 
-    public Vector3f getScaling() {
+    public synchronized Vector3f getScaling() {
         return this.getModel().getPose().getScaling();
+    }
+
+    public synchronized TagsContainer getTagsContainer() {
+        return this.tagsContainer;
     }
 
     public WBenchObject setId(int id) {
@@ -135,7 +137,7 @@ public abstract class WBenchObject extends SceneProp {
 
     @Override
     public String toString() {
-        return this.getName() + " " + this.getPosition();
+        return this.getObjectId().toString() + " " + this.getPosition();
     }
 
     @Override
@@ -143,15 +145,34 @@ public abstract class WBenchObject extends SceneProp {
         return Objects.hashCode(this.id);
     }
 
-    public TagsContainer getTagsContainer() {
-        return this.tagsContainer;
-    }
-
-    public String getName() {
-        return this.name;
+    public ID getObjectId() {
+        return this.objectId;
     }
 
     public int getId() {
         return this.id;
+    }
+
+    public static final class ID {
+        private final String nameId;
+        private final String groupId;
+
+        public ID(@NotNull String nameId, @Nullable String groupId) {
+            this.nameId = nameId;
+            this.groupId = groupId;
+        }
+
+        public String getNameId() {
+            return this.nameId;
+        }
+
+        public String getGroupId() {
+            return this.groupId;
+        }
+
+        @Override
+        public String toString() {
+            return this.getGroupId() + "/" + this.getNameId();
+        }
     }
 }

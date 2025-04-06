@@ -1,6 +1,6 @@
 ![Made in Java](https://img.shields.io/badge/Made_in-Java-yellow)
-[![](https://jitpack.io/v/alfabouh/javagems3d.svg)](https://jitpack.io/#alfabouh/javagems3d)
-[![GitHub release](https://img.shields.io/badge/GitHub%20Packages-Download-brightgreen)](https://github.com/alfabouh/javagems3d/packages/2241468)
+[![](https://jitpack.io/v/gltexture/javagems3d.svg)](https://jitpack.io/#gltexture/javagems3d)
+[![GitHub release](https://img.shields.io/badge/GitHub%20Packages-Download-brightgreen)](https://github.com/gltexture/javagems3d/packages/2241468)
 ![OpenGL 4.3](https://img.shields.io/badge/Render-OpenGL_4.3-blue)
 ![Bullet Physics](https://img.shields.io/badge/Physics-Bullet-blue)
 ![Windows Support](https://img.shields.io/badge/Platform-Windows-brightgreen)
@@ -17,7 +17,7 @@ The engine uses **OpenGL 4.3** for workbench.graphics, and the **Bullet Physics(
 ![screen_1725096928350](https://github.com/user-attachments/assets/48d10d31-2aa7-4e16-93a7-27d3720ec7f8)
 
 ### Projects, based on JavaGems3D:
-[![ItchIO](https://img.shields.io/badge/JGems_Projects-ItchIO-brightgreen)](https://alfabouh.itch.io/)
+[![ItchIO](https://img.shields.io/badge/JGems_Projects-ItchIO-brightgreen)](https://gltexture.itch.io/)
 
 ## Engine Features(v0.2a)
 
@@ -63,10 +63,11 @@ The main goal of the project is to create a lightweight java game engine for the
 To include JavaGems3D in your project, add the following dependency to your `pom.xml`:
 
 ```xml
+
 <dependency>
-  <groupId>com.github.alfabouh</groupId>
-  <artifactId>javagems3d</artifactId>
-  <version>0.2</version>
+    <groupId>com.github.gltexturecom.github.gltexture</groupId>
+    <artifactId>javagems3d</artifactId>
+    <version>0.2</version>
 </dependency>
 ```
 ### 2. Initializing the engine
@@ -179,8 +180,8 @@ public class TestTBoxApp implements JGemsTBoxApplication {
 
 ### Examples
 - *Below are links to repositories where you can see examples of working programs, based on JavaGems3D*
-- [JavaGems3DExample](https://github.com/alfabouh/JavaGems3DExample)
-- [JavaGems3DHorror](https://github.com/alfabouh/JavaGems3DHorror)
+- [JavaGems3DExample](https://github.com/gltexture/JavaGems3DExample)
+- [JavaGems3DHorror](https://github.com/gltexture/JavaGems3DHorror)
 
 ## Some screenshots
 

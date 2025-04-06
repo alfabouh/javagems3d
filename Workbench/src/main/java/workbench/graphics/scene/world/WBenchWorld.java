@@ -11,20 +11,21 @@ import logger.Log;
 import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
+import workbench.graphics.objects.WBenchObject;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class WBenchWorld implements IRenderWorld {
     private ICamera camera;
     private WBenchEnvironment environment;
     private final Set<SceneObject> toRenderSet;
+    private final Map<Integer, WBenchObject> idMap;
     private int ticks;
 
     public WBenchWorld() {
         this.camera = null;
         this.toRenderSet = new HashSet<>();
+        this.idMap = new HashMap<>();
     }
 
     @Override
@@ -96,12 +97,25 @@ public class WBenchWorld implements IRenderWorld {
     }
 
     public void addObjectInWorld(SceneObject renderObject) {
+        if (renderObject instanceof WBenchObject) {
+            WBenchObject wBenchObject = (WBenchObject) renderObject;
+            int id = wBenchObject.getId() < 0 ? this.getSceneObjects().size() : wBenchObject.getId();
+            wBenchObject.setId(id);
+            this.getIdMap().put(id, wBenchObject);
+        }
         this.getSceneObjects().add(renderObject);
         renderObject.onSpawn(this);
         Log.get().info("Created object: " + renderObject);
     }
 
     public void removeObjectFromWorld(SceneObject renderObject) {
+        if (renderObject instanceof WBenchObject) {
+            WBenchObject wBenchObject = (WBenchObject) renderObject;
+            int id = wBenchObject.getId();
+            if (!this.getIdMap().remove(id, wBenchObject)) {
+                Log.get().warn("Couldn't remove object with id: " + id);
+            }
+        }
         this.getSceneObjects().remove(renderObject);
         renderObject.onDestroy(this);
         Log.get().info("Removed object: " + renderObject);
@@ -109,6 +123,10 @@ public class WBenchWorld implements IRenderWorld {
 
     public void setCamera(@Nullable ICamera camera) {
         this.camera = camera;
+    }
+
+    public Map<Integer, WBenchObject> getIdMap() {
+        return this.idMap;
     }
 
     public WBenchEnvironment getEnvironment() {

@@ -1,6 +1,6 @@
 package javagems3d.mapping.tags.base;
 
-public enum Colors {
+public enum ColorMode {
     COLOR3,
     COLOR4;
 }

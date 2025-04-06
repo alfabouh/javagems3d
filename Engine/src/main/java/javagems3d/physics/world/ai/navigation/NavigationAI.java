@@ -5,7 +5,7 @@ import javagems3d.physics.world.ai.AbstractAI;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.service.graph.Graph;
 import javagems3d.system.service.graph.GraphVertex;
-import javagems3d.system.map.navigation.pathfind.MapPathFinder;
+import javagems3d.system.navigation.pathfind.MapPathFinder;
 
 import java.util.List;
 

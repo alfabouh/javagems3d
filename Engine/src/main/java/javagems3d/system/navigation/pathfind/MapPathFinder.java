@@ -1,4 +1,4 @@
-package javagems3d.system.map.navigation.pathfind;
+package javagems3d.system.navigation.pathfind;
 
 import org.jetbrains.annotations.NotNull;
 import javagems3d.system.service.graph.Graph;

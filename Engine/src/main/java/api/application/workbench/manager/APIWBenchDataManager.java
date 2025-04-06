@@ -3,7 +3,6 @@ package api.application.workbench.manager;
 import api.application.workbench.resources.ResourceEntity;
 import api.application.workbench.resources.ResourceMarker;
 import api.application.workbench.resources.ResourceProp;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.collections.Triple;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
@@ -27,19 +26,19 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
 
     @Override
     public void addResourceEntity(@Nullable String group, @NotNull ResourceEntity resourceEntity) {
-        this.getResourceEntityMap().put(resourceEntity.getId(), resourceEntity);
+        this.getResourceEntityMap().put(resourceEntity.getNameId(), resourceEntity);
         resourceEntity.setGroupId(group);
     }
 
     @Override
     public void addResourceProp(@Nullable String group, @NotNull ResourceProp resourceProp) {
-        this.getResourcePropMap().put(resourceProp.getId(), resourceProp);
+        this.getResourcePropMap().put(resourceProp.getNameId(), resourceProp);
         resourceProp.setGroupId(group);
     }
 
     @Override
     public void addResourceMarker(@Nullable String group, @NotNull ResourceMarker resourceMarker) {
-        this.getResourceMarker().put(resourceMarker.getId(), resourceMarker);
+        this.getResourceMarker().put(resourceMarker.getNameId(), resourceMarker);
         resourceMarker.setGroupId(group);
     }
 

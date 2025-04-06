@@ -10,7 +10,7 @@ import javagems3d.help.JGemsMathHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
-import javagems3d.mapping.tags.base.Colors;
+import javagems3d.mapping.tags.base.ColorMode;
 import javagems3d.mapping.tags.items.*;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -34,7 +34,7 @@ public class ActionsInterfaceComponent {
     public void actionsContent() {
         if (this.getEditorInterface().getCurrentSelectedTemplate() != null && ImGui.collapsingHeader("Preview", ImGuiTreeNodeFlags.DefaultOpen)) {
             float available = Math.min(ImGui.getContentRegionAvailX(), 256);
-            ImGui.text("Preview: " + this.getEditorInterface().getCurrentSelectedTemplate().getId());
+            ImGui.text("Preview: " + this.getEditorInterface().getCurrentSelectedTemplate().getObjectId().getNameId());
             ImGui.image(this.getEditorInterface().getScenePreview().getTextureIDByIndex(0), available, available, 0.0f, 1.0f, 1.0f, 0.0f);
 
             float[] scaling = new float[]{this.getEditorInterface().getPreviewDistance()};
@@ -44,15 +44,14 @@ public class ActionsInterfaceComponent {
             }
             ImGui.endDisabled();
             if (ImGui.button("Generate")) {
-                WBenchObject wBenchObject = this.getEditorInterface().getCurrentSelectedTemplate().createObject(this.getEditorInterface().getOpenGLRenderer().getWorld());
-                wBenchObject.setId(this.getEditorInterface().getOpenGLRenderer().getWorld().getSceneObjects().size());
+                WBenchObject wBenchObject = this.getEditorInterface().getCurrentSelectedTemplate().createObject(this.getEditorInterface().getOpenGLRenderer().getWorld(), null);
 
                 CullingAABB cullingAABB = wBenchObject.getCullingData();
                 if (cullingAABB != null) {
                     ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
                     float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
                     Vector3f posToSpawn = camera.getCamPosition();
-                    posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul(diagonal + 1.0f));
+                    posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
                     wBenchObject.setPosition(posToSpawn);
                     this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(wBenchObject);
                 }
@@ -62,7 +61,7 @@ public class ActionsInterfaceComponent {
 
         WBenchObject currentSelectedObject = this.getEditorInterface().getCurrentSelectedObject();
         if (currentSelectedObject != null) {
-            if (ImGui.collapsingHeader("Object: " + currentSelectedObject.getName() + "(" + currentSelectedObject.getId() + ")", ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Object: " + currentSelectedObject.getObjectId().getNameId() + "(" + currentSelectedObject.getId() + ")", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.treePush();
                 if (currentSelectedObject.hasTranslationConstraints()) {
                     if (ImGui.treeNodeEx("Transformation", ImGuiTreeNodeFlags.DefaultOpen)) {
@@ -134,8 +133,8 @@ public class ActionsInterfaceComponent {
             if (tagItem instanceof TagColor) {
                 TagColor tagColor = (TagColor) tagItem;
                 Vector4f color = tagColor.getColorVector();
-                Colors colorMode = tagColor.getColorMode();
-                if (colorMode == Colors.COLOR3) {
+                ColorMode colorMode = tagColor.getColorMode();
+                if (colorMode == ColorMode.COLOR3) {
                     float[] colorArray = new float[]{color.x, color.y, color.z};
                     if (ImGui.colorEdit3("##" + tagID.getDescription(), colorArray)) {
                         tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], color.w));

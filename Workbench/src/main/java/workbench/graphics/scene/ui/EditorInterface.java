@@ -125,6 +125,9 @@ public class EditorInterface implements DearUIInterface {
 
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("Project")) {
+            if (ImGui.menuItem("Save")) {
+                WBench.get().getProjectManager().saveProject(this.getProjectManager().getWorld(), false);
+            }
             if (ImGui.menuItem("Compile")) {
 
             }

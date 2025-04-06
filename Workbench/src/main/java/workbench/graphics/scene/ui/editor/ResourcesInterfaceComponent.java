@@ -8,7 +8,9 @@ import workbench.WBench;
 import workbench.graphics.objects.WBenchPointLightObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.ui.EditorInterface;
+import workbench.project.ProjectTemplates;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,8 +34,7 @@ public class ResourcesInterfaceComponent {
                 Vector3f posToSpawn = camera.getCamPosition();
                 posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul(3.0f));
 
-                WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("point_light_marker", this.getEditorInterface().getOpenGLRenderer().getWorld());
-                pointLightObject.setId(this.getEditorInterface().getOpenGLRenderer().getWorld().getSceneObjects().size());
+                WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("plmarker", this.getEditorInterface().getOpenGLRenderer().getWorld());
                 pointLightObject.setPosition(posToSpawn);
                 this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(pointLightObject);
             }
@@ -55,10 +56,10 @@ public class ResourcesInterfaceComponent {
         ImGui.separator();
     }
 
-    private <T extends WBenchObjectTemplate> void renderObjectGroupsList(Map<String, Set<T>> map) {
-        for (Map.Entry<String, Set<T>> entry : map.entrySet()) {
+    private <T extends WBenchObjectTemplate> void renderObjectGroupsList(Map<String, ProjectTemplates.TemplatesTable<T>> tableMap) {
+        for (Map.Entry<String, ProjectTemplates.TemplatesTable<T>> entry : tableMap.entrySet()) {
             String groupName = entry.getKey();
-            Set<T> objects = entry.getValue();
+            Collection<T> objects = entry.getValue().getTemplateMap().values();
 
             ImGui.treePush();
             String groupNameTree = groupName != null ? groupName : "Other";
@@ -66,7 +67,7 @@ public class ResourcesInterfaceComponent {
                 ImGui.treePush();
                 for (T object : objects) {
                     boolean flag = this.getEditorInterface().getCurrentSelectedTemplate() == object;
-                    if (ImGui.selectable(object.getId(), flag)) {
+                    if (ImGui.selectable(object.getObjectId().getNameId(), flag)) {
                         if (!flag) {
                             this.getEditorInterface().setCurrentSelectedTemplate(object);
                             this.getEditorInterface().setPreviewDistance(1.0f);
