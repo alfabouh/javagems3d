@@ -11,47 +11,28 @@ import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class JGemsEntityData {
+public class JGemsEntityData {
     private final JGemsPath pathToModel;
     private final EntityRenderData entityRenderData;
-    private final WorldItemFabric worldItemFabric;
 
-    public JGemsEntityData(@Nullable JGemsPath pathToModel, @NotNull EntityRenderData entityRenderData, @NotNull WorldItemFabric worldItemFabric) {
+    public JGemsEntityData(@Nullable JGemsPath pathToModel, @NotNull EntityRenderData entityRenderData) {
         this.entityRenderData = entityRenderData;
-        this.worldItemFabric = worldItemFabric;
         this.pathToModel = pathToModel;
     }
 
-    public JGemsEntityData(@Nullable JGemsPath pathToModel, @NotNull WorldItemFabric worldItemFabric) {
-        this(pathToModel, JGemsResourceManager.globalRenderDataAssets.defaultEntityIndirect, worldItemFabric);
+    public JGemsEntityData(@Nullable JGemsPath pathToModel) {
+        this(pathToModel, JGemsResourceManager.globalRenderDataAssets.defaultEntityIndirect);
     }
 
-    public JGemsEntityData(@Nullable JGemsPath pathToModel, boolean isDynamic) {
-        this(pathToModel, JGemsResourceManager.globalRenderDataAssets.defaultEntityIndirect, isDynamic ? IAPIWBenchDataManager.DEFAULT_FABRIC_FOR_DYNAMIC : IAPIWBenchDataManager.DEFAULT_FABRIC_FOR_STATIC);
-    }
-
-    public JGemsEntityData(@NotNull WorldItemFabric worldItemFabric) {
-        this(null, JGemsResourceManager.globalRenderDataAssets.defaultEntityIndirect, worldItemFabric);
-    }
-
-    public JGemsEntityData(boolean isDynamic) {
-        this(null, JGemsResourceManager.globalRenderDataAssets.defaultEntityIndirect, isDynamic ? IAPIWBenchDataManager.DEFAULT_FABRIC_FOR_DYNAMIC : IAPIWBenchDataManager.DEFAULT_FABRIC_FOR_STATIC);
+    public JGemsEntityData() {
+        this(null, JGemsResourceManager.globalRenderDataAssets.defaultEntityIndirect);
     }
 
     public JGemsPath getPathToModel() {
-        return this.pathToModel;
+        return pathToModel;
     }
 
     public EntityRenderData getEntityRenderData() {
-        return this.entityRenderData;
-    }
-
-    public WorldItemFabric getWorldItemFabric() {
-        return this.worldItemFabric;
-    }
-
-    @FunctionalInterface
-    public interface WorldItemFabric {
-        WorldItem create(String id, MeshStructure3D<?> objectsMesh, PhysicsWorld world, SceneWorld sceneWorld);
+        return entityRenderData;
     }
 }

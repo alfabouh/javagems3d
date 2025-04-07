@@ -69,11 +69,12 @@ public class AppTest extends JGemsApplication {
 
         manager.addResourceEntity("sponza",
                 () -> new WBenchObjectData(sponza),
-                () -> new JGemsEntityData(false)
+                () -> new JGemsEntityData(sponza)
         );
+
         manager.addResourceEntity("testPhys", "cube",
                 () -> new WBenchObjectData(cube).addTag(tagPhysics),
-                () -> new JGemsEntityData(false)
+                () -> new JGemsEntityData(cube)
         );
 
         manager.addResourceProp("testProp", "cube",

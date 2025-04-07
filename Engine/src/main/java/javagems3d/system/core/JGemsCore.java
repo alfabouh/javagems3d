@@ -14,7 +14,7 @@ import javagems3d.help.JGemsWindowHelper;
 import javagems3d.physics.entities.bullet.wrappers.BulletBody;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.JGemsPhysics;
-import javagems3d.system.map.IMapActionsCallback;
+import javagems3d.mapping.loading.IMapProcessingCallback;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
@@ -191,7 +191,7 @@ public class JGemsCore implements ICore {
         this.getMapLoader().postLoad(physicsWorld, sceneWorld);
         EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.POST, mapLoader));
         this.getResourceManager().writeResourcesDataCache();
-        ((IMapActionsCallback) this.getScreen().getScene().getSceneRenderer()).onMapLoaded(this.getMapLoader(), this.getResourceManager());
+        ((IMapProcessingCallback) this.getScreen().getScene().getSceneRenderer()).onMapLoaded(this.getMapLoader(), this.getResourceManager());
 
         JGemsWindowHelper.setWindowFocus(true);
         this.getScreen().removeLoadingScreen();
@@ -237,7 +237,7 @@ public class JGemsCore implements ICore {
         }
         this.getSoundManager().stopAllSounds();
         this.destroyWorlds();
-        ((IMapActionsCallback) this.getScreen().getScene().getSceneRenderer()).onMapDestroyed(this.getMapLoader(), this.getResourceManager());
+        ((IMapProcessingCallback) this.getScreen().getScene().getSceneRenderer()).onMapDestroyed(this.getMapLoader(), this.getResourceManager());
         this.getResourceManager().destroyResourcesDataCache();
         this.getResourceManager().getLocalResources().destroy();
         this.localPlayer = null;

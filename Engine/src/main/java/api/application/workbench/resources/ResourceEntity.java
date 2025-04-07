@@ -5,7 +5,7 @@ import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import org.jetbrains.annotations.NotNull;
 
 public class ResourceEntity extends Resource<WBenchObjectData, JGemsEntityData> {
-    public ResourceEntity(@NotNull String id, @NotNull WFabric<WBenchObjectData> fabricWBench, @NotNull WFabric<JGemsEntityData> fabricGame) {
+    public ResourceEntity(@NotNull String id, @NotNull Resource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull Resource.MapObjectFabric<JGemsEntityData> fabricGame) {
         super(id, fabricWBench, fabricGame);
     }
 }

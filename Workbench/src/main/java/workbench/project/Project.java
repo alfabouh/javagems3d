@@ -1,5 +1,6 @@
 package workbench.project;
 
+import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,8 +10,9 @@ import java.util.List;
 
 public class Project implements Serializable {
     private static final long serialVersionUID = -2138L;
-
     private transient JGemsPath currentProjectPath;
+
+    private final String INFORMATION = JGemsMapping.DATA_INFO;
     private final String projectName;
     private final String version;
     private String mapDataFile;

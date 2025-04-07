@@ -10,7 +10,7 @@ import javagems3d.mapping.tags.items.TagItem;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 
-public final class WBenchObjectData extends WBenchData {
+public class WBenchObjectData extends WBenchData {
     private final JGemsPath pathToModel;
     private final RenderProperties renderProperties;
 

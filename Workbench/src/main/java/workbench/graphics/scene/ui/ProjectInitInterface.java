@@ -10,7 +10,7 @@ import imgui.type.ImString;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import javagems3d.mapping.MappingSystem;
+import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.path.JGemsPath;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -79,7 +79,7 @@ public class ProjectInitInterface implements DearUIInterface {
             String projectPath = this.projectPath.get();
             String projectName = this.projectName.get();
             if (!projectPath.isEmpty() && !projectName.isEmpty()) {
-                WBench.get().getProjectManager().createProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + MappingSystem.MAP_PROJECT_FILE), projectName);
+                WBench.get().getProjectManager().createProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGemsMapping.MAP_PROJECT_FILE), projectName);
                 WBench.get().getSettings().addPath(projectPath);
             }
         }

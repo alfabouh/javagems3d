@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-public final class WBenchMarkerData extends WBenchData {
+public class WBenchMarkerData extends WBenchData {
     private final JGemsPath pathToModel;
     private final DefaultMarker defaultMarker;
     private final Vector3f color;

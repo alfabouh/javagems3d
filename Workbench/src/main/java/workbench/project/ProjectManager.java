@@ -1,7 +1,6 @@
 package workbench.project;
 
 import com.google.gson.JsonSyntaxException;
-import com.sun.javafx.collections.MappingChange;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.environment.fog.FogScene;
 import javagems3d.graphics.environment.lights.SunLight;
@@ -10,7 +9,7 @@ import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.MappingSystem;
+import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -23,8 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.objects.*;
-import workbench.graphics.objects.templates.WBenchMarkerTemplate;
-import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.EditorInterface;
@@ -70,7 +67,7 @@ public final class ProjectManager {
     @SuppressWarnings("all")
     public boolean createProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
-            Project project = new Project(MappingSystem.DATA_VERSION, name);
+            Project project = new Project(JGemsMapping.DATA_VERSION, name);
             this.setCurrentProject(path, project);
             this.createProjectSystemFiles(absPath, name);
             this.saveProjectFile(project);
@@ -119,7 +116,7 @@ public final class ProjectManager {
     }
 
     public void readProject(WBenchWorld world) {
-        final String mapDataFile = this.getCurrentProject().getProjectName() + MappingSystem.MAP_DATA_FILE;
+        final String mapDataFile = this.getCurrentProject().getProjectName() + JGemsMapping.MAP_DATA_FILE;
         final File file = new File(this.getCurrentProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile);
         if (!file.exists()) {
             return;
@@ -248,7 +245,7 @@ public final class ProjectManager {
                 jsonFileManaging.setMatch(ProjectDataPacket.class, projectDataPacket.getSerializationRules());
                 projectDataPacket.set(fogData, sunData, objectsData, skyData);
 
-                final String mapDataFile = this.getCurrentProject().getProjectName() + MappingSystem.MAP_DATA_FILE;
+                final String mapDataFile = this.getCurrentProject().getProjectName() + JGemsMapping.MAP_DATA_FILE;
                 this.getCurrentProject().setMapDataFile(mapDataFile);
                 jsonFileManaging.writeToFile(projectDataPacket, new File(this.getCurrentProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile), null);
                 this.saveProjectFile(this.getCurrentProject());
@@ -297,7 +294,7 @@ public final class ProjectManager {
                 throw new JGemsIOException("Invalid path: " + path);
             }
 
-            File[] files = projectFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(MappingSystem.MAP_PROJECT_FILE));
+            File[] files = projectFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(JGemsMapping.MAP_PROJECT_FILE));
             if (files == null || files.length != 1) {
                 throw new JGemsIOException("Couldn't find project file: " + path);
             }

@@ -14,7 +14,6 @@ import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.*;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
@@ -30,7 +29,7 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsRenderingHelper;
-import javagems3d.system.map.IMapActionsCallback;
+import javagems3d.mapping.loading.IMapProcessingCallback;
 import javagems3d.system.map.loaders.IMapLoader;
 
 import javagems3d.system.resources.assets.models.Model2D;
@@ -49,9 +48,8 @@ import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionsCallback {
+public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapProcessingCallback {
     public static JGemsShaderManager UBO_SHADER = null;
 
     public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
