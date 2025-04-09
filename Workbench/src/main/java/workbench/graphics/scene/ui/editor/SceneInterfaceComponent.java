@@ -6,7 +6,6 @@ import imgui.extension.imguizmo.flag.Mode;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IGluingRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
@@ -114,10 +113,10 @@ public class SceneInterfaceComponent {
             if (ImGui.isMouseReleased(0)) {
                 this.wasWindowFocused = false;
             }
-            WBench.get().getScreen().getWindow().setInFocus(true);
+            WBench.get().getScreen().getWindow().setFocus(true);
         } else {
             this.wasWindowFocused = true;
-            WBench.get().getScreen().getWindow().setInFocus(false);
+            WBench.get().getScreen().getWindow().setFocus(false);
         }
     }
 

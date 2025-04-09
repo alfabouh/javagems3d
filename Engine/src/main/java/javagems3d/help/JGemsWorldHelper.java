@@ -61,6 +61,6 @@ public abstract class JGemsWorldHelper {
 
     public static void addLight(Light light) {
         light.on();
-        JGemsEnvironmentHelper.getWorldEnvironment().getLightManager().addLight(light);
+        JGemsEnvironmentHelper.getWorldEnvironment().getLightScene().addLight(light);
     }
 }

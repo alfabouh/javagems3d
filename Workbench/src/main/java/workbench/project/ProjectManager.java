@@ -1,5 +1,6 @@
 package workbench.project;
 
+import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import com.google.gson.JsonSyntaxException;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.environment.fog.FogScene;
@@ -8,6 +9,11 @@ import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.mapping.data.*;
+import javagems3d.mapping.data.items.FogData;
+import javagems3d.mapping.data.items.ObjectsData;
+import javagems3d.mapping.data.items.SkyData;
+import javagems3d.mapping.data.items.SunData;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.collections.Pair;
@@ -26,11 +32,7 @@ import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.EditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
-import javagems3d.mapping.data.FogData;
-import javagems3d.mapping.data.ObjectsData;
-import javagems3d.mapping.data.SkyData;
-import javagems3d.mapping.data.SunData;
-import javagems3d.mapping.data.templates.SavedObjectTemplate;
+import javagems3d.mapping.data.templates.MapObjectTemplate;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 
@@ -46,18 +48,18 @@ import java.util.function.BiFunction;
 
 public final class ProjectManager {
     private final ProjectTemplates projectTemplates;
-    private Project currentProject;
+    private WBenchProject currentWBenchProject;
     private WBenchWorld world;
 
     public ProjectManager() {
         this.projectTemplates = new ProjectTemplates();
-        this.currentProject = null;
+        this.currentWBenchProject = null;
         this.world = null;
     }
 
-    private void setCurrentProject(JGemsPath path, Project currentProject) {
-        this.currentProject = currentProject;
-        currentProject.setCurrentProjectPath(path);
+    private void setCurrentProject(JGemsPath path, WBenchProject currentWBenchProject) {
+        this.currentWBenchProject = currentWBenchProject;
+        currentWBenchProject.setCurrentProjectPath(path);
     }
 
     public void setWorld(@NotNull WBenchWorld world) {
@@ -67,14 +69,14 @@ public final class ProjectManager {
     @SuppressWarnings("all")
     public boolean createProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
-            Project project = new Project(JGemsMapping.DATA_VERSION, name);
-            this.setCurrentProject(path, project);
+            WBenchProject WBenchProject = new WBenchProject(JGemsMapping.DATA_VERSION, name);
+            this.setCurrentProject(path, WBenchProject);
             this.createProjectSystemFiles(absPath, name);
-            this.saveProjectFile(project);
-            Log.get().debug("Created project: " + project);
+            this.saveProjectFile();
+            Log.get().debug("Created WBenchProject: " + WBenchProject);
 
-            this.initLocalResources(project);
-            this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
+            this.initLocalResources(WBenchProject);
+            this.initWorkingSpace(WBenchOpenGLRenderer.getEditorInterface());
             LoadingInterfaceSwing.dispose();
 
             return true;
@@ -85,13 +87,13 @@ public final class ProjectManager {
         }
     }
 
-    private void saveProjectFile(Project project) {
+    private void saveProjectFile() {
         JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-        jsonFileManaging.writeToFile(project, project.getCurrentProjectPath().toFile(), null);
+        jsonFileManaging.writeToFile(this.getCurrentProject(), this.getCurrentProject().getCurrentProjectPath().toFile(), null);
     }
 
-    private <T> void handleObjects(Set<SavedObjectTemplate> templates, BiFunction<String, String, T> templateFinder, BiFunction<T, SavedObjectTemplate, WBenchObject> objectCreator) {
-        for (SavedObjectTemplate template : templates) {
+    private <T> void handleObjects(Set<MapObjectTemplate> templates, BiFunction<String, String, T> templateFinder, BiFunction<T, MapObjectTemplate, WBenchObject> objectCreator) {
+        for (MapObjectTemplate template : templates) {
             final String name = template.getObjectId();
             final String group = template.getObjectGroup();
 
@@ -115,25 +117,30 @@ public final class ProjectManager {
         }
     }
 
-    public void readProject(WBenchWorld world) {
-        final String mapDataFile = this.getCurrentProject().getProjectName() + JGemsMapping.MAP_DATA_FILE;
+    public void readProject() {
+        final WBenchWorld world = this.getWorld();
+        final String mapDataFile = this.getCurrentProject().getMapDataFile();
+        if (mapDataFile == null || mapDataFile.isEmpty()) {
+            return;
+        }
+
         final File file = new File(this.getCurrentProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile);
         if (!file.exists()) {
             return;
         }
 
         JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
-        ProjectDataPacket projectDataPacket = new ProjectDataPacket();
+        MapDataPack mapDataPack = new MapDataPack();
         try {
-            projectDataPacket = jsonFileManaging.readFromFile(file, ProjectDataPacket.class, null);
+            mapDataPack = jsonFileManaging.readFromFile(file, MapDataPack.class, null);
 
-            final SkyData skyData = projectDataPacket.getSkyData();
-            final SunData sunData = projectDataPacket.getSunData();
-            final FogData fogData = projectDataPacket.getFogData();
-            final ObjectsData objectsData = projectDataPacket.getObjectsData();
+            final SkyData skyData = mapDataPack.getSkyData();
+            final SunData sunData = mapDataPack.getSunData();
+            final FogData fogData = mapDataPack.getFogData();
+            final ObjectsData objectsData = mapDataPack.getObjectsData();
 
             if (skyData != null) {
-                ICubeMapProgram cubeMapProgram = this.getProjectObjects().getSkyBoxes().get(skyData.getSkyboxPath());
+                ICubeMapProgram cubeMapProgram = this.getProjectObjects().getSkyBoxes().get(skyData.skyboxPath);
                 world.getEnvironment().getSkyBox().setSky2DTexture(cubeMapProgram);
                 Log.get().debug("Read SkyData");
             } else {
@@ -163,25 +170,25 @@ public final class ProjectManager {
                     this.handleObjects(objectsData.propObjects, (group, name) -> this.getProjectObjects().getPropGroups().get(group).find(name), (tpl, t) -> new WBenchCommonObject(this.getWorld(), tpl, t.getTagsContainer()));
                     Log.get().debug("Read Props: " + objectsData.propObjects.size());
                 } else {
-                    Log.get().warn("Map has no props!");
+                    Log.get().warn("Map has no props");
                 }
 
                 if (objectsData.entityObjects != null) {
                     this.handleObjects(objectsData.entityObjects, (group, name) -> this.getProjectObjects().getEntityGroups().get(group).find(name), (tpl, t) -> new WBenchCommonObject(this.getWorld(), tpl, t.getTagsContainer()));
                     Log.get().debug("Read Entities: " + objectsData.entityObjects.size());
                 } else {
-                    Log.get().warn("Map has no entities!");
+                    Log.get().warn("Map has no entities");
                 }
 
                 if (objectsData.markerObjects != null) {
                     this.handleObjects(objectsData.markerObjects, (group, name) -> this.getProjectObjects().getMarkerGroups().get(group).find(name), (tpl, t) -> new WBenchMarkerObject(this.getWorld(), tpl, t.getTagsContainer(), tpl.getColor(), tpl.isTransparent()));
                     Log.get().debug("Read Markers: " + objectsData.markerObjects.size());
                 } else {
-                    Log.get().warn("Map has no markers!");
+                    Log.get().warn("Map has no markers");
                 }
 
                 if (objectsData.pointLights != null) {
-                    for (SavedObjectTemplate template : objectsData.pointLights) {
+                    for (MapObjectTemplate template : objectsData.pointLights) {
                         WBenchPointLightObject object = WBenchPointLightObject.create(template.getObjectId(), this.getWorld(), template.getTagsContainer());
                         object.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
                         object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -190,7 +197,7 @@ public final class ProjectManager {
                     }
                     Log.get().debug("Read Point Lights: " + objectsData.pointLights.size());
                 } else {
-                    Log.get().warn("Map has no point lights!");
+                    Log.get().warn("Map has no point lights");
                 }
             } else {
                 Log.get().error("Couldn't get ObjectsData");
@@ -201,16 +208,23 @@ public final class ProjectManager {
         }
     }
 
+    public void compile() { //TODO
+        this.saveProjectFile();
+        this.saveProject(false);
+    }
+
     @SuppressWarnings("all")
-    public void saveProject(WBenchWorld world, boolean wait) {
+    public void saveProject(boolean wait) {
+        final WBenchWorld world = this.getWorld();
+
         JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
         final SunLight sunLight = world.getEnvironment().getSkyBox().getSun();
         final FogScene fogScene = world.getEnvironment().getFogManager();
         final Set<SceneObject> objectsCopy = new HashSet<>(world.getSceneObjects());
-        final Set<SavedObjectTemplate> props = new HashSet<>();
-        final Set<SavedObjectTemplate> entities = new HashSet<>();
-        final Set<SavedObjectTemplate> markers = new HashSet<>();
-        final Set<SavedObjectTemplate> pointLights = new HashSet<>();
+        final Set<MapObjectTemplate> props = new HashSet<>();
+        final Set<MapObjectTemplate> entities = new HashSet<>();
+        final Set<MapObjectTemplate> markers = new HashSet<>();
+        final Set<MapObjectTemplate> pointLights = new HashSet<>();
         final SkyBox skyBox = world.getEnvironment().getSkyBox();
 
         final SunData sunData = new SunData(sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
@@ -220,11 +234,11 @@ public final class ProjectManager {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try {
-                Map<String, Set<SavedObjectTemplate>> categoryMap = new HashMap<>();
-                categoryMap.put(WBenchIdentifiers.PROP, props);
-                categoryMap.put(WBenchIdentifiers.ENTITY, entities);
-                categoryMap.put(WBenchIdentifiers.MARKER, markers);
-                categoryMap.put(WBenchIdentifiers.POINT_LIGHT, pointLights);
+                Map<String, Set<MapObjectTemplate>> categoryMap = new HashMap<>();
+                categoryMap.put(MapObjectsIdentifiers.PROP, props);
+                categoryMap.put(MapObjectsIdentifiers.ENTITY, entities);
+                categoryMap.put(MapObjectsIdentifiers.MARKER, markers);
+                categoryMap.put(MapObjectsIdentifiers.POINT_LIGHT, pointLights);
 
                 for (SceneObject sceneObject : objectsCopy) {
                     if (sceneObject instanceof WBenchObject) {
@@ -232,23 +246,23 @@ public final class ProjectManager {
                         final WBenchObject.ID objectId = wBenchObject.getObjectId();
                         final String nameId = objectId.getNameId();
 
-                        for (Map.Entry<String, Set<SavedObjectTemplate>> entry : categoryMap.entrySet()) {
+                        for (Map.Entry<String, Set<MapObjectTemplate>> entry : categoryMap.entrySet()) {
                             if (nameId.startsWith(entry.getKey())) {
-                                entry.getValue().add(new SavedObjectTemplate(wBenchObject.getId(), objectId.getNameId(), objectId.getGroupId(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                                entry.getValue().add(new MapObjectTemplate(wBenchObject.getId(), objectId.getNameId(), objectId.getGroupId(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
                                 break;
                             }
                         }
                     }
                 }
                 final ObjectsData objectsData = new ObjectsData(props, markers, entities, pointLights);
-                ProjectDataPacket projectDataPacket = new ProjectDataPacket();
-                jsonFileManaging.setMatch(ProjectDataPacket.class, projectDataPacket.getSerializationRules());
-                projectDataPacket.set(fogData, sunData, objectsData, skyData);
+                MapDataPack mapDataPack = new MapDataPack();
+                jsonFileManaging.setMatch(MapDataPack.class, mapDataPack.getSerializationRules());
+                mapDataPack.set(fogData, sunData, objectsData, skyData);
 
                 final String mapDataFile = this.getCurrentProject().getProjectName() + JGemsMapping.MAP_DATA_FILE;
                 this.getCurrentProject().setMapDataFile(mapDataFile);
-                jsonFileManaging.writeToFile(projectDataPacket, new File(this.getCurrentProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile), null);
-                this.saveProjectFile(this.getCurrentProject());
+                jsonFileManaging.writeToFile(mapDataPack, new File(this.getCurrentProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile), null);
+                this.saveProjectFile();
             } catch (Exception e) {
                 Log.get().exception(e);
                 LoggingManager.showExceptionDialog("Where was an error, while saving map!\n\n" + e.getMessage());
@@ -267,10 +281,10 @@ public final class ProjectManager {
 
     @SuppressWarnings("all")
     private void createProjectSystemFiles(JGemsPath path, String name) {
-        File compiled = new File(new JGemsPath(path, "compiled").getFullPath());
+       // File compiled = new File(new JGemsPath(path, "compiled").getFullPath());
         File scripts = new File(new JGemsPath(path, "scripts").getFullPath());
 
-        compiled.mkdirs();
+       // compiled.mkdirs();
         scripts.mkdirs();
     }
 
@@ -281,8 +295,8 @@ public final class ProjectManager {
                 this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
             }
             this.destroyLocalResources(this.getCurrentProject());
-            this.currentProject = null;
-            Log.get().info("Project successfully closed");
+            this.currentWBenchProject = null;
+            Log.get().info("WBenchProject successfully closed");
         }
     }
 
@@ -296,27 +310,30 @@ public final class ProjectManager {
 
             File[] files = projectFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(JGemsMapping.MAP_PROJECT_FILE));
             if (files == null || files.length != 1) {
-                throw new JGemsIOException("Couldn't find project file: " + path);
+                throw new JGemsIOException("Couldn't find WBenchProject file: " + path);
             }
 
             File projectFile = files[0];
-            Project project = this.readMainFile(new JGemsPath(projectFile.getPath()));
-            if (project == null) {
+            WBenchProject WBenchProject = this.readMainFile(new JGemsPath(projectFile.getPath()));
+            if (WBenchProject == null) {
                 return false;
             }
-            this.createProjectSystemFiles(path, project.getProjectName());
-            Log.get().debug("Opened project: " + project);
+            WBenchProject.checkVersion();
 
-            this.initLocalResources(project);
+            this.createProjectSystemFiles(path, WBenchProject.getProjectName());
+            Log.get().info("Opened WBenchProject: " + WBenchProject);
+            Log.get().info(WBenchProject.getInformation());
+
+            this.initLocalResources(WBenchProject);
             LoadingInterfaceSwing.setResource("JSON Processing...");
-            this.readProject(this.getWorld());
-            this.initWorkingSpace(this.getWorld(), WBenchOpenGLRenderer.getEditorInterface());
+            this.readProject();
+            this.initWorkingSpace(WBenchOpenGLRenderer.getEditorInterface());
 
             return true;
         } catch (JGemsIOException e) {
             if (this.getCurrentProject() != null) {
                 this.destroyLocalResources(this.getCurrentProject());
-                this.currentProject = null;
+                this.currentWBenchProject = null;
             }
             LoggingManager.showExceptionDialog("Internal error! Couldn't open project!\n" + e.getMessage());
             Log.get().exception(e);
@@ -326,12 +343,12 @@ public final class ProjectManager {
         }
     }
 
-    public Project readMainFile(JGemsPath path) {
+    public WBenchProject readMainFile(JGemsPath path) {
         try {
             JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-            Project project = jsonFileManaging.readFromFile(new File(path.toString()), Project.class, null);
-            this.setCurrentProject(path, project);
-            return project;
+            WBenchProject WBenchProject = jsonFileManaging.readFromFile(new File(path.toString()), WBenchProject.class, null);
+            this.setCurrentProject(path, WBenchProject);
+            return WBenchProject;
         } catch (JGemsIOException | JsonSyntaxException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't open project!\n" + e.getMessage());
             Log.get().exception(e);
@@ -339,26 +356,26 @@ public final class ProjectManager {
         }
     }
 
-    private void initLocalResources(Project project) {
+    private void initLocalResources(WBenchProject WBenchProject) {
         LoadingInterfaceSwing.invoke();
         WBenchResourceManager.createLocalShaders();
         WBenchResourceManager.setDefaultRenderTableValues();
         WBench.get().getResourceManager().initLocalResources();
         WBench.get().getResourceManager().loadLocalResources();
         this.getWorld().onWorldStart();
-        ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpeningProject(WBench.get().getResourceManager(), project);
+        ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onOpeningProject(WBench.get().getResourceManager(), WBenchProject);
     }
 
-    private void destroyLocalResources(Project project) {
-        ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onClosingProject(WBench.get().getResourceManager(), project);
+    private void destroyLocalResources(WBenchProject WBenchProject) {
+        ((IProjectActionsCallback) WBench.get().getScreen().getScene().getSceneRenderer()).onClosingProject(WBench.get().getResourceManager(), WBenchProject);
         this.getWorld().onWorldEnd();
         WBench.get().getResourceManager().destroyLocalResources();
         this.getProjectObjects().clear();
         ((EditorInterface) WBenchOpenGLRenderer.getEditorInterface()).clear();
     }
 
-    private void initWorkingSpace(WBenchWorld world, DearUIInterface dearUIInterface) {
-        world.setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(0.0f, 5.0f, 0.0f), new Vector3f()));
+    private void initWorkingSpace(DearUIInterface dearUIInterface) {
+        this.getWorld().setCamera(new ControlledCamera(WBench.get().getControllerDispatcher().getCurrentController(), new Vector3f(0.0f, 5.0f, 0.0f), new Vector3f()));
         WBench.get().openInterface(dearUIInterface);
     }
 
@@ -367,7 +384,7 @@ public final class ProjectManager {
     }
 
     private void closeWorkingSpace(DearUIInterface dearUIInterface) {
-        this.saveProject(this.getWorld(), true);
+        this.saveProject(true);
         world.setCamera(null);
         WBench.get().openInterface(dearUIInterface);
     }
@@ -376,7 +393,7 @@ public final class ProjectManager {
         return this.world;
     }
 
-    public Project getCurrentProject() {
-        return this.currentProject;
+    public WBenchProject getCurrentProject() {
+        return this.currentWBenchProject;
     }
 }

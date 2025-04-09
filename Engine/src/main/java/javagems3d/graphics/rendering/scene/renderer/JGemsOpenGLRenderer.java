@@ -29,8 +29,9 @@ import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsRenderingHelper;
-import javagems3d.mapping.loading.IMapProcessingCallback;
-import javagems3d.system.map.loaders.IMapLoader;
+import javagems3d.mapping.IGameMap;
+import javagems3d.mapping.processing.base.IMapProcessor;
+import javagems3d.mapping.processing.callbacks.IMapActionCallback;
 
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -49,7 +50,7 @@ import org.lwjgl.opengl.GL46;
 
 import java.util.*;
 
-public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapProcessingCallback {
+public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionCallback {
     public static JGemsShaderManager UBO_SHADER = null;
 
     public static final NodeID DEFERRED_RENDER_PASS = new NodeID("d-pass", 0);
@@ -247,7 +248,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     @Override
-    public void onMapLoaded(IMapLoader loader, JGemsResourceManager resourceManager) {
+    public void onLoaded(@NotNull IMapProcessor mapProcessor, @NotNull IGameMap gameMap, @NotNull JGemsResourceManager resourceManager) {
         this.initSceneIndirectRenderBuffer(resourceManager.getResourceDataCache().getMeshBuffersDataCache());
         resourceManager.loadMeshMaterialsIsSSBO(JGemsResourceManager.globalShaderAssets.MaterialsData);
         resourceManager.loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
@@ -255,7 +256,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     @Override
-    public void onMapDestroyed(IMapLoader loader, JGemsResourceManager resourceManager) {
+    public void onDestroying(@NotNull IGameMap gameMap, @NotNull JGemsResourceManager resourceManager) {
         this.destroySceneIndirectRenderBuffer();
     }
 

@@ -12,7 +12,7 @@
 
 The engine uses **OpenGL 4.3** for workbench.graphics, and the **Bullet Physics([Libbulletjme](https://github.com/stephengold/Libbulletjme))** as the physics engine.
 
-***The project is at the initial pipeline of development, many features have not yet been implemented, and those that have been implemented have not been properly implemented. Use the best practices at your own risk!***
+***The WBenchProject is at the initial pipeline of development, many features have not yet been implemented, and those that have been implemented have not been properly implemented. Use the best practices at your own risk!***
 
 ![screen_1725096928350](https://github.com/user-attachments/assets/48d10d31-2aa7-4e16-93a7-27d3720ec7f8)
 
@@ -54,13 +54,13 @@ The engine uses **OpenGL 4.3** for workbench.graphics, and the **Bullet Physics(
 - ❌ The feature has not been developed, but it is planned in the future
 
 ### Goal
-The main goal of the project is to create a lightweight java game engine for the development of simple three-dimensional games
+The main goal of the WBenchProject is to create a lightweight java game engine for the development of simple three-dimensional games
 
 ## Get Started
 
 ### 1. Add Dependency
 
-To include JavaGems3D in your project, add the following dependency to your `pom.xml`:
+To include JavaGems3D in your WBenchProject, add the following dependency to your `pom.xml`:
 
 ```xml
 

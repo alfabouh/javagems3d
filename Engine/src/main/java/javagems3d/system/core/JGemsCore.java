@@ -1,42 +1,28 @@
 package javagems3d.system.core;
 
-import api.events.EventBus;
 import api.system.JGemsAPI;
-import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
-import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.math.Plane;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
-import javagems3d.help.JGemsCameraHelper;
 import javagems3d.help.JGemsControllerHelper;
 import javagems3d.help.JGemsCoreHelper;
 import javagems3d.help.JGemsWindowHelper;
-import javagems3d.physics.entities.bullet.wrappers.BulletBody;
-import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.mapping.IGameMap;
+import javagems3d.mapping.JGemsMapping;
+import javagems3d.mapping.processing.base.IMapProcessor;
+import javagems3d.mapping.processing.callbacks.IMapActionCallback;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
-import javagems3d.mapping.loading.IMapProcessingCallback;
-import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
-import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
-import org.joml.Vector3f;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
-import api.events.EventLauncher;
-import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
-import javagems3d.system.core.player.LocalPlayer;
-import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.stat.PerformanceStat;
 import logger.managers.JGemsLogging;
-import javagems3d.temp.map_sys.save.objects.map_prop.FogProp;
-import javagems3d.temp.map_sys.save.objects.map_prop.SkyProp;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -45,7 +31,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
-public class JGemsCore implements ICore {
+public final class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
     public static final String ENG_NAME = "JavaGems 3D";
     public static final String ENG_VER = "0.30a-dev";
@@ -58,8 +44,7 @@ public class JGemsCore implements ICore {
     private final EngineState engineState;
     private final RequestsFromThreads requestsFromThreads;
     private Thread systemThread;
-    private IMapLoader mapLoader;
-    private LocalPlayer localPlayer;
+    private JGemsMapping mapping;
 
     private final Set<Exception> exceptionsBuffer;
 
@@ -71,10 +56,13 @@ public class JGemsCore implements ICore {
 
         this.engineState = new EngineState();
         this.systemThread = null;
-        this.mapLoader = null;
 
         this.requestsFromThreads = new RequestsFromThreads();
         this.exceptionsBuffer = SyncManager.createSyncronisedSet();
+    }
+
+    private void createMappingObject() {
+        this.mapping = new JGemsMapping((SceneWorld) this.getScreen().getSceneWorld(), this.getPhysics().getPhysicsWorld(), this.getResourceManager());
     }
 
     public void update() {
@@ -86,175 +74,71 @@ public class JGemsCore implements ICore {
         return GLFW.glfwGetCurrentContext() != 0L;
     }
 
-    public void entryMap(IMapLoader mapLoader) {
-        if (!this.isCurrentThreadOGL()) {
-            this.requestsFromThreads.loadMap = mapLoader;
-            return;
-        }
-        if (this.getMapLoader() != null) {
-            Log.get().error("Firstly, the current mapping should be destroyed");
-            return;
-        }
-        this.mapLoader = mapLoader;
-        this.readAndProcessMapData();
-        this.requestsFromThreads.loadMap = null;
-    }
-
     public void exitMap() {
         if (!this.isCurrentThreadOGL()) {
             this.requestsFromThreads.destroyMap = true;
             return;
         }
-        Log.get().trace("Exit mapping");
-        EventLauncher.pushEvent(new EventBus.MapDestroy(EventBus.Run.PRE, mapLoader));
-        this.pauseGame();
-        this.getScreen().showGameLoadingScreen("Exiting world...");
-        this.clear();
-        JGemsCoreHelper.unPauseGameAndUnLockUnPausing();
-        JGemsCoreHelper.unLockController();
-        JGemsCameraHelper.setCurrentCamera(null);
-        JGemsWindowHelper.setWindowFocus(false);
-        this.getScreen().removeLoadingScreen();
-        this.mapLoader = null;
-        JGems3D.get().showMainMenu();
-        EventLauncher.pushEvent(new EventBus.MapDestroy(EventBus.Run.POST, mapLoader));
-        this.requestsFromThreads.destroyMap = false;
-    }
-
-    private void readAndProcessMapData() {
-        if (!this.engineState().isEngineIsReady()) {
-            throw new JGemsRuntimeException("Attempted to load mapping, before initialization");
-        }
-
-        if (this.getMapLoader() == null) {
-            Log.get().error("Invalid mapping");
+        if (!this.getMapping().isMapValid()) {
             return;
         }
 
-        SystemResources globalRes = this.getResourceManager().getGlobalResources();
-        SystemResources localRes = this.getResourceManager().getLocalResources();
+        this.pauseGame();
+        this.getScreen().showGameLoadingScreen("Exiting world...");
 
-        this.getScreen().showGameLoadingScreen("Loading Map...");
-        this.createWorlds();
-        Log.get().trace("Loading mapping: " + this.currentMapName());
-        PhysicsWorld physicsWorld = this.getPhysics().getPhysicsProcessor().getPhysicsWorld();
-        SceneWorld sceneWorld = (SceneWorld) this.getScreen().getSceneWorld();
-        JGemsEnvironment environment = (JGemsEnvironment) sceneWorld.getEnvironment();
+        this.getMapping().destroyMap((IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
 
-        EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.PRE, mapLoader));
-        this.getMapLoader().preLoad(physicsWorld, sceneWorld);
+        this.getSoundManager().stopAllSounds();
+        this.getResourceManager().destroyResourcesDataCache();
+        this.getResourceManager().getLocalResources().destroy();
+        System.gc();
 
-        FogProp fogProp = this.getMapLoader().getLevelInfo().getMapProperties().getFogProp();
-        SkyProp skyProp = this.getMapLoader().getLevelInfo().getMapProperties().getSkyProp();
+        this.getScreen().getScene().setCamera(null);
+        this.getScreen().getWindow().setFocus(false);
 
-        if (fogProp != null) {
-            if (fogProp.isFogEnabled()) {
-                environment.getFogManager().setColor(fogProp.getFogColor());
-                environment.getFogManager().setDensity(fogProp.getFogDensity());
-                environment.getSkyBox().setSkyCoveredByFog(fogProp.isSkyCoveredByFog());
-            } else {
-                environment.getFogManager().disable();
-            }
+        this.getScreen().removeLoadingScreen();
+        JGems3D.get().showMainMenu();
+        this.setLockedResuming(false);
+        this.getScreen().getControllerDispatcher().setLockedController(false);
+
+        this.requestsFromThreads.destroyMap = false;
+    }
+
+    public void loadMap(@NotNull IMapProcessor mapProcessor) {
+        if (!this.engineState().isEngineIsReady()) {
+            throw new JGemsRuntimeException("Attempted to load mapping, before initialization");
         }
+        this.getSoundManager().stopAllSounds();
+        JGemsCoreHelper.getScreen().showGameLoadingScreen("Loading Map: " + mapProcessor.getMapName() + "(" + mapProcessor.getMapInformation() + ")");
 
-        if (skyProp != null) {
-            CubeMapTexture cubeMapProgram = globalRes.getResource(skyProp.getSkyBoxPath());
-            if (cubeMapProgram != null) {
-                environment.getSkyBox().setSky2DTexture(cubeMapProgram);
-            }
-            environment.getSkyBox().getSun().setLightPosition(skyProp.getSunPos());
-            environment.getSkyBox().getSun().setLightColor(skyProp.getSunColor());
-            environment.getSkyBox().getSun().setSunBrightness(skyProp.getSunBrightness());
-        }
-
-        this.getMapLoader().fillSkyBox(environment.getSkyBox().getBackground());
-        this.getMapLoader().createMap(globalRes, localRes, physicsWorld, sceneWorld);
-
-        Pair<Vector3f, Double> pair = this.getMapLoader().getLevelInfo().chooseRandomSpawnPoint();
-        Vector3f startPos = new Vector3f(pair.getFirst());
-        Vector3f startRot = new Vector3f(0.0f, (float) (pair.getSecond() + (Math.PI / 2.0f)), 0.0f);
-        if (this.getMapLoader().playerConstructor() != null) {
-            this.localPlayer = new LocalPlayer(this.getMapLoader().playerConstructor());
-            this.getLocalPlayer().addPlayerInWorlds(physicsWorld, startPos, startRot);
-            JGemsControllerHelper.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, this.getLocalPlayer().getEntityPlayer());
-            JGemsCameraHelper.enableAttachedCamera((WorldItem) this.getLocalPlayer().getEntityPlayer());
-        } else {
-            JGemsCameraHelper.enableFreeCamera(JGemsControllerHelper.getCurrentController(), startPos, startRot);
-        }
-        Log.get().info("Successfully loaded mapping: " + this.currentMapName());
+        this.getMapping().loadMap(mapProcessor, (IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
         JGemsControllerHelper.setCursorInCenter();
-
-        if (true) {//TODO
-           this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);
-        }
-
-        this.getMapLoader().postLoad(physicsWorld, sceneWorld);
-        EventLauncher.pushEvent(new EventBus.MapLoad(EventBus.Run.POST, mapLoader));
-        this.getResourceManager().writeResourcesDataCache();
-        ((IMapProcessingCallback) this.getScreen().getScene().getSceneRenderer()).onMapLoaded(this.getMapLoader(), this.getResourceManager());
 
         JGemsWindowHelper.setWindowFocus(true);
         this.getScreen().removeLoadingScreen();
 
-        this.unPauseGame();
+        this.resumeGame();
+        this.setLockedResuming(false);
+        this.getScreen().getControllerDispatcher().setLockedController(false);
+        this.requestsFromThreads.mapProcessor = null;
     }
 
-    private void buildInvisibleBorders(PhysicsWorld physicsWorld, int mapSize) {
-        float worldSize = (float) mapSize;
+    @SuppressWarnings("all")
+    public boolean isLockedResuming() {
+        return this.engineState().lockedUnPausing;
+    }
 
-        PlaneCollisionShape planeShape1 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(1, 0, 0), -worldSize));
-        PlaneCollisionShape planeShape2 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(-1, 0, 0), -worldSize));
-        PlaneCollisionShape planeShape3 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 1, 0), -worldSize));
-        PlaneCollisionShape planeShape4 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, -1, 0), -worldSize));
-        PlaneCollisionShape planeShape5 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 0, 1), -worldSize));
-        PlaneCollisionShape planeShape6 = new PlaneCollisionShape(new Plane(new com.jme3.math.Vector3f(0, 0, -1), -worldSize));
-
-        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape1, 0), "border_wall1"));
-        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape2, 0), "border_wall2"));
-        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape3, 0), "border_wall3"));
-        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape4, 0), "border_wall4"));
-        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape5, 0), "border_wall5"));
-        physicsWorld.addItem(new BulletBody(physicsWorld, new PhysicsRigidBody(planeShape6, 0), "border_wall6"));
+    public void setLockedResuming(boolean lock) {
+        this.engineState().lockedUnPausing = lock;
     }
 
     public void pauseGame() {
         this.engineState().paused = true;
     }
 
-    public void unPauseGame() {
-        if (!this.isLockedUnPausing()) {
+    public void resumeGame() {
+        if (!this.isLockedResuming()) {
             this.engineState().paused = false;
-        }
-    }
-
-    public void clear() {
-        if (this.mapLoader == null) {
-            return;
-        }
-        if (!this.engineState().isEngineIsReady()) {
-            Log.get().warn("Engine thread is not ready to be cleaned");
-            return;
-        }
-        this.getSoundManager().stopAllSounds();
-        this.destroyWorlds();
-        ((IMapProcessingCallback) this.getScreen().getScene().getSceneRenderer()).onMapDestroyed(this.getMapLoader(), this.getResourceManager());
-        this.getResourceManager().destroyResourcesDataCache();
-        this.getResourceManager().getLocalResources().destroy();
-        this.localPlayer = null;
-        System.gc();
-    }
-
-    private void createWorlds() {
-        this.getPhysics().getPhysicsWorld().onWorldStart();
-        this.getScreen().getSceneWorld().onWorldStart();
-    }
-
-    private void destroyWorlds() {
-        if (this.getPhysics().getPhysicsWorld() != null) {
-            this.getPhysics().getPhysicsWorld().onWorldEnd();
-        }
-        if (this.getScreen().getSceneWorld() != null) {
-            this.getScreen().getSceneWorld().onWorldEnd();
         }
     }
 
@@ -277,6 +161,7 @@ public class JGemsCore implements ICore {
                 JGemsAPI.APIAppData().postInit(this);
                 this.engineState().gameResourcesLoaded = true;
                 this.engineState().engineIsReady = true;
+                this.createMappingObject();
                 this.getScreen().runRenderThread();
             } catch (Exception e) {
                 JGems3D.close(null);
@@ -284,6 +169,7 @@ public class JGemsCore implements ICore {
                 Log.get().exception(e);
             } finally {
                 try {
+                    this.exitMap();
                     JGems3D.freeSync();
                     if (!this.getPhysics().waitForFullTermination()) {
                         Log.get().error("Waited for physics termination too long...");
@@ -291,12 +177,10 @@ public class JGemsCore implements ICore {
                     if (this.getScreen().getScene() != null) {
                         this.getScreen().getScene().getSceneRenderer().destroySceneIndirectRenderBuffer();
                     }
-                    this.destroyWorlds();
                     this.getSoundManager().stopAllSounds();
                     this.getResourceManager().destroy();
                     this.getSoundManager().destroy();
                     this.getPhysics().getPhysicsProcessor().clearResources();
-                    this.localPlayer = null;
                     JGemsAPI.get().close();
                     Log.get().debug("END");
                 } catch (Exception e) {
@@ -344,6 +228,26 @@ public class JGemsCore implements ICore {
         }
     }
 
+    public boolean isCurrentGameMapPlayerValid() {
+        return this.getMapping().isPlayerValid();
+    }
+
+    public boolean isCurrentGameMapValid() {
+        return this.getMapping().isMapValid();
+    }
+
+    public IPlayer getCurrentGameMapPlayer() {
+        return this.getMapping().getCurrentPlayer();
+    }
+
+    public IGameMap getCurrentGameMap() {
+        return this.getMapping().getCurrentLoadedMap();
+    }
+
+    private JGemsMapping getMapping() {
+        return this.mapping;
+    }
+
     private Set<Exception> getExceptionsBuffer() {
         return this.exceptionsBuffer;
     }
@@ -360,33 +264,12 @@ public class JGemsCore implements ICore {
         return this.jGemsPhysics;
     }
 
-    public LocalPlayer getLocalPlayer() {
-        return this.localPlayer;
-    }
-
     public JGemsResourceManager getResourceManager() {
         return this.resourceManager;
     }
 
-    public String currentMapName() {
-        return this.getMapLoader().getLevelInfo().getMapProperties().getMapName();
-    }
-
     public Thread getSystemThread() {
         return this.systemThread;
-    }
-
-    public IMapLoader getMapLoader() {
-        return this.mapLoader;
-    }
-
-    @SuppressWarnings("all")
-    public boolean isLockedUnPausing() {
-        return this.engineState().lockedUnPausing;
-    }
-
-    public void setLockedUnPausing(boolean lockedUnPausing) {
-        this.engineState().lockedUnPausing = lockedUnPausing;
     }
 
     public static void printSystemInfo() {
@@ -466,15 +349,15 @@ public class JGemsCore implements ICore {
 
     private class RequestsFromThreads {
         public boolean destroyMap;
-        public IMapLoader loadMap;
+        public IMapProcessor mapProcessor;
 
         public void update() {
             if (this.destroyMap) {
                 JGemsCore.this.exitMap();
                 return;
             }
-            if (this.loadMap != null) {
-                JGemsCore.this.entryMap(this.loadMap);
+            if (this.mapProcessor != null) {
+                JGemsCore.this.loadMap(this.mapProcessor);
             }
         }
     }
@@ -505,7 +388,7 @@ public class JGemsCore implements ICore {
         }
 
         public boolean isPaused() {
-            return JGemsCore.this.getMapLoader() == null || this.paused;
+            return !JGemsCore.this.getMapping().isMapValid() || this.paused;
         }
     }
 }

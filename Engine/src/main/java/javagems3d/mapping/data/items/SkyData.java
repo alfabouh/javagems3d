@@ -1,4 +1,4 @@
-package javagems3d.mapping.data;
+package javagems3d.mapping.data.items;
 
 import com.google.gson.*;
 import javagems3d.system.service.args.ArbitraryArguments;
@@ -19,10 +19,6 @@ public class SkyData implements SectionData<SkyData> {
         this.skyboxPath = skyboxPath;
     }
 
-    public String getSkyboxPath() {
-        return this.skyboxPath;
-    }
-
     @Override
     public JSONFileManaging.@NotNull SerializationRules<SkyData> getSerializationRules() {
         return new JSONFileManaging.SerializationRules<SkyData>() {
@@ -30,7 +26,7 @@ public class SkyData implements SectionData<SkyData> {
             public JsonElement write(SkyData toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.add("skyboxPath", context.serialize(toWrite.getSkyboxPath()));
+                    jsonObject.add("skyboxPath", context.serialize(toWrite.skyboxPath));
                     return jsonObject;
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't write: " + toWrite.getClass(), e);

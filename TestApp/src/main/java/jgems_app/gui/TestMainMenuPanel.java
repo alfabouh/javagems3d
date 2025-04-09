@@ -15,14 +15,16 @@ import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.help.JGemsUIHelper;
-import javagems3d.system.core.player.IPlayerConstructor;
-import javagems3d.system.map.loaders.custom.DefaultMap;
 
+import javagems3d.mapping.IGameMap;
+import javagems3d.mapping.processing.ExternalMapProcessor;
+import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
+import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import jgems_app.map.TestMap;
 import org.joml.Vector2f;
@@ -70,18 +72,22 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         this.renderContent(JGemsUI, window, frameDeltaTicks);
         JGemsUI.buttonUI("SponzaMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().entryMap(new TestMap());
+                    JGems3D.get().loadMap(new TestMap());
                     JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                 });
 
         JGemsUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+                //.setOnClick(() -> {
+                //    JGems3D.get().loadMap(new ManualMapProcessor.Default() {
+                //        @Override
+                //        public @NotNull IGameMap.IPlayerConstructor getPlayerConstructor() {
+                //            return (world) -> new Pair<>(new TestPlayer(world, new Vector3f(0.0f), new Vector3f(0.0f)), null);
+                //        }
+                //    });
+                //    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
+                //});
                 .setOnClick(() -> {
-                    JGems3D.get().entryMap(new DefaultMap() {
-                        @Override
-                        public @NotNull IPlayerConstructor playerConstructor() {
-                            return (world, startPos, startRot) -> new Pair<>(new TestPlayer(world, startPos, startRot), null);
-                        }
-                    });
+                    JGems3D.get().loadMap(new ExternalMapProcessor.Default(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
                     JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                 });
 

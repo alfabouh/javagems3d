@@ -12,7 +12,7 @@ import org.joml.Vector3f;
 
 import java.lang.reflect.Type;
 
-public final class SavedObjectTemplate implements IJSONSerializable<SavedObjectTemplate> {
+public final class MapObjectTemplate implements IJSONSerializable<MapObjectTemplate> {
     private int id;
     private String objectId;
     private String objectGroup;
@@ -23,10 +23,10 @@ public final class SavedObjectTemplate implements IJSONSerializable<SavedObjectT
     private Vector3f rotation;
     private Vector3f scaling;
 
-    private SavedObjectTemplate() {
+    private MapObjectTemplate() {
     }
 
-    public SavedObjectTemplate(int id, String objectId, String objectGroup, TagsContainer tagsContainer, Vector3f position, Vector3f rotation, Vector3f scaling) {
+    public MapObjectTemplate(int id, String objectId, String objectGroup, TagsContainer tagsContainer, Vector3f position, Vector3f rotation, Vector3f scaling) {
         this.id = id;
         this.objectGroup = objectGroup;
         this.objectId = objectId;
@@ -65,10 +65,10 @@ public final class SavedObjectTemplate implements IJSONSerializable<SavedObjectT
     }
 
     @Override
-    public JSONFileManaging.@NotNull SerializationRules<SavedObjectTemplate> getSerializationRules() {
-        return new JSONFileManaging.SerializationRules<SavedObjectTemplate>() {
+    public JSONFileManaging.@NotNull SerializationRules<MapObjectTemplate> getSerializationRules() {
+        return new JSONFileManaging.SerializationRules<MapObjectTemplate>() {
             @Override
-            public JsonElement write(SavedObjectTemplate toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public JsonElement write(MapObjectTemplate toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = new JsonObject();
 
@@ -87,21 +87,21 @@ public final class SavedObjectTemplate implements IJSONSerializable<SavedObjectT
             }
 
             @Override
-            public SavedObjectTemplate read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public MapObjectTemplate read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-                    SavedObjectTemplate savedObjectTemplate = new SavedObjectTemplate();
+                    MapObjectTemplate mapObjectTemplate = new MapObjectTemplate();
 
-                    savedObjectTemplate.id = context.deserialize(jsonObject.get("id"), String.class);
-                    savedObjectTemplate.objectGroup = context.deserialize(jsonObject.get("objectGroup"), String.class);
-                    savedObjectTemplate.objectId = context.deserialize(jsonObject.get("objectId"), String.class);
-                    savedObjectTemplate.position = context.deserialize(jsonObject.get("position"), Vector3f.class);
-                    savedObjectTemplate.rotation = context.deserialize(jsonObject.get("rotation"), Vector3f.class);
-                    savedObjectTemplate.scaling = context.deserialize(jsonObject.get("scaling"), Vector3f.class);
-                    savedObjectTemplate.tagsContainer = context.deserialize(jsonObject.get("tagsContainer"), TagsContainer.class);
+                    mapObjectTemplate.id = context.deserialize(jsonObject.get("id"), String.class);
+                    mapObjectTemplate.objectGroup = context.deserialize(jsonObject.get("objectGroup"), String.class);
+                    mapObjectTemplate.objectId = context.deserialize(jsonObject.get("objectId"), String.class);
+                    mapObjectTemplate.position = context.deserialize(jsonObject.get("position"), Vector3f.class);
+                    mapObjectTemplate.rotation = context.deserialize(jsonObject.get("rotation"), Vector3f.class);
+                    mapObjectTemplate.scaling = context.deserialize(jsonObject.get("scaling"), Vector3f.class);
+                    mapObjectTemplate.tagsContainer = context.deserialize(jsonObject.get("tagsContainer"), TagsContainer.class);
 
-                    return savedObjectTemplate;
+                    return mapObjectTemplate;
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

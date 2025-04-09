@@ -1,4 +1,4 @@
-package javagems3d.mapping.data;
+package javagems3d.mapping.data.items;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
@@ -7,40 +7,40 @@ import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javagems3d.mapping.data.templates.SavedObjectTemplate;
+import javagems3d.mapping.data.templates.MapObjectTemplate;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
 public class ObjectsData implements SectionData<ObjectsData> {
-    public Set<SavedObjectTemplate> propObjects;
-    public Set<SavedObjectTemplate> markerObjects;
-    public Set<SavedObjectTemplate> entityObjects;
-    public Set<SavedObjectTemplate> pointLights;
+    public Set<MapObjectTemplate> propObjects;
+    public Set<MapObjectTemplate> markerObjects;
+    public Set<MapObjectTemplate> entityObjects;
+    public Set<MapObjectTemplate> pointLights;
 
     private ObjectsData() {
     }
 
-    public ObjectsData(Set<SavedObjectTemplate> propObjects, Set<SavedObjectTemplate> markerObjects, Set<SavedObjectTemplate> entityObjects, Set<SavedObjectTemplate> pointLights) {
+    public ObjectsData(Set<MapObjectTemplate> propObjects, Set<MapObjectTemplate> markerObjects, Set<MapObjectTemplate> entityObjects, Set<MapObjectTemplate> pointLights) {
         this.propObjects = propObjects;
         this.markerObjects = markerObjects;
         this.entityObjects = entityObjects;
         this.pointLights = pointLights;
     }
 
-    public Set<SavedObjectTemplate> getPropObjects() {
+    public Set<MapObjectTemplate> getPropObjects() {
         return this.propObjects;
     }
 
-    public Set<SavedObjectTemplate> getMarkerObjects() {
+    public Set<MapObjectTemplate> getMarkerObjects() {
         return this.markerObjects;
     }
 
-    public Set<SavedObjectTemplate> getEntityObjects() {
+    public Set<MapObjectTemplate> getEntityObjects() {
         return this.entityObjects;
     }
 
-    public Set<SavedObjectTemplate> getPointLights() {
+    public Set<MapObjectTemplate> getPointLights() {
         return this.pointLights;
     }
 
@@ -69,10 +69,10 @@ public class ObjectsData implements SectionData<ObjectsData> {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
                     ObjectsData objectsData = new ObjectsData();
 
-                    objectsData.propObjects = context.deserialize(jsonObject.get("propObjects"), new TypeToken<Set<SavedObjectTemplate>>() {}.getType());
-                    objectsData.markerObjects = context.deserialize(jsonObject.get("markerObjects"), new TypeToken<Set<SavedObjectTemplate>>() {}.getType());
-                    objectsData.entityObjects = context.deserialize(jsonObject.get("entityObjects"), new TypeToken<Set<SavedObjectTemplate>>() {}.getType());
-                    objectsData.pointLights = context.deserialize(jsonObject.get("pointLights"), new TypeToken<Set<SavedObjectTemplate>>() {}.getType());
+                    objectsData.propObjects = context.deserialize(jsonObject.get("propObjects"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
+                    objectsData.markerObjects = context.deserialize(jsonObject.get("markerObjects"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
+                    objectsData.entityObjects = context.deserialize(jsonObject.get("entityObjects"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
+                    objectsData.pointLights = context.deserialize(jsonObject.get("pointLights"), new TypeToken<Set<MapObjectTemplate>>() {}.getType());
 
                     return objectsData;
                 } catch (Exception e) {

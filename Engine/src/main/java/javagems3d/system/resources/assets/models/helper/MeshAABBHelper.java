@@ -140,7 +140,7 @@ public abstract class MeshAABBHelper {
                                         for (int i = 0; i < JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS; i++) {
                                             SkeletonData skeletonData = mesh.getSkeletonData();
                                             if (skeletonData == null) {
-                                                throw new JGemsRuntimeException("Couldn't calculate animated model's AABB! It's skeleton is NULL!");
+                                                throw new JGemsRuntimeException("Couldn't calculate animated model's AABB! It's skeleton is NULL");
                                             }
                                             int vertexIndex = k / 3;
                                             float weight = skeletonData.getWeights().get(vertexIndex * JGemsConfig.SYSTEM.ANIM_MAX_WEIGHTS + i);

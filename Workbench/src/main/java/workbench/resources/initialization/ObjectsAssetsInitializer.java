@@ -17,7 +17,7 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
-import workbench.graphics.objects.WBenchIdentifiers;
+import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
@@ -25,41 +25,44 @@ import workbench.resources.WBenchResourceManager;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class ObjectsAssetsInitializer implements IAssetsInitializer {
     public void load(SystemResources systemResources) {
         APIWBenchDataManager apiwBenchDataManager = WBench.APIEditorResources().getEditorResourcesManager();
 
         {
-            Set<Map.Entry<String, ResourceEntity>> entityEntry = apiwBenchDataManager.getResourceEntityMap().entrySet();
-            for (Map.Entry<String, ResourceEntity> entry : entityEntry) {
-                ResourceEntity resourceEntity = entry.getValue();
-                WBenchObjectData wBenchObjectData = resourceEntity.getFabricWBench().create();
-                WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(WBenchIdentifiers.ENTITY, resourceEntity), wBenchObjectData);
-                WBench.get().getProjectObjects().addEntity(resourceEntity.getGroupId(), wBenchObjectTemplate);
+            Set<Map.Entry<String, APIWBenchDataManager.TemplatesTable<ResourceEntity>>> entityEntry = apiwBenchDataManager.getResourceEntityMap().entrySet();
+            for (Map.Entry<String, APIWBenchDataManager.TemplatesTable<ResourceEntity>> entry : entityEntry) {
+                final APIWBenchDataManager.TemplatesTable<ResourceEntity> table = entry.getValue();
+                for (ResourceEntity resource : table.getTemplateMap().values()) {
+                    WBenchObjectData wBenchObjectData = resource.getFabricWBench().create();
+                    WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(MapObjectsIdentifiers.ENTITY, resource), wBenchObjectData);
+                    WBench.get().getProjectObjects().addEntity(entry.getKey(), wBenchObjectTemplate);
+                }
             }
         }
 
         {
-            Set<Map.Entry<String, ResourceProp>> propEntry = apiwBenchDataManager.getResourcePropMap().entrySet();
-            for (Map.Entry<String, ResourceProp> entry : propEntry) {
-                ResourceProp resourceProp = entry.getValue();
-                WBenchObjectData wBenchObjectData = resourceProp.getFabricWBench().create();
-                WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(WBenchIdentifiers.PROP, resourceProp), wBenchObjectData);
-                WBench.get().getProjectObjects().addProp(resourceProp.getGroupId(), wBenchObjectTemplate);
+            Set<Map.Entry<String, APIWBenchDataManager.TemplatesTable<ResourceProp>>> propEntry = apiwBenchDataManager.getResourcePropMap().entrySet();
+            for (Map.Entry<String, APIWBenchDataManager.TemplatesTable<ResourceProp>> entry : propEntry) {
+                final APIWBenchDataManager.TemplatesTable<ResourceProp> table = entry.getValue();
+                for (ResourceProp resource : table.getTemplateMap().values()) {
+                    WBenchObjectData wBenchObjectData = resource.getFabricWBench().create();
+                    WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(MapObjectsIdentifiers.PROP, resource), wBenchObjectData);
+                    WBench.get().getProjectObjects().addEntity(entry.getKey(), wBenchObjectTemplate);
+                }
             }
         }
 
         {
-            Set<Map.Entry<String, ResourceMarker>> markerEntry = apiwBenchDataManager.getResourceMarker().entrySet();
-            for (Map.Entry<String, ResourceMarker> entry : markerEntry) {
-                ResourceMarker resourceMarker = entry.getValue();
-                WBenchMarkerData wBenchObjectData = resourceMarker.getFabricWBench().create();
-                WBenchMarkerTemplate wBenchMarkerTemplate = this.constructMarkerTemplate(systemResources, this.getId(WBenchIdentifiers.MARKER, resourceMarker), wBenchObjectData);
-                WBench.get().getProjectObjects().addMarker(resourceMarker.getGroupId(), wBenchMarkerTemplate);
+            Set<Map.Entry<String, APIWBenchDataManager.TemplatesTable<ResourceMarker>>> markerEntry = apiwBenchDataManager.getResourceMarkerMap().entrySet();
+            for (Map.Entry<String, APIWBenchDataManager.TemplatesTable<ResourceMarker>> entry : markerEntry) {
+                final APIWBenchDataManager.TemplatesTable<ResourceMarker> table = entry.getValue();
+                for (ResourceMarker resource : table.getTemplateMap().values()) {
+                    WBenchMarkerData wBenchObjectData = resource.getFabricWBench().create();
+                    WBenchMarkerTemplate wBenchObjectTemplate = this.constructMarkerTemplate(systemResources, this.getId(MapObjectsIdentifiers.MARKER, resource), wBenchObjectData);
+                    WBench.get().getProjectObjects().addEntity(entry.getKey(), wBenchObjectTemplate);
+                }
             }
         }
     }

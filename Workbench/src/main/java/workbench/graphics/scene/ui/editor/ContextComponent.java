@@ -149,7 +149,7 @@ public class ContextComponent {
             ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
             ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
             ImBoolean opened = new ImBoolean(true);
-            if (ImGui.begin("Project", opened, ImGuiWindowFlags.NoResize)) {
+            if (ImGui.begin("WBenchProject", opened, ImGuiWindowFlags.NoResize)) {
                 ImGui.text("Map Size");
 
             }

@@ -5,20 +5,20 @@ import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
 import javagems3d.system.resources.managing.resources.SystemResources;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.collections.Triple;
 import javagems3d.system.service.path.JGemsPath;
 import workbench.WBench;
-
-import java.util.Set;
+import java.util.Map;
 
 public class TextureAssetsInitializer implements IAssetsInitializer {
     public void load(SystemResources systemResources) {
         APIWBenchDataManager apiwBenchDataManager = WBench.APIEditorResources().getEditorResourcesManager();
-        Set<Triple<String, String, JGemsPath>> entityEntry = apiwBenchDataManager.getSkyBoxesPath();
-        for (Triple<String, String, JGemsPath> entry : entityEntry) {
-            ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(null, entry.getThird(), entry.getSecond(), new CubeMapTexture.Properties(true));
+        Map<String, Pair<String, JGemsPath>> map = apiwBenchDataManager.getSkyBoxesMap();
+        for (Map.Entry<String, Pair<String, JGemsPath>> entry : map.entrySet()) {
+            ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(null, entry.getValue().getSecond(), entry.getValue().getFirst(), new CubeMapTexture.Properties(true));
             if (cubeMapProgram != null) {
-                WBench.get().getProjectObjects().addSkyBox(entry.getFirst(), cubeMapProgram);
+                WBench.get().getProjectObjects().addSkyBox(entry.getKey(), cubeMapProgram);
             }
         }
     }

@@ -2,6 +2,7 @@ package workbench.graphics.objects;
 
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.help.JGemsMathHelper;
 import javagems3d.mapping.tags.TagsContainer;
@@ -26,7 +27,7 @@ public abstract class WBenchObject extends SceneProp {
     private final TranslationConstraints translationConstraints;
 
     public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
-        super(wBenchWorld, new Model3D(new Pose3D(), meshStructure3D), renderAttributes);
+        super(wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
         this.id = -1;
         this.objectId = objectId;
         this.tagsContainer = new TagsContainer(tagsContainer);
@@ -80,7 +81,7 @@ public abstract class WBenchObject extends SceneProp {
             float clampedZ = JGemsMathHelper.clamp(currentPos.z, -WBench.MAP_SIZE + halfDepth, WBench.MAP_SIZE - halfDepth);
 
             if (worldSize.x > WBench.MAP_SIZE || worldSize.y > WBench.MAP_SIZE || worldSize.z > WBench.MAP_SIZE) {
-                Log.get().warn("Object " + this + " was removed due to it's size!");
+                Log.get().warn("Object " + this + " was removed due to it's size");
                 this.setDead();
                 return;
             }

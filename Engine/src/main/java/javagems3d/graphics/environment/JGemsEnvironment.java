@@ -35,8 +35,13 @@ public class JGemsEnvironment implements IEnvironment {
     public void destroyEnvironment() {
         this.getSkyBox().destroySkyBox(this.getWorld());
         this.getShadowScene().destroyResources();
+        this.clearPointLightsBuffer();
+    }
+
+    public void clearPointLightsBuffer() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.getLightManager().clearPointLightsBuffer(stack);
+            this.getLightScene().clearPointLightsBuffer(stack);
+            this.getLightScene().getPointLightList().clear();
         }
     }
 
@@ -52,7 +57,7 @@ public class JGemsEnvironment implements IEnvironment {
     }
 
     protected void updateLightsUBO(IWorld world, MemoryStack stack) {
-        this.getLightManager().updateBuffers(stack, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        this.getLightScene().updateBuffers(stack, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
     }
 
     @Override
@@ -64,7 +69,7 @@ public class JGemsEnvironment implements IEnvironment {
         return this.shadowScene;
     }
 
-    public JGemsLightScene getLightManager() {
+    public JGemsLightScene getLightScene() {
         return this.lightManager;
     }
 

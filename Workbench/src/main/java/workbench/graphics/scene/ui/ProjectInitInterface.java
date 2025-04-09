@@ -46,7 +46,7 @@ public class ProjectInitInterface implements DearUIInterface {
         if (f1) {
             ImGui.pushStyleColor(ImGuiCol.FrameBg, 1.0f, 0.0f, 0.0f, 1.0f);
         }
-        ImGui.text("Project name:");
+        ImGui.text("WBenchProject name:");
         ImGui.inputText("##project_name", this.projectName, ImGuiInputTextFlags.CallbackCharFilter, new ImGuiInputTextCallback() {
             @Override
             public void accept(ImGuiInputTextCallbackData data) {
@@ -63,7 +63,7 @@ public class ProjectInitInterface implements DearUIInterface {
         if (f2) {
             ImGui.pushStyleColor(ImGuiCol.FrameBg, 1.0f, 0.0f, 0.0f, 1.0f);
         }
-        ImGui.text("Project path:");
+        ImGui.text("WBenchProject path:");
         ImGui.inputText("##project_path", this.projectPath);
         if (f2) {
             ImGui.popStyleColor();

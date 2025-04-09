@@ -121,7 +121,7 @@ public class Window implements IWindow {
         return this.isWindowActive() && this.isInFocus;
     }
 
-    public void setInFocus(boolean inFocus) {
+    public void setFocus(boolean inFocus) {
         isInFocus = inFocus;
     }
 

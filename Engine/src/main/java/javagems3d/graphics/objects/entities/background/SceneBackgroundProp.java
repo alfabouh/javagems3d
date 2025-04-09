@@ -3,6 +3,7 @@ package javagems3d.graphics.objects.entities.background;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
 
@@ -14,8 +15,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class SceneBackgroundProp extends SceneProp {
-    public SceneBackgroundProp(@NotNull SceneWorld sceneWorld, @Nullable Model3D model, @NotNull RenderAttributes objectRenderingConfiguration) {
-        super(sceneWorld, model, objectRenderingConfiguration);
+    public SceneBackgroundProp(@NotNull SceneWorld sceneWorld, @NotNull PropRenderData propRenderData) {
+        super(sceneWorld, propRenderData);
     }
 
     public final void clearLights() {

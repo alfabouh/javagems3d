@@ -26,10 +26,12 @@ public abstract class SkyBox implements ISkyBox {
         this.background = new Background(world, backGroundViewScaling);
     }
 
+    @Override
     public void setSkyCoveredByFog(boolean skyCoveredByFog) {
         this.isSkyCoveredByFog = skyCoveredByFog;
     }
 
+    @Override
     public void setSky2DTexture(@Nullable ICubeMapProgram sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
     }

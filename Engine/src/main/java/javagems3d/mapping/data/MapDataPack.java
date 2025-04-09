@@ -1,29 +1,29 @@
-package workbench.project;
+package javagems3d.mapping.data;
 
 import com.google.gson.*;
+import javagems3d.mapping.data.items.FogData;
+import javagems3d.mapping.data.items.ObjectsData;
+import javagems3d.mapping.data.items.SkyData;
+import javagems3d.mapping.data.items.SunData;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.IJSONSerializable;
 import javagems3d.system.service.json.JSONFileManaging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javagems3d.mapping.data.FogData;
-import javagems3d.mapping.data.ObjectsData;
-import javagems3d.mapping.data.SkyData;
-import javagems3d.mapping.data.SunData;
 
 import java.lang.reflect.Type;
 
-public final class ProjectDataPacket implements IJSONSerializable<ProjectDataPacket> {
+public final class MapDataPack implements IJSONSerializable<MapDataPack> {
     private FogData fogData;
     private SunData sunData;
     private ObjectsData objectsData;
     private SkyData skyData;
 
-    public ProjectDataPacket() {
+    public MapDataPack() {
     }
 
-    public ProjectDataPacket(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData) {
+    public MapDataPack(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData) {
         this.fogData = fogData;
         this.sunData = sunData;
         this.objectsData = objectsData;
@@ -54,10 +54,10 @@ public final class ProjectDataPacket implements IJSONSerializable<ProjectDataPac
     }
 
     @Override
-    public JSONFileManaging.@NotNull SerializationRules<ProjectDataPacket> getSerializationRules() {
-        return new JSONFileManaging.SerializationRules<ProjectDataPacket>() {
+    public JSONFileManaging.@NotNull SerializationRules<MapDataPack> getSerializationRules() {
+        return new JSONFileManaging.SerializationRules<MapDataPack>() {
             @Override
-            public JsonElement write(ProjectDataPacket toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public JsonElement write(MapDataPack toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = new JsonObject();
 
@@ -73,7 +73,7 @@ public final class ProjectDataPacket implements IJSONSerializable<ProjectDataPac
             }
 
             @Override
-            public ProjectDataPacket read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public MapDataPack read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
 
@@ -82,7 +82,7 @@ public final class ProjectDataPacket implements IJSONSerializable<ProjectDataPac
                     ObjectsData objectsData = context.deserialize(jsonObject.get("objectsData"), ObjectsData.class);
                     SkyData skyData = context.deserialize(jsonObject.get("skyData"), SkyData.class);
 
-                    return new ProjectDataPacket(fogData, sunData, objectsData, skyData);
+                    return new MapDataPack(fogData, sunData, objectsData, skyData);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

@@ -37,7 +37,7 @@ public class DearUIGameInterface implements DearUIInterface {
 
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
         ICamera camera = JGems3D.get().getScreen().getCamera();
-        IPlayer entityPlayerSP = JGems3D.get().getPlayer();
+        IPlayer entityPlayerSP = JGems3D.get().getCurrentGameMapPlayer();
         SceneWorld sceneWorld = JGemsCoreHelper.getSceneWorld();
         JGemsOpenGLRenderer sceneRender = (JGemsOpenGLRenderer) JGems3D.get().getScreen().getScene().getSceneRenderer();
 
@@ -150,8 +150,8 @@ public class DearUIGameInterface implements DearUIInterface {
                     JGemsCameraHelper.enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
                     JGemsControllerHelper.detachController();
                 } else {
-                    JGemsCameraHelper.enableAttachedCamera((WorldItem) JGems3D.get().getPlayer());
-                    JGemsControllerHelper.attachControllerTo(mouseKeyboardController, JGems3D.get().getPlayer());
+                    JGemsCameraHelper.enableAttachedCamera((WorldItem) JGems3D.get().getCurrentGameMapPlayer());
+                    JGemsControllerHelper.attachControllerTo(mouseKeyboardController, JGems3D.get().getCurrentGameMapPlayer());
                 }
             }
 
@@ -165,7 +165,7 @@ public class DearUIGameInterface implements DearUIInterface {
 
             if (ImGui.button("Generate NavMesh")) {
                 Graph graph = JGemsWorldHelper.genSimpleMapGraphFromStartPoint(JGemsCameraHelper.getCurrentCamera().getCamPosition());
-                String mapName = JGemsCoreHelper.getCurrentMap().getLevelInfo().toString();
+                String mapName = JGemsCoreHelper.getCurrentMap().getName();
                 Graph.saveInFile(graph);
                 if (graph == null || graph.getGraph().isEmpty()) {
                     LoggingManager.showWindowInfo("Couldn't create NavMesh");

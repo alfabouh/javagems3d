@@ -124,13 +124,13 @@ public class EditorInterface implements DearUIInterface {
         }
 
         ImGui.beginMainMenuBar();
-        if (ImGui.beginMenu("Project")) {
-            if (ImGui.menuItem("Save")) {
-                WBench.get().getProjectManager().saveProject(this.getProjectManager().getWorld(), false);
+        if (ImGui.beginMenu("WBenchProject")) {
+            if (ImGui.menuItem("Save Map")) {
+                WBench.get().getProjectManager().saveProject(false);
             }
-            if (ImGui.menuItem("Compile")) {
-
-            }
+           // if (ImGui.menuItem("Compile")) {
+//
+           // }
             if (ImGui.menuItem("Exit")) {
                 if (LoggingManager.showConfirmationWindowDialog("Are you sure?")) {
                     WBench.get().getProjectManager().closeProject(false);
@@ -219,6 +219,9 @@ public class EditorInterface implements DearUIInterface {
 
         ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         if (ImGui.isWindowHovered()) {
+            if (ImGui.isMouseClicked(1)) {
+                ImGui.setWindowFocus();
+            }
             EditorInterface.isCursorInsideScene = true;
         } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
             EditorInterface.isCursorInsideScene = false;

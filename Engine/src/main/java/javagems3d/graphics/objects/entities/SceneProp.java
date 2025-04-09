@@ -3,6 +3,8 @@ package javagems3d.graphics.objects.entities;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
+import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
+import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
@@ -10,6 +12,7 @@ import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.IWorldTicked;
 
 import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.pose.Pose3D;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,12 +23,14 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class SceneProp extends SceneObject implements IWorldTicked {
+    private final IModelConstructor<Void> propModelConstructor;
     private final List<Light> lightList;
     private boolean isVisible;
     private boolean isDead;
 
-    public SceneProp(@NotNull IRenderWorld world, @Nullable Model3D model, @NotNull RenderAttributes renderAttributes) {
-        super(world, model, renderAttributes);
+    public SceneProp(@NotNull IRenderWorld world, @NotNull PropRenderData propRenderData) {
+        super(world, new Model3D(new Pose3D(), propRenderData.getMeshDataGroup()), propRenderData.getObjectRenderAttributes());
+        this.propModelConstructor = propRenderData.getPropModelConstructor();
         this.lightList = new ArrayList<>();
         this.isVisible = true;
         this.isDead = false;
@@ -65,6 +70,9 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
     public void onSpawn(IWorld iWorld) {
         Log.get().trace("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
+            if (!this.hasModel() && this.getPropModelConstructor() != null) {
+                this.setModel(new Model3D(new Pose3D(), this.getPropModelConstructor().constructMeshDataGroup(null)));
+            }
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
         }
     }
@@ -82,6 +90,10 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
     public void onUpdate(IWorld iWorld) {
         this.setCullingData(this.pickAABBDataFromMesh());
         this.adjustLightsTranslation(this.getModel().getPose().getPosition(), new Vector3f(0.0f));
+    }
+
+    public IModelConstructor<Void> getPropModelConstructor() {
+        return this.propModelConstructor;
     }
 
     @Override

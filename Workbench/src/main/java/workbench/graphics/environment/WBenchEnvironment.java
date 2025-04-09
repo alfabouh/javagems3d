@@ -2,15 +2,10 @@ package workbench.graphics.environment;
 
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.IEnvironment;
-import javagems3d.graphics.environment.fog.JGemsFogScene;
-import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
-import javagems3d.graphics.environment.shadows.scene.JGemsShadowScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.IWorld;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.lwjgl.system.MemoryStack;
 import workbench.graphics.environment.components.WBenchFogScene;
 import workbench.graphics.environment.components.WBenchLightScene;
@@ -43,7 +38,7 @@ public class WBenchEnvironment implements IEnvironment {
         this.getSkyBox().destroySkyBox(this.getWorld());
         this.getShadowScene().destroyResources();
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            this.getLightManager().clearPointLightsBuffer(stack);
+            this.getLightScene().clearPointLightsBuffer(stack);
         }
     }
 
@@ -58,7 +53,7 @@ public class WBenchEnvironment implements IEnvironment {
     }
 
     protected void updateLightsUBO(IWorld world, MemoryStack stack) {
-        this.getLightManager().updateBuffers(stack, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        this.getLightScene().updateBuffers(stack, world, JGemsTransformManager.INSTANCE.getCameraViewMatrix());
     }
 
     @Override
@@ -70,7 +65,7 @@ public class WBenchEnvironment implements IEnvironment {
         return this.shadowScene;
     }
 
-    public WBenchLightScene getLightManager() {
+    public WBenchLightScene getLightScene() {
         return this.lightManager;
     }
 

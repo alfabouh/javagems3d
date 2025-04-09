@@ -66,7 +66,7 @@ public class WBenchScreen implements IScreen {
             this.setScreenCallbacks();
             OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
         } else {
-            throw new JGemsRuntimeException("Caught service, while building screen!");
+            throw new JGemsRuntimeException("Caught service, while building screen");
         }
     }
 

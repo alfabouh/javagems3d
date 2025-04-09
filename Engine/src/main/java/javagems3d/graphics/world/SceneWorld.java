@@ -4,7 +4,7 @@ import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
-import javagems3d.graphics.objects.entities.SceneProp;
+import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -19,7 +19,6 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
 import javagems3d.graphics.particles.ParticlesEmitter;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.triggers.liquids.base.Liquid;
@@ -91,6 +90,7 @@ public final class SceneWorld implements IRenderWorld {
         if (this.getParticlesEmitter() != null) {
             this.getParticlesEmitter().destroy(this);
         }
+        ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
         this.clearAll();
         EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.POST, this));
     }
@@ -188,16 +188,16 @@ public final class SceneWorld implements IRenderWorld {
     }
 
     public void removeLight(Light light) {
-        this.getEnvironment().getLightManager().removeLight(light);
+        this.getEnvironment().getLightScene().removeLight(light);
     }
 
     public void addLight(Light light) {
-        this.getEnvironment().getLightManager().addLight(light);
+        this.getEnvironment().getLightScene().addLight(light);
     }
 
     public void addItemLight(ILighted keepLights, Light light) {
         keepLights.addLight(light);
-        this.getEnvironment().getLightManager().addLight(light);
+        this.getEnvironment().getLightScene().addLight(light);
     }
 
     public void addWorldItemLight(WorldItem worldItem, Light light) {
@@ -211,7 +211,7 @@ public final class SceneWorld implements IRenderWorld {
             return;
         }
         abstractSceneEntity.addLight(light);
-        this.getEnvironment().getLightManager().addLight(light);
+        this.getEnvironment().getLightScene().addLight(light);
     }
 
     public void removeLightFromById(ILighted keepLights, int i) {

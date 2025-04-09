@@ -5,6 +5,7 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.help.JGemsUIHelper;
+import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -17,7 +18,6 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.screen.window.Window;
-import javagems3d.system.map.loaders.custom.DefaultMap;
 
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -63,7 +63,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
 
         JGemsUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().entryMap(new DefaultMap());
+                    JGems3D.get().loadMap(new ManualMapProcessor.Default());
                     JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                 });
 

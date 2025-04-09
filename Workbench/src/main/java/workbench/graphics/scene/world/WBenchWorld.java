@@ -72,18 +72,18 @@ public class WBenchWorld implements IRenderWorld {
     }
 
     public void removeLight(Light light) {
-        this.getEnvironment().getLightManager().removeLight(light);
+        this.getEnvironment().getLightScene().removeLight(light);
         Log.get().info("Removed light: " + light);
     }
 
     public void addLight(Light light) {
-        this.getEnvironment().getLightManager().addLight(light);
+        this.getEnvironment().getLightScene().addLight(light);
         Log.get().info("Created new light: " + light);
     }
 
     public void addItemLight(ILighted keepLights, Light light) {
         keepLights.addLight(light);
-        this.getEnvironment().getLightManager().addLight(light);
+        this.getEnvironment().getLightScene().addLight(light);
         Log.get().info("Added light: " + light + " to: " + keepLights);
     }
 

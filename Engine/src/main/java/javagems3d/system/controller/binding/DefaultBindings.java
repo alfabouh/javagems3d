@@ -53,7 +53,7 @@ public final class DefaultBindings extends BindingManager {
 
         this.keyEsc = new FunctionalKey(e -> {
             if (e == IKeyAction.KeyAction.CLICK) {
-                if (JGems3D.get().isCurrentMapIsValid()) {
+                if (JGems3D.get().isCurrentGameMapValid()) {
                     if (JGems3D.get().isPaused()) {
                         if (JGems3D.get().getScreen().getControllerDispatcher().getCurrentController() instanceof MouseKeyboardController) {
                             JGemsControllerDispatcher.mouseKeyboardController.setCursorInCenter();
@@ -62,11 +62,11 @@ public final class DefaultBindings extends BindingManager {
                             JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptMMB();
                         }
                         JGems3D.get().unPauseGame();
-                        JGems3D.get().getScreen().getWindow().setInFocus(true);
+                        JGems3D.get().getScreen().getWindow().setFocus(true);
                         JGems3D.get().openUIPanel(new DefaultGamePanel(null));
                     } else {
                         JGems3D.get().pauseGame(true);
-                        JGems3D.get().getScreen().getWindow().setInFocus(false);
+                        JGems3D.get().getScreen().getWindow().setFocus(false);
                         JGems3D.get().openUIPanel(new DefaultPausePanel(null));
                     }
                 }

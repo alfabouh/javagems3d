@@ -60,11 +60,11 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
         }
     }
 
-    public boolean isLockController() {
+    public boolean isControllerLocked() {
         return this.lockController;
     }
 
-    public void setLockController(boolean lockController) {
+    public void setLockedController(boolean lockController) {
         this.lockController = lockController;
     }
 
@@ -73,7 +73,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
     }
 
     public void updateController(IWindow window) {
-        if (this.isLockController()) {
+        if (this.isControllerLocked()) {
             if (this.getCurrentControlledItem() != null) {
                 this.getCurrentControlledItem().performController(new Vector2f(0.0f), new Vector3f(0.0f), false);
             }

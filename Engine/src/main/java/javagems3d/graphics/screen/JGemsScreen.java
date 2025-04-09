@@ -94,7 +94,7 @@ public class JGemsScreen implements IScreen {
             OpenGLRenderer.setViewPort(this.getWindow().getWindowSize());
             this.getWindow().showWindow();
         } else {
-            throw new JGemsRuntimeException("Caught service, while building screen!");
+            throw new JGemsRuntimeException("Caught service, while building screen");
         }
     }
 
@@ -277,7 +277,7 @@ public class JGemsScreen implements IScreen {
 
     private void updateSound() {
         JGems3D.get().getSoundManager().update();
-        if (JGems3D.get().isValidPlayer()) {
+        if (JGems3D.get().isCurrentGameMapPlayerValid()) {
             SoundListener.updateOrientationAndPosition(JGemsTransformManager.INSTANCE.getCameraViewMatrix(), this.getCamera().getCamPosition());
         }
         SoundListener.updateListenerGain(JGemsCoreHelper.getMainObject().getGameSettings());

@@ -1,5 +1,6 @@
 package workbench.graphics.objects;
 
+import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
@@ -49,7 +50,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         tagsContainer.addTag(colorTag);
         tagsContainer.addTag(brightnessTag);
 
-        return WBenchPointLightObject.create(WBenchIdentifiers.POINT_LIGHT + name, wBenchWorld, tagsContainer);
+        return WBenchPointLightObject.create(MapObjectsIdentifiers.POINT_LIGHT + name, wBenchWorld, tagsContainer);
     }
 
     @Override

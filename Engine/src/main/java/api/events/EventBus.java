@@ -13,7 +13,6 @@ import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.triggers.IHasCollisionTrigger;
 import javagems3d.physics.world.triggers.ITriggerAction;
-import javagems3d.system.map.loaders.IMapLoader;
 
 public abstract class EventBus {
     public enum Run {
@@ -144,25 +143,25 @@ public abstract class EventBus {
     }
 
     // section Map
-    public static final class MapLoad implements IEvent {
-        public final Run run;
-        public final IMapLoader mapLoader;
+//   public static final class MapLoad implements IEvent {
+//       public final Run run;
+//       public final IMapLoader mapLoader;
 
-        public MapLoad(Run run, IMapLoader mapLoader) {
-            this.run = run;
-            this.mapLoader = mapLoader;
-        }
-    }
+//       public MapLoad(Run run, IMapLoader mapLoader) {
+//           this.run = run;
+//           this.mapLoader = mapLoader;
+//       }
+//   }
 
-    public static final class MapDestroy implements IEvent {
-        public final Run run;
-        public final IMapLoader mapLoader;
+//   public static final class MapDestroy implements IEvent {
+//       public final Run run;
+//       public final IMapLoader mapLoader;
 
-        public MapDestroy(Run run, IMapLoader mapLoader) {
-            this.run = run;
-            this.mapLoader = mapLoader;
-        }
-    }
+//       public MapDestroy(Run run, IMapLoader mapLoader) {
+//           this.run = run;
+//           this.mapLoader = mapLoader;
+//       }
+//   }
 
     // section Resources
 

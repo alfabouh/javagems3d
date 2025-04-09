@@ -5,9 +5,10 @@ import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.mapping.IGameMap;
+import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.settings.JGemsSettings;
 
 public abstract class JGemsCoreHelper {
@@ -24,7 +25,7 @@ public abstract class JGemsCoreHelper {
     }
 
     public static IPlayer getCurrentPlayer() {
-        return getMainObject().getPlayer();
+        return getMainObject().getCurrentGameMapPlayer();
     }
 
     public static JGemsScreen getScreen() {
@@ -63,8 +64,8 @@ public abstract class JGemsCoreHelper {
         JGems3D.get().pauseGameAndLockUnPausing(pauseSounds);
     }
 
-    public static IMapLoader getCurrentMap() {
-        return JGems3D.get().getCore().getMapLoader();
+    public static IGameMap getCurrentMap() {
+        return JGems3D.get().getCore().getCurrentGameMap();
     }
 
     public static void unPauseGameAndUnLockUnPausing() {
@@ -79,8 +80,8 @@ public abstract class JGemsCoreHelper {
         JGems3D.get().unPauseGame();
     }
 
-    public static void loadMap(IMapLoader mapLoader) {
-        JGems3D.get().entryMap(mapLoader);
+    public static void loadMap(IMapProcessor mapLoader) {
+        JGems3D.get().loadMap(mapLoader);
     }
 
     public static void destroyMap() {

@@ -65,9 +65,9 @@ public class RenderDataInitializer implements IAssetsInitializer {
         this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()));
 
         this.defaultEntityIndirect = new EntityRenderData(RenderAttributes.getDefaultIndirect());
-        this.defaultEntityIndirect = new EntityRenderData(RenderAttributes.getDefaultDirect());
+        this.defaultEntityDirect = new EntityRenderData(RenderAttributes.getDefaultDirect());
         this.defaultPropIndirect = new PropRenderData(RenderAttributes.getDefaultIndirect());
-        this.defaultPropIndirect = new PropRenderData(RenderAttributes.getDefaultDirect());
+        this.defaultPropDirect = new PropRenderData(RenderAttributes.getDefaultDirect());
     }
 
     @Override

@@ -4,6 +4,7 @@ import api.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.help.JGemsCoreHelper;
+import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
@@ -20,7 +21,6 @@ import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.core.JGemsCore;
-import javagems3d.system.map.loaders.IMapLoader;
 import javagems3d.system.resources.localisation.JGemsLocalisation;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -222,21 +222,21 @@ public final class JGems3D {
     }
 
     public void lockController() {
-        this.getScreen().getControllerDispatcher().setLockController(true);
+        this.getScreen().getControllerDispatcher().setLockedController(true);
     }
 
     public void unLockController() {
-        this.getScreen().getControllerDispatcher().setLockController(false);
+        this.getScreen().getControllerDispatcher().setLockedController(false);
     }
 
     public void pauseGameAndLockUnPausing(boolean pauseSounds) {
         this.pauseGame(pauseSounds);
-        this.getCore().setLockedUnPausing(true);
+        this.getCore().setLockedResuming(true);
     }
 
     public void unPauseGameAndUnLockUnPausing() {
         this.unPauseGame();
-        this.getCore().setLockedUnPausing(false);
+        this.getCore().setLockedResuming(false);
     }
 
     public void pauseGame(boolean pauseSounds) {
@@ -247,14 +247,14 @@ public final class JGems3D {
     }
 
     public void unPauseGame() {
-        this.getCore().unPauseGame();
-        if (!this.getCore().isLockedUnPausing()) {
+        this.getCore().resumeGame();
+        if (!this.getCore().isLockedResuming()) {
             this.getSoundManager().resumeAllSounds();
         }
     }
 
-    public void entryMap(IMapLoader mapLoader) {
-        this.getCore().entryMap(mapLoader);
+    public void loadMap(IMapProcessor mapProcessor) {
+        this.getCore().loadMap(mapProcessor);
     }
 
     public void exitMap() {
@@ -312,8 +312,8 @@ public final class JGems3D {
         }
     }
 
-    public boolean isCurrentMapIsValid() {
-        return this.getCore().getMapLoader() != null;
+    public boolean isCurrentGameMapValid() {
+        return this.getCore().isCurrentGameMapValid();
     }
 
     public JGemsResourceManager getResourceManager() {
@@ -325,12 +325,12 @@ public final class JGems3D {
         return this.shouldBeClosed;
     }
 
-    public boolean isValidPlayer() {
-        return this.getCore().getLocalPlayer() != null && this.getPlayer() != null;
+    public boolean isCurrentGameMapPlayerValid() {
+        return this.getCore().isCurrentGameMapPlayerValid();
     }
 
-    public IPlayer getPlayer() {
-        return this.getCore().getLocalPlayer() == null ? null : this.getCore().getLocalPlayer().getEntityPlayer();
+    public IPlayer getCurrentGameMapPlayer() {
+        return this.getCore().getCurrentGameMapPlayer();
     }
 
     public boolean isPaused() {

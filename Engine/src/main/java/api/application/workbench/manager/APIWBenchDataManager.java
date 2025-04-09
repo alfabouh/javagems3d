@@ -1,8 +1,11 @@
 package api.application.workbench.manager;
 
+import api.application.workbench.resources.Resource;
 import api.application.workbench.resources.ResourceEntity;
 import api.application.workbench.resources.ResourceMarker;
 import api.application.workbench.resources.ResourceProp;
+import javagems3d.help.JGemsUtils;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.collections.Triple;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
@@ -11,35 +14,44 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public final class APIWBenchDataManager implements IAPIWBenchDataManager {
-    private final Map<String, ResourceEntity> resourceEntityMap;
-    private final Map<String, ResourceProp> resourcePropMap;
-    private final Map<String, ResourceMarker> resourceMarker;
+    private final Map<String, TemplatesTable<ResourceEntity>> resourceEntityMap;
+    private final Map<String, TemplatesTable<ResourceProp>> resourcePropMap;
+    private final Map<String, TemplatesTable<ResourceMarker>> resourceMarker;
 
-    private final Set<Triple<String, String, JGemsPath>> skyBoxesPath;
+    private final Map<String, Pair<String, JGemsPath>> skyBoxesMap;
 
     public APIWBenchDataManager() {
         this.resourceEntityMap = new HashMap<>();
         this.resourcePropMap = new HashMap<>();
         this.resourceMarker = new HashMap<>();
-        this.skyBoxesPath = new HashSet<>();
+        this.skyBoxesMap = new HashMap<>();
     }
 
     @Override
     public void addResourceEntity(@Nullable String group, @NotNull ResourceEntity resourceEntity) {
-        this.getResourceEntityMap().put(resourceEntity.getNameId(), resourceEntity);
         resourceEntity.setGroupId(group);
+        JGemsUtils.putObjectInMapOrUpdate(this.getResourceEntityMap(), group, new TemplatesTable<>(resourceEntity), (ex, nw) -> {
+            ex.add(resourceEntity);
+            return ex;
+        }, resourceEntity);
     }
 
     @Override
     public void addResourceProp(@Nullable String group, @NotNull ResourceProp resourceProp) {
-        this.getResourcePropMap().put(resourceProp.getNameId(), resourceProp);
         resourceProp.setGroupId(group);
+        JGemsUtils.putObjectInMapOrUpdate(this.getResourcePropMap(), group, new TemplatesTable<>(resourceProp), (ex, nw) -> {
+            ex.add(resourceProp);
+            return ex;
+        }, resourceProp);
     }
 
     @Override
     public void addResourceMarker(@Nullable String group, @NotNull ResourceMarker resourceMarker) {
-        this.getResourceMarker().put(resourceMarker.getNameId(), resourceMarker);
         resourceMarker.setGroupId(group);
+        JGemsUtils.putObjectInMapOrUpdate(this.getResourceMarkerMap(), group, new TemplatesTable<>(resourceMarker), (ex, nw) -> {
+            ex.add(resourceMarker);
+            return ex;
+        }, resourceMarker);
     }
 
     @Override
@@ -49,22 +61,49 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
 
     @Override
     public void addResourceSkyCubeMap(@NotNull String name, @NotNull String extension, @NotNull JGemsPath pathToCubeMapDirectory) {
-        this.getSkyBoxesPath().add(new Triple<>(name, extension, pathToCubeMapDirectory));
+        this.getSkyBoxesMap().put(name, new Pair<>(extension, pathToCubeMapDirectory));
     }
 
-    public Set<Triple<String, String, JGemsPath>> getSkyBoxesPath() {
-        return this.skyBoxesPath;
+    public Map<String, Pair<String, JGemsPath>> getSkyBoxesMap() {
+        return this.skyBoxesMap;
     }
 
-    public Map<String, ResourceEntity> getResourceEntityMap() {
+    public Map<String, TemplatesTable<ResourceEntity>> getResourceEntityMap() {
         return this.resourceEntityMap;
     }
 
-    public Map<String, ResourceProp> getResourcePropMap() {
+    public Map<String, TemplatesTable<ResourceProp>> getResourcePropMap() {
         return this.resourcePropMap;
     }
 
-    public Map<String, ResourceMarker> getResourceMarker() {
+    public Map<String, TemplatesTable<ResourceMarker>> getResourceMarkerMap() {
         return this.resourceMarker;
+    }
+
+    public static class TemplatesTable<T extends Resource<?, ?>> {
+        private final Map<String, T> templateMap;
+
+        @SuppressWarnings("all")
+        public TemplatesTable(Resource<?, ?> resource) {
+            this();
+            this.getTemplateMap().put(resource.getNameId(), (T) resource);
+        }
+
+        public TemplatesTable() {
+            this.templateMap = new HashMap<>();
+        }
+
+        @SuppressWarnings("all")
+        public void add(Resource<?, ?> resource) {
+            this.getTemplateMap().put(resource.getNameId(), (T) resource);
+        }
+
+        public T find(String id) {
+            return this.getTemplateMap().get(id);
+        }
+
+        public Map<String, T> getTemplateMap() {
+            return this.templateMap;
+        }
     }
 }

@@ -10,7 +10,6 @@ import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.JGemsPostFXRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.*;
@@ -36,7 +35,7 @@ import workbench.graphics.scene.nodes.templates.IUIRenderNode;
 import workbench.graphics.scene.ui.EditorInterface;
 import workbench.graphics.scene.ui.ProjectInitInterface;
 import workbench.graphics.scene.world.WBenchWorld;
-import workbench.project.Project;
+import workbench.project.WBenchProject;
 import workbench.resources.WBenchResourceManager;
 
 import java.util.*;
@@ -208,7 +207,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     @Override
-    public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull Project project) {
+    public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull WBenchProject WBenchProject) {
         this.setDefaultNodes();
         this.getDebugLinesDrawer().setup();
 
@@ -228,7 +227,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     @Override
-    public void onClosingProject(WBenchResourceManager resourceManager, @NotNull Project project) {
+    public void onClosingProject(WBenchResourceManager resourceManager, @NotNull WBenchProject WBenchProject) {
         this.destroySceneIndirectRenderBuffer();
         this.getDebugLinesDrawer().clear();
 

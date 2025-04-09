@@ -32,7 +32,7 @@ public abstract class TagItem implements ICopyable<TagItem> {
 
     public TagItem(@NotNull String typeString) {
         if (typeString.isEmpty()) {
-            throw new JGemsRuntimeException("TagItem " + this.getClass() +" should not have empty type!");
+            throw new JGemsRuntimeException("TagItem " + this.getClass() +" should not have empty type");
         }
         this.typeString = typeString;
     }

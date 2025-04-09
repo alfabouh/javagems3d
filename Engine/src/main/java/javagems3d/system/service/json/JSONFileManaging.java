@@ -86,14 +86,44 @@ public class JSONFileManaging {
         return gsonBuilder.setPrettyPrinting().create();
     }
 
-    protected String write(@NotNull Object object, @Nullable ArbitraryArguments metaData) {
+    public String write(@NotNull Object object, @Nullable ArbitraryArguments metaData) {
         Gson gson = this.createGson(metaData);
         return gson.toJson(object);
     }
 
-    protected <T> T read(String jsonString, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
+    public JsonElement read(String jsonString) throws JsonSyntaxException {
+        return JsonParser.parseString(jsonString);
+    }
+
+    public JsonElement read(InputStream stream) throws JsonSyntaxException {
+        try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            String string = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
+            return JsonParser.parseString(string);
+        } catch (IOException | JsonSyntaxException e) {
+            throw new JGemsIOException(e);
+        }
+    }
+
+    public <T> T read(String jsonString, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
         Gson gson = createGson(metaData);
         return gson.fromJson(jsonString, clazz);
+    }
+
+    public <T> T readFromInputStream(InputStream stream, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JsonSyntaxException {
+        try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            String string = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
+            return this.read(string, clazz, metaData);
+        } catch (IOException | JsonSyntaxException e) {
+            throw new JGemsIOException(e);
+        }
+    }
+
+    public <T> T readFromFile(File file, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JGemsIOException, JsonSyntaxException {
+        try {
+            return this.readFromInputStream(Files.newInputStream(file.toPath()), clazz, metaData);
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
     }
 
     public String getString(Object object, @Nullable ArbitraryArguments metaData) {
@@ -113,15 +143,6 @@ public class JSONFileManaging {
         try (Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
             writer.write(this.write(object, metaData));
         } catch (IOException e) {
-            throw new JGemsIOException(e);
-        }
-    }
-
-    public <T> T readFromFile(File file, Class<T> clazz, @Nullable ArbitraryArguments metaData) throws JGemsIOException, JsonSyntaxException {
-        try (Reader reader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8)) {
-            String string = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
-            return this.read(string, clazz, metaData);
-        } catch (IOException | JsonSyntaxException e) {
             throw new JGemsIOException(e);
         }
     }

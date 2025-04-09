@@ -1,7 +1,5 @@
 package workbench.graphics.scene;
 
-import javagems3d.graphics.camera.ControlledCamera;
-import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.rendering.scene.IScene;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
@@ -10,8 +8,6 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import logger.Log;
-import org.joml.Vector3f;
-import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.world.WBenchWorld;
 
@@ -50,7 +46,7 @@ public class WBenchScene implements IScene {
         this.getWorld().updateWorldObjects(frameTicking);
         this.getWorld().onWorldUpdate();
 
-        ((Window) this.getWindow()).setInFocus(true);
+        ((Window) this.getWindow()).setFocus(true);
 
         if (this.getCamera() != null) {
             this.getCamera().updateCamera(frameTicking.getFrameDeltaTime());

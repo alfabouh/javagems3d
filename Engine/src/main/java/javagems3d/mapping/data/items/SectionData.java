@@ -1,4 +1,4 @@
-package javagems3d.mapping.data;
+package javagems3d.mapping.data.items;
 
 import javagems3d.system.service.json.IJSONSerializable;
 

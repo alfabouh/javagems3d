@@ -42,7 +42,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * The SystemResources class contains a cache, as well as tools for loading resources
+ * The SystemResources class contains a cache, as well as tools for processing resources
  */
 public abstract class SystemResources implements ISystemResources {
     private final ResourceCache resourceCache;
@@ -103,7 +103,7 @@ public abstract class SystemResources implements ISystemResources {
             this.processMessage("Successfully loaded model", 0x00ff00);
             return t;
         } catch (Exception e) {
-            this.processMessage("Error, while loading model: " + modelPath, 0xff0000);
+            this.processMessage("Error, while processing model: " + modelPath, 0xff0000);
             throw e;
         }
     }
@@ -115,7 +115,7 @@ public abstract class SystemResources implements ISystemResources {
             this.processMessage("Successfully loaded texture", 0x00ff00);
             return t;
         } catch (Exception e) {
-            this.processMessage("Error, while loading texture: " + name + ". Default returned", 0xff0000);
+            this.processMessage("Error, while processing texture: " + name + ". Default returned", 0xff0000);
             if (returnDefault != null) {
                 return returnDefault;
             } else {

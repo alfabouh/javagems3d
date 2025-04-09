@@ -85,7 +85,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             Log.get().info("Mesh " + this.getPath() + " successfully created");
         }
         if (meshGroup == null) {
-            throw new JGemsNullException("There was an error, while loading the model");
+            throw new JGemsNullException("There was an error, while processing the model");
         }
         if (createCollision) {
             JGemsUtils.createMeshCollisionData(meshGroup);
@@ -116,7 +116,7 @@ public class ModelMeshLoader implements ILoadingHelper {
             Log.get().info("Mesh " + this.getPath() + " successfully created");
         }
         if (meshBuffer == null) {
-            throw new JGemsNullException("There was an error, while loading the model");
+            throw new JGemsNullException("There was an error, while processing the model");
         }
         if (createCollision) {
             JGemsUtils.createMeshCollisionData(meshBuffer);
