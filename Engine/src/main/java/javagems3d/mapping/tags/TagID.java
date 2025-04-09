@@ -20,6 +20,18 @@ public final class TagID {
         this.toolTip = toolTip;
     }
 
+    public TagID(@NotNull TagID id, @NotNull String description, @Nullable String toolTip) {
+        this.id = id.getId();
+        this.description = description;
+        this.toolTip = toolTip;
+    }
+
+    public TagID(@NotNull TagID id, @NotNull String description) {
+        this.id = id.getId();
+        this.description = description;
+        this.toolTip = null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -80,5 +92,7 @@ public final class TagID {
         public static final TagID COLOR4 = new TagID("color4", "Color RGBA");
 
         public static final TagID BRIGHTNESS = new TagID("brightness", "Brightness");
+
+        public static final TagID OBJECT_LIST = new TagID("obj_list_selected", "Select Object");
     }
 }

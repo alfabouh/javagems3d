@@ -66,9 +66,9 @@ public abstract class JGemsConfig {
 
 
         public static int SSAO_NOISE_SIZE = 4;
-        public static float SSAO_RADIUS = 0.5f;
+        public static float SSAO_RADIUS = 0.25f;
         public static float SSAO_BIAS = 0.01f;
-        public static float SSAO_RANGE = 1.0f;
+        public static float SSAO_RANGE = 1.25f;
         public static float HDR_EXPOSURE = 2.5f;
         public static float HDR_GAMMA = 0.3f;
         public static boolean USE_HDR = true;

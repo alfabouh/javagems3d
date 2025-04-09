@@ -5,19 +5,22 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.help.JGemsMathHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
+import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.ColorMode;
 import javagems3d.mapping.tags.items.*;
+import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.EditorInterface;
 
-import java.util.Collection;
+import java.util.*;
 
 public class ActionsInterfaceComponent {
     private final EditorInterface editorInterface;
@@ -95,7 +98,7 @@ public class ActionsInterfaceComponent {
                 Collection<Tag<? extends TagItem>> tags = currentSelectedObject.getTagsContainer().getTagCollection();
                 if (!tags.isEmpty() && ImGui.treeNodeEx("Tags", ImGuiTreeNodeFlags.DefaultOpen)) {
                     for (Tag<? extends TagItem> tag : tags) {
-                        this.processTag(tag);
+                        this.processTag(currentSelectedObject.getTagsContainer(), tag);
                     }
                     ImGui.treePop();
                 }
@@ -104,73 +107,17 @@ public class ActionsInterfaceComponent {
         }
     }
 
-    private void processTag(Tag<? extends TagItem> tag) {
+    private void processTag(TagsContainer tagsContainer, Tag<? extends TagItem> tag) {
         final TagID tagID = tag.getTagID();
         TagItem tagItem = tag.getTagItem();
 
+        Set<Pair<Integer, SceneObject>> pairSet = new TreeSet<>(Comparator.comparingInt(Pair::getFirst));
+        for (Map.Entry<Integer, WBenchObject> entry : this.getEditorInterface().getOpenGLRenderer().getWorld().getIdMap().entrySet()) {
+            pairSet.add(new Pair<>(entry.getKey(), entry.getValue()));
+        }
+
         if (ImGui.treeNodeEx(tagID.getDescription(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            if (tagItem instanceof TagRadioBoolean) {
-                TagRadioBoolean tagRadioBoolean = (TagRadioBoolean) tagItem;
-                TagRadioBoolean.Info[] infos = tagRadioBoolean.getValues();
-                for (int i = 0; i < infos.length; i++) {
-                    boolean selected = infos[i].isFlag();
-                    if (ImGui.radioButton(infos[i].getName(), selected)) {
-                        for (int j = 0; j < infos.length; j++) {
-                            infos[j].setFlag(j == i);
-                        }
-                    }
-                }
-            }
-
-            if (tagItem instanceof TagCheckBoolean) {
-                TagCheckBoolean tagCheckBoolean = (TagCheckBoolean) tagItem;
-                boolean value = tagCheckBoolean.isFlag();
-                if (ImGui.checkbox("##" + tagID.getDescription(), value)) {
-                    tagCheckBoolean.setFlag(!value);
-                }
-            }
-
-            if (tagItem instanceof TagColor) {
-                TagColor tagColor = (TagColor) tagItem;
-                Vector4f color = tagColor.getColorVector();
-                ColorMode colorMode = tagColor.getColorMode();
-                if (colorMode == ColorMode.COLOR3) {
-                    float[] colorArray = new float[]{color.x, color.y, color.z};
-                    if (ImGui.colorEdit3("##" + tagID.getDescription(), colorArray)) {
-                        tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], color.w));
-                    }
-                } else {
-                    float[] colorArray = new float[]{color.x, color.y, color.z, color.w};
-                    if (ImGui.colorEdit4("##" + tagID.getDescription(), colorArray)) {
-                        tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], colorArray[3]));
-                    }
-                }
-            }
-
-            if (tagItem instanceof TagFloat) {
-                TagFloat tagFloat = (TagFloat) tagItem;
-                float[] value = new float[] {tagFloat.getValue()};
-                if (ImGui.dragFloat("##" + tagID.getDescription(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
-                    tagFloat.setValue(JGemsMathHelper.clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
-                }
-            }
-
-            if (tagItem instanceof TagInt) {
-                TagInt tagInt = (TagInt) tagItem;
-                int[] value = new int[] {tagInt.getValue()};
-                if (ImGui.dragInt("##" + tagID.getDescription(), value, 1, tagInt.getMin(), tagInt.getMax())) {
-                    tagInt.setValue(JGemsMathHelper.clamp(value[0], tagInt.getMin(), tagInt.getMax()));
-                }
-            }
-
-            if (tagItem instanceof TagString) {
-                TagString tagString = (TagString) tagItem;
-                ImString value = new ImString(tagString.getText());
-                if (ImGui.inputText("##" + tagID.getDescription(), value)) {
-                    tagString.setText(value.get());
-                }
-            }
-
+            tagItem.ImGuiRendering(tagsContainer, tagItem, tagID, pairSet);
             ImGui.treePop();
         }
 

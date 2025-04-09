@@ -1,6 +1,15 @@
 package javagems3d.mapping.tags.items;
 
 import com.google.gson.reflect.TypeToken;
+import imgui.ImGui;
+import javagems3d.mapping.tags.TagID;
+import javagems3d.system.service.args.ArbitraryArguments;
+import org.jetbrains.annotations.Nullable;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.mapping.tags.TagID;
+import javagems3d.mapping.tags.TagsContainer;
+import javagems3d.system.service.collections.Pair;
+import java.util.Set;
 
 public class TagRadioBoolean extends TagItem {
     public static final String TYPE_STRING = "TagRadioBoolean";
@@ -28,6 +37,20 @@ public class TagRadioBoolean extends TagItem {
     @Override
     public TagItem copy() {
         return new TagRadioBoolean(this.getCopiedValues());
+    }
+
+    @Override
+    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+        TagRadioBoolean tagRadioBoolean = (TagRadioBoolean) tagItem;
+        TagRadioBoolean.Info[] infos = tagRadioBoolean.getValues();
+        for (int i = 0; i < infos.length; i++) {
+            boolean selected = infos[i].isFlag();
+            if (ImGui.radioButton(infos[i].getName(), selected)) {
+                for (int j = 0; j < infos.length; j++) {
+                    infos[j].setFlag(j == i);
+                }
+            }
+        }
     }
 
     public static final class Info {

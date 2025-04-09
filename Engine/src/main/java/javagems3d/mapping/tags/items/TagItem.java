@@ -1,12 +1,19 @@
 package javagems3d.mapping.tags.items;
 
 import com.google.gson.reflect.TypeToken;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.mapping.tags.TagID;
+import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.resources.managing.resources.data.ICopyable;
+import javagems3d.system.service.args.ArbitraryArguments;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class TagItem implements ICopyable<TagItem> {
     public static final Map<String, TypeToken<? extends TagItem>> tokensMap = new HashMap<>();
@@ -18,6 +25,7 @@ public abstract class TagItem implements ICopyable<TagItem> {
         TagItem.putTypeToken(TagInt.TYPE_STRING, new TypeToken<TagInt>() {});
         TagItem.putTypeToken(TagRadioBoolean.TYPE_STRING, new TypeToken<TagRadioBoolean>() {});
         TagItem.putTypeToken(TagString.TYPE_STRING, new TypeToken<TagString>() {});
+        TagItem.putTypeToken(TagObjectsList.TYPE_STRING, new TypeToken<TagObjectsList>() {});
     }
 
     public static void putTypeToken(String typeString, TypeToken<? extends TagItem> token) {
@@ -36,6 +44,8 @@ public abstract class TagItem implements ICopyable<TagItem> {
         }
         this.typeString = typeString;
     }
+
+    public abstract void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet);
 
     public String getTypeString() {
         return this.typeString;

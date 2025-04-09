@@ -16,6 +16,7 @@ import javagems3d.mapping.tags.base.ColorMode;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.mapping.tags.items.TagColor;
 import javagems3d.mapping.tags.items.TagFloat;
+import javagems3d.mapping.tags.items.TagObjectsList;
 import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import org.jetbrains.annotations.NotNull;
@@ -46,9 +47,12 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld) {
         final Tag<TagColor> colorTag = Tag.create(TagID.DEFAULT.COLOR3, new TagColor(ColorMode.COLOR3, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
         final Tag<TagFloat> brightnessTag = Tag.create(TagID.DEFAULT.BRIGHTNESS, new TagFloat(1.0f, 0.0f, 24.0f));
+        final Tag<TagObjectsList> objectsListTag = Tag.create(new TagID(TagID.DEFAULT.OBJECT_LIST, "Attach To"), new TagObjectsList());
+
         final TagsContainer tagsContainer = new TagsContainer();
         tagsContainer.addTag(colorTag);
         tagsContainer.addTag(brightnessTag);
+        tagsContainer.addTag(objectsListTag);
 
         return WBenchPointLightObject.create(MapObjectsIdentifiers.POINT_LIGHT + name, wBenchWorld, tagsContainer);
     }
@@ -69,6 +73,12 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         if (this.pointLight != null) {
             this.pointLight.setLightColor(this.getColor());
             this.pointLight.setBrightness(this.getBrightness());
+        }
+        if (this.getTagsContainer().hasTag(TagID.DEFAULT.OBJECT_LIST)) {
+            int attachedTo = this.getTagsContainer().getTag(TagID.DEFAULT.OBJECT_LIST).<TagObjectsList>getTagItemUnsafeCast().getValue();
+            if (attachedTo > 0) {
+                System.out.println(attachedTo);
+            }
         }
     }
 

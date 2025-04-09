@@ -1,6 +1,16 @@
 package javagems3d.mapping.tags.items;
 
 import com.google.gson.reflect.TypeToken;
+import imgui.ImGui;
+import javagems3d.help.JGemsMathHelper;
+import javagems3d.mapping.tags.TagID;
+import javagems3d.system.service.args.ArbitraryArguments;
+import org.jetbrains.annotations.Nullable;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.mapping.tags.TagID;
+import javagems3d.mapping.tags.TagsContainer;
+import javagems3d.system.service.collections.Pair;
+import java.util.Set;
 
 public class TagFloat extends TagItem {
     public static final String TYPE_STRING = "TagFloat";
@@ -36,5 +46,14 @@ public class TagFloat extends TagItem {
     @Override
     public TagItem copy() {
         return new TagFloat(this.getValue(), this.getMin(), this.getMax());
+    }
+
+    @Override
+    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+        TagFloat tagFloat = (TagFloat) tagItem;
+        float[] value = new float[] {tagFloat.getValue()};
+        if (ImGui.dragFloat("##" + tagID.getDescription(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
+            tagFloat.setValue(JGemsMathHelper.clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
+        }
     }
 }

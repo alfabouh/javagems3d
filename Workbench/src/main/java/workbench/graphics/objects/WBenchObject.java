@@ -138,7 +138,7 @@ public abstract class WBenchObject extends SceneProp {
 
     @Override
     public String toString() {
-        return this.getObjectId().toString() + " " + this.getPosition();
+        return "(" + this.getId() + ") " + this.getObjectId().toString() + " {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}";
     }
 
     @Override
@@ -173,7 +173,8 @@ public abstract class WBenchObject extends SceneProp {
 
         @Override
         public String toString() {
-            return this.getGroupId() + "/" + this.getNameId();
+            final String prefix = this.getGroupId() == null ? "" : this.getGroupId() + "/";
+            return prefix + this.getNameId();
         }
     }
 }

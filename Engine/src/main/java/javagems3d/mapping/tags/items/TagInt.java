@@ -1,16 +1,13 @@
 package javagems3d.mapping.tags.items;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.reflect.TypeToken;
-import javagems3d.system.service.args.ArbitraryArguments;
-import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.json.JSONFileManaging;
-import org.jetbrains.annotations.NotNull;
+import imgui.ImGui;
+import javagems3d.help.JGemsMathHelper;
+import javagems3d.mapping.tags.TagID;
 
-import java.lang.reflect.Type;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.mapping.tags.TagsContainer;
+import javagems3d.system.service.collections.Pair;
+import java.util.Set;
 
 public class TagInt extends TagItem {
     public static final String TYPE_STRING = "TagInt";
@@ -46,5 +43,14 @@ public class TagInt extends TagItem {
     @Override
     public TagItem copy() {
         return new TagInt(this.getValue(), this.getMin(), this.getMax());
+    }
+
+    @Override
+    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+        TagInt tagInt = (TagInt) tagItem;
+        int[] value = new int[] {tagInt.getValue()};
+        if (ImGui.dragInt("##" + tagID.getDescription(), value, 1, tagInt.getMin(), tagInt.getMax())) {
+            tagInt.setValue(JGemsMathHelper.clamp(value[0], tagInt.getMin(), tagInt.getMax()));
+        }
     }
 }

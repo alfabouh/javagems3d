@@ -74,6 +74,10 @@ public final class TagsContainer {
         this.tags = new HashMap<>();
     }
 
+    public boolean hasTag(TagID id) {
+        return this.getTag(id) != null;
+    }
+
     public void addTag(Tag<? extends TagItem> tag) {
         this.getTags().put(tag.getTagID(), tag);
     }

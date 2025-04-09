@@ -1,7 +1,15 @@
 package javagems3d.mapping.tags.items;
 
 import com.google.gson.reflect.TypeToken;
+import imgui.ImGui;
+import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.base.ColorMode;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.mapping.tags.TagID;
+import javagems3d.mapping.tags.TagsContainer;
+import javagems3d.system.service.collections.Pair;
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
@@ -32,5 +40,23 @@ public class TagColor extends TagItem {
     @Override
     public TagItem copy() {
         return new TagColor(this.getColorMode(), new Vector4f(this.getColorVector()));
+    }
+
+    @Override
+    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+        TagColor tagColor = (TagColor) tagItem;
+        Vector4f color = tagColor.getColorVector();
+        ColorMode colorMode = tagColor.getColorMode();
+        if (colorMode == ColorMode.COLOR3) {
+            float[] colorArray = new float[]{color.x, color.y, color.z};
+            if (ImGui.colorEdit3("##" + tagID.getDescription(), colorArray)) {
+                tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], color.w));
+            }
+        } else {
+            float[] colorArray = new float[]{color.x, color.y, color.z, color.w};
+            if (ImGui.colorEdit4("##" + tagID.getDescription(), colorArray)) {
+                tagColor.setColor(new Vector4f(colorArray[0], colorArray[1], colorArray[2], colorArray[3]));
+            }
+        }
     }
 }
