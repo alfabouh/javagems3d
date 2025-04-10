@@ -8,4 +8,8 @@ public interface IWorldObject {
     void onDestroy(IWorld iWorld);
 
     boolean isDead();
+
+    default boolean isAlive() {
+        return !this.isDead();
+    }
 }

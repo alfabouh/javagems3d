@@ -27,7 +27,6 @@ import java.util.List;
 
 public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     private final IModelConstructor<WorldItem> entityModelConstructor;
-    private final List<Light> lightList;
     private final WorldItem worldItem;
     private boolean isVisible;
     private boolean isDead;
@@ -39,7 +38,6 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     public SceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull EntityRenderData renderData) {
         super(sceneWorld, new Model3D(new Pose3D(), renderData.getMeshDataGroup()), renderData.getObjectRenderAttributes());
         this.entityModelConstructor = renderData.getEntityModelConstructor();
-        this.lightList = new ArrayList<>();
         this.worldItem = worldItem;
         this.renderPosition = new Vector3f(worldItem.getPosition());
         this.renderRotation = new Vector3f(worldItem.getRotation());
@@ -51,6 +49,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
 
     @Override
     public void onSpawn(IWorld iWorld) {
+        super.onSpawn(iWorld);
         Log.get().trace("[ " + this + " ]" + " - PreRender");
         if (this.canBeRendered()) {
             if (!this.hasModel() && this.getEntityModelConstructor() != null) {
@@ -63,12 +62,12 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
 
     @Override
     public void onDestroy(IWorld iWorld) {
+        super.onDestroy(iWorld);
         EventLauncher.pushEvent(new EventBus.ItemDestroyInRenderWorld(this));
         Log.get().trace("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));
         }
-        this.clearLights();
     }
 
     @Override
@@ -118,7 +117,6 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
             this.renderPosition.set(pos);
             this.renderRotation.set(rot);
         }
-        this.adjustLightsTranslation(this.getRenderPosition(), new Vector3f(0.0f));
     }
 
     private Quaternionf getQuaternionInterpolated(InterpolationPoints rotation, float physicsSyncTicks) {
@@ -131,37 +129,9 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
         return res;
     }
 
-    public void clearLights() {
-        Iterator<Light> lightIterator = this.getLightsList().iterator();
-        while (lightIterator.hasNext()) {
-            Light l = lightIterator.next();
-            l.off();
-            this.onRemoveLight(l);
-            lightIterator.remove();
-        }
-    }
-
-    public void addLight(Light light) {
-        this.getLightsList().add(light);
-        light.on();
-        this.onAddLight(light);
-    }
-
-    public void removeLight(Light light) {
-        if (!this.getLightsList().contains(light)) {
-            throw new JGemsRuntimeException("Couldn't remove light. Entity doesn't keep it. " + this);
-        }
-        this.getLightsList().remove(light);
-        light.off();
-        this.onRemoveLight(light);
-    }
-
-    protected void onAddLight(Light light) {
-        Log.get().trace("Attached light to: " + this);
-    }
-
-    protected void onRemoveLight(Light light) {
-        Log.get().trace("Removed light from: " + this);
+    @Override
+    public Vector3f getPositionToAttachLights() {
+        return this.getRenderPosition();
     }
 
     protected IModelConstructor<WorldItem> getEntityModelConstructor() {
@@ -212,11 +182,6 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
 
     public WorldItem getWorldItem() {
         return this.worldItem;
-    }
-
-    @Override
-    public List<Light> getLightsList() {
-        return this.lightList;
     }
 
     @Override

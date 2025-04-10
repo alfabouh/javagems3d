@@ -4,14 +4,14 @@ import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
-import javagems3d.graphics.environment.lights.scene.JGemsLightScene;
+import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.objects.ILighted;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.AttachedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.IAnimated;
-import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
@@ -26,6 +26,7 @@ import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -36,7 +37,7 @@ public final class SceneWorld implements IRenderWorld {
     private final IEnvironment environment;
 
     private final ParticlesEmitter particlesEmitter;
-    private final Set<Pair<WorldItem, Light>> lightAttachmentQueue;
+    private final Set<Pair<WorldItem, ILightAttached>> lightAttachmentQueue;
     private final Map<Integer, SceneEntity> objectMap;
 
     private final Set<SceneObject> toRenderSet;
@@ -72,9 +73,9 @@ public final class SceneWorld implements IRenderWorld {
     @Override
     public void onWorldUpdate() {
         if (!EventLauncher.pushEvent(new EventBus.RenderWorldTickPre(this)).isCancelled()) {
-            Iterator<Pair<WorldItem, Light>> iterator = this.lightAttachmentQueue.iterator();
+            Iterator<Pair<WorldItem, ILightAttached>> iterator = this.lightAttachmentQueue.iterator();
             while (iterator.hasNext()) {
-                Pair<WorldItem, Light> pair = iterator.next();
+                Pair<WorldItem, ILightAttached> pair = iterator.next();
                 this.addWorldItemLight(pair.getFirst(), pair.getSecond());
                 iterator.remove();
             }
@@ -183,89 +184,51 @@ public final class SceneWorld implements IRenderWorld {
     }
 
     public void addItem(WorldItem worldItem, EntityRenderData renderData) throws JGemsException {
-        SceneEntity abstractSceneEntity = renderData.constructSceneObject(this, worldItem);
-        this.addEntityInWorld(abstractSceneEntity);
+        this.addObject(renderData.constructSceneObject(this, worldItem));
     }
 
-    public void removeLight(Light light) {
+    public void removeLight(Light light, @Nullable ILighted lighted) {
         this.getEnvironment().getLightScene().removeLight(light);
-    }
-
-    public void addLight(Light light) {
-        this.getEnvironment().getLightScene().addLight(light);
-    }
-
-    public void addItemLight(ILighted keepLights, Light light) {
-        keepLights.addLight(light);
-        this.getEnvironment().getLightScene().addLight(light);
-    }
-
-    public void addWorldItemLight(WorldItem worldItem, Light light) {
-        if (!worldItem.isSpawned()) {
-            Log.get().error("Couldn't attach light. Entity hasn't been spawned");
-            return;
+        if (lighted != null) {
+            lighted.removeLight((ILightAttached) light);
         }
+    }
+
+    public void addLight(Light light, @Nullable ILighted lighted) {
+        this.getEnvironment().getLightScene().addLight(light);
+        if (lighted != null) {
+            lighted.addLight((ILightAttached) light);
+        }
+    }
+
+    public void addWorldItemLight(WorldItem worldItem, ILightAttached light) {
         SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
         if (abstractSceneEntity == null) {
             this.lightAttachmentQueue.add(new Pair<>(worldItem, light));
             return;
         }
         abstractSceneEntity.addLight(light);
-        this.getEnvironment().getLightScene().addLight(light);
+        this.getEnvironment().getLightScene().addLight((Light) light);
     }
 
-    public void removeLightFromById(ILighted keepLights, int i) {
-        if (keepLights == null) {
-            Log.get().error("Couldn't attach light. Invalid entity");
-            return;
+    public void addObject(SceneObject sceneObject) {
+        this.getSceneObjects().add(sceneObject);
+        sceneObject.onSpawn(this);
+
+        if (sceneObject instanceof SceneEntity) {
+            SceneEntity sceneEntity = (SceneEntity) sceneObject;
+            this.getObjectMap().put(sceneEntity.getWorldItem().getItemId(), sceneEntity);
         }
-        keepLights.removeLightById(i);
     }
 
-    public void removeLightFrom(ILighted keepLights, Light light) {
-        if (keepLights == null) {
-            Log.get().error("Couldn't attach light. Invalid entity");
-            return;
+    public void removeObject(SceneObject sceneObject) {
+        this.getSceneObjects().remove(sceneObject);
+        sceneObject.onDestroy(this);
+
+        if (sceneObject instanceof SceneEntity) {
+            SceneEntity sceneEntity = (SceneEntity) sceneObject;
+            this.getObjectMap().remove(sceneEntity.getWorldItem().getItemId());
         }
-        keepLights.removeLight(light);
-    }
-
-    public void removeLightFrom(WorldItem worldItem, Light light) {
-        SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
-        if (abstractSceneEntity == null) {
-            Log.get().error("Couldn't attach light. Invalid entity");
-            return;
-        }
-        abstractSceneEntity.removeLight(light);
-    }
-
-    public void removeLightFromById(WorldItem worldItem, int i) {
-        SceneEntity abstractSceneEntity = this.getObjectMap().get(worldItem.getItemId());
-        if (abstractSceneEntity == null) {
-            Log.get().error("Couldn't attach light. Invalid entity");
-            return;
-        }
-        abstractSceneEntity.removeLightById(i);
-    }
-
-    public void addObjectInWorld(SceneObject renderObject) {
-        this.getSceneObjects().add(renderObject);
-        renderObject.onSpawn(this);
-    }
-
-    public void removeObjectFromWorld(SceneObject renderObject) {
-        this.getSceneObjects().remove(renderObject);
-        renderObject.onDestroy(this);
-    }
-
-    public void addEntityInWorld(SceneEntity abstractSceneEntity) {
-        this.getObjectMap().put(abstractSceneEntity.getWorldItem().getItemId(), abstractSceneEntity);
-        this.addObjectInWorld(abstractSceneEntity);
-    }
-
-    public void removeEntityFromWorld(SceneEntity abstractSceneEntity) {
-        this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
-        this.removeObjectFromWorld(abstractSceneEntity);
     }
 
     public void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {

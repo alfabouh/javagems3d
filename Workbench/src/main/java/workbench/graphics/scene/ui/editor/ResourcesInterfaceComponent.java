@@ -12,7 +12,6 @@ import workbench.project.ProjectTemplates;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 public class ResourcesInterfaceComponent {
     private final EditorInterface editorInterface;
@@ -36,7 +35,7 @@ public class ResourcesInterfaceComponent {
 
                 WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("plmarker", this.getEditorInterface().getOpenGLRenderer().getWorld());
                 pointLightObject.setPosition(posToSpawn);
-                this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(pointLightObject);
+                this.getEditorInterface().getOpenGLRenderer().getWorld().addObject(pointLightObject);
             }
             ImGui.treePop();
         }

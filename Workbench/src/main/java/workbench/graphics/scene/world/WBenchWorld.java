@@ -1,6 +1,7 @@
 package workbench.graphics.scene.world;
 
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.lights.ILightAttached;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.SceneObject;
@@ -71,32 +72,21 @@ public class WBenchWorld implements IRenderWorld {
         }
     }
 
-    public void removeLight(Light light) {
+    public void removeLight(Light light, @Nullable ILighted lighted) {
         this.getEnvironment().getLightScene().removeLight(light);
-        Log.get().info("Removed light: " + light);
-    }
-
-    public void addLight(Light light) {
-        this.getEnvironment().getLightScene().addLight(light);
-        Log.get().info("Created new light: " + light);
-    }
-
-    public void addItemLight(ILighted keepLights, Light light) {
-        keepLights.addLight(light);
-        this.getEnvironment().getLightScene().addLight(light);
-        Log.get().info("Added light: " + light + " to: " + keepLights);
-    }
-
-    public void removeItemLight(ILighted keepLights, Light light) {
-        if (keepLights == null) {
-            Log.get().error("Couldn't attach light. Invalid entity");
-            return;
+        if (lighted != null) {
+            lighted.removeLight((ILightAttached) light);
         }
-        keepLights.removeLight(light);
-        Log.get().info("Removed light: " + light + " from: " + keepLights);
     }
 
-    public void addObjectInWorld(SceneObject renderObject) {
+    public void addLight(Light light, @Nullable ILighted lighted) {
+        this.getEnvironment().getLightScene().addLight(light);
+        if (lighted != null) {
+            lighted.addLight((ILightAttached) light);
+        }
+    }
+
+    public void addObject(SceneObject renderObject) {
         if (renderObject instanceof WBenchObject) {
             WBenchObject wBenchObject = (WBenchObject) renderObject;
             int id = wBenchObject.getId() < 0 ? this.getSceneObjects().size() : wBenchObject.getId();
@@ -108,7 +98,7 @@ public class WBenchWorld implements IRenderWorld {
         Log.get().info("Created object: " + renderObject);
     }
 
-    public void removeObjectFromWorld(SceneObject renderObject) {
+    public void removeObject(SceneObject renderObject) {
         if (renderObject instanceof WBenchObject) {
             WBenchObject wBenchObject = (WBenchObject) renderObject;
             int id = wBenchObject.getId();

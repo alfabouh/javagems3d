@@ -33,7 +33,7 @@ public class TestMap extends ManualMapProcessor {
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
         MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPath("/assets/models/sponza/sponza.gltf"), ModelLoaderFlags.DEFAULT, false);
-        sceneWorld.addObjectInWorld(new SceneWorldProp(sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
+        sceneWorld.addObject(new SceneWorldProp(sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
 
         JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
         JGemsWorldHelper.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, meshGroup));

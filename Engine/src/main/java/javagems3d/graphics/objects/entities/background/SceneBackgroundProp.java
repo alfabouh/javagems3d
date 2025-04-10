@@ -1,5 +1,6 @@
 package javagems3d.graphics.objects.entities.background;
 
+import javagems3d.graphics.environment.lights.ILightAttached;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
@@ -13,30 +14,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class SceneBackgroundProp extends SceneProp {
     public SceneBackgroundProp(@NotNull SceneWorld sceneWorld, @NotNull PropRenderData propRenderData) {
         super(sceneWorld, propRenderData);
     }
 
-    public final void clearLights() {
-    }
-
-    public final void addLight(Light light) {
-    }
-
-    public final void removeLight(Light light) {
-    }
-
-    protected final void onAddLight(Light light) {
-    }
-
-    protected final void onRemoveLight(Light light) {
-    }
-
     @Override
-    public final List<Light> getLightsList() {
-        return Collections.emptyList();
+    public final @NotNull Set<ILightAttached> getAttachedLights() {
+        return Collections.emptySet();
     }
 
     @Override

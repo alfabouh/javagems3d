@@ -248,7 +248,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
-            sceneWorld.addObjectInWorld(sceneWorldProp);
+            sceneWorld.addObject(sceneWorldProp);
         }
 
         @Override
@@ -275,7 +275,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             pointLight.setLightColor(tagColor.xyz(new Vector3f()));
             pointLight.setBrightness(brightness);
             pointLight.on();
-            sceneWorld.addLight(pointLight);
+            sceneWorld.addLight(pointLight, null);
         }
 
         @Override

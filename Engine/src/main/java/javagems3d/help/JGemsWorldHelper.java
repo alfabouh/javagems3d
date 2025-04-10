@@ -1,6 +1,7 @@
 package javagems3d.help;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.lights.ILightAttached;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.objects.entities.SceneProp;
@@ -20,11 +21,11 @@ public abstract class JGemsWorldHelper {
     }
 
     public static void removePropFromScene(SceneProp sceneProp) {
-        JGems3D.get().getScreen().getScene().getWorld().removeObjectFromWorld(sceneProp);
+        JGems3D.get().getScreen().getScene().getWorld().removeObject(sceneProp);
     }
 
     public static void addPropInScene(SceneProp sceneProp) {
-        JGems3D.get().getScreen().getScene().getWorld().addObjectInWorld(sceneProp);
+        JGems3D.get().getScreen().getScene().getWorld().addObject(sceneProp);
     }
 
     public static void removeItemFromWorld(WorldItem worldItem) {
@@ -55,7 +56,7 @@ public abstract class JGemsWorldHelper {
         JGemsCoreHelper.getPhysicsWorld().addItem(triggerZone);
     }
 
-    public static void addLight(WorldItem worldItem, Light light) {
+    public static void addLight(WorldItem worldItem, ILightAttached light) {
         JGemsCoreHelper.getSceneWorld().addWorldItemLight(worldItem, light);
     }
 

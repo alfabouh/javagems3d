@@ -59,15 +59,15 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
             PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
             pointLight.on();
-            sceneWorld.addLight(pointLight);
+            sceneWorld.addLight(pointLight, null);
 
             PointLight pointLight2 = new PointLight(new Vector3f(-10.0f, 0.0f, -12.0f), new Vector3f(1.0f, 1.0f, 0.0f)).setBrightness(10.0f);
             pointLight2.on();
-            sceneWorld.addLight(pointLight2);
+            sceneWorld.addLight(pointLight2, null);
 
             PointLight pointLight3 = new PointLight(new Vector3f(0.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 1.0f)).setBrightness(10.0f);
             pointLight3.on();
-            sceneWorld.addLight(pointLight3);
+            sceneWorld.addLight(pointLight3, null);
         }
 
         @Override

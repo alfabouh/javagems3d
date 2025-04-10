@@ -3,20 +3,16 @@ package workbench.graphics.scene.ui.editor;
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiTreeNodeFlags;
-import imgui.type.ImString;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.help.JGemsMathHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.ColorMode;
 import javagems3d.mapping.tags.items.*;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.EditorInterface;
 
@@ -56,7 +52,7 @@ public class ActionsInterfaceComponent {
                     Vector3f posToSpawn = camera.getCamPosition();
                     posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
                     wBenchObject.setPosition(posToSpawn);
-                    this.getEditorInterface().getOpenGLRenderer().getWorld().addObjectInWorld(wBenchObject);
+                    this.getEditorInterface().getOpenGLRenderer().getWorld().addObject(wBenchObject);
                 }
             }
             ImGui.separator();

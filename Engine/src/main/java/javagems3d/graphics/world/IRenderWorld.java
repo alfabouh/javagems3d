@@ -11,6 +11,6 @@ public interface IRenderWorld extends IWorld {
     IEnvironment getEnvironment();
     ICamera getCamera();
 
-    void removeObjectFromWorld(SceneObject sceneObject);
-    void addObjectInWorld(SceneObject sceneObject);
+    void removeObject(SceneObject sceneObject);
+    void addObject(SceneObject sceneObject);
 }

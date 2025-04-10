@@ -1,6 +1,7 @@
 package javagems3d.graphics.environment.lights.scene;
 
 import api.events.EventBus;
+import javagems3d.graphics.environment.lights.ILightAttached;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.environment.IEnvironment;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 
 public abstract class LightScene implements ILightScene {
     private final IEnvironment environment;
-    private List<PointLight> pointLightList;
+    private List<PointLight> pointLights;
 
     private final ShaderStorageBufferObject sunBuffer;
     private final ShaderStorageBufferObject pointLightsBuffer;
@@ -46,34 +47,33 @@ public abstract class LightScene implements ILightScene {
     }
 
     private void initCollections() {
-        this.pointLightList = SyncManager.createSyncronisedList(new ArrayList<>(this.getMaxPointLights()));
+        this.pointLights = SyncManager.createSyncronisedList(new ArrayList<>(this.getMaxPointLights()));
     }
 
     public void addLight(Light light) {
         if (light.getLightType().equals(LightType.POINT)) {
-            if (this.getPointLightList().stream().filter(PointLight::isActive).count() >= this.getMaxPointLights()) {
+            if (this.getPointLights().size() >= this.getMaxPointLights()) {
                 throw new JGemsRuntimeException("Reached active point lights limit: " + this.getMaxPointLights());
             }
-            this.getPointLightList().add((PointLight) light);
+            this.getPointLights().add((PointLight) light);
         }
         EventLauncher.pushEvent(new EventBus.LightAdded(light));
     }
 
     public void removeLight(Light light) {
         light.off();
+        if (light.getLightType().equals(LightType.POINT)) {
+            this.getPointLights().remove((PointLight) light);
+        }
     }
 
     public float calcAmbientLight() {
         return this.getEnvironment().getSkyBox().getSun().getSunBrightness();
     }
 
-    public List<PointLight> getPointLightList() {
-        return this.pointLightList;
-    }
-
     @Override
     public void updateBuffers(MemoryStack stack, IWorld world, Matrix4f viewMatrix) {
-        this.getPointLightList().forEach(e -> e.onUpdate(world));
+        this.getPointLights().forEach(e -> e.onUpdate(world));
         this.updateSunBuffer(this.getSunBuffer(), stack, viewMatrix);
         this.updatePointLightsBuffer(this.getPointLightsBuffer(), stack, viewMatrix);
     }
@@ -95,7 +95,7 @@ public abstract class LightScene implements ILightScene {
     }
 
     public void updatePointLightsBuffer(ShaderStorageBufferObject pointLightsBuffer, MemoryStack stack, Matrix4f viewMatrix) {
-        List<PointLight> pointLights = this.getPointLightList().stream().filter(PointLight::isActive).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1.0f)).collect(Collectors.toList());
+        List<PointLight> pointLights = this.getPointLights().stream().filter(PointLight::isActive).sorted(Comparator.comparingDouble(e -> e.getBrightness() * -1.0f)).collect(Collectors.toList());
         final int sizeMainBuffer = JGemsConfig.SYSTEM.POINT_LIGHT_BUFFER_PACK_SIZE * (4);
         ByteBuffer buffer = stack.malloc(sizeMainBuffer);
         ByteBuffer buffer2 = stack.malloc(Integer.BYTES);
@@ -137,7 +137,7 @@ public abstract class LightScene implements ILightScene {
         ByteBuffer buffer = stack.malloc(sizeMainBuffer);
         ByteBuffer buffer2 = stack.malloc(Integer.BYTES);
 
-        for (int i = 0; i < this.getPointLightList().size(); i++) {
+        for (int i = 0; i < this.getPointLights().size(); i++) {
             buffer.putFloat(0.0f);
             buffer.putFloat(0.0f);
             buffer.putFloat(0.0f);
@@ -168,6 +168,11 @@ public abstract class LightScene implements ILightScene {
     }
 
     public abstract int getMaxPointLights();
+
+
+    public List<PointLight> getPointLights() {
+        return this.pointLights;
+    }
 
     public IEnvironment getEnvironment() {
         return this.environment;

@@ -41,7 +41,7 @@ public class JGemsEnvironment implements IEnvironment {
     public void clearPointLightsBuffer() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.getLightScene().clearPointLightsBuffer(stack);
-            this.getLightScene().getPointLightList().clear();
+            this.getLightScene().getPointLights().clear();
         }
     }
 

@@ -1,17 +1,25 @@
 package javagems3d.graphics.environment.lights;
 
+import javagems3d.graphics.objects.ILighted;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.physics.world.basic.IWorldObject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.physics.world.IWorld;
 
-public class PointLight extends Light {
+public class PointLight extends Light implements ILightAttached {
     private int attachedShadowSceneId = -1;
     private float brightness;
+    private ILighted lighted;
+    private ActionOnDetach actionOnDetach;
 
     public PointLight() {
         super();
         this.brightness = 1.0f;
+        this.lighted = null;
+        this.actionOnDetach = ActionOnDetach.DESTROY;
     }
 
     public PointLight(@NotNull Vector3f lightPos, @NotNull Vector3f lightColor, @NotNull Vector3f offset) {
@@ -71,7 +79,30 @@ public class PointLight extends Light {
         return LightType.POINT;
     }
 
+    public PointLight setActionOnDetach(ActionOnDetach actionOnDetach) {
+        this.actionOnDetach = actionOnDetach;
+        return this;
+    }
+
     @Override
     public void onUpdate(IWorld iWorld) {
+        if (this.getAttachedTo() != null && ((IWorldObject) this.getAttachedTo()).isAlive()) {
+            this.setLightPosition(this.getAttachedTo().getPositionToAttachLights());
+        }
+    }
+
+    @Override
+    public void attachTo(@Nullable ILighted lighted) {
+        this.lighted = lighted;
+    }
+
+    @Override
+    public @Nullable ILighted getAttachedTo() {
+        return this.lighted;
+    }
+
+    @Override
+    public ActionOnDetach getActionOnDeath() {
+        return this.actionOnDetach;
     }
 }

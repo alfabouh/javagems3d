@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<WBenchProject xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <properties>
-        <WBenchProject.groupId>com.github.gltexture</WBenchProject.groupId>
-        <WBenchProject.artifactId>javagems3d</WBenchProject.artifactId>
-        <WBenchProject.version>0.2</WBenchProject.version>
-
+        <project.groupId>com.github.gltexture</project.groupId>
+        <project.artifactId>javagems3d</project.artifactId>
+        <project.version>0.2</project.version>
         <github.global.server>github</github.global.server>
         <lwjgl.version>3.3.6</lwjgl.version>
         <joml.version>1.10.8</joml.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <WBenchProject.build.sourceEncoding>UTF-8</WBenchProject.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <imgui.artifactId>imgui-java-natives-windows</imgui.artifactId>
         <lwjgl.natives>natives-windows</lwjgl.natives>
         <bullet.artifactId>Libbulletjme-Windows64</bullet.artifactId>
@@ -19,9 +18,9 @@
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>${WBenchProject.groupId}</groupId>
-    <artifactId>${WBenchProject.artifactId}</artifactId>
-    <version>${WBenchProject.version}</version>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>${project.version}</version>
     <packaging>pom</packaging>
 
     <name>JavaGems3D</name>
@@ -138,9 +137,9 @@
                     <target>1.8</target>
                     <annotationProcessorPaths>
                         <path>
-                            <groupId>${WBenchProject.groupId}</groupId>
-                            <artifactId>${WBenchProject.artifactId}</artifactId>
-                            <version>${WBenchProject.version}</version>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <version>${project.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -363,4 +362,4 @@
             </snapshots>
         </repository>
     </repositories>
-</WBenchProject>
+</project>

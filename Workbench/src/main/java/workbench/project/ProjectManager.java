@@ -113,7 +113,7 @@ public final class ProjectManager {
             object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             object.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
 
-            this.getWorld().addObjectInWorld(object);
+            this.getWorld().addObject(object);
         }
     }
 
@@ -193,7 +193,7 @@ public final class ProjectManager {
                         object.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
                         object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
                         object.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
-                        this.getWorld().addObjectInWorld(object);
+                        this.getWorld().addObject(object);
                     }
                     Log.get().debug("Read Point Lights: " + objectsData.pointLights.size());
                 } else {

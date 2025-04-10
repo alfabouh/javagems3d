@@ -1,15 +1,21 @@
 package javagems3d.graphics.objects;
 
 import javagems3d.JGems3D;
+import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.world.IRenderWorld;
+import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.physics.world.IWorld;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.animation.AnimationData;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class SceneObject implements IModeled, IRendered, ILighted, IWorldObject {
     private AnimationData animationData;
@@ -20,6 +26,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
     private float animationProgress;
     private double lastTick;
     private CullingAABB cullingAABB;
+    private final Set<ILightAttached> lights;
 
     public SceneObject(IRenderWorld world, Model3D model, RenderAttributes renderAttributes) {
         this.animationData = null;
@@ -29,6 +36,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
         this.renderAttributes = renderAttributes;
         this.lastTick = JGems3D.glfwTime();
         this.animationSpeed = 1.0f;
+        this.lights = new HashSet<>();
     }
 
     public SceneObject setModel(Model3D model) {
@@ -38,9 +46,31 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
         return this;
     }
 
+    public void clearLights() {
+        for (ILightAttached lightAttached : this.getAttachedLights()) {
+            Light light = (Light) lightAttached;
+            switch (lightAttached.getActionOnDeath()) {
+                case DESTROY: {
+                    this.getWorld().getEnvironment().getLightScene().removeLight(light);
+                    break;
+                }
+                case KEEP_IN_WORLD: {
+                    this.removeLight(lightAttached);
+                    break;
+                }
+            }
+        }
+        this.getAttachedLights().clear();
+    }
+
     @Override
-    public CullingAABB getCullingData() {
-        return this.cullingAABB;
+    public void onSpawn(IWorld iWorld) {
+
+    }
+
+    @Override
+    public void onDestroy(IWorld iWorld) {
+        this.clearLights();
     }
 
     @Override
@@ -96,9 +126,18 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
         return animationData;
     }
 
-    public SceneObject setCullingData(CullingAABB cullingAABB) {
+    public void setCullingData(CullingAABB cullingAABB) {
         this.cullingAABB = cullingAABB;
-        return this;
+    }
+
+    @Override
+    public @NotNull Set<ILightAttached> getAttachedLights() {
+        return this.lights;
+    }
+
+    @Override
+    public CullingAABB getCullingData() {
+        return this.cullingAABB;
     }
 
     @Override

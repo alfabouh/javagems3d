@@ -69,6 +69,10 @@ public abstract class Light implements IWorldTicked {
         return this;
     }
 
+    public boolean canBeAttached() {
+        return this instanceof ILightAttached;
+    }
+
     public boolean isActive() {
         return this.isActive;
     }

@@ -1,34 +1,31 @@
 package javagems3d.graphics.objects;
 
-import javagems3d.graphics.environment.lights.Light;
+import javagems3d.graphics.environment.lights.ILightAttached;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ILighted {
-    void addLight(Light light);
-
-    void removeLight(Light light);
-
-    List<Light> getLightsList();
-
-    default void adjustLightsTranslation(Vector3f pos, Vector3f offset) {
-        for (Light l : this.getLightsList()) {
-            l.setLightPosition(pos);
-            l.setOffset(offset);
-        }
+    default void addLight(ILightAttached light) {
+        light.attachTo(this);
+        this.getAttachedLights().add(light);
     }
 
-    @SuppressWarnings("all")
-    default boolean removeLightById(int id) {
-        if (id >= 0 && id < this.getLightsList().size()) {
-            this.removeLight(this.getLightsList().get(id));
-            return true;
-        }
-        return false;
+    default void removeLight(ILightAttached light) {
+        light.detach();
+        this.getAttachedLights().remove(light);
     }
+
+    default boolean isLightAttached(ILightAttached light) {
+        return this.getAttachedLights().contains(light);
+    }
+
+    @NotNull Set<ILightAttached> getAttachedLights();
+
+    Vector3f getPositionToAttachLights();
 
     default boolean hasLights() {
-        return !this.getLightsList().isEmpty();
+        return !this.getAttachedLights().isEmpty();
     }
 }

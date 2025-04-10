@@ -2,7 +2,9 @@ package workbench.graphics.objects;
 
 import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
+import javagems3d.graphics.environment.lights.ILightAttached;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
@@ -77,7 +79,16 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         if (this.getTagsContainer().hasTag(TagID.DEFAULT.OBJECT_LIST)) {
             int attachedTo = this.getTagsContainer().getTag(TagID.DEFAULT.OBJECT_LIST).<TagObjectsList>getTagItemUnsafeCast().getValue();
             if (attachedTo > 0) {
-                System.out.println(attachedTo);
+                final WBenchWorld wBenchWorld = (WBenchWorld) iWorld;
+                if (this.isLightAttached(this.pointLight)) {
+                    this.removeLight(this.pointLight);
+                    SceneObject sceneObject = wBenchWorld.getIdMap().get(attachedTo);
+                    sceneObject.addLight(this.pointLight);
+                }
+            } else {
+                if (!this.isLightAttached(this.pointLight)) {
+                    this.addLight(this.pointLight);
+                }
             }
         }
     }
@@ -86,8 +97,10 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
         this.pointLight = new PointLight(this.getPosition(), new Vector3f(1.0f)).on();
+        this.pointLight.setActionOnDetach(ILightAttached.ActionOnDetach.KEEP_IN_WORLD);
+
         WBenchWorld wBenchWorld = (WBenchWorld) iWorld;
-        wBenchWorld.addItemLight(this, this.pointLight);
+        wBenchWorld.addLight(this.pointLight, this);
     }
 
     @Override
@@ -96,7 +109,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
 
         if (this.pointLight != null) {
             WBenchWorld wBenchWorld = (WBenchWorld) iWorld;
-            wBenchWorld.removeItemLight(this, this.pointLight);
+            wBenchWorld.removeLight(this.pointLight, this);
         }
     }
 
