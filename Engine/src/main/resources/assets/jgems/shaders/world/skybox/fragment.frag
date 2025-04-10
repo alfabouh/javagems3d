@@ -41,16 +41,16 @@ void main()
     float sunFactor = pow(smoothstep(0.98, 1.0, scos), 32.);
 
     vec4 color = vec4(sun.color, 1.0);
-
-    float fogFactor = fog.density * 100.0;
-    float f = covered_by_fog ? clamp(fogFactor, 0.0, 1.0) : 0.0;
-
     vec2 texel_size = textureSize(skybox_background, 0);
     vec4 background = texture(skybox_background, gl_FragCoord.xy / texel_size);
 
     vec3 sunEffect = color.xyz * brightness * sunFactor;
-    vec4 tex2d_colors = vec4((color.rgb * f) + (diffuse.rgb * (1.0 - f) * brightness) + sunEffect, 1.0);
-    frag_color = background + tex2d_colors * (1. - background.a);
+    vec4 tex2d_colors = vec4((diffuse.rgb * brightness) + sunEffect, 1.0);
 
+    frag_color = background + tex2d_colors * (1. - background.a);
     bright_color = vec4(sunEffect, 1.) * (1. - background.a);
+
+    float f = covered_by_fog ? clamp(fog.density, 0.0, 1.0) : 0.0;
+    frag_color.rgb = mix(frag_color.rgb, fog.color, f);
+    bright_color.rgb = mix(bright_color.rgb, vec3(0.), f);
 }

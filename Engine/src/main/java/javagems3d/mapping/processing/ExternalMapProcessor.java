@@ -19,6 +19,7 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.help.JGemsUtils;
 import javagems3d.help.JGemsWorldHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.data.MapDataPack;
@@ -32,6 +33,8 @@ import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.items.TagColor;
 import javagems3d.mapping.tags.items.TagFloat;
+import javagems3d.mapping.tags.items.TagObjectsList;
+import javagems3d.mapping.tags.items.TagVector;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.world.PhysicsWorld;
@@ -52,8 +55,7 @@ import org.joml.Vector4f;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class ExternalMapProcessor extends MapProcessor {
     private final JGemsPath pathToJG3DFile;
@@ -102,18 +104,45 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
     }
 
-    protected abstract void onProcessProp(MapObjectTemplate template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
-    protected abstract void onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+    protected abstract void onProcessProp(MapObjectTemplate template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach);
+    protected abstract void onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach);
     protected abstract void onProcessMarker(MapObjectTemplate template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
-    protected abstract void onProcessPointLight(MapObjectTemplate template, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
 
     protected abstract void preProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
     protected abstract void postProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+
+    protected Pair<PointLight, Integer> onProcessPointLight(MapObjectTemplate template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        final Vector4f tagColor = template.getTagsContainer().getTag(TagID.DEFAULT.COLOR3).<TagColor>getTagItemUnsafeCast().getColorVector();
+        final float brightness = template.getTagsContainer().getTag(TagID.DEFAULT.BRIGHTNESS).<TagFloat>getTagItemUnsafeCast().getValue();
+        final int attachedTo = template.getTagsContainer().hasTag(TagID.DEFAULT.OBJECT_LIST) ? template.getTagsContainer().getTag(TagID.DEFAULT.OBJECT_LIST).<TagObjectsList>getTagItemUnsafeCast().getValue() : 1;
+        final Vector3f offset = template.getTagsContainer().hasTag(TagID.DEFAULT.FLOAT3) ? template.getTagsContainer().getTag(TagID.DEFAULT.FLOAT3).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+
+        PointLight pointLight = new PointLight();
+        pointLight.setLightPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
+        pointLight.setLightColor(tagColor.xyz(new Vector3f()));
+        pointLight.setBrightness(brightness);
+        pointLight.setOffset(offset);
+        pointLight.on();
+        sceneWorld.addLight(pointLight, null);
+
+        return new Pair<>(pointLight, attachedTo);
+    }
 
     protected void onProcessing(Set<MapObjectTemplate> propObjects, Set<MapObjectTemplate> markerObjects, Set<MapObjectTemplate> entityObjects, Set<MapObjectTemplate> pointLights, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         final Map<String, APIWBenchDataManager.TemplatesTable<ResourceProp>> resourcePropMap = JGemsAPI.APIAppEditorResources().getEditorResourcesManager().getResourcePropMap();
         final Map<String, APIWBenchDataManager.TemplatesTable<ResourceEntity>> resourceEntityMap = JGemsAPI.APIAppEditorResources().getEditorResourcesManager().getResourceEntityMap();
         final Map<String, APIWBenchDataManager.TemplatesTable<ResourceMarker>> resourceMarkerMap = JGemsAPI.APIAppEditorResources().getEditorResourcesManager().getResourceMarkerMap();
+
+        Map<Integer, List<PointLight>> pointLightIdMap = new HashMap<>();
+        for (MapObjectTemplate template : pointLights) {
+            Pair<PointLight, Integer> pair = this.onProcessPointLight(template, physicsWorld, sceneWorld);
+            if (pair.getSecond() >= 0) {
+                JGemsUtils.putObjectInMapOrUpdate(pointLightIdMap, pair.getSecond(), new ArrayList<PointLight>() {{ add(pair.getFirst()); }}, (ex, nw) -> {
+                    ex.add(nw);
+                    return ex;
+                }, pair.getFirst());
+            }
+        }
 
         for (MapObjectTemplate template : propObjects) {
             final String name = template.getObjectId();
@@ -126,7 +155,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             }
 
             JGemsPropData propData = resourcePropMap.get(group).getTemplateMap().get(nameNormalised).getFabricGame().create();
-            this.onProcessProp(template, propData, physicsWorld, sceneWorld);
+            this.onProcessProp(template, propData, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
         }
 
         for (MapObjectTemplate template : entityObjects) {
@@ -140,7 +169,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             }
 
             JGemsEntityData entityData = resourceEntityMap.get(group).getTemplateMap().get(nameNormalised).getFabricGame().create();
-            this.onProcessEntity(template, entityData, physicsWorld, sceneWorld);
+            this.onProcessEntity(template, entityData, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
         }
 
         for (MapObjectTemplate template : markerObjects) {
@@ -155,10 +184,6 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
             JGemsMarkerData markerData = resourceMarkerMap.get(group).getTemplateMap().get(nameNormalised).getFabricGame().create();
             this.onProcessMarker(template, markerData, physicsWorld, sceneWorld);
-        }
-
-        for (MapObjectTemplate template : pointLights) {
-            this.onProcessPointLight(template, physicsWorld, sceneWorld);
         }
     }
 
@@ -242,40 +267,40 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
 
         @Override
-        protected void onProcessProp(MapObjectTemplate template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        protected void onProcessProp(MapObjectTemplate template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
             MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), ModelLoaderFlags.DEFAULT, false);
             SceneWorldProp sceneWorldProp = new SceneWorldProp(sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
             sceneWorld.addObject(sceneWorldProp);
+
+            if (pointLightsToAttach != null) {
+                for (PointLight pointLight : pointLightsToAttach) {
+                    sceneWorldProp.addLight(pointLight);
+                }
+            }
         }
 
         @Override
-        protected void onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        protected void onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
             MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.getPathToModel(), ModelLoaderFlags.DEFAULT, false);
             JGemsStaticBody jGemsStaticBody = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectId()).setCanBeDestroyed(false);
             JGemsWorldHelper.addItemInWorld(jGemsStaticBody, new EntityRenderData(entityData.getEntityRenderData(), buffer));
             jGemsStaticBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsStaticBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             jGemsStaticBody.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
+
+            if (pointLightsToAttach != null) {
+                for (PointLight pointLight : pointLightsToAttach) {
+                    sceneWorld.addWorldItemLight(jGemsStaticBody, pointLight);
+                }
+            }
         }
 
         @Override
         protected void onProcessMarker(MapObjectTemplate template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
 
-        }
-
-        @Override
-        protected void onProcessPointLight(MapObjectTemplate template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-            final Vector4f tagColor = template.getTagsContainer().getTag(TagID.DEFAULT.COLOR3).<TagColor>getTagItemUnsafeCast().getColorVector();
-            final float brightness = template.getTagsContainer().getTag(TagID.DEFAULT.BRIGHTNESS).<TagFloat>getTagItemUnsafeCast().getValue();
-            PointLight pointLight = new PointLight();
-            pointLight.setLightPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
-            pointLight.setLightColor(tagColor.xyz(new Vector3f()));
-            pointLight.setBrightness(brightness);
-            pointLight.on();
-            sceneWorld.addLight(pointLight, null);
         }
 
         @Override

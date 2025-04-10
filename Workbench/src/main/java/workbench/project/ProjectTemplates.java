@@ -29,21 +29,21 @@ public class ProjectTemplates {
 
     public void addProp(String group, WBenchObjectTemplate wBenchObjectTemplate) {
         JGemsUtils.putObjectInMapOrUpdate(this.getPropGroups(), group, new TemplatesTable<>(wBenchObjectTemplate), (ex, nw) -> {
-            ex.add(wBenchObjectTemplate);
+            ex.add(nw);
             return ex;
         }, wBenchObjectTemplate);
     }
 
     public void addEntity(String group, WBenchObjectTemplate wBenchObjectTemplate) {
         JGemsUtils.putObjectInMapOrUpdate(this.getEntityGroups(), group, new TemplatesTable<>(wBenchObjectTemplate), (ex, nw) -> {
-            ex.add(wBenchObjectTemplate);
+            ex.add(nw);
             return ex;
         }, wBenchObjectTemplate);
     }
 
     public void addMarker(String group, WBenchMarkerTemplate wBenchObjectTemplate) {
         JGemsUtils.putObjectInMapOrUpdate(this.getMarkerGroups(), group, new TemplatesTable<>(wBenchObjectTemplate), (ex, nw) -> {
-            ex.add(wBenchObjectTemplate);
+            ex.add(nw);
             return ex;
         }, wBenchObjectTemplate);
     }

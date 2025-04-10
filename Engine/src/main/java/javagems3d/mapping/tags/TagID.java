@@ -92,7 +92,10 @@ public final class TagID {
         public static final TagID COLOR4 = new TagID("color4", "Color RGBA");
 
         public static final TagID BRIGHTNESS = new TagID("brightness", "Brightness");
-
         public static final TagID OBJECT_LIST = new TagID("obj_list_selected", "Select Object");
+
+        public static final TagID FLOAT2 = new TagID("float2", "2 Values");
+        public static final TagID FLOAT3 = new TagID("float3", "3 Values");
+        public static final TagID FLOAT4 = new TagID("float4", "4 Values");
     }
 }

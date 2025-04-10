@@ -31,7 +31,7 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     public void addResourceEntity(@Nullable String group, @NotNull ResourceEntity resourceEntity) {
         resourceEntity.setGroupId(group);
         JGemsUtils.putObjectInMapOrUpdate(this.getResourceEntityMap(), group, new TemplatesTable<>(resourceEntity), (ex, nw) -> {
-            ex.add(resourceEntity);
+            ex.add(nw);
             return ex;
         }, resourceEntity);
     }
@@ -40,7 +40,7 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     public void addResourceProp(@Nullable String group, @NotNull ResourceProp resourceProp) {
         resourceProp.setGroupId(group);
         JGemsUtils.putObjectInMapOrUpdate(this.getResourcePropMap(), group, new TemplatesTable<>(resourceProp), (ex, nw) -> {
-            ex.add(resourceProp);
+            ex.add(nw);
             return ex;
         }, resourceProp);
     }
@@ -49,7 +49,7 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     public void addResourceMarker(@Nullable String group, @NotNull ResourceMarker resourceMarker) {
         resourceMarker.setGroupId(group);
         JGemsUtils.putObjectInMapOrUpdate(this.getResourceMarkerMap(), group, new TemplatesTable<>(resourceMarker), (ex, nw) -> {
-            ex.add(resourceMarker);
+            ex.add(nw);
             return ex;
         }, resourceMarker);
     }

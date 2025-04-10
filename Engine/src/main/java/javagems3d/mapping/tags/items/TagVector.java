@@ -56,10 +56,31 @@ public class TagVector extends TagItem {
 
     @Override
     public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
-        TagVector tagFloat = (TagVector) tagItem;
-        float[] values = new float[] {tagFloat.getValues().x, tagFloat.getValues().y, tagFloat.getValues().z};
-        if (ImGui.dragFloat3("##" + tagID.getDescription(), values, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
-        //    tagFloat.setValue(JGemsMathHelper.clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
+        TagVector tagVector = (TagVector) tagItem;
+        Vector4f vec = tagVector.getValues();
+        float[] values = new float[] {vec.x, vec.y, vec.z, vec.w};
+        String label = "##" + tagID.getDescription();
+
+        boolean changed = false;
+        switch (tagVector.getVectorMode()) {
+            case VEC2F:
+                changed = ImGui.dragFloat2(label, values, 0.1f, tagVector.getMin(), tagVector.getMax());
+                break;
+            case VEC3F:
+                changed = ImGui.dragFloat3(label, values, 0.1f, tagVector.getMin(), tagVector.getMax());
+                break;
+            case VEC4F:
+                changed = ImGui.dragFloat4(label, values, 0.1f, tagVector.getMin(), tagVector.getMax());
+                break;
+        }
+
+        if (changed) {
+            float x = JGemsMathHelper.clamp(values[0], tagVector.getMin(), tagVector.getMax());
+            float y = JGemsMathHelper.clamp(values[1], tagVector.getMin(), tagVector.getMax());
+            float z = JGemsMathHelper.clamp(values[2], tagVector.getMin(), tagVector.getMax());
+            float w = JGemsMathHelper.clamp(values[3], tagVector.getMin(), tagVector.getMax());
+
+            vec.set(x, y, z, w);
         }
     }
 }

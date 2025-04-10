@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.scene.nodes.*;
@@ -169,13 +170,17 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
 
         GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);
-        postRenderNode.onRender(frameTicking);
         GL46.glDepthMask(true);
 
         forwardRenderNode.getOutColorBuffer().copyFBOtoFBODepth(gluingRenderNode.getOutColorBuffer().getFrameBufferId(), this.getRenderingResolution());
         gluingRenderNode.getOutColorBuffer().bindFBO();
         WBenchOpenGLRenderer.DebugLinesDrawer().render();
         gluingRenderNode.getOutColorBuffer().unBindFBO();
+
+        GL46.glDepthMask(false);
+        postRenderNode.onRender(frameTicking);
+        GL46.glDepthMask(true);
+
 
         EditorInterface editorInterface1 = ((EditorInterface) WBenchOpenGLRenderer.editorInterface);
         editorInterface1.setVisibleObjects(toRender);

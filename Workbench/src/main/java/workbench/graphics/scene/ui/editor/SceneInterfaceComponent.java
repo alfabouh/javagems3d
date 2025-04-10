@@ -3,6 +3,8 @@ package workbench.graphics.scene.ui.editor;
 import imgui.ImGui;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
+import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;

@@ -71,7 +71,7 @@ public class ResourcesInterfaceComponent {
                             this.getEditorInterface().setCurrentSelectedTemplate(object);
                             this.getEditorInterface().setPreviewDistance(1.0f);
                         } else {
-                            this.getEditorInterface().setCurrentSelectedObject(null);
+                            this.getEditorInterface().setCurrentSelectedTemplate(null);
                         }
                     }
                 }
