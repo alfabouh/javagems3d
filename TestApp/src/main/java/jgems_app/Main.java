@@ -1,5 +1,6 @@
 package jgems_app;
 
+import api.scripting.JGemsAPIScriptingEngine;
 import launcher.JavaGemsLauncher;
 
 public class Main {

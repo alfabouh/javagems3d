@@ -41,13 +41,12 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
 
     public SceneObject setModel(Model3D model) {
         this.model = model;
-        this.initAnimation();
         this.setCullingData(this.pickAABBDataFromMesh());
         return this;
     }
 
     public void clearLights() {
-        for (ILightAttached lightAttached : this.getAttachedLights()) {
+        for (ILightAttached lightAttached : new HashSet<>(this.getAttachedLights())) {
             Light light = (Light) lightAttached;
             switch (lightAttached.getActionOnDeath()) {
                 case DESTROY: {
@@ -55,7 +54,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
                     break;
                 }
                 case KEEP_IN_WORLD: {
-                    this.removeLight(lightAttached);
+                    this.removeLightAttachment(lightAttached);
                     break;
                 }
             }
@@ -65,7 +64,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
 
     @Override
     public void onSpawn(IWorld iWorld) {
-
+        this.initAnimation();
     }
 
     @Override
@@ -120,6 +119,7 @@ public abstract class SceneObject implements IModeled, IRendered, ILighted, IWor
             Log.get().error("Couldn't set animation for: " + this);
             return null;
         }
+
         AnimationData animationData = new AnimationData(this.getModel().getMeshStructure().getAnimationsList().get(id));
         this.setAnimationData(animationData);
         this.nextAnimationFrame();

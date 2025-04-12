@@ -1,21 +1,16 @@
-package javagems3d.system.resources.assets.models.mesh.udata;
+package javagems3d.system.resources.assets.models.mesh.data;
 
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.transformation.TransformUtils;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
-import javagems3d.system.resources.assets.models.mesh.IMesh;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.List;
-
-public class MeshAABBData {
+public class MeshBoundingBoxData {
     private final CullingAABB cullingAABB;
 
-    public MeshAABBData(CullingAABB cullingAABB) {
+    public MeshBoundingBoxData(CullingAABB cullingAABB) {
         this.cullingAABB = cullingAABB;
     }
 

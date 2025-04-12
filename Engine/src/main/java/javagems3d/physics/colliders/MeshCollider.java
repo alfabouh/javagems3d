@@ -1,11 +1,8 @@
 package javagems3d.physics.colliders;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.collision.shapes.HullCollisionShape;
-import com.jme3.bullet.collision.shapes.MeshCollisionShape;
-import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
+import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.service.exceptions.JGemsNullException;
 
 public class MeshCollider implements IColliderConstructor {
@@ -31,15 +28,15 @@ public class MeshCollider implements IColliderConstructor {
 
     @Override
     public CollisionShape execute() {
-        MeshCollisionData meshCollisionData = this.meshStructure.getMeshUserData(MeshStructure3D.MESH_COLLISION_UD, MeshCollisionData.class);
+        MeshCollisionData meshCollisionData = this.meshStructure.getMeshCollisionData();
         if (meshCollisionData == null) {
             throw new JGemsNullException("Couldn't get mesh collision collections! " + this.meshStructure);
         }
         CollisionShape collisionShape;
         if (this.isBodyDynamic) {
-            collisionShape = meshCollisionData.getOptimizedMeshCollisionShape();
+            collisionShape = meshCollisionData.getDynamicCollision();
         } else {
-            collisionShape = meshCollisionData.getMeshCollisionShape();
+            collisionShape = meshCollisionData.getStaticCollision();
         }
         collisionShape.setMargin(this.margin());
         return collisionShape;

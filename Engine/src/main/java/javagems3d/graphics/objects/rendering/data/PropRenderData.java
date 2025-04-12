@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("all")
 public class PropRenderData {
-    public static IScenePropConstructor DEFAULT_OBJECT_CONSTRUCTOR = (sceneWorld, propRenderData) -> new SceneWorldProp(sceneWorld, propRenderData);
+    public static IScenePropConstructor DEFAULT_OBJECT_CONSTRUCTOR = (name, sceneWorld, propRenderData) -> new SceneWorldProp(name, sceneWorld, propRenderData);
 
     private final IScenePropConstructor sceneObjectConstructor;
     private IModelConstructor<Void> propModelConstructor;
@@ -49,8 +49,8 @@ public class PropRenderData {
         return PropRenderData.DEFAULT_OBJECT_CONSTRUCTOR;
     }
 
-    public SceneProp constructSceneObject(SceneWorld sceneWorld, PropRenderData propRenderData) {
-        return this.getSceneObjectConstructor().createSceneProp(sceneWorld, propRenderData);
+    public SceneProp constructSceneObject(String name, SceneWorld sceneWorld, PropRenderData propRenderData) {
+        return this.getSceneObjectConstructor().createSceneProp(name, sceneWorld, propRenderData);
     }
 
     protected void onObjectCreated(SceneEntity abstractSceneEntity) {

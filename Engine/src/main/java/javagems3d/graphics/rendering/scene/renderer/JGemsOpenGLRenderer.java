@@ -1,8 +1,10 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
+import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
@@ -10,6 +12,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
@@ -33,6 +36,9 @@ import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.mapping.processing.callbacks.IMapActionCallback;
 
+import javagems3d.physics.entities.bullet.JGemsBody;
+import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -46,6 +52,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.*;
@@ -183,7 +190,26 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
         uiRenderNode.onRender(frameTicking);
 
-        forwardRenderNode.getOutColorBuffer().copyFBOtoFBODepth(0, this.getRenderingResolution());
+        if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
+            for (SceneObject sceneObject : this.getWorld().getSceneObjects()) {
+                CullingAABB cullingAABB = sceneObject.getCullingData();
+                if (cullingAABB != null) {
+                    JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                }
+                if (sceneObject instanceof SceneEntity) {
+                    SceneEntity sceneEntity = (SceneEntity) sceneObject;
+                    if (sceneEntity.getWorldItem() instanceof JGemsBody) {
+                        JGemsBody gemsBody = (JGemsBody) sceneEntity.getWorldItem();
+                        BoundingBox boundingBox = new BoundingBox();
+                        gemsBody.getPhysicsRigidBody().boundingBox(boundingBox);
+                        Vector3f min = DynamicsUtils.convertV3F_JOML(boundingBox.getMin(new com.jme3.math.Vector3f()));
+                        Vector3f max = DynamicsUtils.convertV3F_JOML(boundingBox.getMax(new com.jme3.math.Vector3f()));
+
+                        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(min, max, new Vector3f(0.0f, 0.0f, 1.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                    }
+                }
+            }
+        }
         JGemsOpenGLRenderer.DebugLinesDrawer().render();
     }
 

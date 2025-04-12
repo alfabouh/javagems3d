@@ -3,7 +3,7 @@ package javagems3d.graphics.objects;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 
 import javagems3d.system.resources.assets.models.Model3D;
-import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
+import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,11 +19,11 @@ public interface IModeled extends IAnimated {
         if (this.hasAnimationData()) {
             return this.getModel().getMeshStructure().getMeshAABBDataForAnimation(this.getAnimationData().getCurrentAnimation()).getNormalizedAABB(pose3D);
         }
-        MeshAABBData meshAABBData = this.getModel().getMeshStructure().getMeshAABBData();
-        if (meshAABBData == null) {
+        MeshBoundingBoxData meshBoundingBoxData = this.getModel().getMeshStructure().getMeshAABBData();
+        if (meshBoundingBoxData == null) {
             return null;
         }
-        return meshAABBData.getNormalizedAABB(pose3D);
+        return meshBoundingBoxData.getNormalizedAABB(pose3D);
     }
 
     default boolean hasModel() {

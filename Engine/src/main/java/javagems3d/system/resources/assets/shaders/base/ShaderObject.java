@@ -7,13 +7,10 @@ import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManag
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrary;
 import javagems3d.system.resources.assets.shaders.uniform.Uniform;
-import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
-import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -146,7 +143,7 @@ public class ShaderObject {
 
 
     private String readShaderText(JGemsPath shaderPath) {
-        return JGemsFilesHelper.readTextFromFile(new JGemsPath(shaderPath, this.getShaderType().getFile()));
+        return JGemsFilesHelper.readTextFromFileInJar(new JGemsPath(shaderPath, this.getShaderType().getFile()));
     }
 
     private String processIncludes(String shaderCode) {

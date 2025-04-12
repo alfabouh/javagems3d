@@ -190,14 +190,14 @@ public final class SceneWorld implements IRenderWorld {
     public void removeLight(Light light, @Nullable ILighted lighted) {
         this.getEnvironment().getLightScene().removeLight(light);
         if (lighted != null) {
-            lighted.removeLight((ILightAttached) light);
+            lighted.removeLightAttachment((ILightAttached) light);
         }
     }
 
     public void addLight(Light light, @Nullable ILighted lighted) {
         this.getEnvironment().getLightScene().addLight(light);
         if (lighted != null) {
-            lighted.addLight((ILightAttached) light);
+            lighted.addLightAttachment((ILightAttached) light);
         }
     }
 
@@ -207,7 +207,7 @@ public final class SceneWorld implements IRenderWorld {
             this.lightAttachmentQueue.add(new Pair<>(worldItem, light));
             return;
         }
-        abstractSceneEntity.addLight(light);
+        abstractSceneEntity.addLightAttachment(light);
         this.getEnvironment().getLightScene().addLight((Light) light);
     }
 

@@ -98,17 +98,19 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
             this.pointLight.setOffset(this.getLightOffset());
         }
         int attachedTo = this.getAttachedTo();
-        if (attachedTo >= 0) {
-            final WBenchWorld wBenchWorld = (WBenchWorld) iWorld;
-            SceneObject sceneObject = wBenchWorld.getIdMap().get(attachedTo);
+
+        final WBenchWorld wBenchWorld = (WBenchWorld) iWorld;
+        SceneObject sceneObject = wBenchWorld.getIdMap().get(attachedTo);
+        boolean flag = !(sceneObject instanceof WBenchMarkerObject) && (sceneObject != null && attachedTo != this.getId());
+        if (flag) {
             WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.LineRequest(this.getPosition(), sceneObject.getPositionToAttachLights(), new Vector3f(this.getColor()).mul(6.0f), DebugLinesDrawer.Depth(), DebugLinesDrawer.Depth()));
-            if (this.isLightAttached(this.pointLight)) {
-                this.removeLight(this.pointLight);
-                sceneObject.addLight(this.pointLight);
+            if (this.pointLight.getAttachedTo() == null || !this.pointLight.getAttachedTo().equals(sceneObject)) {
+                this.pointLight.getAttachedTo().removeLightAttachment(this.pointLight);
+                sceneObject.addLightAttachment(this.pointLight);
             }
         } else {
             if (!this.isLightAttached(this.pointLight)) {
-                this.addLight(this.pointLight);
+                this.addLightAttachment(this.pointLight);
             }
         }
     }
@@ -116,7 +118,7 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     @Override
     public String toString(boolean textPosition) {
         final int attached = this.getAttachedTo();
-        return super.toString(textPosition) + (attached >= 0 ? (" ---> (" + attached + ")") : "");
+        return super.toString(textPosition) + (attached >= 0 ? ("->(" + attached + ")") : "");
     }
 
     @Override

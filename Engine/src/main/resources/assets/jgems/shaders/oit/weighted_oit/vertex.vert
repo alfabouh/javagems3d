@@ -4,6 +4,7 @@ layout (location=2) in vec3 aNormal;
 layout (location=3) in vec3 aTangent;
 layout (location=4) in vec3 aBitangent;
 
+out vec3 model_vertex_normal;
 out vec2 uv_coordinates;
 out vec3 modelview_vertex_normal;
 out vec3 modelview_vertex_pos;
@@ -24,7 +25,9 @@ void main()
 
     modelview_vertex_normal = normalize(model_view_matrix * vec4(aNormal, 0.0f)).xyz;
     modelview_vertex_pos = mv_pos.xyz;
+
     model_vertex_pos = model_matrix * vec4(aPosition, 1.0f);
+    model_vertex_normal = normalize(model_matrix * vec4(aNormal, 0.0f)).xyz;
 
     vec3 T = normalize(vec3(model_view_matrix * (vec4(aTangent, 0.0))));
     vec3 B = normalize(vec3(model_view_matrix * (vec4(aBitangent, 0.0))));

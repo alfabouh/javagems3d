@@ -11,13 +11,11 @@ import api.application.workbench.resources.data.wbench.WBenchObjectData;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import org.jetbrains.annotations.NotNull;
 import workbench.WBench;
-import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
@@ -36,7 +34,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
                 final APIWBenchDataManager.TemplatesTable<ResourceEntity> table = entry.getValue();
                 for (ResourceEntity resource : table.getTemplateMap().values()) {
                     WBenchObjectData wBenchObjectData = resource.getFabricWBench().create();
-                    WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(MapObjectsIdentifiers.ENTITY, resource), wBenchObjectData);
+                    WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(resource), wBenchObjectData);
                     WBench.get().getProjectObjects().addEntity(entry.getKey(), wBenchObjectTemplate);
                 }
             }
@@ -48,8 +46,8 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
                 final APIWBenchDataManager.TemplatesTable<ResourceProp> table = entry.getValue();
                 for (ResourceProp resource : table.getTemplateMap().values()) {
                     WBenchObjectData wBenchObjectData = resource.getFabricWBench().create();
-                    WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(MapObjectsIdentifiers.PROP, resource), wBenchObjectData);
-                    WBench.get().getProjectObjects().addEntity(entry.getKey(), wBenchObjectTemplate);
+                    WBenchObjectTemplate wBenchObjectTemplate = this.constructObjectTemplate(systemResources, this.getId(resource), wBenchObjectData);
+                    WBench.get().getProjectObjects().addProp(entry.getKey(), wBenchObjectTemplate);
                 }
             }
         }
@@ -60,19 +58,19 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
                 final APIWBenchDataManager.TemplatesTable<ResourceMarker> table = entry.getValue();
                 for (ResourceMarker resource : table.getTemplateMap().values()) {
                     WBenchMarkerData wBenchObjectData = resource.getFabricWBench().create();
-                    WBenchMarkerTemplate wBenchObjectTemplate = this.constructMarkerTemplate(systemResources, this.getId(MapObjectsIdentifiers.MARKER, resource), wBenchObjectData);
-                    WBench.get().getProjectObjects().addEntity(entry.getKey(), wBenchObjectTemplate);
+                    WBenchMarkerTemplate wBenchObjectTemplate = this.constructMarkerTemplate(systemResources, this.getId(resource), wBenchObjectData);
+                    WBench.get().getProjectObjects().addMarker(entry.getKey(), wBenchObjectTemplate);
                 }
             }
         }
     }
 
-    private WBenchObject.ID getId(String prefix, Resource<?, ?> resourceEntity) {
-        return new WBenchObject.ID(prefix + resourceEntity.getNameId(), resourceEntity.getGroupId());
+    private WBenchObject.ID getId(Resource<?, ?> resourceEntity) {
+        return new WBenchObject.ID(resourceEntity.getNameId(), resourceEntity.getGroupId());
     }
 
     private WBenchObjectTemplate constructObjectTemplate(SystemResources systemResources, WBenchObject.ID objectId, WBenchObjectData wBenchObjectData) {
-        MeshGroup meshGroup = systemResources.createMeshGroup(wBenchObjectData.getPathToModel(), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true, true);
+        MeshGroup meshGroup = systemResources.createMeshGroup_Buffer(wBenchObjectData.getPathToModel(),true, false);
         return new WBenchObjectTemplate(objectId, meshGroup, RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties()), wBenchObjectData.getTagsContainer(), wBenchObjectData.getTranslationConstraints());
     }
 
@@ -81,7 +79,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
         if (wBenchMarkerData.getDefaultMarker() != null) {
             meshGroup = this.getModelFromDefaultMarker(systemResources, wBenchMarkerData.getDefaultMarker());
         } else {
-            meshGroup = systemResources.createMeshGroup(wBenchMarkerData.getPathToModel(), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, false, true);
+            meshGroup = systemResources.createMeshGroup_Buffer(wBenchMarkerData.getPathToModel(), false, false);
         }
         return new WBenchMarkerTemplate(objectId, meshGroup, wBenchMarkerData.getTagsContainer(), wBenchMarkerData.getTranslationConstraints(), wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent());
     }

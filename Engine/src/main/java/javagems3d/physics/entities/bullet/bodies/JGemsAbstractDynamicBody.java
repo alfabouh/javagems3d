@@ -1,4 +1,4 @@
-package javagems3d.physics.entities.bullet.basic;
+package javagems3d.physics.entities.bullet.bodies;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import javagems3d.physics.entities.bullet.JGemsBody;

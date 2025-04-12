@@ -10,11 +10,25 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public abstract class JGemsFilesHelper {
-    public static String readTextFromFile(JGemsPath path) {
+    public static String readTextFromFileInJar(JGemsPath path) {
         StringBuilder textBuilder = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(JGems3D.loadFileFromJar(path), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                textBuilder.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            throw new JGemsIOException(e);
+        }
+        return textBuilder.toString();
+    }
+
+    public static String readTextFromFileOutsideJar(JGemsPath path) {
+        StringBuilder textBuilder = new StringBuilder();
+        try (BufferedReader reader = Files.newBufferedReader(path.toFile().toPath(), StandardCharsets.UTF_8)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 textBuilder.append(line).append(System.lineSeparator());

@@ -1,5 +1,8 @@
 package javagems3d.mapping;
 
+import api.scripting.JGemsAPIScriptingEngine;
+import api.scripting.functions.APIScriptingFunctions;
+import api.system.JGemsAPI;
 import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Plane;
@@ -89,10 +92,18 @@ public final class JGemsMapping {
 
         Log.get().info("Loading Map: " + processor.getMapName() + "(" + processor.getMapInformation() + ")");
         this.createWorlds();
+        if (!JGemsAPI.executeScriptFunction(null, APIScriptingFunctions.onInitialization, JGemsAPI.getAPIScripting().createInitializationJS())) {
+            JGemsAPIScriptingEngine.warn(APIScriptingFunctions.onInitialization);
+        }
+        processor.init();
+
         processor.setGlobalResources(this.getResourceManager().getGlobalResources());
         processor.setLocalResources(this.getResourceManager().getLocalResources());
         processor.onSetupSkyBox(environment.getSkyBox(), environment.getSkyBox().getBackground());
         processor.onSetupFog(environment.getFogManager());
+        if (!JGemsAPI.executeScriptFunction(null, APIScriptingFunctions.onWorldPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
+            JGemsAPIScriptingEngine.warn(APIScriptingFunctions.onWorldPreGeneration);
+        }
         processor.preProcessing(this.getPhysicsWorld(), this.getSceneWorld());
         processor.onProcessing(this.getPhysicsWorld(), this.getSceneWorld());
 
@@ -107,6 +118,9 @@ public final class JGemsMapping {
             JGemsCameraHelper.enableFreeCamera(JGemsControllerHelper.getCurrentController(), processor.getDefaultStartPosition(), processor.getDefaultStartRotation());
         }
         processor.postProcessing(this.getPhysicsWorld(), this.getSceneWorld());
+        if (!JGemsAPI.executeScriptFunction(null, APIScriptingFunctions.onWorldPostGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
+            JGemsAPIScriptingEngine.warn(APIScriptingFunctions.onWorldPostGeneration);
+        }
 
         this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);
 

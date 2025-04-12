@@ -16,7 +16,6 @@ import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.world.PhysicsWorld;
-import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
@@ -32,8 +31,8 @@ public class TestMap extends ManualMapProcessor {
 
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPath("/assets/models/sponza/sponza.gltf"), ModelLoaderFlags.DEFAULT, false);
-        sceneWorld.addObject(new SceneWorldProp(sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
+        MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPath("/assets/models/sponza/sponza.gltf"), false, false);
+        sceneWorld.addObject(new SceneWorldProp("sponza", sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
 
         JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
         JGemsWorldHelper.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, meshGroup));

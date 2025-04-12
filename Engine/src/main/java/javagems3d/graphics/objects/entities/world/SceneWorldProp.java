@@ -12,7 +12,7 @@ import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
 public class SceneWorldProp extends SceneProp {
-    public SceneWorldProp(@NotNull SceneWorld sceneWorld, @NotNull PropRenderData propRenderData) {
-        super(sceneWorld, propRenderData);
+    public SceneWorldProp(@NotNull String name, @NotNull SceneWorld sceneWorld, @NotNull PropRenderData propRenderData) {
+        super(name, sceneWorld, propRenderData);
     }
 }

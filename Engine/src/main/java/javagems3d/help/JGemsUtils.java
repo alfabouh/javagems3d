@@ -6,9 +6,10 @@ import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.helper.MeshAABBHelper;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
-import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
-import javagems3d.system.resources.assets.models.mesh.udata.MeshCollisionData;
+import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
+import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -111,10 +112,10 @@ public abstract class JGemsUtils {
     public static boolean createMeshAABBData(MeshStructure3D<?> meshStructure) {
         int optimalThreads = Runtime.getRuntime().availableProcessors();
         if (meshStructure != null) {
-            meshStructure.setMeshAABBData(new MeshAABBData(MeshAABBHelper.createMultiThread(meshStructure, optimalThreads)));
+            meshStructure.setMeshAABBData(new MeshBoundingBoxData(MeshAABBHelper.createMultiThread(meshStructure, optimalThreads)));
             if (meshStructure.isAnimatedStructure()) {
                 for (Map.Entry<Animation, CullingAABB> aabbEntry : MeshAABBHelper.createAnimatedMultiThread(meshStructure, optimalThreads).entrySet()) {
-                    meshStructure.setMeshAABBDataForAnimationFrame(aabbEntry.getKey(), new MeshAABBData(aabbEntry.getValue()));
+                    meshStructure.setMeshAABBDataForAnimationFrame(aabbEntry.getKey(), new MeshBoundingBoxData(aabbEntry.getValue()));
                 }
             }
             return true;
@@ -123,9 +124,9 @@ public abstract class JGemsUtils {
     }
 
     @SuppressWarnings("all")
-    public static boolean createMeshCollisionData(MeshStructure3D<?> meshStructure) {
-        if (meshStructure != null && meshStructure.getMeshUserData(MeshStructure3D.MESH_COLLISION_UD) == null) {
-            meshStructure.setMeshUserData(MeshStructure3D.MESH_COLLISION_UD, new MeshCollisionData(meshStructure));
+    public static boolean createMeshCollisionData(MeshStructure3D<?> meshStructure, @Nullable MeshCollisionData.Fabric fabric) {
+        if (meshStructure != null) {
+            meshStructure.setMeshCollisionData(new MeshCollisionData(meshStructure, fabric == null ? new MeshCollisionData.DefaultFabric() : fabric));
             return true;
         }
         return false;

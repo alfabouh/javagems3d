@@ -2,9 +2,9 @@ package javagems3d.system.resources.assets.models.mesh.structures;
 
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.mesh.IMesh;
+import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
-import javagems3d.system.resources.assets.models.mesh.udata.IMeshUserData;
-import javagems3d.system.resources.assets.models.mesh.udata.MeshAABBData;
+import javagems3d.system.resources.assets.models.mesh.data.MeshBoundingBoxData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -15,21 +15,18 @@ import java.util.Map;
 public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, MeshNode3D<T>> {
     public static final int SOLID_LAYER = 0;
     public static final int TRANSPARENCY_LAYER = 1;
-
-    public static final String MESH_COLLISION_UD = "mesh_collision";
-
-    private final Map<String, IMeshUserData> meshUserData;
     private final List<Animation> animationsList;
 
-    private MeshAABBData meshAABBData;
-    private final Map<Animation, MeshAABBData> frameMeshAABBDataMap;
+    private MeshCollisionData meshCollisionData;
+    private MeshBoundingBoxData meshBoundingBox;
+    private final Map<Animation, MeshBoundingBoxData> animationsBoundingBoxes;
 
     public MeshStructure3D() {
-        this.meshUserData = new HashMap<>();
         this.animationsList = new ArrayList<>();
 
-        this.meshAABBData = null;
-        this.frameMeshAABBDataMap = new HashMap<>();
+        this.meshBoundingBox = null;
+        this.meshCollisionData = null;
+        this.animationsBoundingBoxes = new HashMap<>();
     }
 
     public abstract boolean canBeUsedInIndirectRendering();
@@ -40,10 +37,6 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
 
     public void loadAnimations(List<Animation> animations) {
         this.getAnimationsList().addAll(animations);
-    }
-
-    public void setMeshUserData(String key, IMeshUserData meshUserData) {
-        this.meshUserData.put(key, meshUserData);
     }
 
     public void putNodes(List<MeshNode3D<T>> list) {
@@ -86,19 +79,18 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
 
     public void clear() {
         super.clear();
-        this.meshUserData.clear();
-        this.frameMeshAABBDataMap.clear();
+        this.animationsBoundingBoxes.clear();
         this.getAnimationsList().forEach(Animation::clear);
         this.getAnimationsList().clear();
     }
 
     @SuppressWarnings("all")
-    public <E extends IMeshUserData> E getUnSafeMeshUserData(String key) {
+    public <E extends IUserData> E getUnSafeMeshUserData(String key) {
         return this.getMeshUserData(key, null);
     }
 
     @SuppressWarnings("all")
-    public <E extends IMeshUserData> E getMeshUserData(String key, Class<E> tClass) {
+    public <E extends IUserData> E getMeshUserData(String key, Class<E> tClass) {
         if (this.getMeshUserData(key) == null) {
             return null;
         }
@@ -108,21 +100,28 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
         return null;
     }
 
-    public void setMeshAABBDataForAnimationFrame(Animation animation, MeshAABBData meshAABBData) {
-        this.frameMeshAABBDataMap.put(animation, meshAABBData);
+    public void setMeshAABBDataForAnimationFrame(Animation animation, MeshBoundingBoxData meshBoundingBoxData) {
+        this.animationsBoundingBoxes.put(animation, meshBoundingBoxData);
     }
 
-    public MeshAABBData getMeshAABBDataForAnimation(Animation animation) {
-        return this.frameMeshAABBDataMap.get(animation);
+    public MeshBoundingBoxData getMeshAABBDataForAnimation(Animation animation) {
+        return this.animationsBoundingBoxes.get(animation);
     }
 
-    public MeshStructure3D<T> setMeshAABBData(MeshAABBData meshAABBData) {
-        this.meshAABBData = meshAABBData;
-        return this;
+    public void setMeshAABBData(MeshBoundingBoxData meshBoundingBoxData) {
+        this.meshBoundingBox = meshBoundingBoxData;
     }
 
-    public MeshAABBData getMeshAABBData() {
-        return this.meshAABBData;
+    public void setMeshCollisionData(MeshCollisionData meshCollisionData) {
+        this.meshCollisionData = meshCollisionData;
+    }
+
+    public MeshCollisionData getMeshCollisionData() {
+        return this.meshCollisionData;
+    }
+
+    public MeshBoundingBoxData getMeshAABBData() {
+        return this.meshBoundingBox;
     }
 
     public boolean isAnimatedStructure() {
@@ -139,13 +138,5 @@ public abstract class MeshStructure3D<T extends IMesh> extends MeshStructure<T, 
 
     public List<Animation> getAnimationsList() {
         return this.animationsList;
-    }
-
-    public IMeshUserData getMeshUserData(String key) {
-        return this.meshUserData.get(key);
-    }
-
-    public boolean hasMeshUserData(String key) {
-        return this.getMeshUserData(key) != null;
     }
 }

@@ -8,6 +8,7 @@ import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.util.BufferUtils;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -59,7 +60,10 @@ public abstract class DynamicsUtils {
     }
 
     public static void rotateRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f rot) {
-        physicsRigidBody.setPhysicsRotation(new Quaternion().fromAngles(rot.x, rot.y, rot.z));
+        Quaternionf quaternionf = new Quaternionf();
+        quaternionf.rotateXYZ(-rot.x, -rot.y, -rot.z);
+
+        physicsRigidBody.setPhysicsRotation(new Quaternion(quaternionf.x, quaternionf.y, quaternionf.z, quaternionf.w));
     }
 
     public static void scaleRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f scale) {

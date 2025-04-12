@@ -112,7 +112,7 @@ public final class ProjectManager {
             object.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             object.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
-
+            object.setId(template.getId());
             this.getWorld().addObject(object);
         }
     }
@@ -193,12 +193,15 @@ public final class ProjectManager {
                         object.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
                         object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
                         object.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
+                        object.setId(template.getId());
                         this.getWorld().addObject(object);
                     }
                     Log.get().debug("Read Point Lights: " + objectsData.pointLights.size());
                 } else {
                     Log.get().warn("Map has no point lights");
                 }
+
+                world.calcFreeIds();
             } else {
                 Log.get().error("Couldn't get ObjectsData");
             }

@@ -7,5 +7,5 @@ import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface IScenePropConstructor {
-    @NotNull SceneProp createSceneProp(SceneWorld sceneWorld, PropRenderData propRenderData);
+    @NotNull SceneProp createSceneProp(String name, SceneWorld sceneWorld, PropRenderData propRenderData);
 }

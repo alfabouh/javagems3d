@@ -1,4 +1,4 @@
-package javagems3d.physics.entities.bullet.basic;
+package javagems3d.physics.entities.bullet.bodies;
 
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.properties.collision.CollisionType;

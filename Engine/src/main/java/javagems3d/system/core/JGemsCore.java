@@ -101,6 +101,7 @@ public final class JGemsCore implements ICore {
         this.setLockedResuming(false);
         this.getScreen().getControllerDispatcher().setLockedController(false);
 
+        JGemsAPI.clearScriptingEngine();
         this.requestsFromThreads.destroyMap = false;
     }
 
@@ -169,8 +170,8 @@ public final class JGemsCore implements ICore {
                 Log.get().exception(e);
             } finally {
                 try {
-                    this.exitMap();
                     JGems3D.freeSync();
+                    this.exitMap();
                     if (!this.getPhysics().waitForFullTermination()) {
                         Log.get().error("Waited for physics termination too long...");
                     }

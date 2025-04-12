@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public interface IMapProcessor {
+    void init();
+
     void preProcessing(PhysicsWorld world, SceneWorld sceneWorld);
     void onProcessing(PhysicsWorld world, SceneWorld sceneWorld);
     void postProcessing(PhysicsWorld world, SceneWorld sceneWorld);

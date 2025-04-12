@@ -23,7 +23,6 @@ import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.Water;
-import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
@@ -37,6 +36,10 @@ public abstract class ManualMapProcessor extends MapProcessor {
         super();
     }
 
+    @Override
+    public void init() {
+    }
+
     public static class Default extends ManualMapProcessor {
 
         @Override
@@ -46,7 +49,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), ModelLoaderFlags.DEFAULT, false);
+            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false, false);
 
             JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
             JGemsWorldHelper.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
@@ -55,7 +58,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
             Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
             JGemsWorldHelper.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
-            JGemsWorldHelper.addPropInScene(new SceneWorldProp(sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), JGemsResourceManager.globalModelAssets.defaultCube_bff)));
+            JGemsWorldHelper.addPropInScene(new SceneWorldProp("cube", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), JGemsResourceManager.globalModelAssets.defaultCube_bff)));
 
             PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
             pointLight.on();
@@ -77,10 +80,10 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onSetupSkyBox(ISkyBox skyBox, SkyBox.Background background) {
-            MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, false);
+            MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), false, false);
             RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect().replaceShaderManager(Pipeline.SCENE, JGemsResourceManager.globalShaderAssets.background_indirect), JGemsRenderProperties.getDefault());
             renderAttributes.getProperties().setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.5f);
-            SceneBackgroundProp sceneProp3 = new SceneBackgroundProp((SceneWorld) background.getWorld(), new PropRenderData(renderAttributes, meshGroup));
+            SceneBackgroundProp sceneProp3 = new SceneBackgroundProp("city", (SceneWorld) background.getWorld(), new PropRenderData(renderAttributes, meshGroup));
             sceneProp3.getModel().getPose().setPosition(new Vector3f(0.0f, -3.0f, 0.0f));
             sceneProp3.getModel().getPose().setRotation(new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f));
             sceneProp3.getModel().getPose().setScaling(new Vector3f(14.0f));

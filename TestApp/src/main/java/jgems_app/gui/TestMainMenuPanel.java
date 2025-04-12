@@ -86,10 +86,11 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 //    });
                 //    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                 //});
-                .setOnClick(() -> {
-                    JGems3D.get().loadMap(new ExternalMapProcessor.Default(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
-                    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
-                });
+
+               .setOnClick(() -> {
+                   JGems3D.get().loadMap(new ExternalMapProcessor.Default(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
+                   JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
+               });
 
         JGemsUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {

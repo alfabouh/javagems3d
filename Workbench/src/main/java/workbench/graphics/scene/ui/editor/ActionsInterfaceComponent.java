@@ -60,7 +60,7 @@ public class ActionsInterfaceComponent {
 
         WBenchObject currentSelectedObject = this.getEditorInterface().getCurrentSelectedObject();
         if (currentSelectedObject != null) {
-            if (ImGui.collapsingHeader("Object: " + currentSelectedObject.getObjectId().getNameId() + "(" + currentSelectedObject.getId() + ")", ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.collapsingHeader("Object [" + currentSelectedObject.getId() + "]", ImGuiTreeNodeFlags.DefaultOpen)) {
                 ImGui.treePush();
                 if (currentSelectedObject.hasTranslationConstraints()) {
                     if (ImGui.treeNodeEx("Transformation", ImGuiTreeNodeFlags.DefaultOpen)) {

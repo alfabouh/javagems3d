@@ -20,13 +20,15 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class SceneProp extends SceneObject implements IWorldTicked {
+    private final String name;
     private final IModelConstructor<Void> propModelConstructor;
     private boolean isVisible;
     private boolean isDead;
 
-    public SceneProp(@NotNull IRenderWorld world, @NotNull PropRenderData propRenderData) {
+    public SceneProp(@NotNull String name, @NotNull IRenderWorld world, @NotNull PropRenderData propRenderData) {
         super(world, new Model3D(new Pose3D(), propRenderData.getMeshDataGroup()), propRenderData.getObjectRenderAttributes());
         this.propModelConstructor = propRenderData.getPropModelConstructor();
+        this.name = name;
         this.isVisible = true;
         this.isDead = false;
     }
@@ -97,8 +99,12 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
         return super.canBeRendered() && this.isVisible;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     @Override
     public String toString() {
-        return this.getClass().getName() + " - " + this.getModel().getPose().getPosition();
+        return this.getName() + " - " + this.getModel().getPose().getPosition();
     }
 }

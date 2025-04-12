@@ -1,7 +1,6 @@
 package workbench.resources.initialization;
 
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.ModelLoaderFlags;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -31,9 +30,9 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
         this.defaultCube_gr = IAssetsInitializer.createDefaultCubeGroup();
         systemResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_GR", this.defaultCube_gr);
 
-        this.markerDefault = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker/marker.gltf"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true, true);
-        this.markerCursor = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cursor/marker.gltf"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true, true);
-        this.markerCube = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cube/marker.gltf"), ModelLoaderFlags.DEFAULT & ~ModelLoaderFlags.CREATE_COLLISION_UD, true, true);
+        this.markerDefault = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker/marker.gltf"), true, false);
+        this.markerCursor = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cursor/marker.gltf"), true, false);
+        this.markerCube = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cube/marker.gltf"), true, false);
     }
 
     @Override

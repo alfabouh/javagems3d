@@ -27,7 +27,7 @@ public abstract class WBenchObject extends SceneProp {
     private final TranslationConstraints translationConstraints;
 
     public WBenchObject(@NotNull WBenchObject.ID objectId, @NotNull WBenchWorld wBenchWorld, @Nullable MeshStructure3D<?> meshStructure3D, @NotNull RenderAttributes renderAttributes, @NotNull TagsContainer tagsContainer, @NotNull TranslationConstraints translationConstraints) {
-        super(wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
+        super(objectId.getNameId(), wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
         this.id = -1;
         this.objectId = objectId;
         this.tagsContainer = new TagsContainer(tagsContainer);
@@ -137,7 +137,7 @@ public abstract class WBenchObject extends SceneProp {
     }
 
     public String toString(boolean textPosition) {
-        return "(" + this.getId() + ") " + this.getObjectId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
+        return "[" + this.getId() + "]" + this.getObjectId().toString() + (textPosition ? (" {" + this.getPosition().x + ", " + this.getPosition().y + ", " + this.getPosition().z + "}") : "");
     }
 
     @Override

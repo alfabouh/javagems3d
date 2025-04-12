@@ -6,14 +6,15 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> implements ICached {
     protected final Map<Integer, List<R>> nodesLayers;
+    private final Map<String, IUserData> meshUserData;
 
     public MeshStructure() {
+        this.meshUserData = new HashMap<>();
         this.nodesLayers = new HashMap<>();
         this.initLayers();
     }
@@ -25,6 +26,10 @@ public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> imp
         if (this.nodesLayers.isEmpty()) {
             this.nodesLayers.put(0, new ArrayList<>());
         }
+    }
+
+    public void setMeshUserData(String key, IUserData meshUserData) {
+        this.meshUserData.put(key, meshUserData);
     }
 
     public static int chooseLayer(@NotNull Material material) {
@@ -58,12 +63,21 @@ public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> imp
     }
 
     public void clear() {
+        this.meshUserData.clear();
         this.nodesLayers.values().forEach(e -> e.forEach(MeshNode::clear));
         this.nodesLayers.values().forEach(List::clear);
     }
 
     public List<R> getNodes(int layer) {
         return this.nodesLayers.get(layer);
+    }
+
+    public IUserData getMeshUserData(String key) {
+        return this.meshUserData.get(key);
+    }
+
+    public boolean hasMeshUserData(String key) {
+        return this.getMeshUserData(key) != null;
     }
 
     public List<R> getAllNodes() {
@@ -76,5 +90,8 @@ public abstract class MeshStructure <T extends IMesh, R extends MeshNode<T>> imp
             list.addAll(layer);
         }
         return list;
+    }
+
+    public interface IUserData {
     }
 }

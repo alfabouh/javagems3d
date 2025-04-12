@@ -186,7 +186,6 @@ public abstract class JGemsBody extends WorldItem implements IJGemsBulletEntity,
     public static class JGemsPhysicsRigidBody extends PhysicsRigidBody {
         private float saveDensity = -1.0f;
 
-
         public JGemsPhysicsRigidBody(CollisionShape shape) {
             super(shape);
         }

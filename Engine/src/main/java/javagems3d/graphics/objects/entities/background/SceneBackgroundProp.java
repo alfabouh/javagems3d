@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 public class SceneBackgroundProp extends SceneProp {
-    public SceneBackgroundProp(@NotNull SceneWorld sceneWorld, @NotNull PropRenderData propRenderData) {
-        super(sceneWorld, propRenderData);
+    public SceneBackgroundProp(@NotNull String name, @NotNull SceneWorld sceneWorld, @NotNull PropRenderData propRenderData) {
+        super(name, sceneWorld, propRenderData);
     }
 
     @Override

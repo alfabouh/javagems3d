@@ -1,10 +1,10 @@
-package launcher.util;
+package javagems3d.system.service.args;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class InputArgs {
-    private Map<String, String> values;
+    private final Map<String, String> values;
 
     public InputArgs(String[] args) {
         this.values = new HashMap<>();

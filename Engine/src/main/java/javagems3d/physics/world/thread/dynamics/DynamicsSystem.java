@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DynamicsSystem {
+    public static boolean VALID = false;
     private final Set<PhysicsCollisionObject> objectsWithCollideTriggers;
     private PhysicsSpace physicsSpace;
 
@@ -35,6 +36,7 @@ public class DynamicsSystem {
             String lib = NativesExtractor.extractNativesAndReturnPath(path, JGems3D.get().getOS());
             System.load(lib);
             Log.get().info("Injected lib: " + lib);
+            VALID = true;
         } catch (Exception e) {
             throw new JGemsRuntimeException(e);
         }

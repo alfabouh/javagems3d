@@ -3,6 +3,7 @@ package workbench.graphics.scene.ui;
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiWindowFlags;
+import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
@@ -43,6 +44,8 @@ import workbench.resources.shaders.WBenchShaderManager;
 
 import java.lang.Math;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EditorInterface implements DearUIInterface {
     public static boolean VIEW_SHADOWS = true;
@@ -211,7 +214,7 @@ public class EditorInterface implements DearUIInterface {
         final float propertiesWindowSizeX = (windowSize.x - sceneWindowSizeX) - sceneWindowOffset;
         final float propertiesWindowSizeY =  windowSize.y;
 
-        ImGui.begin("Items", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Items",  ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.setWindowSize(entitiesWindowSizeX, entitiesWindowSizeY - YOffset);
         ImGui.setWindowPos(0, YOffset);
         this.getItemsComponent().itemsContent();

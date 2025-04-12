@@ -180,6 +180,9 @@ public class WBenchScreen implements IScreen {
         JGemsTimer perSecondTimer = this.getTimerPool().createTimer();
         JGemsTimer renderTimer = this.getTimerPool().createTimer();
         JGemsTimer deltaTimer = this.getTimerPool().createTimer();
+
+        JGemsTimer autoSaveTimer = this.getTimerPool().createTimer();
+
         while (!WBench.get().isShouldBeClosed()) {
             if (GLFW.glfwWindowShouldClose(this.getWindow().getDescriptor())) {
                 WBench.get().close();
@@ -197,6 +200,14 @@ public class WBenchScreen implements IScreen {
                 WBenchScreen.RENDER_FPS = fps;
                 fps = 0;
             }
+
+            if (autoSaveTimer.resetTimerAfterReachedSeconds(60.0f)) {
+                if (WBench.get().getProjectManager().getCurrentProject() != null) {
+                    Log.get().trace("Autosave...");
+                    WBench.get().getProjectManager().saveProject(false);
+                }
+            }
+
             SpeedProfiler.clear();
             GLFW.glfwSwapBuffers(this.getWindow().getDescriptor());
             GLFW.glfwPollEvents();

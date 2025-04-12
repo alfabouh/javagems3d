@@ -2,28 +2,26 @@ package javagems3d.graphics.objects.entities;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
-import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
 import javagems3d.physics.world.basic.WorldItem;
 
 import javagems3d.system.resources.assets.models.Model3D;
+import javagems3d.system.resources.assets.models.animation.AnimationData;
+import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
+import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.graphics.objects.rendering.constructors.IModelConstructor;
-import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     private final IModelConstructor<WorldItem> entityModelConstructor;
@@ -45,6 +43,20 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
         this.currentRotationInterpolation = new InterpolationPoints(this.getFixedRotation(), this.getFixedRotation());
         this.isVisible = true;
         this.isDead = false;
+    }
+
+    @Override
+    public AnimationData setAnimationByID(int id) {
+        AnimationData animationData = super.setAnimationByID(id);
+        if (animationData != null) {
+            if (this.getWorldItem() instanceof JGemsBody) {
+                final JGemsBody jGemsBody = (JGemsBody) this.getWorldItem();
+                final MeshStructure3D<?> meshStructure3D = this.getModel().getMeshStructure();
+                final MeshCollisionData meshCollisionData = meshStructure3D.getMeshCollisionData();
+                jGemsBody.getPhysicsRigidBody().setCollisionShape(meshCollisionData.getAnimationAABBShapes().get(id));
+            }
+        }
+        return animationData;
     }
 
     @Override

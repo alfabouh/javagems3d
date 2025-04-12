@@ -1,6 +1,5 @@
 package javagems3d.physics.entities.bullet.bodies;
 
-import javagems3d.physics.entities.bullet.basic.JGemsAbstractDynamicBody;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import javagems3d.physics.colliders.IColliderConstructor;

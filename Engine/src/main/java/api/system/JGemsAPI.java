@@ -2,9 +2,13 @@ package api.system;
 
 import api.events.EventBus;
 import api.application.JGemsApplication;
+import api.scripting.JGemsAPIScriptingEngine;
+import api.scripting.functions.APIScriptingFunction;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
@@ -12,7 +16,6 @@ import org.reflections.util.ConfigurationBuilder;
 import javagems3d.system.service.exceptions.JGemsException;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +27,7 @@ public final class JGemsAPI implements Closeable {
 
     private static JGemsAPIData appData = null;
     private static JGemsAPIEditorResources appEditorResources = null;
+    private static JGemsAPIScriptingEngine apiScriptingEngine;
 
     private static JGemsAPI INSTANCE;
     private static JGemsAPIManager M_INSTANCE;
@@ -55,17 +59,40 @@ public final class JGemsAPI implements Closeable {
         return JGemsAPI.appData;
     }
 
-    public static JGemsAPIEditorResources APIAppEditorResources() {
+    public static JGemsAPIEditorResources APIEditorResources() {
         return JGemsAPI.appEditorResources;
+    }
+
+    public static JGemsAPIScriptingEngine getAPIScripting() {
+        return JGemsAPI.apiScriptingEngine;
+    }
+
+    public static void clearScriptingEngine() {
+        JGemsAPI.getAPIScripting().clearEngine();
+    }
+
+
+    public static void registerScriptBinding(String key, Object value, int scope) {
+        JGemsAPI.getAPIScripting().registerScriptBinding(key, value, scope);
+    }
+
+    public static void executeScript(@NotNull String script) {
+        JGemsAPI.getAPIScripting().executeScript(script);
+    }
+
+    public static boolean executeScriptFunction(@Nullable Object[] result, @NotNull APIScriptingFunction apiScriptingFunction, Object... args) {
+        return JGemsAPI.getAPIScripting().execFunction(result, apiScriptingFunction, args);
     }
 
     public void launchAPI() throws JGemsAPIException {
         try {
             JGemsAPI.appData = new JGemsAPIData();
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
+            JGemsAPI.apiScriptingEngine = new JGemsAPIScriptingEngine(JGemsAPI.appEditorResources);
+
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication();
             Log.get().debug("Init API-App: id=" + pair.getSecond().id());
-            JGemsAPI.getManager().pullDataFromApplication(JGemsAPI.APIAppEditorResources(), JGemsAPI.APIAppData(), pair);
+            JGemsAPI.getManager().pullDataFromApplication(JGemsAPI.APIEditorResources(), JGemsAPI.APIAppData(), pair);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new JGemsAPIException(e);
         } finally {
@@ -78,8 +105,8 @@ public final class JGemsAPI implements Closeable {
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication();
             Log.get().debug("Init API-App(ONLY EDITOR DATA): id=" + pair.getSecond().id());
-            JGemsAPI.getManager().pullDataForEditor(pair.getFirst(), JGemsAPI.APIAppEditorResources());
-            return JGemsAPI.APIAppEditorResources();
+            JGemsAPI.getManager().pullDataForEditor(pair.getFirst(), JGemsAPI.APIEditorResources());
+            return JGemsAPI.APIEditorResources();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new JGemsAPIException(e);
         } finally {
