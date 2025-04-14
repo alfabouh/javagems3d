@@ -27,6 +27,7 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import workbench.WBench;
+import workbench.graphics.environment.components.WBenchSkyBackground;
 import workbench.graphics.objects.*;
 import workbench.graphics.scene.renderer.IProjectActionsCallback;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
@@ -92,7 +93,7 @@ public final class ProjectManager {
         jsonFileManaging.writeToFile(this.getCurrentProject(), this.getCurrentProject().getCurrentProjectPath().toFile(), null);
     }
 
-    private <T> void handleObjects(Set<MapObjectTemplate> templates, BiFunction<String, String, T> templateFinder, BiFunction<T, MapObjectTemplate, WBenchObject> objectCreator) {
+    private <T> void handleObjects(boolean background, Set<MapObjectTemplate> templates, BiFunction<String, String, T> templateFinder, BiFunction<T, MapObjectTemplate, WBenchObject> objectCreator) {
         for (MapObjectTemplate template : templates) {
             final String name = template.getObjectId();
             final String group = template.getObjectGroup();
@@ -113,7 +114,11 @@ public final class ProjectManager {
             object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             object.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());
             object.setId(template.getId());
-            this.getWorld().addObject(object);
+            if (background) {
+                this.getWorld().getEnvironment().getSkyBox().getBackground().addObject(object);
+            } else {
+                this.getWorld().addObject(object);
+            }
         }
     }
 
@@ -142,6 +147,7 @@ public final class ProjectManager {
             if (skyData != null) {
                 ICubeMapProgram cubeMapProgram = this.getProjectObjects().getSkyBoxes().get(skyData.skyboxPath);
                 world.getEnvironment().getSkyBox().setSky2DTexture(cubeMapProgram);
+                world.getEnvironment().getSkyBox().getBackground().setViewScaling(skyData.backGroundScaling);
                 Log.get().debug("Read SkyData");
             } else {
                 Log.get().error("Couldn't get SkyData");
@@ -167,24 +173,31 @@ public final class ProjectManager {
 
             if (objectsData != null) {
                 if (objectsData.propObjects != null) {
-                    this.handleObjects(objectsData.propObjects, (group, name) -> this.getProjectObjects().getPropGroups().get(group).find(name), (tpl, t) -> new WBenchCommonObject(this.getWorld(), tpl, t.getTagsContainer()));
+                    this.handleObjects(false, objectsData.propObjects, (group, name) -> this.getProjectObjects().getPropGroups().get(group).find(name), (tpl, t) -> new WBenchCommonObject(this.getWorld(), tpl, t.getTagsContainer()));
                     Log.get().debug("Read Props: " + objectsData.propObjects.size());
                 } else {
                     Log.get().warn("Map has no props");
                 }
 
                 if (objectsData.entityObjects != null) {
-                    this.handleObjects(objectsData.entityObjects, (group, name) -> this.getProjectObjects().getEntityGroups().get(group).find(name), (tpl, t) -> new WBenchCommonObject(this.getWorld(), tpl, t.getTagsContainer()));
+                    this.handleObjects(false, objectsData.entityObjects, (group, name) -> this.getProjectObjects().getEntityGroups().get(group).find(name), (tpl, t) -> new WBenchCommonObject(this.getWorld(), tpl, t.getTagsContainer()));
                     Log.get().debug("Read Entities: " + objectsData.entityObjects.size());
                 } else {
                     Log.get().warn("Map has no entities");
                 }
 
                 if (objectsData.markerObjects != null) {
-                    this.handleObjects(objectsData.markerObjects, (group, name) -> this.getProjectObjects().getMarkerGroups().get(group).find(name), (tpl, t) -> new WBenchMarkerObject(this.getWorld(), tpl, t.getTagsContainer(), tpl.getColor(), tpl.isTransparent()));
+                    this.handleObjects(false, objectsData.markerObjects, (group, name) -> this.getProjectObjects().getMarkerGroups().get(group).find(name), (tpl, t) -> new WBenchMarkerObject(this.getWorld(), tpl, t.getTagsContainer(), tpl.getColor(), tpl.isTransparent()));
                     Log.get().debug("Read Markers: " + objectsData.markerObjects.size());
                 } else {
                     Log.get().warn("Map has no markers");
+                }
+
+                if (objectsData.backgroundProps != null) {
+                    this.handleObjects(true, objectsData.backgroundProps, (group, name) -> this.getProjectObjects().getPropGroups().get(group).find(name), (tpl, t) -> new WBenchCommonObject(this.getWorld(), tpl, t.getTagsContainer()));
+                    Log.get().debug("Read Background prop: " + objectsData.markerObjects.size());
+                } else {
+                    Log.get().warn("Map has no background props");
                 }
 
                 if (objectsData.pointLights != null) {
@@ -201,7 +214,9 @@ public final class ProjectManager {
                     Log.get().warn("Map has no point lights");
                 }
 
-                world.calcFreeIds();
+                final WBenchSkyBackground wBenchSkyBackground = (WBenchSkyBackground) world.getEnvironment().getSkyBox().getBackground();
+                WBenchWorld.calcFreeIds(world.getFreeIds(), world.getSceneObjects());
+                WBenchWorld.calcFreeIds(wBenchSkyBackground.getFreeIds(), wBenchSkyBackground.getSkySceneObjects());
             } else {
                 Log.get().error("Couldn't get ObjectsData");
             }
@@ -224,7 +239,9 @@ public final class ProjectManager {
         final SunLight sunLight = world.getEnvironment().getSkyBox().getSun();
         final FogScene fogScene = world.getEnvironment().getFogManager();
         final Set<SceneObject> objectsCopy = new HashSet<>(world.getSceneObjects());
+        final Set<SceneObject> backgroundCopy = new HashSet<>(world.getEnvironment().getSkyBox().getBackground().getSkySceneObjects());
         final Set<MapObjectTemplate> props = new HashSet<>();
+        final Set<MapObjectTemplate> backgroundProps = new HashSet<>();
         final Set<MapObjectTemplate> entities = new HashSet<>();
         final Set<MapObjectTemplate> markers = new HashSet<>();
         final Set<MapObjectTemplate> pointLights = new HashSet<>();
@@ -232,7 +249,7 @@ public final class ProjectManager {
 
         final SunData sunData = new SunData(sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getDensity(), fogScene.getColor());
-        final SkyData skyData = new SkyData(this.getProjectObjects().getSkyBoxes().inverse().get(skyBox.getTexture()));
+        final SkyData skyData = new SkyData(this.getProjectObjects().getSkyBoxes().inverse().get(skyBox.getTexture()), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
@@ -242,6 +259,7 @@ public final class ProjectManager {
                 categoryMap.put(MapObjectsIdentifiers.ENTITY, entities);
                 categoryMap.put(MapObjectsIdentifiers.MARKER, markers);
                 categoryMap.put(MapObjectsIdentifiers.POINT_LIGHT, pointLights);
+                categoryMap.put("backgroundProps", backgroundProps);
 
                 for (SceneObject sceneObject : objectsCopy) {
                     if (sceneObject instanceof WBenchObject) {
@@ -257,7 +275,16 @@ public final class ProjectManager {
                         }
                     }
                 }
-                final ObjectsData objectsData = new ObjectsData(props, markers, entities, pointLights);
+                for (SceneObject sceneObject : backgroundCopy) {
+                    if (sceneObject instanceof WBenchObject) {
+                        WBenchObject wBenchObject = (WBenchObject) sceneObject;
+                        final WBenchObject.ID objectId = wBenchObject.getObjectId();
+                        final String nameId = objectId.getNameId();
+                        categoryMap.get("backgroundProps").add(new MapObjectTemplate(wBenchObject.getId(), objectId.getNameId(), objectId.getGroupId(), wBenchObject.getTagsContainer(), wBenchObject.getPosition(), wBenchObject.getRotation(), wBenchObject.getScaling()));
+                    }
+                }
+
+                final ObjectsData objectsData = new ObjectsData(props, markers, entities, pointLights, backgroundProps);
                 MapDataPack mapDataPack = new MapDataPack();
                 jsonFileManaging.setMatch(MapDataPack.class, mapDataPack.getSerializationRules());
                 mapDataPack.set(fogData, sunData, objectsData, skyData);

@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions;
+package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;

@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions;
+package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
@@ -11,7 +11,6 @@ import javagems3d.graphics.rendering.scene.renderer.processors.post.FXAARenderPr
 import javagems3d.graphics.rendering.scene.renderer.processors.post.HDRRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 

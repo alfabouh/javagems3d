@@ -20,6 +20,7 @@ layout (std430, binding = 7) buffer WorldFog {
     Fog fog;
 };
 
+uniform float view_scaling;
 uniform vec3 camera_pos;
 uniform samplerCube ambient_cubemap;
 uniform bool useCubeMap;
@@ -73,7 +74,7 @@ vec4 calc_fog(vec3 frag_pos, vec4 color) {
     }
 
     vec3 fog_color = fog.color;
-    float distance = length(frag_pos);
+    float distance = length(frag_pos) * view_scaling;
     float fogFactor = 1. / exp((distance * fog.density) * (distance * fog.density));
     fogFactor = clamp(fogFactor, 0., 1.);
 

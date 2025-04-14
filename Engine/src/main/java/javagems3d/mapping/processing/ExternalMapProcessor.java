@@ -1,9 +1,11 @@
 package javagems3d.mapping.processing;
 
 import api.application.workbench.manager.APIWBenchDataManager;
+import api.application.workbench.resources.Resource;
 import api.application.workbench.resources.ResourceEntity;
 import api.application.workbench.resources.ResourceMarker;
 import api.application.workbench.resources.ResourceProp;
+import api.application.workbench.resources.data.jgems.IJGemsObjectData;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
@@ -12,7 +14,8 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.skybox.ISkyBox;
-import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
@@ -55,6 +58,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public abstract class ExternalMapProcessor extends MapProcessor {
     private final JGemsPath pathToJG3DFile;
@@ -124,6 +128,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     public void init() {
     }
 
+    protected abstract void onProcessBackgroundProp(MapObjectTemplate template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background);
     protected abstract void onProcessProp(MapObjectTemplate template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach);
     protected abstract void onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach);
     protected abstract void onProcessMarker(MapObjectTemplate template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
@@ -148,7 +153,21 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         return new Pair<>(pointLight, attachedTo);
     }
 
-    protected void onProcessing(Set<MapObjectTemplate> propObjects, Set<MapObjectTemplate> markerObjects, Set<MapObjectTemplate> entityObjects, Set<MapObjectTemplate> pointLights, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+    @SuppressWarnings("all")
+    private <T extends IJGemsObjectData, R extends Resource<?, ?>> void processMapObjects(Collection<MapObjectTemplate> templates, Map<String, APIWBenchDataManager.TemplatesTable<R>> resourceMap, BiConsumer<MapObjectTemplate, T> processor) {
+        for (MapObjectTemplate template : templates) {
+            final String name = template.getObjectId();
+            final String group = template.getObjectGroup();
+            if (!resourceMap.containsKey(group) || !resourceMap.get(group).getTemplateMap().containsKey(name)) {
+                Log.get().error("Couldn't spawn " + name + " from group: " + group);
+                continue;
+            }
+            T data = (T) resourceMap.get(group).getTemplateMap().get(name).getFabricGame().create();
+            processor.accept(template, data);
+        }
+    }
+
+    protected void onProcessing(Set<MapObjectTemplate> backgroundPropObjects, Set<MapObjectTemplate> propObjects, Set<MapObjectTemplate> markerObjects, Set<MapObjectTemplate> entityObjects, Set<MapObjectTemplate> pointLights, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         final Map<String, APIWBenchDataManager.TemplatesTable<ResourceProp>> resourcePropMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourcePropMap();
         final Map<String, APIWBenchDataManager.TemplatesTable<ResourceEntity>> resourceEntityMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourceEntityMap();
         final Map<String, APIWBenchDataManager.TemplatesTable<ResourceMarker>> resourceMarkerMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourceMarkerMap();
@@ -164,47 +183,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             }
         }
 
-        for (MapObjectTemplate template : propObjects) {
-            final String name = template.getObjectId();
-            final String group = template.getObjectGroup();
-
-            if (!resourcePropMap.containsKey(group) || !resourcePropMap.get(group).getTemplateMap().containsKey(name)) {
-                Log.get().error("Couldn't spawn prop: " + group + "/" + name);
-                continue;
-            }
-
-            JGemsPropData propData = resourcePropMap.get(group).getTemplateMap().get(name).getFabricGame().create();
-            this.onProcessProp(template, propData, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
-        }
-
-        for (MapObjectTemplate template : entityObjects) {
-            final String name = template.getObjectId();
-            final String group = template.getObjectGroup();
-
-            if (!resourceEntityMap.containsKey(group) || !resourceEntityMap.get(group).getTemplateMap().containsKey(name)) {
-                Log.get().error("Couldn't spawn entity: " + group + "/" + name);
-                continue;
-            }
-
-            JGemsEntityData entityData = resourceEntityMap.get(group).getTemplateMap().get(name).getFabricGame().create();
-            this.onProcessEntity(template, entityData, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
-        }
-
-        for (MapObjectTemplate template : markerObjects) {
-            final String name = template.getObjectId();
-            final String group = template.getObjectGroup();
-
-            if (!resourceMarkerMap.containsKey(group) || !resourceMarkerMap.get(group).getTemplateMap().containsKey(name)) {
-                Log.get().error("Couldn't spawn marker: " + group + "/" + name);
-                continue;
-            }
-
-            JGemsMarkerData markerData = resourceMarkerMap.get(group).getTemplateMap().get(name).getFabricGame().create();
-            this.onProcessMarker(template, markerData, physicsWorld, sceneWorld);
-        }
+        this.processMapObjects(propObjects, resourcePropMap, (template, data) -> this.onProcessProp(template, (JGemsPropData) data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null)));
+        this.processMapObjects(backgroundPropObjects, resourcePropMap, (template, data) -> this.onProcessBackgroundProp(template, (JGemsPropData) data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground()));
+        this.processMapObjects(entityObjects, resourceEntityMap, (template, data) -> this.onProcessEntity(template, (JGemsEntityData) data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null)));
+        this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, (JGemsMarkerData) data, physicsWorld, sceneWorld));
     }
 
-    protected void onSetupSkyBox(SunData sunData, SkyData skyData, ISkyBox skyBox, SkyBox.Background background) {
+    protected void onSetupSkyBox(Set<MapObjectTemplate> propObjects, SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
         final Map<String, Pair<String, JGemsPath>> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
 
         if (skyBoxesSet.containsKey(skyData.skyboxPath)) {
@@ -235,7 +220,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         final Set<MapObjectTemplate> markerObjects = this.getMapDataPack().getObjectsData().getMarkerObjects();
         final Set<MapObjectTemplate> entityObjects = this.getMapDataPack().getObjectsData().getEntityObjects();
         final Set<MapObjectTemplate> pointLights = this.getMapDataPack().getObjectsData().getPointLights();
-        this.onProcessing(propObjects, markerObjects, entityObjects, pointLights, world, sceneWorld);
+        final Set<MapObjectTemplate> backgroundProps = this.getMapDataPack().getObjectsData().getBackgroundProps();
+        this.onProcessing(backgroundProps, propObjects, markerObjects, entityObjects, pointLights, world, sceneWorld);
     }
 
     @Override
@@ -244,10 +230,13 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     @Override
-    public final void onSetupSkyBox(ISkyBox skyBox, SkyBox.Background background) {
+    public final void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
         final SunData sunData = this.getMapDataPack().getSunData();
         final SkyData skyData = this.getMapDataPack().getSkyData();
-        this.onSetupSkyBox(sunData, skyData, skyBox, background);
+        final Set<MapObjectTemplate> backgroundProps = this.getMapDataPack().getObjectsData().getBackgroundProps();
+        background.setViewScaling(skyData.backGroundScaling);
+
+        this.onSetupSkyBox(backgroundProps, sunData, skyData, skyBox, background);
     }
 
     @Override
@@ -281,6 +270,16 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     public static class Default extends ExternalMapProcessor {
         public Default(JGemsPath pathToJG3DFile, boolean inJar) {
             super(pathToJG3DFile, inJar);
+        }
+
+        @Override
+        protected void onProcessBackgroundProp(MapObjectTemplate template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background) {
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false, false);
+            SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
+            sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
+            sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
+            sceneWorldProp.getModel().getPose().setScaling(template.getScaling() == null ? new Vector3f(1.0f) : template.getScaling());
+            background.addObject(sceneWorldProp);
         }
 
         @Override

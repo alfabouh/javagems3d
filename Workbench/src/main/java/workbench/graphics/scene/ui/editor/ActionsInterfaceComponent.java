@@ -52,7 +52,7 @@ public class ActionsInterfaceComponent {
                     Vector3f posToSpawn = camera.getCamPosition();
                     posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
                     wBenchObject.setPosition(posToSpawn);
-                    this.getEditorInterface().getOpenGLRenderer().getWorld().addObject(wBenchObject);
+                    this.getEditorInterface().addObjectInWorld(wBenchObject);
                 }
             }
             ImGui.separator();

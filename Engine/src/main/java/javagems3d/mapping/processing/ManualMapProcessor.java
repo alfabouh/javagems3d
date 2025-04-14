@@ -4,15 +4,14 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.skybox.ISkyBox;
-import javagems3d.graphics.environment.skybox.SkyBox;
-import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
-import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsWorldHelper;
 import javagems3d.mapping.IGameMap;
@@ -79,15 +78,15 @@ public abstract class ManualMapProcessor extends MapProcessor {
         }
 
         @Override
-        public void onSetupSkyBox(ISkyBox skyBox, SkyBox.Background background) {
+        public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
             MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), false, false);
-            RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect().replaceShaderManager(Pipeline.SCENE, JGemsResourceManager.globalShaderAssets.background_indirect), JGemsRenderProperties.getDefault());
+            RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault());
             renderAttributes.getProperties().setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.5f);
-            SceneBackgroundProp sceneProp3 = new SceneBackgroundProp("city", (SceneWorld) background.getWorld(), new PropRenderData(renderAttributes, meshGroup));
+            SceneWorldProp sceneProp3 = new SceneWorldProp("city", (SceneWorld) background.getWorld(), new PropRenderData(renderAttributes, meshGroup));
             sceneProp3.getModel().getPose().setPosition(new Vector3f(0.0f, -3.0f, 0.0f));
             sceneProp3.getModel().getPose().setRotation(new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f));
             sceneProp3.getModel().getPose().setScaling(new Vector3f(14.0f));
-            background.addObjectInBackGround(sceneProp3);
+            background.addObject(sceneProp3);
         }
 
         @Override

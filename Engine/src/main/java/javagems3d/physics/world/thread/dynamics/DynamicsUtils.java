@@ -62,7 +62,6 @@ public abstract class DynamicsUtils {
     public static void rotateRigidBody(PhysicsRigidBody physicsRigidBody, Vector3f rot) {
         Quaternionf quaternionf = new Quaternionf();
         quaternionf.rotateXYZ(-rot.x, -rot.y, -rot.z);
-
         physicsRigidBody.setPhysicsRotation(new Quaternion(quaternionf.x, quaternionf.y, quaternionf.z, quaternionf.w));
     }
 

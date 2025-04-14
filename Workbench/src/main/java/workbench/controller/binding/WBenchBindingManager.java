@@ -1,8 +1,13 @@
 package workbench.controller.binding;
 
+import javagems3d.JGems3D;
 import javagems3d.system.controller.binding.BindingManager;
+import javagems3d.system.controller.components.FunctionalKey;
+import javagems3d.system.controller.components.IKeyAction;
 import javagems3d.system.controller.components.Key;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.lwjgl.glfw.GLFW;
+import workbench.resources.WBenchResourceManager;
 
 public class WBenchBindingManager extends BindingManager {
     public final Key keyA;
@@ -14,6 +19,7 @@ public class WBenchBindingManager extends BindingManager {
     public final Key keyCtrl;
     public final Key keyDelete;
     public final Key keyEsc;
+    public final Key keyV;
 
     public WBenchBindingManager() {
         this.keyA = new Key(GLFW.GLFW_KEY_A);
@@ -25,6 +31,16 @@ public class WBenchBindingManager extends BindingManager {
         this.keyCtrl = new Key(GLFW.GLFW_KEY_LEFT_CONTROL);
         this.keyDelete = new Key(GLFW.GLFW_KEY_DELETE);
         this.keyEsc = new Key(GLFW.GLFW_KEY_ESCAPE);
+
+        this.keyV = new FunctionalKey(e -> {
+            if (e == IKeyAction.KeyAction.CLICK) {
+                WBenchResourceManager.reloadShaders();
+            }
+        }, GLFW.GLFW_KEY_V);
+
+        if (JGems3D.DEBUG_MODE) {
+            this.addBinding(this.keyV);
+        }
 
         this.addBinding(this.keyA, "Walk Left");
         this.addBinding(this.keyD, "Walk Right");

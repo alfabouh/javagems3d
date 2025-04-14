@@ -1,9 +1,9 @@
 package javagems3d.mapping.processing.base;
 
-import javagems3d.graphics.environment.fog.FogScene;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
-import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.mapping.IGameMap;
 import javagems3d.physics.world.PhysicsWorld;
@@ -19,7 +19,7 @@ public interface IMapProcessor {
     void onProcessing(PhysicsWorld world, SceneWorld sceneWorld);
     void postProcessing(PhysicsWorld world, SceneWorld sceneWorld);
 
-    void onSetupSkyBox(ISkyBox skyBox, SkyBox.Background background);
+    void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background);
     void onSetupFog(IFogScene fogScene);
 
     @Nullable IGameMap.IPlayerConstructor getPlayerConstructor();

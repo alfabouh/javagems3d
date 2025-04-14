@@ -2,7 +2,7 @@ package jgems_app.map;
 
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
-import javagems3d.graphics.environment.skybox.SkyBox;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -47,7 +47,7 @@ public class TestMap extends ManualMapProcessor {
     }
 
     @Override
-    public void onSetupSkyBox(ISkyBox skyBox, SkyBox.Background background) {
+    public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
         skyBox.getSun().setLightPosition(new Vector3f(0.35f, 1.0f, 0.125f));
         skyBox.getSun().setLightColor(new Vector3f(1.0f, 0.95f, 0.91f));
     }

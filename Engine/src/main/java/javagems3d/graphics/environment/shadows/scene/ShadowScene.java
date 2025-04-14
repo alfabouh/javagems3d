@@ -77,11 +77,11 @@ public abstract class ShadowScene implements IShadowScene {
         }
     }
 
-    public void renderAllModelsInShadowMap(Set<SceneObject> modeledSceneObjectSet) {
+    public void renderAllModelsInShadowMap(Set<? extends SceneObject> modeledSceneObjectSet) {
         this.renderSceneInShadowMap(modeledSceneObjectSet);
     }
 
-    public void renderSceneInShadowMap(Set<SceneObject> modeledSceneObjectSet) {
+    public void renderSceneInShadowMap(Set<? extends SceneObject> modeledSceneObjectSet) {
         if (this.shouldNotRenderShadows()) {
             this.renderNullShadows();
             return;

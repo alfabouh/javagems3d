@@ -103,7 +103,9 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         SceneObject sceneObject = wBenchWorld.getIdMap().get(attachedTo);
         boolean flag = !(sceneObject instanceof WBenchMarkerObject) && (sceneObject != null && attachedTo != this.getId());
         if (flag) {
-            WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.LineRequest(this.getPosition(), sceneObject.getPositionToAttachLights(), new Vector3f(this.getColor()).mul(6.0f), DebugLinesDrawer.Depth(), DebugLinesDrawer.Depth()));
+            if (!WBenchOpenGLRenderer.isRenderingBackgroundScene()) {
+                WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.LineRequest(this.getPosition(), sceneObject.getPositionToAttachLights(), new Vector3f(this.getColor()).mul(6.0f), DebugLinesDrawer.Depth(), DebugLinesDrawer.Depth()));
+            }
             if (this.pointLight.getAttachedTo() == null || !this.pointLight.getAttachedTo().equals(sceneObject)) {
                 this.pointLight.getAttachedTo().removeLightAttachment(this.pointLight);
                 sceneObject.addLightAttachment(this.pointLight);

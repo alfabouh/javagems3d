@@ -1,18 +1,14 @@
 package workbench.graphics.scene.nodes;
 
-import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions.PostFXRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.BloomRenderProcessor;
-import javagems3d.graphics.rendering.scene.renderer.processors.post.FXAARenderProcessor;
 import javagems3d.graphics.rendering.scene.renderer.processors.post.HDRRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 import workbench.graphics.scene.ui.EditorInterface;

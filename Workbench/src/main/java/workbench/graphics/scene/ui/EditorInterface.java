@@ -3,9 +3,10 @@ package workbench.graphics.scene.ui;
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiWindowFlags;
-import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
@@ -27,12 +28,9 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
-import workbench.controller.WBenchControllerDispatcher;
 import workbench.controller.binding.WBenchBindingManager;
-import workbench.controller.objects.WBenchMouseKeyboardController;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
@@ -44,13 +42,15 @@ import workbench.resources.shaders.WBenchShaderManager;
 
 import java.lang.Math;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class EditorInterface implements DearUIInterface {
+    private SelectedScene selectedScene;
+
     public static boolean VIEW_SHADOWS = true;
     public static boolean VIEW_CHESS_TERRAIN = true;
     public static boolean VIEW_HDR = true;
+    public static boolean VIEW_FOG = true;
     public static boolean FULL_BRIGHT = false;
 
     public static final Object monitor = new Object();
@@ -97,6 +97,7 @@ public class EditorInterface implements DearUIInterface {
         this.getItemsComponent().clear();
 
         this.currentOperation = Operation.TRANSLATE;
+        this.selectedScene = SelectedScene.MAIN;
 
         this.currentSelectedObject = null;
         this.currentSelectedTemplate = null;
@@ -117,7 +118,7 @@ public class EditorInterface implements DearUIInterface {
 
         boolean deleteCurrentObject = ImGui.isKeyPressed(WBench.get().getBindingManager().keyDelete.getKeyCode(), false);
         if (deleteCurrentObject) {
-            this.getCurrentSelectedObject().setDead();
+            this.removeObjectFromWorld(this.getCurrentSelectedObject());
         }
 
         boolean removeObjectSelection1 = this.getCurrentSelectedObject() != null && this.getCurrentSelectedObject().isDead();
@@ -153,8 +154,40 @@ public class EditorInterface implements DearUIInterface {
             }
             ImGui.endMenu();
         }
+        if (ImGui.beginMenu("Scene")) {
+            SelectedScene oldSelected = this.getSelectedScene();
+            if (ImGui.checkbox("Main", this.getSelectedScene().equals(SelectedScene.MAIN))) {
+                this.selectedScene = SelectedScene.MAIN;
+            }
+            if (ImGui.checkbox("JGemsSkyBackground", this.getSelectedScene().equals(SelectedScene.BACKGROUND))) {
+                this.selectedScene = SelectedScene.BACKGROUND;
+            }
+            ISkyBackground background = this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground();
+
+            String[] scales = {"2.0", "4.0", "8.0", "16.0"};
+            ImGui.beginDisabled(!this.getSelectedScene().equals(SelectedScene.BACKGROUND));
+            if (ImGui.beginCombo("Scale", String.valueOf(background.getViewScaling()))) {
+                for (String scale : scales) {
+                    float selectedScaling = Float.parseFloat(scale);
+                    if (ImGui.selectable(scale, background.getViewScaling() == selectedScaling)) {
+                        background.setViewScaling(selectedScaling);
+                    }
+                }
+                ImGui.endCombo();
+            }
+            ImGui.endDisabled();
+            ImGui.endMenu();
+
+            if (!oldSelected.equals(this.getSelectedScene())) {
+                this.setCurrentSelectedTemplate(null);
+                this.setCurrentSelectedObject(null);
+            }
+        }
         JGemsConfig.DEBUG.FULL_BRIGHT = EditorInterface.FULL_BRIGHT;
         if (ImGui.beginMenu("View")) {
+            if (ImGui.checkbox("Fog", EditorInterface.VIEW_FOG)) {
+                EditorInterface.VIEW_FOG = !EditorInterface.VIEW_FOG;
+            }
             if (ImGui.checkbox("Full Bright", EditorInterface.FULL_BRIGHT)) {
                 EditorInterface.FULL_BRIGHT = !EditorInterface.FULL_BRIGHT;
             }
@@ -220,7 +253,7 @@ public class EditorInterface implements DearUIInterface {
         this.getItemsComponent().itemsContent();
         ImGui.end();
 
-        ImGui.begin("Scene", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
+        ImGui.begin("Scene " + this.getSelectedScene().name(), ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus);
         if (ImGui.isWindowHovered()) {
             if (ImGui.isMouseClicked(1)) {
                 ImGui.setWindowFocus();
@@ -374,6 +407,35 @@ public class EditorInterface implements DearUIInterface {
         }
     }
 
+    public void addObjectInWorld(WBenchObject wBenchObject) {
+        switch (this.getSelectedScene()) {
+            case MAIN: {
+                this.getOpenGLRenderer().getWorld().addObject(wBenchObject);
+            }
+            case BACKGROUND: {
+                this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground().addObject(wBenchObject);
+            }
+        }
+    }
+
+    public void removeObjectFromWorld(WBenchObject wBenchObject) {
+        wBenchObject.setDead();
+    }
+
+    public Set<WBenchObject> setOfSceneObjects() {
+        switch (this.getSelectedScene()) {
+            case MAIN: {
+                return this.getOpenGLRenderer().getWorld().getSceneObjects();
+            }
+            case BACKGROUND: {
+                return (Set<WBenchObject>) this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects().stream().map(e -> (WBenchObject) e).collect(Collectors.toSet());
+            }
+            default: {
+                return null;
+            }
+        }
+    }
+
     public void setCurrentSelectedTemplate(WBenchObjectTemplate currentSelectedTemplate) {
         this.currentSelectedTemplate = currentSelectedTemplate;
     }
@@ -402,6 +464,10 @@ public class EditorInterface implements DearUIInterface {
 
     public int getCurrentOperation() {
         return this.currentOperation;
+    }
+
+    public SelectedScene getSelectedScene() {
+        return this.selectedScene;
     }
 
     public ContextComponent getContextComponent() {

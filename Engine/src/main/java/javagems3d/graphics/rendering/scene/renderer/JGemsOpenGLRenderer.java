@@ -56,6 +56,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, IDearUIImp, IMapActionCallback {
     public static JGemsShaderManager UBO_SHADER = null;
@@ -70,7 +71,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     protected Map<NodeID, IRenderNode> conveyorNodes;
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
-    private final ISceneCulling sceneCulling;
+    private final ISceneCulling<SceneObject> sceneCulling;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
@@ -88,7 +89,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
 
-        this.sceneCulling = new SceneCulling(this, null);
+        this.sceneCulling = new SceneCulling<>(SceneCulling.FRUSTUM_CPU | SceneCulling.DISTANCE, null);
         this.debugLinesDrawer = new DebugLinesDrawer(JGemsResourceManager.globalShaderAssets.debug);
     }
 
@@ -178,7 +179,9 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
         Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
-        JGemsOpenGLRenderer.renderScene(frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, this.getSceneCulling());
+        JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
+            this.getSceneCulling().cull(toRender, JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera());
+        });
 
         GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);
@@ -213,8 +216,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         JGemsOpenGLRenderer.DebugLinesDrawer().render();
     }
 
-    public static void renderScene(FrameTicking frameTicking, Collection<SceneObject> toRender, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, ISceneCulling sceneCulling) {
-        sceneCulling.cull(toRender);
+    public static void renderScene(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Collection<SceneObject> toRender, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, @Nullable Consumer<Void> cullingFun) {
+        if (cullingFun != null) {
+            cullingFun.accept(null);
+        }
 
         List<SceneObject> redirectedInTransparency = new ArrayList<>();
         Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRender, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
@@ -365,7 +370,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     @Override
-    public ISceneCulling getSceneCulling() {
+    public ISceneCulling<SceneObject> getSceneCulling() {
         return this.sceneCulling;
     }
 

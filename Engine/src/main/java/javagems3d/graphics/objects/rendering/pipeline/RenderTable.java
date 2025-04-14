@@ -21,24 +21,28 @@ import java.util.stream.Collectors;
 
 public class RenderTable implements ICopyable<RenderTable> {
     public static JGemsShaderManager DEFAULT_SCENE_SHADER = null;
+    public static JGemsShaderManager DEFAULT_BACKGROUND_SHADER = null;
     public static JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER = null;
     public static JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER = null;
     public static JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER = null;
 
     public static JGemsShaderManager DEFAULT_SCENE_SHADER_IND = null;
+    public static JGemsShaderManager DEFAULT_BACKGROUND_SHADER_IND = null;
     public static JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND = null;
     public static JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND = null;
     public static JGemsShaderManager DEFAULT_TRANSPARENCY_SHADER_IND = null;
 
-    public static void SET_DEFAULT_SHADERS_INDIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_BLENDED_TRANSPARENCY_SHADER_IND) {
+    public static void SET_DEFAULT_SHADERS_INDIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_BACKGROUND_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, @NotNull JGemsShaderManager DEFAULT_BLENDED_TRANSPARENCY_SHADER_IND) {
         RenderTable.DEFAULT_SCENE_SHADER_IND = DEFAULT_SCENE_SHADER_IND;
+        RenderTable.DEFAULT_BACKGROUND_SHADER_IND = DEFAULT_BACKGROUND_SHADER_IND;
         RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND = DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND;
         RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND = DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND;
         RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND = DEFAULT_BLENDED_TRANSPARENCY_SHADER_IND;
     }
 
-    public static void SET_DEFAULT_SHADERS_DIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_BLENDED_TRANSPARENCY_SHADER) {
+    public static void SET_DEFAULT_SHADERS_DIRECT(@NotNull JGemsShaderManager DEFAULT_SCENE_SHADER, @NotNull JGemsShaderManager DEFAULT_BACKGROUND_SHADER, @NotNull JGemsShaderManager DEFAULT_SUN_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_POINT_L_SHADOW_MAP_SHADER, @NotNull JGemsShaderManager DEFAULT_BLENDED_TRANSPARENCY_SHADER) {
         RenderTable.DEFAULT_SCENE_SHADER = DEFAULT_SCENE_SHADER;
+        RenderTable.DEFAULT_BACKGROUND_SHADER = DEFAULT_BACKGROUND_SHADER;
         RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER = DEFAULT_SUN_L_SHADOW_MAP_SHADER;
         RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER = DEFAULT_POINT_L_SHADOW_MAP_SHADER;
         RenderTable.DEFAULT_TRANSPARENCY_SHADER = DEFAULT_BLENDED_TRANSPARENCY_SHADER;
@@ -77,11 +81,13 @@ public class RenderTable implements ICopyable<RenderTable> {
     public RenderTable setDefaultTableValues(boolean indirect) {
         if (indirect) {
             this.setMatch(Pipeline.SCENE, RenderTable.DEFAULT_SCENE_SHADER_IND, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND);
+            this.setMatch(Pipeline.BACKGROUND, RenderTable.DEFAULT_BACKGROUND_SHADER_IND, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND);
             this.setMatch(Pipeline.POINT_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
             this.setMatch(Pipeline.SUN_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER_IND, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC_IND);
             this.setMatch(Pipeline.TRANSPARENCY, RenderTable.DEFAULT_TRANSPARENCY_SHADER_IND, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND);
         } else {
             this.setMatch(Pipeline.SCENE, RenderTable.DEFAULT_SCENE_SHADER, RenderTable.DEFAULT_SCENE_RENDER_FABRIC);
+            this.setMatch(Pipeline.BACKGROUND, RenderTable.DEFAULT_BACKGROUND_SHADER, RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND);
             this.setMatch(Pipeline.POINT_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_POINT_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
             this.setMatch(Pipeline.SUN_LIGHT_SHADOW_MAP, RenderTable.DEFAULT_SUN_L_SHADOW_MAP_SHADER, RenderTable.DEFAULT_SHADOW_RENDER_FABRIC);
             this.setMatch(Pipeline.TRANSPARENCY, RenderTable.DEFAULT_TRANSPARENCY_SHADER, RenderTable.DEFAULT_TRANSPARENCY_RENDER_FABRIC);

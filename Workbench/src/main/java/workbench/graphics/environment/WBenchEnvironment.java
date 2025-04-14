@@ -22,7 +22,7 @@ public class WBenchEnvironment implements IEnvironment {
     private final IWorld world;
 
     public WBenchEnvironment(IWorld world) {
-        this.skyBox = new WBenchSkyBox(4.0f, world, null);
+        this.skyBox = new WBenchSkyBox(world,4.0f, null);
         this.fogManager = new WBenchFogScene();
         this.lightManager = new WBenchLightScene(WBenchResourceManager.localShaderAssets.SunLightData, WBenchResourceManager.localShaderAssets.PointLightsData,this);
         this.shadowScene = new WBenchShadowScene(this);

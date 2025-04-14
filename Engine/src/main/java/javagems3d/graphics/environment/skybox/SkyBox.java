@@ -1,29 +1,28 @@
 package javagems3d.graphics.environment.skybox;
 
-import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.SunLight;
-import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
+import javagems3d.graphics.environment.skybox.background.JGemsSkyBackground;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.physics.world.IWorld;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public abstract class SkyBox implements ISkyBox {
     private ICubeMapProgram sky2DTexture;
-    private final Background background;
+    private ISkyBackground background;
     private final SunLight sunLight;
     private boolean isSkyCoveredByFog;
 
-    public SkyBox(float backGroundViewScaling, IWorld world, @Nullable ICubeMapProgram sky2DTexture) {
+    public SkyBox(@NotNull ISkyBackground skyBackground, @Nullable ICubeMapProgram sky2DTexture) {
         this.sky2DTexture = sky2DTexture;
         this.sunLight = new SunLight(new Vector3f(1.0f), new Vector3f(1.0f), 1.0f);
         this.isSkyCoveredByFog = true;
-        this.background = new Background(world, backGroundViewScaling);
+        this.background = skyBackground;
     }
 
     @Override
@@ -36,11 +35,16 @@ public abstract class SkyBox implements ISkyBox {
         this.sky2DTexture = sky2DTexture;
     }
 
+    public SkyBox setBackground(@NotNull ISkyBackground background) {
+        this.background = background;
+        return this;
+    }
+
     public boolean isSkyCoveredByFog() {
         return this.isSkyCoveredByFog;
     }
 
-    public Background getBackground() {
+    public ISkyBackground getBackground() {
         return this.background;
     }
 
@@ -54,60 +58,16 @@ public abstract class SkyBox implements ISkyBox {
 
     @Override
     public void updateSkyBox(IWorld world, ICamera camera) {
-        this.getBackground().updateMeta(camera);
+        this.getBackground().update(camera);
+    }
+
+    @Override
+    public void createSkyBox(IWorld world) {
+        this.getBackground().create(world);
     }
 
     @Override
     public void destroySkyBox(IWorld world) {
-        this.getBackground().clearBackGround();
-    }
-
-    public static class Background {
-        private final FixedCamera scaledCameraBackground;
-        private final Set<SceneBackgroundProp> toRenderSet;
-        private final IWorld world;
-        private float viewScaling;
-
-        public Background(IWorld world, float viewScaling) {
-            this.scaledCameraBackground = new FixedCamera(new Vector3f(), new Vector3f());
-            this.toRenderSet = new HashSet<>();
-            this.viewScaling = viewScaling;
-            this.world = world;
-        }
-
-        public void updateMeta(ICamera camera) {
-            this.getScaledCameraBackground().setCameraPosition(camera.getCamPosition().mul(1.0f / this.getViewScaling()));
-            this.getScaledCameraBackground().setCameraRotation(camera.getCamRotation());
-        }
-
-        public void setViewScaling(float viewScaling) {
-            this.viewScaling = viewScaling;
-        }
-
-        public void clearBackGround() {
-            this.getToRenderSet().forEach(e -> e.onDestroy(this.getWorld()));
-            this.getToRenderSet().clear();
-        }
-
-        public void addObjectInBackGround(SceneBackgroundProp sceneBackgroundProp) {
-            sceneBackgroundProp.onSpawn(this.getWorld());
-            this.getToRenderSet().add(sceneBackgroundProp);
-        }
-
-        public IWorld getWorld() {
-            return this.world;
-        }
-
-        public FixedCamera getScaledCameraBackground() {
-            return this.scaledCameraBackground;
-        }
-
-        public float getViewScaling() {
-            return this.viewScaling;
-        }
-
-        public Set<SceneBackgroundProp> getToRenderSet() {
-            return this.toRenderSet;
-        }
+        this.getBackground().destroy(world);
     }
 }

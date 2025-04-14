@@ -20,15 +20,14 @@ public class ItemsInterfaceComponent {
     }
 
     public void itemsContent() {
-        for (SceneObject wBenchObject : this.getEditorInterface().getOpenGLRenderer().getWorld().getSceneObjects()) {
-            WBenchObject wBenchObject1 = (WBenchObject) wBenchObject;
-            boolean flag = this.getEditorInterface().getCurrentSelectedObject() == wBenchObject1;
+        for (WBenchObject wBenchObject : this.getEditorInterface().setOfSceneObjects()) {
+            boolean flag = this.getEditorInterface().getCurrentSelectedObject() == wBenchObject;
             float x = ImGui.getContentRegionAvailX() - 30f;
-            ImGui.pushID(wBenchObject1.getId());
-            Vector3f color = wBenchObject1.textInMenuColor();
+            ImGui.pushID(wBenchObject.getId());
+            Vector3f color = wBenchObject.textInMenuColor();
             ImGui.pushStyleColor(ImGuiCol.Text, color.x, color.y, color.z, 1.0f);
 
-            String fullText = wBenchObject1.toString(false);
+            String fullText = wBenchObject.toString(false);
             String displayText = fullText;
             float textWidth = ImGui.calcTextSize(displayText).x;
             float maxWidth = Math.max(ImGui.getContentRegionAvailX() - 30.0f, 0.0f);
@@ -42,7 +41,7 @@ public class ItemsInterfaceComponent {
             }
             if (ImGui.selectable(displayText, flag, ImGuiSelectableFlags.AllowItemOverlap, x, 18f)) {
                 if (!flag) {
-                    this.getEditorInterface().setCurrentSelectedObject(wBenchObject1);
+                    this.getEditorInterface().setCurrentSelectedObject(wBenchObject);
                     this.getEditorInterface().setCurrentOperation(this.getEditorInterface().chooseDefaultGuizmoOperation());
                 } else {
                     this.getEditorInterface().setCurrentSelectedObject(null);
@@ -54,13 +53,13 @@ public class ItemsInterfaceComponent {
             ImGui.popStyleColor();
             ImGui.sameLine();
             if (ImGui.button("X")) {
-                if (wBenchObject1.equals(this.getEditorInterface().getCurrentSelectedObject())) {
+                if (wBenchObject.equals(this.getEditorInterface().getCurrentSelectedObject())) {
                     this.getEditorInterface().setCurrentSelectedObject(null);
                 }
-                wBenchObject1.setDead();
+                this.getEditorInterface().removeObjectFromWorld(wBenchObject);
             }
             if (ImGui.isItemHovered()) {
-                ImGui.setTooltip("id: " + wBenchObject1.getId());
+                ImGui.setTooltip("id: " + wBenchObject.getId());
             }
             ImGui.popID();
         }

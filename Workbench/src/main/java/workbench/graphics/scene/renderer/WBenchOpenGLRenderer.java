@@ -18,6 +18,7 @@ import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
@@ -35,6 +36,7 @@ import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.nodes.templates.IUIRenderNode;
 import workbench.graphics.scene.ui.EditorInterface;
 import workbench.graphics.scene.ui.ProjectInitInterface;
+import workbench.graphics.scene.ui.editor.SelectedScene;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.project.WBenchProject;
 import workbench.resources.WBenchResourceManager;
@@ -56,7 +58,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     protected IndirectBufferProgram sceneIndirectBufferProgram;
     protected DearUIRenderer dearUIRenderer;
     protected Model2D screenModel;
-    private final ISceneCulling sceneCulling;
+    private final ISceneCulling<SceneObject> sceneCulling;
 
     private final DebugLinesDrawer debugLinesDrawer;
     private final FBOTexture2DProgram editorScenePreview;
@@ -72,8 +74,12 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
 
-        this.sceneCulling = new SceneCulling(this, null);
+        this.sceneCulling = new SceneCulling<>(SceneCulling.FRUSTUM_CPU | SceneCulling.DISTANCE, null);
         this.debugLinesDrawer = new DebugLinesDrawer(WBenchResourceManager.globalShaderAssets.debug);
+    }
+
+    public static boolean isRenderingBackgroundScene() {
+        return (((EditorInterface) WBenchOpenGLRenderer.getEditorInterface()).getSelectedScene().equals(SelectedScene.BACKGROUND));
     }
 
     @Override
@@ -156,6 +162,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
             uiRenderNode.onRender(frameTicking);
             return;
         }
+        final EditorInterface editorInterface1 = ((EditorInterface) WBenchOpenGLRenderer.editorInterface);
+
         IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.FORWARD_RENDER_PASS);
         IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
         ITransparencyRenderNode transparencyRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.TRANSPARENCY_RENDER_PASS);
@@ -165,8 +173,11 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
-        Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
-        JGemsOpenGLRenderer.renderScene(frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, this.getSceneCulling());
+        final boolean renderBackGround = WBenchOpenGLRenderer.isRenderingBackgroundScene();
+        Set<SceneObject> toRender = new HashSet<>(renderBackGround ? this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getWorld().getSceneObjects());
+        JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
+            this.getSceneCulling().cull(toRender, JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), !renderBackGround ? this.getCamera() : this.getWorld().getEnvironment().getSkyBox().getBackground().getScaledCameraBackground());
+        });
 
         GL46.glDepthMask(false);
         gluingRenderNode.onRender(frameTicking);
@@ -181,8 +192,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         postRenderNode.onRender(frameTicking);
         GL46.glDepthMask(true);
 
-
-        EditorInterface editorInterface1 = ((EditorInterface) WBenchOpenGLRenderer.editorInterface);
         editorInterface1.setVisibleObjects(toRender);
         OpenGLRenderer.setViewPort(this.getWindowSize());
         uiRenderNode.onRender(frameTicking);
@@ -322,7 +331,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     @Override
-    public ISceneCulling getSceneCulling() {
+    public ISceneCulling<SceneObject> getSceneCulling() {
         return this.sceneCulling;
     }
 

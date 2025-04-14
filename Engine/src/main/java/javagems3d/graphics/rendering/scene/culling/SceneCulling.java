@@ -1,31 +1,34 @@
 package javagems3d.graphics.rendering.scene.culling;
 
+import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.scene.culling.stages.CPUDistanceCulling;
 import javagems3d.graphics.rendering.scene.culling.stages.CPUFrustumCulling;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.transformation.TransformUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SceneCulling implements ISceneCulling {
-    private Set<SceneObject> snapshot;
+public class SceneCulling <T extends SceneObject> implements ISceneCulling <T> {
+    private Set<T> snapshot;
 
-    private final OpenGLRenderer openGLRenderer;
     private final CPUDistanceCulling cpuDistanceCulling;
     private final CPUFrustumCulling cpuFrustumCulling;
     private final Pipeline pipeline;
-
+    private final int modes;
     private boolean freeze;
 
-    public SceneCulling(OpenGLRenderer openGLRenderer, @Nullable Pipeline pipeline) {
-        this.openGLRenderer = openGLRenderer;
+    public SceneCulling(int modes, @Nullable Pipeline pipeline) {
+        this.modes = modes;
         this.pipeline = pipeline;
         this.snapshot = null;
 
@@ -34,12 +37,7 @@ public class SceneCulling implements ISceneCulling {
     }
 
     @Override
-    public @NotNull OpenGLRenderer getOpenGLRender() {
-        return this.openGLRenderer;
-    }
-
-    @Override
-    public void cull(@NotNull Collection<SceneObject> sceneObjects) {
+    public void cull(@NotNull Collection<T> sceneObjects, @NotNull Matrix4f projectionMatrix, @NotNull ICamera camera) {
         if (sceneObjects.isEmpty()) {
             return;
         }
@@ -54,12 +52,12 @@ public class SceneCulling implements ISceneCulling {
             }
         }
         this.preFilter(sceneObjects);
-        if (!this.disableDistanceCulling()) {
-            this.getCpuDistanceCulling().setCamera(this.getOpenGLRender().getCamera());
+        if ((this.getModes() & SceneCulling.DISTANCE) != 0) {
+            this.getCpuDistanceCulling().setCamera(camera);
             this.getCpuDistanceCulling().filter(sceneObjects);
         }
-        if (!this.disableFrustumCulling()) {
-            this.getCpuFrustumCulling().rebuildFrustum(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+        if ((this.getModes() & SceneCulling.FRUSTUM_CPU) != 0) {
+            this.getCpuFrustumCulling().rebuildFrustum(projectionMatrix, TransformUtils.getViewMatrix(camera));
             this.getCpuFrustumCulling().filter(sceneObjects);
         }
         if (this.isFrozen() && this.snapshot == null) {
@@ -69,24 +67,28 @@ public class SceneCulling implements ISceneCulling {
 
     @Override
     public void createResources() {
-        this.getCpuDistanceCulling().createResources(this.getOpenGLRender());
-        this.getCpuFrustumCulling().createResources(this.getOpenGLRender());
+        this.getCpuDistanceCulling().createResources();
+        this.getCpuFrustumCulling().createResources();
     }
 
     @Override
     public void destroyResources() {
-        this.getCpuDistanceCulling().destroyResources(this.getOpenGLRender());
-        this.getCpuFrustumCulling().destroyResources(this.getOpenGLRender());
+        this.getCpuDistanceCulling().destroyResources();
+        this.getCpuFrustumCulling().destroyResources();
         this.snapshot = null;
     }
 
-    protected void preFilter(@NotNull Collection<SceneObject> sceneObjects) {
+    protected void preFilter(@NotNull Collection<T> sceneObjects) {
         sceneObjects.removeIf((e) -> {
             if (!e.canBeRendered() || !e.hasModel()) {
                 return true;
             }
             return this.getPipeline() != null && !e.canBeRendered(this.getPipeline());
         });
+    }
+
+    public int getModes() {
+        return this.modes;
     }
 
     public boolean isFrozen() {
@@ -110,18 +112,11 @@ public class SceneCulling implements ISceneCulling {
     }
 
     @Override
-    public boolean disableDistanceCulling() {
-        return false;
-    }
-
-    @Override
-    public boolean disableFrustumCulling() {
-        return false;
-    }
-
-    @Override
     public void onWindowResize(IWindow window) {
         this.destroyResources();
         this.createResources();
     }
+
+    public static int FRUSTUM_CPU = 1 << 2;
+    public static int DISTANCE = 1 << 3;
 }

@@ -5,6 +5,7 @@ import javagems3d.graphics.environment.lights.ILightAttached;
 import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.physics.world.basic.IWorldTicked;
@@ -20,7 +21,7 @@ public class WBenchWorld implements IRenderWorld {
     private final Queue<Integer> freeIds;
     private ICamera camera;
     private WBenchEnvironment environment;
-    private final Set<SceneObject> toRenderSet;
+    private final Set<WBenchObject> toRenderSet;
     private final Map<Integer, WBenchObject> idMap;
     private int ticks;
 
@@ -50,37 +51,33 @@ public class WBenchWorld implements IRenderWorld {
     }
 
     public void updateWorldObjects(FrameTicking frameTicking) {
-        Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
+        Iterator<WBenchObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
-            SceneObject sceneObject = iterator.next();
+            WBenchObject sceneObject = iterator.next();
             if (sceneObject.isDead()) {
                 Log.get().info("Removed object: " + sceneObject);
-                if (sceneObject instanceof WBenchObject) {
-                    WBenchObject wBenchObject = (WBenchObject) sceneObject;
-                    int id = wBenchObject.getId();
-                    if (this.getIdMap().remove(id) != null) {
-                        this.getFreeIds().add(id);
-                    } else {
-                        Log.get().warn("Couldn't remove object with id: " + id);
-                    }
+                int id = sceneObject.getId();
+                if (this.getIdMap().remove(id) != null) {
+                    this.getFreeIds().add(id);
+                } else {
+                    Log.get().warn("Couldn't remove object with id: " + id);
                 }
-                iterator.remove();
                 sceneObject.onDestroy(this);
+                iterator.remove();
                 continue;
             }
             sceneObject.updateAnimation();
-            IWorldTicked worldTicked = (IWorldTicked) sceneObject;
-            worldTicked.onUpdate(this);
+            ((IWorldTicked) sceneObject).onUpdate(this);
         }
     }
 
     private void clearAll() {
         this.getFreeIds().clear();
-        Iterator<SceneObject> iterator = this.getSceneObjects().iterator();
+        Iterator<WBenchObject> iterator = this.getSceneObjects().iterator();
         while (iterator.hasNext()) {
             SceneObject sceneObject = iterator.next();
-            iterator.remove();
             sceneObject.onDestroy(this);
+            iterator.remove();
         }
     }
 
@@ -99,50 +96,49 @@ public class WBenchWorld implements IRenderWorld {
     }
 
     public void addObject(SceneObject renderObject) {
-        if (renderObject instanceof WBenchObject) {
-            WBenchObject wBenchObject = (WBenchObject) renderObject;
-            int id = wBenchObject.getId();
-            if (id < 0) {
-                if (!this.getFreeIds().isEmpty()) {
-                    id = this.getFreeIds().poll();
-                } else {
-                    id = this.getSceneObjects().size();
+        WBenchObject wBenchObject = (WBenchObject) renderObject;
+        int id = wBenchObject.getId();
+        if (id < 0) {
+            if (!this.getFreeIds().isEmpty()) {
+                Integer freeId = this.getFreeIds().poll();
+                if (freeId != null) {
+                    id = freeId;
                 }
-                wBenchObject.setId(id);
+            } else {
+                id = this.getSceneObjects().size();
             }
-            this.getIdMap().put(id, wBenchObject);
+            wBenchObject.setId(id);
         }
+        this.getIdMap().put(id, wBenchObject);
 
-        this.getSceneObjects().add(renderObject);
-        renderObject.onSpawn(this);
-        Log.get().info("Created object: " + renderObject);
+        this.getSceneObjects().add(wBenchObject);
+        wBenchObject.onSpawn(this);
+        Log.get().info("Created object: " + wBenchObject);
     }
 
     public void removeObject(SceneObject renderObject) {
-        if (renderObject instanceof WBenchObject) {
-            WBenchObject wBenchObject = (WBenchObject) renderObject;
-            int id = wBenchObject.getId();
-            if (this.getIdMap().remove(id) != null) {
-                this.getFreeIds().add(id);
-            } else {
-                Log.get().warn("Couldn't remove object with id: " + id);
-            }
+        WBenchObject wBenchObject = (WBenchObject) renderObject;
+        int id = wBenchObject.getId();
+        if (this.getIdMap().remove(id) != null) {
+            this.getFreeIds().add(id);
+        } else {
+            Log.get().warn("Couldn't remove object with id: " + id);
         }
 
-        this.getSceneObjects().remove(renderObject);
-        renderObject.onDestroy(this);
-        Log.get().info("Removed object: " + renderObject);
+        this.getSceneObjects().remove(wBenchObject);
+        wBenchObject.onDestroy(this);
+        Log.get().info("Removed object: " + wBenchObject);
     }
 
-    public void calcFreeIds() {
-        this.getFreeIds().clear();
+    public static void calcFreeIds(Queue<Integer> free, Set<? extends SceneProp> wBenchObjects) {
+        free.clear();
 
         BitSet usedIds = new BitSet();
         int maxId = -1;
 
-        for (SceneObject sceneObject : this.getSceneObjects()) {
-            if (sceneObject instanceof WBenchObject) {
-                WBenchObject wBenchObject = (WBenchObject) sceneObject;
+        for (SceneProp sceneObject : wBenchObjects) {
+            WBenchObject wBenchObject = (WBenchObject) sceneObject;
+            if (sceneObject != null) {
                 int id = wBenchObject.getId();
                 if (id >= 0) {
                     usedIds.set(id);
@@ -153,7 +149,7 @@ public class WBenchWorld implements IRenderWorld {
 
         for (int i = 0; i <= maxId; i++) {
             if (!usedIds.get(i)) {
-                this.getFreeIds().add(i);
+                free.add(i);
             }
         }
     }
@@ -178,7 +174,7 @@ public class WBenchWorld implements IRenderWorld {
         return this.camera;
     }
 
-    public Set<SceneObject> getSceneObjects() {
+    public Set<WBenchObject> getSceneObjects() {
         return this.toRenderSet;
     }
 

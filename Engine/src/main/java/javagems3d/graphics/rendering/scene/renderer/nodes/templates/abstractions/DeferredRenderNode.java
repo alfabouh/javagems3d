@@ -1,4 +1,4 @@
-package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions;
+package javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions;
 
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.IRendered;
@@ -9,10 +9,7 @@ import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentConta
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
-import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IDeferredRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.processors.geometry.DirectGeometryRenderProcessor;
@@ -32,7 +29,6 @@ import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Collection;

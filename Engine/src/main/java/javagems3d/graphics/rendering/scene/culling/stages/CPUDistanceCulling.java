@@ -56,7 +56,7 @@ public class CPUDistanceCulling implements ICullingAlgorithm {
     }
 
     @Override
-    public void filter(Collection<SceneObject> sceneObjects) {
+    public void filter(Collection<? extends SceneObject> sceneObjects) {
         if (this.getCamera() == null) {
             Log.get().warn("Tried to do distance culling with NULL camera");
             return;

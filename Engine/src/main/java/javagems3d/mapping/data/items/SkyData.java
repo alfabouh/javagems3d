@@ -11,12 +11,14 @@ import java.lang.reflect.Type;
 
 public class SkyData implements SectionData<SkyData> {
     public String skyboxPath;
+    public float backGroundScaling;
 
     private SkyData() {
     }
 
-    public SkyData(String skyboxPath) {
+    public SkyData(String skyboxPath, float backGroundScaling) {
         this.skyboxPath = skyboxPath;
+        this.backGroundScaling = backGroundScaling;
     }
 
     @Override
@@ -27,6 +29,7 @@ public class SkyData implements SectionData<SkyData> {
                 try {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.add("skyboxPath", context.serialize(toWrite.skyboxPath));
+                    jsonObject.add("backGroundScaling", context.serialize(toWrite.backGroundScaling));
                     return jsonObject;
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't write: " + toWrite.getClass(), e);
@@ -38,7 +41,8 @@ public class SkyData implements SectionData<SkyData> {
                 try {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
                     String skyboxPath = context.deserialize(jsonObject.get("skyboxPath"), String.class);
-                    return new SkyData(skyboxPath);
+                    float backGroundScaling = context.deserialize(jsonObject.get("backGroundScaling"), Float.class);
+                    return new SkyData(skyboxPath, backGroundScaling);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

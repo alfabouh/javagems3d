@@ -3,7 +3,7 @@ package workbench.graphics.scene.nodes;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions.ForwardRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.ForwardRenderNode;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
@@ -20,7 +20,10 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
+import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.editor.SelectedScene;
+import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 
 public class WBenchForwardRenderNode extends ForwardRenderNode {
@@ -35,6 +38,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
         super.onRender(frameTicking);
 
         if (EditorInterface.VIEW_CHESS_TERRAIN) {
+            final WBenchWorld wBenchWorld = (WBenchWorld) this.getWorld();
             this.getOutColorBuffer().bindFBO();
             GL46.glEnable(GL46.GL_BLEND);
             GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
@@ -42,7 +46,13 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
             WBenchResourceManager.localShaderAssets.simple_flat.performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
             WBenchResourceManager.localShaderAssets.simple_flat.performModel3DMatrix(new UniformString("model_matrix"), TransformUtils.getModelMatrix(this.flat.getPose()));
             WBenchResourceManager.localShaderAssets.simple_flat.performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
-            WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
+            if (WBenchOpenGLRenderer.isRenderingBackgroundScene()) {
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.65f, 0.35f, 0.5f)));
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("drawCenterRect"), UniformFunctions.FLOAT(128.0f / wBenchWorld.getEnvironment().getSkyBox().getBackground().getViewScaling()));
+            } else {
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
+                WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("drawCenterRect"), UniformFunctions.FLOAT(-1.0f));
+            }
             JGemsRenderingHelper.renderModel3D(this.flat, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             WBenchResourceManager.localShaderAssets.simple_flat.endShading();
             this.getOutColorBuffer().unBindFBO();

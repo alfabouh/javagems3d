@@ -26,29 +26,32 @@ public class ResourcesInterfaceComponent {
     }
 
     public void resourcesContent() {
-        if (ImGui.collapsingHeader("Generate Light")) {
-            ImGui.treePush();
-            if (ImGui.selectable("Point Light", false)) {
-                ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
-                Vector3f posToSpawn = camera.getCamPosition();
-                posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul(3.0f));
+        if (this.getEditorInterface().getSelectedScene().equals(SelectedScene.MAIN)) {
+            if (ImGui.collapsingHeader("Generate Light")) {
+                ImGui.treePush();
+                if (ImGui.selectable("Point Light", false)) {
+                    ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
+                    Vector3f posToSpawn = camera.getCamPosition();
+                    posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul(3.0f));
 
-                WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("plmarker", this.getEditorInterface().getOpenGLRenderer().getWorld());
-                pointLightObject.setPosition(posToSpawn);
-                this.getEditorInterface().getOpenGLRenderer().getWorld().addObject(pointLightObject);
+                    WBenchPointLightObject pointLightObject = WBenchPointLightObject.create("plmarker", this.getEditorInterface().getOpenGLRenderer().getWorld());
+                    pointLightObject.setPosition(posToSpawn);
+                    this.getEditorInterface().addObjectInWorld(pointLightObject);
+                }
+                ImGui.treePop();
             }
-            ImGui.treePop();
-        }
-        ImGui.separator();
-        if (ImGui.collapsingHeader("Entities")) {
-            this.renderObjectGroupsList(WBench.get().getProjectObjects().getEntityGroups());
+            ImGui.separator();
+            if (ImGui.collapsingHeader("Entities")) {
+                this.renderObjectGroupsList(WBench.get().getProjectObjects().getEntityGroups());
+            }
+            if (ImGui.collapsingHeader("Markers")) {
+                this.renderObjectGroupsList(WBench.get().getProjectObjects().getMarkerGroups());
+            }
         }
         if (ImGui.collapsingHeader("Props")) {
             this.renderObjectGroupsList(WBench.get().getProjectObjects().getPropGroups());
         }
-        if (ImGui.collapsingHeader("Markers")) {
-            this.renderObjectGroupsList(WBench.get().getProjectObjects().getMarkerGroups());
-        }
+        ImGui.newLine();
         if (ImGui.collapsingHeader("Scripts")) {
 
         }

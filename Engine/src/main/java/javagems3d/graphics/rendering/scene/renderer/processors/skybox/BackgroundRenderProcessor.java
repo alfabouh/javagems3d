@@ -1,10 +1,12 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.skybox;
 
+import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.ISkyBox;
+import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.entities.background.SceneBackgroundProp;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.fbo.attachments.T2DAttachmentContainer;
@@ -27,6 +29,7 @@ import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
 import javagems3d.system.service.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.List;
@@ -58,15 +61,19 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     @Override
     public void createResources() {
         final Consumer<JGemsShaderManager> uniformsHandlerI = (shaderManager) -> {
-            final ICamera camera = this.getSkyBox().getBackground().getScaledCameraBackground();
-            final Matrix4f cameraMatrix = TransformUtils.getViewMatrix(camera);
+            final ISkyBackground skyBackground = this.getSkyBox().getBackground();
+            final ICamera cameraBackground = skyBackground.getScaledCameraBackground();
+
+            final Matrix4f cameraMatrix = TransformUtils.getViewMatrix(cameraBackground);
             final Matrix4f projection = JGemsTransformManager.INSTANCE.getPerspectiveMatrix();
             final ICubeMapProgram cubeMapProgram = this.getSkyBox().getTexture();
 
-            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(camera.getCamPosition()));
+            shaderManager.performUniformNoWarn(new UniformString("camera_pos"), UniformFunctions.VEC3F(cameraBackground.getCamPosition()));
             if (cubeMapProgram != null && shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
                 shaderManager.performUniformTextureBindless(new UniformString("ambient_cubemap"), cubeMapProgram);
             }
+
+            shaderManager.performUniform(new UniformString("view_scaling"), UniformFunctions.FLOAT(skyBackground.getViewScaling()));
             shaderManager.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(projection));
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
         };
@@ -75,8 +82,8 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
             JGemsShadersHelper.performModelMaterialOnShader(sceneWorld.getEnvironment(), pair.getFirst(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
         };
 
-        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
-        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.indirectSSBO, this.propertiesSSBO, Pipeline.SCENE, this.getOpenGLRenderer());
+        this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.BACKGROUND, this.getOpenGLRenderer());
+        this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.indirectSSBO, this.propertiesSSBO, Pipeline.BACKGROUND, this.getOpenGLRenderer());
 
         this.getDirectGeometryRenderProcessor().createResources();
         this.getIndirectGeometryRenderProcessor().createResources();
@@ -105,16 +112,20 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     }
 
     protected void renderBackground(FrameTicking frameTicking) {
-        Set<SceneBackgroundProp> toRender = this.getSkyBox().getBackground().getToRenderSet();
+        Set<? extends SceneProp> toRender = this.getSkyBox().getBackground().getSkySceneObjectsFiltered();
+        System.out.println(toRender.size());
         Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(toRender);
         List<SceneObject> directRenderObjects = groups.getFirst();
         List<SceneObject> indirectRenderObjects = groups.getSecond();
+        final Vector3f cameraPos = this.getWorld().getCamera().getCamPosition();
 
         this.getBackground().bindFBO();
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-        this.renderIndirectObjects(frameTicking, indirectRenderObjects);
-        this.renderDirectObjects(frameTicking, directRenderObjects);
+        if (Math.abs(cameraPos.x) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.y) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.z) <= JGems3D.MAP_MAX_SIZE) {
+            this.renderIndirectObjects(frameTicking, indirectRenderObjects);
+            this.renderDirectObjects(frameTicking, directRenderObjects);
+        }
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getBackground().unBindFBO();
     }
@@ -129,7 +140,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
     }
 
-    protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<SceneBackgroundProp> filteredObjectsSet) {
+    protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<? extends SceneProp> filteredObjectsSet) {
         Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> e.getModel().getMeshStructure().canBeUsedInIndirectRendering()));
         return new Pair<>(partitionedModels.get(false), partitionedModels.get(true));
     }

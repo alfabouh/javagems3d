@@ -2,7 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer.nodes;
 
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abtractions.GluingRenderNode;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.GluingRenderNode;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import org.jetbrains.annotations.NotNull;

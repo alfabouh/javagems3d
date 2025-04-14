@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.Set;
 
 public interface ICullingAlgorithm {
-    void filter(Collection<SceneObject> sceneObjects);
+    void filter(Collection<? extends SceneObject> sceneObjects);
 
-    default void createResources(OpenGLRenderer openGLRenderer) {
+    default void createResources() {
     }
 
-    default void destroyResources(OpenGLRenderer openGLRenderer) {
+    default void destroyResources() {
     }
 }

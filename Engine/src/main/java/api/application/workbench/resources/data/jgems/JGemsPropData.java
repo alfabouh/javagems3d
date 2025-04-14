@@ -6,7 +6,7 @@ import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class JGemsPropData {
+public class JGemsPropData implements IJGemsObjectData {
     private final JGemsPath pathToModel;
     private final PropRenderData propRenderData;
 
