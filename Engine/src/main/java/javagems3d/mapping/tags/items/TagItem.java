@@ -47,7 +47,7 @@ public abstract class TagItem implements ICopyable<TagItem> {
         this.typeString = typeString;
     }
 
-    public abstract void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet);
+    public abstract void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet);
 
     public String getTypeString() {
         return this.typeString;

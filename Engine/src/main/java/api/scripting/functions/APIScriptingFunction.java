@@ -11,7 +11,7 @@ public final class APIScriptingFunction {
     APIScriptingFunction(String name, Class<?>... args) {
         this.name = name;
         this.args = new ArrayList<>(Arrays.asList(args));
-        APIScriptingFunctions.apiScriptingFunctions.add(this);
+        APIScriptsListing.apiScriptingFunctions.add(this);
     }
 
     @Override

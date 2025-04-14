@@ -1,6 +1,7 @@
 package workbench.graphics.scene.ui.editor;
 
 import imgui.ImGui;
+import imgui.type.ImInt;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.help.JGemsUtils;
 import org.joml.Vector3f;
@@ -11,12 +12,15 @@ import workbench.graphics.scene.ui.EditorInterface;
 import workbench.project.ProjectTemplates;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class ResourcesInterfaceComponent {
     private final EditorInterface editorInterface;
+    private ImInt currentSelectedScript;
 
     public ResourcesInterfaceComponent(EditorInterface editorInterface) {
+        this.currentSelectedScript = new ImInt(-1);
         this.editorInterface = editorInterface;
         this.clear();
     }
@@ -53,7 +57,31 @@ public class ResourcesInterfaceComponent {
         }
         ImGui.newLine();
         if (ImGui.collapsingHeader("Scripts")) {
+            if (ImGui.button("Create new script")) {
 
+            }
+            final List<String> scriptPaths = WBench.get().getProjectManager().getCurrentProject().getScriptFiles();
+            if (!scriptPaths.isEmpty()) {
+                final String[] items = new String[scriptPaths.size()];
+                for (int i = 0; i < items.length; i++) {
+                    items[i] = scriptPaths.get(i);
+                }
+                final int currentId = this.currentSelectedScript.get();
+                ImGui.treePush();
+                ImGui.combo(items[currentId], this.currentSelectedScript, items, 4);
+
+                ImGui.separator();
+                if (ImGui.button("Open File")) {
+
+                }
+                if (ImGui.button("Open Folder")) {
+
+                }
+                if (ImGui.button("Delete")) {
+                    scriptPaths.remove(currentId);
+                }
+                ImGui.treePop();
+            }
         }
         ImGui.separator();
     }

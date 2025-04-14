@@ -30,7 +30,7 @@ public abstract class WBenchObject extends SceneProp {
         super(objectId.getNameId(), wBenchWorld, new PropRenderData(renderAttributes, meshStructure3D));
         this.id = -1;
         this.objectId = objectId;
-        this.tagsContainer = new TagsContainer(tagsContainer);
+        this.tagsContainer = tagsContainer.copy();
         this.translationConstraints = translationConstraints;
     }
 
@@ -55,6 +55,8 @@ public abstract class WBenchObject extends SceneProp {
         this.normalizePosition();
         this.onScale(this.getScaling());
     }
+
+    public abstract WBenchObject clone();
 
     protected abstract void onTranslate(Vector3f position);
     protected abstract void onRotate(Vector3f rotation);

@@ -77,8 +77,8 @@ public abstract class SceneProp extends SceneObject implements IWorldTicked {
     }
 
     @Override
-    public SceneWorld getWorld() {
-        return (SceneWorld) super.getWorld();
+    public IRenderWorld getWorld() {
+        return super.getWorld();
     }
 
     public void setDead() {

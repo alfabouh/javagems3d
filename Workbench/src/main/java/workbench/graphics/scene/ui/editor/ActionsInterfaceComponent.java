@@ -113,7 +113,7 @@ public class ActionsInterfaceComponent {
         }
 
         if (ImGui.treeNodeEx(tagID.getDescription(), ImGuiTreeNodeFlags.DefaultOpen)) {
-            tagItem.ImGuiRendering(tagsContainer, tagItem, tagID, pairSet);
+            tagItem.ImGuiRendering(tagsContainer, this.getEditorInterface().getCurrentSelectedObject(), tagItem, tagID, pairSet);
             ImGui.treePop();
         }
 

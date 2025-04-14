@@ -7,7 +7,7 @@ import javagems3d.help.JGemsMathHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
-
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class TagObjectsList extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagObjectsList tagList = (TagObjectsList) tagItem;
 
         List<Pair<Integer, SceneObject>> objectList = new ArrayList<>(sceneObjectsIDSet);

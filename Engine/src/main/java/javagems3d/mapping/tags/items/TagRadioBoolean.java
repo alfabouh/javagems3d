@@ -10,6 +10,7 @@ import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
 import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 public class TagRadioBoolean extends TagItem {
     public static final String TYPE_STRING = "TagRadioBoolean";
@@ -40,7 +41,7 @@ public class TagRadioBoolean extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagRadioBoolean tagRadioBoolean = (TagRadioBoolean) tagItem;
         TagRadioBoolean.Info[] infos = tagRadioBoolean.getValues();
         for (int i = 0; i < infos.length; i++) {

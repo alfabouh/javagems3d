@@ -3,7 +3,7 @@ package javagems3d.mapping.tags.items;
 import imgui.ImGui;
 import javagems3d.help.JGemsMathHelper;
 import javagems3d.mapping.tags.TagID;
-
+import org.jetbrains.annotations.Nullable;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
@@ -46,7 +46,7 @@ public class TagInt extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagInt tagInt = (TagInt) tagItem;
         int[] value = new int[] {tagInt.getValue()};
         if (ImGui.dragInt("##" + tagID.getDescription(), value, 1, tagInt.getMin(), tagInt.getMax())) {

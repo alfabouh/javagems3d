@@ -40,6 +40,13 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
         super(objectId, wBenchWorld, meshStructure3D, renderAttributes, tagsContainer, translationConstraints, color, transparent);
     }
 
+    @Override
+    public WBenchPointLightObject clone() {
+        TagsContainer tagsContainer = this.getTagsContainer().copy();
+        tagsContainer.replaceTag(TagID.DEFAULT.OBJECT_LIST, new TagObjectsList());
+        return new WBenchPointLightObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), tagsContainer, this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+    }
+
     public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @NotNull TagsContainer tagsContainer) {
         final MeshStructure3D<?> meshStructure3D = WBenchResourceManager.localModelAssets.markerCube;
         final RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getDirect(), WBenchRenderProperties.getDefault());

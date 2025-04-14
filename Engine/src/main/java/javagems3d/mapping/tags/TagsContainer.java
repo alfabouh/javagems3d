@@ -3,12 +3,13 @@ package javagems3d.mapping.tags;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.mapping.tags.items.TagItem;
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import javagems3d.system.service.json.JSONFileManaging;
 import logger.Log;
 
 import java.util.*;
 
-public final class TagsContainer {
+public final class TagsContainer implements ICopyable<TagsContainer> {
     static {
         TagItem.REGISTER_ALL_TAGS();
     }
@@ -78,6 +79,14 @@ public final class TagsContainer {
         return this.getTag(id) != null;
     }
 
+    public void replaceTag(TagID id, TagItem newValue) {
+        this.getTags().replace(id, new Tag<>(id, newValue));
+    }
+
+    public void removeTag(TagID id) {
+        this.getTags().remove(id);
+    }
+
     public void addTag(Tag<? extends TagItem> tag) {
         this.getTags().put(tag.getTagID(), tag);
     }
@@ -92,5 +101,9 @@ public final class TagsContainer {
 
     public Map<TagID, Tag<? extends TagItem>> getTags() {
         return this.tags;
+    }
+
+    public TagsContainer copy() {
+        return new TagsContainer(this);
     }
 }

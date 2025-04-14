@@ -20,6 +20,11 @@ public class WBenchCommonObject extends WBenchObject {
     }
 
     @Override
+    public WBenchCommonObject clone() {
+        return new WBenchCommonObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints());
+    }
+
+    @Override
     public Vector3f textInMenuColor() {
         return new Vector3f(1.0f);
     }

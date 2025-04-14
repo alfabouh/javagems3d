@@ -6,7 +6,7 @@ import api.scripting.classes.util.Vec3f;
 import api.scripting.classes.util.Vec4f;
 import api.scripting.classes.world.GameWorldJS;
 import api.scripting.functions.APIScriptingFunction;
-import api.scripting.functions.APIScriptingFunctions;
+import api.scripting.functions.APIScriptsListing;
 import api.system.JGemsAPIEditorResources;
 import javagems3d.JGems3D;
 import javagems3d.system.service.exceptions.JGemsAPIException;
@@ -61,7 +61,7 @@ public final class JGemsAPIScriptingEngine {
     }
 
     public boolean execFunction(@Nullable Object[] result, @NotNull APIScriptingFunction apiScriptingFunction, Object... args) {
-        if (!APIScriptingFunctions.check(apiScriptingFunction, args)) {
+        if (!APIScriptsListing.check(apiScriptingFunction, args)) {
             Log.get().error("API found wrong function execution: " + apiScriptingFunction.getName());
             return false;
         }

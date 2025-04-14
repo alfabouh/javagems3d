@@ -23,7 +23,7 @@ public class TagString extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagString tagString = (TagString) tagItem;
         ImString value = new ImString(tagString.getText());
         if (ImGui.inputText("##" + tagID.getDescription(), value)) {

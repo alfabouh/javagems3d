@@ -11,6 +11,7 @@ import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;
 import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 public class TagFloat extends TagItem {
     public static final String TYPE_STRING = "TagFloat";
@@ -49,7 +50,7 @@ public class TagFloat extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagFloat tagFloat = (TagFloat) tagItem;
         float[] value = new float[] {tagFloat.getValue()};
         if (ImGui.dragFloat("##" + tagID.getDescription(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {

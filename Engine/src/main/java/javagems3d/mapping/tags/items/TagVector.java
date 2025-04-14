@@ -9,7 +9,7 @@ import javagems3d.mapping.tags.base.VectorMode;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
+import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public class TagVector extends TagItem {
@@ -55,7 +55,7 @@ public class TagVector extends TagItem {
     }
 
     @Override
-    public void ImGuiRendering(TagsContainer tagsContainer, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
+    public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
         TagVector tagVector = (TagVector) tagItem;
         Vector4f vec = tagVector.getValues();
         float[] values = new float[] {vec.x, vec.y, vec.z, vec.w};

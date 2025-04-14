@@ -26,6 +26,10 @@ public class WBenchMarkerObject extends WBenchObject {
         this.transparent = transparent;
     }
 
+    @Override
+    public WBenchMarkerObject clone() {
+        return new WBenchMarkerObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+    }
 
     @Override
     protected void onTranslate(Vector3f position) {
