@@ -113,7 +113,6 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
 
     protected void renderBackground(FrameTicking frameTicking) {
         Set<? extends SceneProp> toRender = this.getSkyBox().getBackground().getSkySceneObjectsFiltered();
-        System.out.println(toRender.size());
         Pair<List<SceneObject>, List<SceneObject>> groups = this.divideSet2Groups(toRender);
         List<SceneObject> directRenderObjects = groups.getFirst();
         List<SceneObject> indirectRenderObjects = groups.getSecond();

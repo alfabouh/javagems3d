@@ -95,7 +95,7 @@ public final class ProjectManager {
 
     private <T> void handleObjects(boolean background, Set<MapObjectTemplate> templates, BiFunction<String, String, T> templateFinder, BiFunction<T, MapObjectTemplate, WBenchObject> objectCreator) {
         for (MapObjectTemplate template : templates) {
-            final String name = template.getObjectId();
+            final String name = template.getObjectNameId();
             final String group = template.getObjectGroup();
 
             T tpl = null;
@@ -202,7 +202,7 @@ public final class ProjectManager {
 
                 if (objectsData.pointLights != null) {
                     for (MapObjectTemplate template : objectsData.pointLights) {
-                        WBenchPointLightObject object = WBenchPointLightObject.create(template.getObjectId(), this.getWorld(), template.getTagsContainer());
+                        WBenchPointLightObject object = WBenchPointLightObject.create(template.getObjectNameId(), this.getWorld(), template.getTagsContainer());
                         object.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
                         object.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
                         object.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());

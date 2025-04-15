@@ -5,6 +5,6 @@ uniform vec4 color;
 
 void main()
 {
-    frag_color = color;
-    frag_color2 = vec4(0.0);
+    frag_color = color * vec4(12.);
+    frag_color2 = frag_color;
 }

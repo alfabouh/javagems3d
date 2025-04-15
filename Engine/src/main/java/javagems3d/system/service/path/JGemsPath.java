@@ -49,6 +49,10 @@ public final class JGemsPath implements Serializable {
         return new File(this.getFullPath());
     }
 
+    public Path toPath() {
+        return this.toFile().toPath();
+    }
+
     public JGemsPath getDirectory() {
         return new JGemsPath(this.getFullPath().substring(0, this.getFullPath().lastIndexOf('/')));
     }

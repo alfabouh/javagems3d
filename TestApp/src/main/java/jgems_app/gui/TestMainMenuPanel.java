@@ -25,6 +25,7 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
+import jgems_app.map.ExternalLoader;
 import org.jetbrains.annotations.NotNull;
 import jgems_app.map.TestMap;
 import org.joml.Vector2f;
@@ -88,7 +89,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 //});
 
                .setOnClick(() -> {
-                   JGems3D.get().loadMap(new ExternalMapProcessor.Default(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
+                   JGems3D.get().loadMap(new ExternalLoader(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
                    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
                });
 

@@ -39,6 +39,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
     public void init() {
     }
 
+    @Deprecated
     public static class Default extends ManualMapProcessor {
 
         @Override

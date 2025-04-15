@@ -62,7 +62,7 @@ public class RenderDataInitializer implements IAssetsInitializer {
         //this.zippo_world.getObjectRenderSettings().setOverlappingMaterial(zwMat);
 
         this.water = new LiquidRenderData(new Material(JGemsResourceManager.globalTextureAssets.waterTexture).setOpacity(0.5f), JGemsResourceManager.globalShaderAssets.weighted_liquid_oit);
-        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.test_anim); //TODO
+        this.entityCube = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault())).setMeshDataGroup(JGemsResourceManager.globalModelAssets.grassCube); //TODO
         this.defaultPlayer = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), null);
         this.ground = new EntityRenderData(EntityRenderData.defaultObjectConstructor(), new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()));
 

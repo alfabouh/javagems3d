@@ -2,7 +2,6 @@ package javagems3d.graphics.environment.skybox.background;
 
 import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.camera.base.ICamera;
-import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.transformation.JGemsTransformManager;
@@ -32,13 +31,14 @@ public abstract class SkyBoxBackground implements ISkyBackground {
     public void update(ICamera mainViewCamera) {
         this.getScaledCameraBackground().setCameraPosition(mainViewCamera.getCamPosition().mul(1.0f / this.getViewScaling()));
         this.getScaledCameraBackground().setCameraRotation(mainViewCamera.getCamRotation());
-        this.deathIterator();
+        this.updateIterator();
     }
 
-    protected void deathIterator() {
+    protected void updateIterator() {
         Iterator<SceneProp> scenePropIterator = this.getSkySceneObjects().iterator();
         while (scenePropIterator.hasNext()) {
             SceneProp sceneProp = scenePropIterator.next();
+            sceneProp.onUpdate(this.getWorld());
             if (sceneProp.isDead()) {
                 sceneProp.onDestroy(this.getWorld());
                 scenePropIterator.remove();

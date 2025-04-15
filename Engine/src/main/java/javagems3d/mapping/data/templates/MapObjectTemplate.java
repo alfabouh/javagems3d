@@ -44,7 +44,7 @@ public final class MapObjectTemplate implements IJSONSerializable<MapObjectTempl
         return this.objectGroup;
     }
 
-    public String getObjectId() {
+    public String getObjectNameId() {
         return this.objectId;
     }
 

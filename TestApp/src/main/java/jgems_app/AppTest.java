@@ -64,12 +64,14 @@ public class AppTest extends JGemsApplication {
     public void setupEditorResources(IAPIWBenchDataManager manager) {
         final Tag<TagRadioBoolean> tagPhysics = new Tag<>(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Is Static", true), new TagRadioBoolean.Info("Is Dynamic", false)));
 
-        final JGemsPath sponza = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "sponza/sponza.gltf");
+        final JGemsPath sponza = new JGemsPath("assets/models/sponza/sponza.gltf");
         final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf");
+        final JGemsPath trees = new JGemsPath("/assets/models/trees/trees.gltf");
+        final JGemsPath map04 = new JGemsPath("/assets/models/cube/cube.gltf");
 
-        manager.addResourceEntity("sponza",
-                () -> new WBenchObjectData(sponza),
-                () -> new JGemsEntityData(sponza)
+        manager.addResourceProp("trees",
+                () -> new WBenchObjectData(trees),
+                () -> new JGemsPropData(trees)
         );
 
         manager.addResourceEntity("testPhys", "cube",
@@ -82,12 +84,8 @@ public class AppTest extends JGemsApplication {
                 () -> new JGemsPropData(cube)
         );
 
-        manager.addResourceMarker("general", "cube",
-                () -> new WBenchMarkerData(DefaultMarker.POINT, new Vector3f(1.0f, 0.0f, 0.0f), true)
-        );
-
-        manager.addResourceMarker("general", "cone",
-                () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(1.0f, 0.0f, 1.0f), false)
+        manager.addResourceMarker("player", "spawn",
+                () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(1.0f, 1.0f, 0.0f), false)
         );
 
         manager.addResourceSkyCubeMap("SkyDay1", "png", new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"));

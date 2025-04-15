@@ -2,6 +2,8 @@ package api.scripting.functions;
 
 import api.scripting.classes.init.InitializationJS;
 import api.scripting.classes.world.GameWorldJS;
+import javagems3d.JGems3D;
+import javagems3d.system.core.JGemsCore;
 
 import java.util.HashSet;
 import java.util.List;
@@ -26,20 +28,33 @@ public abstract class APIScriptsListing {
         }};
 
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("//AUTO-GENERATED " + JGemsCore.ENG_VER);
+        stringBuilder.append("\n");
+        stringBuilder.append("\n");
+        stringBuilder.append("\n");
         for (APIScriptingFunction apiScriptingFunction : apiDefaultFunctions) {
-            stringBuilder.append(apiScriptingFunction.getName());
+            stringBuilder.append(apiScriptingFunction.toString());
             stringBuilder.append("(");
 
             List<Class<?>> classList = apiScriptingFunction.getArgs();
             final int size = classList.size();
             for (int i = 0; i < size; i++) {
                 Class<?> clazz = classList.get(i);
-                String className = clazz.getTypeName();
+                String className = clazz.getSimpleName();
                 stringBuilder.append(className.toLowerCase());
                 if (i != size - 1) {
                     stringBuilder.append(", ");
                 }
             }
+            stringBuilder.append(")");
+            stringBuilder.append(" {");
+            stringBuilder.append("\n");
+            stringBuilder.append("  //Your code.");
+            stringBuilder.append("\n");
+            stringBuilder.append("}");
+
+            stringBuilder.append("\n");
+            stringBuilder.append("\n");
         }
 
         apiScriptTemplate = stringBuilder.toString();

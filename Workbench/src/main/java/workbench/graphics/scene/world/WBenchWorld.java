@@ -35,6 +35,7 @@ public class WBenchWorld implements IRenderWorld {
     @Override
     public void onWorldStart() {
         this.environment = new WBenchEnvironment(this);
+        this.getEnvironment().getSkyBox().createSkyBox(this);
         WBench.get().getScreen().zeroRenderTick();
         this.ticks = 0;
     }
@@ -46,6 +47,9 @@ public class WBenchWorld implements IRenderWorld {
 
     @Override
     public void onWorldEnd() {
+        if (this.getEnvironment() != null) {
+            this.getEnvironment().getSkyBox().destroySkyBox(this);
+        }
         this.clearAll();
         this.environment = null;
     }

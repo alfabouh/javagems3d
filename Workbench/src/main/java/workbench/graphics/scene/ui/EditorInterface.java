@@ -24,6 +24,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
+import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -130,6 +131,7 @@ public class EditorInterface implements DearUIInterface {
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("WBenchProject")) {
             if (ImGui.menuItem("Save Map")) {
+                Log.get().trace("Saved...");
                 WBench.get().getProjectManager().saveProject(false);
             }
            // if (ImGui.menuItem("Compile")) {
@@ -411,9 +413,11 @@ public class EditorInterface implements DearUIInterface {
         switch (this.getSelectedScene()) {
             case MAIN: {
                 this.getOpenGLRenderer().getWorld().addObject(wBenchObject);
+                break;
             }
             case BACKGROUND: {
                 this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground().addObject(wBenchObject);
+                break;
             }
         }
     }
@@ -428,7 +432,7 @@ public class EditorInterface implements DearUIInterface {
                 return this.getOpenGLRenderer().getWorld().getSceneObjects();
             }
             case BACKGROUND: {
-                return (Set<WBenchObject>) this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects().stream().map(e -> (WBenchObject) e).collect(Collectors.toSet());
+                return this.getOpenGLRenderer().getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects().stream().map(e -> (WBenchObject) e).collect(Collectors.toSet());
             }
             default: {
                 return null;

@@ -1,7 +1,9 @@
 package javagems3d.graphics.rendering.scene.renderer.debug;
 
+import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;

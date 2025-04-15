@@ -65,6 +65,7 @@ public final class SceneWorld implements IRenderWorld {
         JGemsConfig.DEBUG.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
+        this.getEnvironment().getSkyBox().createSkyBox(this);
         this.ticks = 0;
         EventLauncher.pushEvent(new EventBus.RenderWorldStart(EventBus.Run.POST, this));
     }
@@ -91,6 +92,7 @@ public final class SceneWorld implements IRenderWorld {
         if (this.getParticlesEmitter() != null) {
             this.getParticlesEmitter().destroy(this);
         }
+        this.getEnvironment().getSkyBox().destroySkyBox(this);
         ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
         this.clearAll();
         EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.POST, this));

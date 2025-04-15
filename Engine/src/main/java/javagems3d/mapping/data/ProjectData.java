@@ -4,7 +4,10 @@ import javagems3d.JGems3D;
 import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.service.exceptions.JGemsIOException;
+import javagems3d.system.service.path.JGemsPath;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -10,17 +10,12 @@ import javagems3d.system.service.path.JGemsPath;
 public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
-
     public MeshBuffer grassCube;
-    public MeshBuffer test_anim;
 
     @Override
     public void load(SystemResources systemResources) {
         this.createDefaults(systemResources);
         this.grassCube = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), true, false);
-        this.test_anim = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "test_anim/boblampclean.md5mesh"), true, true);
-        // systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), ModelMeshLoader.ModelLoaderFlags.LOAD_IN_INDIRECT_BUFFER);
-        //systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "test_anim/boblamp.md5mesh"), ModelMeshLoader.ModelLoaderFlags.DEFAULT);
     }
 
     private void createDefaults(SystemResources systemResources) {

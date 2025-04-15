@@ -33,7 +33,6 @@ public class JGemsEnvironment implements IEnvironment {
     }
 
     public void destroyEnvironment() {
-        this.getSkyBox().destroySkyBox(this.getWorld());
         this.getShadowScene().destroyResources();
         this.clearPointLightsBuffer();
     }

@@ -1,11 +1,18 @@
 package workbench.project;
 
+import api.scripting.functions.APIScriptsListing;
 import javagems3d.mapping.JGemsMapping;
 import javagems3d.mapping.data.ProjectData;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.Iterator;
+import java.util.List;
 
 public class WBenchProject extends ProjectData implements Serializable {
     private static final long serialVersionUID = -2138L;
@@ -14,6 +21,89 @@ public class WBenchProject extends ProjectData implements Serializable {
     public WBenchProject(@NotNull String version, @NotNull String projectName) {
         super(JGemsMapping.DATA_INFO, projectName, version, "");
         this.currentProjectPath = null;
+    }
+
+    public JGemsPath getScriptPathTo(String name) {
+        return new JGemsPath(this.getCurrentProjectPath().getDirectory(), "scripts", name);
+    }
+
+    public void reviseScripts() {
+        List<String> scriptFiles = this.getScriptFiles();
+
+        Iterator<String> iterator = scriptFiles.iterator();
+        while (iterator.hasNext()) {
+            String scriptName = iterator.next();
+            Path path = this.getScriptPathTo(scriptName).toPath();
+            if (!Files.exists(path)) {
+                Log.get().warn("Script file not found, removing from list: " + path);
+                iterator.remove();
+            }
+        }
+
+        Path scriptsDir = this.getScriptPathTo("").toPath();
+        if (Files.exists(scriptsDir) && Files.isDirectory(scriptsDir)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(scriptsDir, "*.js")) {
+                for (Path scriptPath : stream) {
+                    String fileName = scriptPath.getFileName().toString();
+                    if (!scriptFiles.contains(fileName)) {
+                        Log.get().info("Adding new script to list: " + fileName);
+                        scriptFiles.add(fileName);
+                    }
+                }
+            } catch (IOException e) {
+                Log.get().error("Failed to scan scripts directory", e);
+            }
+        }
+    }
+
+    public void createNewScript(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            Path scriptsDir = this.getScriptPathTo("").toPath();
+            if (!Files.exists(scriptsDir)) {
+                Files.createDirectories(scriptsDir);
+            }
+
+            final String scriptFile = name + ".js";
+            Path newScriptPath = scriptsDir.resolve(scriptFile);
+            if (Files.exists(newScriptPath)) {
+                Log.get().warn("Script already exists: " + newScriptPath);
+                return;
+            }
+            String defaultScript = APIScriptsListing.getApiScriptTemplate();
+            Files.write(newScriptPath, defaultScript.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE_NEW);
+            this.getScriptFiles().add(scriptFile);
+
+            Log.get().info("Created new script " + scriptFile);
+        } catch (IOException e) {
+            Log.get().error("Failed to create script", e);
+        }
+    }
+
+    public void deleteScript(int index) {
+        List<String> scriptFiles = this.getScriptFiles();
+
+        if (index < 0 || index >= scriptFiles.size()) {
+            Log.get().warn("Invalid script index: " + index);
+            return;
+        }
+
+        try {
+            Path scriptPath = this.getScriptPathTo(scriptFiles.get(index)).toPath();
+
+            if (Files.exists(scriptPath)) {
+                Files.delete(scriptPath);
+            }
+
+            Log.get().info("Script deleted: " + scriptPath);
+        } catch (IOException e) {
+            Log.get().error("Failed to delete script", e);
+        } finally {
+            scriptFiles.remove(index);
+        }
     }
 
     public void setMapDataFile(String mapDataFile) {

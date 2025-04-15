@@ -176,7 +176,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         final boolean renderBackGround = WBenchOpenGLRenderer.isRenderingBackgroundScene();
         Set<SceneObject> toRender = new HashSet<>(renderBackGround ? this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects() : this.getWorld().getSceneObjects());
         JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
-            this.getSceneCulling().cull(toRender, JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), !renderBackGround ? this.getCamera() : this.getWorld().getEnvironment().getSkyBox().getBackground().getScaledCameraBackground());
+            this.getSceneCulling().cull(toRender, JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera());
         });
 
         GL46.glDepthMask(false);

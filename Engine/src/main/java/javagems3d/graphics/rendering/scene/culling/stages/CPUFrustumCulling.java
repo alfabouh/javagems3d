@@ -31,7 +31,7 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
         for (int i = 0; i < 6; i++) {
             projectionViewMatrix.frustumPlane(i, this.planes.get(i));
         }
-        this.frustumIntersection.set(new Matrix4f(projectionViewMatrix));
+        this.frustumIntersection.set(projectionViewMatrix);
     }
 
     public boolean isInFrustum(CullingAABB cullingAABB) {

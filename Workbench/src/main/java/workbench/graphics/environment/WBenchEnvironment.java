@@ -35,7 +35,6 @@ public class WBenchEnvironment implements IEnvironment {
     }
 
     public void destroyEnvironment() {
-        this.getSkyBox().destroySkyBox(this.getWorld());
         this.getShadowScene().destroyResources();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.getLightScene().clearPointLightsBuffer(stack);

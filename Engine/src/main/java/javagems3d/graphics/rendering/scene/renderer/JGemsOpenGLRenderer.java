@@ -17,6 +17,7 @@ import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
+import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.ForwardRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.*;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
@@ -194,23 +195,28 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         uiRenderNode.onRender(frameTicking);
 
         if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
+            for (SceneObject sceneObject : this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects()) {
+                CullingAABB cullingAABB = sceneObject.getCullingData();
+                if (cullingAABB != null) {
+                    JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                }
+            }
             for (SceneObject sceneObject : this.getWorld().getSceneObjects()) {
                 CullingAABB cullingAABB = sceneObject.getCullingData();
                 if (cullingAABB != null) {
                     JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
                 }
-                if (sceneObject instanceof SceneEntity) {
-                    SceneEntity sceneEntity = (SceneEntity) sceneObject;
-                    if (sceneEntity.getWorldItem() instanceof JGemsBody) {
-                        JGemsBody gemsBody = (JGemsBody) sceneEntity.getWorldItem();
-                        BoundingBox boundingBox = new BoundingBox();
-                        gemsBody.getPhysicsRigidBody().boundingBox(boundingBox);
-                        Vector3f min = DynamicsUtils.convertV3F_JOML(boundingBox.getMin(new com.jme3.math.Vector3f()));
-                        Vector3f max = DynamicsUtils.convertV3F_JOML(boundingBox.getMax(new com.jme3.math.Vector3f()));
-
-                        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(min, max, new Vector3f(0.0f, 0.0f, 1.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-                    }
-                }
+                //if (sceneObject instanceof SceneEntity) {
+                //    SceneEntity sceneEntity = (SceneEntity) sceneObject;
+                //    if (sceneEntity.getWorldItem() instanceof JGemsBody) {
+                //        JGemsBody gemsBody = (JGemsBody) sceneEntity.getWorldItem();
+                //        BoundingBox boundingBox = new BoundingBox();
+                //        gemsBody.getPhysicsRigidBody().boundingBox(boundingBox);
+                //        Vector3f min = DynamicsUtils.convertV3F_JOML(boundingBox.getMin(new com.jme3.math.Vector3f()));
+                //        Vector3f max = DynamicsUtils.convertV3F_JOML(boundingBox.getMax(new com.jme3.math.Vector3f()));
+                //        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(min, max, new Vector3f(0.0f, 0.0f, 1.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                //    }
+                //}
             }
         }
         JGemsOpenGLRenderer.DebugLinesDrawer().render();
