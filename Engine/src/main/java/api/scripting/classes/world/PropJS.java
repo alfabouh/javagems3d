@@ -1,7 +1,8 @@
-package api.scripting.classes.objects;
+package api.scripting.classes.world;
 
 import api.scripting.classes.util.Vec3f;
 import javagems3d.graphics.objects.entities.SceneProp;
+import javagems3d.help.JGemsWorldHelper;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +37,11 @@ public final class PropJS {
         pose3D.setScaling(vec3f.createJOML());
     }
 
-    public SceneProp getSceneObject() {
+    public void remove() {
+        JGemsWorldHelper.removePropFromScene(this.getSceneObject());
+    }
+
+    SceneProp getSceneObject() {
         return this.sceneProp;
     }
 }

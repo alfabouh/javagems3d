@@ -12,6 +12,7 @@ import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.items.*;
 import javagems3d.system.service.collections.Pair;
+import logger.Log;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.EditorInterface;
@@ -44,16 +45,7 @@ public class ActionsInterfaceComponent {
             ImGui.endDisabled();
             if (ImGui.button("Generate")) {
                 WBenchObject wBenchObject = this.getEditorInterface().getCurrentSelectedTemplate().createObject(this.getEditorInterface().getOpenGLRenderer().getWorld(), null);
-
-                CullingAABB cullingAABB = wBenchObject.getCullingData();
-                if (cullingAABB != null) {
-                    ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
-                    float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
-                    Vector3f posToSpawn = camera.getCamPosition();
-                    posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
-                    wBenchObject.setPosition(posToSpawn);
-                    this.getEditorInterface().addObjectInWorld(wBenchObject);
-                }
+                this.spawnInWorld(wBenchObject);
             }
             ImGui.separator();
         }
@@ -61,6 +53,11 @@ public class ActionsInterfaceComponent {
         WBenchObject currentSelectedObject = this.getEditorInterface().getCurrentSelectedObject();
         if (currentSelectedObject != null) {
             if (ImGui.collapsingHeader("Object [" + currentSelectedObject.getId() + "]", ImGuiTreeNodeFlags.DefaultOpen)) {
+                if (ImGui.button("Clone")) {
+                    WBenchObject wBenchObject = currentSelectedObject.clone();
+                    this.spawnInWorld(wBenchObject);
+                    Log.get().trace("Cloned " + currentSelectedObject);
+                }
                 ImGui.treePush();
                 if (currentSelectedObject.hasTranslationConstraints()) {
                     if (ImGui.treeNodeEx("Transformation", ImGuiTreeNodeFlags.DefaultOpen)) {
@@ -100,6 +97,18 @@ public class ActionsInterfaceComponent {
                 }
                 ImGui.treePop();
             }
+        }
+    }
+
+    private void spawnInWorld(WBenchObject wBenchObject) {
+        CullingAABB cullingAABB = wBenchObject.getCullingData();
+        if (cullingAABB != null) {
+            ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
+            float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
+            Vector3f posToSpawn = camera.getCamPosition();
+            posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
+            wBenchObject.setPosition(posToSpawn);
+            this.getEditorInterface().addObjectInWorld(wBenchObject);
         }
     }
 

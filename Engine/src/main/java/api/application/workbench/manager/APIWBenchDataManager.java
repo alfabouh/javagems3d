@@ -17,7 +17,6 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     private final Map<String, TemplatesTable<ResourceEntity>> resourceEntityMap;
     private final Map<String, TemplatesTable<ResourceProp>> resourcePropMap;
     private final Map<String, TemplatesTable<ResourceMarker>> resourceMarker;
-
     private final Map<String, Pair<String, JGemsPath>> skyBoxesMap;
 
     public APIWBenchDataManager() {
@@ -52,11 +51,6 @@ public final class APIWBenchDataManager implements IAPIWBenchDataManager {
             ex.add(nw);
             return ex;
         }, resourceMarker);
-    }
-
-    @Override
-    public void addResourceScript(@Nullable String group, @NotNull ResourceEntity resourceEntity) {
-
     }
 
     @Override

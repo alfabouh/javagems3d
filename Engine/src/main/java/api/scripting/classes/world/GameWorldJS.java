@@ -1,13 +1,9 @@
 package api.scripting.classes.world;
 
-import api.application.workbench.manager.APIWBenchDataManager;
 import api.scripting.JGemsAPIScriptingManaging;
 import api.scripting.classes.init.templates.EntityTemplateJS;
 import api.scripting.classes.init.templates.PropTemplateJS;
-import api.scripting.classes.objects.EntityJS;
-import api.scripting.classes.objects.PropJS;
 import api.scripting.classes.util.Vec3f;
-import api.system.JGemsAPIEditorResources;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -87,8 +83,34 @@ public final class GameWorldJS {
         JGemsWorldHelper.addPropInScene(sceneProp);
         if (sceneProp.hasModel()) {
             sceneProp.getModel().getPose().setPosition(position.createJOML());
+            sceneProp.getModel().getPose().setRotation(rotation.createJOML());
+            sceneProp.getModel().getPose().setScaling(scaling.createJOML());
         }
         return new PropJS(sceneProp);
+    }
+
+    public PointLightJS spawnPointLight(float brightness, @NotNull Vec3f lightPos, @NotNull Vec3f lightColor, @NotNull Vec3f offset) {
+        PointLightJS pointLightJS = new PointLightJS(brightness, lightPos, lightColor, offset);
+        JGemsWorldHelper.addLight(pointLightJS.getPointLight());
+        return pointLightJS;
+    }
+
+    public PointLightJS spawnPointLight(float brightness, @NotNull Vec3f lightPos, @NotNull Vec3f lightColor) {
+        PointLightJS pointLightJS = new PointLightJS(brightness, lightPos, lightColor, new Vec3f(0.0f, 0.0f, 0.0f));
+        JGemsWorldHelper.addLight(pointLightJS.getPointLight());
+        return pointLightJS;
+    }
+
+    public void removePointLight(PointLightJS pointLightJS) {
+        pointLightJS.remove();
+    }
+
+    public void removeEntity(EntityJS entityJS) {
+        entityJS.remove();
+    }
+
+    public void removeProp(PropJS propJS) {
+        propJS.remove();
     }
 
     public JGemsAPIScriptingManaging getScriptingManaging() {

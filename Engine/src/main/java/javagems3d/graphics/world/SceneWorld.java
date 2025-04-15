@@ -189,10 +189,11 @@ public final class SceneWorld implements IRenderWorld {
         this.addObject(renderData.constructSceneObject(this, worldItem));
     }
 
-    public void removeLight(Light light, @Nullable ILighted lighted) {
+    public void removeLight(Light light) {
         this.getEnvironment().getLightScene().removeLight(light);
-        if (lighted != null) {
-            lighted.removeLightAttachment((ILightAttached) light);
+        ILightAttached lighted = (ILightAttached) light;
+        if (lighted.getAttachedTo() != null) {
+            lighted.getAttachedTo().removeLightAttachment((ILightAttached) light);
         }
     }
 

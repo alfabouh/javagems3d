@@ -64,4 +64,8 @@ public abstract class JGemsWorldHelper {
         light.on();
         JGemsEnvironmentHelper.getWorldEnvironment().getLightScene().addLight(light);
     }
+
+    public static void removeLight(Light light) {
+        JGemsEnvironmentHelper.getWorldEnvironment().getWorld().removeLight(light);
+    }
 }

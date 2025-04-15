@@ -17,20 +17,12 @@ public class WBenchMarkerData extends WBenchData {
     private final Vector3f color;
     private final boolean transparent;
 
-    public WBenchMarkerData(@NotNull JGemsPath pathToModel, @NotNull TranslationConstraints translationConstraints) {
-        this(pathToModel, translationConstraints, new Vector3f(1.0f), false);
-    }
-
     public WBenchMarkerData(@NotNull JGemsPath pathToModel, @NotNull TranslationConstraints translationConstraints, @Nullable Vector3f color, boolean transparent) {
         super(new TagsContainer(), translationConstraints);
         this.color = color;
         this.pathToModel = pathToModel;
         this.transparent = transparent;
         this.defaultMarker = null;
-    }
-
-    public WBenchMarkerData(@NotNull DefaultMarker defaultMarker) {
-        this(defaultMarker, new Vector3f(1.0f), false);
     }
 
     public WBenchMarkerData(@NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent) {

@@ -69,25 +69,10 @@ public class AppTest extends JGemsApplication {
         final JGemsPath trees = new JGemsPath("/assets/models/trees/trees.gltf");
         final JGemsPath map04 = new JGemsPath("/assets/models/cube/cube.gltf");
 
-        manager.addResourceProp("trees",
-                () -> new WBenchObjectData(trees),
-                () -> new JGemsPropData(trees)
-        );
-
-        manager.addResourceEntity("testPhys", "cube",
-                () -> new WBenchObjectData(cube).addTag(tagPhysics),
-                () -> new JGemsEntityData(cube)
-        );
-
-        manager.addResourceProp("testProp", "cube",
-                () -> new WBenchObjectData(cube),
-                () -> new JGemsPropData(cube)
-        );
-
-        manager.addResourceMarker("player", "spawn",
-                () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(1.0f, 1.0f, 0.0f), false)
-        );
-
+        manager.addResourceProp("trees", trees);
+        manager.addResourceEntity("testPhys", "cube", cube).addTag(tagPhysics);
+        manager.addResourceProp("testProp", "cube", cube);
+        manager.addResourceMarker("player", "spawn", DefaultMarker.CURSOR_CONE, new Vector3f(1.0f, 1.0f, 0.0f), false);
         manager.addResourceSkyCubeMap("SkyDay1", "png", new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"));
     }
 }
