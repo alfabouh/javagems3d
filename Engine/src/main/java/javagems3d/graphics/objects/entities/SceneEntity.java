@@ -34,7 +34,7 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
     protected InterpolationPoints currentRotationInterpolation;
 
     public SceneEntity(@NotNull SceneWorld sceneWorld, @NotNull WorldItem worldItem, @NotNull EntityRenderData renderData) {
-        super(sceneWorld, new Model3D(new Pose3D(), renderData.getMeshDataGroup()), renderData.getObjectRenderAttributes());
+        super(sceneWorld, new Model3D(new Pose3D(), renderData.getMeshStructure()), renderData.getObjectRenderAttributes());
         this.entityModelConstructor = renderData.getEntityModelConstructor();
         this.worldItem = worldItem;
         this.renderPosition = new Vector3f(worldItem.getPosition());

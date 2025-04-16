@@ -65,8 +65,8 @@ public final class GameWorldJS {
 
         final EntityRenderData entityRenderData = this.getScriptingManaging().getEntityRenderDataMap().get(entityTemplateJS);
         final JGemsBody jGemsBody = !isStatic
-                ? new JGemsDynamicBody(MeshCollider.getDynamic(entityRenderData.getMeshDataGroup()), JGemsCoreHelper.getPhysicsWorld(), entityTemplateJS.getName())
-                : new JGemsStaticBody(MeshCollider.getStatic(entityRenderData.getMeshDataGroup()), JGemsCoreHelper.getPhysicsWorld(), entityTemplateJS.getName());
+                ? new JGemsDynamicBody(MeshCollider.getDynamic(entityRenderData.getMeshStructure()), JGemsCoreHelper.getPhysicsWorld(), entityTemplateJS.getName())
+                : new JGemsStaticBody(MeshCollider.getStatic(entityRenderData.getMeshStructure()), JGemsCoreHelper.getPhysicsWorld(), entityTemplateJS.getName());
         jGemsBody.setStartTransformations(position.createJOML(), rotation.createJOML(), scaling.createJOML());
         JGemsWorldHelper.addItemInWorld(jGemsBody, entityRenderData);
         return new EntityJS(jGemsBody);

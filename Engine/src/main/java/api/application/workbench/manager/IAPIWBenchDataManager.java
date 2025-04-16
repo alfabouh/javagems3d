@@ -26,6 +26,19 @@ public interface IAPIWBenchDataManager {
     void addResourceMarker(@Nullable String group, @NotNull ResourceMarker resourceMarker);
     void addResourceSkyCubeMap(@NotNull String name, @NotNull String extension, @NotNull JGemsPath pathToCubeMapDirectory);
 
+    default void addResourceEntity(@Nullable String group, @NotNull String id, @NotNull JGemsPath modelPath) {
+        this.addResourceEntity(group, new ResourceEntity(id, () -> new WBenchObjectData(modelPath), () -> new JGemsEntityData(modelPath)));
+    }
+
+    default void addResourceProp(@Nullable String group, @NotNull String id, @NotNull JGemsPath modelPath) {
+        this.addResourceProp(group, new ResourceProp(id, () -> new WBenchObjectData(modelPath), () -> new JGemsPropData(modelPath)));
+    }
+
+    default void addResourceMarker(@Nullable String group, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent) {
+        this.addResourceMarker(group, new ResourceMarker(id, () -> new WBenchMarkerData(defaultMarker, color, transparent)));
+    }
+
+
     default void addResourceEntity(@Nullable String group, @NotNull String id, @NotNull Resource.MapObjectFabric<WBenchObjectData> fabricWBench, @NotNull Resource.MapObjectFabric<JGemsEntityData> fabricGame) {
         this.addResourceEntity(group, new ResourceEntity(id, fabricWBench, fabricGame));
     }
@@ -48,38 +61,5 @@ public interface IAPIWBenchDataManager {
 
     default void addResourceMarker(@NotNull String id, @NotNull Resource.MapObjectFabric<WBenchMarkerData> fabricWBench) {
         this.addResourceMarker(null, id, fabricWBench);
-    }
-
-
-    default WBenchData addResourceProp(@Nullable String group, @NotNull String id, @NotNull JGemsPath pathToModel) {
-        final WBenchObjectData wBenchData = new WBenchObjectData(pathToModel);
-        final JGemsPropData jGemsPropData = new JGemsPropData(pathToModel);
-        this.addResourceProp(group, id, () -> wBenchData, () -> jGemsPropData);
-        return wBenchData;
-    }
-
-    default WBenchData addResourceProp(@NotNull String id, @NotNull JGemsPath pathToModel) {
-        return this.addResourceProp(null, id, pathToModel);
-    }
-
-    default WBenchData addResourceEntity(@Nullable String group, @NotNull String id, @NotNull JGemsPath pathToModel) {
-        final WBenchObjectData wBenchData = new WBenchObjectData(pathToModel);
-        final JGemsEntityData jGemsEntityData = new JGemsEntityData(pathToModel);
-        this.addResourceEntity(group, id, () -> wBenchData, () -> jGemsEntityData);
-        return wBenchData;
-    }
-
-    default WBenchData addResourceEntity(@NotNull String id, @NotNull JGemsPath pathToModel) {
-        return this.addResourceEntity(null, id, pathToModel);
-    }
-
-    default WBenchData addResourceMarker(@NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent) {
-        return this.addResourceMarker(null, id, defaultMarker, color, transparent);
-    }
-
-    default WBenchData addResourceMarker(@Nullable String group, @NotNull String id, @NotNull DefaultMarker defaultMarker, @Nullable Vector3f color, boolean transparent) {
-        final WBenchMarkerData wBenchData = new WBenchMarkerData(defaultMarker, color, transparent);
-        this.addResourceMarker(group, id, () -> wBenchData);
-        return wBenchData;
     }
 }

@@ -63,6 +63,7 @@ public final class TagID {
 
     public static class DEFAULT {
         public static final TagID PHYSICS_STATE = new TagID("phys_state", "Physics State", "Determines the physical condition of the object. \nStatic=stationary \nDynamic=gravity affected");
+        public static final TagID MARKER_STRING_ID = new TagID("marker_string_id", "String ID", "Object's id");
 
         public static final TagID POSITION_X = new TagID("position_x", "Translate X");
         public static final TagID POSITION_Y = new TagID("position_y", "Translate Y");

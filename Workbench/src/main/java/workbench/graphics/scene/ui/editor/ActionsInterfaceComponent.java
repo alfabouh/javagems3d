@@ -13,7 +13,10 @@ import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.items.*;
 import javagems3d.system.service.collections.Pair;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.ui.EditorInterface;
 
@@ -21,9 +24,11 @@ import java.util.*;
 
 public class ActionsInterfaceComponent {
     private final EditorInterface editorInterface;
+    private final float[] coordsToGen;
 
     public ActionsInterfaceComponent(EditorInterface editorInterface) {
         this.editorInterface = editorInterface;
+        this.coordsToGen = new float[3];
         this.clear();
     }
 
@@ -45,7 +50,23 @@ public class ActionsInterfaceComponent {
             ImGui.endDisabled();
             if (ImGui.button("Generate")) {
                 WBenchObject wBenchObject = this.getEditorInterface().getCurrentSelectedTemplate().createObject(this.getEditorInterface().getOpenGLRenderer().getWorld(), null);
-                this.spawnInWorld(wBenchObject);
+                this.spawnInWorld(wBenchObject, null);
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Generate At...")) {
+                ImGui.openPopup("Position");
+            }
+            if (ImGui.beginPopup("Position")) {
+                ImGui.inputFloat3("##coords", this.coordsToGen);
+                if (ImGui.button("Confirm")) {
+                    WBenchObject wBenchObject = this.getEditorInterface().getCurrentSelectedTemplate().createObject(this.getEditorInterface().getOpenGLRenderer().getWorld(), null);
+                    this.spawnInWorld(wBenchObject, new Vector3f(this.coordsToGen));
+                }
+                ImGui.sameLine();
+                if (ImGui.button("Cancel")) {
+                    ImGui.closeCurrentPopup();
+                }
+                ImGui.endPopup();
             }
             ImGui.separator();
         }
@@ -53,11 +74,6 @@ public class ActionsInterfaceComponent {
         WBenchObject currentSelectedObject = this.getEditorInterface().getCurrentSelectedObject();
         if (currentSelectedObject != null) {
             if (ImGui.collapsingHeader("Object [" + currentSelectedObject.getId() + "]", ImGuiTreeNodeFlags.DefaultOpen)) {
-                if (ImGui.button("Clone")) {
-                    WBenchObject wBenchObject = currentSelectedObject.clone();
-                    this.spawnInWorld(wBenchObject);
-                    Log.get().trace("Cloned " + currentSelectedObject);
-                }
                 ImGui.treePush();
                 if (currentSelectedObject.hasTranslationConstraints()) {
                     if (ImGui.treeNodeEx("Transformation", ImGuiTreeNodeFlags.DefaultOpen)) {
@@ -83,7 +99,7 @@ public class ActionsInterfaceComponent {
                             }
                         }
 
-                        this.processTranslations();
+                        this.processTranslations(currentSelectedObject);
                         ImGui.treePop();
                     }
                     ImGui.separator();
@@ -100,14 +116,18 @@ public class ActionsInterfaceComponent {
         }
     }
 
-    private void spawnInWorld(WBenchObject wBenchObject) {
+    public void spawnInWorld(WBenchObject wBenchObject, @Nullable Vector3f pos) {
         CullingAABB cullingAABB = wBenchObject.getCullingData();
         if (cullingAABB != null) {
-            ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
-            float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
-            Vector3f posToSpawn = camera.getCamPosition();
-            posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
-            wBenchObject.setPosition(posToSpawn);
+            if (pos != null) {
+                wBenchObject.setPosition(pos);
+            } else {
+                ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
+                float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
+                Vector3f posToSpawn = camera.getCamPosition();
+                posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
+                wBenchObject.setPosition(posToSpawn);
+            }
             this.getEditorInterface().addObjectInWorld(wBenchObject);
         }
     }
@@ -122,10 +142,15 @@ public class ActionsInterfaceComponent {
         }
 
         if (ImGui.treeNodeEx(tagID.getDescription(), ImGuiTreeNodeFlags.DefaultOpen)) {
+            this.showItemDescription(tagID);
             tagItem.ImGuiRendering(tagsContainer, this.getEditorInterface().getCurrentSelectedObject(), tagItem, tagID, pairSet);
             ImGui.treePop();
+        } else {
+            this.showItemDescription(tagID);
         }
+    }
 
+    private void showItemDescription(TagID tagID) {
         if (tagID.getToolTip() != null && ImGui.isItemHovered()) {
             ImGui.beginTooltip();
             ImGui.setTooltip(tagID.getToolTip());
@@ -133,20 +158,23 @@ public class ActionsInterfaceComponent {
         }
     }
 
-    private void processTranslations() {
+    private void processTranslations(WBenchObject wBenchObject) {
+        if (wBenchObject == null) {
+            return;
+        }
         int operationFlag = this.getEditorInterface().getCurrentOperation();
 
-        float[] posArrayX = new float[] {this.getEditorInterface().getCurrentSelectedObject().getPosition().x};
-        float[] posArrayY = new float[] {this.getEditorInterface().getCurrentSelectedObject().getPosition().y};
-        float[] posArrayZ = new float[] {this.getEditorInterface().getCurrentSelectedObject().getPosition().z};
+        float[] posArrayX = new float[] {wBenchObject.getPosition().x};
+        float[] posArrayY = new float[] {wBenchObject.getPosition().y};
+        float[] posArrayZ = new float[] {wBenchObject.getPosition().z};
 
-        float[] rotArrayX = new float[] {this.getEditorInterface().getCurrentSelectedObject().getRotation().x};
-        float[] rotArrayY = new float[] {this.getEditorInterface().getCurrentSelectedObject().getRotation().y};
-        float[] rotArrayZ = new float[] {this.getEditorInterface().getCurrentSelectedObject().getRotation().z};
+        float[] rotArrayX = new float[] {wBenchObject.getRotation().x};
+        float[] rotArrayY = new float[] {wBenchObject.getRotation().y};
+        float[] rotArrayZ = new float[] {wBenchObject.getRotation().z};
 
-        float[] sclArrayX = new float[] {this.getEditorInterface().getCurrentSelectedObject().getScaling().x};
-        float[] sclArrayY = new float[] {this.getEditorInterface().getCurrentSelectedObject().getScaling().y};
-        float[] sclArrayZ = new float[] {this.getEditorInterface().getCurrentSelectedObject().getScaling().z};
+        float[] sclArrayX = new float[] {wBenchObject.getScaling().x};
+        float[] sclArrayY = new float[] {wBenchObject.getScaling().y};
+        float[] sclArrayZ = new float[] {wBenchObject.getScaling().z};
 
         if ((operationFlag & Operation.TRANSLATE_X) != 0) {
             ImGui.dragFloat("X", posArrayX, 0.01f);
@@ -178,9 +206,9 @@ public class ActionsInterfaceComponent {
             ImGui.dragFloat("Z", sclArrayZ, 0.01f, 0.001f, 1000.0f);
         }
 
-        this.getEditorInterface().getCurrentSelectedObject().setPosition(new Vector3f(posArrayX[0], posArrayY[0], posArrayZ[0]));
-        this.getEditorInterface().getCurrentSelectedObject().setRotation(new Vector3f(rotArrayX[0], rotArrayY[0], rotArrayZ[0]));
-        this.getEditorInterface().getCurrentSelectedObject().setScaling(new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]));
+        wBenchObject.setPosition(new Vector3f(posArrayX[0], posArrayY[0], posArrayZ[0]));
+        wBenchObject.setRotation(new Vector3f(rotArrayX[0], rotArrayY[0], rotArrayZ[0]));
+        wBenchObject.setScaling(new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]));
     }
 
     public EditorInterface getEditorInterface() {

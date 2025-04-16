@@ -13,6 +13,7 @@ import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
+import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.EditorInterface;
 import workbench.resources.WBenchResourceManager;
 
@@ -34,7 +35,7 @@ public class WBenchShadowScene extends ShadowScene {
 
     @Override
     protected boolean shouldNotRenderShadows() {
-        return !JGemsConfig.SYSTEM.USE_SHADOWS || JGemsConfig.DEBUG.FULL_BRIGHT || !EditorInterface.VIEW_SHADOWS;
+        return !JGemsConfig.SYSTEM.USE_SHADOWS || JGemsConfig.DEBUG.FULL_BRIGHT || !EditorInterface.VIEW_SHADOWS || WBenchOpenGLRenderer.isRenderingBackgroundScene();
     }
 
     @Override

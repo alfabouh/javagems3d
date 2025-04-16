@@ -16,18 +16,18 @@ public class TagString extends TagItem {
     public static final String TYPE_STRING = "TagString";
 
     private String text;
+    private transient final ImString value;
 
     public TagString(@NotNull String text) {
         super(TagString.TYPE_STRING);
+        this.value = new ImString(32);
         this.text = text;
     }
 
     @Override
     public void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet) {
-        TagString tagString = (TagString) tagItem;
-        ImString value = new ImString(tagString.getText());
-        if (ImGui.inputText("##" + tagID.getDescription(), value)) {
-            tagString.setText(value.get());
+        if (ImGui.inputText("##" + tagID.getDescription(), this.value)) {
+            this.setText(value.get());
         }
     }
 

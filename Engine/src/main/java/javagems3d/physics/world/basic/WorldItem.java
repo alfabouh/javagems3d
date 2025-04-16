@@ -1,6 +1,7 @@
 package javagems3d.physics.world.basic;
 
 import javagems3d.help.JGemsUtils;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

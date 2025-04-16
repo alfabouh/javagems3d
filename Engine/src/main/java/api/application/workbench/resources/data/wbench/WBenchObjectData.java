@@ -46,4 +46,9 @@ public class WBenchObjectData extends WBenchData {
     public RenderProperties getRenderProperties() {
         return this.renderProperties;
     }
+
+    @SuppressWarnings("all")
+    public <T extends RenderProperties> T getRenderPropertiesUnsafeCast() {
+        return (T) this.renderProperties;
+    }
 }

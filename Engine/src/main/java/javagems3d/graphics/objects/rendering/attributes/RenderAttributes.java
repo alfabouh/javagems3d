@@ -50,6 +50,14 @@ public class RenderAttributes implements IRenderAttributes, ICopyable<RenderAttr
         return new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault());
     }
 
+    public static RenderAttributes getDefaultDirect(@NotNull RenderProperties renderProperties) {
+        return new RenderAttributes(RenderTable.getDirect(), renderProperties);
+    }
+
+    public static RenderAttributes getDefaultIndirect(@NotNull RenderProperties renderProperties) {
+        return new RenderAttributes(RenderTable.getIndirect(), renderProperties);
+    }
+
     @Override
     public @NotNull RenderAttributes copy() {
         return new RenderAttributes(this.getRenderTable().copy(), this.getProperties().copy());

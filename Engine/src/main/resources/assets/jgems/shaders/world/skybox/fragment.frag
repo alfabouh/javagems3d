@@ -50,7 +50,12 @@ void main()
     frag_color = tex2d_colors;
     bright_color = vec4(sunEffect, 1.) * (1. - background.a);
 
-    float f = covered_by_fog ? clamp(fog.density * 100., 0.0, 1.0) : 0.0;
+    const vec3 up = vec3(0.0, 1.0, 0.0);
+    float dotUp = dot(normalize(uv_coordinates_cube), up);
+    float fogFalloff = (1.0 - abs(dotUp)) * step(1.e-6, fog.density);
+    float fogStrength = smoothstep(0.0, 1.0, pow(fogFalloff, 1.0 - (fog.density * 10.)));
+    float f = covered_by_fog ? fogStrength : 0.0;
+
     frag_color.rgb = mix(frag_color.rgb, fog.color, f);
     frag_color = background + frag_color * (1. - background.a);
     bright_color.rgb = mix(bright_color.rgb, vec3(0.), f);

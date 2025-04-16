@@ -28,7 +28,11 @@ public class WBenchMarkerObject extends WBenchObject {
 
     @Override
     public WBenchMarkerObject clone() {
-        return new WBenchMarkerObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+        WBenchMarkerObject wBenchMarkerObject = new WBenchMarkerObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+        wBenchMarkerObject.setPosition(this.getPosition());
+        wBenchMarkerObject.setRotation(this.getRotation());
+        wBenchMarkerObject.setScaling(this.getScaling());
+        return wBenchMarkerObject;
     }
 
     @Override

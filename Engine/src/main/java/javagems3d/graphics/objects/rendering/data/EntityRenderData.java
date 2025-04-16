@@ -43,6 +43,10 @@ public class EntityRenderData {
         this(entityRenderData.getSceneObjectConstructor(), entityRenderData.getObjectRenderAttributes(), meshStructure);
     }
 
+    public EntityRenderData(@NotNull EntityRenderData entityRenderData, @NotNull RenderAttributes renderAttributes) {
+        this(entityRenderData.getSceneObjectConstructor(), renderAttributes, entityRenderData.getMeshStructure());
+    }
+
     public static ISceneEntityConstructor defaultObjectConstructor() {
         return EntityRenderData.DEFAULT_OBJECT_CONSTRUCTOR;
     }
@@ -73,7 +77,7 @@ public class EntityRenderData {
         return this;
     }
 
-    public MeshStructure3D<?> getMeshDataGroup() {
+    public MeshStructure3D<?> getMeshStructure() {
         return this.meshStructure;
     }
 
@@ -91,7 +95,7 @@ public class EntityRenderData {
 
     protected EntityRenderData copyObject() {
         EntityRenderData entityRenderData = new EntityRenderData(this.getSceneObjectConstructor(), this.getObjectRenderAttributes() == null ? null : this.getObjectRenderAttributes().copy());
-        entityRenderData.setMeshDataGroup(this.getMeshDataGroup());
+        entityRenderData.setMeshDataGroup(this.getMeshStructure());
         entityRenderData.setEntityModelConstructor(this.getEntityModelConstructor());
         return entityRenderData;
     }

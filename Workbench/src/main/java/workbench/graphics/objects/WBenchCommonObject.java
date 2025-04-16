@@ -21,7 +21,11 @@ public class WBenchCommonObject extends WBenchObject {
 
     @Override
     public WBenchCommonObject clone() {
-        return new WBenchCommonObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints());
+        WBenchCommonObject commonObject = new WBenchCommonObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), this.getTagsContainer().copy(), this.getTranslationConstraints());
+        commonObject.setPosition(this.getPosition());
+        commonObject.setRotation(this.getRotation());
+        commonObject.setScaling(this.getScaling());
+        return commonObject;
     }
 
     @Override

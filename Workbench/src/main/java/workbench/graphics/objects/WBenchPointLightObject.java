@@ -44,7 +44,11 @@ public class WBenchPointLightObject extends WBenchMarkerObject {
     public WBenchPointLightObject clone() {
         TagsContainer tagsContainer = this.getTagsContainer().copy();
         tagsContainer.replaceTag(TagID.DEFAULT.OBJECT_LIST, new TagObjectsList());
-        return new WBenchPointLightObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), tagsContainer, this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+        WBenchPointLightObject wBenchPointLightObject = new WBenchPointLightObject(this.getObjectId(), (WBenchWorld) this.getWorld(), this.getModel().getMeshStructure(), this.getRenderAttributes().copy(), tagsContainer, this.getTranslationConstraints(), new Vector3f(this.getColor()), this.isTransparent());
+        wBenchPointLightObject.setPosition(this.getPosition());
+        wBenchPointLightObject.setRotation(this.getRotation());
+        wBenchPointLightObject.setScaling(this.getScaling());
+        return wBenchPointLightObject;
     }
 
     public static WBenchPointLightObject create(@NotNull String name, @NotNull WBenchWorld wBenchWorld, @NotNull TagsContainer tagsContainer) {

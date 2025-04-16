@@ -39,7 +39,7 @@ public abstract class DynamicsUtils {
         Transform transform = new Transform();
         transform.setScale(DynamicsUtils.convertV3F_JME(scaling));
         transform.setTranslation(DynamicsUtils.convertV3F_JME(pos));
-        transform.setRotation(new Quaternion().fromAngles(rot.x, rot.y, rot.z));
+        transform.setRotation(new Quaternion().fromAngles(-rot.x, -rot.y, -rot.z));
         return transform;
     }
 
@@ -74,7 +74,7 @@ public abstract class DynamicsUtils {
     }
 
     public static void rotateGhost(PhysicsGhostObject physicsGhostObject, Vector3f rot) {
-        physicsGhostObject.setPhysicsRotation(new Quaternion().fromAngles(rot.x, rot.y, rot.z));
+        physicsGhostObject.setPhysicsRotation(new Quaternion().fromAngles(-rot.x, -rot.y, -rot.z));
     }
 
     public static Vector3f getObjectBodyPos(PhysicsCollisionObject physicsRigidBody) {

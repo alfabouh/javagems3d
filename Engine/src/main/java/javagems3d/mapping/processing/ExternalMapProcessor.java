@@ -135,10 +135,10 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     protected abstract void postProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
 
     protected Pair<PointLight, Integer> onProcessPointLight(MapObjectTemplate template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        final Vector4f tagColor = template.getTagsContainer().getTag(TagID.DEFAULT.COLOR3).<TagColor>getTagItemUnsafeCast().getColorVector();
-        final float brightness = template.getTagsContainer().getTag(TagID.DEFAULT.BRIGHTNESS).<TagFloat>getTagItemUnsafeCast().getValue();
-        final int attachedTo = template.getTagsContainer().hasTag(TagID.DEFAULT.OBJECT_LIST) ? template.getTagsContainer().getTag(TagID.DEFAULT.OBJECT_LIST).<TagObjectsList>getTagItemUnsafeCast().getValue() : 1;
-        final Vector3f offset = template.getTagsContainer().hasTag(TagID.DEFAULT.FLOAT3) ? template.getTagsContainer().getTag(TagID.DEFAULT.FLOAT3).<TagVector>getTagItemUnsafeCast().getValues().xyz(new Vector3f()) : new Vector3f(0.0f);
+        final Vector4f tagColor = template.getTagsContainer().<TagColor>getTagItem(TagID.DEFAULT.COLOR3).getColorVector();
+        final float brightness = template.getTagsContainer().<TagFloat>getTagItem(TagID.DEFAULT.BRIGHTNESS).getValue();
+        final int attachedTo = template.getTagsContainer().<TagObjectsList>getTagItem(TagID.DEFAULT.OBJECT_LIST).getValue();
+        final Vector3f offset = template.getTagsContainer().<TagVector>getTagItem(TagID.DEFAULT.FLOAT3).getValues().xyz(new Vector3f());
 
         PointLight pointLight = new PointLight();
         pointLight.setLightPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
@@ -298,7 +298,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected void onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            final TagRadioBoolean tagPhysics = template.getTagsContainer().getTag(TagID.DEFAULT.PHYSICS_STATE).getTagItemUnsafeCast();
+            final TagRadioBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE);
             MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.getPathToModel(), false, false);
 
             JGemsBody jGemsBody = null;

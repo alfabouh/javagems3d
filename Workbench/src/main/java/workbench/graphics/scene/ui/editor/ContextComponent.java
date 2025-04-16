@@ -10,6 +10,7 @@ import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
+import javagems3d.help.JGemsMathHelper;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import workbench.WBench;
@@ -52,8 +53,8 @@ public class ContextComponent {
             ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
             ImBoolean opened = new ImBoolean(true);
             if (ImGui.begin("Fog", opened, ImGuiWindowFlags.NoResize)) {
-                float[] fogIntensity = new float[] {environment.getFogManager().getDensity()};
-                if (ImGui.sliderFloat("Fog Intensity", fogIntensity, 0.0f, 1.0f)) {
+                float[] fogIntensity = new float[] {JGemsMathHelper.clamp(environment.getFogManager().getDensity(), 0.0f, 1.0f)};
+                if (ImGui.dragFloat("Fog Intensity", fogIntensity, 0.0001f, 0.0f, 1.0f)) {
                     environment.getFogManager().setDensity(fogIntensity[0]);
                 }
 

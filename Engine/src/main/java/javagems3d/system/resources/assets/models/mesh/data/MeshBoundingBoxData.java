@@ -39,6 +39,11 @@ public class MeshBoundingBoxData {
             newMax.max(newPos);
         }
 
+        CullingAABB cullingAABB1 = new CullingAABB(newMin, newMax);
+        if (cullingAABB1.getAabbMax().y - cullingAABB1.getAabbMin().y <= 1.0e-4f) {
+            newMin.y += -0.001f;
+            newMax.y += 0.001f;
+        }
         return new CullingAABB(newMin, newMax);
     }
     

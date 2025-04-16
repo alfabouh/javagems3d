@@ -95,6 +95,13 @@ public final class TagsContainer implements ICopyable<TagsContainer> {
         return this.getTags().get(id);
     }
 
+    public <T extends TagItem> T getTagItem(TagID id) {
+        if (!this.hasTag(id)) {
+            return null;
+        }
+        return this.getTags().get(id).getTagItemUnsafeCast();
+    }
+
     public Collection<Tag<? extends TagItem>> getTagCollection() {
         return this.getTags().values();
     }

@@ -79,8 +79,8 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.setCollisionGroup(CollisionType.PLAYER);
         this.setCollisionFilter(CollisionType.UNIVERSAL);
         this.getGhostBody().setUserObject(this);
-
         this.getGhostBody().setKinematic(true);
+
         this.getPhysicsBody().setKinematic(true);
         this.getPhysicsBody().setMass(25.0f);
         this.getGhostBody().setMass(1.0f);
@@ -108,6 +108,8 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         this.createEntityState();
         ((PhysicsWorld) iWorld).getDynamics().addCollisionObject(this.getGhostBody());
         ((PhysicsWorld) iWorld).getDynamics().addCollisionObject(this.getPhysicsBody());
+
+        DynamicsUtils.transformRigidBody(this.getGhostBody(), this.startPosition, this.startRotation, this.startScaling);
     }
 
     protected void createEntityState() {

@@ -110,7 +110,6 @@ public final class JGemsMapping {
         if (processor.getPlayerConstructor() != null) {
             Pair<@NotNull IPlayer, @Nullable EntityRenderData> pair = processor.getPlayerConstructor().constructPlayer(this.getPhysicsWorld());
             player = pair.getFirst();
-            ((WorldItem) player).setStartTransformations(processor.getDefaultStartPosition(), processor.getDefaultStartRotation(), new Vector3f(1.0f));
             JGemsWorldHelper.addItemInWorld((WorldItem) player, pair.getSecond() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.getSecond());
             JGemsControllerHelper.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, player);
             JGemsCameraHelper.enableAttachedCamera((WorldItem) player);

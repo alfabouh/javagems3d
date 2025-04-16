@@ -82,9 +82,9 @@ public abstract class WBenchObject extends SceneProp {
             float clampedY = JGemsMathHelper.clamp(currentPos.y, -WBench.MAP_SIZE + halfHeight, WBench.MAP_SIZE - halfHeight);
             float clampedZ = JGemsMathHelper.clamp(currentPos.z, -WBench.MAP_SIZE + halfDepth, WBench.MAP_SIZE - halfDepth);
 
-            if (worldSize.x > WBench.MAP_SIZE || worldSize.y > WBench.MAP_SIZE || worldSize.z > WBench.MAP_SIZE) {
-                Log.get().warn("Object " + this + " was removed due to it's size");
+            if (worldSize.x > WBench.MAP_SIZE * 2.0f || worldSize.y > WBench.MAP_SIZE * 2.0f || worldSize.z > WBench.MAP_SIZE * 2.0f) {
                 this.setDead();
+                Log.get().warn("Object " + this + " was removed due to it's size: " + worldSize);
                 return;
             }
             this.getModel().getPose().setPosition(new Vector3f(clampedX, clampedY, clampedZ));

@@ -211,12 +211,9 @@ public class EditorInterface implements DearUIInterface {
             float max = 0.0025f;
             float[] camSpeedPercent = new float[] { (camSpeedRaw / max) * 100.0f };
 
-            if (ImGui.treeNode("Options")) {
-                if (ImGui.sliderFloat("Camera Sensitivity", camSpeedPercent, (min / max) * 100.0f, 100.0f, "%.1f%%")) {
-                    float newCamSpeed = JGemsMathHelper.clamp((camSpeedPercent[0] / 100.0f) * max, min, max);
-                    WBench.get().getSettings().setCamSpeed(newCamSpeed);
-                }
-                ImGui.treePop();
+            if (ImGui.sliderFloat("Camera Sensitivity", camSpeedPercent, (min / max) * 100.0f, 100.0f, "%.1f%%")) {
+                float newCamSpeed = JGemsMathHelper.clamp((camSpeedPercent[0] / 100.0f) * max, min, max);
+                WBench.get().getSettings().setCamSpeed(newCamSpeed);
             }
 
             if (ImGui.treeNode("Keys")) {
@@ -346,7 +343,7 @@ public class EditorInterface implements DearUIInterface {
         }
         OpenGLRenderer.setViewPort(new Vector2i(256, 256));
         this.scenePreview.bindFBO();
-        GL46.glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+        GL46.glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         this.renderPreviewItem(this.getPreviewDistance(), WBenchResourceManager.localShaderAssets.preview, this.currentSelectedTemplate.getMeshGroup());
         this.scenePreview.unBindFBO();
@@ -385,8 +382,8 @@ public class EditorInterface implements DearUIInterface {
 
     public void setNewCamera(@Nullable ICamera camera) {
         if (camera == null) {
-            if (this.oldCamera != null) {
-                this.getOpenGLRenderer().getWorld().setCamera(this.oldCamera);
+            if (this.getOldCamera() != null) {
+                this.getOpenGLRenderer().getWorld().setCamera(this.getOldCamera());
                 this.oldCamera = null;
             }
         } else {
@@ -464,6 +461,10 @@ public class EditorInterface implements DearUIInterface {
 
     public float getPreviewDistance() {
         return this.previewDistance;
+    }
+
+    public ICamera getOldCamera() {
+        return this.oldCamera;
     }
 
     public int getCurrentOperation() {

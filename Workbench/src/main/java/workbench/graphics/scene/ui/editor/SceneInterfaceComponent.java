@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SceneInterfaceComponent {
     private final EditorInterface editorInterface;
     private AtomicBoolean isThreadInProcess;
-    private boolean wasWindowFocused;
+    //private boolean wasWindowFocused;
 
     public SceneInterfaceComponent(EditorInterface editorInterface) {
         this.editorInterface = editorInterface;
@@ -40,7 +40,7 @@ public class SceneInterfaceComponent {
 
     public void clear() {
         this.isThreadInProcess.set(false);
-        this.wasWindowFocused = false;
+        //this.wasWindowFocused = false;
     }
 
     public void sceneContent() {
@@ -63,7 +63,7 @@ public class SceneInterfaceComponent {
 
         ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
 
-        if (!this.wasWindowFocused && !this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
+        if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
             if (!ImGuizmo.isUsing() && EditorInterface.isCursorInsideScene) {
                 if (ImGui.isMouseReleased(0)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -91,7 +91,7 @@ public class SceneInterfaceComponent {
                 if (cullingAABB != null) {
                     WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
                     float[] modelMatrix = TransformUtils.getModelMatrix(this.getEditorInterface().getCurrentSelectedObject().getModel().getPose()).get(new float[16]);
-                    ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getCurrentOperation(), Mode.WORLD, new float[]{0.01f, 0.01f, 0.01f});
+                    ImGuizmo.manipulate(view, projection, modelMatrix, this.getEditorInterface().getCurrentOperation(), Mode.WORLD, new float[]{0.001f, 0.001f, 0.001f});
 
                     if (ImGuizmo.isUsing()) {
                         Vector3f position = new Vector3f();
@@ -112,11 +112,11 @@ public class SceneInterfaceComponent {
 
         if (ImGui.isWindowFocused()) {
             if (ImGui.isMouseReleased(0)) {
-                this.wasWindowFocused = false;
+                //this.wasWindowFocused = false;
             }
             WBench.get().getScreen().getWindow().setFocus(true);
         } else {
-            this.wasWindowFocused = true;
+            //this.wasWindowFocused = true;
             WBench.get().getScreen().getWindow().setFocus(false);
         }
     }
@@ -138,32 +138,35 @@ public class SceneInterfaceComponent {
         Vector4f getRayInWorld = getRayInView.mul(viewMatrix.invert(new Matrix4f()));
         Vector3f camRay = new Vector3f(getRayInWorld.x, getRayInWorld.y, getRayInWorld.z);
         camRay.normalize();
-        Set<SceneObject> intersectedAabbs = new HashSet<>();
 
         Vector3f origin = this.getEditorInterface().getOpenGLRenderer().getCamera().getCamPosition();
+        List<Pair<SceneObject, Vector3f>> sceneObjects = this.getIntersectedObjects(this.getEditorInterface().getVisibleObjects(), origin, camRay);
+        return sceneObjects.isEmpty() ? null : (WBenchObject) sceneObjects.get(0).getFirst();
+    }
 
+    public List<Pair<SceneObject, Vector3f>> getIntersectedObjects(Collection<SceneObject> objects, Vector3f origin, Vector3f ray) {
+        Set<SceneObject> intersectedAabbs = new HashSet<>();
         if (this.getEditorInterface().getVisibleObjects() != null) {
             for (SceneObject sceneObject : this.getEditorInterface().getVisibleObjects()) {
                 CullingAABB cullingAABB = sceneObject.pickAABBDataFromMesh();
                 if (cullingAABB != null) {
                     Vector2f vector2f = new Vector2f();
-                    if (Intersectionf.intersectRayAab(origin, camRay, cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), vector2f)) {
+                    if (Intersectionf.intersectRayAab(origin, ray, cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), vector2f)) {
                         intersectedAabbs.add(sceneObject);
                     }
                 }
             }
         }
 
-        List<Pair<SceneObject, Float>> sceneObjects = new ArrayList<>();
+        List<Pair<SceneObject, Vector3f>> sceneObjects = new ArrayList<>();
         for (SceneObject object : intersectedAabbs) {
-            int optimalThreads = Runtime.getRuntime().availableProcessors();
-            Vector3f intersection = this.findClosesPointRayIntersectMesh(object.getModel(), origin, camRay, optimalThreads);
+            Vector3f intersection = this.findClosesPointRayIntersectMesh(object.getModel(), origin, ray, Runtime.getRuntime().availableProcessors() - 1);
             if (intersection != null) {
-                sceneObjects.add(new Pair<>(object, origin.distance(intersection)));
+                sceneObjects.add(new Pair<>(object, intersection));
             }
         }
-        sceneObjects.sort(Comparator.comparingDouble(Pair::getSecond));
-        return sceneObjects.isEmpty() ? null : (WBenchObject) sceneObjects.get(0).getFirst();
+        sceneObjects.sort(Comparator.comparingDouble(e -> e.getSecond().distance(origin)));
+        return sceneObjects;
     }
 
     public Vector3f findClosesPointRayIntersectMesh(Model3D model3D, Vector3f rayStart, Vector3f rayEnd, int threads) {
