@@ -2,7 +2,6 @@ package javagems3d.graphics.objects.rendering.pipeline.fabric.shadow;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.system.global.JGemsConfig;
-import javagems3d.graphics.objects.IAnimated;
 import javagems3d.graphics.objects.IModeled;
 import javagems3d.graphics.objects.IRendered;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
@@ -16,7 +15,6 @@ import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
-import javagems3d.help.JGemsShadersHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.service.args.ArbitraryArguments;

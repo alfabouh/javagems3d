@@ -3,7 +3,6 @@ package javagems3d.mapping.tags.items;
 import imgui.ImGui;
 import imgui.type.ImInt;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.help.JGemsMathHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.collections.Pair;

@@ -1,11 +1,8 @@
 package jgems_app.entities;
 
 import javagems3d.JGems3D;
-import javagems3d.help.JGemsControllerHelper;
-import javagems3d.help.JGemsWorldHelper;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
-import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.controller.binding.DefaultBindings;

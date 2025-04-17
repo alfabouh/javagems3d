@@ -1,7 +1,6 @@
 package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
-import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;

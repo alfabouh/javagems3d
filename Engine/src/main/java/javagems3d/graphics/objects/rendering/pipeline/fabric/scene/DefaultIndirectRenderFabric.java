@@ -7,7 +7,6 @@ import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.objects.rendering.pipeline.fabric.IndirectRenderFabric;
 import javagems3d.graphics.rendering.scene.renderer.indirect.GroupedIndirectRenderer;
-import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.service.args.ArbitraryArguments;
 import org.joml.Matrix4f;
 

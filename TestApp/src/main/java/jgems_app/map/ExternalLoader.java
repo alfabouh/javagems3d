@@ -2,13 +2,10 @@ package jgems_app.map;
 
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.help.JGemsCoreHelper;
-import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.data.templates.MapObjectTemplate;
 import javagems3d.mapping.processing.ExternalMapProcessor;
 import javagems3d.mapping.tags.TagID;
-import javagems3d.mapping.tags.items.TagRadioBoolean;
 import javagems3d.mapping.tags.items.TagString;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.system.resources.managing.JGemsResourceManager;

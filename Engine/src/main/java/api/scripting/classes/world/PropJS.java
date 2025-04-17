@@ -2,7 +2,6 @@ package api.scripting.classes.world;
 
 import api.scripting.classes.util.Vec3f;
 import javagems3d.graphics.objects.entities.SceneProp;
-import javagems3d.help.JGemsWorldHelper;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import org.jetbrains.annotations.NotNull;
 

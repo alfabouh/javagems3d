@@ -1,6 +1,5 @@
 package javagems3d.physics.entities.collectabes;
 
-import javagems3d.help.JGemsCoreHelper;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;

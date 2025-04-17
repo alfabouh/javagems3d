@@ -3,9 +3,7 @@ package javagems3d.system.core;
 import api.system.JGemsAPI;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.screen.JGemsScreen;
-import javagems3d.help.JGemsControllerHelper;
-import javagems3d.help.JGemsCoreHelper;
-import javagems3d.help.JGemsWindowHelper;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.JGemsMapping;
 import javagems3d.mapping.processing.base.IMapProcessor;
@@ -59,6 +57,8 @@ public final class JGemsCore implements ICore {
 
         this.requestsFromThreads = new RequestsFromThreads();
         this.exceptionsBuffer = SyncManager.createSyncronisedSet();
+
+        JGemsHelper.init(this);
     }
 
     private void createMappingObject() {
@@ -99,7 +99,7 @@ public final class JGemsCore implements ICore {
         this.getScreen().removeLoadingScreen();
         JGems3D.get().showMainMenu();
         this.setLockedResuming(false);
-        this.getScreen().getControllerDispatcher().setLockedController(false);
+        this.getScreen().getControllerDispatcher().setLock(false);
 
         JGemsAPI.clearScriptingEngine();
         this.requestsFromThreads.destroyMap = false;
@@ -110,17 +110,17 @@ public final class JGemsCore implements ICore {
             throw new JGemsRuntimeException("Attempted to load mapping, before initialization");
         }
         this.getSoundManager().stopAllSounds();
-        JGemsCoreHelper.getScreen().showGameLoadingScreen("Loading Map: " + mapProcessor.getMapName() + "(" + mapProcessor.getMapInformation() + ")");
+        JGemsHelper.screen().getScreen().showGameLoadingScreen("Loading Map: " + mapProcessor.getMapName() + "(" + mapProcessor.getMapInformation() + ")");
 
         this.getMapping().loadMap(mapProcessor, (IMapActionCallback) this.getScreen().getScene().getSceneRenderer());
-        JGemsControllerHelper.setCursorInCenter();
+        JGemsHelper.controller().setCursorInCenter();
 
-        JGemsWindowHelper.setWindowFocus(true);
+        JGemsHelper.screen().setWindowFocus(true);
         this.getScreen().removeLoadingScreen();
 
         this.resumeGame();
         this.setLockedResuming(false);
-        this.getScreen().getControllerDispatcher().setLockedController(false);
+        this.getScreen().getControllerDispatcher().setLock(false);
         this.requestsFromThreads.mapProcessor = null;
     }
 

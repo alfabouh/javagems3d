@@ -185,7 +185,7 @@ public final class SceneWorld implements IRenderWorld {
         return true;
     }
 
-    public void addItem(WorldItem worldItem, EntityRenderData renderData) throws JGemsException {
+    public void addWorldItem(WorldItem worldItem, EntityRenderData renderData) throws JGemsException {
         this.addObject(renderData.constructSceneObject(this, worldItem));
     }
 

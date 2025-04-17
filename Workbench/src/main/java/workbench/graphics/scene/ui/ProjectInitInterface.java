@@ -8,7 +8,6 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImString;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
-import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.path.JGemsPath;

@@ -1,6 +1,5 @@
 package javagems3d.system.controller;
 
-import javagems3d.help.JGemsCameraHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.screen.window.IWindow;

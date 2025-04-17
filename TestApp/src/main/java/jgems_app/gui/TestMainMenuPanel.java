@@ -13,26 +13,18 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.help.JGemsRenderingHelper;
-import javagems3d.help.JGemsUIHelper;
 
-import javagems3d.mapping.IGameMap;
-import javagems3d.mapping.processing.ExternalMapProcessor;
-import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
-import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
 import jgems_app.map.ExternalLoader;
-import org.jetbrains.annotations.NotNull;
 import jgems_app.map.TestMap;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
-import jgems_app.entities.TestPlayer;
 
 public class TestMainMenuPanel extends AbstractPanelUI {
     private final FBOTexture2DProgram postFbo;

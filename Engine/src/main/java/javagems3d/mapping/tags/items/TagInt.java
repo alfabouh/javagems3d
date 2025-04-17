@@ -1,7 +1,6 @@
 package javagems3d.mapping.tags.items;
 
 import imgui.ImGui;
-import javagems3d.help.JGemsMathHelper;
 import javagems3d.mapping.tags.TagID;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.graphics.objects.SceneObject;

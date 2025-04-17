@@ -1,7 +1,6 @@
 package javagems3d.system.resources.assets.shaders.base;
 
 import javagems3d.JGems3D;
-import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.resources.assets.shaders.constants.ShaderStaticConstants;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesManager;
 import javagems3d.system.resources.assets.shaders.libraries.ShaderLibrariesContainer;

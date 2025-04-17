@@ -8,7 +8,6 @@ import com.jme3.bullet.collision.PhysicsSweepTestResult;
 import com.jme3.bullet.collision.shapes.ConvexShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Transform;
-import javagems3d.help.JGemsMathHelper;
 import javagems3d.physics.entities.bullet.IJGemsBulletEntity;
 import javagems3d.physics.entities.properties.collision.CollisionType;
 import javagems3d.physics.entities.properties.state.EntityState;

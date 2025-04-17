@@ -64,7 +64,7 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
         return this.lockController;
     }
 
-    public void setLockedController(boolean lockController) {
+    public void setLock(boolean lockController) {
         this.lockController = lockController;
     }
 

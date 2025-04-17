@@ -8,7 +8,6 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.help.JGemsWindowHelper;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;

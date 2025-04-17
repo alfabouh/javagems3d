@@ -3,7 +3,6 @@ package javagems3d;
 import api.system.JGemsAPIData;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
-import javagems3d.help.JGemsCoreHelper;
 import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.os.OS;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import api.system.JGemsAPI;
-import api.events.EventLauncher;
 import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
@@ -29,7 +27,6 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.path.JGemsPath;
 import javagems3d.system.service.synchronizing.SyncManager;
 import javagems3d.system.settings.JGemsSettings;
-import api.events.EventBus;
 import logger.SystemLogging;
 import logger.managers.JGemsLogging;
 
@@ -190,17 +187,6 @@ public final class JGems3D {
         return String.format(this.getLocalisation().format(key), objects);
     }
 
-    public void reloadResources() {
-        EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent());
-        JGems3D.get().getScreen().showGameLoadingScreen("System01");
-        JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
-        JGems3D.get().getResourceManager().recreateTexturesInAllCaches();
-        JGems3D.get().getScreen().refreshSceneResources();
-        JGems3D.get().getLocalisation().setLanguage(JGemsCoreHelper.getGameSettings().language.getCurrentLanguage());
-        this.getResourceManager().loadBindlessHandlersInSSBO(JGemsResourceManager.globalShaderAssets.BindlessTexturesData);
-        JGems3D.get().getScreen().removeLoadingScreen();
-    }
-
     public void changeIcon(@Nullable JGemsPath icon) {
         this.getScreen().setIcon(icon);
     }
@@ -222,11 +208,11 @@ public final class JGems3D {
     }
 
     public void lockController() {
-        this.getScreen().getControllerDispatcher().setLockedController(true);
+        this.getScreen().getControllerDispatcher().setLock(true);
     }
 
     public void unLockController() {
-        this.getScreen().getControllerDispatcher().setLockedController(false);
+        this.getScreen().getControllerDispatcher().setLock(false);
     }
 
     public void pauseGameAndLockUnPausing(boolean pauseSounds) {

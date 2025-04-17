@@ -3,7 +3,6 @@ package javagems3d.system.controller.binding;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.DefaultGamePanel;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.DefaultPausePanel;
-import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.controller.components.FunctionalKey;
 import javagems3d.system.controller.components.IKeyAction;
 import javagems3d.system.controller.components.Key;

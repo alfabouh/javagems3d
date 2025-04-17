@@ -2,12 +2,10 @@ package javagems3d.mapping.tags.items;
 
 import imgui.ImGui;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.help.JGemsMathHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.VectorMode;
 import javagems3d.system.service.collections.Pair;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jetbrains.annotations.Nullable;
 import java.util.Set;

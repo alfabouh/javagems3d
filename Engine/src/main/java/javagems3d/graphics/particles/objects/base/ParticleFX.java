@@ -1,7 +1,6 @@
 package javagems3d.graphics.particles.objects.base;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.help.JGemsCoreHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;

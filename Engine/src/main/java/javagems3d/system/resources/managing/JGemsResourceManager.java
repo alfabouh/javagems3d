@@ -42,18 +42,6 @@ public final class JGemsResourceManager extends ResourceManager {
         }
     }
 
-    public static SystemResources getLocalGameResources() {
-        return JGems3D.get().getResourceManager().getLocalResources();
-    }
-
-    public static SystemResources getGlobalGameResources() {
-        return JGems3D.get().getResourceManager().getGlobalResources();
-    }
-
-    public static ITexture2DProgram getAnimationsTextureBuffer() {
-        return JGems3D.get().getResourceManager().getAnimationMatricesTexture();
-    }
-
     public void loadGlobalResources() {
         this.getGlobalResources().loadResources();
     }

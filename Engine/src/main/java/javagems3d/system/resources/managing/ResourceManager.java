@@ -1,7 +1,5 @@
 package javagems3d.system.resources.managing;
 
-import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
@@ -12,8 +10,6 @@ import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
-import javagems3d.system.resources.assets.texturing.colors.Color4Texture;
-import javagems3d.system.resources.assets.texturing.ISample;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor3;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
 import javagems3d.system.resources.managing.resources.SystemResources;

@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-public abstract class JGemsUtils {
+public final class JGemsUtils {
+    private JGemsUtils() {
+    }
+
     public static Matrix4f getMatrixFromArray(float[] arr) {
         return new Matrix4f(arr[0], arr[1], arr[2], arr[3],
                 arr[4], arr[5], arr[6], arr[7],
@@ -99,14 +102,6 @@ public abstract class JGemsUtils {
         return a;
     }
 
-    public static Vector3f calcLookVector(Vector3f rotations) {
-        float x = rotations.x;
-        float y = rotations.y;
-        float lX = Math.sin(y) * Math.cos(x);
-        float lY = -Math.sin(x);
-        float lZ = -Math.cos(y) * Math.cos(x);
-        return new Vector3f(lX, lY, lZ);
-    }
 
     @SuppressWarnings("all")
     public static boolean createMeshAABBData(MeshStructure3D<?> meshStructure) {

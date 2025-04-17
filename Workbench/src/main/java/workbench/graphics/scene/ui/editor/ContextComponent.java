@@ -10,17 +10,14 @@ import javagems3d.graphics.camera.FixedCamera;
 import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
-import javagems3d.help.JGemsMathHelper;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
 import workbench.graphics.scene.ui.EditorInterface;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ContextComponent {
     private final EditorInterface editorInterface;

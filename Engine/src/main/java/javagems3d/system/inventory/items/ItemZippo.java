@@ -1,6 +1,5 @@
 package javagems3d.system.inventory.items;
 
-import javagems3d.help.JGemsWorldHelper;
 import org.joml.Vector3f;
 import javagems3d.JGems3D;
 import javagems3d.audio.sound.data.SoundType;

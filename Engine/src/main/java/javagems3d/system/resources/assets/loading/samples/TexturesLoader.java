@@ -1,8 +1,6 @@
 package javagems3d.system.resources.assets.loading.samples;
 
-import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
-import javagems3d.help.JGemsFilesHelper;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;

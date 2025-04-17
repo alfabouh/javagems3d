@@ -2,7 +2,6 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;

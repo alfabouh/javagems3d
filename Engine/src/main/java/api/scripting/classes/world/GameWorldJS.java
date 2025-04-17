@@ -8,8 +8,6 @@ import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
-import javagems3d.help.JGemsCoreHelper;
-import javagems3d.help.JGemsWorldHelper;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;

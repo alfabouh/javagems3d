@@ -7,7 +7,6 @@ import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.screen.ticking.FrameTicking;
-import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.dispatcher.JGemsControllerDispatcher;
 import org.jetbrains.annotations.NotNull;

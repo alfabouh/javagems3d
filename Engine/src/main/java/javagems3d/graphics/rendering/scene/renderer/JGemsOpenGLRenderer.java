@@ -1,10 +1,8 @@
 package javagems3d.graphics.rendering.scene.renderer;
 
-import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
@@ -17,7 +15,6 @@ import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.*;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.base.NodeID;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.ForwardRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.*;
 import javagems3d.graphics.rendering.ui.dear_imgui.DearUIRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
@@ -32,13 +29,10 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
-import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.mapping.processing.callbacks.IMapActionCallback;
 
-import javagems3d.physics.entities.bullet.JGemsBody;
-import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;

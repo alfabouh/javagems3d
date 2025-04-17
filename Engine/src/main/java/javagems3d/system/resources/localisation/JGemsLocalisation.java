@@ -1,7 +1,6 @@
 package javagems3d.system.resources.localisation;
 
 import javagems3d.JGems3D;
-import javagems3d.help.JGemsLocalisationHelper;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;

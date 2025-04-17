@@ -1,7 +1,6 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
-import javagems3d.help.JGemsCoreHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.ui.jgems_imgui.elements.*;
 import javagems3d.graphics.screen.window.IWindow;

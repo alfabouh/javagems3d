@@ -7,7 +7,6 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
-import javagems3d.help.JGemsRenderingHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -22,7 +21,6 @@ import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
 import workbench.graphics.scene.ui.EditorInterface;
-import workbench.graphics.scene.ui.editor.SelectedScene;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 

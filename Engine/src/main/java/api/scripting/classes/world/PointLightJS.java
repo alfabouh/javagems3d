@@ -2,7 +2,6 @@ package api.scripting.classes.world;
 
 import api.scripting.classes.util.Vec3f;
 import javagems3d.graphics.environment.lights.PointLight;
-import javagems3d.help.JGemsWorldHelper;
 import org.jetbrains.annotations.NotNull;
 
 public class PointLightJS {
