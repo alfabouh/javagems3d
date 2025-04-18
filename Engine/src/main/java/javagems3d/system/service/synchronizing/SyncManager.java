@@ -26,6 +26,10 @@ public abstract class SyncManager {
         return Collections.synchronizedList(list);
     }
 
+    public static <T> Set<T> createSyncronisedSet(Set<T> set) {
+        return Collections.synchronizedSet(set);
+    }
+
     public static <T> Set<T> createSyncronisedSet() {
         return ConcurrentHashMap.newKeySet();
     }

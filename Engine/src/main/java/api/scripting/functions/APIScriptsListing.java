@@ -1,7 +1,10 @@
 package api.scripting.functions;
 
 import api.scripting.classes.init.InitializationJS;
+import api.scripting.classes.world.EntityJS;
 import api.scripting.classes.world.GameWorldJS;
+import api.scripting.classes.world.PointLightJS;
+import api.scripting.classes.world.PropJS;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.service.collections.Pair;
 
@@ -12,25 +15,35 @@ public abstract class APIScriptsListing {
     static final Set<APIScriptingFunction> apiScriptingFunctions = new LinkedHashSet<>();
 
     public static final APIScriptingFunction onInitialization = new APIScriptingFunction("onInitialization", "Game objects initialization manager", new Pair<>(InitializationJS.class, "onitializationjs"));
-    public static final APIScriptingFunction onWorldPreGeneration = new APIScriptingFunction("onWorldPreGeneration", "Called before map worlds init", new Pair<>(GameWorldJS.class, "gameworldjs"));
-    public static final APIScriptingFunction onWorldPostGeneration = new APIScriptingFunction("onWorldPostGeneration", "Called after map worlds init", new Pair<>(GameWorldJS.class, "gameworldjs"));
+    public static final APIScriptingFunction onMapPreGeneration = new APIScriptingFunction("onMapPreGeneration", "Called before map init", new Pair<>(GameWorldJS.class, "gameworldjs"));
+    public static final APIScriptingFunction onMapPostGeneration = new APIScriptingFunction("onMapPostGeneration", "Called after map init", new Pair<>(GameWorldJS.class, "gameworldjs"));
+    public static final APIScriptingFunction onMapClear = new APIScriptingFunction("onMapClear", "Called before map clear", new Pair<>(GameWorldJS.class, "gameworldjs"));
     public static final APIScriptingFunction onPhysicsWorldUpdate = new APIScriptingFunction("onPhysicsWorldUpdate", "Called on physics world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
     public static final APIScriptingFunction onSceneWorldUpdate = new APIScriptingFunction("onSceneWorldUpdate", "Called on scene world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
 
+    public static final APIScriptingFunction onMapSpawnedEntity = new APIScriptingFunction("onMapSpawnedEntity", "Called when an entity is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(EntityJS.class, "entityjs"));
+    public static final APIScriptingFunction onMapSpawnedProp = new APIScriptingFunction("onMapSpawnedProp", "Called when a prop is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PropJS.class, "entityjs"));
+    public static final APIScriptingFunction onMapSpawnedPointLight = new APIScriptingFunction("onMapSpawnedPointLight", "Called when a point light is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PointLightJS.class, "pointlightjs"));
+
+
     static {
         APIScriptsListing.addFunction(APIScriptsListing.onInitialization);
-        APIScriptsListing.addFunction(APIScriptsListing.onWorldPreGeneration);
-        APIScriptsListing.addFunction(APIScriptsListing.onWorldPostGeneration);
+        APIScriptsListing.addFunction(APIScriptsListing.onMapPreGeneration);
+        APIScriptsListing.addFunction(APIScriptsListing.onMapPostGeneration);
+        APIScriptsListing.addFunction(APIScriptsListing.onMapClear);
         APIScriptsListing.addFunction(APIScriptsListing.onPhysicsWorldUpdate);
         APIScriptsListing.addFunction(APIScriptsListing.onSceneWorldUpdate);
+        APIScriptsListing.addFunction(APIScriptsListing.onMapSpawnedEntity);
+        APIScriptsListing.addFunction(APIScriptsListing.onMapSpawnedProp);
+        APIScriptsListing.addFunction(APIScriptsListing.onMapSpawnedPointLight);
     }
 
     static {
         Set<APIScriptingFunction> apiDefaultFunctions = new LinkedHashSet<APIScriptingFunction>()
         {{
             add(APIScriptsListing.onInitialization);
-            add(APIScriptsListing.onWorldPreGeneration);
-            add(APIScriptsListing.onWorldPostGeneration);
+            add(APIScriptsListing.onMapPreGeneration);
+            add(APIScriptsListing.onMapPostGeneration);
             add(APIScriptsListing.onPhysicsWorldUpdate);
             add(APIScriptsListing.onSceneWorldUpdate);
         }};

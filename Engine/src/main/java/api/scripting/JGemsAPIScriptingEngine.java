@@ -1,5 +1,6 @@
 package api.scripting;
 
+import api.scripting.classes.global.GlobalJS;
 import api.scripting.classes.init.InitializationJS;
 import api.scripting.classes.init.logging.LogJS;
 import api.scripting.classes.util.Vec3f;
@@ -56,6 +57,7 @@ public final class JGemsAPIScriptingEngine {
         Log.get().debug("Created API script engine");
         this.engine = new ScriptEngineManager().getEngineByName("nashorn");
         this.registerScriptBinding("log", new LogJS(), ScriptContext.GLOBAL_SCOPE);
+        this.registerScriptBinding("global", new GlobalJS(this.getGameWorldJS()), ScriptContext.GLOBAL_SCOPE);
         this.eval("var Vec3f = Java.type('" + Vec3f.class.getName() + "');");
         this.eval("var Vec4f = Java.type('" + Vec4f.class.getName() + "');");
     }
@@ -76,11 +78,10 @@ public final class JGemsAPIScriptingEngine {
                 }
                 return true;
             } catch (ScriptException | NoSuchMethodException e) {
-                throw new JGemsAPIException(e);
+                Log.get().exception(e);
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     public static void warn(APIScriptingFunction apiScriptingFunction) {

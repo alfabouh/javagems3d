@@ -1,8 +1,12 @@
 package javagems3d.physics.world;
 
 import api.events.EventBus;
+import api.scripting.functions.APIScriptsListing;
+import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -35,6 +39,7 @@ public final class PhysicsWorld implements IWorld {
             this.getWorldObjectsContainer().onUpdate();
             this.ticks += 1;
         }
+        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onPhysicsWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
         EventLauncher.pushEvent(new EventBus.PhysWorldTickPost(this));
     }
 
@@ -104,5 +109,9 @@ public final class PhysicsWorld implements IWorld {
 
     public DynamicsSystem getDynamics() {
         return JGems3D.get().getPhysics().getPhysicsProcessor().getDynamicsSystem();
+    }
+
+    public boolean contains(WorldItem worldItem) {
+        return this.getWorldObjectsContainer().getWorldObjects().contains(worldItem);
     }
 }

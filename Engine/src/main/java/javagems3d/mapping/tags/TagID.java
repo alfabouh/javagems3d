@@ -10,26 +10,30 @@ public final class TagID {
     private final String description;
     private final String toolTip;
 
-    public TagID(@NotNull String id, @NotNull String description) {
-        this(id, description, null);
-    }
-
     public TagID(@NotNull String id, @NotNull String description, @Nullable String toolTip) {
         this.id = id;
         this.description = description;
         this.toolTip = toolTip;
     }
 
+    public TagID(@NotNull String id, @NotNull String description) {
+        this(id, description, null);
+    }
+
+    public TagID(@NotNull String id) {
+        this(id, "", null);
+    }
+
     public TagID(@NotNull TagID id, @NotNull String description, @Nullable String toolTip) {
-        this.id = id.getId();
-        this.description = description;
-        this.toolTip = toolTip;
+        this(id.getId(), description, toolTip);
     }
 
     public TagID(@NotNull TagID id, @NotNull String description) {
-        this.id = id.getId();
-        this.description = description;
-        this.toolTip = null;
+        this(id.getId(), description, id.getToolTip());
+    }
+
+    public TagID(@NotNull TagID id) {
+        this(id.getId(), id.getDescription(), id.getToolTip());
     }
 
     @Override

@@ -6,7 +6,7 @@ import api.scripting.doc.annotations.JSTypeDoc;
 import logger.Log;
 
 @JSGlobalVar(varName = "log")
-@JSTypeDoc(description = "Logging manager", order = 0)
+@JSTypeDoc(description = "Logging manager", priority = JSTypeDoc.Priority.HIGH)
 public final class LogJS {
     @JSMethodDoc(description = "Regular message", args = {"message"}, order = 0)
     public void info(String text) {

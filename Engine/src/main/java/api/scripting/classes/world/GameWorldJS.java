@@ -6,6 +6,9 @@ import api.scripting.classes.init.templates.PropTemplateJS;
 import api.scripting.classes.util.Vec3f;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
+import api.scripting.functions.APIScriptsListing;
+import api.system.JGemsAPI;
+import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.entities.world.SceneWorldProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -15,53 +18,64 @@ import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
+import javagems3d.physics.world.basic.WorldItem;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
-@JSTypeDoc(description = "Game World. General realization of the scene and physics world", order = 2)
-public final class GameWorldJS {
+import java.util.HashMap;
+import java.util.Map;
+
+@JSTypeDoc(description = "Game World. General realization of the scene and physics world", priority = JSTypeDoc.Priority.HIGH)
+public final class GameWorldJS extends ObjectJS {
     private final JGemsAPIScriptingManaging scriptingManaging;
+    public final Map<Integer, ObjectJS> mapObjectsMap;
 
     public GameWorldJS(@NotNull JGemsAPIScriptingManaging scriptingManaging) {
         this.scriptingManaging = scriptingManaging;
+        this.mapObjectsMap = new HashMap<>();
     }
 
-    @JSMethodDoc(description = "Spawn static(non-moving> entity in physics world", args = {"entityTemplateJS", "position", "rotation", "scaling"}, order = 0)
+    public void clear() {
+        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapClear, this);
+        this.mapObjectsMap.clear();
+    }
+
+    @JSMethodDoc(description = "Spawn static(non-moving) entity in physics world", args = {"entityTemplateJS", "position", "rotation", "scaling"}, order = 0)
     public EntityJS spawnStaticEntity(EntityTemplateJS entityTemplateJS, Vec3f position, Vec3f rotation, Vec3f scaling) {
         return this.spawnEntity(entityTemplateJS, true, position, rotation, scaling);
     }
 
-    @JSMethodDoc(description = "Spawn dynamic(moving> entity in physics world", args = {"entityTemplateJS", "position", "rotation", "scaling"}, order = 1)
+    @JSMethodDoc(description = "Spawn dynamic(moving) entity in physics world", args = {"entityTemplateJS", "position", "rotation", "scaling"}, order = 1)
     public EntityJS spawnDynamicEntity(EntityTemplateJS entityTemplateJS, Vec3f position, Vec3f rotation, Vec3f scaling) {
         return this.spawnEntity(entityTemplateJS, false, position, rotation, scaling);
     }
 
-    @JSMethodDoc(description = "Spawn static(non-moving> entity in physics world", args = {"entityTemplateJS", "position", "rotation"}, order = 2)
+    @JSMethodDoc(description = "Spawn static(non-moving) entity in physics world", args = {"entityTemplateJS", "position", "rotation"}, order = 2)
     public EntityJS spawnStaticEntity(EntityTemplateJS entityTemplateJS, Vec3f position, Vec3f rotation) {
         return this.spawnEntity(entityTemplateJS, true, position, rotation, new Vec3f(1.0f, 1.0f, 1.0f));
     }
 
-    @JSMethodDoc(description = "Spawn dynamic(moving> entity in physics world", args = {"entityTemplateJS", "position", "rotation"}, order = 3)
+    @JSMethodDoc(description = "Spawn dynamic(moving) entity in physics world", args = {"entityTemplateJS", "position", "rotation"}, order = 3)
     public EntityJS spawnDynamicEntity(EntityTemplateJS entityTemplateJS, Vec3f position, Vec3f rotation) {
         return this.spawnEntity(entityTemplateJS, false, position, rotation, new Vec3f(1.0f, 1.0f, 1.0f));
     }
 
-    @JSMethodDoc(description = "Spawn static(non-moving> entity in physics world", args = {"entityTemplateJS", "position"}, order = 4)
+    @JSMethodDoc(description = "Spawn static(non-moving) entity in physics world", args = {"entityTemplateJS", "position"}, order = 4)
     public EntityJS spawnStaticEntity(EntityTemplateJS entityTemplateJS, Vec3f position) {
         return this.spawnEntity(entityTemplateJS, true, position, new Vec3f(0.0f, 0.0f, 0.0f), new Vec3f(1.0f, 1.0f, 1.0f));
     }
 
-    @JSMethodDoc(description = "Spawn dynamic(moving> entity in physics world", args = {"entityTemplateJS", "position"}, order = 5)
+    @JSMethodDoc(description = "Spawn dynamic(moving) entity in physics world", args = {"entityTemplateJS", "position"}, order = 5)
     public EntityJS spawnDynamicEntity(EntityTemplateJS entityTemplateJS, Vec3f position) {
         return this.spawnEntity(entityTemplateJS, false, position, new Vec3f(0.0f, 0.0f, 0.0f), new Vec3f(1.0f, 1.0f, 1.0f));
     }
 
-    @JSMethodDoc(description = "Spawn static(non-moving> entity in physics world", args = {"entityTemplateJS"}, order = 6)
+    @JSMethodDoc(description = "Spawn static(non-moving) entity in physics world", args = {"entityTemplateJS"}, order = 6)
     public EntityJS spawnStaticEntity(EntityTemplateJS entityTemplateJS) {
         return this.spawnEntity(entityTemplateJS, true, new Vec3f(0.0f, 0.0f, 0.0f), new Vec3f(0.0f, 0.0f, 0.0f), new Vec3f(1.0f, 1.0f, 1.0f));
     }
 
-    @JSMethodDoc(description = "Spawn dynamic(moving> entity in physics world", args = {"entityTemplateJS"}, order = 7)
+    @JSMethodDoc(description = "Spawn dynamic(moving) entity in physics world", args = {"entityTemplateJS"}, order = 7)
     public EntityJS spawnDynamicEntity(EntityTemplateJS entityTemplateJS) {
         return this.spawnEntity(entityTemplateJS, false, new Vec3f(0.0f, 0.0f, 0.0f), new Vec3f(0.0f, 0.0f, 0.0f), new Vec3f(1.0f, 1.0f, 1.0f));
     }
@@ -126,6 +140,24 @@ public final class GameWorldJS {
     @JSMethodDoc(description = "Remove prop from scene world", args = {"propJS"}, order = 13)
     public void removeProp(PropJS propJS) {
         propJS.remove();
+    }
+
+    public void onMapSpawnedWorldItemEvent(@NotNull WorldItem worldItem, int templateId) {
+        final EntityJS entityJS = new EntityJS(worldItem);
+        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapSpawnedEntity, this, entityJS);
+        this.mapObjectsMap.put(templateId, entityJS);
+    }
+
+    public void onMapSpawnedPropEvent(@NotNull SceneProp sceneProp, int templateId) {
+        final PropJS propJS = new PropJS(sceneProp);
+        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapSpawnedProp, this, propJS);
+        this.mapObjectsMap.put(templateId, propJS);
+    }
+
+    public void onMapSpawnedPointLightEvent(@NotNull PointLight pointLight, int templateId) {
+        final PointLightJS pointLightJS = new PointLightJS(pointLight);
+        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapSpawnedPointLight, this, pointLightJS);
+        this.mapObjectsMap.put(templateId, pointLightJS);
     }
 
     public JGemsAPIScriptingManaging getScriptingManaging() {

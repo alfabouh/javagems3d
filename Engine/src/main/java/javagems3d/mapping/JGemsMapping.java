@@ -77,6 +77,7 @@ public final class JGemsMapping {
             mapActionCallback.onDestroying(this.getCurrentLoadedMap(), this.getResourceManager());
         }
         this.currentLoadedMap = null;
+        JGemsAPI.getAPIScripting().getGameWorldJS().clear();
         this.destroyWorlds();
     }
     
@@ -100,8 +101,8 @@ public final class JGemsMapping {
         processor.setLocalResources(this.getResourceManager().getLocalResources());
         processor.onSetupSkyBox(environment.getSkyBox(), environment.getSkyBox().getBackground());
         processor.onSetupFog(environment.getFogManager());
-        if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onWorldPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
-            JGemsAPIScriptingEngine.warn(APIScriptsListing.onWorldPreGeneration);
+        if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
+            JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPreGeneration);
         }
         processor.preProcessing(this.getPhysicsWorld(), this.getSceneWorld());
         processor.onProcessing(this.getPhysicsWorld(), this.getSceneWorld());
@@ -116,8 +117,8 @@ public final class JGemsMapping {
             JGemsHelper.camera().enableFreeCamera(JGemsHelper.controller().getCurrentController(), processor.getDefaultStartPosition(), processor.getDefaultStartRotation());
         }
         processor.postProcessing(this.getPhysicsWorld(), this.getSceneWorld());
-        if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onWorldPostGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
-            JGemsAPIScriptingEngine.warn(APIScriptsListing.onWorldPostGeneration);
+        if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPostGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
+            JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPostGeneration);
         }
 
         this.buildInvisibleBorders(physicsWorld, JGems3D.MAP_MAX_SIZE);

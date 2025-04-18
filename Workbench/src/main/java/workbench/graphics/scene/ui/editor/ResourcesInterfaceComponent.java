@@ -187,6 +187,7 @@ public class ResourcesInterfaceComponent {
                             }
                             ImGui.separator();
                             if (ImGui.menuItem("Save")) {
+                                WBench.get().getProjectManager().getCurrentProject().writeScriptFile(selectedPath, this.getEditorInterface().getEditor().getText());
                                 WBench.get().getProjectManager().saveProject(false);
                             }
                             ImGui.endMenu();
@@ -221,6 +222,12 @@ public class ResourcesInterfaceComponent {
         ImGui.treePush();
 
         for (JGemsScriptingDocs.ClassDesc classDesc : ResourcesInterfaceComponent.scriptingDocs.getTypes()) {
+            if (classDesc.parent() != null && !classDesc.parent().equals("Object")) {
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xffffffc1);
+                ImGui.textWrapped(classDesc.parent() + " ->");
+                ImGui.popStyleColor();
+                ImGui.sameLine();
+            }
             ImGui.pushStyleColor(ImGuiCol.Text, 0xffc1ffc1);
             ImGui.textWrapped(classDesc.classSimpleName());
             ImGui.popStyleColor();

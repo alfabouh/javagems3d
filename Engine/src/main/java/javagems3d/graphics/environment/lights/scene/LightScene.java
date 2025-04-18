@@ -21,14 +21,12 @@ import javagems3d.system.service.synchronizing.SyncManager;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class LightScene implements ILightScene {
     private final IEnvironment environment;
-    private List<PointLight> pointLights;
+    private Set<PointLight> pointLights;
 
     private final ShaderStorageBufferObject sunBuffer;
     private final ShaderStorageBufferObject pointLightsBuffer;
@@ -47,7 +45,7 @@ public abstract class LightScene implements ILightScene {
     }
 
     private void initCollections() {
-        this.pointLights = SyncManager.createSyncronisedList(new ArrayList<>(this.getMaxPointLights()));
+        this.pointLights = SyncManager.createSyncronisedSet(new LinkedHashSet<>(this.getMaxPointLights()));
     }
 
     public void addLight(Light light) {
@@ -167,10 +165,13 @@ public abstract class LightScene implements ILightScene {
         ShaderStorageBufferProgram.updateSubDataSSBO(pointLightsBuffer, sizeMainBuffer, buffer2);
     }
 
+    public boolean containsPointLight(PointLight pointLight) {
+        return this.getPointLights().contains(pointLight);
+    }
+
     public abstract int getMaxPointLights();
 
-
-    public List<PointLight> getPointLights() {
+    public Set<PointLight> getPointLights() {
         return this.pointLights;
     }
 

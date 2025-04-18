@@ -83,6 +83,21 @@ public class WBenchProject extends ProjectData implements Serializable {
         }
     }
 
+    public void writeScriptFile(String name, String text) {
+        if (name == null || name.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            Path scriptsDir = this.getScriptPathTo("").toPath();
+            Path newScriptPath = scriptsDir.resolve(name);
+            Files.write(newScriptPath, text.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+            Log.get().info("Wrote script " + name);
+        } catch (IOException e) {
+            Log.get().error("Failed to write script", e);
+        }
+    }
+
     public void deleteScript(int index) {
         List<String> scriptFiles = this.getScriptFiles();
 

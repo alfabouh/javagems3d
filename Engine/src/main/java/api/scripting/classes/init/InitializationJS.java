@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-@JSTypeDoc(description = "Used to initialize new objects in engine", order = 1)
+@JSTypeDoc(description = "Used to initialize new objects in engine", priority = JSTypeDoc.Priority.HIGH)
 public final class InitializationJS {
     private final JGemsAPIScriptingManaging scriptingManaging;
     private final APIWBenchDataManager apiwBenchDataManager;

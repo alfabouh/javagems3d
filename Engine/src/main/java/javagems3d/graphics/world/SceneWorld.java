@@ -2,6 +2,9 @@ package javagems3d.graphics.world;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
+import api.scripting.JGemsAPIScriptingEngine;
+import api.scripting.functions.APIScriptsListing;
+import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.lights.ILightAttached;
@@ -82,6 +85,7 @@ public final class SceneWorld implements IRenderWorld {
             }
             this.ticks += 1;
         }
+        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
         EventLauncher.pushEvent(new EventBus.RenderWorldTickPost(this));
     }
 
@@ -251,6 +255,10 @@ public final class SceneWorld implements IRenderWorld {
         synchronized (this) {
             return this.environment;
         }
+    }
+
+    public boolean contains(SceneObject sceneObject) {
+        return this.getSceneObjects().contains(sceneObject);
     }
 
     public ICamera getCamera() {

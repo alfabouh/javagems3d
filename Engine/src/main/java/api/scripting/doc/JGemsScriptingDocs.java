@@ -38,7 +38,7 @@ public final class JGemsScriptingDocs {
         for (String packagePath : packagePaths) {
             Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(packagePath)).setScanners(Scanners.SubTypes.filterResultsBy(s -> s.startsWith(packagePath)), Scanners.TypesAnnotated, Scanners.MethodsSignature));
             final Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(JSTypeDoc.class);
-            final List<Class<?>> sortedClasses = classSet.stream().sorted(Comparator.comparingInt((e) -> e.getAnnotation(JSTypeDoc.class).order())).collect(Collectors.toList());
+            final List<Class<?>> sortedClasses = classSet.stream().sorted(Comparator.comparingInt((e) -> e.getAnnotation(JSTypeDoc.class).priority().ordinal())).collect(Collectors.toList());
 
             for (Class<?> clazz : sortedClasses) {
                 ClassDesc classDesc = this.getClassDesc(clazz);
@@ -65,6 +65,7 @@ public final class JGemsScriptingDocs {
         String commentary = null;
         String description = JSTypeDocAnnotation.description();
         String globalVar = null;
+        String parent = null;
 
         if (clazz.isAnnotationPresent(JSGlobalVar.class)) {
             JSGlobalVar JSGlobalVarAnnotation = clazz.getAnnotation(JSGlobalVar.class);
@@ -74,7 +75,11 @@ public final class JGemsScriptingDocs {
             JSCommentary JSCommentaryAnnotation = clazz.getAnnotation(JSCommentary.class);
             commentary = JSCommentaryAnnotation.commentary();
         }
-        return new ClassDesc(commentary, clazz.getSimpleName(), clazz.getSimpleName().toLowerCase(), description, globalVar);
+        if (clazz.getSuperclass() != null) {
+            parent = clazz.getSuperclass().getSimpleName();
+        }
+
+        return new ClassDesc(commentary, parent, clazz.getSimpleName(), clazz.getSimpleName().toLowerCase(), description, globalVar);
     }
 
     private @NotNull MethodDesc getMethodDesc(Method method) {
@@ -150,9 +155,11 @@ public final class JGemsScriptingDocs {
         private final String description;
         private final List<MethodDesc> methods;
         private final String globalVarName;
+        private final String parent;
 
-        ClassDesc(String commentary, String classSimpleName, String classVarName, String description, String globalVarName) {
+        ClassDesc(String commentary, String parent, String classSimpleName, String classVarName, String description, String globalVarName) {
             this.commentary = commentary;
+            this.parent = parent;
             this.classSimpleName = classSimpleName;
             this.classVarName = classVarName;
             this.description = description;
@@ -162,6 +169,10 @@ public final class JGemsScriptingDocs {
 
         public List<MethodDesc> getMethods() {
             return this.methods;
+        }
+
+        public String parent() {
+            return this.parent;
         }
 
         public String commentary() {

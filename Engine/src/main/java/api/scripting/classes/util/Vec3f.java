@@ -4,8 +4,8 @@ import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
 import org.joml.Vector3f;
 
-@JSTypeDoc(description = "Vector with 3 floats", order = 8)
-public class Vec3f {
+@JSTypeDoc(description = "Vector with 3 floats", priority = JSTypeDoc.Priority.LOW)
+public final class Vec3f {
     private final float x;
     private final float y;
     private final float z;

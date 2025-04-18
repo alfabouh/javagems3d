@@ -9,5 +9,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JSTypeDoc {
     String description();
-    int order() default 0;
+    Priority priority() default Priority.LOW;
+
+    enum Priority {
+        HIGH,
+        MED,
+        LOW
+    }
 }
