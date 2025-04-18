@@ -1,9 +1,13 @@
 package api.scripting.classes.world;
 
 import api.scripting.classes.util.Vec3f;
+import api.scripting.doc.annotations.JSMethodDoc;
+import api.scripting.doc.annotations.JSTypeDoc;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.help.JGemsHelper;
 import org.jetbrains.annotations.NotNull;
 
+@JSTypeDoc(description = "Point light in scene world", order = 5)
 public class PointLightJS {
     private final PointLight pointLight;
 
@@ -13,16 +17,18 @@ public class PointLightJS {
         this.pointLight.on();
     }
 
+    @JSMethodDoc(description = "Turn on", args = {}, order = 0)
     public void enable() {
         this.getPointLight().on();
     }
 
+    @JSMethodDoc(description = "Turn off", args = {}, order = 1)
     public void disable() {
         this.getPointLight().off();
     }
 
     public void remove() {
-        JGemsWorldHelper.removeLight(this.getPointLight());
+        JGemsHelper.world().removeLight(this.getPointLight());
     }
 
     PointLight getPointLight() {

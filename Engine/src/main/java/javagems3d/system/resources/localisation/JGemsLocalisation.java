@@ -1,6 +1,7 @@
 package javagems3d.system.resources.localisation;
 
 import javagems3d.JGems3D;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
@@ -40,8 +41,8 @@ public class JGemsLocalisation {
 
     public static void setLangLocalisationPath(Lang lang, JGemsPath path) {
         lang.setFileDirectoryPath(path);
-        if (JGemsLocalisationHelper.getLocalisation().getCurrentlang() != null && JGemsLocalisationHelper.getLocalisation().getCurrentlang().equals(lang)) {
-            JGemsLocalisationHelper.getLocalisation().setLanguage(lang);
+        if (JGemsHelper.localisation().getLocalisation().getCurrentlang() != null && JGemsHelper.localisation().getLocalisation().getCurrentlang().equals(lang)) {
+            JGemsHelper.localisation().getLocalisation().setLanguage(lang);
         }
     }
 

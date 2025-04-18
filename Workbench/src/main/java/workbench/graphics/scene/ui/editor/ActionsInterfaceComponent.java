@@ -6,6 +6,7 @@ import imgui.flag.ImGuiTreeNodeFlags;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
@@ -125,7 +126,7 @@ public class ActionsInterfaceComponent {
                 ICamera camera = this.getEditorInterface().getOpenGLRenderer().getCamera();
                 float diagonal = cullingAABB.getAabbMax().distance(cullingAABB.getAabbMin());
                 Vector3f posToSpawn = camera.getCamPosition();
-                posToSpawn.add(JGemsUtils.calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
+                posToSpawn.add(JGemsHelper.math().calcLookVector(camera.getCamRotation()).mul((diagonal / 2.0f) + 1.0f));
                 wBenchObject.setPosition(posToSpawn);
             }
             this.getEditorInterface().addObjectInWorld(wBenchObject);

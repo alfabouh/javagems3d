@@ -1,5 +1,6 @@
 package javagems3d.system.controller;
 
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.screen.window.IWindow;
@@ -7,8 +8,8 @@ import javagems3d.system.controller.base.IInventoryController;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.base.ScanningMode;
 import javagems3d.system.controller.binding.BindingManager;
-import javagems3d.system.inventory.IInventoryOwner;
-import javagems3d.system.inventory.Inventory;
+import javagems3d.system.inventory.InventoryBase;
+import javagems3d.system.inventory.InventoryOwner;
 import org.jetbrains.annotations.NotNull;
 
 public class JGemsMouseKeyboardController extends MouseKeyboardController implements IInventoryController {
@@ -26,17 +27,17 @@ public class JGemsMouseKeyboardController extends MouseKeyboardController implem
         return JGemsConfig.SYSTEM.CAM_SENS;
     }
 
-    public void updateItemWithInventory(IInventoryOwner hasInventory) {
-        if (JGemsCameraHelper.getCurrentCamera() instanceof ControlledCamera) {
+    public void updateItemWithInventory(InventoryOwner hasInventory) {
+        if (JGemsHelper.camera().getCurrentCamera() instanceof ControlledCamera) {
             return;
         }
-        Inventory inventory = hasInventory.getInventory();
+        InventoryBase inventoryBase = hasInventory.getInventory();
         if (this.getMouseAndKeyboard().isLeftKeyPressed()) {
-            inventory.onMouseLeftClick(hasInventory.getWorld());
+            inventoryBase.onMouseLeftClick(hasInventory.getWorld());
         }
         if (this.getMouseAndKeyboard().isRightKeyPressed()) {
-            inventory.onMouseRightClick(hasInventory.getWorld());
+            inventoryBase.onMouseRightClick(hasInventory.getWorld());
         }
-        inventory.scrollInventoryToNotNullItem(this.getMouseAndKeyboard().getScrollVector());
+        inventoryBase.scrollInventoryToNotNullItem(this.getMouseAndKeyboard().getScrollVector());
     }
 }

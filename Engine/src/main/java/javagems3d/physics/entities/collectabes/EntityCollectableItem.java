@@ -1,5 +1,8 @@
 package javagems3d.physics.entities.collectabes;
 
+import javagems3d.help.JGemsHelper;
+import javagems3d.system.inventory.Inventory;
+import javagems3d.system.inventory.InventoryOwner;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -11,17 +14,15 @@ import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.zones.SimpleTriggerZone;
-import javagems3d.system.inventory.IInventoryOwner;
-import javagems3d.system.inventory.items.InventoryItem;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 
 public class EntityCollectableItem extends WorldItem {
     private final SimpleTriggerZone pickUpItemTriggerZone;
-    private InventoryItem inventoryItem;
+    private Inventory.Item item;
 
-    public EntityCollectableItem(PhysicsWorld world, InventoryItem inventoryItem, Vector3f pos, String itemName) {
+    public EntityCollectableItem(PhysicsWorld world, Inventory.Item item, Vector3f pos, String itemName) {
         super(world, pos, itemName);
-        this.inventoryItem = inventoryItem;
+        this.item = item;
 
         this.pickUpItemTriggerZone = new SimpleTriggerZone(new Zone(this.getPosition(), new Vector3f(1.0f)));
         this.pickUpItemTriggerZone.setCollisionFilter(CollisionType.PLAYER);
@@ -30,10 +31,10 @@ public class EntityCollectableItem extends WorldItem {
 
     protected ITriggerAction action() {
         return (e) -> {
-            if (e instanceof IInventoryOwner) {
-                IInventoryOwner inventory = (IInventoryOwner) e;
+            if (e instanceof InventoryOwner) {
+                InventoryOwner inventory = (InventoryOwner) e;
                 if (inventory.getInventory().addItemInInventory(this.getInventoryItem())) {
-                    JGemsCoreHelper.getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 1.5f, 1.0f, 1.0f, this.getPosition());
+                    JGemsHelper.get().getSoundManager().playSoundAt(JGemsResourceManager.globalSoundAssets.pick, SoundType.WORLD_SOUND, 1.5f, 1.0f, 1.0f, this.getPosition());
                     Log.get().trace("Put " + this.getInventoryItem().getName() + " in inventory");
                     this.setDead();
                 }
@@ -57,12 +58,12 @@ public class EntityCollectableItem extends WorldItem {
         this.getPickUpItemTriggerZone().onDestroy(iWorld);
     }
 
-    public InventoryItem getInventoryItem() {
-        return this.inventoryItem;
+    public Inventory.Item getInventoryItem() {
+        return this.item;
     }
 
-    public void setInventoryItem(@NotNull InventoryItem inventoryItem) {
-        this.inventoryItem = inventoryItem;
+    public void setInventoryItem(@NotNull Inventory.Item item) {
+        this.item = item;
     }
 
     public SimpleTriggerZone getPickUpItemTriggerZone() {

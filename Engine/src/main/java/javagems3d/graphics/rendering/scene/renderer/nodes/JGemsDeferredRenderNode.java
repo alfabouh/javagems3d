@@ -4,6 +4,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.DeferredRenderNode;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -22,7 +23,7 @@ public class JGemsDeferredRenderNode extends DeferredRenderNode {
 
     @Override
     public @NotNull ITexture2DProgram getAnimationsTexture() {
-        return JGemsResourceManager.getAnimationsTextureBuffer();
+        return JGemsHelper.resources().getAnimationsTextureBuffer();
     }
 
     @Override

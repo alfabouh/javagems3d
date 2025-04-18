@@ -29,6 +29,7 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.IRenderWorld;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.mapping.processing.callbacks.IMapActionCallback;
@@ -141,8 +142,8 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     @Override
     public void onStartRender() {
         this.constructScreenModel();
-        this.jGemsUI = new JGemsUI();
-        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, null, JGemsResourceManager.getGlobalGameResources());
+        this.jGemsUI = new JGemsUI(this.getWindow());
+        this.dearUIRenderer = new DearUIRenderer(this.getWindow(), JGemsResourceManager.globalShaderAssets.imgui, null, JGemsHelper.resources().getGlobalGameResources());
 
         this.setDefaultNodes();
         this.getConveyorNodes().keySet().forEach(e -> Log.get().trace("Registered scene node: " + e.getName()));
@@ -245,7 +246,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         imgShader.beginShading();
         imgShader.performUniformTextureBindless(new UniformString("texture_map"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsRenderingHelper.renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.render().renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();
     }
 

@@ -8,6 +8,7 @@ import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
@@ -63,7 +64,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
 
         if (pathToJarFont != null) {
             try (InputStream stream = JGems3D.loadFileFromJar(pathToJarFont)) {
-                byte[] fontData = JGemsFilesHelper.toByteArray(stream);
+                byte[] fontData = JGemsHelper.files().toByteArray(stream);
                 ImFontConfig fontConfig = new ImFontConfig();
                 fontConfig.setGlyphRanges(fontAtlas.getGlyphRangesCyrillic());
                 fontAtlas.addFontFromMemoryTTF(fontData, 12, fontConfig);

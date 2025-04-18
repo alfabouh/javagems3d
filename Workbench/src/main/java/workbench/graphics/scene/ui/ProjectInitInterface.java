@@ -8,6 +8,7 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImString;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.path.JGemsPath;
@@ -70,7 +71,7 @@ public class ProjectInitInterface implements DearUIInterface {
 
         ImGui.sameLine();
         if (ImGui.button("View")) {
-            projectPath.set(JGemsFilesHelper.openFolderViewer(""));
+            projectPath.set(JGemsHelper.files().openFolderViewer(""));
         }
 
         if (ImGui.button("Create project", 120, 30)) {
@@ -85,7 +86,7 @@ public class ProjectInitInterface implements DearUIInterface {
         ImGui.sameLine();
         ImGui.pushStyleColor(ImGuiCol.Button, 0.1f, 0.2f, 0.9f, 1.0f);
         if (ImGui.button("Open project", 120, 30)) {
-            String projectPath = JGemsFilesHelper.openFolderViewer("");
+            String projectPath = JGemsHelper.files().openFolderViewer("");
             if (!projectPath.isEmpty() && WBench.get().getProjectManager().getCurrentProject() == null) {
                 WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
                 WBench.get().getSettings().addPath(projectPath);

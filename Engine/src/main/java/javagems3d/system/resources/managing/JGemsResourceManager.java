@@ -3,6 +3,7 @@ package javagems3d.system.resources.managing;
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.initialization.*;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.manager.ShaderManager;
@@ -27,18 +28,18 @@ public final class JGemsResourceManager extends ResourceManager {
     }
 
     public static void createShaders() {
-        JGemsResourceManager.globalShaderAssets.createShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
+        JGemsResourceManager.globalShaderAssets.createShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
         for (ShadersInitializer<? extends ShaderManager> shadersLoader : JGemsAPI.APIAppData().getAppResources().getShadersInitializers()) {
-            shadersLoader.createShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
+            shadersLoader.createShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
         }
 
         RenderDataInitializer.setDefaultRenderTableValues();
     }
 
     public static void reloadShaders() {
-        JGemsResourceManager.globalShaderAssets.reloadShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
+        JGemsResourceManager.globalShaderAssets.reloadShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
         for (ShadersInitializer<? extends ShaderManager> shadersLoader : JGemsAPI.APIAppData().getAppResources().getShadersInitializers()) {
-            shadersLoader.reloadShaders(JGemsResourceManager.getGlobalGameResources().getResourceCache());
+            shadersLoader.reloadShaders(JGemsHelper.resources().getGlobalGameResources().getResourceCache());
         }
     }
 

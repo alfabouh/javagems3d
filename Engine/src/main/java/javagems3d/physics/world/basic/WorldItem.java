@@ -1,5 +1,6 @@
 package javagems3d.physics.world.basic;
 
+import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import logger.Log;
@@ -130,7 +131,7 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public Vector3f getLookVector() {
-        return JGemsUtils.calcLookVector(this.getRotation());
+        return JGemsHelper.math().calcLookVector(this.getRotation());
     }
 
     public void setDead() {

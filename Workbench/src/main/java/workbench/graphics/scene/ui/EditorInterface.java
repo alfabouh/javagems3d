@@ -2,6 +2,8 @@ package workbench.graphics.scene.ui;
 
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
+import imgui.extension.texteditor.TextEditor;
+import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
@@ -13,6 +15,7 @@ import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.Binding;
 import javagems3d.system.global.JGemsConfig;
@@ -45,6 +48,7 @@ import java.util.stream.Collectors;
 
 public class EditorInterface implements DearUIInterface {
     private SelectedScene selectedScene;
+    private final TextEditor editor;
 
     public static boolean VIEW_SHADOWS = true;
     public static boolean VIEW_CHESS_TERRAIN = true;
@@ -75,6 +79,8 @@ public class EditorInterface implements DearUIInterface {
     public static boolean isCursorInsideScene;
 
     public EditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull ProjectManager projectManager) {
+        this.editor = new TextEditor();
+
         this.projectManager = projectManager;
         this.openGLRenderer = openGLRenderer;
         this.scenePreview = scenePreview;
@@ -210,7 +216,7 @@ public class EditorInterface implements DearUIInterface {
             float[] camSpeedPercent = new float[] { (camSpeedRaw / max) * 100.0f };
 
             if (ImGui.sliderFloat("Camera Sensitivity", camSpeedPercent, (min / max) * 100.0f, 100.0f, "%.1f%%")) {
-                float newCamSpeed = JGemsMathHelper.clamp((camSpeedPercent[0] / 100.0f) * max, min, max);
+                float newCamSpeed = JGemsHelper.math().clamp((camSpeedPercent[0] / 100.0f) * max, min, max);
                 WBench.get().getSettings().setCamSpeed(newCamSpeed);
             }
 
@@ -463,6 +469,10 @@ public class EditorInterface implements DearUIInterface {
 
     public ICamera getOldCamera() {
         return this.oldCamera;
+    }
+
+    public TextEditor getEditor() {
+        return this.editor;
     }
 
     public int getCurrentOperation() {

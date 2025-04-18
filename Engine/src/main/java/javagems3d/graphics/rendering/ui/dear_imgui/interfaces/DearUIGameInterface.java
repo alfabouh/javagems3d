@@ -6,6 +6,7 @@ import imgui.flag.ImGuiWindowFlags;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.JGemsEnvironment;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.ITransparencyRenderNode;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
@@ -34,7 +35,7 @@ public class DearUIGameInterface implements DearUIInterface {
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
         ICamera camera = JGems3D.get().getScreen().getCamera();
         IPlayer entityPlayerSP = JGems3D.get().getCurrentGameMapPlayer();
-        SceneWorld sceneWorld = JGemsCoreHelper.getSceneWorld();
+        SceneWorld sceneWorld = JGemsHelper.get().getSceneWorld();
         JGemsOpenGLRenderer sceneRender = (JGemsOpenGLRenderer) JGems3D.get().getScreen().getScene().getSceneRenderer();
 
         float logX = (float) windowSize.x / 3;
@@ -63,12 +64,12 @@ public class DearUIGameInterface implements DearUIInterface {
         ImGui.text("FPS: " + JGemsScreen.RENDER_FPS + " | TPS: " + JGemsScreen.PHYS_TPS);
         if (entityPlayerSP != null) {
             WorldItem dynamicPlayer = (WorldItem) entityPlayerSP;
-            if (JGemsCameraHelper.getCurrentCamera() instanceof ControlledCamera) {
-                ImGui.text(String.format("%s %s %s", JGemsCameraHelper.getCurrentCamera().getCamPosition().x, JGemsCameraHelper.getCurrentCamera().getCamPosition().y, JGemsCameraHelper.getCurrentCamera().getCamPosition().z));
+            if (JGemsHelper.camera().getCurrentCamera() instanceof ControlledCamera) {
+                ImGui.text(String.format("%s %s %s", JGemsHelper.camera().getCurrentCamera().getCamPosition().x, JGemsHelper.camera().getCurrentCamera().getCamPosition().y, JGemsHelper.camera().getCurrentCamera().getCamPosition().z));
             } else {
                 ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
             }
-            ImGui.text("entities: " + JGemsCoreHelper.getPhysicsWorld().countItems());
+            ImGui.text("entities: " + JGemsHelper.get().getPhysicsWorld().countItems());
             ImGui.text("tick: " + sceneWorld.getTicks());
             ImGui.text("current speed(scalar): " + String.format("%.4f", entityPlayerSP.getScalarSpeed()));
         }
@@ -139,15 +140,15 @@ public class DearUIGameInterface implements DearUIInterface {
             }
         }
 
-        boolean flag = JGemsCameraHelper.getCurrentCamera() instanceof ControlledCamera;
+        boolean flag = JGemsHelper.camera().getCurrentCamera() instanceof ControlledCamera;
         if (ImGui.collapsingHeader("Tools")) {
             if (ImGui.checkbox("FreeCam", flag)) {
                 if (!flag) {
-                    JGemsCameraHelper.enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
-                    JGemsControllerHelper.detachController();
+                    JGemsHelper.camera().enableFreeCamera(mouseKeyboardController, camera.getCamPosition(), camera.getCamRotation());
+                    JGemsHelper.controller().detachController();
                 } else {
-                    JGemsCameraHelper.enableAttachedCamera((WorldItem) JGems3D.get().getCurrentGameMapPlayer());
-                    JGemsControllerHelper.attachControllerTo(mouseKeyboardController, JGems3D.get().getCurrentGameMapPlayer());
+                    JGemsHelper.camera().enableAttachedCamera((WorldItem) JGems3D.get().getCurrentGameMapPlayer());
+                    JGemsHelper.controller().attachControllerTo(mouseKeyboardController, JGems3D.get().getCurrentGameMapPlayer());
                 }
             }
 
@@ -159,17 +160,17 @@ public class DearUIGameInterface implements DearUIInterface {
                 JGemsConfig.DEBUG.SHOW_DEBUG_LINES = !JGemsConfig.DEBUG.SHOW_DEBUG_LINES;
             }
 
-            if (ImGui.button("Generate NavMesh")) {
-                Graph graph = JGemsWorldHelper.genSimpleMapGraphFromStartPoint(JGemsCameraHelper.getCurrentCamera().getCamPosition());
-                String mapName = JGemsCoreHelper.getCurrentMap().getName();
-                Graph.saveInFile(graph);
-                if (graph == null || graph.getGraph().isEmpty()) {
-                    LoggingManager.showWindowInfo("Couldn't create NavMesh");
-                } else {
-                    LoggingManager.showWindowInfo("Created NavMesh(" + graph.getGraph().size() + ") and saved in game folder. " + mapName + ".nav");
-                }
-                JGemsCoreHelper.getPhysicsWorld().setMapNavGraph(graph);
-            }
+           // if (ImGui.button("Generate NavMesh")) {
+           //     Graph graph = JGemsWorldHelper.genSimpleMapGraphFromStartPoint(JGemsCameraHelper.getCurrentCamera().getCamPosition());
+           //     String mapName = JGemsCoreHelper.getCurrentMap().getName();
+           //     Graph.saveInFile(graph);
+           //     if (graph == null || graph.getGraph().isEmpty()) {
+           //         LoggingManager.showWindowInfo("Couldn't create NavMesh");
+           //     } else {
+           //         LoggingManager.showWindowInfo("Created NavMesh(" + graph.getGraph().size() + ") and saved in game folder. " + mapName + ".nav");
+           //     }
+           //     JGemsCoreHelper.getPhysicsWorld().setMapNavGraph(graph);
+           // }
             if (ImGui.isItemHovered()) {
                 ImGui.beginTooltip();
                 ImGui.setTooltip("Generates NavMesh, starting from current camera position");
@@ -217,7 +218,7 @@ public class DearUIGameInterface implements DearUIInterface {
 
             if (ImGui.collapsingHeader("Animations")) {
                 ImGui.beginChild("Images2", JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 2.0f + 50.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f + 60, true);
-                ImGui.image(JGemsResourceManager.getAnimationsTextureBuffer().getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.image(JGemsHelper.resources().getAnimationsTextureBuffer().getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
                 ImGui.sameLine();
 //
                 //ImGui.image(sceneRender.getSceneGluingBuffer().getTexturePrograms().get(1).getTextureId(), JGemsSceneGlobalConstants.defaultW / 4.0f, JGemsSceneGlobalConstants.defaultH / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);

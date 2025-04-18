@@ -2,6 +2,7 @@ package workbench.resources.initialization;
 
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.initialization.base.ShadersInitializer;
 import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
@@ -54,10 +55,10 @@ public final class LocalShadersInitializer extends ShadersInitializer<WBenchShad
         shaderStaticConstants.putConstant("MAX_POINT_LIGHTS_SHADOWS", String.valueOf(JGemsConfig.SYSTEM.MAX_POINT_LIGHTS_SHADOWS));
         shaderStaticConstants.putConstant("SUN_SHADOW_CASCADES", String.valueOf(JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES));
 
-        shaderStaticConstants.putConstant("DIFFUSE_CODE", String.valueOf(JGemsRenderingHelper.DIFFUSE_CODE));
-        shaderStaticConstants.putConstant("NORMALS_CODE", String.valueOf(JGemsRenderingHelper.NORMALS_CODE));
-        shaderStaticConstants.putConstant("EMISSION_CODE", String.valueOf(JGemsRenderingHelper.EMISSION_CODE));
-        shaderStaticConstants.putConstant("METALLIC_ROUGHNESS_CODE", String.valueOf(JGemsRenderingHelper.METALLIC_ROUGHNESS_CODE));
+        shaderStaticConstants.putConstant("DIFFUSE_CODE", String.valueOf(JGemsHelper.Render.DIFFUSE_CODE));
+        shaderStaticConstants.putConstant("NORMALS_CODE", String.valueOf(JGemsHelper.Render.NORMALS_CODE));
+        shaderStaticConstants.putConstant("EMISSION_CODE", String.valueOf(JGemsHelper.Render.EMISSION_CODE));
+        shaderStaticConstants.putConstant("METALLIC_ROUGHNESS_CODE", String.valueOf(JGemsHelper.Render.METALLIC_ROUGHNESS_CODE));
     }
 
     @Override

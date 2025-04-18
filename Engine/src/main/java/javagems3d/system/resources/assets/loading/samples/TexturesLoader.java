@@ -1,6 +1,7 @@
 package javagems3d.system.resources.assets.loading.samples;
 
 import javagems3d.JGems3D;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
 import javagems3d.system.resources.cache.ResourceCache;
@@ -68,7 +69,7 @@ public class TexturesLoader implements ILoadingHelper {
             IntBuffer height = stack.mallocInt(1);
             IntBuffer channels = stack.mallocInt(1);
 
-            ByteBuffer buffer = JGemsFilesHelper.toByteBuffer(inputStream);
+            ByteBuffer buffer = JGemsHelper.files().toByteBuffer(inputStream);
             ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, width, height, channels, STBImage.STBI_rgb_alpha);
             MemoryUtil.memFree(buffer);
             if (imageBuffer == null) {

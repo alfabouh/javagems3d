@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.graphics.screen.window.IWindow;
 import org.joml.Vector2i;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.AbstractPanelUI;
@@ -14,29 +15,29 @@ public class DefaultGamePanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(JGemsUI JGemsUI, float frameDeltaTicks) {
-        this.renderTextOnScreen(JGemsUI, frameDeltaTicks);
-        this.renderImagesOnScreen(JGemsUI, frameDeltaTicks);
+    public void drawPanel(JGemsUI ui, float frameDeltaTicks) {
+        this.renderTextOnScreen(ui, frameDeltaTicks);
+        this.renderImagesOnScreen(ui, frameDeltaTicks);
     }
 
-    protected void renderTextOnScreen(JGemsUI JGemsUI, float frameDeltaTicks) {
-        Window window = JGemsUI.getWindow();
+    protected void renderTextOnScreen(JGemsUI ui, float frameDeltaTicks) {
+        IWindow window = ui.getWindow();
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
         //final WorldItem entityPlayerSP = (WorldItem) JGems3D.get().getPlayer();
 
-       //if (entityPlayerSP instanceof IInventoryOwner) {
-       //    IInventoryOwner dynamicPlayer = (IInventoryOwner) entityPlayerSP;
+       //if (entityPlayerSP instanceof InventoryOwner) {
+       //    InventoryOwner dynamicPlayer = (InventoryOwner) entityPlayerSP;
 
-       //    Inventory inventory = dynamicPlayer.getInventory();
+       //    InventoryBase inventory = dynamicPlayer.getInventory();
        //    int j = 0;
 
        //    if (inventory.getCurrentItem() != null && inventory.getCurrentItem().getDescription() != null) {
        //        JGemsUI.textUI(inventory.getCurrentItem().getDescription(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(80, 80), 0xffffff, 0.5f);
        //    }
 
-       //    for (Inventory.Slot slot : inventory.getInventorySlots()) {
+       //    for (InventoryBase.Slot slot : inventory.getInventorySlots()) {
        //        if (slot.getInventoryItem() == null) {
        //            continue;
        //        }
@@ -53,12 +54,12 @@ public class DefaultGamePanel extends AbstractPanelUI {
        //}
     }
 
-    protected void renderImagesOnScreen(JGemsUI JGemsUI, float frameDeltaTicks) {
-        Window window = JGemsUI.getWindow();
+    protected void renderImagesOnScreen(JGemsUI ui, float frameDeltaTicks) {
+        IWindow window = ui.getWindow();
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
         int crossSize = 32;
-        JGemsUI.imageUI((ITexture2DProgram) JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
+        ui.imageUI((ITexture2DProgram) JGemsResourceManager.globalTextureAssets.crosshair, new Vector2i(windowW / 2 - crossSize / 2, windowH / 2 - crossSize / 2), new Vector2i(crossSize), 0.5f);
     }
 }

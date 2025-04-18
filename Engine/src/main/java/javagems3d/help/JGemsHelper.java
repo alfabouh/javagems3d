@@ -3,10 +3,13 @@ package javagems3d.help;
 import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.JGems3D;
+import javagems3d.audio.JGemsSoundManager;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.IEnvironment;
 import javagems3d.graphics.environment.fog.IFogScene;
+import javagems3d.graphics.environment.lights.ILightAttached;
+import javagems3d.graphics.environment.lights.Light;
 import javagems3d.graphics.environment.lights.PointLight;
 import javagems3d.graphics.environment.shadows.PointLightShadow;
 import javagems3d.graphics.environment.shadows.SunLightShadow;
@@ -14,6 +17,7 @@ import javagems3d.graphics.environment.shadows.scene.ShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.IAnimated;
+import javagems3d.graphics.objects.ILighted;
 import javagems3d.graphics.objects.entities.SceneEntity;
 import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
@@ -156,10 +160,6 @@ public final class JGemsHelper {
 
 
 
-    public JGems3D getMainObject() {
-        return JGems3D.get();
-    }
-
     public JGemsSettings getGameSettings() {
         return JGems3D.get().getGameSettings();
     }
@@ -172,6 +172,9 @@ public final class JGemsHelper {
         return this.core.getPhysics().getPhysicsWorld();
     }
 
+    public JGemsSoundManager getSoundManager() {
+        return this.core.getSoundManager();
+    }
 
 
     public final class Camera {
@@ -206,7 +209,7 @@ public final class JGemsHelper {
             return this.getControllerDispatcher().getCurrentController();
         }
 
-        public BindingManager bindingManager() {
+        public BindingManager getBindingManager() {
             return this.getCurrentController().getBindingManager();
         }
 
@@ -339,6 +342,22 @@ public final class JGemsHelper {
 
         public void removeLiquid(Liquid liquid) {
             JGemsHelper.this.getPhysicsWorld().removeItem(liquid);
+        }
+
+        public void removeLight(Light light) {
+            JGemsHelper.this.getSceneWorld().removeLight(light);
+        }
+
+        public void addLight(Light light) {
+            JGemsHelper.this.getSceneWorld().addLight(light, null);
+        }
+
+        public void addLight(Light light, @Nullable ILighted lighted) {
+            JGemsHelper.this.getSceneWorld().addLight(light, lighted);
+        }
+
+        public void addWorldItemLight(WorldItem worldItem, ILightAttached light) {
+            JGemsHelper.this.getSceneWorld().addWorldItemLight(worldItem, light);
         }
     }
 

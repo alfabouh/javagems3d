@@ -1,5 +1,6 @@
 package javagems3d.graphics.rendering.scene.renderer.processors.post;
 
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
@@ -44,7 +45,7 @@ public class HDRRenderProcessor extends IRenderProcessor.Template {
         hdr.performUniformTextureBindless(new UniformString("texture_map"), this.getInColor().getTextureByIndex(0));
         hdr.performUniformTextureBindless(new UniformString("bloom_map"), this.getInBloomColor().getTextureByIndex(0));
         hdr.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        JGemsRenderingHelper.renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.render().renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);
         hdr.endShading();
     }
 

@@ -8,6 +8,7 @@ import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.physics.colliders.MeshCollider;
@@ -32,7 +33,7 @@ public class TestMap extends ManualMapProcessor {
         sceneWorld.addObject(new SceneWorldProp("sponza", sceneWorld, new PropRenderData(RenderAttributes.getDefaultIndirect(), meshGroup)));
 
         JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(meshGroup), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
-        JGemsWorldHelper.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, meshGroup));
+        JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, meshGroup));
         worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
         worldModeledBrush.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
         worldModeledBrush.setScaling(new Vector3f(0.1f));
@@ -40,7 +41,7 @@ public class TestMap extends ManualMapProcessor {
 
     @Override
     public void postProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        JGemsCameraHelper.enableFreeCamera(JGemsControllerHelper.getCurrentController(), new Vector3f(), new Vector3f());
+        JGemsHelper.camera().enableFreeCamera(JGemsHelper.controller().getCurrentController(), new Vector3f(), new Vector3f());
     }
 
     @Override

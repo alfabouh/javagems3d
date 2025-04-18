@@ -3,6 +3,7 @@ package javagems3d.system.controller.dispatcher;
 import api.system.JGemsAPI;
 import javagems3d.system.controller.base.IInventoryController;
 import javagems3d.system.controller.JGemsMouseKeyboardController;
+import javagems3d.system.inventory.InventoryOwner;
 import logger.Log;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -12,7 +13,6 @@ import javagems3d.physics.entities.properties.controller.IControllable;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.system.controller.base.IController;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import javagems3d.system.inventory.IInventoryOwner;
 
 public class JGemsControllerDispatcher implements IControllerDispatcher {
     public static MouseKeyboardController mouseKeyboardController = null;
@@ -83,10 +83,10 @@ public class JGemsControllerDispatcher implements IControllerDispatcher {
             this.getCurrentController().updateControllerState(window);
             if (!JGems3D.get().isPaused()) {
                 if (this.getCurrentControlledItem() != null) {
-                    if (window.isWindowInFocus() && this.getCurrentControlledItem() instanceof IInventoryOwner) {
+                    if (window.isWindowInFocus() && this.getCurrentControlledItem() instanceof InventoryOwner) {
                         if (this.getCurrentController() instanceof IInventoryController) {
                             IInventoryController iInventoryController = (IInventoryController) this.getCurrentController();
-                            iInventoryController.updateItemWithInventory(((IInventoryOwner) this.getCurrentControlledItem()));
+                            iInventoryController.updateItemWithInventory(((InventoryOwner) this.getCurrentControlledItem()));
                         }
                     }
                     this.performControllerToItem(window, this.getCurrentController(), this.getCurrentControlledItem());

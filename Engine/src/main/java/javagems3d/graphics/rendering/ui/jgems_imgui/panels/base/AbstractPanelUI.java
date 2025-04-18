@@ -12,12 +12,12 @@ public abstract class AbstractPanelUI implements PanelUI, IWindow.ResizeEvent {
     }
 
     @Override
-    public void onConstruct(JGemsUI JGemsUI) {
+    public void onConstruct(JGemsUI ui) {
 
     }
 
     @Override
-    public void onDestruct(JGemsUI JGemsUI) {
+    public void onDestruct(JGemsUI ui) {
 
     }
 
@@ -26,13 +26,13 @@ public abstract class AbstractPanelUI implements PanelUI, IWindow.ResizeEvent {
 
     }
 
-    public void closePanel(JGemsUI JGemsUI) {
-        JGemsUI.removePanel();
+    public void closePanel(JGemsUI ui) {
+        ui.removePanel();
     }
 
-    public void goBack(JGemsUI JGemsUI) {
-        if (JGemsUI != null) {
-            JGemsUI.setPanel(this.prevPanel);
+    public void goBack(JGemsUI ui) {
+        if (ui != null) {
+            ui.setPanel(this.prevPanel);
         } else {
             Log.get().warn("Couldn't go back to NULL UI panel");
         }

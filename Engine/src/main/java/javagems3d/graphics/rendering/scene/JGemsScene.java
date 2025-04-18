@@ -37,7 +37,7 @@ public class JGemsScene implements IScene {
 
     @SuppressWarnings("all")
     public void renderScene(float frameDeltaTime) throws InterruptedException {
-        if (JGemsWindowHelper.isWindowActive()) {
+        if (this.getWindow().isWindowActive()) {
             if (JGemsOpenGLRenderer.UBOShader() != null) {
                 JGemsOpenGLRenderer.UBOShader().beginShading();
             }

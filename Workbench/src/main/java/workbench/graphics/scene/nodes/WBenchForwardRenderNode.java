@@ -7,6 +7,7 @@ import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -51,7 +52,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
                 WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(0.35f, 0.35f, 0.65f, 0.5f)));
                 WBenchResourceManager.localShaderAssets.simple_flat.performUniform(new UniformString("drawCenterRect"), UniformFunctions.FLOAT(-1.0f));
             }
-            JGemsRenderingHelper.renderModel3D(this.flat, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
+            JGemsHelper.render().renderModel3D(this.flat, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
             WBenchResourceManager.localShaderAssets.simple_flat.endShading();
             this.getOutColorBuffer().unBindFBO();
             GL46.glDisable(GL46.GL_BLEND);

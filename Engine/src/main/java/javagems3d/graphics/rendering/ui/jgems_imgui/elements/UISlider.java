@@ -1,6 +1,7 @@
 package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
+import javagems3d.help.JGemsHelper;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -128,7 +129,7 @@ public class UISlider extends UIInteractiveElement implements UIScalable {
 
     @Override
     protected void onClicked(Vector2f mouseCoordinates) {
-        float value = JGemsMathHelper.clamp((mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
+        float value = JGemsHelper.math().clamp((mouseCoordinates.x - this.getPosition().x) / this.getSize().x, 0.0f, 1.0f);
         this.setOptionValue(value);
     }
 

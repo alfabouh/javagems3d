@@ -1,6 +1,7 @@
 package javagems3d.mapping.tags.items;
 
 import imgui.ImGui;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.tags.TagID;
 import org.jetbrains.annotations.Nullable;
 import javagems3d.graphics.objects.SceneObject;
@@ -49,7 +50,7 @@ public class TagFloat extends TagItem {
         TagFloat tagFloat = (TagFloat) tagItem;
         float[] value = new float[] {tagFloat.getValue()};
         if (ImGui.dragFloat("##" + tagID.getDescription(), value, 0.1f, tagFloat.getMin(), tagFloat.getMax())) {
-            tagFloat.setValue(JGemsMathHelper.clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
+            tagFloat.setValue(JGemsHelper.math().clamp(value[0], tagFloat.getMin(), tagFloat.getMax()));
         }
     }
 }

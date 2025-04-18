@@ -1,6 +1,7 @@
 package javagems3d.graphics.screen;
 
 import javagems3d.graphics.world.IRenderWorld;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.screen.window.IWindow;
@@ -213,7 +214,7 @@ public class JGemsScreen implements IScreen {
 
     public void runRenderThread() {
         Log.get().info("Starting screen");
-        SoundListener.updateListenerGain(JGemsCoreHelper.getMainObject().getGameSettings());
+        SoundListener.updateListenerGain(JGemsHelper.get().getGameSettings());
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
@@ -279,7 +280,7 @@ public class JGemsScreen implements IScreen {
         if (JGems3D.get().isCurrentGameMapPlayerValid()) {
             SoundListener.updateOrientationAndPosition(JGemsTransformManager.INSTANCE.getCameraViewMatrix(), this.getCamera().getCamPosition());
         }
-        SoundListener.updateListenerGain(JGemsCoreHelper.getMainObject().getGameSettings());
+        SoundListener.updateListenerGain(JGemsHelper.get().getGameSettings());
     }
 
     public IRenderWorld getSceneWorld() {

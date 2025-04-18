@@ -1,5 +1,6 @@
 package javagems3d.system.resources.managing;
 
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
@@ -96,7 +97,7 @@ public abstract class ResourceManager {
             //int metallic_roughness_map_id;
             byteBuffer.putInt(metallicRoughnessMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallicRoughnessMap) : 0);
             //int texturing_code;
-            byteBuffer.putInt(JGemsRenderingHelper.getTexturingCodeForShader(material));
+            byteBuffer.putInt(JGemsHelper.render().getTexturingCodeForShader(material));
             byteBuffer.putInt(0);
         }
         byteBuffer.flip();

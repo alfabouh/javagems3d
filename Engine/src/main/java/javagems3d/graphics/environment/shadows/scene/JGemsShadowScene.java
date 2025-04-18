@@ -8,6 +8,7 @@ import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
 import javagems3d.graphics.transformation.TransformUtils;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -29,7 +30,7 @@ public class JGemsShadowScene extends ShadowScene {
     }
 
     public static float qualityMultiplier() {
-        int i = (int) JGemsMathHelper.clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
+        int i = (int) JGemsHelper.math().clamp(JGems3D.get().getGameSettings().shadowQuality.getValue(), 0.0f, 2.0f);
         return i == 2 ? 1.0f : i == 1 ? 0.5f : 0.25f;
     }
 
@@ -75,7 +76,7 @@ public class JGemsShadowScene extends ShadowScene {
             sunShadowFBO.connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(blurringConst));
             blurring.performUniformTextureBindless(new UniformString("texture_map"), sunShadowFBO.getTextureByIndex(i));
-            JGemsRenderingHelper.renderModel2D(screenModel, GL46.GL_TRIANGLES);
+            JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
         }
         blurring.endShading();
         sunShadowFBO.unBindFBO();
@@ -87,7 +88,7 @@ public class JGemsShadowScene extends ShadowScene {
             shaderManager.performUniform(new UniformString("projection_view_matrix"), UniformFunctions.MAT4F(new Matrix4f(lightProjection)));
             shaderManager.performUniformNoWarn(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
             shaderManager.performUniformNoWarn(new UniformString("NegExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
-            shaderManager.performUniformTexture(new UniformString("animations_matrix"), JGemsResourceManager.getAnimationsTextureBuffer());
+            shaderManager.performUniformTexture(new UniformString("animations_matrix"), JGemsHelper.resources().getAnimationsTextureBuffer());
         };
     }
 

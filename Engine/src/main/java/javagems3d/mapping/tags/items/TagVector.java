@@ -2,6 +2,7 @@ package javagems3d.mapping.tags.items;
 
 import imgui.ImGui;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.VectorMode;
@@ -73,10 +74,10 @@ public class TagVector extends TagItem {
         }
 
         if (changed) {
-            float x = JGemsMathHelper.clamp(values[0], tagVector.getMin(), tagVector.getMax());
-            float y = JGemsMathHelper.clamp(values[1], tagVector.getMin(), tagVector.getMax());
-            float z = JGemsMathHelper.clamp(values[2], tagVector.getMin(), tagVector.getMax());
-            float w = JGemsMathHelper.clamp(values[3], tagVector.getMin(), tagVector.getMax());
+            float x = JGemsHelper.math().clamp(values[0], tagVector.getMin(), tagVector.getMax());
+            float y = JGemsHelper.math().clamp(values[1], tagVector.getMin(), tagVector.getMax());
+            float z = JGemsHelper.math().clamp(values[2], tagVector.getMin(), tagVector.getMax());
+            float w = JGemsHelper.math().clamp(values[3], tagVector.getMin(), tagVector.getMax());
 
             vec.set(x, y, z, w);
         }

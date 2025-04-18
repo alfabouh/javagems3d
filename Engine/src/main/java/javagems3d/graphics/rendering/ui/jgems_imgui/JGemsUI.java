@@ -26,12 +26,14 @@ public final class JGemsUI implements IWindow.ResizeEvent {
     private boolean requestCleanFrame;
     private PanelUI currentPanel;
     private float frameDeltaTicks;
+    private final IWindow window;
 
-    public JGemsUI() {
+    public JGemsUI(IWindow window) {
         this.uiFrameCache = new HashMap<>();
         this.currentPanel = null;
         this.requestCleanFrame = false;
         this.renderUIData = new RenderUIData();
+        this.window = window;
     }
 
     public static Vector3f HEX2RGB(int hex) {
@@ -222,16 +224,16 @@ public final class JGemsUI implements IWindow.ResizeEvent {
         this.getUiFrameCache().clear();
     }
 
-    public Window getWindow() {
-        return JGemsCoreHelper.getScreen().getWindow();
-    }
-
     public PanelUI getCurrentPanel() {
         return this.currentPanel;
     }
 
     public Map<Integer, UIElement> getUiFrameCache() {
         return this.uiFrameCache;
+    }
+
+    public IWindow getWindow() {
+        return this.window;
     }
 
     private static class RenderUIData {

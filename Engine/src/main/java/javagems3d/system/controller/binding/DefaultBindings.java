@@ -3,6 +3,7 @@ package javagems3d.system.controller.binding;
 import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.DefaultGamePanel;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.DefaultPausePanel;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.components.FunctionalKey;
 import javagems3d.system.controller.components.IKeyAction;
 import javagems3d.system.controller.components.Key;
@@ -40,7 +41,7 @@ public final class DefaultBindings extends BindingManager {
         this.keyBlock1 = new Key(GLFW.GLFW_KEY_F);
         this.keyBlock2 = new Key(GLFW.GLFW_KEY_C);
         this.keyBlock3 = new Key(GLFW.GLFW_KEY_G);
-        this.keyClear = new FunctionalKey(e -> JGemsCoreHelper.getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
+        this.keyClear = new FunctionalKey(e -> JGemsHelper.get().getPhysicsWorld().killItems(), GLFW.GLFW_KEY_B);
         this.keyX = new Key(GLFW.GLFW_KEY_X);
         this.keySelection = new Key(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 

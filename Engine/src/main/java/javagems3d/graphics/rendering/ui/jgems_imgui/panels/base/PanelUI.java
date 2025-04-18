@@ -4,9 +4,9 @@ import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 
 public interface PanelUI extends IWindow.ResizeEvent {
-    void onConstruct(JGemsUI JGemsUI);
+    void onConstruct(JGemsUI ui);
 
-    void onDestruct(JGemsUI JGemsUI);
+    void onDestruct(JGemsUI ui);
 
-    void drawPanel(JGemsUI JGemsUI, float frameDeltaTicks);
+    void drawPanel(JGemsUI ui, float frameDeltaTicks);
 }

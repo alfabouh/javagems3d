@@ -4,6 +4,7 @@ import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.shaders.base.*;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
@@ -176,7 +177,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             }
             return;
         }
-        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsRenderingHelper.getMaxTextureUnits()) {
+        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.render().getMaxTextureUnits()) {
             Log.get().error("[" + this + "] Texture attachments overflow");
             return;
         }
@@ -208,7 +209,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             }
             return;
         }
-        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsRenderingHelper.getMaxTextureUnits()) {
+        if (textureUnit < 0 || this.getUsedTextureUnits() >= JGemsHelper.render().getMaxTextureUnits()) {
             Log.get().error("[" + this + "] Texture attachments overflow");
             return;
         }

@@ -19,6 +19,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.post.SSAORenderPr
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.world.IRenderWorld;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
@@ -129,7 +130,7 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
 
     public static Consumer<Pair<JGemsShaderManager, IRendered>> getDefaultConsumerForDirectObjects(IRenderWorld renderWorld) {
         return (pair) -> {
-            JGemsShadersHelper.performModelMaterialOnShader(renderWorld.getEnvironment(), pair.getFirst(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
+            JGemsHelper.render().performModelMaterialOnShader(renderWorld.getEnvironment(), pair.getFirst(), new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
         };
     }
 

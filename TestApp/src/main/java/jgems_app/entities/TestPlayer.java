@@ -1,6 +1,7 @@
 package jgems_app.entities;
 
 import javagems3d.JGems3D;
+import javagems3d.help.JGemsHelper;
 import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
@@ -19,9 +20,9 @@ public class TestPlayer extends JGemsKinematicPlayer {
     @Override
     public void performController(Vector2f rotationInput, Vector3f xyzInput, boolean isFocused) {
         if (JGems3D.DEBUG_MODE) {
-            if (((DefaultBindings) JGemsControllerHelper.bindingManager()).keyBlock1.isClicked()) {
+            if (((DefaultBindings) JGemsHelper.controller().getBindingManager()).keyBlock1.isClicked()) {
                 JGemsDynamicBody entityPropInfo = new JGemsDynamicBody(MeshCollider.getDynamic(JGemsResourceManager.globalModelAssets.grassCube), this.getWorld(), this.getPosition().add(this.getLookVector().mul(5.0f)), "jgems_app/horror");
-                JGemsWorldHelper.addItemInWorld(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
+                JGemsHelper.world().addWorldItem(entityPropInfo, JGemsResourceManager.globalRenderDataAssets.entityCube);
                 Vector3f v3 = this.getLookVector().mul(50.0f);
                // entityPropInfo.setRotation(new Vector3f((float) Math.toRadians(-90.0f), 0.0f, 0.0f));
                 entityPropInfo.setScaling(new Vector3f(0.05f));

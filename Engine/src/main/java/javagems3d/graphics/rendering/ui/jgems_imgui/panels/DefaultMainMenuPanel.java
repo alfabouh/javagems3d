@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.panels;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import org.joml.Vector2f;
@@ -37,7 +38,7 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("color"), UniformFunctions.VEC3F(color));
             JGemsResourceManager.globalShaderAssets.menu.performUniform(new UniformString("w_tick"), UniformFunctions.FLOAT(JGems3D.get().getScreen().getRenderTicks()));
             JGemsResourceManager.globalShaderAssets.menu.performOrthographicMatrix(new UniformString("projection_model_matrix"), model, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-            JGemsRenderingHelper.renderModel2D(model, GL46.GL_TRIANGLES);
+            JGemsHelper.render().renderModel2D(model, GL46.GL_TRIANGLES);
             JGemsResourceManager.globalShaderAssets.menu.endShading();
         }
     }
@@ -52,45 +53,45 @@ public class DefaultMainMenuPanel extends AbstractPanelUI {
     }
 
     @Override
-    public void drawPanel(JGemsUI JGemsUI, float frameDeltaTicks) {
-        Window window = JGemsUI.getWindow();
+    public void drawPanel(JGemsUI ui, float frameDeltaTicks) {
+        IWindow window = ui.getWindow();
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
-        this.renderContent(JGemsUI, window, frameDeltaTicks);
+        this.renderContent(ui, window, frameDeltaTicks);
 
-        JGemsUI.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().loadMap(new ManualMapProcessor.Default());
-                    JGemsUIHelper.openUIPanel(new DefaultGamePanel(null));
+                    ui.setPanel(new DefaultGamePanel(null));
                 });
 
-        JGemsUI.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().openUIPanel(new DefaultSettingsPanel(this));
                 });
 
-        JGemsUI.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().openUIPanel(new DefaultLeaveConfirmationPanel(this));
                 });
     }
 
-    private void renderContent(JGemsUI JGemsUI, Window window, float frameDeltaTicks) {
+    private void renderContent(JGemsUI ui, IWindow window, float frameDeltaTicks) {
         int windowW = window.getWindowSize().x;
         int windowH = window.getWindowSize().y;
 
         DefaultMainMenuPanel.renderMenuBackGround(new Vector3f(1.0f));
-        JGemsUI.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);
+        ui.textUI(JGems3D.get().toString(), JGemsResourceManager.globalTextureAssets.standardFont, new Vector2i(10, windowH - 35), 0x00ff00, 0.5f);
     }
 
     @Override
-    public void onConstruct(JGemsUI JGemsUI) {
+    public void onConstruct(JGemsUI ui) {
         this.createFBOs(JGems3D.get().getScreen().getWindow());
     }
 
     @Override
-    public void onDestruct(JGemsUI JGemsUI) {
+    public void onDestruct(JGemsUI ui) {
         this.postFbo.clearFBO();
     }
 }

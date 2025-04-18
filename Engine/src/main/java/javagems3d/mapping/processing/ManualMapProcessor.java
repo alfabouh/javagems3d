@@ -12,6 +12,7 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.objects.rendering.pipeline.RenderTable;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.base.MapProcessor;
 import javagems3d.physics.colliders.MeshCollider;
@@ -50,13 +51,13 @@ public abstract class ManualMapProcessor extends MapProcessor {
             MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false, false);
 
             JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
-            JGemsWorldHelper.addItemInWorld(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
+            JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
             worldModeledBrush.setPosition(new Vector3f(0, -5, 0));
 
             Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
-            JGemsWorldHelper.addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
+            JGemsHelper.world().addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
-            JGemsWorldHelper.addPropInScene(new SceneWorldProp("cube", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), JGemsResourceManager.globalModelAssets.defaultCube_bff)));
+            JGemsHelper.world().addProp(new SceneWorldProp("cube", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), JGemsResourceManager.globalModelAssets.defaultCube_bff)));
 
             PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
             pointLight.on();
@@ -78,7 +79,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
-            MeshBuffer meshGroup = JGemsResourceManager.getLocalGameResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), false, false);
+            MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), false, false);
             RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault());
             renderAttributes.getProperties().setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.5f);
             SceneWorldProp sceneProp3 = new SceneWorldProp("city", (SceneWorld) background.getWorld(), new PropRenderData(renderAttributes, meshGroup));

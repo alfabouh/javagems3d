@@ -20,6 +20,7 @@ import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.world.SceneWorld;
+import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.data.MapDataPack;
@@ -94,9 +95,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         try {
             for (String path : scriptPaths) {
                 if (isJar) {
-                    JGemsAPI.executeScript(JGemsFilesHelper.readTextFromFileInJar(new JGemsPath(pathToJG3DFile.getDirectory(), "scripts", path)));
+                    JGemsAPI.executeScript(JGemsHelper.files().readTextFromFileInJar(new JGemsPath(pathToJG3DFile.getDirectory(), "scripts", path)));
                 } else {
-                    JGemsAPI.executeScript(JGemsFilesHelper.readTextFromFileOutsideJar(new JGemsPath(pathToJG3DFile.getDirectory(), "scripts",path)));
+                    JGemsAPI.executeScript(JGemsHelper.files().readTextFromFileOutsideJar(new JGemsPath(pathToJG3DFile.getDirectory(), "scripts",path)));
                 }
             }
         } catch (JGemsIOException e) {
@@ -305,7 +306,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
             } else {
                 jGemsBody = new JGemsDynamicBody(MeshCollider.getDynamic(buffer), physicsWorld, new Vector3f(0.0f), template.getObjectNameId()).setCanBeDestroyed(false);
             }
-            JGemsWorldHelper.addItemInWorld(jGemsBody, new EntityRenderData(entityData.getEntityRenderData(), buffer));
+            JGemsHelper.world().addWorldItem(jGemsBody, new EntityRenderData(entityData.getEntityRenderData(), buffer));
             jGemsBody.setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             jGemsBody.setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
             jGemsBody.setScaling(template.getScaling() == null ? new Vector3f(0.0f) : template.getScaling());

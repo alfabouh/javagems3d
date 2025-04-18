@@ -109,11 +109,11 @@ public final class JGemsMapping {
         if (processor.getPlayerConstructor() != null) {
             Pair<@NotNull IPlayer, @Nullable EntityRenderData> pair = processor.getPlayerConstructor().constructPlayer(this.getPhysicsWorld());
             player = pair.getFirst();
-            JGemsWorldHelper.addItemInWorld((WorldItem) player, pair.getSecond() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.getSecond());
-            JGemsControllerHelper.attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, player);
-            JGemsCameraHelper.enableAttachedCamera((WorldItem) player);
+            JGemsHelper.world().addWorldItem((WorldItem) player, pair.getSecond() == null ? JGemsResourceManager.globalRenderDataAssets.defaultPlayer : pair.getSecond());
+            JGemsHelper.controller().attachControllerTo(JGemsControllerDispatcher.mouseKeyboardController, player);
+            JGemsHelper.camera().enableAttachedCamera((WorldItem) player);
         } else {
-            JGemsCameraHelper.enableFreeCamera(JGemsControllerHelper.getCurrentController(), processor.getDefaultStartPosition(), processor.getDefaultStartRotation());
+            JGemsHelper.camera().enableFreeCamera(JGemsHelper.controller().getCurrentController(), processor.getDefaultStartPosition(), processor.getDefaultStartRotation());
         }
         processor.postProcessing(this.getPhysicsWorld(), this.getSceneWorld());
         if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onWorldPostGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {

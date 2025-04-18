@@ -8,6 +8,9 @@ import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.scripting.JGemsAPIScriptingManaging;
 import api.scripting.classes.init.templates.EntityTemplateJS;
 import api.scripting.classes.init.templates.PropTemplateJS;
+import api.scripting.doc.annotations.JSCommentary;
+import api.scripting.doc.annotations.JSMethodDoc;
+import api.scripting.doc.annotations.JSTypeDoc;
 import javagems3d.graphics.objects.rendering.data.EntityRenderData;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
@@ -17,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+@JSTypeDoc(description = "Used to initialize new objects in engine", order = 1)
 public final class InitializationJS {
     private final JGemsAPIScriptingManaging scriptingManaging;
     private final APIWBenchDataManager apiwBenchDataManager;
@@ -28,6 +32,8 @@ public final class InitializationJS {
         this.apiwBenchDataManager = dataManager;
     }
 
+    @JSCommentary(commentary = "This method registers a new entity template, which is later used to instantiate objects in the game world. The template is defined based on components registered via the Java API - IAPIWBenchDataManager.")
+    @JSMethodDoc(description = "Registers new entity template in engine system", args = {"group", "entName"}, order = 0)
     public EntityTemplateJS registerEntity(String group, String entName) {
         Map<String, APIWBenchDataManager.TemplatesTable<ResourceEntity>> map = this.getApiwBenchDataManager().getResourceEntityMap();
         APIWBenchDataManager.TemplatesTable<ResourceEntity> templatesTable = map.get(group);
@@ -48,18 +54,20 @@ public final class InitializationJS {
         return null;
     }
 
-    public PropTemplateJS registerProp(String group, String entRawProp) {
+    @JSCommentary(commentary = "This method registers a new prop template, which is later used to instantiate objects in the game world. The template is defined based on components registered via the Java API - IAPIWBenchDataManager.")
+    @JSMethodDoc(description = "Registers new prop template in engine system", args = {"group", "propName"}, order = 1)
+    public PropTemplateJS registerProp(String group, String propName) {
         Map<String, APIWBenchDataManager.TemplatesTable<ResourceProp>> map = this.getApiwBenchDataManager().getResourcePropMap();
         APIWBenchDataManager.TemplatesTable<ResourceProp> templatesTable = map.get(group);
         if (templatesTable != null) {
-            if (!templatesTable.getTemplateMap().containsKey(entRawProp)) {
-                Log.get().error("API doesn't contain: " + group + "/" + entRawProp);
+            if (!templatesTable.getTemplateMap().containsKey(propName)) {
+                Log.get().error("API doesn't contain: " + group + "/" + propName);
                 return null;
             }
-            JGemsPropData jGemsPropData = templatesTable.find(entRawProp).getFabricGame().create();
+            JGemsPropData jGemsPropData = templatesTable.find(propName).getFabricGame().create();
             MeshBuffer meshBuffer = this.getResourceManager().getLocalResources().createMeshBuffer(jGemsPropData.getPathToModel(), false, false);
 
-            PropTemplateJS propTemplateJS = new PropTemplateJS(group, entRawProp);
+            PropTemplateJS propTemplateJS = new PropTemplateJS(group, propName);
             this.getScriptingManaging().getPropRenderDataMap().put(propTemplateJS, new PropRenderData(jGemsPropData.getPropRenderData(), meshBuffer));
             return propTemplateJS;
         } else {

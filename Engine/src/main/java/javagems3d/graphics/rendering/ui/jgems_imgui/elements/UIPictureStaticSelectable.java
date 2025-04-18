@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsHelper;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -40,7 +41,7 @@ public class UIPictureStaticSelectable extends UIPictureStatic {
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         shaderManager.performUniformTextureBindless(new UniformString("texture_map"), this.iImageSample);
         this.getCurrentShader().performUniform(new UniformString("selected"), UniformFunctions.BOOLEAN(this.isSelected()));
-        JGemsRenderingHelper.renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
+        JGemsHelper.render().renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 }

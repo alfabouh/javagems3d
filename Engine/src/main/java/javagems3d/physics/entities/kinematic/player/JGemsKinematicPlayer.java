@@ -4,14 +4,14 @@ import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.ITriggerAction;
-import javagems3d.system.inventory.IInventoryOwner;
-import javagems3d.system.inventory.Inventory;
+import javagems3d.system.inventory.InventoryOwner;
+import javagems3d.system.inventory.InventoryBase;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implements IPlayer, IInventoryOwner {
-    private Inventory inventory;
+public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implements IPlayer, InventoryOwner {
+    private InventoryBase inventoryBase;
 
     public JGemsKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
         super(world, pos, rot, itemName);
@@ -38,7 +38,7 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     protected void createInventory() {
-        this.inventory = new Inventory(this, 4);
+        this.inventoryBase = new InventoryBase(this, 4);
     }
 
     protected Vector2f shapeSize() {
@@ -71,8 +71,8 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
-    public Inventory getInventory() {
-        return this.inventory;
+    public InventoryBase getInventory() {
+        return this.inventoryBase;
     }
 
     @Override

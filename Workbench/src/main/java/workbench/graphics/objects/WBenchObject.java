@@ -4,6 +4,7 @@ import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.graphics.objects.rendering.attributes.RenderAttributes;
 import javagems3d.graphics.objects.rendering.data.PropRenderData;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.system.resources.assets.models.mesh.structures.MeshStructure3D;
@@ -75,9 +76,9 @@ public abstract class WBenchObject extends SceneProp {
             float halfHeight = worldSize.y / 2.0f;
             float halfDepth = worldSize.z / 2.0f;
 
-            float clampedX = JGemsMathHelper.clamp(currentPos.x, -WBench.MAP_SIZE + halfWidth, WBench.MAP_SIZE - halfWidth);
-            float clampedY = JGemsMathHelper.clamp(currentPos.y, -WBench.MAP_SIZE + halfHeight, WBench.MAP_SIZE - halfHeight);
-            float clampedZ = JGemsMathHelper.clamp(currentPos.z, -WBench.MAP_SIZE + halfDepth, WBench.MAP_SIZE - halfDepth);
+            float clampedX = JGemsHelper.math().clamp(currentPos.x, -WBench.MAP_SIZE + halfWidth, WBench.MAP_SIZE - halfWidth);
+            float clampedY = JGemsHelper.math().clamp(currentPos.y, -WBench.MAP_SIZE + halfHeight, WBench.MAP_SIZE - halfHeight);
+            float clampedZ = JGemsHelper.math().clamp(currentPos.z, -WBench.MAP_SIZE + halfDepth, WBench.MAP_SIZE - halfDepth);
 
             if (worldSize.x > WBench.MAP_SIZE * 2.0f || worldSize.y > WBench.MAP_SIZE * 2.0f || worldSize.z > WBench.MAP_SIZE * 2.0f) {
                 this.setDead();
@@ -87,9 +88,9 @@ public abstract class WBenchObject extends SceneProp {
             this.getModel().getPose().setPosition(new Vector3f(clampedX, clampedY, clampedZ));
         } else {
             Vector3f currentPos = this.getModel().getPose().getPosition();
-            float clampedX = JGemsMathHelper.clamp(currentPos.x, -WBench.MAP_SIZE, WBench.MAP_SIZE);
-            float clampedY = JGemsMathHelper.clamp(currentPos.y, -WBench.MAP_SIZE, WBench.MAP_SIZE);
-            float clampedZ = JGemsMathHelper.clamp(currentPos.z, -WBench.MAP_SIZE, WBench.MAP_SIZE);
+            float clampedX = JGemsHelper.math().clamp(currentPos.x, -WBench.MAP_SIZE, WBench.MAP_SIZE);
+            float clampedY = JGemsHelper.math().clamp(currentPos.y, -WBench.MAP_SIZE, WBench.MAP_SIZE);
+            float clampedZ = JGemsHelper.math().clamp(currentPos.z, -WBench.MAP_SIZE, WBench.MAP_SIZE);
             this.getModel().getPose().setPosition(new Vector3f(clampedX, clampedY, clampedZ));
         }
     }

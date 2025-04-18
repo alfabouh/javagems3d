@@ -1,7 +1,10 @@
 package api.scripting.classes.util;
 
+import api.scripting.doc.annotations.JSMethodDoc;
+import api.scripting.doc.annotations.JSTypeDoc;
 import org.joml.Vector4f;
 
+@JSTypeDoc(description = "Vector with 4 floats", order = 9)
 public class Vec4f {
     private final float x;
     private final float y;
@@ -19,18 +22,22 @@ public class Vec4f {
         return new Vector4f(this.x, this.y, this.z, this.w);
     }
 
+    @JSMethodDoc(description = "get X", args = {}, order = 0)
     public float getX() {
         return this.x;
     }
 
+    @JSMethodDoc(description = "get Y", args = {}, order = 1)
     public float getY() {
         return this.y;
     }
 
+    @JSMethodDoc(description = "get Z", args = {}, order = 2)
     public float getZ() {
         return this.z;
     }
 
+    @JSMethodDoc(description = "get W(Fourth value)", args = {}, order = 3)
     public float getW() {
         return this.w;
     }

@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.ui.jgems_imgui.elements;
 
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.transformation.JGemsTransformManager;
+import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
@@ -45,7 +46,7 @@ public class UIText extends UIElement {
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.textModel.getModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         shaderManager.performUniformTextureBindless(new UniformString("texture_map"), this.getFontTexture().getTexture());
         shaderManager.performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(JGemsUI.HEX2RGB(this.hexColor), 1.0f)));
-        JGemsRenderingHelper.renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
+        JGemsHelper.render().renderModel2D(this.textModel.getModel(), GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }
 
