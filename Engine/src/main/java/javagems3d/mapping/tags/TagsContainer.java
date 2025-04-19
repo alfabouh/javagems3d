@@ -4,14 +4,32 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import javagems3d.mapping.tags.items.TagItem;
 import javagems3d.system.resources.managing.resources.data.ICopyable;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.json.JSONFileManaging;
 import logger.Log;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public final class TagsContainer implements ICopyable<TagsContainer> {
+    public static @NotNull Map<Class<?>, JSONFileManaging.SerializationRules<?>> TAG_ITEMS_SERIALIZATION_RULES = new HashMap<>();
+
     static {
         TagItem.REGISTER_ALL_TAGS();
+    }
+
+    public static void addLazyItemSerializationRule(TagItem tagItem) {
+        if (tagItem.getSerializationRule() != null) {
+            TagsContainer.TAG_ITEMS_SERIALIZATION_RULES.put(tagItem.getClass(), tagItem.getSerializationRule());
+        }
+    }
+
+    public static JSONFileManaging createJSONFileManaging() {
+        final JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
+        for (Map.Entry<Class<?>, JSONFileManaging.SerializationRules<?>> pair : TagsContainer.TAG_ITEMS_SERIALIZATION_RULES.entrySet()) {
+            jsonFileManaging.setMatchUnsafe(pair.getKey(), pair.getValue());
+        }
+        return jsonFileManaging;
     }
 
     public static final JSONFileManaging.SerializationRules<TagsContainer> TAGS_CONTAINER_SERIALIZATION_RULE =

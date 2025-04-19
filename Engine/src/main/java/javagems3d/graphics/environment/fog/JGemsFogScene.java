@@ -12,10 +12,10 @@ public class JGemsFogScene extends FogScene {
     @Override
     public void updateFogBuffer(ShaderStorageBufferObject shaderStorageBufferObject, ISkyBox skyBox, MemoryStack stack) {
         FloatBuffer buffer = stack.mallocFloat(JGemsConfig.SYSTEM.FOG_BUFFER_PACK_SIZE);
-        buffer.put(this.getColor().x * skyBox.getSun().getSunBrightness());
-        buffer.put(this.getColor().y * skyBox.getSun().getSunBrightness());
-        buffer.put(this.getColor().z * skyBox.getSun().getSunBrightness());
-        buffer.put(!JGemsConfig.DEBUG.FULL_BRIGHT ? this.getDensity() : 0.0f);
+        buffer.put(this.getFogColor().x * skyBox.getSun().getSunBrightness());
+        buffer.put(this.getFogColor().y * skyBox.getSun().getSunBrightness());
+        buffer.put(this.getFogColor().z * skyBox.getSun().getSunBrightness());
+        buffer.put(!JGemsConfig.DEBUG.FULL_BRIGHT ? this.getFogDensity() : 0.0f);
         buffer.flip();
         ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, 0L, buffer);
     }

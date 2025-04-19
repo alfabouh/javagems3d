@@ -16,23 +16,23 @@ public abstract class FogScene implements IFogScene {
 
     public abstract void updateFogBuffer(ShaderStorageBufferObject shaderStorageBufferObject, ISkyBox skyBox, MemoryStack stack);
 
-    public void setColor(Vector3f color) {
+    public void setFogColor(Vector3f color) {
         this.color = color;
     }
 
-    public void setDensity(float density) {
+    public void setFogDensity(float density) {
         this.density = density;
     }
 
     public void disable() {
-        this.setDensity(0.0f);
+        this.setFogDensity(0.0f);
     }
 
-    public Vector3f getColor() {
+    public Vector3f getFogColor() {
         return new Vector3f(this.color);
     }
 
-    public float getDensity() {
+    public float getFogDensity() {
         return this.density;
     }
 }

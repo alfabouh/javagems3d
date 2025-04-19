@@ -63,7 +63,7 @@ public abstract class IndirectObjectsRenderer {
     }
 
     protected void fillSSBOWithInformation(@NotNull IntBuffer indexes, @NotNull IntBuffer materialIds, Collection<SceneObject> sceneObjects) {
-        ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(4 * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
+        ByteBuffer properties = this.isUsePropertiesSSBO() ? MemoryUtil.memAlloc(Float.BYTES * IndirectObjectsRenderer.SSBO_DATASETS_PROPERTIES_SIZE) : null;
         FloatBuffer modelMatrices = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_MATRICES_SIZE);
         FloatBuffer deltaFrames = MemoryUtil.memAllocFloat(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);
         IntBuffer animationMatricesOffsets = MemoryUtil.memAllocInt(IndirectObjectsRenderer.SSBO_DATASETS_ENT_IDS_SIZE);

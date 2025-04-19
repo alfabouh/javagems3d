@@ -46,7 +46,7 @@ public abstract class JGemsConfig {
         public static int FOG_BUFFER_PACK_SIZE = 8 + (1);
 
         public static int INDIRECT_RENDERING_MATERIALS_PACK_SIZE = 15 + (1) + 1;
-        public static int INDIRECT_RENDERING_PROPERTIES_PACK_SIZE = 2;
+        public static int INDIRECT_RENDERING_PROPERTIES_PACK_SIZE = 1;
 
         public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 22);
 

@@ -17,6 +17,7 @@ import javagems3d.system.resources.managing.resources.SystemResources;
 import javagems3d.system.resources.managing.resources.data.ResourcesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.BindlessTexturesDataCache;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
+import javagems3d.system.service.json.JSONFileManaging;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -118,6 +119,7 @@ public abstract class ResourceManager {
     }
 
     public void destroy() {
+        JSONFileManaging.CLEAR_RULES();
         ResourceManager.destroyDefaultTexture();
         ShaderStorageBufferProgram.clearAll();
         this.getResourceDataCache().clearAll();

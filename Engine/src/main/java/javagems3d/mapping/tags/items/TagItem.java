@@ -8,6 +8,7 @@ import javagems3d.system.resources.managing.resources.data.ICopyable;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import javagems3d.system.service.json.JSONFileManaging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,6 @@ public abstract class TagItem implements ICopyable<TagItem> {
         TagItem.putTypeToken(TagString.TYPE_STRING, new TypeToken<TagString>() {});
         TagItem.putTypeToken(TagObjectsList.TYPE_STRING, new TypeToken<TagObjectsList>() {});
         TagItem.putTypeToken(TagVector.TYPE_STRING, new TypeToken<TagVector>() {});
-
     }
 
     public static void putTypeToken(String typeString, TypeToken<? extends TagItem> token) {
@@ -45,9 +45,14 @@ public abstract class TagItem implements ICopyable<TagItem> {
             throw new JGemsRuntimeException("TagItem " + this.getClass() +" should not have empty type");
         }
         this.typeString = typeString;
+        TagsContainer.addLazyItemSerializationRule(this);
     }
 
     public abstract void ImGuiRendering(TagsContainer tagsContainer, @Nullable SceneObject currentSelected, TagItem tagItem, TagID tagID, Set<Pair<Integer, SceneObject>> sceneObjectsIDSet);
+
+    public @Nullable JSONFileManaging.SerializationRules<? extends TagItem> getSerializationRule() {
+        return null;
+    }
 
     public String getTypeString() {
         return this.typeString;

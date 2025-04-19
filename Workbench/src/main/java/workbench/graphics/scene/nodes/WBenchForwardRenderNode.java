@@ -75,6 +75,11 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
     }
 
     @Override
+    public boolean renderBackground() {
+        return ((EditorInterface) WBenchOpenGLRenderer.getEditorInterface()).getOldCamera() == null;
+    }
+
+    @Override
     public @NotNull ShaderStorageBufferObject getIndirectBufferData() {
         return WBenchResourceManager.localShaderAssets.IndirectBufferData;
     }

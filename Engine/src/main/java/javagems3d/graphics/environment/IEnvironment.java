@@ -16,6 +16,6 @@ public interface IEnvironment {
     IWorld getWorld();
     IShadowScene getShadowScene();
     ILightScene getLightScene();
-    IFogScene getFogManager();
+    IFogScene getFogScene();
     ISkyBox getSkyBox();
 }

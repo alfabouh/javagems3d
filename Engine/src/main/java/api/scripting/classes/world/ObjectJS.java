@@ -1,5 +1,9 @@
 package api.scripting.classes.world;
 
+import api.scripting.classes.world.objects.EntityJS;
+import api.scripting.classes.world.objects.PointLightJS;
+import api.scripting.classes.world.objects.PropJS;
+import api.scripting.classes.world.objects.UnknownObjectJS;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
 
@@ -18,5 +22,10 @@ public abstract class ObjectJS {
     @JSMethodDoc(description = "Returned true, if object is PointLightJS", args = {}, order = 2)
     public final boolean isPointLightJS() {
         return this instanceof PointLightJS;
+    }
+
+    @JSMethodDoc(description = "Returned true, if object is UnknownObjectJs", args = {}, order = 3)
+    public final boolean isUnknownObjectJS() {
+        return this instanceof UnknownObjectJS;
     }
 }

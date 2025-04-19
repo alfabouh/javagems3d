@@ -48,8 +48,8 @@ public abstract class ShadowScene implements IShadowScene {
         this.getPointLightShadows().forEach(e -> e.setShadowMapResolution(this.getShadowResolution()));
 
         this.openGLRenderer = openGLRenderer;
-        this.pointLightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getIndirectSSBO(), this.getPropertiesSSBO(), Pipeline.POINT_LIGHT_SHADOW_MAP, false, true);
-        this.sunlightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getIndirectSSBO(), this.getPropertiesSSBO(), Pipeline.SUN_LIGHT_SHADOW_MAP, false, true);
+        this.pointLightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getIndirectSSBO(), this.getPropertiesSSBO(), Pipeline.POINT_LIGHT_SHADOW_MAP, true, true);
+        this.sunlightIndirectRendered = new GroupedIndirectRenderer(openGLRenderer, this.getIndirectSSBO(), this.getPropertiesSSBO(), Pipeline.SUN_LIGHT_SHADOW_MAP, true, true);
         this.getPointLightShadows().forEach(PointLightShadow::createResources);
         this.getSunLightShadow().createResources();
     }

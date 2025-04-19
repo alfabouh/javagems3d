@@ -134,7 +134,7 @@ public final class ProjectManager {
             return;
         }
 
-        JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
+        JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
         MapDataPack mapDataPack = new MapDataPack();
         try {
             mapDataPack = jsonFileManaging.readFromFile(file, MapDataPack.class, null);
@@ -164,8 +164,8 @@ public final class ProjectManager {
 
             if (fogData != null) {
                 world.getEnvironment().getSkyBox().setSkyCoveredByFog(fogData.isSkyCoveredByFog);
-                world.getEnvironment().getFogManager().setColor(fogData.color);
-                world.getEnvironment().getFogManager().setDensity(fogData.density);
+                world.getEnvironment().getFogScene().setFogColor(fogData.color);
+                world.getEnvironment().getFogScene().setFogDensity(fogData.density);
                 Log.get().debug("Read FogData");
             } else {
                 Log.get().error("Couldn't get FogData");
@@ -235,9 +235,9 @@ public final class ProjectManager {
     public void saveProject(boolean wait) {
         final WBenchWorld world = this.getWorld();
 
-        JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
+        JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
         final SunLight sunLight = world.getEnvironment().getSkyBox().getSun();
-        final FogScene fogScene = world.getEnvironment().getFogManager();
+        final FogScene fogScene = world.getEnvironment().getFogScene();
         final Set<SceneObject> objectsCopy = new HashSet<>(world.getSceneObjects());
         final Set<SceneObject> backgroundCopy = new HashSet<>(world.getEnvironment().getSkyBox().getBackground().getSkySceneObjects());
         final Set<MapObjectTemplate> props = new HashSet<>();
@@ -248,7 +248,7 @@ public final class ProjectManager {
         final SkyBox skyBox = world.getEnvironment().getSkyBox();
 
         final SunData sunData = new SunData(sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
-        final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getDensity(), fogScene.getColor());
+        final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
         final SkyData skyData = new SkyData(this.getProjectObjects().getSkyBoxes().inverse().get(skyBox.getTexture()), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();

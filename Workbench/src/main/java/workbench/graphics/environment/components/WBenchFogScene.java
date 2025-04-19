@@ -5,7 +5,7 @@ import workbench.graphics.scene.ui.EditorInterface;
 
 public class WBenchFogScene extends JGemsFogScene {
     @Override
-    public float getDensity() {
-        return EditorInterface.VIEW_FOG ? super.getDensity() : 0.0f;
+    public float getFogDensity() {
+        return EditorInterface.VIEW_FOG ? super.getFogDensity() : 0.0f;
     }
 }

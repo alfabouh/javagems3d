@@ -1,6 +1,7 @@
 package javagems3d.system.service.json;
 
 import com.google.gson.*;
+import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 public class JSONFileManaging {
     public static final Set<Pair<Class<?>, SerializationRules<?>>> DEFAULT_SERIALIZATION_RULES = new HashSet<>();
+
     static {
         JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(new Pair<>(Vector3f.class, JSONFileManaging.create(
                 (object, context) -> {
@@ -57,6 +59,15 @@ public class JSONFileManaging {
                     return new Vector4f(x, y, z, w);
                 }
         )));
+    }
+
+    public void addDefaultSerializationRule(Pair<Class<?>, SerializationRules<?>> pair) {
+        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.add(pair);
+    }
+
+    public static void CLEAR_RULES() {
+        JSONFileManaging.DEFAULT_SERIALIZATION_RULES.clear();
+        TagsContainer.TAG_ITEMS_SERIALIZATION_RULES.clear();
     }
 
     private final Map<Class<?>, SerializationRules<?>> rulesMap;
@@ -145,6 +156,10 @@ public class JSONFileManaging {
         } catch (IOException e) {
             throw new JGemsIOException(e);
         }
+    }
+
+    public void setMatchUnsafe(@NotNull Class<?> clazz, @NotNull SerializationRules<?> serializationRules) {
+        this.getRulesMap().put(clazz, serializationRules);
     }
 
     public <T> void setMatch(@NotNull Class<T> clazz, @NotNull SerializationRules<T> serializationRules) {

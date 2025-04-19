@@ -51,7 +51,7 @@ public class JGemsEnvironment implements IEnvironment {
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.updateLightsUBO(this.getWorld(), stack);
-            this.getFogManager().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), stack);
+            this.getFogScene().updateFogBuffer(JGemsResourceManager.globalShaderAssets.FogData, this.getSkyBox(), stack);
         }
     }
 
@@ -72,7 +72,7 @@ public class JGemsEnvironment implements IEnvironment {
         return this.lightManager;
     }
 
-    public JGemsFogScene getFogManager() {
+    public JGemsFogScene getFogScene() {
         return this.fogManager;
     }
 

@@ -31,4 +31,8 @@ public class SimpleTexturedParticle extends TexturedParticleFX {
         this.maxLivingSeconds = maxLivingSeconds;
         return this;
     }
+
+    @Override
+    public void setDead() {
+    }
 }

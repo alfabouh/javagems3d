@@ -47,7 +47,7 @@ public class WBenchEnvironment implements IEnvironment {
         this.getShadowScene().renderAllModelsInShadowMap(this.getWorld().getSceneObjects());
         try (MemoryStack stack = MemoryStack.stackPush()) {
             this.updateLightsUBO(this.getWorld(), stack);
-            this.getFogManager().updateFogBuffer(WBenchResourceManager.localShaderAssets.FogData, this.getSkyBox(), stack);
+            this.getFogScene().updateFogBuffer(WBenchResourceManager.localShaderAssets.FogData, this.getSkyBox(), stack);
         }
     }
 
@@ -68,7 +68,7 @@ public class WBenchEnvironment implements IEnvironment {
         return this.lightManager;
     }
 
-    public WBenchFogScene getFogManager() {
+    public WBenchFogScene getFogScene() {
         return this.fogManager;
     }
 

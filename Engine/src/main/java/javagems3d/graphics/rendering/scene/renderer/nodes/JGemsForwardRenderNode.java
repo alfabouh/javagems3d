@@ -26,6 +26,11 @@ public class JGemsForwardRenderNode extends ForwardRenderNode {
     }
 
     @Override
+    public boolean renderBackground() {
+        return true;
+    }
+
+    @Override
     public @NotNull MeshGroup getCube() {
         return JGemsResourceManager.globalModelAssets.defaultCube_gr;
     }

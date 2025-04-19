@@ -19,6 +19,10 @@ public class Water extends Liquid {
     }
 
     @Override
+    public void setDead() {
+    }
+
+    @Override
     public boolean isDead() {
         return false;
     }

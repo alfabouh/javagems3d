@@ -100,7 +100,7 @@ public final class JGemsMapping {
         processor.setGlobalResources(this.getResourceManager().getGlobalResources());
         processor.setLocalResources(this.getResourceManager().getLocalResources());
         processor.onSetupSkyBox(environment.getSkyBox(), environment.getSkyBox().getBackground());
-        processor.onSetupFog(environment.getFogManager());
+        processor.onSetupFog(environment.getFogScene());
         if (!JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapPreGeneration, JGemsAPI.getAPIScripting().getGameWorldJS())) {
             JGemsAPIScriptingEngine.warn(APIScriptsListing.onMapPreGeneration);
         }

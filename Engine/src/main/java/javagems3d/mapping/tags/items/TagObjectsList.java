@@ -13,7 +13,6 @@ import java.util.Set;
 
 public class TagObjectsList extends TagItem {
     public static final String TYPE_STRING = "TagObjectsList";
-
     private int value;
 
     protected TagObjectsList(int value) {

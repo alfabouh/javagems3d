@@ -4,6 +4,9 @@ import api.scripting.JGemsAPIScriptingManaging;
 import api.scripting.classes.init.templates.EntityTemplateJS;
 import api.scripting.classes.init.templates.PropTemplateJS;
 import api.scripting.classes.util.Vec3f;
+import api.scripting.classes.world.background.BackgroundJS;
+import api.scripting.classes.world.environment.EnvironmentJS;
+import api.scripting.classes.world.objects.*;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
 import api.scripting.functions.APIScriptsListing;
@@ -28,16 +31,31 @@ import java.util.Map;
 @JSTypeDoc(description = "Game World. General realization of the scene and physics world", priority = JSTypeDoc.Priority.HIGH)
 public final class GameWorldJS extends ObjectJS {
     private final JGemsAPIScriptingManaging scriptingManaging;
-    public final Map<Integer, ObjectJS> mapObjectsMap;
+    public final Map<Integer, ObjectJS> mapObjectsIdMap;
+    private final EnvironmentJS environmentJS;
+    private final BackgroundJS backgroundJS;
 
     public GameWorldJS(@NotNull JGemsAPIScriptingManaging scriptingManaging) {
         this.scriptingManaging = scriptingManaging;
-        this.mapObjectsMap = new HashMap<>();
+        this.mapObjectsIdMap = new HashMap<>();
+        this.environmentJS = new EnvironmentJS();
+        this.backgroundJS = new BackgroundJS(this, scriptingManaging);
     }
 
     public void clear() {
         JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapClear, this);
-        this.mapObjectsMap.clear();
+        this.getBackgroundJS().clear();
+        this.mapObjectsIdMap.clear();
+    }
+
+    @JSMethodDoc(description = "Get background control", args = {}, order = -2)
+    public BackgroundJS getBackgroundJS() {
+        return this.backgroundJS;
+    }
+
+    @JSMethodDoc(description = "Get environment control", args = {}, order = -1)
+    public EnvironmentJS getEnvironmentJS() {
+        return this.environmentJS;
     }
 
     @JSMethodDoc(description = "Spawn static(non-moving) entity in physics world", args = {"entityTemplateJS", "position", "rotation", "scaling"}, order = 0)
@@ -116,14 +134,14 @@ public final class GameWorldJS extends ObjectJS {
     @JSMethodDoc(description = "Spawn point light in scene world", args = {"brightness", "light position", "light color", "offset"}, order = 9)
     public PointLightJS spawnPointLight(float brightness, @NotNull Vec3f lightPos, @NotNull Vec3f lightColor, @NotNull Vec3f offset) {
         PointLightJS pointLightJS = new PointLightJS(brightness, lightPos, lightColor, offset);
-        JGemsHelper.world().addLight(pointLightJS.getPointLight());
+        JGemsHelper.world().addLight(UtilsJS.getPointlight(pointLightJS));
         return pointLightJS;
     }
 
     @JSMethodDoc(description = "Spawn point light in scene world", args = {"brightness", "light position", "light color"}, order = 10)
     public PointLightJS spawnPointLight(float brightness, @NotNull Vec3f lightPos, @NotNull Vec3f lightColor) {
         PointLightJS pointLightJS = new PointLightJS(brightness, lightPos, lightColor, new Vec3f(0.0f, 0.0f, 0.0f));
-        JGemsHelper.world().addLight(pointLightJS.getPointLight());
+        JGemsHelper.world().addLight(UtilsJS.getPointlight(pointLightJS));
         return pointLightJS;
     }
 
@@ -145,22 +163,22 @@ public final class GameWorldJS extends ObjectJS {
     public void onMapSpawnedWorldItemEvent(@NotNull WorldItem worldItem, int templateId) {
         final EntityJS entityJS = new EntityJS(worldItem);
         JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapSpawnedEntity, this, entityJS);
-        this.mapObjectsMap.put(templateId, entityJS);
+        this.mapObjectsIdMap.put(templateId, entityJS);
     }
 
     public void onMapSpawnedPropEvent(@NotNull SceneProp sceneProp, int templateId) {
         final PropJS propJS = new PropJS(sceneProp);
         JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapSpawnedProp, this, propJS);
-        this.mapObjectsMap.put(templateId, propJS);
+        this.mapObjectsIdMap.put(templateId, propJS);
     }
 
     public void onMapSpawnedPointLightEvent(@NotNull PointLight pointLight, int templateId) {
         final PointLightJS pointLightJS = new PointLightJS(pointLight);
         JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapSpawnedPointLight, this, pointLightJS);
-        this.mapObjectsMap.put(templateId, pointLightJS);
+        this.mapObjectsIdMap.put(templateId, pointLightJS);
     }
 
-    public JGemsAPIScriptingManaging getScriptingManaging() {
+    JGemsAPIScriptingManaging getScriptingManaging() {
         return this.scriptingManaging;
     }
 }

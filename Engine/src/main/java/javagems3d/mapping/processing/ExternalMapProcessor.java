@@ -57,6 +57,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 public abstract class ExternalMapProcessor extends MapProcessor {
@@ -71,8 +72,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         this.readMap(pathToJG3DFile, inJar);
     }
 
+
     protected void readMap(JGemsPath pathToJG3DFile, boolean inJar) {
-        final JSONFileManaging jsonFileManaging = JSONFileManaging.create(new Pair<>(TagsContainer.class, TagsContainer.TAGS_CONTAINER_SERIALIZATION_RULE));
+        final JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
 
         try {
             this.projectData = this.loadJson(jsonFileManaging, pathToJG3DFile, inJar, ProjectData.class);
@@ -195,6 +197,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         });
         this.processMapObjects(backgroundPropObjects, resourcePropMap, (template, data) -> {
             SceneProp prop = this.onProcessBackgroundProp(template, (JGemsPropData) data, sceneWorld, sceneWorld.getEnvironment().getSkyBox().getBackground());
+            if (prop != null) {
+                JGemsAPI.getAPIScripting().getGameWorldJS().getBackgroundJS().onMapSpawnedBackgroundPropEvent(prop, template.getId());
+            }
         });
         this.processMapObjects(entityObjects, resourceEntityMap, (template, data) -> {
             WorldItem worldItem = this.onProcessEntity(template, (JGemsEntityData) data, physicsWorld, sceneWorld, pointLightIdMap.getOrDefault(template.getId(), null));
@@ -221,8 +226,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     protected void onSetupFog(FogData fogData, IFogScene fogScene) {
-        fogScene.setColor(fogData.color);
-        fogScene.setDensity(fogData.density);
+        fogScene.setFogColor(fogData.color);
+        fogScene.setFogDensity(fogData.density);
     }
 
     @Override

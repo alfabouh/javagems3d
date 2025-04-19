@@ -32,6 +32,10 @@ public class SimpleTriggerZone extends AbstractTriggerZone {
     }
 
     @Override
+    public void setDead() {
+    }
+
+    @Override
     public boolean isDead() {
         return false;
     }

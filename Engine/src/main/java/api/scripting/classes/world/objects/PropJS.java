@@ -1,6 +1,7 @@
-package api.scripting.classes.world;
+package api.scripting.classes.world.objects;
 
 import api.scripting.classes.util.Vec3f;
+import api.scripting.classes.world.ObjectJS;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
 import javagems3d.graphics.objects.entities.SceneProp;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @JSTypeDoc(description = "Prop in scene world", priority = JSTypeDoc.Priority.MED)
-public final class PropJS extends ObjectJS {
+public class PropJS extends ObjectJS {
     private final SceneProp sceneProp;
 
     public PropJS(@NotNull SceneProp sceneProp) {
@@ -62,11 +63,21 @@ public final class PropJS extends ObjectJS {
         return new Vec3f(vector3f.x, vector3f.y, vector3f.z);
     }
 
+    @JSMethodDoc(description = "Mark object as dead. Dead objects will be removed from the world.", args = {}, order = 6)
+    public void setDead() {
+        this.getSceneObject().setDead();
+    }
+
+    @JSMethodDoc(description = "Check if object is marked as dead.", args = {}, order = 7)
+    public boolean isDead() {
+        return this.getSceneObject().isDead();
+    }
+
     public void remove() {
         JGemsHelper.world().removeProp(this.getSceneObject());
     }
 
-    public SceneProp getSceneObject() {
+    SceneProp getSceneObject() {
         return this.sceneProp;
     }
 }

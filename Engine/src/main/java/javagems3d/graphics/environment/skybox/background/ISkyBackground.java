@@ -30,4 +30,8 @@ public interface ISkyBackground{
 
     void destroy(IWorld world);
     void create(IWorld world);
+
+    default boolean contains(SceneProp sceneProp) {
+        return this.getSkySceneObjects().contains(sceneProp);
+    }
 }

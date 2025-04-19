@@ -1,15 +1,20 @@
-package api.scripting.classes.world;
+package api.scripting.classes.world.objects;
 
 import api.scripting.classes.util.Vec3f;
+import api.scripting.classes.world.ObjectJS;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
+import api.system.JGemsAPI;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.lights.scene.LightScene;
+import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.help.JGemsHelper;
+import javagems3d.physics.world.basic.WorldItem;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @JSTypeDoc(description = "Point light in scene world", priority = JSTypeDoc.Priority.MED)
-public final class PointLightJS extends ObjectJS {
+public class PointLightJS extends ObjectJS {
     private final PointLight pointLight;
 
     public PointLightJS(PointLight pointLight) {
@@ -75,11 +80,39 @@ public final class PointLightJS extends ObjectJS {
         this.getPointLight().setLightColor(color.createJOML());
     }
 
+    @JSMethodDoc(description = "Get object, that this point light attached to", args = {""}, order = 10)
+    public UnknownObjectJS getAttachedTo() {
+        Object object = this.getPointLight().getAttachedTo();
+        if (object == null) {
+            return null;
+        }
+        return new UnknownObjectJS(object);
+    }
+
+    @JSMethodDoc(description = "Attach light to object", args = {"objectJS"}, order = 11)
+    public boolean attach(ObjectJS objectJS) {
+        if (objectJS.isPropJS()) {
+            SceneProp sceneProp = ((PropJS) objectJS).getSceneObject();
+            sceneProp.addLightAttachment(this.getPointLight());
+            return true;
+        } else if (objectJS.isEntityJS()) {
+            WorldItem worldItem = ((EntityJS) objectJS).getWorldItem();
+            JGemsHelper.world().addWorldItemLight(worldItem, this.getPointLight());
+            return true;
+        }
+        return false;
+    }
+
+    @JSMethodDoc(description = "Detach light from object", args = {""}, order = 12)
+    public void detach() {
+        this.getPointLight().detach();
+    }
+
     public void remove() {
         JGemsHelper.world().removeLight(this.getPointLight());
     }
 
-    public PointLight getPointLight() {
+    PointLight getPointLight() {
         return this.pointLight;
     }
 }

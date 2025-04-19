@@ -1,6 +1,7 @@
-package api.scripting.classes.world;
+package api.scripting.classes.world.objects;
 
 import api.scripting.classes.util.Vec3f;
+import api.scripting.classes.world.ObjectJS;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
 import javagems3d.physics.world.basic.WorldItem;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @JSTypeDoc(description = "Entity in physical world", priority = JSTypeDoc.Priority.MED)
-public final class EntityJS extends ObjectJS {
+public class EntityJS extends ObjectJS {
     private final WorldItem worldItem;
 
     public EntityJS(@NotNull WorldItem worldItem) {
@@ -48,11 +49,21 @@ public final class EntityJS extends ObjectJS {
         return new Vec3f(vector3f.x, vector3f.y, vector3f.z);
     }
 
+    @JSMethodDoc(description = "Mark object as dead. Dead objects will be removed from the world.", args = {}, order = 6)
+    public void setDead() {
+        this.getWorldItem().setDead();
+    }
+
+    @JSMethodDoc(description = "Check if object is marked as dead.", args = {}, order = 7)
+    public boolean isDead() {
+        return this.getWorldItem().isDead();
+    }
+
     public void remove() {
         this.getWorldItem().setDead();
     }
 
-    public WorldItem getWorldItem() {
+    WorldItem getWorldItem() {
         return this.worldItem;
     }
 }

@@ -30,4 +30,8 @@ public class SimpleColoredParticle extends ColoredParticleFX {
         this.maxLivingSeconds = maxLivingSeconds;
         return this;
     }
+
+    @Override
+    public void setDead() {
+    }
 }

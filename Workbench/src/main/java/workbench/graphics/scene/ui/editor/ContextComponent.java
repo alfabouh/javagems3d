@@ -51,14 +51,14 @@ public class ContextComponent {
             ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
             ImBoolean opened = new ImBoolean(true);
             if (ImGui.begin("Fog", opened, ImGuiWindowFlags.NoResize)) {
-                float[] fogIntensity = new float[] {JGemsHelper.math().clamp(environment.getFogManager().getDensity(), 0.0f, 1.0f)};
+                float[] fogIntensity = new float[] {JGemsHelper.math().clamp(environment.getFogScene().getFogDensity(), 0.0f, 1.0f)};
                 if (ImGui.dragFloat("Fog Intensity", fogIntensity, 0.0001f, 0.0f, 1.0f)) {
-                    environment.getFogManager().setDensity(fogIntensity[0]);
+                    environment.getFogScene().setFogDensity(fogIntensity[0]);
                 }
 
-                float[] fogColor = new float[] {environment.getFogManager().getColor().x, environment.getFogManager().getColor().y, environment.getFogManager().getColor().z};
+                float[] fogColor = new float[] {environment.getFogScene().getFogColor().x, environment.getFogScene().getFogColor().y, environment.getFogScene().getFogColor().z};
                 if (ImGui.colorEdit3("Fog Color", fogColor)) {
-                    environment.getFogManager().setColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
+                    environment.getFogScene().setFogColor(new Vector3f(fogColor[0], fogColor[1], fogColor[2]));
                 }
 
                 ImBoolean fogCoversSky = new ImBoolean(environment.getSkyBox().isSkyCoveredByFog());

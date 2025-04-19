@@ -302,7 +302,7 @@ public final class JGemsHelper {
         }
 
         public IFogScene getFog() {
-            return this.getEnvironment().getFogManager();
+            return this.getEnvironment().getFogScene();
         }
 
         public IEnvironment getEnvironment() {

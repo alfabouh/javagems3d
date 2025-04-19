@@ -10,6 +10,12 @@ public final class Vec3f {
     private final float y;
     private final float z;
 
+    public Vec3f(Vector3f vector3f) {
+        this.x = vector3f.x;
+        this.y = vector3f.y;
+        this.z = vector3f.z;
+    }
+
     public Vec3f(float x, float y, float z) {
         this.x = x;
         this.y = y;

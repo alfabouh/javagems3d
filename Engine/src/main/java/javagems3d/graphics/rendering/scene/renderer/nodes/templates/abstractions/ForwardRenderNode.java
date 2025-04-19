@@ -45,10 +45,12 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        GL46.glEnable(GL46.GL_BLEND);
-        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
-        this.getBackgroundRenderProcessor().runProcessorRendering(frameTicking);
-        GL46.glDisable(GL46.GL_BLEND);
+        if (this.renderBackground()) {
+            GL46.glEnable(GL46.GL_BLEND);
+            GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+            this.getBackgroundRenderProcessor().runProcessorRendering(frameTicking);
+            GL46.glDisable(GL46.GL_BLEND);
+        }
 
         this.getOutColorBuffer().bindFBO();
         this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());
@@ -70,6 +72,7 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
     public abstract @NotNull ShaderStorageBufferObject getPropertiesData();
     public abstract @NotNull MeshGroup getCube();
     public abstract @NotNull JGemsShaderManager getSkyBoxShader();
+    public abstract boolean renderBackground();
 
     public void initFBOs() {
     }

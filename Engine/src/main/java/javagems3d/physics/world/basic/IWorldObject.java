@@ -7,6 +7,7 @@ public interface IWorldObject {
 
     void onDestroy(IWorld iWorld);
 
+    void setDead();
     boolean isDead();
 
     default boolean isAlive() {
