@@ -132,7 +132,6 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     public void onRender(MouseKeyboardController mouseKeyboardController, DearUIInterface dearUIInterface, FrameTicking frameTicking) {
         ImGui.newFrame();
         dearUIInterface.drawGui(this.getWindow().getWindowSize(), mouseKeyboardController);
-        EventLauncher.pushEvent(new EventBus.DearIMGUIRender(this.getWindow().getWindowSize(), this));
         ImGui.endFrame();
         ImGui.render();
 

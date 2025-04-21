@@ -13,7 +13,7 @@ public interface IWorldObject {
 
     default void onDestroyWithEvent(IWorld world) {
         EventLauncher.pushEvent(new EventBus.WorldObjectState(EventBus.Run.PRE, EventBus.ObjectState.DESTROY, this));
-        this.onSpawn(world);
+        this.onDestroy(world);
         EventLauncher.pushEvent(new EventBus.WorldObjectState(EventBus.Run.POST, EventBus.ObjectState.DESTROY, this));
     }
 

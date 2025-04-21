@@ -55,7 +55,6 @@ public abstract class LightScene implements ILightScene {
             }
             this.getPointLights().add((PointLight) light);
         }
-        EventLauncher.pushEvent(new EventBus.LightAdded(light));
     }
 
     public void removeLight(Light light) {
@@ -71,7 +70,7 @@ public abstract class LightScene implements ILightScene {
 
     @Override
     public void updateBuffers(MemoryStack stack, IWorld world, Matrix4f viewMatrix) {
-        this.getPointLights().forEach(e -> e.onUpdate(world));
+        this.getPointLights().forEach(e -> e.onUpdateWithEvent(world));
         this.updateSunBuffer(this.getSunBuffer(), stack, viewMatrix);
         this.updatePointLightsBuffer(this.getPointLightsBuffer(), stack, viewMatrix);
     }

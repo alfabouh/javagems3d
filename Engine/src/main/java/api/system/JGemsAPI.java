@@ -32,6 +32,8 @@ public final class JGemsAPI implements Closeable {
     private static JGemsAPI INSTANCE;
     private static JGemsAPIManager M_INSTANCE;
 
+    private static boolean ALLOW_EVENTS = false;
+
     public static void INIT_JGEMS() {
         JGemsAPI.INSTANCE = new JGemsAPI();
         JGemsAPI.M_INSTANCE = new JGemsAPIManager();
@@ -41,6 +43,10 @@ public final class JGemsAPI implements Closeable {
 
     private JGemsAPI() {
         this.reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(JGemsAPI.DEF_API_PACKAGE)).setScanners(Scanners.SubTypes.filterResultsBy(s -> s.startsWith(JGemsAPI.DEF_API_PACKAGE)), Scanners.TypesAnnotated));
+    }
+
+    public static boolean ALLOW_EVENTS() {
+        return JGemsAPI.ALLOW_EVENTS;
     }
 
     public static boolean isValid() {
@@ -71,7 +77,6 @@ public final class JGemsAPI implements Closeable {
         JGemsAPI.getAPIScripting().clearEngine();
     }
 
-
     public static void registerScriptBinding(String key, Object value, int scope) {
         JGemsAPI.getAPIScripting().registerScriptBinding(key, value, scope);
     }
@@ -89,6 +94,7 @@ public final class JGemsAPI implements Closeable {
             JGemsAPI.appData = new JGemsAPIData();
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
             JGemsAPI.apiScriptingEngine = new JGemsAPIScriptingEngine(JGemsAPI.appEditorResources);
+            JGemsAPI.ALLOW_EVENTS = true;
 
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication();
             Log.get().debug("Init API-App: id=" + pair.getSecond().id());
@@ -100,9 +106,10 @@ public final class JGemsAPI implements Closeable {
         }
     }
 
-    public JGemsAPIEditorResources launchAPIAndGetOnlyEditorData() throws JGemsAPIException {
+    public JGemsAPIEditorResources launchAPIEditorData() throws JGemsAPIException {
         try {
             JGemsAPI.appEditorResources = new JGemsAPIEditorResources();
+            JGemsAPI.ALLOW_EVENTS = false;
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication();
             Log.get().debug("Init API-App(ONLY EDITOR DATA): id=" + pair.getSecond().id());
             JGemsAPI.getManager().pullDataForEditor(pair.getFirst(), JGemsAPI.APIEditorResources());

@@ -75,7 +75,7 @@ public final class SceneWorld implements IRenderWorld {
     //section WorldUpdate
     @Override
     public void onWorldUpdate() {
-        if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(this)).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
             JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
             JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             Iterator<Pair<WorldItem, ILightAttached>> iterator = this.lightAttachmentQueue.iterator();
@@ -85,6 +85,7 @@ public final class SceneWorld implements IRenderWorld {
                 iterator.remove();
             }
             this.ticks += 1;
+            EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(EventBus.Run.POST, this));
         }
     }
 
@@ -121,7 +122,7 @@ public final class SceneWorld implements IRenderWorld {
 
             if (sceneObject instanceof IWorldTicked) {
                 IWorldTicked worldTicked = (IWorldTicked) sceneObject;
-                worldTicked.onUpdate(this);
+                worldTicked.onUpdateWithEvent(this);
             }
 
             if (sceneObject instanceof SceneEntity) {

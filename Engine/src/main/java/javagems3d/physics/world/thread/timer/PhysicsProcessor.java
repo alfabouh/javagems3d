@@ -34,7 +34,6 @@ public class PhysicsProcessor implements IPhysicsProcessor {
                 if (JGems3D.get().getCore().engineState().isEngineIsReady() && !JGems3D.get().getCore().engineState().isPaused()) {
                     synchronized (PhysicsProcessor.lockObject) {
                         this.world.onWorldUpdate();
-                        EventLauncher.pushEvent(new EventBus.BulletUpdate(this.dynamicsSystem));
                         this.dynamicsSystem.step(time, 0);
                         this.dynamicsSystem.collideTest();
                     }

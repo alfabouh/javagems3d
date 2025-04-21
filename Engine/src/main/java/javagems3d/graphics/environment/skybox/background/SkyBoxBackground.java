@@ -38,7 +38,7 @@ public abstract class SkyBoxBackground implements ISkyBackground {
         Iterator<SceneProp> scenePropIterator = this.getSkySceneObjects().iterator();
         while (scenePropIterator.hasNext()) {
             SceneProp sceneProp = scenePropIterator.next();
-            sceneProp.onUpdate(this.getWorld());
+            sceneProp.onUpdateWithEvent(this.getWorld());
             if (sceneProp.isDead()) {
                 sceneProp.onDestroyWithEvent(this.getWorld());
                 scenePropIterator.remove();

@@ -32,10 +32,11 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void onWorldUpdate() {
-        if (!EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(this)).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.PRE, this)).isCancelled()) {
             this.getWorldObjectsContainer().onUpdate();
             JGemsAPI.executeScriptFunction(null, APIScriptsListing.onPhysicsWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             this.ticks += 1;
+            EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(EventBus.Run.POST, this));
         }
     }
 

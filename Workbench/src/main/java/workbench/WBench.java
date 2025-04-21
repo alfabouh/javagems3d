@@ -57,7 +57,7 @@ public final class WBench {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("WorkbenchLogger"));
             JGemsAPI.INIT_JGEMS();
-            WBench.apiEditorResources = JGemsAPI.get().launchAPIAndGetOnlyEditorData();
+            WBench.apiEditorResources = JGemsAPI.get().launchAPIEditorData();
             WBench.checkFilesDirectory();
         } catch (IOException | JGemsAPIException e) {
             throw new JGemsRuntimeException(e);

@@ -563,7 +563,7 @@ public final class JGemsHelper {
 
 
         public void reloadResources() {
-            EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent());
+            EventLauncher.pushEvent(new EventBus.ReloadResourcesEvent(JGems3D.get().getResourceManager()));
             JGems3D.get().getScreen().showGameLoadingScreen("System01");
             JGems3D.get().getScreen().tryAddLineInLoadingScreen(0x00ff00, "Performing settings...");
             JGems3D.get().getResourceManager().recreateTexturesInAllCaches();

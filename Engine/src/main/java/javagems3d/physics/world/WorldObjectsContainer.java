@@ -32,10 +32,7 @@ public final class WorldObjectsContainer {
                 }
                 worldItem1.setPrevPosition(worldItem1.getPosition());
             }
-            if (!EventLauncher.pushEvent(new EventBus.WorldItemUpdatePre(worldTicked)).isCancelled()) {
-                worldTicked.onUpdate(world);
-            }
-            EventLauncher.pushEvent(new EventBus.WorldItemUpdatePost(worldTicked));
+            worldTicked.onUpdateWithEvent(world);
         }
     }
 

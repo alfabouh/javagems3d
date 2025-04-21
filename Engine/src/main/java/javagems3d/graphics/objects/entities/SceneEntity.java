@@ -69,13 +69,11 @@ public abstract class SceneEntity extends SceneObject implements IWorldTicked {
             }
             this.getRenderFabricsSet().forEach(e -> e.createResources(this));
         }
-        EventLauncher.pushEvent(new EventBus.ItemSpawnInRenderWorld(this));
     }
 
     @Override
     public void onDestroy(IWorld iWorld) {
         super.onDestroy(iWorld);
-        EventLauncher.pushEvent(new EventBus.ItemDestroyInRenderWorld(this));
         Log.get().trace("[ " + this + " ]" + " - PostRender");
         if (this.canBeRendered()) {
             this.getRenderFabricsSet().forEach(e -> e.destroyResources(this));

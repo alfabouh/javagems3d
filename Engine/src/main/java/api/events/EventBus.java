@@ -1,8 +1,17 @@
 package api.events;
 
+import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.rendering.scene.renderer.OpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.nodes.base.IRenderNode;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.IWorldObject;
+import javagems3d.physics.world.basic.IWorldTicked;
+import javagems3d.physics.world.triggers.IHasCollisionTrigger;
+import javagems3d.physics.world.triggers.ITriggerAction;
+import javagems3d.system.resources.managing.ResourceManager;
+
+import java.util.Set;
 
 public abstract class EventBus {
     public enum ObjectState {
@@ -28,6 +37,9 @@ public abstract class EventBus {
         @SuppressWarnings("all")
         default boolean isCancelled() {
             return this.canBeCancelled() && ((Cancellable) this).isCancelled();
+        }
+
+        class EmptyEvent implements IEvent {
         }
     }
 
@@ -84,16 +96,20 @@ public abstract class EventBus {
 
     public static final class SceneWorldUpdate extends Cancellable implements IEvent {
         public final SceneWorld sceneWorld;
+        public final Run run;
 
-        public SceneWorldUpdate(SceneWorld sceneWorld) {
+        public SceneWorldUpdate(Run run, SceneWorld sceneWorld) {
+            this.run = run;
             this.sceneWorld = sceneWorld;
         }
     }
 
     public static final class PhysicsWorldUpdate extends Cancellable implements IEvent {
         public final PhysicsWorld physicsWorld;
+        public final Run run;
 
-        public PhysicsWorldUpdate(PhysicsWorld physicsWorld) {
+        public PhysicsWorldUpdate(Run run, PhysicsWorld physicsWorld) {
+            this.run = run;
             this.physicsWorld = physicsWorld;
         }
     }
@@ -107,6 +123,68 @@ public abstract class EventBus {
             this.run = run;
             this.state = state;
             this.worldObject = worldObject;
+        }
+    }
+
+    public static final class WorldObjectUpdate extends Cancellable implements IEvent {
+        public final IWorldTicked worldTicked;
+        public final Run run;
+
+        public WorldObjectUpdate(Run run, IWorldTicked worldTicked) {
+            this.run = run;
+            this.worldTicked = worldTicked;
+        }
+    }
+
+    public static final class OpenGLRendererState extends Cancellable implements IEvent {
+        public final OpenGLRenderer openGLRenderer;
+        public final State state;
+
+        public OpenGLRendererState(State state, OpenGLRenderer openGLRenderer) {
+            this.state = state;
+            this.openGLRenderer = openGLRenderer;
+        }
+    }
+
+    public static final class OpenGLRendererProcess extends Cancellable implements IEvent {
+        public final OpenGLRenderer openGLRenderer;
+        public final Run run;
+        public final Set<SceneObject> toRender;
+
+        public OpenGLRendererProcess(Run run, Set<SceneObject> toRender, OpenGLRenderer openGLRenderer) {
+            this.toRender = toRender;
+            this.run = run;
+            this.openGLRenderer = openGLRenderer;
+        }
+    }
+
+    public static final class OpenGLNodeRenderProcess extends Cancellable implements IEvent {
+        public final OpenGLRenderer openGLRenderer;
+        public final Run run;
+        public final IRenderNode renderNode;
+
+        public OpenGLNodeRenderProcess(Run run, IRenderNode renderNode, OpenGLRenderer openGLRenderer) {
+            this.renderNode = renderNode;
+            this.run = run;
+            this.openGLRenderer = openGLRenderer;
+        }
+    }
+
+    public static class CollisionTriggered extends Cancellable implements IEvent {
+        public final IHasCollisionTrigger object;
+        public final ITriggerAction triggerAction;
+
+        public CollisionTriggered(IHasCollisionTrigger object, ITriggerAction triggerAction) {
+            this.object = object;
+            this.triggerAction = triggerAction;
+        }
+    }
+
+    public static class ReloadResourcesEvent implements IEvent {
+        public final ResourceManager resourceManager;
+
+        public ReloadResourcesEvent(ResourceManager resourceManager) {
+            this.resourceManager = resourceManager;
         }
     }
 }
