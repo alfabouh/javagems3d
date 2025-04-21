@@ -77,8 +77,8 @@ public abstract class WorldItem implements IWorldObject {
     }
 
     public void onSpawn(IWorld iWorld) {
-        this.spawnTick = iWorld.getTicks();
         Log.get().trace("Added entity in world - [ " + this + " ]");
+        this.spawnTick = iWorld.getTicks();
         this.spawned = true;
     }
 

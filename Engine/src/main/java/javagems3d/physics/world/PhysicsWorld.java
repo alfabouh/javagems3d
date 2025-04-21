@@ -5,8 +5,6 @@ import api.scripting.functions.APIScriptsListing;
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import api.events.EventLauncher;
-import javagems3d.graphics.objects.SceneObject;
-import javagems3d.graphics.objects.entities.SceneProp;
 import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
@@ -29,25 +27,22 @@ public final class PhysicsWorld implements IWorld {
     }
 
     public void onWorldStart() {
-        EventLauncher.pushEvent(new EventBus.PhysWorldStart(EventBus.Run.PRE, this));
+        EventLauncher.pushEvent(new EventBus.PhysicsWorldState(EventBus.State.START, this));
         this.ticks = 0;
-        EventLauncher.pushEvent(new EventBus.PhysWorldStart(EventBus.Run.POST, this));
     }
 
     public void onWorldUpdate() {
-        if (!EventLauncher.pushEvent(new EventBus.PhysWorldTickPre(this)).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.PhysicsWorldUpdate(this)).isCancelled()) {
             this.getWorldObjectsContainer().onUpdate();
+            JGemsAPI.executeScriptFunction(null, APIScriptsListing.onPhysicsWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             this.ticks += 1;
         }
-        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onPhysicsWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
-        EventLauncher.pushEvent(new EventBus.PhysWorldTickPost(this));
     }
 
     public void onWorldEnd() {
-        EventLauncher.pushEvent(new EventBus.PhysWorldEnd(EventBus.Run.PRE, this));
+        EventLauncher.pushEvent(new EventBus.PhysicsWorldState(EventBus.State.END, this));
         this.removeNavGraph();
         this.clear();
-        EventLauncher.pushEvent(new EventBus.PhysWorldEnd(EventBus.Run.POST, this));
     }
 
     public void killItems() {
@@ -60,11 +55,9 @@ public final class PhysicsWorld implements IWorld {
 
     public void addObject(IWorldObject worldObject) {
         this.getWorldObjectsContainer().addObjectInWorld(worldObject);
-        EventLauncher.pushEvent(new EventBus.ItemSpawnedInPhysicsWorld(worldObject));
     }
 
     public void removeItem(IWorldObject worldObject) {
-        EventLauncher.pushEvent(new EventBus.ItemDestroyedInPhysicsWorld(worldObject));
         this.getWorldObjectsContainer().removeObjectFromWorld(worldObject);
     }
 

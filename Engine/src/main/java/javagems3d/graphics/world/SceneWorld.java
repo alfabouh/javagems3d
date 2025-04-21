@@ -64,19 +64,20 @@ public final class SceneWorld implements IRenderWorld {
     //section WorldStart
     @Override
     public void onWorldStart() {
-        EventLauncher.pushEvent(new EventBus.RenderWorldStart(EventBus.Run.PRE, this));
+        EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.START, this));
         JGemsConfig.DEBUG.reset();
         JGems3D.get().getScreen().zeroRenderTick();
         this.getParticlesEmitter().create(this);
         this.getEnvironment().getSkyBox().createSkyBox(this);
         this.ticks = 0;
-        EventLauncher.pushEvent(new EventBus.RenderWorldStart(EventBus.Run.POST, this));
     }
 
     //section WorldUpdate
     @Override
     public void onWorldUpdate() {
-        if (!EventLauncher.pushEvent(new EventBus.RenderWorldTickPre(this)).isCancelled()) {
+        if (!EventLauncher.pushEvent(new EventBus.SceneWorldUpdate(this)).isCancelled()) {
+            JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
+            JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
             Iterator<Pair<WorldItem, ILightAttached>> iterator = this.lightAttachmentQueue.iterator();
             while (iterator.hasNext()) {
                 Pair<WorldItem, ILightAttached> pair = iterator.next();
@@ -85,22 +86,18 @@ public final class SceneWorld implements IRenderWorld {
             }
             this.ticks += 1;
         }
-        JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
-        JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
-        EventLauncher.pushEvent(new EventBus.RenderWorldTickPost(this));
     }
 
     //section WorldEnd
     @Override
     public void onWorldEnd() {
-        EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.PRE, this));
+        EventLauncher.pushEvent(new EventBus.SceneWorldState(EventBus.State.END, this));
         if (this.getParticlesEmitter() != null) {
             this.getParticlesEmitter().destroy(this);
         }
         this.getEnvironment().getSkyBox().destroySkyBox(this);
         ((JGemsEnvironment) this.getEnvironment()).clearPointLightsBuffer();
         this.clearAll();
-        EventLauncher.pushEvent(new EventBus.RenderWorldEnd(EventBus.Run.POST, this));
     }
 
     public void updateWorldObjects(boolean refresh, FrameTicking frameTicking) {
@@ -115,7 +112,7 @@ public final class SceneWorld implements IRenderWorld {
                     SceneEntity abstractSceneEntity = (SceneEntity) sceneObject;
                     this.getObjectMap().remove(abstractSceneEntity.getWorldItem().getItemId());
                 }
-                sceneObject.onDestroy(this);
+                sceneObject.onDestroyWithEvent(this);
                 iterator.remove();
                 continue;
             }
@@ -154,7 +151,7 @@ public final class SceneWorld implements IRenderWorld {
             iterator.remove();
             if (modeledSceneObject instanceof SceneEntity) {
                 SceneEntity abstractSceneEntity = (SceneEntity) modeledSceneObject;
-                abstractSceneEntity.onDestroy(this);
+                abstractSceneEntity.onDestroyWithEvent(this);
             }
         }
 
@@ -221,7 +218,7 @@ public final class SceneWorld implements IRenderWorld {
 
     public void addObject(SceneObject sceneObject) {
         this.getSceneObjects().add(sceneObject);
-        sceneObject.onSpawn(this);
+        sceneObject.onSpawnWithEvent(this);
 
         if (sceneObject instanceof SceneEntity) {
             SceneEntity sceneEntity = (SceneEntity) sceneObject;
@@ -231,7 +228,7 @@ public final class SceneWorld implements IRenderWorld {
 
     public void removeObject(SceneObject sceneObject) {
         this.getSceneObjects().remove(sceneObject);
-        sceneObject.onDestroy(this);
+        sceneObject.onDestroyWithEvent(this);
 
         if (sceneObject instanceof SceneEntity) {
             SceneEntity sceneEntity = (SceneEntity) sceneObject;

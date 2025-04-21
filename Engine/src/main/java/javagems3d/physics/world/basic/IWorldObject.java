@@ -1,10 +1,23 @@
 package javagems3d.physics.world.basic;
 
+import api.events.EventBus;
+import api.events.EventLauncher;
 import javagems3d.physics.world.IWorld;
 
 public interface IWorldObject {
-    void onSpawn(IWorld iWorld);
+    default void onSpawnWithEvent(IWorld world) {
+        EventLauncher.pushEvent(new EventBus.WorldObjectState(EventBus.Run.PRE, EventBus.ObjectState.SPAWN, this));
+        this.onSpawn(world);
+        EventLauncher.pushEvent(new EventBus.WorldObjectState(EventBus.Run.POST, EventBus.ObjectState.SPAWN, this));
+    }
 
+    default void onDestroyWithEvent(IWorld world) {
+        EventLauncher.pushEvent(new EventBus.WorldObjectState(EventBus.Run.PRE, EventBus.ObjectState.DESTROY, this));
+        this.onSpawn(world);
+        EventLauncher.pushEvent(new EventBus.WorldObjectState(EventBus.Run.POST, EventBus.ObjectState.DESTROY, this));
+    }
+
+    void onSpawn(IWorld iWorld);
     void onDestroy(IWorld iWorld);
 
     void setDead();

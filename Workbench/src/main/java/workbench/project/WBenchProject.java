@@ -42,7 +42,7 @@ public class WBenchProject extends ProjectData implements Serializable {
 
         Path scriptsDir = this.getScriptPathTo("").toPath();
         if (Files.exists(scriptsDir) && Files.isDirectory(scriptsDir)) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(scriptsDir, "*.js")) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(scriptsDir, "*" + JGemsMapping.MAP_SCRIPT_FILE)) {
                 for (Path scriptPath : stream) {
                     String fileName = scriptPath.getFileName().toString();
                     if (!scriptFiles.contains(fileName)) {
@@ -67,7 +67,7 @@ public class WBenchProject extends ProjectData implements Serializable {
                 Files.createDirectories(scriptsDir);
             }
 
-            final String scriptFile = name + ".js";
+            final String scriptFile = name + JGemsMapping.MAP_SCRIPT_FILE;
             Path newScriptPath = scriptsDir.resolve(scriptFile);
             if (Files.exists(newScriptPath)) {
                 Log.get().warn("Script already exists: " + newScriptPath);

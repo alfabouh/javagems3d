@@ -43,7 +43,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
         while (particleFXIterator.hasNext()) {
             ParticleFX particleFX = particleFXIterator.next();
             if (particleFX.isDead()) {
-                particleFX.onDestroy(iWorld);
+                particleFX.onDestroyWithEvent(iWorld);
                 particleFXIterator.remove();
                 continue;
             }
@@ -76,7 +76,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     }
 
     public void clearParticles(SceneWorld sceneWorld) {
-        this.getParticlesSet().forEach(e -> e.onDestroy(sceneWorld));
+        this.getParticlesSet().forEach(e -> e.onDestroyWithEvent(sceneWorld));
         this.getParticlesSet().clear();
     }
 

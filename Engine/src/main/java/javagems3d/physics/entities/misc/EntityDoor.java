@@ -37,12 +37,12 @@ public class EntityDoor extends WorldItem implements IWorldTicked {
 
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
-        this.getDoorTriggerZone().onSpawn(iWorld);
+        this.getDoorTriggerZone().onSpawnWithEvent(iWorld);
     }
 
     public void onDestroy(IWorld iWorld) {
         super.onDestroy(iWorld);
-        this.getDoorTriggerZone().onDestroy(iWorld);
+        this.getDoorTriggerZone().onDestroyWithEvent(iWorld);
     }
 
     public boolean canBeDestroyed() {

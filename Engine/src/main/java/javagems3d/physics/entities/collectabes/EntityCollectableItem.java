@@ -50,12 +50,12 @@ public class EntityCollectableItem extends WorldItem {
 
     public void onSpawn(IWorld iWorld) {
         super.onSpawn(iWorld);
-        this.getPickUpItemTriggerZone().onSpawn(iWorld);
+        this.getPickUpItemTriggerZone().onSpawnWithEvent(iWorld);
     }
 
     public void onDestroy(IWorld iWorld) {
         super.onDestroy(iWorld);
-        this.getPickUpItemTriggerZone().onDestroy(iWorld);
+        this.getPickUpItemTriggerZone().onDestroyWithEvent(iWorld);
     }
 
     public Inventory.Item getInventoryItem() {

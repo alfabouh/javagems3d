@@ -44,13 +44,13 @@ public final class WorldObjectsContainer {
     }
 
     public void clear() {
-        this.getWorldObjects().forEach(e -> e.onDestroy(this.getWorld()));
+        this.getWorldObjects().forEach(e -> e.onDestroyWithEvent(this.getWorld()));
         this.getWorldObjects().clear();
         this.getWorldTickedObjects().clear();
     }
 
     public void addObjectInWorld(IWorldObject worldObject) {
-        worldObject.onSpawn(this.getWorld());
+        worldObject.onSpawnWithEvent(this.getWorld());
         this.getWorldObjects().add(worldObject);
         if (worldObject instanceof IWorldTicked) {
             this.getWorldTickedObjects().add(((IWorldTicked) worldObject));
@@ -58,7 +58,7 @@ public final class WorldObjectsContainer {
     }
 
     public void removeObjectFromWorld(IWorldObject worldObject) {
-        worldObject.onDestroy(this.getWorld());
+        worldObject.onDestroyWithEvent(this.getWorld());
         this.getWorldObjects().remove(worldObject);
         if (worldObject instanceof IWorldTicked) {
             this.getWorldTickedObjects().remove(((IWorldTicked) worldObject));
