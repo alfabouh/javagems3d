@@ -85,6 +85,7 @@ public final class SceneWorld implements IRenderWorld {
             }
             this.ticks += 1;
         }
+        JGemsAPI.getAPIScripting().getGameWorldJS().getTimerManagerJS().renderThreadUpdateTimers();
         JGemsAPI.executeScriptFunction(null, APIScriptsListing.onSceneWorldUpdate, JGemsAPI.getAPIScripting().getGameWorldJS());
         EventLauncher.pushEvent(new EventBus.RenderWorldTickPost(this));
     }

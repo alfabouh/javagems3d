@@ -45,12 +45,11 @@ public abstract class ForwardRenderNode extends IRenderNode.Template implements 
 
     @Override
     public void onRender(FrameTicking frameTicking) {
-        if (this.renderBackground()) {
-            GL46.glEnable(GL46.GL_BLEND);
-            GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
-            this.getBackgroundRenderProcessor().runProcessorRendering(frameTicking);
-            GL46.glDisable(GL46.GL_BLEND);
-        }
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+        this.getBackgroundRenderProcessor().setRender(this.renderBackground());
+        this.getBackgroundRenderProcessor().runProcessorRendering(frameTicking);
+        GL46.glDisable(GL46.GL_BLEND);
 
         this.getOutColorBuffer().bindFBO();
         this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getForwardRenderingObjects());

@@ -18,7 +18,7 @@ public class PropJS extends ObjectJS {
         this.sceneProp = sceneProp;
     }
 
-    @JSMethodDoc(description = "Set prop location", args = {"Position"}, order = 0)
+    @JSMethodDoc(description = "Set prop location", args = {"position"}, order = 0)
     public void setPosition(Vec3f vec3f) {
         if (!this.getSceneObject().hasModel()) {
             return;
@@ -27,7 +27,7 @@ public class PropJS extends ObjectJS {
         pose3D.setPosition(vec3f.createJOML());
     }
 
-    @JSMethodDoc(description = "Set prop rotation. Euler XYZ", args = {"Rotation"}, order = 1)
+    @JSMethodDoc(description = "Set prop rotation. Euler XYZ", args = {"rotation"}, order = 1)
     public void setRotation(Vec3f vec3f) {
         if (!this.getSceneObject().hasModel()) {
             return;
@@ -36,7 +36,7 @@ public class PropJS extends ObjectJS {
         pose3D.setRotation(vec3f.createJOML());
     }
 
-    @JSMethodDoc(description = "Set prop scaling", args = {"Scaling"}, order = 2)
+    @JSMethodDoc(description = "Set prop scaling", args = {"scaling"}, order = 2)
     public void setScaling(Vec3f vec3f) {
         if (!this.getSceneObject().hasModel()) {
             return;

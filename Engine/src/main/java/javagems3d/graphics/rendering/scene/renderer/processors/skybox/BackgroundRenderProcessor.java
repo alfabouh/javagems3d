@@ -48,6 +48,8 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     private final ShaderStorageBufferObject indirectSSBO;
     private final ShaderStorageBufferObject propertiesSSBO;
 
+    private boolean render;
+
     public BackgroundRenderProcessor(@NotNull FBOTexture2DProgram inColor, @NotNull ShaderStorageBufferObject indirectSSBO, @NotNull ShaderStorageBufferObject propertiesSSBO, @NotNull ISkyBox skyBox, @NotNull OpenGLRenderer openGLRenderer) {
         super(openGLRenderer);
         this.skyBox = skyBox;
@@ -55,6 +57,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
 
         this.indirectSSBO = indirectSSBO;
         this.propertiesSSBO = propertiesSSBO;
+        this.render = true;
     }
 
     @SuppressWarnings("all")
@@ -121,9 +124,11 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         this.getBackground().bindFBO();
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
-        if (Math.abs(cameraPos.x) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.y) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.z) <= JGems3D.MAP_MAX_SIZE) {
-            this.renderIndirectObjects(frameTicking, indirectRenderObjects);
-            this.renderDirectObjects(frameTicking, directRenderObjects);
+        if (this.isRender()) {
+            if (Math.abs(cameraPos.x) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.y) <= JGems3D.MAP_MAX_SIZE && Math.abs(cameraPos.z) <= JGems3D.MAP_MAX_SIZE) {
+                this.renderIndirectObjects(frameTicking, indirectRenderObjects);
+                this.renderDirectObjects(frameTicking, directRenderObjects);
+            }
         }
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getBackground().unBindFBO();
@@ -142,6 +147,15 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
     protected Pair<List<SceneObject>, List<SceneObject>> divideSet2Groups(Set<? extends SceneProp> filteredObjectsSet) {
         Map<Boolean, List<SceneObject>> partitionedModels = filteredObjectsSet.stream().collect(Collectors.partitioningBy(e -> e.getModel().getMeshStructure().canBeUsedInIndirectRendering()));
         return new Pair<>(partitionedModels.get(false), partitionedModels.get(true));
+    }
+
+    public boolean isRender() {
+        return this.render;
+    }
+
+    public BackgroundRenderProcessor setRender(boolean render) {
+        this.render = render;
+        return this;
     }
 
     public FBOTexture2DProgram getBackground() {

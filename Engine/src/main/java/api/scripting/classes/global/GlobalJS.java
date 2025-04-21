@@ -1,5 +1,6 @@
 package api.scripting.classes.global;
 
+import api.scripting.classes.global.timer.TimerCallbackJS;
 import api.scripting.classes.world.*;
 import api.scripting.classes.world.objects.*;
 import api.scripting.classes.world.ObjectJS;
@@ -47,7 +48,7 @@ public final class GlobalJS {
         return object;
     }
 
-    @JSMethodDoc(description = "Returns BackgroundPropJS by id", args = {"Entity ID"}, order = 0)
+    @JSMethodDoc(description = "Returns BackgroundPropJS by id", args = {"Entity ID"}, order = 1)
     public BackgroundPropJS getBackgroundPropByID(int id) {
         BackgroundPropJS object = this.getGameWorldJS().getBackgroundJS().mapObjectsIdMap.get(id);
         if (object == null) {
@@ -60,6 +61,26 @@ public final class GlobalJS {
         }
 
         return object;
+    }
+
+    @JSMethodDoc(description = "Creates a new timer with the given ID, duration in seconds, number of repetitions, and a callback to invoke", args = {"id", "seconds", "repeatTimes", "callback"}, order = 2)
+    public void pushTimer(String id, int seconds, int repeatTimes, TimerCallbackJS timerCallbackJS) {
+        this.getGameWorldJS().getTimerManagerJS().pushTimer(id, seconds, repeatTimes, timerCallbackJS);
+    }
+
+    @JSMethodDoc(description = "Stops and removes the timer with the given ID", args = {"id"}, order = 3)
+    public void stopTimer(String id) {
+        this.getGameWorldJS().getTimerManagerJS().removeTimer(id);
+    }
+
+    @JSMethodDoc(description = "Clears all timers", args = {}, order = 4)
+    public void clearTimers() {
+        this.getGameWorldJS().getTimerManagerJS().clear();
+    }
+
+    @JSMethodDoc(description = "Checks if the timer is active", args = {"id"}, order = 5)
+    public boolean isTimerActive(String id) {
+        return this.getGameWorldJS().getTimerManagerJS().isTimerActive(id);
     }
 
     GameWorldJS getGameWorldJS() {

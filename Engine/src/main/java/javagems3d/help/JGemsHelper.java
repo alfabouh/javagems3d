@@ -29,6 +29,7 @@ import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.graphics.screen.timer.JGemsTimer;
+import javagems3d.graphics.screen.timer.TimerPool;
 import javagems3d.graphics.world.SceneWorld;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.base.IMapProcessor;
@@ -277,6 +278,10 @@ public final class JGemsHelper {
 
         public void zeroRenderTick() {
             this.getScreen().zeroRenderTick();
+        }
+
+        public TimerPool getTimerPool() {
+            return this.getScreen().getTimerPool();
         }
 
         public JGemsTimer createTimer() {

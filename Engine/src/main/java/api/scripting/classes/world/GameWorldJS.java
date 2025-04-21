@@ -1,6 +1,7 @@
 package api.scripting.classes.world;
 
 import api.scripting.JGemsAPIScriptingManaging;
+import api.scripting.classes.global.timer.TimerManagerJS;
 import api.scripting.classes.init.templates.EntityTemplateJS;
 import api.scripting.classes.init.templates.PropTemplateJS;
 import api.scripting.classes.util.Vec3f;
@@ -34,12 +35,14 @@ public final class GameWorldJS extends ObjectJS {
     public final Map<Integer, ObjectJS> mapObjectsIdMap;
     private final EnvironmentJS environmentJS;
     private final BackgroundJS backgroundJS;
+    private final TimerManagerJS timerManagerJS;
 
     public GameWorldJS(@NotNull JGemsAPIScriptingManaging scriptingManaging) {
         this.scriptingManaging = scriptingManaging;
         this.mapObjectsIdMap = new HashMap<>();
         this.environmentJS = new EnvironmentJS();
         this.backgroundJS = new BackgroundJS(this, scriptingManaging);
+        this.timerManagerJS = new TimerManagerJS();
     }
 
     public void clear() {
@@ -176,6 +179,10 @@ public final class GameWorldJS extends ObjectJS {
         final PointLightJS pointLightJS = new PointLightJS(pointLight);
         JGemsAPI.executeScriptFunction(null, APIScriptsListing.onMapSpawnedPointLight, this, pointLightJS);
         this.mapObjectsIdMap.put(templateId, pointLightJS);
+    }
+
+    public TimerManagerJS getTimerManagerJS() {
+        return this.timerManagerJS;
     }
 
     JGemsAPIScriptingManaging getScriptingManaging() {

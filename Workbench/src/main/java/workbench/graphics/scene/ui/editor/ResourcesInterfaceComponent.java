@@ -54,6 +54,7 @@ public class ResourcesInterfaceComponent {
     private final EditorInterface editorInterface;
     private final ImInt currentSelectedScript;
     private final ImString newScriptName = new ImString(64);
+    private String scriptTextTemplate;
 
     public ResourcesInterfaceComponent(EditorInterface editorInterface) {
         this.currentSelectedScript = new ImInt(-1);
@@ -113,7 +114,9 @@ public class ResourcesInterfaceComponent {
                     wBenchProject.reviseScripts();
                     try {
                         final JGemsPath path = wBenchProject.getScriptPathTo(scriptPaths.get(this.currentSelectedScript.get() - 1));
-                        this.getEditorInterface().getEditor().setText(JGemsHelper.files().readTextFromFileOutsideJar(path));
+                        final String readText = JGemsHelper.files().readTextFromFileOutsideJar(path);
+                        this.getEditorInterface().getEditor().setText(readText);
+                        this.scriptTextTemplate = this.getEditorInterface().getEditor().getText();
                     } catch (Exception e) {
                         Log.get().exception(e);
                     }
@@ -163,6 +166,7 @@ public class ResourcesInterfaceComponent {
                 ImGui.setNextWindowPos(wSize.x / 2.0f - wSize.x / 4.0f, wSize.y / 2.0f - wSize.y / 4.0f, ImGuiCond.Appearing);
                 ImGui.setNextWindowSize(wSize.x / 2.0f, wSize.y / 2.0f);
                 ImBoolean scriptingOpened = new ImBoolean(true);
+                boolean shouldSave = EditorInterface.ctrlS();
                 if (ImGui.begin("Scripting", scriptingOpened, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.MenuBar)) {
                     if (ImGui.beginMenuBar()) {
                         if (ImGui.beginMenu("View")) {
@@ -185,14 +189,18 @@ public class ResourcesInterfaceComponent {
                                     this.getEditorInterface().getEditor().redo(1);
                                 }
                             }
-                            ImGui.separator();
-                            if (ImGui.menuItem("Save")) {
-                                WBench.get().getProjectManager().getCurrentProject().writeScriptFile(selectedPath, this.getEditorInterface().getEditor().getText());
-                                WBench.get().getProjectManager().saveProject(false);
-                            }
                             ImGui.endMenu();
                         }
+                        if (!this.scriptTextTemplate.equals(this.getEditorInterface().getEditor().getText()) && ImGui.button("Save")) {
+                            shouldSave = true;
+                        }
                         ImGui.endMenuBar();
+                    }
+
+                    if (shouldSave) {
+                        final String textToSave = this.getEditorInterface().getEditor().getText();
+                        WBench.get().getProjectManager().getCurrentProject().writeScriptFile(selectedPath, textToSave);
+                        this.scriptTextTemplate = textToSave;
                     }
                 }
                 if (!scriptingOpened.get()) {
@@ -319,7 +327,7 @@ public class ResourcesInterfaceComponent {
         ImGui.treePop();
 
         ImGui.separator();
-        ImGui.text("Global Functions");
+        ImGui.text("Event handling functions");
         ImGui.separator();
         ImGui.treePush();
 

@@ -27,6 +27,10 @@ public class ItemsInterfaceComponent {
     }
 
     public void itemsContent() {
+        if (EditorInterface.ctrlC()) {
+            this.cloneSelected(this.getEditorInterface().getCurrentSelectedObject());
+        }
+
         for (WBenchObject wBenchObject : new HashSet<>(this.getEditorInterface().setOfSceneObjects())) {
             boolean flag = this.getEditorInterface().getCurrentSelectedObject() == wBenchObject;
             float x = ImGui.getContentRegionAvailX() - 50f;
@@ -165,6 +169,9 @@ public class ItemsInterfaceComponent {
     }
 
     private void cloneSelected(WBenchObject wBenchObject) {
+        if (wBenchObject == null) {
+            return;
+        }
         WBenchObject cloneObj = wBenchObject.clone();
         CullingAABB cullingAABB = cloneObj.getCullingData();
 

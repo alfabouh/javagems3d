@@ -29,7 +29,6 @@ public abstract class APIScriptsListing {
     public static final APIScriptingFunction onMapSpawnedBackgroundProp = new APIScriptingFunction("onMapSpawnedBackgroundProp", "Called when a background prop is spawned from a map template into the background", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(BackgroundJS.class, "backgroundjs"), new Pair<>(BackgroundPropJS.class, "propjs"));
     public static final APIScriptingFunction onMapSpawnedPointLight = new APIScriptingFunction("onMapSpawnedPointLight", "Called when a point light is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PointLightJS.class, "pointlightjs"));
 
-
     static {
         APIScriptsListing.addFunction(APIScriptsListing.onInitialization);
         APIScriptsListing.addFunction(APIScriptsListing.onMapPreGeneration);

@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.extension.texteditor.TextEditor;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
+import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
@@ -30,6 +31,7 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.controller.binding.WBenchBindingManager;
@@ -111,6 +113,14 @@ public class EditorInterface implements DearUIInterface {
         this.visibleObjects = null;
     }
 
+    public static boolean ctrlS() {
+        return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_S, false);
+    }
+
+    public static boolean ctrlC() {
+        return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_C, false);
+    }
+
     @Override
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
         if (this.getProjectManager().getCurrentProject() == null) {
@@ -119,6 +129,11 @@ public class EditorInterface implements DearUIInterface {
         if (false) {
             ImGui.setNextWindowFocus();
             ImGui.showDemoWindow();
+        }
+
+        if (EditorInterface.ctrlS()) {
+            WBench.get().getProjectManager().saveProject(false);
+            Log.get().info("Saved...");
         }
 
         boolean deleteCurrentObject = ImGui.isKeyPressed(WBench.get().getBindingManager().keyDelete.getKeyCode(), false);
@@ -134,8 +149,8 @@ public class EditorInterface implements DearUIInterface {
 
         ImGui.beginMainMenuBar();
         if (ImGui.beginMenu("WBenchProject")) {
-            if (ImGui.menuItem("Save Map")) {
-                Log.get().trace("Saved...");
+            if (ImGui.menuItem("Save")) {
+                Log.get().info("Saved...");
                 WBench.get().getProjectManager().saveProject(false);
             }
            // if (ImGui.menuItem("Compile")) {
@@ -225,8 +240,10 @@ public class EditorInterface implements DearUIInterface {
                     ImGui.text(binding.toString());
                 }
                 ImGui.separator();
-                ImGui.text("Left Mouse Key - Select Object");
-                ImGui.text("Right Mouse Key - Drag Camera");
+                ImGui.text("Left Mouse Key - Select Object/Action");
+                ImGui.text("Right Mouse Key - Move Camera/Action");
+                ImGui.text("Ctrl+S - Save");
+                ImGui.text("Ctrl+C - Clone Selected Object");
                 ImGui.treePop();
             }
             ImGui.endMenu();
