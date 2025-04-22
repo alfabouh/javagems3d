@@ -30,7 +30,7 @@ public class WBenchSettings implements Serializable {
     }
 
     @SuppressWarnings("all")
-    public static @NotNull WBenchSettings load(JGemsPath path) throws JGemsIOException {
+    public static WBenchSettings load(JGemsPath path) throws JGemsIOException {
         File file = new File(path.getFullPath(), WBenchSettings.extension);
         try {
             if (!file.exists()) {

@@ -1,3 +1,5 @@
+#extension GL_ARB_bindless_texture : enable
+
 layout (location = 0) out vec4 frag_color;
 
 in vec3 normals;
@@ -5,7 +7,7 @@ in vec3 pos;
 
 in vec2 uv_texture;
 uniform bool use_texture;
-uniform sampler2D diffuse_map;
+uniform uvec2 diffuse_map;
 uniform vec4 diffuse_color;
 
 vec4 calc_light_factor(vec3 colors, float brightness, vec3 vPos, vec3 light_dir, vec3 vNormal) {
@@ -32,7 +34,7 @@ vec4 calc_sun_light(vec3 vPos, vec3 vNormal) {
 void main()
 {
     float f1 = min(uv_texture.y, uv_texture.x) + 0.5;
-    frag_color = use_texture ? texture(diffuse_map, uv_texture) : vec4(vec3(f1), 1.0);
+    frag_color = use_texture ? texture(sampler2D(diffuse_map), uv_texture) : vec4(vec3(f1), 1.0);
     frag_color *= vec4(diffuse_color.rgb, 1.);
     frag_color *= calc_sun_light(pos, normals);
 }
