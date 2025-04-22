@@ -22,6 +22,7 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 import jgems_app.map.ExternalLoader;
 import jgems_app.map.TestMap;
+import jgems_app.map.TestMapAnim;
 import jgems_app.map.TestMapDirect;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -65,6 +66,12 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         int windowH = window.getWindowSize().y;
 
         this.renderContent(ui, window, frameDeltaTicks);
+        ui.buttonUI("AnimMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 210), new Vector2i(300, 60), 0x00ff00, 0.5f)
+                .setOnClick(() -> {
+                    JGems3D.get().loadMap(new TestMapAnim());
+                    ui.setPanel(new DefaultGamePanel(null));
+                });
+
         ui.buttonUI("DirectRendMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0x00ff00, 0.5f)
                 .setOnClick(() -> {
                     JGems3D.get().loadMap(new TestMapDirect());

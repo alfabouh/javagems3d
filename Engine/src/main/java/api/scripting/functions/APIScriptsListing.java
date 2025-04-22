@@ -116,6 +116,8 @@ public abstract class APIScriptsListing {
                 }
             }
             return args.length == function.getArgs().size();
-        } else return args == null && function.getArgs() == null;
+        } else {
+            return args == null && function.getArgs() == null;
+        }
     }
 }

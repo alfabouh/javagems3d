@@ -10,6 +10,7 @@ import api.scripting.functions.APIScriptingFunction;
 import api.scripting.functions.APIScriptsListing;
 import api.system.JGemsAPIEditorResources;
 import javagems3d.JGems3D;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import logger.Log;
@@ -29,6 +30,11 @@ public final class JGemsAPIScriptingEngine {
         this.apiEditorResources = apiEditorResources;
         this.gameWorldJS = new GameWorldJS(this.getScriptingManaging());
         this.clearEngine();
+    }
+
+    @SafeVarargs
+    public static APIScriptingFunction createJSFunction(String name, String description, Pair<Class<?>, String>... args) {
+        return APIScriptsListing.createNewFunction(name, description, args);
     }
 
     public static void warn(APIScriptingFunction apiScriptingFunction) {

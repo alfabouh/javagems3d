@@ -9,11 +9,12 @@ import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import api.application.workbench.resources.data.wbench.WBenchObjectData;
-import api.application.workbench.resources.data.wbench.properties.WBenchRenderProperties;
+import api.scripting.JGemsAPIScriptingEngine;
+import api.scripting.functions.APIScriptingFunction;
+import api.system.JGemsAPI;
 import api.system.JGemsAppEntry;
 import api.system.JGemsAppInstance;
 import javagems3d.JGems3D;
-import javagems3d.graphics.objects.rendering.attributes.JGemsRenderProperties;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.window.Window;
 import javagems3d.mapping.tags.Tag;
@@ -31,6 +32,8 @@ import org.joml.Vector3f;
 
 @JGemsAppEntry(id = "DefaultGame")
 public class AppTest extends JGemsApplication {
+    public static APIScriptingFunction scriptingFunction = JGemsAPIScriptingEngine.createJSFunction("testf", "Test fun");
+
     @JGemsAppInstance
     public static AppTest appTest;
 
