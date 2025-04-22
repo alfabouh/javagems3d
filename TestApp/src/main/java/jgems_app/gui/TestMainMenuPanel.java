@@ -32,7 +32,7 @@ public class TestMainMenuPanel extends AbstractPanelUI {
 
     public TestMainMenuPanel(PanelUI panelUI) {
         super(panelUI);
-        this.postFbo = new FBOTexture2DProgram(true);
+        this.postFbo = new FBOTexture2DProgram(true, false);
     }
 
     public static void renderMenuBackGround(Vector3f color) {

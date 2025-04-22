@@ -23,7 +23,7 @@ public class SunLightShadow extends Shadow {
     public SunLightShadow(IEnvironment environment, Vector2i shadowMapResolution, int totalCascades) {
         super(environment, shadowMapResolution);
         this.totalCascades = totalCascades;
-        this.sunShadowFBO = new FBOTexture2DProgram(true);
+        this.sunShadowFBO = new FBOTexture2DProgram(true, false);
         this.initCascades();
     }
 

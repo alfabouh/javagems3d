@@ -75,7 +75,7 @@ public class JGemsShadowScene extends ShadowScene {
             GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
             sunShadowFBO.connectTextureToBuffer(GL46.GL_COLOR_ATTACHMENT0, i);
             blurring.performUniform(new UniformString("blur"), UniformFunctions.FLOAT(blurringConst));
-            blurring.performUniformTextureBindless(new UniformString("texture_map"), sunShadowFBO.getTextureByIndex(i));
+            blurring.performUniformTexture(new UniformString("texture_map"), sunShadowFBO.getTextureByIndex(i));
             JGemsHelper.render().renderModel2D(screenModel, GL46.GL_TRIANGLES);
         }
         blurring.endShading();

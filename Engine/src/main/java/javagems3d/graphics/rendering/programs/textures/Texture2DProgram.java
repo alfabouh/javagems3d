@@ -9,12 +9,14 @@ import org.lwjgl.opengl.GL46;
 import java.nio.FloatBuffer;
 
 public class Texture2DProgram implements ITexture2DProgram, ITextureBindless {
+    private final boolean bindless;
     private int textureId;
     private int samplerId;
     private long bindlessHandler;
     private Vector2i size;
 
-    public Texture2DProgram() {
+    public Texture2DProgram(boolean bindless) {
+        this.bindless = bindless;
         this.size = null;
         this.bindlessHandler = 0;
         this.textureId = 0;
@@ -26,9 +28,8 @@ public class Texture2DProgram implements ITexture2DProgram, ITextureBindless {
         this.bindTexture();
         this.size = size;
         GL46.glTexImage2D(this.getTextureAttachment(), 0, properties.getTextureFormat(), this.getSize().x, this.getSize().y, 0, properties.getInternalFormat(), GL46.GL_FLOAT, pixels);
-        this.createSampler(properties);
         this.unBindTexture();
-        this.createBindlessHandling();
+        this.createSampler(properties);
     }
 
     protected void createSampler(@NotNull Properties properties) {
@@ -46,10 +47,8 @@ public class Texture2DProgram implements ITexture2DProgram, ITextureBindless {
         if (properties.getBorderColor() != null) {
             GL46.glSamplerParameterfv(this.getSamplerId(), GL46.GL_TEXTURE_BORDER_COLOR, properties.getBorderColor());
         }
-        if (this.isHandlerExists()) {
-            this.removeARB64Handling();
-            this.createBindlessHandling();
-        }
+        this.removeARB64Handling();
+        this.createBindlessHandling();
     }
 
     public void createBindlessHandling() {
@@ -89,6 +88,11 @@ public class Texture2DProgram implements ITexture2DProgram, ITextureBindless {
     @Override
     public long getBindingHandler() {
         return this.bindlessHandler;
+    }
+
+    @Override
+    public boolean canBeBindless() {
+        return this.bindless;
     }
 
     public static class Properties implements IProperties {

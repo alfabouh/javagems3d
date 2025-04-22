@@ -39,7 +39,7 @@ public class UIPictureStatic extends UIElement {
         JGemsShaderManager shaderManager = this.getCurrentShader();
         shaderManager.beginShading();
         shaderManager.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.imageModel, JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        shaderManager.performUniformTextureBindless(new UniformString("texture_map"), this.iImageSample);
+        shaderManager.performUniformTexture(new UniformString("texture_map"), this.iImageSample);
         JGemsHelper.render().renderModel2D(this.imageModel, GL46.GL_TRIANGLES);
         shaderManager.endShading();
     }

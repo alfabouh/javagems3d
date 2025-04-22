@@ -46,8 +46,6 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         this.unBindTexture();
         data.clear();
         this.setProperties(properties, true);
-
-        this.createBindlessHandling();
     }
 
     public void setProperties(IProperties properties, boolean update) {
@@ -71,10 +69,8 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
         if (anisotropic) {
             GL46.glSamplerParameterf(this.getSamplerId(), EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, GL46.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
         }
-        if (this.isHandlerExists()) {
-            this.removeARB64Handling();
-            this.createBindlessHandling();
-        }
+        this.removeARB64Handling();
+        this.createBindlessHandling();
     }
 
     public void createBindlessHandling() {
@@ -128,6 +124,11 @@ public class ImageTexture implements ICached, IPropertiesSample, ITexture2DProgr
     @Override
     public long getBindingHandler() {
         return this.bindlessHandler;
+    }
+
+    @Override
+    public boolean canBeBindless() {
+        return true;
     }
 
     public static final class Properties implements IProperties {

@@ -11,7 +11,7 @@ public class FBOCubeMapProgram {
     private int renderBufferId;
 
     public FBOCubeMapProgram() {
-        this.cubeMapTextureProgram = new CubeMapProgram();
+        this.cubeMapTextureProgram = new CubeMapProgram(false);
     }
 
     public void createFrameBufferCubeMapDepth(Vector2i size, int filtering, int clamp) {

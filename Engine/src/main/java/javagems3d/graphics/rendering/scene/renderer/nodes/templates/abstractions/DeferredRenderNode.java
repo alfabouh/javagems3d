@@ -101,9 +101,9 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
     }
 
     public void initFBOs() {
-        this.gBuffer = new FBOTexture2DProgram(true);
+        this.gBuffer = new FBOTexture2DProgram(true, false);
         if (this.useSsao()) {
-            this.ssaoBuffer = new FBOTexture2DProgram(true);
+            this.ssaoBuffer = new FBOTexture2DProgram(true, false);
         }
 
         T2DAttachmentContainer gBuffer = new T2DAttachmentContainer() {{

@@ -19,12 +19,12 @@ uniform vec3 camera_pos;
 uniform uvec2 ambient_cubemap;
 uniform bool useCubeMap;
 uniform bool isSsaoValid;
-uniform uvec2 gPositions;
-uniform uvec2 gNormals;
-uniform uvec2 gTexture;
-uniform uvec2 gEmission;
-uniform uvec2 gMetallicRoughness;
-uniform uvec2 ssao_map;
+uniform sampler2D gPositions;
+uniform sampler2D gNormals;
+uniform sampler2D gTexture;
+uniform sampler2D gEmission;
+uniform sampler2D gMetallicRoughness;
+uniform sampler2D ssao_map;
 
 #include "assets/jgems/shaders/libs/shadows"
 #include "assets/jgems/shaders/libs/lighting"
@@ -42,7 +42,7 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
         float p_brightness = p.brightness;
         vec3 params = getParams(p_brightness);
         float p_id = p.attachedShadowSceneId;
-        float shadow = p_id >= 0 ? calculate_point_light_shadows(samplerCube(point_light_cubemap[int(p_id)]), world_position.xyz, p.position.xyz) : 1.;
+        float shadow = p_id >= 0 ? calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz) : 1.;
         point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * shadow;
     }
 
@@ -76,11 +76,11 @@ vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
 
 void main()
 {
-    vec3 frag_pos = texture(sampler2D(gPositions), uv_coordinates).xyz;
-    vec3 normals = texture(sampler2D(gNormals), uv_coordinates).xyz;
-    vec4 g_texture = texture(sampler2D(gTexture), uv_coordinates);
-    vec3 emission = texture(sampler2D(gEmission), uv_coordinates).rgb;
-    vec2 metallic_roughness = texture(sampler2D(gMetallicRoughness), uv_coordinates).rg;
+    vec3 frag_pos = texture(gPositions, uv_coordinates).xyz;
+    vec3 normals = texture(gNormals, uv_coordinates).xyz;
+    vec4 g_texture = texture(gTexture, uv_coordinates);
+    vec3 emission = texture(gEmission, uv_coordinates).rgb;
+    vec2 metallic_roughness = texture(gMetallicRoughness, uv_coordinates).rg;
 
     vec4 view_pos = vec4(frag_pos, 1.0);
     vec4 world_position = out_inversed_view_matrix * view_pos;
@@ -97,7 +97,7 @@ void main()
     float f1 = 1.0;
     if (isSsaoValid) {
         float gray = dot(g_texture.rgb, vec3(0.299, 0.587, 0.114));
-        float AO = texture(sampler2D(ssao_map), uv_coordinates).r;
+        float AO = texture(ssao_map, uv_coordinates).r;
         f1 = pow(AO, (1.0 - gray) * 3.);
     }
 

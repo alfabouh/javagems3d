@@ -5,40 +5,40 @@ in vec2 uv_coordinates;
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 bloom_color;
 
-uniform uvec2 texture_map;
-uniform uvec2 bloom_map1;
-uniform uvec2 bloom_map2;
-uniform uvec2 accumulated_alpha;
-uniform uvec2 reveal_alpha;
+uniform sampler2D texture_map;
+uniform sampler2D bloom_map1;
+uniform sampler2D bloom_map2;
+uniform sampler2D accumulated_alpha;
+uniform sampler2D reveal_alpha;
 
 bool isApproximatelyEqual(float a, float b) {
-    return abs(a - b) <= (abs(a) < abs(b) ? abs(b) : abs(a)) * 1.0e-8f;
+  return abs(a - b) <= (abs(a) < abs(b) ? abs(b) : abs(a)) * 1.0e-8f;
 }
 
 float max3(vec3 v) {
-    return max(max(v.x, v.y), v.z);
+  return max(max(v.x, v.y), v.z);
 }
 
 void main() {
-  vec4 accum = texture(sampler2D(accumulated_alpha), uv_coordinates);
-  vec4 accum_blur = texture(sampler2D(bloom_map2), uv_coordinates);
-  float reveal = texture(sampler2D(reveal_alpha), uv_coordinates).r;
+  vec4 accum = texture(accumulated_alpha, uv_coordinates);
+  vec4 accum_blur = texture(bloom_map2, uv_coordinates);
+  float reveal = texture(reveal_alpha, uv_coordinates).r;
 
-    accum.rgb = isinf(max3(abs(accum.rgb))) ? vec3(accum.a) : accum.rgb;
+  accum.rgb = isinf(max3(abs(accum.rgb))) ? vec3(accum.a) : accum.rgb;
 
-    vec3 accumColor = accum.rgb / max(accum.a, 1e-5f);
-    vec4 mixedTransparency = vec4(accumColor, 1. - reveal);
+  vec3 accumColor = accum.rgb / max(accum.a, 1e-5f);
+  vec4 mixedTransparency = vec4(accumColor, 1. - reveal);
 
-    mixedTransparency = isApproximatelyEqual(reveal, 1.0f) ? vec4(0.) : mixedTransparency;
+  mixedTransparency = isApproximatelyEqual(reveal, 1.0f) ? vec4(0.) : mixedTransparency;
 
-  vec4 sceneColor = texture(sampler2D(texture_map), uv_coordinates) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
+  vec4 sceneColor = texture(texture_map, uv_coordinates) * (1.0 - mixedTransparency.a) + mixedTransparency * mixedTransparency.a;
 
-    vec3 accumBloomColor = accum_blur.rgb / max(accum_blur.a, 1e-5f);
-    vec4 mixedBloomTransparency = vec4(accumBloomColor, reveal <= 0.0 ? 1. : reveal);
+  vec3 accumBloomColor = accum_blur.rgb / max(accum_blur.a, 1e-5f);
+  vec4 mixedBloomTransparency = vec4(accumBloomColor, reveal <= 0.0 ? 1. : reveal);
 
-    frag_color = sceneColor;
+  frag_color = sceneColor;
 
-    vec4 transparencyBloom = mixedBloomTransparency * mixedBloomTransparency.a;
-  vec4 sceneBloom = texture(sampler2D(bloom_map1), uv_coordinates) * (length(mixedTransparency) <= 0 ? vec4(1.) : vec4(mixedTransparency.xyz, 1.0 - mixedTransparency.a));
-    bloom_color = sceneBloom + transparencyBloom;
+  vec4 transparencyBloom = mixedBloomTransparency * mixedBloomTransparency.a;
+  vec4 sceneBloom = texture(bloom_map1, uv_coordinates) * (length(mixedTransparency) <= 0 ? vec4(1.) : vec4(mixedTransparency.xyz, 1.0 - mixedTransparency.a));
+  bloom_color = sceneBloom + transparencyBloom;
 }

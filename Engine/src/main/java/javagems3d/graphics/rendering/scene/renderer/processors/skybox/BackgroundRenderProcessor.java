@@ -91,7 +91,7 @@ public class BackgroundRenderProcessor extends IRenderProcessor.Template {
         this.getDirectGeometryRenderProcessor().createResources();
         this.getIndirectGeometryRenderProcessor().createResources();
 
-        this.background = new FBOTexture2DProgram(true);
+        this.background = new FBOTexture2DProgram(true, false);
         T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGBA16F, GL46.GL_RGBA);
             add(GL46.GL_COLOR_ATTACHMENT1, GL46.GL_RGB16F, GL46.GL_RGB);

@@ -4,8 +4,8 @@ struct CascadeShadow {
 };
 
 uniform CascadeShadow cascade_shadow[CONST.SUN_SHADOW_CASCADES];
-uniform uvec2 sun_shadow_map[CONST.SUN_SHADOW_CASCADES];
-uniform uvec2 point_light_cubemap[CONST.MAX_POINT_LIGHTS_SHADOWS];
+uniform sampler2D sun_shadow_map[CONST.SUN_SHADOW_CASCADES];
+uniform samplerCube point_light_cubemap[CONST.MAX_POINT_LIGHTS_SHADOWS];
 uniform float far_plane;
 
 uniform float PosExp;
@@ -35,7 +35,7 @@ float EVSM(int idx, vec4 shadow_coord, float bias) {
     float negativeExponent = NegExp;
     vec2 exponents = vec2(positiveExponent, negativeExponent);
 
-    vec4 moments = texture(sampler2D(sun_shadow_map[idx]), shadow_coord.xy).xyzw;
+    vec4 moments = texture(sun_shadow_map[idx], shadow_coord.xy).xyzw;
     vec2 posMoments = vec2(moments.x, moments.z);
     vec2 negMoments = vec2(moments.y, moments.w);
     vec2 wDepth = warp(exponents, shadow_coord.z);

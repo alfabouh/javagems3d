@@ -39,7 +39,7 @@ public class FXAARenderProcessor extends IRenderProcessor.Template {
         fxaaFilter.beginShading();
         fxaaFilter.performUniform(new UniformString("use_fxaa"), UniformFunctions.BOOLEAN(JGemsConfig.SYSTEM.USE_FXAA));
         fxaaFilter.performUniform(new UniformString("resolution"), UniformFunctions.VEC2I(this.getRenderingResolution()));
-        fxaaFilter.performUniformTextureBindless(new UniformString("texture_map"), this.getInColor().getTextureByIndex(0));
+        fxaaFilter.performUniformTexture(new UniformString("texture_map"), this.getInColor().getTextureByIndex(0));
         fxaaFilter.performUniform(new UniformString("FXAA_SPAN_MAX"), UniformFunctions.FLOAT(this.getValue()));
         fxaaFilter.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getOpenGLRenderer().getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.render().renderModel2D(this.getOpenGLRenderer().getScreenModel(), GL46.GL_TRIANGLES);

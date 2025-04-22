@@ -91,8 +91,8 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
 
         ssaoComputeShader.performUniform(new UniformString("noiseScale"), UniformFunctions.VEC2I(new Vector2i(windowSize).div(JGemsConfig.SYSTEM.SSAO_NOISE_SIZE)));
         ssaoComputeShader.performUniform(new UniformString("projection_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getPerspectiveMatrix()));
-        ssaoComputeShader.performUniformTextureBindless(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
-        ssaoComputeShader.performUniformTextureBindless(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
+        ssaoComputeShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
+        ssaoComputeShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
         ssaoComputeShader.performUniformTextureBindless(new UniformString("ssaoNoise"), this.getSsaoNoiseTexture());
         ssaoComputeShader.performUniformTextureBindless(new UniformString("ssaoKernel"), this.getSsaoKernelTexture());
         GL46.glBindImageTexture(4, this.getSsaoBufferTexture().getTextureId(), 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16F);
@@ -110,7 +110,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     }
 
     protected Texture2DProgram calcSSAOKernel(int size) {
-        Texture2DProgram texture2DProgram = new Texture2DProgram();
+        Texture2DProgram texture2DProgram = new Texture2DProgram(true);
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
             float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;
@@ -137,7 +137,7 @@ public class SSAORenderProcessor extends IRenderProcessor.Template {
     }
 
     protected Texture2DProgram calcSSAONoise(int size) {
-        Texture2DProgram texture2DProgram = new Texture2DProgram();
+        Texture2DProgram texture2DProgram = new Texture2DProgram(true);
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(size * 3);
         for (int i = 0; i < size; ++i) {
             float x = JGems3D.random.nextFloat() * 2.0f - 1.0f;

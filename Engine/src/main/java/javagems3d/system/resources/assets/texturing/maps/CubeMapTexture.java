@@ -36,8 +36,6 @@ public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgr
         data.clear();
         this.unBindTexture();
         this.setProperties(properties, true);
-
-        this.createBindlessHandling();
     }
 
     public void setProperties(IProperties properties, boolean update) {
@@ -55,10 +53,8 @@ public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgr
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
         GL46.glSamplerParameteri(this.getSamplerId(), GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
-        if (this.isHandlerExists()) {
-            this.removeARB64Handling();
-            this.createBindlessHandling();
-        }
+        this.removeARB64Handling();
+        this.createBindlessHandling();
     }
 
     public void createBindlessHandling() {
@@ -111,6 +107,11 @@ public class CubeMapTexture implements ICached, IPropertiesSample, ICubeMapProgr
     @Override
     public long getBindingHandler() {
         return this.bindlessHandler;
+    }
+
+    @Override
+    public boolean canBeBindless() {
+        return true;
     }
 
     public static final class Data {

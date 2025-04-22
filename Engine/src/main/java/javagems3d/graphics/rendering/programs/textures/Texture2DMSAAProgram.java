@@ -14,9 +14,11 @@ public class Texture2DMSAAProgram implements ITexture2DProgram, ITextureBindless
     private int textureId;
     private int samplerId;
     private long bindlessHandler;
+    private final boolean bindless;
     private Vector2i size;
 
-    public Texture2DMSAAProgram(int msaa) {
+    public Texture2DMSAAProgram(int msaa, boolean bindless) {
+        this.bindless = bindless;
         this.size = null;
         this.msaa = msaa;
         this.bindlessHandler = 0;
@@ -29,10 +31,8 @@ public class Texture2DMSAAProgram implements ITexture2DProgram, ITextureBindless
         this.bindTexture();
         this.size = size;
         GL46.glTexImage2DMultisample(this.getTextureAttachment(), this.msaa, properties.getInternalFormat(), size.x, size.y, true);
-        this.createSampler(properties);
         this.unBindTexture();
-
-        this.createBindlessHandling();
+        this.createSampler(properties);
     }
 
     protected void createSampler(@NotNull Texture2DMSAAProgram.Properties properties) {
@@ -49,10 +49,8 @@ public class Texture2DMSAAProgram implements ITexture2DProgram, ITextureBindless
         if (properties.getBorderColor() != null) {
             GL46.glSamplerParameterfv(this.getSamplerId(), GL46.GL_TEXTURE_BORDER_COLOR, properties.getBorderColor());
         }
-        if (this.isHandlerExists()) {
-            this.removeARB64Handling();
-            this.createBindlessHandling();
-        }
+        this.removeARB64Handling();
+        this.createBindlessHandling();
     }
 
     public void createBindlessHandling() {
@@ -87,6 +85,11 @@ public class Texture2DMSAAProgram implements ITexture2DProgram, ITextureBindless
     @Override
     public long getBindingHandler() {
         return this.bindlessHandler;
+    }
+
+    @Override
+    public boolean canBeBindless() {
+        return this.bindless;
     }
 
     @Override

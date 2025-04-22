@@ -90,13 +90,13 @@ public abstract class ResourceManager {
             //float roughness_factor;
             byteBuffer.putFloat(roughnessFactor);
             //int diffuse_map_id;
-            byteBuffer.putInt(diffuseMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuseMap) : 0);
+            byteBuffer.putInt((diffuseMap != null && diffuseMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) diffuseMap) : 0);
             //int normals_map_id;
-            byteBuffer.putInt(normalsMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normalsMap) : 0);
+            byteBuffer.putInt((normalsMap != null && normalsMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) normalsMap) : 0);
             //int emission_map_id;
-            byteBuffer.putInt(emissionMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emissionMap) : 0);
+            byteBuffer.putInt((emissionMap != null && emissionMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) emissionMap) : 0);
             //int metallic_roughness_map_id;
-            byteBuffer.putInt(metallicRoughnessMap instanceof ITextureBindless ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallicRoughnessMap) : 0);
+            byteBuffer.putInt((metallicRoughnessMap != null && metallicRoughnessMap.isBindless()) ? bindlessTexturesDataCache.getTextureId((ITextureBindless) metallicRoughnessMap) : 0);
             //int texturing_code;
             byteBuffer.putInt(JGemsHelper.render().getTexturingCodeForShader(material));
             byteBuffer.putInt(0);
@@ -145,7 +145,7 @@ public abstract class ResourceManager {
             }
         }
         Log.get().debug("Loading " + totalMatrices + " animations in texture-buffer");
-        Texture2DProgram texture2DProgram = new Texture2DProgram();
+        Texture2DProgram texture2DProgram = new Texture2DProgram(true);
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(totalMatrices * 16);
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
             for (Animation animation : meshStructure3D.getAnimationsList()) {
@@ -200,7 +200,7 @@ public abstract class ResourceManager {
                 }
             }
             buffer.flip();
-            ResourceManager.DEFAULT_TEXTURE = new Texture2DProgram();
+            ResourceManager.DEFAULT_TEXTURE = new Texture2DProgram(true);
             Texture2DProgram texture2DProgram = (Texture2DProgram) ResourceManager.DEFAULT_TEXTURE;
             texture2DProgram.createTexture(new Vector2i(4, 4), new Texture2DProgram.Properties(GL46.GL_RGB, GL46.GL_RGB, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), buffer);
         }

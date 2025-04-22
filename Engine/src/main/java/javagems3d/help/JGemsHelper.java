@@ -526,7 +526,7 @@ public final class JGemsHelper {
             for (int i = 0; i < JGemsConfig.SYSTEM.SUN_SHADOW_CASCADES; i++) {
                 SunLightShadow.Cascade cascade = shadowScene.getSunLightShadow().getCascades().get(i);
                 if (shaderManager.isUniformExist(new UniformString("sun_shadow_map", i))) {
-                    shaderManager.performUniformTextureBindless(new UniformString("sun_shadow_map", i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
+                    shaderManager.performUniformTexture(new UniformString("sun_shadow_map", i), shadowScene.getSunLightShadow().getSunShadowFBO().getTextureByIndex(i));
                     shaderManager.performUniform(new UniformString("cascade_shadow", ".split_distance", i), UniformFunctions.FLOAT(cascade.getSplitDistance()));
                     shaderManager.performUniform(new UniformString("cascade_shadow", ".projection_view", i), UniformFunctions.MAT4F(cascade.getLightProjectionViewMatrix()));
                     shaderManager.performUniform(new UniformString("PosExp"), UniformFunctions.FLOAT(JGemsConfig.SYSTEM.EVSM_POSITIVE_EXPONENT));
@@ -537,7 +537,7 @@ public final class JGemsHelper {
                 PointLightShadow pointLightShadow = shadowScene.getPointLightShadows().get(i);
                 shaderManager.performUniform(new UniformString("far_plane"), UniformFunctions.FLOAT(pointLightShadow.farPlane()));
                 if (shaderManager.isUniformExist(new UniformString("point_light_cubemap", i))) {
-                    shaderManager.performUniformTextureBindless(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
+                    shaderManager.performUniformTexture(new UniformString("point_light_cubemap", i), pointLightShadow.getPointLightCubeMap().getCubeMapProgram());
                 }
             }
             shaderManager.enableWarns();

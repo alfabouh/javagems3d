@@ -96,7 +96,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     protected void setDefaultNodes() {
-        IDeferredRenderNode defaultDeferredNode = new JGemsDeferredRenderNode(new FBOTexture2DProgram(true), this);
+        IDeferredRenderNode defaultDeferredNode = new JGemsDeferredRenderNode(new FBOTexture2DProgram(true, false), this);
         IForwardRenderNode forwardRenderNode = new JGemsForwardRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
         ITransparencyRenderNode transparencyRenderNode = new JGemsTransparencyRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
         IGluingRenderNode gluingRenderNode = new JGemsGluingRenderNode(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
@@ -258,7 +258,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     protected void renderFinalSceneInMainBuffer(FBOTexture2DProgram finalFBO) {
         JGemsShaderManager imgShader = JGemsResourceManager.globalShaderAssets.gui_image;
         imgShader.beginShading();
-        imgShader.performUniformTextureBindless(new UniformString("texture_map"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
+        imgShader.performUniformTexture(new UniformString("texture_map"), finalFBO.getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
         imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
         JGemsHelper.render().renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
         imgShader.endShading();

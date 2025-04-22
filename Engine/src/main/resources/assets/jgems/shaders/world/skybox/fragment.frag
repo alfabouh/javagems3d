@@ -24,7 +24,7 @@ layout (std430, binding = 7) buffer WorldFog {
     Fog fog;
 };
 
-uniform uvec2 skybox_background;
+uniform sampler2D skybox_background;
 uniform uvec2 skybox_cube;
 uniform mat4 view_mat_inverted;
 uniform bool covered_by_fog;
@@ -41,8 +41,8 @@ void main()
     float sunFactor = pow(smoothstep(0.98, 1.0, scos), 32.);
 
     vec4 color = vec4(sun.color, 1.0);
-    vec2 texel_size = textureSize(sampler2D(skybox_background), 0);
-    vec4 background = texture(sampler2D(skybox_background), gl_FragCoord.xy / texel_size);
+    vec2 texel_size = textureSize(skybox_background, 0);
+    vec4 background = texture(skybox_background, gl_FragCoord.xy / texel_size);
 
     vec3 sunEffect = color.xyz * brightness * sunFactor;
     vec4 tex2d_colors = vec4((diffuse.rgb * brightness) + sunEffect, 1.0);

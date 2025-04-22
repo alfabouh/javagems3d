@@ -65,7 +65,7 @@ public class SkyboxRenderProcessor extends IRenderProcessor.Template {
         skyShaderManager.performUniform(new UniformString("covered_by_fog"), UniformFunctions.BOOLEAN(this.getSkyBox().isSkyCoveredByFog()));
         skyShaderManager.performUniform(new UniformString("view_mat_inverted"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix().invert()));
         skyShaderManager.performModel3DViewMatrix(new UniformString("model_view_matrix"), viewMatrix);
-        skyShaderManager.performUniformTextureBindless(new UniformString("skybox_background"), this.getBackgroundTexture());
+        skyShaderManager.performUniformTexture(new UniformString("skybox_background"), this.getBackgroundTexture());
         JGemsHelper.render().renderModel3D(model, MeshStructure3D.SOLID_LAYER, GL46.GL_TRIANGLES);
         skyShaderManager.endShading();
         GL46.glDepthFunc(GL46.GL_LESS);

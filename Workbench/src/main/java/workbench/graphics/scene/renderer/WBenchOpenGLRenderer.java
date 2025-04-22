@@ -67,7 +67,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         super(window, wBenchWorld);
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
-        this.editorScenePreview = new FBOTexture2DProgram(true);
+        this.editorScenePreview = new FBOTexture2DProgram(true, false);
         WBenchOpenGLRenderer.editorInterface = new EditorInterface(this, this.editorScenePreview, WBench.get().getProjectManager());
         WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
 
@@ -88,7 +88,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     protected void setDefaultNodes() {
-        IDeferredRenderNode defaultDeferredNode = new WBenchDeferredRenderNode(new FBOTexture2DProgram(true), this);
+        IDeferredRenderNode defaultDeferredNode = new WBenchDeferredRenderNode(new FBOTexture2DProgram(true, false), this);
         IForwardRenderNode forwardRenderNode = new WBenchForwardRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
         ITransparencyRenderNode transparencyRenderNode = new WBenchTransparencyRenderNode(defaultDeferredNode.getOutColorBuffer(), this);
         IGluingRenderNode gluingRenderNode = new WBenchGluingRenderNode(transparencyRenderNode.getOutColorBuffer(), forwardRenderNode.getOutColorBuffer(), this);
@@ -196,14 +196,6 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         OpenGLRenderer.setViewPort(this.getWindowSize());
         uiRenderNode.onRender(frameTicking);
         editorInterface1.renderPreviewItem();
-
-        //  WBenchOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(new Vector3f(), new Vector3f(2.0f, 12.0f, 2.0f), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-        //JGemsShaderManager imgShader = WBenchResourceManager.localShaderAssets.gui_image;
-        //imgShader.beginShading();
-        //imgShader.performUniformTextureBindless(new UniformString("texture_map"), deferredRenderNode.getOutColorBuffer().getTextureByIndex(0));//finalFBO.getTextureByIndex(0)
-        //imgShader.performOrthographicMatrix(new UniformString("projection_model_matrix"), this.getScreenModel(), JGemsTransformManager.INSTANCE.getOrthographicMatrix());
-        //JGemsHelper.render().renderModel2D(this.getScreenModel(), GL46.GL_TRIANGLES);
-        //imgShader.endShading();
     }
 
     @Override

@@ -54,13 +54,13 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
             }
         }
         deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix()));
-        deferredShader.performUniformTextureBindless(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
-        deferredShader.performUniformTextureBindless(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
-        deferredShader.performUniformTextureBindless(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));
-        deferredShader.performUniformTextureBindless(new UniformString("gEmission"), gBuffer.getTextureByIndex(3));
-        deferredShader.performUniformTextureBindless(new UniformString("gMetallicRoughness"), gBuffer.getTextureByIndex(4));
+        deferredShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
+        deferredShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
+        deferredShader.performUniformTexture(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));
+        deferredShader.performUniformTexture(new UniformString("gEmission"), gBuffer.getTextureByIndex(3));
+        deferredShader.performUniformTexture(new UniformString("gMetallicRoughness"), gBuffer.getTextureByIndex(4));
         if (ssaoBuffer != null) {
-            deferredShader.performUniformTextureBindless(new UniformString("ssao_map"), ssaoBuffer.getTextureByIndex(0));
+            deferredShader.performUniformTexture(new UniformString("ssao_map"), ssaoBuffer.getTextureByIndex(0));
             deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(true));
         } else {
             deferredShader.performUniform(new UniformString("isSsaoValid"), UniformFunctions.BOOLEAN(false));

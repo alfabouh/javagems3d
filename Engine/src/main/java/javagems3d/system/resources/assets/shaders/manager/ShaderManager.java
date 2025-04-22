@@ -239,9 +239,9 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             }
             return;
         }
-        if (!(program instanceof ITextureBindless) || !((ITextureBindless) program).isHandlerExists()) {
+        if (!program.isBindless()) {
             if (this.isWarnsEnabled()) {
-                Log.get().warn("[" + this + "] Texture is not bindless! Uniform: " + uniform);
+                Log.get().error("[" + this + "] Texture is not bindless! Uniform: " + uniform);
             }
             return;
         }

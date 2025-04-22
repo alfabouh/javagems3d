@@ -14,9 +14,11 @@ public class CubeMapProgram implements ICubeMapProgram, ITextureBindless {
     private int textureId;
     private int samplerId;
     private long bindlessHandler;
+    private final boolean bindless;
     private Vector2i[] size;
 
-    public CubeMapProgram() {
+    public CubeMapProgram(boolean bindless) {
+        this.bindless = bindless;
         this.bindlessHandler = 0;
         this.textureId = 0;
         this.samplerId = 0;
@@ -30,10 +32,8 @@ public class CubeMapProgram implements ICubeMapProgram, ITextureBindless {
             this.size[i] = size6x;
             GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, properties.getInternalFormat(), size6x.x, size6x.y, 0, properties.getTextureFormat(), GL46.GL_FLOAT, (ByteBuffer) null);
         }
-        this.createSampler(properties);
         this.unBindTexture();
-
-        this.createBindlessHandling();
+        this.createSampler(properties);
     }
 
     protected void createSampler(@NotNull CubeMapProgram.Properties properties) {
@@ -51,10 +51,8 @@ public class CubeMapProgram implements ICubeMapProgram, ITextureBindless {
         if (properties.getBorderColor() != null) {
             GL46.glSamplerParameterfv(this.getSamplerId(), GL46.GL_TEXTURE_BORDER_COLOR, properties.getBorderColor());
         }
-        if (this.isHandlerExists()) {
-            this.removeARB64Handling();
-            this.createBindlessHandling();
-        }
+        this.removeARB64Handling();
+        this.createBindlessHandling();
     }
 
     public void createBindlessHandling() {
@@ -89,6 +87,11 @@ public class CubeMapProgram implements ICubeMapProgram, ITextureBindless {
     @Override
     public long getBindingHandler() {
         return this.bindlessHandler;
+    }
+
+    @Override
+    public boolean canBeBindless() {
+        return this.bindless;
     }
 
     @Override

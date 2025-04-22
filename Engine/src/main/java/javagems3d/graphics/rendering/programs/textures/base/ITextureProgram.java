@@ -20,6 +20,10 @@ public interface ITextureProgram extends ISample {
         GL46.glBindTexture(this.getTextureAttachment(), 0);
     }
 
+    default boolean isBindless() {
+        return (this instanceof ITextureBindless) && ((ITextureBindless) this).isHandlerExists();
+    }
+
     int getSamplerId();
     int getTextureId();
     int getTextureAttachment();

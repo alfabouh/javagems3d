@@ -52,7 +52,7 @@ public abstract class PostFXRenderNode extends IRenderNode.Template implements I
     }
 
     public void initFBOs() {
-        this.outColor = new FBOTexture2DProgram(true);
+        this.outColor = new FBOTexture2DProgram(true, false);
         T2DAttachmentContainer clr = new T2DAttachmentContainer() {{
             add(GL46.GL_COLOR_ATTACHMENT0, GL46.GL_RGB, GL46.GL_RGB);
         }};

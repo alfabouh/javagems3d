@@ -43,7 +43,7 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         this.indirectDeferredRenderingObjects = new HashSet<>();
         this.directDeferredRenderingObjects = new HashSet<>();
         this.inColor = inColor;
-        this.outColor = new FBOTexture2DProgram(true);
+        this.outColor = new FBOTexture2DProgram(true, false);
     }
 
     @Override
