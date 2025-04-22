@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL46;
 
 public class DefaultDirectShadowRenderFabric extends DefaultDirectRenderFabric {
     public DefaultDirectShadowRenderFabric() {
-        super(Stage.SHADOW_DIRECT);
+        super(Stage.SHADOW_DIRECT, false);
     }
 
     @Override

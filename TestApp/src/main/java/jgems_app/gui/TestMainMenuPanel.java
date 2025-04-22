@@ -22,6 +22,7 @@ import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.path.JGemsPath;
 import jgems_app.map.ExternalLoader;
 import jgems_app.map.TestMap;
+import jgems_app.map.TestMapDirect;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -64,9 +65,9 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         int windowH = window.getWindowSize().y;
 
         this.renderContent(ui, window, frameDeltaTicks);
-        ui.buttonUI("SponzaMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0xffffff, 0.5f)
+        ui.buttonUI("DirectRendMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0x00ff00, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().loadMap(new TestMap());
+                    JGems3D.get().loadMap(new TestMapDirect());
                     ui.setPanel(new DefaultGamePanel(null));
                 });
 

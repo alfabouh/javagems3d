@@ -61,9 +61,8 @@ public class ModelMeshLoader implements ILoadingHelper {
             meshGroup = this.getResourceCache().getCachedObjectUnSafeCast(grString);
             Log.get().info("Mesh " + this.getPath() + " picked from cache");
         } else {
-            meshGroup = this.processMeshGroup(this.getShaderToDetermineTexturesWithTransparency(), this.getGameResources(), attachMeshBuffer, animated);
+            meshGroup = this.processMeshGroup(this.getShaderToDetermineTexturesWithTransparency(), this.getGameResources(), attachMeshBuffer, keepNodesInMemory, animated);
             this.getResourceCache().addObjectInBuffer(grString, meshGroup);
-            Log.get().info("Mesh " + this.getPath() + " successfully created");
         }
         if (meshGroup == null) {
             throw new JGemsNullException("There was an error, while processing the model");
@@ -87,7 +86,6 @@ public class ModelMeshLoader implements ILoadingHelper {
         } else {
             meshBuffer = this.processMeshBuffer(this.getShaderToDetermineTexturesWithTransparency(), this.getGameResources(), animated);
             this.getResourceCache().addObjectInBuffer(bffString, meshBuffer);
-            Log.get().info("Mesh " + this.getPath() + " successfully created");
         }
         if (meshBuffer == null) {
             throw new JGemsNullException("There was an error, while processing the model");
@@ -151,7 +149,7 @@ public class ModelMeshLoader implements ILoadingHelper {
         systemResources.processMessage("Loaded animation(size:" + animations.size() + ")", 0xff00ff);
     }
 
-    private MeshGroup processMeshGroup(@Nullable JGemsShaderManager computeTransparentPixels, SystemResources systemResources, boolean attachMeshBuffer, boolean animated) {
+    private MeshGroup processMeshGroup(@Nullable JGemsShaderManager computeTransparentPixels, SystemResources systemResources, boolean attachMeshBuffer, boolean keepMeshBufferNodesInMemory, boolean animated) {
         MeshGroup meshGroup = new MeshGroup();
         MeshBuffer meshBuffer = attachMeshBuffer ? new MeshBuffer() : null;
 
@@ -193,14 +191,16 @@ public class ModelMeshLoader implements ILoadingHelper {
                     meshBuffer.putNode(MeshStructure3D.chooseLayer(material), new MeshNode3D<>(meshData2, material));
                     systemResources.getResourceArrays().getMeshBuffersDataArray().addMeshBuffer(meshBuffer);
                     meshGroup.setLinkedMeshBuffer(meshBuffer);
-                    meshBuffer.setKeepNodesInMemory(false);
+                    meshBuffer.setKeepNodesInMemory(keepMeshBufferNodesInMemory);
                 }
             }
 
             if (skeletonData != null) {
                 this.readAnimations(bonesList, aiScene, meshGroup, meshBuffer);
             }
+
             Assimp.aiReleaseImport(aiScene);
+            Log.get().info("Mesh " + this.getPath() + " successfully created");
         } catch (Exception e) {
             Log.get().error(e.getMessage());
             return null;
@@ -247,7 +247,9 @@ public class ModelMeshLoader implements ILoadingHelper {
             if (skeletonData != null) {
                 this.readAnimations(bonesList, aiScene, meshBuffer);
             }
+
             Assimp.aiReleaseImport(aiScene);
+            Log.get().info("Mesh " + this.getPath() + " successfully created");
         } catch (Exception e) {
             Log.get().exception(e);
             return null;

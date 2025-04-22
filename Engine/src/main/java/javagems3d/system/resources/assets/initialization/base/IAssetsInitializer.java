@@ -68,7 +68,9 @@ public interface IAssetsInitializer {
         dataMesh.putVertexBufferF(DefaultAttributePointers.ATTR_POSITIONS, JGemsUtils.convertFloatsList(IAssetsInitializer.CubeModelPos));
         dataMesh.putVertexIndexes(JGemsUtils.convertIntsList(IAssetsInitializer.CubeModelInd));
         MeshNode3D<DataMesh> meshBufferMeshNode3D = new MeshNode3D<>(dataMesh, new Material(new Color4Texture(1.0f, 1.0f, 1.0f)));
-        return new MeshBuffer(meshBufferMeshNode3D);
+        MeshBuffer meshBuffer = new MeshBuffer(meshBufferMeshNode3D);
+        meshBuffer.setKeepNodesInMemory(true);
+        return meshBuffer;
     }
 
     static MeshGroup createDefaultCubeGroup() {

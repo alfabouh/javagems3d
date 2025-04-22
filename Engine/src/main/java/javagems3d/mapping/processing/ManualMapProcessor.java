@@ -48,7 +48,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false, false);
+            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04.gltf"), false, false);
 
             JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
             JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
@@ -79,14 +79,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
-            MeshBuffer meshGroup = this.getLocalResources().createMeshBuffer(new JGemsPath("/assets/jgems/models/skybox_m/city.gltf"), false, false);
-            RenderAttributes renderAttributes = new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault());
-            renderAttributes.getProperties().setValueFloat(JGemsRenderProperties.KEY_ALPHA_DISCARD, 0.5f);
-            SceneWorldProp sceneProp3 = new SceneWorldProp("city", (SceneWorld) background.getWorld(), new PropRenderData(renderAttributes, meshGroup));
-            sceneProp3.getModel().getPose().setPosition(new Vector3f(0.0f, -3.0f, 0.0f));
-            sceneProp3.getModel().getPose().setRotation(new Vector3f(0.0f, (float) Math.toRadians(0.0f), 0.0f));
-            sceneProp3.getModel().getPose().setScaling(new Vector3f(14.0f));
-            background.addObject(sceneProp3);
+            skyBox.setSky2DTexture(JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
         }
 
         @Override

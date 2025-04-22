@@ -10,12 +10,12 @@ import javagems3d.system.service.path.JGemsPath;
 public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup defaultCube_gr;
     public MeshBuffer defaultCube_bff;
-    public MeshBuffer grassCube;
+    public MeshGroup grassCube;
 
     @Override
     public void load(SystemResources systemResources) {
         this.createDefaults(systemResources);
-        this.grassCube = systemResources.createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), true, false);
+        this.grassCube = systemResources.createMeshGroup_Buffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), true, false);
     }
 
     private void createDefaults(SystemResources systemResources) {

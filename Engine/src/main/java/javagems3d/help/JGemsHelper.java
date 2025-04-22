@@ -462,7 +462,7 @@ public final class JGemsHelper {
             ISampleColor3 emissionColor = material.getEmissionColor();
 
             ITexture2DProgram metallicRoughnessMap = material.getEmissionMap();
-            ITexture2DProgram normalsMap = material.getEmissionMap();
+            ITexture2DProgram normalsMap = material.getNormalsMap();
 
             float metallicFactor = material.getMetallicFactor();
             float roughnessFactor = material.getRoughnessFactor();
@@ -493,11 +493,11 @@ public final class JGemsHelper {
             }
 
             if (emissionMap != null) {
-                shaderManager.performUniformSample(new UniformString("emissionMap"), emissionMap);
+                shaderManager.performUniformSample(new UniformString("emission_map"), emissionMap);
             }
 
             if (normalsMap != null) {
-                shaderManager.performUniformSample(new UniformString("normalsMap"), normalsMap);
+                shaderManager.performUniformSample(new UniformString("normals_map"), normalsMap);
             }
 
             if (metallicRoughnessMap != null) {

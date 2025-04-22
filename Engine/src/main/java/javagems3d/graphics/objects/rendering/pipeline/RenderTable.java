@@ -48,11 +48,11 @@ public class RenderTable implements ICopyable<RenderTable> {
         RenderTable.DEFAULT_TRANSPARENCY_SHADER = DEFAULT_BLENDED_TRANSPARENCY_SHADER;
     }
 
-    public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC = new DefaultDirectRenderFabric(Stage.DEFERRED_DIRECT);
-    public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC_FOR = new DefaultDirectRenderFabric(Stage.FORWARD);
+    public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC = new DefaultDirectRenderFabric(Stage.DEFERRED_DIRECT, false);
+    public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC_FOR = new DefaultDirectRenderFabric(Stage.FORWARD, false);
     public static IRenderFabric DEFAULT_SCENE_RENDER_FABRIC_IND = new DefaultIndirectRenderFabric(Stage.DEFERRED_INDIRECT, IndirectRenderFabric.DEFAULT_FUNC);
 
-    public static IRenderFabric DEFAULT_TRANSPARENCY_RENDER_FABRIC = RenderTable.DEFAULT_SCENE_RENDER_FABRIC;
+    public static IRenderFabric DEFAULT_TRANSPARENCY_RENDER_FABRIC = new DefaultDirectRenderFabric(Stage.DEFERRED_DIRECT, true);
     public static IRenderFabric DEFAULT_TRANSPARENCY_RENDER_FABRIC_IND = RenderTable.DEFAULT_SCENE_RENDER_FABRIC_IND;
 
     public static IRenderFabric DEFAULT_SHADOW_RENDER_FABRIC = new DefaultDirectShadowRenderFabric();

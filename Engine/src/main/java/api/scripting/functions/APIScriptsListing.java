@@ -15,33 +15,41 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class APIScriptsListing {
-    public static final APIScriptingFunction onInitialization = new APIScriptingFunction("onInitialization", "Game objects initialization manager", new Pair<>(InitializationJS.class, "onitializationjs"));
-    public static final APIScriptingFunction onMapPreGeneration = new APIScriptingFunction("onMapPreGeneration", "Called before map init", new Pair<>(GameWorldJS.class, "gameworldjs"));
-    public static final APIScriptingFunction onMapPostGeneration = new APIScriptingFunction("onMapPostGeneration", "Called after map init", new Pair<>(GameWorldJS.class, "gameworldjs"));
-    public static final APIScriptingFunction onMapClear = new APIScriptingFunction("onMapClear", "Called before map clear", new Pair<>(GameWorldJS.class, "gameworldjs"));
-    public static final APIScriptingFunction onBackgroundClear = new APIScriptingFunction("onBackgroundClear", "Called before background clear", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(BackgroundJS.class, "backgroundjs"));
-    public static final APIScriptingFunction onPhysicsWorldUpdate = new APIScriptingFunction("onPhysicsWorldUpdate", "Called on physics world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
-    public static final APIScriptingFunction onSceneWorldUpdate = new APIScriptingFunction("onSceneWorldUpdate", "Called on scene world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
-    public static final APIScriptingFunction onMapSpawnedEntity = new APIScriptingFunction("onMapSpawnedEntity", "Called when an entity is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(EntityJS.class, "entityjs"));
-    public static final APIScriptingFunction onMapSpawnedProp = new APIScriptingFunction("onMapSpawnedProp", "Called when a prop is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PropJS.class, "propjs"));
-    public static final APIScriptingFunction onMapSpawnedBackgroundProp = new APIScriptingFunction("onMapSpawnedBackgroundProp", "Called when a background prop is spawned from a map template into the background", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(BackgroundJS.class, "backgroundjs"), new Pair<>(BackgroundPropJS.class, "propjs"));
-    public static final APIScriptingFunction onMapSpawnedPointLight = new APIScriptingFunction("onMapSpawnedPointLight", "Called when a point light is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PointLightJS.class, "pointlightjs"));
+    public static APIScriptingFunction onInitialization = null;
+    public static APIScriptingFunction onMapPreGeneration = null;
+    public static APIScriptingFunction onMapPostGeneration = null;
+    public static APIScriptingFunction onMapClear = null;
+    public static APIScriptingFunction onBackgroundClear = null;
+    public static APIScriptingFunction onPhysicsWorldUpdate = null;
+    public static APIScriptingFunction onSceneWorldUpdate = null;
+    public static APIScriptingFunction onMapSpawnedEntity = null;
+    public static APIScriptingFunction onMapSpawnedProp = null;
+    public static APIScriptingFunction onMapSpawnedBackgroundProp = null;
+    public static APIScriptingFunction onMapSpawnedPointLight = null;
+
     static final Set<APIScriptingFunction> apiScriptingFunctions = new LinkedHashSet<>();
     private static final String apiScriptTemplate;
 
-    static {
-        APIScriptsListing.addFunction(APIScriptsListing.onInitialization);
-        APIScriptsListing.addFunction(APIScriptsListing.onMapPreGeneration);
-        APIScriptsListing.addFunction(APIScriptsListing.onMapPostGeneration);
-        APIScriptsListing.addFunction(APIScriptsListing.onMapClear);
-        APIScriptsListing.addFunction(APIScriptsListing.onPhysicsWorldUpdate);
-        APIScriptsListing.addFunction(APIScriptsListing.onSceneWorldUpdate);
-        APIScriptsListing.addFunction(APIScriptsListing.onMapSpawnedEntity);
-        APIScriptsListing.addFunction(APIScriptsListing.onMapSpawnedProp);
-        APIScriptsListing.addFunction(APIScriptsListing.onMapSpawnedPointLight);
+    @SafeVarargs
+    public static APIScriptingFunction createNewFunction(String name, String description, Pair<Class<?>, String>... args) {
+        APIScriptingFunction apiScriptingFunction = new APIScriptingFunction(name, description, args);
+        APIScriptsListing.addFunction(apiScriptingFunction);
+        return apiScriptingFunction;
     }
 
     static {
+        onInitialization = APIScriptsListing.createNewFunction("onInitialization", "Game objects initialization manager", new Pair<>(InitializationJS.class, "onitializationjs"));
+        onMapPreGeneration = APIScriptsListing.createNewFunction("onMapPreGeneration", "Called before map init", new Pair<>(GameWorldJS.class, "gameworldjs"));
+        onMapPostGeneration = APIScriptsListing.createNewFunction("onMapPostGeneration", "Called after map init", new Pair<>(GameWorldJS.class, "gameworldjs"));
+        onMapClear = APIScriptsListing.createNewFunction("onMapClear", "Called before map clear", new Pair<>(GameWorldJS.class, "gameworldjs"));
+        onBackgroundClear = APIScriptsListing.createNewFunction("onBackgroundClear", "Called before background clear", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(BackgroundJS.class, "backgroundjs"));
+        onPhysicsWorldUpdate = APIScriptsListing.createNewFunction("onPhysicsWorldUpdate", "Called on physics world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
+        onSceneWorldUpdate = APIScriptsListing.createNewFunction("onSceneWorldUpdate", "Called on scene world update", new Pair<>(GameWorldJS.class, "gameworldjs"));
+        onMapSpawnedEntity = APIScriptsListing.createNewFunction("onMapSpawnedEntity", "Called when an entity is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(EntityJS.class, "entityjs"));
+        onMapSpawnedProp = APIScriptsListing.createNewFunction("onMapSpawnedProp", "Called when a prop is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PropJS.class, "propjs"));
+        onMapSpawnedBackgroundProp = APIScriptsListing.createNewFunction("onMapSpawnedBackgroundProp", "Called when a background prop is spawned from a map template into the background", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(BackgroundJS.class, "backgroundjs"), new Pair<>(BackgroundPropJS.class, "propjs"));
+        onMapSpawnedPointLight = APIScriptsListing.createNewFunction("onMapSpawnedPointLight", "Called when a point light is spawned from a map template into the game world", new Pair<>(GameWorldJS.class, "gameworldjs"), new Pair<>(PointLightJS.class, "pointlightjs"));
+
         Set<APIScriptingFunction> apiDefaultFunctions = new LinkedHashSet<APIScriptingFunction>() {{
             add(APIScriptsListing.onInitialization);
             add(APIScriptsListing.onMapPreGeneration);

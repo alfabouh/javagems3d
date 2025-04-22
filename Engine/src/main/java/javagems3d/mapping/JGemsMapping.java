@@ -79,6 +79,7 @@ public final class JGemsMapping {
             mapActionCallback.onDestroying(this.getCurrentLoadedMap(), this.getResourceManager());
         }
         this.currentLoadedMap = null;
+        this.getSceneWorld().getEnvironment().setEnvironmentDefaults();
         JGemsAPI.getAPIScripting().getGameWorldJS().clear();
         this.destroyWorlds();
     }

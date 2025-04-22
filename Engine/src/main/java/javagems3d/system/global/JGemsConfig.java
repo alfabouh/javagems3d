@@ -50,9 +50,9 @@ public abstract class JGemsConfig {
 
         public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 22);
 
-        public static int MAX_INDIRECT_RENDERING_MESH_PROPERTIES = 512;
-        public static int MAX_INDIRECT_RENDERING_MESH_MATERIALS = 256;
-        public static int MAX_INDIRECT_RENDERING_MESH_DATASETS = 2048;
+        public static int MAX_INDIRECT_RENDERING_MESH_PROPERTIES = 512 * 20;
+        public static int MAX_INDIRECT_RENDERING_MESH_MATERIALS = 256 * 20;
+        public static int MAX_INDIRECT_RENDERING_MESH_DATASETS = 2048 * 20;
         public static int MAX_BINDLESS_TEXTURES = 1024;
 
 

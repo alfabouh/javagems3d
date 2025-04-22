@@ -69,10 +69,12 @@ public class DearUIGameInterface implements DearUIInterface {
             } else {
                 ImGui.text(String.format("%s %s %s", dynamicPlayer.getPosition().x, dynamicPlayer.getPosition().y, dynamicPlayer.getPosition().z));
             }
-            ImGui.text("entities: " + JGemsHelper.get().getPhysicsWorld().countItems());
-            ImGui.text("tick: " + sceneWorld.getTicks());
             ImGui.text("current speed(scalar): " + String.format("%.4f", entityPlayerSP.getScalarSpeed()));
+        } else if (JGemsHelper.camera().getCurrentCamera() != null) {
+            ImGui.text(String.format("%s %s %s", JGemsHelper.camera().getCurrentCamera().getCamPosition().x, JGemsHelper.camera().getCurrentCamera().getCamPosition().y, JGemsHelper.camera().getCurrentCamera().getCamPosition().z));
         }
+        ImGui.text("entities: " + JGemsHelper.get().getPhysicsWorld().countItems());
+        ImGui.text("tick: " + sceneWorld.getTicks());
 
         if (ImGui.collapsingHeader("Speed Profiler")) {
             Set<Map.Entry<String, SpeedProfiler.Group>> currProfSet = this.snapShot != null ? this.snapShot : SpeedProfiler.getAllProfilerGroups();

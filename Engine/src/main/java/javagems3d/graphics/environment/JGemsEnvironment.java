@@ -20,7 +20,7 @@ public class JGemsEnvironment implements IEnvironment {
     private final IWorld world;
 
     public JGemsEnvironment(IWorld world) {
-        this.skyBox = new JGemsSkyBox(world, 4.0f, JGemsResourceManager.globalTextureAssets.defaultSkyboxCubeMap);
+        this.skyBox = new JGemsSkyBox(world, 4.0f, null);
         this.fogManager = new JGemsFogScene();
         this.lightManager = new JGemsLightScene(JGemsResourceManager.globalShaderAssets.SunLightData, JGemsResourceManager.globalShaderAssets.PointLightsData,this);
         this.shadowScene = new JGemsShadowScene(this);

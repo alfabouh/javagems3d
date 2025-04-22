@@ -150,8 +150,8 @@ public abstract class DeferredRenderNode extends IRenderNode.Template implements
             shaderManager.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(cameraMatrix));
             shaderManager.performUniformTexture(new UniformString("animations_matrix"), this.getAnimationsTexture());
         };
-        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
 
+        final Consumer<Pair<JGemsShaderManager, IRendered>> uniformsHandlerD = DeferredRenderNode.getDefaultConsumerForDirectObjects(this.getWorld());
         this.directGeometryRenderProcessor = new DirectGeometryRenderProcessor(uniformsHandlerD, Pipeline.SCENE, this.getOpenGLRenderer());
         this.indirectGeometryRenderProcessor = new IndirectGeometryRenderProcessor(uniformsHandlerI, this.getIndirectBufferData(), this.getPropertiesData(), Pipeline.SCENE, this.getOpenGLRenderer());
         if (this.getOutSSAOBuffer() != null && this.getSsaoShader() != null) {
