@@ -1,27 +1,31 @@
 package javagems3d.system.resources.assets.shaders.manager;
 
+import javagems3d.graphics.rendering.programs.shaders.CShaderProgram;
+import javagems3d.graphics.rendering.programs.shaders.GShaderProgram;
+import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformFunctions;
 import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureBindless;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.help.JGemsHelper;
-import javagems3d.system.resources.assets.shaders.base.*;
+import javagems3d.system.resources.assets.shaders.base.ShaderHandler;
+import javagems3d.system.resources.assets.shaders.base.ShadersContainer;
 import javagems3d.system.resources.assets.shaders.buffers.UniformBufferObject;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
-import javagems3d.system.resources.managing.resources.data.ICopyable;
-import logger.Log;
-import org.lwjgl.opengl.GL46;
-import javagems3d.graphics.rendering.programs.shaders.CShaderProgram;
-import javagems3d.graphics.rendering.programs.shaders.GShaderProgram;
-import javagems3d.graphics.rendering.programs.shaders.unifrom.UniformBufferProgram;
 import javagems3d.system.resources.cache.ICached;
 import javagems3d.system.resources.cache.ResourceCache;
+import javagems3d.system.resources.managing.resources.data.ICopyable;
 import javagems3d.system.service.exceptions.JGemsRuntimeException;
+import logger.Log;
+import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * ShaderManager objects are shader packages that have functions for managing the state of the shader, its uniforms and uni-buffers
@@ -242,7 +246,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             return;
         }
         ITextureBindless textureBindless = (ITextureBindless) program;
-        this.performUniform(uniform, UniformFunctions.TEXTURE64ARB(textureBindless.getBindingHandler()));
+        this.performUniform(uniform, UniformFunctions.VEC2UI(textureBindless.getBindingHandler()));
     }
 
     public void performUniformTextureBindless(UniformString uniform, long arbHandler) {
@@ -252,7 +256,7 @@ public abstract class ShaderManager implements ICached, ICopyable<ShaderManager>
             }
             return;
         }
-        this.performUniform(uniform, UniformFunctions.TEXTURE64ARB(arbHandler));
+        this.performUniform(uniform, UniformFunctions.VEC2UI(arbHandler));
     }
 
     private void initShaders(ShadersContainer shadersContainer, GShaderProgram gShaderProgram, CShaderProgram cShaderProgram) {

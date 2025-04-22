@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JSMethodDoc {
     String[] args();
+
     String description();
+
     int order() default 0;
 }

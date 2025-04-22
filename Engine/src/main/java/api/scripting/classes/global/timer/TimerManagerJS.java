@@ -1,12 +1,10 @@
 package api.scripting.classes.global.timer;
+
 import javagems3d.graphics.screen.timer.JGemsTimer;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.service.synchronizing.SyncManager;
-import javagems3d.system.service.synchronizing.Syncer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public final class TimerManagerJS {
@@ -58,13 +56,12 @@ public final class TimerManagerJS {
     }
 
     public static class TimerInfo {
-        private int currentlyRepeated;
-        private boolean active;
-
         private final int seconds;
         private final int repeatTimes;
         private final TimerCallbackJS timerCallbackJS;
         private final JGemsTimer timer;
+        private int currentlyRepeated;
+        private boolean active;
 
         public TimerInfo(int seconds, int repeatTimes, @NotNull TimerCallbackJS timerCallbackJS) {
             this.currentlyRepeated = 0;
@@ -84,12 +81,12 @@ public final class TimerManagerJS {
             this.currentlyRepeated += 1;
         }
 
-        void setActive(boolean active) {
-            this.active = active;
-        }
-
         public boolean isActive() {
             return this.active;
+        }
+
+        void setActive(boolean active) {
+            this.active = active;
         }
 
         int getCurrentlyRepeated() {

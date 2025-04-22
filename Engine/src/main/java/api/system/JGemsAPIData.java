@@ -31,20 +31,6 @@ public final class JGemsAPIData {
     }
     //***********************************
 
-    //***********************************
-    void setAppEventSubscriber(AppEventSubscriber appEventSubscriber) {
-        this.appEventSubscriber = appEventSubscriber;
-    }
-
-    void setId(String id) {
-        this.id = id;
-    }
-
-    void setAppResources(AppResources appResources) {
-        this.appResources = appResources;
-    }
-    //***********************************
-
     public Window.WindowProperties getWindowProperties() {
         return this.jGemsApplication.getWindowProperties();
     }
@@ -56,18 +42,32 @@ public final class JGemsAPIData {
     public PanelUI getMainMenuPanel() {
         return this.jGemsApplication.getMainMenuPanel();
     }
+    //***********************************
 
     //***********************************
     public AppEventSubscriber getAppEventSubscriber() {
         return this.appEventSubscriber;
     }
 
+    //***********************************
+    void setAppEventSubscriber(AppEventSubscriber appEventSubscriber) {
+        this.appEventSubscriber = appEventSubscriber;
+    }
+
     public String getId() {
         return this.id;
     }
 
+    void setId(String id) {
+        this.id = id;
+    }
+
     public AppResources getAppResources() {
         return this.appResources;
+    }
+
+    void setAppResources(AppResources appResources) {
+        this.appResources = appResources;
     }
     //***********************************
 }

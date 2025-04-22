@@ -7,7 +7,10 @@ import api.scripting.classes.init.templates.PropTemplateJS;
 import api.scripting.classes.util.Vec3f;
 import api.scripting.classes.world.background.BackgroundJS;
 import api.scripting.classes.world.environment.EnvironmentJS;
-import api.scripting.classes.world.objects.*;
+import api.scripting.classes.world.objects.EntityJS;
+import api.scripting.classes.world.objects.PointLightJS;
+import api.scripting.classes.world.objects.PropJS;
+import api.scripting.classes.world.objects.UtilsJS;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
 import api.scripting.functions.APIScriptsListing;
@@ -31,8 +34,8 @@ import java.util.Map;
 
 @JSTypeDoc(description = "Game World. General realization of the scene and physics world", priority = JSTypeDoc.Priority.HIGH)
 public final class GameWorldJS extends ObjectJS {
-    private final JGemsAPIScriptingManaging scriptingManaging;
     public final Map<Integer, ObjectJS> mapObjectsIdMap;
+    private final JGemsAPIScriptingManaging scriptingManaging;
     private final EnvironmentJS environmentJS;
     private final BackgroundJS backgroundJS;
     private final TimerManagerJS timerManagerJS;

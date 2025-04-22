@@ -2,11 +2,11 @@ package api.application.workbench.resources;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Resource <T, E> {
+public abstract class Resource<T, E> {
     private final MapObjectFabric<T> fabricWBench;
     private final MapObjectFabric<E> fabricGame;
-    private String groupId;
     private final String nameId;
+    private String groupId;
 
     public Resource(@NotNull String nameId, @NotNull Resource.MapObjectFabric<T> fabricWBench, @NotNull Resource.MapObjectFabric<E> fabricGame) {
         this.nameId = nameId;

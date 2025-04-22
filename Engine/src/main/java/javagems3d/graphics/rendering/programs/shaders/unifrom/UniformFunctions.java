@@ -50,6 +50,15 @@ public abstract class UniformFunctions {
         };
     }
 
+    public static UniformProgram.UFunction VEC2UI(long value) {
+        return e -> {
+            int low = (int) (value & 0xFFFFFFFFL);
+            int high = (int) ((value >>> 32) & 0xFFFFFFFFL);
+            GL46.glUniform2ui(e, low, high);
+            return true;
+        };
+    }
+
     public static UniformProgram.UFunction TEXTURE64ARB(long handler) {
         return e -> {
             ARBBindlessTexture.glUniformHandleui64ARB(e, handler);

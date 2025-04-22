@@ -1,11 +1,12 @@
 package api.system;
 
-import api.events.EventBus;
 import api.application.JGemsApplication;
+import api.events.EventBus;
 import api.scripting.JGemsAPIScriptingEngine;
 import api.scripting.functions.APIScriptingFunction;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsAPIException;
+import javagems3d.system.service.exceptions.JGemsException;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,6 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import javagems3d.system.service.exceptions.JGemsException;
 
 import java.io.Closeable;
 import java.lang.reflect.Constructor;
@@ -33,16 +33,15 @@ public final class JGemsAPI implements Closeable {
     private static JGemsAPIManager M_INSTANCE;
 
     private static boolean ALLOW_EVENTS = false;
-
-    public static void INIT_JGEMS() {
-        JGemsAPI.INSTANCE = new JGemsAPI();
-        JGemsAPI.M_INSTANCE = new JGemsAPIManager();
-    }
-
     private Reflections reflections;
 
     private JGemsAPI() {
         this.reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(JGemsAPI.DEF_API_PACKAGE)).setScanners(Scanners.SubTypes.filterResultsBy(s -> s.startsWith(JGemsAPI.DEF_API_PACKAGE)), Scanners.TypesAnnotated));
+    }
+
+    public static void INIT_JGEMS() {
+        JGemsAPI.INSTANCE = new JGemsAPI();
+        JGemsAPI.M_INSTANCE = new JGemsAPIManager();
     }
 
     public static boolean ALLOW_EVENTS() {
@@ -89,6 +88,10 @@ public final class JGemsAPI implements Closeable {
         return JGemsAPI.getAPIScripting().execFunction(result, apiScriptingFunction, args);
     }
 
+    public static void pushEvent(EventBus.IEvent event) {
+        JGemsAPI.getManager().pushEvent(event);
+    }
+
     public void launchAPI() throws JGemsAPIException {
         try {
             JGemsAPI.appData = new JGemsAPIData();
@@ -99,7 +102,8 @@ public final class JGemsAPI implements Closeable {
             Pair<JGemsApplication, JGemsAppEntry> pair = this.createApplication();
             Log.get().debug("Init API-App: id=" + pair.getSecond().id());
             JGemsAPI.getManager().pullDataFromApplication(JGemsAPI.APIEditorResources(), JGemsAPI.APIAppData(), pair);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new JGemsAPIException(e);
         } finally {
             this.disposeReflection();
@@ -114,15 +118,12 @@ public final class JGemsAPI implements Closeable {
             Log.get().debug("Init API-App(ONLY EDITOR DATA): id=" + pair.getSecond().id());
             JGemsAPI.getManager().pullDataForEditor(pair.getFirst(), JGemsAPI.APIEditorResources());
             return JGemsAPI.APIEditorResources();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new JGemsAPIException(e);
         } finally {
             this.disposeReflection();
         }
-    }
-
-    public static void pushEvent(EventBus.IEvent event) {
-        JGemsAPI.getManager().pushEvent(event);
     }
 
     public void disposeReflection() {

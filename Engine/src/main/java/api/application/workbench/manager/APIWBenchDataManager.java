@@ -6,12 +6,12 @@ import api.application.workbench.resources.ResourceMarker;
 import api.application.workbench.resources.ResourceProp;
 import javagems3d.help.JGemsUtils;
 import javagems3d.system.service.collections.Pair;
-import javagems3d.system.service.collections.Triple;
 import javagems3d.system.service.path.JGemsPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class APIWBenchDataManager implements IAPIWBenchDataManager {
     private final Map<String, TemplatesTable<ResourceEntity>> resourceEntityMap;

@@ -23,10 +23,10 @@ uniform vec4 diffuse_color;
 uniform vec3 emission_color;
 uniform float metallic_factor;
 uniform float roughness_factor;
-uniform sampler2D diffuse_map;
-uniform sampler2D normals_map;
-uniform sampler2D emission_map;
-uniform sampler2D metallic_roughness_map;
+uniform uvec2 diffuse_map;
+uniform uvec2 normals_map;
+uniform uvec2 emission_map;
+uniform uvec2 metallic_roughness_map;
 uniform int texturing_code;
 
 bool checkCode(int i1, int i2) {
@@ -35,7 +35,7 @@ bool checkCode(int i1, int i2) {
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture(normals_map, uv_coordinates).rgb;
+    vec3 normal = texture(sampler2D(normals_map), uv_coordinates).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -54,19 +54,19 @@ void main()
     vec2 metallic_roughness = vec2(metallic_factor, roughness_factor);
 
     if (useDiffuseTexture) {
-        diffuse *= texture(diffuse_map, uv_coordinates);
+        diffuse *= texture(sampler2D(diffuse_map), uv_coordinates);
     }
     if (diffuse.a < alpha_discard) {
         discard;
     }
     if (useEmissionTexture) {
-        emission *= texture(emission_map, uv_coordinates).rgb;
+        emission *= texture(sampler2D(emission_map), uv_coordinates).rgb;
     }
     if (useNormalsTexture) {
         normals = calc_normal_map();
     }
     if (useRoughnessMetallicTexture) {
-        vec4 mr = texture(metallic_roughness_map, uv_coordinates);
+        vec4 mr = texture(sampler2D(metallic_roughness_map), uv_coordinates);
         metallic_roughness *= vec2(mr.b, mr.g);
     }
 

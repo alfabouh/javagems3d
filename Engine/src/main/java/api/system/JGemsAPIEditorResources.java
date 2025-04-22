@@ -8,11 +8,11 @@ public final class JGemsAPIEditorResources {
     public JGemsAPIEditorResources() {
     }
 
-    void setEditorResourcesManager(APIWBenchDataManager APIWBenchDataManager) {
-        this.APIWBenchDataManager = APIWBenchDataManager;
-    }
-
     public APIWBenchDataManager getEditorResourcesManager() {
         return this.APIWBenchDataManager;
+    }
+
+    void setEditorResourcesManager(APIWBenchDataManager APIWBenchDataManager) {
+        this.APIWBenchDataManager = APIWBenchDataManager;
     }
 }

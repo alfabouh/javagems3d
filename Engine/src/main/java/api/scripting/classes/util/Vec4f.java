@@ -2,7 +2,6 @@ package api.scripting.classes.util;
 
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 @JSTypeDoc(description = "Vector with 4 floats", priority = JSTypeDoc.Priority.LOW)

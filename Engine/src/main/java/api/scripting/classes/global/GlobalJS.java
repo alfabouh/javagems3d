@@ -1,9 +1,9 @@
 package api.scripting.classes.global;
 
 import api.scripting.classes.global.timer.TimerCallbackJS;
-import api.scripting.classes.world.*;
-import api.scripting.classes.world.objects.*;
+import api.scripting.classes.world.GameWorldJS;
 import api.scripting.classes.world.ObjectJS;
+import api.scripting.classes.world.objects.*;
 import api.scripting.doc.annotations.JSGlobalVar;
 import api.scripting.doc.annotations.JSMethodDoc;
 import api.scripting.doc.annotations.JSTypeDoc;

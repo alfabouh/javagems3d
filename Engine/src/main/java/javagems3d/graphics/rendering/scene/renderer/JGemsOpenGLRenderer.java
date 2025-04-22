@@ -35,7 +35,6 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.mapping.processing.callbacks.IMapActionCallback;
-
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -187,9 +186,11 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
         Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
         if (!EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.PRE, toRender, this)).isCancelled()) {
+
             JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
                 this.getSceneCulling().cull(toRender, JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera());
             });
+
 
             GL46.glDepthMask(false);
             JGemsOpenGLRenderer.renderNodeWithEvent(this, frameTicking, gluingRenderNode);
@@ -200,7 +201,6 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
             uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
             JGemsOpenGLRenderer.renderNodeWithEvent(this, frameTicking, uiRenderNode);
-
             if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
                 for (SceneObject sceneObject : this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects()) {
                     CullingAABB cullingAABB = sceneObject.getCullingData();

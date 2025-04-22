@@ -16,25 +16,15 @@ public class EntityJS extends ObjectJS {
         this.worldItem = worldItem;
     }
 
-    @JSMethodDoc(description = "Set entity location", args = {"Position"}, order = 0)
-    public void setPosition(Vec3f vec3f) {
-        this.getWorldItem().setPosition(vec3f.createJOML());
-    }
-
-    @JSMethodDoc(description = "Set entity rotation. Euler XYZ", args = {"Rotation"}, order = 1)
-    public void setRotation(Vec3f vec3f) {
-        this.getWorldItem().setRotation(vec3f.createJOML());
-    }
-
-    @JSMethodDoc(description = "Set entity scaling", args = {"Scaling"}, order = 2)
-    public void setScaling(Vec3f vec3f) {
-        this.getWorldItem().setScaling(vec3f.createJOML());
-    }
-
     @JSMethodDoc(description = "Get entity location", args = {}, order = 3)
     public Vec3f getPosition() {
         Vector3f vector3f = this.getWorldItem().getPosition();
         return new Vec3f(vector3f.x, vector3f.y, vector3f.z);
+    }
+
+    @JSMethodDoc(description = "Set entity location", args = {"Position"}, order = 0)
+    public void setPosition(Vec3f vec3f) {
+        this.getWorldItem().setPosition(vec3f.createJOML());
     }
 
     @JSMethodDoc(description = "Get entity rotation. Euler XYZ", args = {}, order = 4)
@@ -43,10 +33,20 @@ public class EntityJS extends ObjectJS {
         return new Vec3f(vector3f.x, vector3f.y, vector3f.z);
     }
 
+    @JSMethodDoc(description = "Set entity rotation. Euler XYZ", args = {"Rotation"}, order = 1)
+    public void setRotation(Vec3f vec3f) {
+        this.getWorldItem().setRotation(vec3f.createJOML());
+    }
+
     @JSMethodDoc(description = "Get entity scaling", args = {}, order = 5)
     public Vec3f getScaling() {
         Vector3f vector3f = this.getWorldItem().getScaling();
         return new Vec3f(vector3f.x, vector3f.y, vector3f.z);
+    }
+
+    @JSMethodDoc(description = "Set entity scaling", args = {"Scaling"}, order = 2)
+    public void setScaling(Vec3f vec3f) {
+        this.getWorldItem().setScaling(vec3f.createJOML());
     }
 
     @JSMethodDoc(description = "Mark object as dead. Dead objects will be removed from the world.", args = {}, order = 6)

@@ -19,16 +19,20 @@ import org.jetbrains.annotations.Nullable;
 import javax.script.*;
 
 public final class JGemsAPIScriptingEngine {
-    private ScriptEngine engine;
     private final JGemsAPIScriptingManaging scriptingManaging;
     private final JGemsAPIEditorResources apiEditorResources;
     private final GameWorldJS gameWorldJS;
+    private ScriptEngine engine;
 
     public JGemsAPIScriptingEngine(@NotNull JGemsAPIEditorResources apiEditorResources) {
         this.scriptingManaging = new JGemsAPIScriptingManaging();
         this.apiEditorResources = apiEditorResources;
         this.gameWorldJS = new GameWorldJS(this.getScriptingManaging());
         this.clearEngine();
+    }
+
+    public static void warn(APIScriptingFunction apiScriptingFunction) {
+        Log.get().warn("Couldn't execute script: " + apiScriptingFunction);
     }
 
     private void eval(String script) {
@@ -82,10 +86,6 @@ public final class JGemsAPIScriptingEngine {
             }
         }
         return false;
-    }
-
-    public static void warn(APIScriptingFunction apiScriptingFunction) {
-        Log.get().warn("Couldn't execute script: " + apiScriptingFunction);
     }
 
     public GameWorldJS getGameWorldJS() {

@@ -22,9 +22,12 @@ public abstract class JGemsApplication implements IWorkBenchSetup {
     }
 
     public abstract void initEvents(@NotNull IAppEventSubscriber appEventSubscriber);
+
     public abstract void initResources(@NotNull IAppResources appResources);
 
     public abstract @NotNull BindingManager getBindingManager();
+
     public abstract @NotNull PanelUI getMainMenuPanel();
+
     public abstract @NotNull Window.WindowProperties getWindowProperties();
 }

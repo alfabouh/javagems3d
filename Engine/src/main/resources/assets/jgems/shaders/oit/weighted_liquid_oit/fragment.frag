@@ -24,7 +24,7 @@ layout (std430, binding = 7) buffer WorldFog {
 };
 
 uniform vec3 camera_pos;
-uniform samplerCube ambient_cubemap;
+uniform uvec2 ambient_cubemap;
 uniform bool useCubeMap;
 
 const int diffuse_code = CONST.DIFFUSE_CODE;
@@ -37,10 +37,10 @@ uniform vec4 diffuse_color;
 uniform vec3 emission_color;
 uniform float metallic_factor;
 uniform float roughness_factor;
-uniform sampler2D diffuse_map;
-uniform sampler2D normals_map;
-uniform sampler2D emission_map;
-uniform sampler2D metallic_roughness_map;
+uniform uvec2 diffuse_map;
+uniform uvec2 normals_map;
+uniform uvec2 emission_map;
+uniform uvec2 metallic_roughness_map;
 uniform int texturing_code;
 uniform vec2 texture_scaling;
 
@@ -68,7 +68,7 @@ vec3 calc_light(vec3 frag_pos, vec3 normal, float specularFactor, vec4 world_pos
         float p_brightness = p.brightness;
         vec3 params = getParams(p_brightness);
         float p_id = p.attachedShadowSceneId;
-        float shadow = p_id >= 0 ? calculate_point_light_shadows(point_light_cubemap[int(p_id)], world_position.xyz, p.position.xyz) : 1.;
+        float shadow = p_id >= 0 ? calculate_point_light_shadows(samplerCube(point_light_cubemap[int(p_id)]), world_position.xyz, p.position.xyz) : 1.;
         point_light_factor += calc_point_light(p, frag_pos, normal, params.x, params.y, params.z, p_brightness, specularFactor) * shadow;
     }
 
@@ -104,7 +104,7 @@ vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return texture(ambient_cubemap, R).rgb;
+    return texture(samplerCube(ambient_cubemap), R).rgb;
 }
 
 bool checkCode(int i1, int i2) {
@@ -113,7 +113,7 @@ bool checkCode(int i1, int i2) {
 }
 
 vec3 calc_normal_map() {
-    vec3 normal = texture(normals_map, getScaledTexture()).rgb;
+    vec3 normal = texture(sampler2D(normals_map), getScaledTexture()).rgb;
     normal = normalize(normal * 2.0 - 1.0);
     normal = normalize(TBN * normal);
     return normal;
@@ -132,16 +132,16 @@ void main()
     vec2 metallic_roughness = vec2(metallic_factor, roughness_factor);
 
     if (useDiffuseTexture) {
-        diffuse *= texture(diffuse_map, getScaledTexture());
+        diffuse *= texture(sampler2D(diffuse_map), getScaledTexture());
     }
     if (useEmissionTexture) {
-        emission *= texture(emission_map, getScaledTexture()).rgb;
+        emission *= texture(sampler2D(emission_map), getScaledTexture()).rgb;
     }
     if (useNormalsTexture) {
         normals = calc_normal_map();
     }
     if (useRoughnessMetallicTexture) {
-        vec4 mr = texture(metallic_roughness_map, getScaledTexture());
+        vec4 mr = texture(sampler2D(metallic_roughness_map), getScaledTexture());
         metallic_roughness *= vec2(mr.b, mr.g);
     }
 

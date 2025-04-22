@@ -68,12 +68,12 @@ float EVSM(int idx, vec4 shadow_coord, float bias) {
 }
 
 void ESM() {
-    //  float d = gl_FragCoord.z;
+    // float d = gl_FragCoord.z;
     //
-    //  float depth1 = exp(80. * d);
-    //  float depth2 = exp(80. * d * d);
+    // float depth1 = exp(80. * d);
+    // float depth2 = exp(80. * d * d);
     //
-    //  frag_color0 = vec4(depth1, depth2, 0., 0.);
+    // frag_color0 = vec4(depth1, depth2, 0., 0.);
 
     float positiveExponent = 60.0f;
     float negativeExponent = 5.0f;

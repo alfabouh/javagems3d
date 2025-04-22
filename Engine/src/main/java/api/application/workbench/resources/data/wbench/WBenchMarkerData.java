@@ -3,7 +3,6 @@ package api.application.workbench.resources.data.wbench;
 import api.application.workbench.resources.data.DefaultMarker;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagsContainer;
-import javagems3d.mapping.tags.base.AxisConstraints;
 import javagems3d.mapping.tags.base.TranslationConstraints;
 import javagems3d.mapping.tags.items.TagItem;
 import javagems3d.system.service.path.JGemsPath;

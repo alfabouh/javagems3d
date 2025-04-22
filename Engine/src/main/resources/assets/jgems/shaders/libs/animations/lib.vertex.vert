@@ -8,7 +8,7 @@ ivec2 pickUV(int globalOffset, int arrI, int textureWidth) {
 }
 
 mat4 getBoneMatrix(int baseOffset, int boneIndex) {
-    int textureWidth = textureSize(animations_matrix, 0).x;
+    int textureWidth = textureSize(sampler2D(animations_matrix), 0).x;
     int globalOffset = (baseOffset + boneIndex) * 4;
     vec4 row0 = texelFetch(animations_matrix, pickUV(globalOffset, 0, textureWidth), 0);
     vec4 row1 = texelFetch(animations_matrix, pickUV(globalOffset, 1, textureWidth), 0);

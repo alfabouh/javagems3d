@@ -22,7 +22,7 @@ layout (std430, binding = 7) buffer WorldFog {
 
 uniform float view_scaling;
 uniform vec3 camera_pos;
-uniform samplerCube ambient_cubemap;
+uniform uvec2 ambient_cubemap;
 uniform bool useCubeMap;
 
 struct Properties {
@@ -86,7 +86,7 @@ vec3 refract_cubemap(vec3 normal, float cnst, vec4 world_position) {
     float ratio = 1.0 / cnst;
     vec3 I = normalize(world_position.xyz - camera_pos);
     vec3 R = refract(I, normalize(normal), ratio);
-    return texture(ambient_cubemap, R).rgb;
+    return texture(samplerCube(ambient_cubemap), R).rgb;
 }
 
 bool checkCode(int i1, int i2) {

@@ -7,7 +7,7 @@ layout (location = 0) out vec4 frag_color0;
 
 uniform float alpha_discard;
 uniform vec4 diffuse_color;
-uniform sampler2D diffuse_map;
+uniform uvec2 diffuse_map;
 uniform bool use_texture;
 uniform vec3 lightPos;
 uniform float far_plane;
@@ -16,7 +16,7 @@ void main()
 {
     float diffuse_a = diffuse_color.a;
     if (use_texture) {
-        diffuse_a *= texture(diffuse_map, uv_coordinates).a;
+        diffuse_a *= texture(sampler2D(diffuse_map), uv_coordinates).a;
     }
     if (diffuse_a < alpha_discard) {
         discard;

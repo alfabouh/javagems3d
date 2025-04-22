@@ -1,4 +1,5 @@
 package api.scripting.doc;
+
 import api.scripting.doc.annotations.JSCommentary;
 import api.scripting.doc.annotations.JSGlobalVar;
 import api.scripting.doc.annotations.JSMethodDoc;
@@ -21,15 +22,15 @@ public final class JGemsScriptingDocs {
         JGemsScriptingDocs.addPackageWithJSCodeDocumentary("api.scripting.classes");
     }
 
-    public static void addPackageWithJSCodeDocumentary(String javaPath) {
-        JGemsScriptingDocs.packagesWithJSCLasses.add(javaPath);
-    }
-
     private List<ClassDesc> types;
 
     public JGemsScriptingDocs() {
         this.types = new ArrayList<>();
         this.load(JGemsScriptingDocs.packagesWithJSCLasses);
+    }
+
+    public static void addPackageWithJSCodeDocumentary(String javaPath) {
+        JGemsScriptingDocs.packagesWithJSCLasses.add(javaPath);
     }
 
     public void load(Set<String> packagePaths) {
@@ -109,6 +110,7 @@ public final class JGemsScriptingDocs {
 
     interface Desc {
         String description();
+
         String commentary();
     }
 

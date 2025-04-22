@@ -3,14 +3,14 @@
 layout (location = 0) out vec4 frag_color;
 
 in vec2 uv_coordinates;
-uniform sampler2D texture_map;
+uniform uvec2 texture_map;
 uniform float blur;
 
 void main()
 {
     float blur_radius = blur;
 
-    vec2 texel_size = 1.0 / textureSize(texture_map, 0);
+    vec2 texel_size = 1.0 / textureSize(sampler2D(texture_map), 0);
 
     vec4 color = vec4(0.0);
     int radius = int(blur_radius);
@@ -20,7 +20,7 @@ void main()
         for (int x = -radius; x <= radius; ++x)
         {
             vec2 offset = vec2(float(x), float(y)) * texel_size;
-            color += texture(texture_map, uv_coordinates + offset);
+            color += texture(sampler2D(texture_map), uv_coordinates + offset);
         }
     }
 
@@ -51,7 +51,7 @@ void main()
 
             if (sample_uv.x >= 0.0 && sample_uv.x <= 1.0 && sample_uv.y >= 0.0 && sample_uv.y <= 1.0)
             {
-                color += texture(texture_map, sample_uv);
+                color += texture(sampler2D(texture_map), sample_uv);
                 num_samples++;
             }
         }
@@ -78,7 +78,7 @@ void main()
         for (int x = -radius; x <= radius; ++x)
         {
             vec2 offset = vec2(float(x), float(y)) * texel_size;
-            color += texture(texture_map, uv + offset);
+            color += texture(sampler2D(texture_map), uv + offset);
         }
     }
 
