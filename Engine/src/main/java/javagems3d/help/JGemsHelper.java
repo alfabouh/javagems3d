@@ -100,6 +100,7 @@ public final class JGemsHelper {
     private final Map map;
     private final Controller controller;
     private final Camera camera;
+    private final State state;
 
     private JGemsHelper() {
         this.files = new Files();
@@ -113,6 +114,7 @@ public final class JGemsHelper {
         this.map = new Map();
         this.controller = new Controller();
         this.camera = new Camera();
+        this.state = new State();
     }
 
     public static Math math() {
@@ -159,6 +161,9 @@ public final class JGemsHelper {
         return JGemsHelper.get().camera;
     }
 
+    public static State state() {
+        return JGemsHelper.get().state;
+    }
 
 
     public JGemsSettings getGameSettings() {
@@ -177,6 +182,31 @@ public final class JGemsHelper {
         return this.core.getSoundManager();
     }
 
+    public final class State {
+        public void pauseGameAndLockResume(boolean pauseSounds) {
+            this.pauseGame(pauseSounds);
+            JGemsHelper.this.core.setLockedResume(true);
+        }
+
+        public void unPauseGameAndUnLockUnPausing() {
+            this.resumeGame();
+            JGemsHelper.this.core.setLockedResume(false);
+        }
+
+        public void pauseGame(boolean pauseSounds) {
+            this.pauseGame(pauseSounds);
+            if (pauseSounds) {
+                JGemsHelper.this.getSoundManager().pauseAllSounds();
+            }
+        }
+
+        public void resumeGame() {
+            JGemsHelper.this.core.resumeGame();
+            if (!JGemsHelper.this.core.isLockedResuming()) {
+                JGemsHelper.this.getSoundManager().resumeAllSounds();
+            }
+        }
+    }
 
     public final class Camera {
         public ICamera getCurrentCamera() {

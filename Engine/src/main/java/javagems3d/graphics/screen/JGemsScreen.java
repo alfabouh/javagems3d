@@ -218,7 +218,7 @@ public class JGemsScreen implements IScreen {
         GL46.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         this.getScene().preRender();
         this.removeLoadingScreen();
-        JGems3D.get().showMainMenu();
+        JGemsHelper.ui().openMainMenu();
         try {
             this.renderLoop();
         } catch (Exception e) {

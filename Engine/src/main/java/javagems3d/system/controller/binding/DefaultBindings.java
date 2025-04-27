@@ -61,13 +61,13 @@ public final class DefaultBindings extends BindingManager {
                             JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptRMB();
                             JGemsControllerDispatcher.mouseKeyboardController.getMouseAndKeyboard().forceInterruptMMB();
                         }
-                        JGems3D.get().unPauseGame();
+                        JGemsHelper.state().resumeGame();
                         JGems3D.get().getScreen().getWindow().setFocus(true);
-                        JGems3D.get().openUIPanel(new DefaultGamePanel(null));
+                        JGemsHelper.ui().openPanel(new DefaultGamePanel(null));
                     } else {
-                        JGems3D.get().pauseGame(true);
+                        JGemsHelper.state().pauseGame(true);
                         JGems3D.get().getScreen().getWindow().setFocus(false);
-                        JGems3D.get().openUIPanel(new DefaultPausePanel(null));
+                        JGemsHelper.ui().openPanel(new DefaultPausePanel(null));
                     }
                 }
             }

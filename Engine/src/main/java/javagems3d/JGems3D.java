@@ -55,6 +55,10 @@ public final class JGems3D {
 
     private boolean shouldBeClosed;
 
+    public static JGems3D get() {
+        return JGems3D.mainObject;
+    }
+
     private JGems3D() throws JGemsRuntimeException {
         try {
             SystemLogging.get().setCurrentLogging(new JGemsLogging("JGemsLogger"));
@@ -103,10 +107,6 @@ public final class JGems3D {
             return;
         }
         JGems3D.start();
-    }
-
-    public static JGems3D get() {
-        return JGems3D.mainObject;
     }
 
     private static void start() {
@@ -193,58 +193,6 @@ public final class JGems3D {
 
     public void changeTitle(@NotNull String title) {
         this.getScreen().setTitle(title);
-    }
-
-    public void showMainMenu() {
-        this.openUIPanel(JGems3D.getAPIAppData().getMainMenuPanel());
-    }
-
-    public void openUIPanel(PanelUI panelUI) {
-        ((IJGemsUIImp) this.getSceneRenderer()).openUIPanel(panelUI);
-    }
-
-    public void closeUIPanel() {
-        ((IJGemsUIImp) this.getSceneRenderer()).openUIPanel(null);
-    }
-
-    public void lockController() {
-        this.getScreen().getControllerDispatcher().setLock(true);
-    }
-
-    public void unLockController() {
-        this.getScreen().getControllerDispatcher().setLock(false);
-    }
-
-    public void pauseGameAndLockUnPausing(boolean pauseSounds) {
-        this.pauseGame(pauseSounds);
-        this.getCore().setLockedResuming(true);
-    }
-
-    public void unPauseGameAndUnLockUnPausing() {
-        this.unPauseGame();
-        this.getCore().setLockedResuming(false);
-    }
-
-    public void pauseGame(boolean pauseSounds) {
-        this.getCore().pauseGame();
-        if (pauseSounds) {
-            this.getSoundManager().pauseAllSounds();
-        }
-    }
-
-    public void unPauseGame() {
-        this.getCore().resumeGame();
-        if (!this.getCore().isLockedResuming()) {
-            this.getSoundManager().resumeAllSounds();
-        }
-    }
-
-    public void loadMap(IMapProcessor mapProcessor) {
-        this.getCore().loadMap(mapProcessor);
-    }
-
-    public void exitMap() {
-        this.getCore().exitMap();
     }
 
     public static void close(@Nullable Exception exception) {

@@ -68,13 +68,13 @@ public class TestMainMenuPanel extends AbstractPanelUI {
         this.renderContent(ui, window, frameDeltaTicks);
         ui.buttonUI("AnimMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 210), new Vector2i(300, 60), 0x00ff00, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().loadMap(new TestMapAnim());
+                    JGemsHelper.map().loadMap(new TestMapAnim());
                     ui.setPanel(new DefaultGamePanel(null));
                 });
 
         ui.buttonUI("DirectRendMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0x00ff00, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().loadMap(new TestMapDirect());
+                    JGemsHelper.map().loadMap(new TestMapDirect());
                     ui.setPanel(new DefaultGamePanel(null));
                 });
 
@@ -90,18 +90,18 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                 //});
 
                .setOnClick(() -> {
-                   JGems3D.get().loadMap(new ExternalLoader(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
+                   JGemsHelper.map().loadMap(new ExternalLoader(new JGemsPath("C:\\Users\\forge\\OneDrive\\Рабочий стол\\project\\test1.jg3d"), false));
                    ui.setPanel(new DefaultGamePanel(null));
                });
 
         ui.buttonUI(JGems3D.get().I18n("menu.main.settings"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 70), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().openUIPanel(new DefaultSettingsPanel(this));
+                    JGemsHelper.ui().openPanel(new DefaultSettingsPanel(this));
                 });
 
         ui.buttonUI(JGems3D.get().I18n("menu.main.exit"), JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30 + 140), new Vector2i(300, 60), 0xffffff, 0.5f)
                 .setOnClick(() -> {
-                    JGems3D.get().openUIPanel(new DefaultLeaveConfirmationPanel(this));
+                    JGemsHelper.ui().openPanel(new DefaultLeaveConfirmationPanel(this));
                 });
     }
 

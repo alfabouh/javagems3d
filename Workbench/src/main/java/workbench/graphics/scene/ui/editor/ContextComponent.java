@@ -52,7 +52,7 @@ public class ContextComponent {
             ImBoolean opened = new ImBoolean(true);
             if (ImGui.begin("Fog", opened, ImGuiWindowFlags.NoResize)) {
                 float[] fogIntensity = new float[] {JGemsHelper.math().clamp(environment.getFogScene().getFogDensity(), 0.0f, 1.0f)};
-                if (ImGui.dragFloat("Fog Intensity", fogIntensity, 0.0001f, 0.0f, 1.0f)) {
+                if (ImGui.dragFloat("Fog Intensity", fogIntensity, 1.0e-6f, 0.0f, 1.0f, "%.6f")) {
                     environment.getFogScene().setFogDensity(fogIntensity[0]);
                 }
 

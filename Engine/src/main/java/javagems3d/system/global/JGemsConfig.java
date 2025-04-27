@@ -50,9 +50,11 @@ public abstract class JGemsConfig {
 
         public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 22);
 
-        public static int MAX_INDIRECT_RENDERING_MESH_PROPERTIES = 512 * 20;
-        public static int MAX_INDIRECT_RENDERING_MESH_MATERIALS = 256 * 20;
-        public static int MAX_INDIRECT_RENDERING_MESH_DATASETS = 2048 * 20;
+        public static int INDIRECT_SSBO_SIZE_MUL = 20;
+
+        public static int MAX_INDIRECT_RENDERING_MESH_PROPERTIES = 512 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
+        public static int MAX_INDIRECT_RENDERING_MESH_MATERIALS = 256 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
+        public static int MAX_INDIRECT_RENDERING_MESH_DATASETS = 2048 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int MAX_BINDLESS_TEXTURES = 1024;
 
 

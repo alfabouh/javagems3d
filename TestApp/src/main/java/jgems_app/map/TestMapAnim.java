@@ -38,13 +38,13 @@ public class TestMapAnim extends ManualMapProcessor {
 
         SceneWorldProp sceneWorldProp1 = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshBuffer));
         sceneWorld.addObject(sceneWorldProp1);
-        sceneWorldProp1.setAnimationSpeed(1.25f);
+        sceneWorldProp1.setAnimationSpeed(2.75f);
         sceneWorldProp1.getModel().getPose().setScaling(new Vector3f(0.1f));
         sceneWorldProp1.getModel().getPose().setPosition(new Vector3f(3.0f, 0.0f, 0.0f));
 
         SceneWorldProp sceneWorldProp2 = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshBuffer));
         sceneWorld.addObject(sceneWorldProp2);
-        sceneWorldProp2.setAnimationSpeed(1.5f);
+        sceneWorldProp2.setAnimationSpeed(3.45f);
         sceneWorldProp2.getModel().getPose().setScaling(new Vector3f(0.15f));
         sceneWorldProp2.getModel().getPose().setPosition(new Vector3f(7.0f, 0.0f, 0.0f));
 

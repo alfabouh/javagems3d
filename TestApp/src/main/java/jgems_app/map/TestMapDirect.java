@@ -34,14 +34,14 @@ public class TestMapDirect extends ManualMapProcessor {
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
         MeshGroup meshGroup = JGemsResourceManager.globalModelAssets.grassCube;
 
-        int size = 20;
+        int size = 15;
         float spacing = 1.5f;
 
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {
                     Vector3f position = new Vector3f(x * spacing, y * spacing, z * spacing);
-                    SceneWorldProp sceneWorldProp = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getDirect(), JGemsRenderProperties.getDefault()), meshGroup));
+                    SceneWorldProp sceneWorldProp = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshGroup));
                     sceneWorld.addObject(sceneWorldProp);
                     sceneWorldProp.getModel().getPose().setPosition(position);
                 }

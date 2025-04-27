@@ -97,8 +97,8 @@ public final class JGemsCore implements ICore {
         this.getScreen().getWindow().setFocus(false);
 
         this.getScreen().removeLoadingScreen();
-        JGems3D.get().showMainMenu();
-        this.setLockedResuming(false);
+        JGemsHelper.ui().openMainMenu();
+        this.setLockedResume(false);
         this.getScreen().getControllerDispatcher().setLock(false);
 
         JGemsAPI.clearScriptingEngine();
@@ -119,7 +119,7 @@ public final class JGemsCore implements ICore {
         this.getScreen().removeLoadingScreen();
 
         this.resumeGame();
-        this.setLockedResuming(false);
+        this.setLockedResume(false);
         this.getScreen().getControllerDispatcher().setLock(false);
         this.requestsFromThreads.mapProcessor = null;
     }
@@ -129,7 +129,7 @@ public final class JGemsCore implements ICore {
         return this.engineState().lockedUnPausing;
     }
 
-    public void setLockedResuming(boolean lock) {
+    public void setLockedResume(boolean lock) {
         this.engineState().lockedUnPausing = lock;
     }
 
