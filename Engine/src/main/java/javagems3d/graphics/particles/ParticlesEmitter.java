@@ -62,7 +62,7 @@ public final class ParticlesEmitter implements IParticlesEmitter {
     @Override
     public void create(SceneWorld sceneWorld) {
         final float size = 0.1f;
-        this.commonParticleModel2D = MeshHelper.generatePlane3DModel(new Vector3f(-size, -size, 0.0f), new Vector3f(size, -size, 0.0f), new Vector3f(-size, size, 0.0f), new Vector3f(size, size, 0.0f));
+        this.commonParticleModel2D = MeshHelper.generatePlane3DModel(null, new Vector3f(-size, -size, 0.0f), new Vector3f(size, -size, 0.0f), new Vector3f(-size, size, 0.0f), new Vector3f(size, size, 0.0f));
         Log.get().info("Created particles emitter");
     }
 

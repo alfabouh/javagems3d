@@ -64,6 +64,10 @@ public final class MapObjectTemplate implements IJSONSerializable<MapObjectTempl
         return this.scaling;
     }
 
+    public boolean checkGroupName(String group, String name) {
+        return this.getObjectGroup().equals(group) && this.getObjectNameId().equals(name);
+    }
+
     @Override
     public JSONFileManaging.@NotNull SerializationRules<MapObjectTemplate> getSerializationRules() {
         return new JSONFileManaging.SerializationRules<MapObjectTemplate>() {

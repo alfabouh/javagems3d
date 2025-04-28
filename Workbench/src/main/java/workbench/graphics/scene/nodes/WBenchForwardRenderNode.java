@@ -62,7 +62,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
 
     @Override
     public void createResources() {
-        this.flat = MeshHelper.generatePlane3DModel(new Vector3f(-WBench.MAP_SIZE, 0.0f, -WBench.MAP_SIZE), new Vector3f(-WBench.MAP_SIZE, 0.0f, WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, 0.0f, -WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, 0.0f, WBench.MAP_SIZE));
+        this.flat = MeshHelper.generatePlane3DModel(null, new Vector3f(-WBench.MAP_SIZE, 0.0f, -WBench.MAP_SIZE), new Vector3f(-WBench.MAP_SIZE, 0.0f, WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, 0.0f, -WBench.MAP_SIZE), new Vector3f(WBench.MAP_SIZE, 0.0f, WBench.MAP_SIZE));
         super.createResources();
     }
 

@@ -10,6 +10,8 @@ import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.pose.Pose2D;
+import javagems3d.system.service.args.ArbitraryArguments;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 
 import javagems3d.system.resources.assets.models.helper.forms.BasicModelCreator;
@@ -45,12 +47,12 @@ public class PlaneModel2D implements BasicModelCreator<Model2D> {
 
 
     @Override
-    public Model2D generateModel() {
-        return new Model2D(new Pose2D(), new MeshGui(this.generateMesh()));
+    public Model2D generateModel(@Nullable ArbitraryArguments arguments) {
+        return new Model2D(new Pose2D(), new MeshGui(this.generateMesh(arguments)));
     }
 
     @Override
-    public RenderMesh generateMesh() {
+    public RenderMesh generateMesh(@Nullable ArbitraryArguments arguments) {
         RenderMesh renderMesh = new RenderMesh();
 
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);

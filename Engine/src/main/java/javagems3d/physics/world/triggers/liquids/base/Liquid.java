@@ -33,6 +33,10 @@ public abstract class Liquid implements IWorldObject, IWorldTicked {
 
     protected abstract void onEntityEnteredLiquid(Object e);
 
+    public Zone getZone() {
+        return this.getSimpleTriggerZone().getZone();
+    }
+
     @Override
     public void onDestroy(IWorld iWorld) {
         this.getSimpleTriggerZone().onDestroyWithEvent(iWorld);

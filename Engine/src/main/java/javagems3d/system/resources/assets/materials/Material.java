@@ -13,54 +13,44 @@ import javagems3d.system.resources.managing.ResourceManager;
 import javagems3d.system.service.synchronizing.GPUSyncer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
 
 @SuppressWarnings("all")
 public class Material {
-    private final Transparency transparency;
-
-    private final ITexture2DProgram diffuseMap;
-    private final ISampleColor4 diffuseColor;
-
-    private final ITexture2DProgram emissionMap;
-    private final ISampleColor3 emissionColor;
-
-    private final ITexture2DProgram metallicRoughnessMap;
-    private final ITexture2DProgram normalsMap;
-
+    private final @Nullable ITexture2DProgram diffuseMap;
+    private final @NotNull ISampleColor4 diffuseColor;
+    private final @Nullable ITexture2DProgram emissionMap;
+    private final @Nullable ISampleColor3 emissionColor;
+    private final @Nullable ITexture2DProgram metallicRoughnessMap;
+    private final @Nullable ITexture2DProgram normalsMap;
     private final float metallicFactor;
     private final float roughnessFactor;
+    private final Transparency transparency;
 
-    public Material(@Nullable ITexture2DProgram diffuseMap, @NotNull ISampleColor4 diffuseColor, @Nullable ITexture2DProgram emissionMap, @Nullable ISampleColor3 emissionColor, @Nullable ITexture2DProgram metallicRoughnessMap, @Nullable ITexture2DProgram normalsMap, float metallicFactor, float roughnessFactor) {
-        this.diffuseMap = diffuseMap;
-        this.diffuseColor = diffuseColor;
-        this.emissionMap = emissionMap;
-        this.emissionColor = emissionColor;
-        this.metallicRoughnessMap = metallicRoughnessMap;
-        this.normalsMap = normalsMap;
-        this.metallicFactor = metallicFactor;
-        this.roughnessFactor = roughnessFactor;
-        this.transparency = new Transparency(diffuseColor);
-    }
-
-    public Material(@NotNull ITexture2DProgram diffuseMap, @NotNull ISampleColor4 diffuseColor) {
-        this(diffuseMap, diffuseColor, null, null, null, null, 0.0f, 0.0f);
+    private Material(Builder builder) {
+        this.diffuseMap = builder.diffuseMap;
+        this.diffuseColor = builder.diffuseColor != null ? builder.diffuseColor : new Color4Texture(1.0f, 1.0f, 1.0f, 1.0f);
+        this.emissionMap = builder.emissionMap;
+        this.emissionColor = builder.emissionColor;
+        this.metallicRoughnessMap = builder.metallicRoughnessMap;
+        this.normalsMap = builder.normalsMap;
+        this.metallicFactor = builder.metallicFactor;
+        this.roughnessFactor = builder.roughnessFactor;
+        this.transparency = new Transparency(this.diffuseColor);
     }
 
     public Material(@NotNull ITexture2DProgram diffuseMap) {
-        this(diffuseMap, new Color4Texture(new Vector4f(1.0f)), null, null, null, null, 0.0f, 0.0f);
+        this(new Builder().diffuseMap(diffuseMap));
     }
 
     public Material(@NotNull ISampleColor4 diffuseColor) {
-        this(null, diffuseColor, null, null, null, null, 0.0f, 0.0f);
+        this(new Builder().diffuseColor(diffuseColor));
     }
 
     public Material() {
-        this(ResourceManager.DEFAULT_TEXTURE(), new Color4Texture(new Vector4f(1.0f)), null, null, null, null, 0.0f, 0.0f);
+        this(new Builder().diffuseMap(ResourceManager.DEFAULT_TEXTURE()));
     }
 
     public float getOpacity() {
@@ -172,6 +162,61 @@ public class Material {
 
         public ISample getDiffuse() {
             return this.diffuse;
+        }
+    }
+
+    public static class Builder {
+        private @Nullable ITexture2DProgram diffuseMap;
+        private @Nullable ISampleColor4 diffuseColor;
+        private @Nullable ITexture2DProgram emissionMap;
+        private @Nullable ISampleColor3 emissionColor;
+        private @Nullable ITexture2DProgram metallicRoughnessMap;
+        private @Nullable ITexture2DProgram normalsMap;
+        private float metallicFactor = 0.0f;
+        private float roughnessFactor = 1.0f;
+
+        public Builder diffuseMap(ITexture2DProgram map) {
+            this.diffuseMap = map;
+            return this;
+        }
+
+        public Builder diffuseColor(ISampleColor4 color) {
+            this.diffuseColor = color;
+            return this;
+        }
+
+        public Builder emissionMap(ITexture2DProgram map) {
+            this.emissionMap = map;
+            return this;
+        }
+
+        public Builder emissionColor(ISampleColor3 color) {
+            this.emissionColor = color;
+            return this;
+        }
+
+        public Builder metallicRoughnessMap(ITexture2DProgram map) {
+            this.metallicRoughnessMap = map;
+            return this;
+        }
+
+        public Builder normalsMap(ITexture2DProgram map) {
+            this.normalsMap = map;
+            return this;
+        }
+
+        public Builder metallicFactor(float factor) {
+            this.metallicFactor = factor;
+            return this;
+        }
+
+        public Builder roughnessFactor(float factor) {
+            this.roughnessFactor = factor;
+            return this;
+        }
+
+        public Material build() {
+            return new Material(this);
         }
     }
 }

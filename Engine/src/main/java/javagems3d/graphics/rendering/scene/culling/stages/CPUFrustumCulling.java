@@ -3,6 +3,7 @@ package javagems3d.graphics.rendering.scene.culling.stages;
 import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import org.jetbrains.annotations.NotNull;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -46,7 +47,7 @@ public class CPUFrustumCulling implements ICullingAlgorithm {
     }
 
     @Override
-    public void filter(Collection<? extends SceneObject> sceneObjects) {
-        sceneObjects.removeIf(e -> !this.test(e));
+    public void filter(@NotNull Collection<? extends ICulled> sceneObjects) {
+        sceneObjects.removeIf(e -> !this.test((ICulled) e));
     }
 }

@@ -9,6 +9,7 @@ import api.application.workbench.resources.data.jgems.IJGemsObjectData;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
 import api.application.workbench.resources.data.jgems.JGemsPropData;
+import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.fog.IFogScene;
@@ -38,10 +39,16 @@ import javagems3d.physics.colliders.MeshCollider;
 import javagems3d.physics.entities.bullet.JGemsBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
+import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
+import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
+import javagems3d.physics.world.triggers.Zone;
+import javagems3d.physics.world.triggers.liquids.Water;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.texturing.maps.CubeMapTexture;
+import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.exceptions.JGemsNullException;
@@ -50,6 +57,7 @@ import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -289,6 +297,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     public static class Default extends ExternalMapProcessor {
+        protected Vector3f playerSpawnPoint;
+        protected Vector3f playerSpawnRotation;
+
         public Default(JGemsPath pathToJG3DFile, boolean inJar) {
             super(pathToJG3DFile, inJar);
         }
@@ -349,7 +360,23 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected void onProcessMarker(MapObjectTemplate template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+            if (template.checkGroupName("generic", MapObjectsIdentifiers.MARKER + "water")) {
+                Vector3f pos = template.getPosition();
+                Vector3f scale = template.getScaling();
+                Water water = new Water(new Zone(new Vector3f(pos), new Vector3f(scale).mul(2.0f)));
+                JGemsHelper.world().addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
+            }
 
+            if (template.checkGroupName("generic", MapObjectsIdentifiers.MARKER + "player_spawn")) {
+                Matrix4f rotMatrix = new Matrix4f().rotateXYZ(template.getRotation().x, template.getRotation().y, template.getRotation().z);
+                Vector3f forward = new Vector3f(0, 0, -1);
+                rotMatrix.transformDirection(forward);
+                Vector3f flatForward = new Vector3f(forward.x, 0, forward.z).normalize();
+                float angleY = (float) Math.atan2(-flatForward.x, -flatForward.z);
+
+                this.playerSpawnPoint = template.getPosition();
+                this.playerSpawnRotation = new Vector3f(0.0f, angleY, 0.0f);
+            }
         }
 
         @Override
@@ -359,12 +386,18 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected void postProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-
         }
 
         @Override
         public @Nullable IGameMap.IPlayerConstructor getPlayerConstructor() {
-            return null;
+            if (this.playerSpawnPoint == null || this.playerSpawnRotation == null) {
+                return null;
+            }
+            return (world -> new Pair<>(this.createPlayer(world, this.playerSpawnPoint, this.playerSpawnRotation), JGemsResourceManager.globalRenderDataAssets.defaultPlayer));
+        }
+
+        protected IPlayer createPlayer(PhysicsWorld world, Vector3f pos, Vector3f rot) {
+            return new JGemsKinematicPlayer(world, new Vector3f(pos), new Vector3f(rot));
         }
     }
 }

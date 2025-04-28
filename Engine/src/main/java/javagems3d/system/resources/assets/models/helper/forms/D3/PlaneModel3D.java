@@ -12,6 +12,8 @@ import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAtt
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
 import javagems3d.system.resources.assets.models.pose.Pose2D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import javagems3d.system.service.args.ArbitraryArguments;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -57,12 +59,17 @@ public class PlaneModel3D implements BasicModelCreator<Model3D> {
     }
 
     @Override
-    public Model3D generateModel() {
-        return new Model3D(new Pose3D(), new MeshGroup(new MeshNode3D<>(this.generateMesh())));
+    public Model3D generateModel(@Nullable ArbitraryArguments arguments) {
+        Material material = null;
+        RenderMesh renderMesh = this.generateMesh(arguments);
+        if (arguments != null && arguments.getterFunc().checkRowByTypes(Material.class)) {
+            material = arguments.getterFunc().getObject(0);
+        }
+        return new Model3D(new Pose3D(), new MeshGroup(new MeshNode3D<>(renderMesh, material == null ? new Material() : material)));
     }
 
     @Override
-    public RenderMesh generateMesh() {
+    public RenderMesh generateMesh(@Nullable ArbitraryArguments arguments) {
         RenderMesh renderMesh = new RenderMesh();
         List<Vector3f> list = this.reorderPositions(this.v1, this.v2, this.v3, this.v4);
 

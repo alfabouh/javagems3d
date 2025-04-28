@@ -56,19 +56,23 @@ public abstract class TransparencyRenderNode extends IRenderNode.Template implem
         GL46.glBlendFunci(1, GL46.GL_ZERO, GL46.GL_ONE_MINUS_SRC_COLOR);
         GL46.glBlendFunci(2, GL46.GL_ONE, GL46.GL_ONE);
         GL46.glBlendEquation(GL46.GL_FUNC_ADD);
+
         this.getOutColorBuffer().bindFBO();
         GL46.glClearBufferfv(GL46.GL_COLOR, 0, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
         GL46.glClearBufferfv(GL46.GL_COLOR, 1, new float[]{1.0f, 1.0f, 1.0f, 1.0f});
         GL46.glClearBufferfv(GL46.GL_COLOR, 2, new float[]{0.0f, 0.0f, 0.0f, 0.0f});
+        this.renderContent(frameTicking);
+        this.getOutColorBuffer().unBindFBO();
 
+        GL46.glDisable(GL46.GL_BLEND);
+        GL46.glDepthMask(true);
+    }
+
+    protected void renderContent(FrameTicking frameTicking) {
         this.getIndirectGeometryRenderProcessor().setIndirectMeshObjects(this.getIndirectDeferredRenderingObjects());
         this.getIndirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
         this.getDirectGeometryRenderProcessor().setDirectMeshObjects(this.getDirectDeferredRenderingObjects());
         this.getDirectGeometryRenderProcessor().runProcessorRendering(frameTicking);
-
-        this.getOutColorBuffer().unBindFBO();
-        GL46.glDisable(GL46.GL_BLEND);
-        GL46.glDepthMask(true);
     }
 
     @Override

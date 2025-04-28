@@ -7,6 +7,8 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
+import javagems3d.system.service.args.ArbitraryArguments;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import javagems3d.system.resources.assets.models.pose.Pose3D;
@@ -22,12 +24,12 @@ public class WireBoxModel3D implements BasicModelCreator<Model3D> {
     }
 
     @Override
-    public Model3D generateModel() {
-        return new Model3D(new Pose3D(), new MeshGroup(new MeshNode3D<>(this.generateMesh())));
+    public Model3D generateModel(@Nullable ArbitraryArguments arguments) {
+        return new Model3D(new Pose3D(), new MeshGroup(new MeshNode3D<>(this.generateMesh(arguments))));
     }
 
     @Override
-    public RenderMesh generateMesh() {
+    public RenderMesh generateMesh(@Nullable ArbitraryArguments arguments) {
         RenderMesh renderMesh = new RenderMesh();
 
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);

@@ -9,6 +9,7 @@ import javagems3d.system.service.path.JGemsPath;
 public class ModelAssetsInitializer implements IAssetsInitializer {
     public MeshGroup markerDefault;
     public MeshGroup markerCursor;
+    public MeshGroup markerAabb;
     public MeshGroup markerCube;
 
     public MeshGroup defaultCube_gr;
@@ -32,6 +33,7 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
 
         this.markerDefault = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker/marker.gltf"), true, false);
         this.markerCursor = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cursor/marker.gltf"), true, false);
+        this.markerAabb = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_aabb/marker.gltf"), true, false);
         this.markerCube = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cube/marker.gltf"), true, false);
     }
 

@@ -19,6 +19,7 @@ struct Fog {
     vec3 color;
     float density;
 };
+
 layout (std430, binding = 7) buffer WorldFog {
     Fog fog;
 };
@@ -32,7 +33,6 @@ const int normals_code = CONST.NORMALS_CODE;
 const int emission_code = CONST.EMISSION_CODE;
 const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
-uniform float alpha_discard;
 uniform vec4 diffuse_color;
 uniform vec3 emission_color;
 uniform float metallic_factor;
@@ -151,10 +151,8 @@ void main()
     vec3 gEmission = emission;
     vec2 gMetallicRoughness = metallic_roughness;
 
-    if (useCubeMap) {
-        vec3 refracted_color = refract_cubemap(model_vertex_normal, 1.73, model_vertex_pos);
-        gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
-    }
+    vec3 refracted_color = refract_cubemap(model_vertex_normal * vec3(-1), 1.73, model_vertex_pos);
+    gColor.rgb = mix(gColor.rgb, refracted_color, metallic_roughness.r * 0.5);
 
     vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
     vec4 frag_color = gColor * vec4(lights + gEmission, 1.0);

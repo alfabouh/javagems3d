@@ -136,8 +136,8 @@ public final class SceneWorld implements IRenderWorld {
         }
 
         this.getLiquids().removeIf(liquid -> {
-            if (liquid.getLiquid().isDead()) {
-                liquid.getModel().clear();
+            if (liquid.isDead()) {
+                liquid.onDestroy(this);
                 return true;
             }
             return false;
@@ -238,11 +238,13 @@ public final class SceneWorld implements IRenderWorld {
     }
 
     public void addLiquid(Liquid liquid, LiquidRenderData liquidRenderData) {
-        this.getLiquids().add(new SceneWorldLiquid(liquid, liquidRenderData));
+        SceneWorldLiquid sceneWorldLiquid = new SceneWorldLiquid(liquid, liquidRenderData);
+        sceneWorldLiquid.onSpawn(this);
+        this.getLiquids().add(sceneWorldLiquid);
     }
 
     public void removeLiquid(SceneWorldLiquid liquid) {
-        liquid.getModel().clear();
+        liquid.onDestroy(this);
         this.getLiquids().remove(liquid);
     }
 

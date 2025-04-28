@@ -194,7 +194,7 @@ public final class JGemsHelper {
         }
 
         public void pauseGame(boolean pauseSounds) {
-            this.pauseGame(pauseSounds);
+            JGemsHelper.this.core.pauseGame();
             if (pauseSounds) {
                 JGemsHelper.this.getSoundManager().pauseAllSounds();
             }

@@ -1,7 +1,14 @@
 package javagems3d.graphics.objects.entities.world;
 
+import javagems3d.graphics.objects.ICulled;
+import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
+import javagems3d.graphics.rendering.scene.culling.rules.CullingRules;
+import javagems3d.physics.world.IWorld;
+import javagems3d.physics.world.basic.IWorldObject;
 import javagems3d.system.resources.assets.models.Model3D;
 import javagems3d.system.resources.assets.models.pose.Pose3D;
+import javagems3d.system.service.args.ArbitraryArguments;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import javagems3d.graphics.objects.rendering.data.LiquidRenderData;
@@ -9,17 +16,16 @@ import javagems3d.physics.world.triggers.liquids.base.Liquid;
 
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 
-public final class SceneWorldLiquid {
+public final class SceneWorldLiquid implements IWorldObject, ICulled {
     private final LiquidRenderData liquidRenderData;
     private final Liquid liquid;
-    private final Model3D model;
+    private Model3D model;
     private final Vector2f textureScaling;
 
     public SceneWorldLiquid(Liquid iLiquid, LiquidRenderData liquidRenderData) {
         this.liquidRenderData = liquidRenderData;
         this.liquid = iLiquid;
         this.textureScaling = new Vector2f(1.0f);
-        this.model = this.constructModel(iLiquid);
     }
 
     private Model3D constructModel(Liquid liquid) {
@@ -37,7 +43,7 @@ public final class SceneWorldLiquid {
         if (size.z > sizeBound) {
             this.textureScaling.mul(1.0f, size.z / sizeBound);
         }
-        return MeshHelper.generatePlane3DModel(v1, v2, v3, v4);
+        return MeshHelper.generatePlane3DModel(ArbitraryArguments.pass(this.getRenderLiquidData().getLiquidMaterial()), v1, v2, v3, v4);
     }
 
     public Vector2f getTextureScaling() {
@@ -54,5 +60,38 @@ public final class SceneWorldLiquid {
 
     public Liquid getLiquid() {
         return this.liquid;
+    }
+
+    @Override
+    public void onSpawn(IWorld iWorld) {
+        this.model = this.constructModel(this.getLiquid());
+    }
+
+    @Override
+    public void onDestroy(IWorld iWorld) {
+        if (this.getModel() != null) {
+            this.getModel().clear();
+        }
+    }
+
+    @Override
+    public void setDead() {
+    }
+
+    @Override
+    public boolean isDead() {
+        return this.getLiquid().isDead();
+    }
+
+    @Override
+    public @NotNull CullingRules getCullingRules() {
+        return CullingRules.get();
+    }
+
+    @Override
+    public CullingAABB getCullingData() {
+        Vector3f min = this.getLiquid().getZone().getLocation().sub(this.getLiquid().getZone().getSize().mul(0.5f));
+        Vector3f max = this.getLiquid().getZone().getLocation().add(this.getLiquid().getZone().getSize().mul(0.5f));
+        return new CullingAABB(min, max);
     }
 }

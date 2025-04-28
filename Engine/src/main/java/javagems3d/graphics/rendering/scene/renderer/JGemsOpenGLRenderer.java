@@ -4,12 +4,16 @@ import api.events.EventBus;
 import api.events.EventLauncher;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
+import javagems3d.graphics.environment.lights.scene.LightScene;
+import javagems3d.graphics.objects.ICulled;
 import javagems3d.graphics.objects.SceneObject;
+import javagems3d.graphics.objects.entities.world.SceneWorldLiquid;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Pipeline;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Redirections;
 import javagems3d.graphics.objects.rendering.pipeline.enums.Stage;
 import javagems3d.graphics.rendering.programs.fbo.FBOTexture2DProgram;
 import javagems3d.graphics.rendering.programs.indirect.base.IndirectBufferProgram;
+import javagems3d.graphics.rendering.programs.ssbo.ShaderStorageBufferProgram;
 import javagems3d.graphics.rendering.scene.culling.ISceneCulling;
 import javagems3d.graphics.rendering.scene.culling.SceneCulling;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
@@ -26,6 +30,7 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIMenuInterfac
 import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
 import javagems3d.graphics.rendering.ui.jgems_imgui.JGemsUI;
 import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
+import javagems3d.graphics.screen.IScreen;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
@@ -39,6 +44,7 @@ import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
+import javagems3d.system.resources.assets.shaders.buffers.ShaderStorageBufferObject;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
@@ -51,7 +57,9 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryStack;
 
+import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -68,7 +76,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     protected Map<NodeID, IRenderNode> conveyorNodes;
     public static DearUIInterface inGameInterface;
     public static DearUIInterface inMenuInterface;
-    private final ISceneCulling<SceneObject> sceneCulling;
+    private final ISceneCulling sceneCulling;
     protected IndirectBufferProgram sceneIndirectBufferProgram;
     protected JGemsUI jGemsUI;
     protected DearUIRenderer dearUIRenderer;
@@ -86,7 +94,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
         this.screenModel = null;
 
-        this.sceneCulling = new SceneCulling<>(SceneCulling.FRUSTUM_CPU | SceneCulling.DISTANCE, null);
+        this.sceneCulling = new SceneCulling(SceneCulling.FRUSTUM_CPU | SceneCulling.DISTANCE, null);
         this.debugLinesDrawer = new DebugLinesDrawer(JGemsResourceManager.globalShaderAssets.debug);
     }
 
@@ -168,6 +176,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         IGluingRenderNode gluingRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.GLUING_RENDER_PASS);
         IPostFXRenderNode postRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.POST_EFFECTS_RENDER_PASS);
         IUIRenderNode uiRenderNode = this.getRenderNodeByPass(JGemsOpenGLRenderer.UI_RENDER_PASS);
+        JGemsOpenGLRenderer.updateTimerSSBO(JGemsHelper.screen().getScreen(), JGemsResourceManager.globalShaderAssets.TimerData);
 
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT | GL46.GL_STENCIL_BUFFER_BIT);
         OpenGLRenderer.setViewPort(this.getWindowSize());
@@ -184,13 +193,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
         this.getWorld().getEnvironment().updateEnvironment(this.getWorld().getCamera());
         OpenGLRenderer.setViewPort(this.getRenderingResolution());
 
-        Set<SceneObject> toRender = new HashSet<>(this.getWorld().getSceneObjects());
-        if (!EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.PRE, toRender, this)).isCancelled()) {
+        Set<SceneObject> toRenderObjects = new HashSet<>(this.getWorld().getSceneObjects());
+        Set<SceneWorldLiquid> toRenderLiquids = new HashSet<>(this.getWorld().getLiquids());
 
-            JGemsOpenGLRenderer.renderScene(this, frameTicking, toRender, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
-                this.getSceneCulling().cull(toRender, JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera());
+        if (!EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.PRE, toRenderObjects, this)).isCancelled()) {
+            JGemsOpenGLRenderer.renderScene(this, frameTicking, toRenderObjects, toRenderLiquids, forwardRenderNode, deferredRenderNode, transparencyRenderNode, (e) -> {
+                @SuppressWarnings("unchecked") Collection<? extends ICulled>[] collections = new Collection[] { toRenderObjects, toRenderLiquids };
+                this.getSceneCulling().cull(JGemsTransformManager.INSTANCE.getPerspectiveMatrix(), this.getCamera(), collections);
             });
-
 
             GL46.glDepthMask(false);
             JGemsOpenGLRenderer.renderNodeWithEvent(this, frameTicking, gluingRenderNode);
@@ -201,43 +211,65 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
             this.renderFinalSceneInMainBuffer(postRenderNode.getOutColorBuffer());
             uiRenderNode.setAnInterface(JGemsOpenGLRenderer.inGameInterface);
             JGemsOpenGLRenderer.renderNodeWithEvent(this, frameTicking, uiRenderNode);
-            if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
-                for (SceneObject sceneObject : this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects()) {
-                    CullingAABB cullingAABB = sceneObject.getCullingData();
-                    if (cullingAABB != null) {
-                        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-                    }
-                }
-                for (SceneObject sceneObject : this.getWorld().getSceneObjects()) {
-                    CullingAABB cullingAABB = sceneObject.getCullingData();
-                    if (cullingAABB != null) {
-                        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-                    }
-                    //if (sceneObject instanceof SceneEntity) {
-                    //    SceneEntity sceneEntity = (SceneEntity) sceneObject;
-                    //    if (sceneEntity.getWorldItem() instanceof JGemsBody) {
-                    //        JGemsBody gemsBody = (JGemsBody) sceneEntity.getWorldItem();
-                    //        BoundingBox boundingBox = new BoundingBox();
-                    //        gemsBody.getPhysicsRigidBody().boundingBox(boundingBox);
-                    //        Vector3f min = DynamicsUtils.convertV3F_JOML(boundingBox.getMin(new com.jme3.math.Vector3f()));
-                    //        Vector3f max = DynamicsUtils.convertV3F_JOML(boundingBox.getMax(new com.jme3.math.Vector3f()));
-                    //        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(min, max, new Vector3f(0.0f, 0.0f, 1.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
-                    //    }
-                    //}
-                }
-            }
-            EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.POST, toRender, this));
+
+            JGemsOpenGLRenderer.renderDebug(this.getWorld().getSceneObjects(), this.getWorld().getLiquids());
+            EventLauncher.pushEvent(new EventBus.OpenGLRendererProcess(EventBus.Run.POST, toRenderObjects, this));
         }
+
         JGemsOpenGLRenderer.DebugLinesDrawer().render();
     }
 
-    public static void renderScene(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Collection<SceneObject> toRender, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, @Nullable Consumer<Void> cullingFun) {
+    public static void updateTimerSSBO(IScreen screen, ShaderStorageBufferObject shaderStorageBufferObject) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer buffer = stack.mallocFloat(1);
+            buffer.put(screen.getRenderTicks());
+            buffer.flip();
+            ShaderStorageBufferProgram.updateSubDataSSBO(shaderStorageBufferObject, 0L, buffer);
+        }
+    }
+
+    public static void renderDebug(Set<SceneObject> sceneObjects, Set<SceneWorldLiquid> liquids) {
+        if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
+            // for (SceneObject sceneObject : this.getWorld().getEnvironment().getSkyBox().getBackground().getSkySceneObjects()) {
+            //     CullingAABB cullingAABB = sceneObject.getCullingData();
+            //     if (cullingAABB != null) {
+            //         JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(0.0f, 1.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+            //     }
+            // }
+            for (SceneObject sceneObject : sceneObjects) {
+                CullingAABB cullingAABB = sceneObject.getCullingData();
+                if (cullingAABB != null) {
+                    JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                }
+                //if (sceneObject instanceof SceneEntity) {
+                //    SceneEntity sceneEntity = (SceneEntity) sceneObject;
+                //    if (sceneEntity.getWorldItem() instanceof JGemsBody) {
+                //        JGemsBody gemsBody = (JGemsBody) sceneEntity.getWorldItem();
+                //        BoundingBox boundingBox = new BoundingBox();
+                //        gemsBody.getPhysicsRigidBody().boundingBox(boundingBox);
+                //        Vector3f min = DynamicsUtils.convertV3F_JOML(boundingBox.getMin(new com.jme3.math.Vector3f()));
+                //        Vector3f max = DynamicsUtils.convertV3F_JOML(boundingBox.getMax(new com.jme3.math.Vector3f()));
+                //        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(min, max, new Vector3f(0.0f, 0.0f, 1.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                //    }
+                //}
+            }
+
+            for (SceneWorldLiquid sceneWorldLiquid : liquids) {
+                CullingAABB cullingAABB = sceneWorldLiquid.getCullingData();
+                JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(0.0f, 0.0f, 1.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+            }
+        }
+    }
+
+    public static void renderScene(OpenGLRenderer openGLRenderer, FrameTicking frameTicking, Collection<SceneObject> toRenderObjects, Collection<SceneWorldLiquid> toRenderLiquids, IForwardRenderNode forwardRenderNode, IDeferredRenderNode deferredRenderNode, ITransparencyRenderNode transparencyRenderNode, @Nullable Consumer<Void> cullingFun) {
         if (cullingFun != null) {
             cullingFun.accept(null);
         }
 
+
+
         List<SceneObject> redirectedInTransparency = new ArrayList<>();
-        Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRender, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
+        Map<Stage, List<SceneObject>> dividedGroups = OpenGLRenderer.groupObjectsFromStages(toRenderObjects, Pipeline.SCENE, new Pair<>(redirectedInTransparency, Redirections.SCENE__IN__TRANSPARENCY));
         deferredRenderNode.setIndirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_INDIRECT, new ArrayList<>()));
         deferredRenderNode.setDirectDeferredRenderingObjects(dividedGroups.getOrDefault(Stage.DEFERRED_DIRECT, new ArrayList<>()));
         forwardRenderNode.setForwardRenderingObjects(dividedGroups.getOrDefault(Stage.FORWARD, new ArrayList<>()));
@@ -252,6 +284,10 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
 
         transparencyRenderNode.setIndirectDeferredRenderingObjects(rejectedIndirect);
         transparencyRenderNode.setDirectDeferredRenderingObjects(rejectedDirect);
+        if (transparencyRenderNode instanceof JGemsTransparencyRenderNode) {
+            JGemsTransparencyRenderNode transparencyRenderNode1 = (JGemsTransparencyRenderNode) transparencyRenderNode;
+            transparencyRenderNode1.setWorldLiquid(toRenderLiquids);
+        }
         JGemsOpenGLRenderer.renderNodeWithEvent(openGLRenderer, frameTicking, transparencyRenderNode);
     }
 
@@ -386,7 +422,7 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
     }
 
     @Override
-    public ISceneCulling<SceneObject> getSceneCulling() {
+    public ISceneCulling getSceneCulling() {
         return this.sceneCulling;
     }
 

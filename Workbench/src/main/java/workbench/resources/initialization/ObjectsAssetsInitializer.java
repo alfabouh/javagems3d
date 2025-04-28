@@ -92,7 +92,9 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
             case CURSOR_CONE: {
                 return WBenchResourceManager.localModelAssets.markerCursor;
             }
-            case AABB_ZONE:
+            case AABB_ZONE: {
+                return WBenchResourceManager.localModelAssets.markerAabb;
+            }
             case POINT: {
                 return WBenchResourceManager.localModelAssets.markerCube;
             }

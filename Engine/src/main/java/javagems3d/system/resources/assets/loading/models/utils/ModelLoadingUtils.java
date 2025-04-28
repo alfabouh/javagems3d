@@ -14,11 +14,9 @@ import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
@@ -281,7 +279,8 @@ public abstract class ModelLoadingUtils {
             }
         }
 
-        Material material = new Material(diffuseMap, diffuseColor, emissionMap, emissionColor, metallicRoughnessMap, normalsMap, metallicFactor, roughnessFactor);
+
+        Material material = new Material.Builder().diffuseMap(diffuseMap).diffuseColor(diffuseColor).emissionMap(emissionMap).emissionColor(emissionColor).metallicRoughnessMap(metallicRoughnessMap).normalsMap(normalsMap).metallicFactor(metallicFactor).roughnessFactor(roughnessFactor).build();
         material.getTransparency().setHasTransparentPixels(textureIsImageAndHasAlphaPixels);
         material.getTransparency().setOpacity(opacityConstant);
         return material;

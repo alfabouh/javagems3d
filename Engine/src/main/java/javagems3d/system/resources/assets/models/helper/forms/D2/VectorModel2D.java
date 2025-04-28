@@ -1,14 +1,12 @@
 package javagems3d.system.resources.assets.models.helper.forms.D2;
 
-import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.flat.MeshGui;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode2D;
-import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
-import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
 import javagems3d.system.resources.assets.models.mesh.vertex.attributes.FloatVertexAttribute;
+import javagems3d.system.service.args.ArbitraryArguments;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 
 import javagems3d.system.resources.assets.models.pose.Pose2D;
@@ -24,12 +22,12 @@ public class VectorModel2D implements BasicModelCreator<Model2D> {
     }
 
     @Override
-    public Model2D generateModel() {
-        return new Model2D(new Pose2D(), new MeshGui(this.generateMesh()));
+    public Model2D generateModel(@Nullable ArbitraryArguments arguments) {
+        return new Model2D(new Pose2D(), new MeshGui(this.generateMesh(arguments)));
     }
 
     @Override
-    public RenderMesh generateMesh() {
+    public RenderMesh generateMesh(@Nullable ArbitraryArguments arguments) {
         RenderMesh renderMesh = new RenderMesh();
         FloatVertexAttribute vaPositions = new FloatVertexAttribute(DefaultAttributePointers.ATTR_POSITIONS);
         FloatVertexAttribute vaTextureCoordinates = new FloatVertexAttribute(DefaultAttributePointers.ATTR_TEXTURE_COORDINATES);

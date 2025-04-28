@@ -12,6 +12,9 @@ public interface IScreen {
 
     IWindow getWindow();
 
+    void zeroRenderTick();
+    float getRenderTicks();
+
     default void setIcon(@Nullable JGemsPath icon) {
         this.getWindow().setIcon(icon);
     }

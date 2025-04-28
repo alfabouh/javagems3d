@@ -69,13 +69,9 @@ public class AppTest extends JGemsApplication {
 
     @Override
     public void setupEditorResources(IAPIWBenchDataManager manager) {
-        final Tag<TagRadioBoolean> tagPhysics = new Tag<>(TagID.DEFAULT.PHYSICS_STATE, new TagRadioBoolean(new TagRadioBoolean.Info("Is Static", true), new TagRadioBoolean.Info("Is Dynamic", false)));
-        final Tag<TagString> tagMarkerId = new Tag<>(TagID.DEFAULT.MARKER_STRING_ID, new TagString("default"));
-
         //final JGemsPath sponza = new JGemsPath("assets/models/sponza/sponza.gltf");
         //final JGemsPath map04 = new JGemsPath("/assets/models/cube/cube.gltf");
 
-        final JGemsPath cube = new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf");
         final JGemsPath trees = new JGemsPath("/assets/models/trees/trees.gltf");
         final JGemsPath flatgrass = new JGemsPath("/assets/models/flatgrass/flatgrass.gltf");
         final JGemsPath flatgrass_back = new JGemsPath("/assets/models/flatgrass/flatgrass_back.gltf");
@@ -156,14 +152,10 @@ public class AppTest extends JGemsApplication {
         //JGemsRenderProperties.getDefault().setValueBool(JGemsRenderProperties.KEY_SHADOW_CASTER, false)
 
         manager.addResourceEntity("terrain", "flatgrass", () -> new WBenchObjectData(flatgrass), () -> new JGemsEntityData(flatgrass));
-        manager.addResourceEntity("testPhys", "cube", () -> new WBenchObjectData(cube).addTag(tagPhysics), () -> new JGemsEntityData(cube));
 
         manager.addResourceProp("terrain", "flatgrass_back", () -> new WBenchObjectData(flatgrass_back), () -> new JGemsPropData(flatgrass_back));
         manager.addResourceProp("trees", () -> new WBenchObjectData(trees), () -> new JGemsPropData(trees));
-        manager.addResourceProp("testProp", "cube", () -> new WBenchObjectData(cube), () -> new JGemsPropData(cube));
 
-        manager.addResourceMarker("player", "spawn", () -> new WBenchMarkerData(DefaultMarker.CURSOR_CONE, new Vector3f(0.0f, 3.0f, 0.0f), false).addTag(tagMarkerId));
-
-        manager.addResourceSkyCubeMap("SkyDay1", "png", new JGemsPath(JGems3D.DEFAULT_PATHS.CUBE_MAPS, "skyDay"));
+        manager.SET_DEFAULTS();
     }
 }
