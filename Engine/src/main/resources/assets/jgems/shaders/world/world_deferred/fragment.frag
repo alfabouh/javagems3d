@@ -25,6 +25,7 @@ uniform sampler2D gTexture;
 uniform sampler2D gEmission;
 uniform sampler2D gMetallicRoughness;
 uniform sampler2D ssao_map;
+uniform bool showCascades;
 
 #include "assets/jgems/shaders/libs/shadows"
 #include "assets/jgems/shaders/libs/lighting"
@@ -108,4 +109,22 @@ void main()
 
     float brightness = dot(frag_color.rgb + emission, vec3(0.2126, 0.7152, 0.0722));
     bright_color = brightness >= 2.0 ? vec4(frag_color.xyz, 1.) : vec4(0., 0., 0., 1.);
+
+    if (showCascades) {
+        int cascadeIndex = int(frag_pos.z < cascade_shadow[0].split_distance) + int(frag_pos.z < cascade_shadow[1].split_distance);
+        switch (cascadeIndex) {
+            case 0:
+                frag_color.rgb *= vec3(1.0f, 0.75f, 0.75f);
+                break;
+            case 1:
+                frag_color.rgb *= vec3(0.75f, 1.0f, 0.75f);
+                break;
+            case 2:
+                frag_color.rgb *= vec3(0.75f, 0.75f, 1.0f);
+                break;
+            default :
+                frag_color.rgb *= vec3(1.0f, 1.0f, 0.25f);
+                break;
+        }
+    }
 }

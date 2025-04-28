@@ -11,6 +11,7 @@ import javagems3d.graphics.environment.lights.SunLight;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import workbench.WBench;
@@ -45,13 +46,21 @@ public class ContextComponent {
     }
 
     public void context() {
+        JGemsConfig.DEBUG.SHOW_CASCADES = this.isOpenEnvironmentShadowsSettings();
+
         WBenchEnvironment environment = this.getEditorInterface().getOpenGLRenderer().getWorld().getEnvironment();
         if (this.isOpenEnvironmentShadowsSettings()) {
             if (!ContextComponent.openWindow("Shadows", (e) -> {
-                float[] shadowSplits = new float[] {environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, environment.getShadowScene().getSunLightShadow().getCascadeSplits().z};
-                if (ImGui.dragFloat3("Cascade Splits", shadowSplits, 0.01f, 0.0f, 5.0f)) {
+                float[] shadowSplits = new float[] {environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, 0.0f};
+                if (ImGui.dragFloat2("Cascade Splits", shadowSplits, 0.01f, 0.0f, 5.0f)) {
                     environment.getShadowScene().getSunLightShadow().setCascadeSplits(new Vector3f(shadowSplits));
                 }
+                ImGui.text("Level 1");
+                ImGui.image(environment.getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(0).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.text("Level 2");
+                ImGui.image(environment.getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(1).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+                ImGui.text("Level 3");
+                ImGui.image(environment.getShadowScene().getSunLightShadow().getSunShadowFBO().getTexturePrograms().get(2).getTextureId(), JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH / 4.0f, JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT / 4.0f, 0.0f, 1.0f, 1.0f, 0.0f);
             })) {
                 this.setOpenEnvironmentShadowsSettings(false);
             }

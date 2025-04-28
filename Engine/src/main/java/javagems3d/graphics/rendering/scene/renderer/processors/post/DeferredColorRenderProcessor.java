@@ -8,6 +8,7 @@ import javagems3d.graphics.rendering.scene.renderer.processors.IRenderProcessor;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.help.JGemsHelper;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,7 @@ public class DeferredColorRenderProcessor extends IRenderProcessor.Template {
             }
         }
         deferredShader.performUniform(new UniformString("view_matrix"), UniformFunctions.MAT4F(JGemsTransformManager.INSTANCE.getCameraViewMatrix()));
+        deferredShader.performUniform(new UniformString("showCascades"), UniformFunctions.BOOLEAN(JGemsConfig.DEBUG.SHOW_CASCADES));
         deferredShader.performUniformTexture(new UniformString("gPositions"), gBuffer.getTextureByIndex(0));
         deferredShader.performUniformTexture(new UniformString("gNormals"), gBuffer.getTextureByIndex(1));
         deferredShader.performUniformTexture(new UniformString("gTexture"), gBuffer.getTextureByIndex(2));

@@ -76,7 +76,7 @@ public class SunLightShadow extends Shadow {
 
         Vector4f sunPos = new Vector4f(this.getEnvironment().getSkyBox().getSun().getLightPosition(), 0.0f);
 
-        float[] cascadeSplitLambda = new float[]{0.6f, 0.6f, 0.6f};
+        float[] cascadeSplitLambda = new float[]{this.getCascadeSplits().x, this.getCascadeSplits().y, 0.0f};
         float[] cascadeSplits = new float[this.getTotalCascades()];
 
         float nearClip = JGemsConfig.SYSTEM.Z_NEAR;

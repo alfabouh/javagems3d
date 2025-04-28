@@ -174,7 +174,7 @@ public class EditorInterface implements DearUIInterface {
                 this.getContextComponent().setOpenEnvironmentSkySettings(!this.getContextComponent().isOpenEnvironmentSkySettings());
             }
             if (ImGui.menuItem("Shadows")) {
-                this.getContextComponent().setOpenEnvironmentSkySettings(!this.getContextComponent().isOpenEnvironmentSkySettings());
+                this.getContextComponent().setOpenEnvironmentShadowsSettings(!this.getContextComponent().isOpenEnvironmentShadowsSettings());
             }
             ImGui.endMenu();
         }
