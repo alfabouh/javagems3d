@@ -173,6 +173,9 @@ public class EditorInterface implements DearUIInterface {
             if (ImGui.menuItem("SkyBox")) {
                 this.getContextComponent().setOpenEnvironmentSkySettings(!this.getContextComponent().isOpenEnvironmentSkySettings());
             }
+            if (ImGui.menuItem("Shadows")) {
+                this.getContextComponent().setOpenEnvironmentSkySettings(!this.getContextComponent().isOpenEnvironmentSkySettings());
+            }
             ImGui.endMenu();
         }
         if (ImGui.beginMenu("Scene")) {

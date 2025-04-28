@@ -19,11 +19,13 @@ public class SunLightShadow extends Shadow {
     private final FBOTexture2DProgram sunShadowFBO;
     private List<Cascade> cascades;
     private final int totalCascades;
+    private final Vector3f cascadeSplits;
 
     public SunLightShadow(IEnvironment environment, Vector2i shadowMapResolution, int totalCascades) {
         super(environment, shadowMapResolution);
         this.totalCascades = totalCascades;
         this.sunShadowFBO = new FBOTexture2DProgram(true, false);
+        this.cascadeSplits = new Vector3f();
         this.initCascades();
     }
 
@@ -32,6 +34,7 @@ public class SunLightShadow extends Shadow {
         for (int i = 0; i < this.getTotalCascades(); i++) {
             this.cascades.add(new Cascade());
         }
+        this.setDefaultCascadeSplits();
     }
 
     /*
@@ -192,6 +195,14 @@ public class SunLightShadow extends Shadow {
         this.getSunShadowFBO().clearFBO();
     }
 
+    public void setDefaultCascadeSplits() {
+        this.cascadeSplits.set(0.6f, 0.6f, 0.6f);
+    }
+
+    public void setCascadeSplits(Vector3f vector3f) {
+        this.cascadeSplits.set(vector3f);
+    }
+
     public List<Cascade> getCascades() {
         return this.cascades;
     }
@@ -202,6 +213,10 @@ public class SunLightShadow extends Shadow {
 
     public int getTotalCascades() {
         return this.totalCascades;
+    }
+
+    public Vector3f getCascadeSplits() {
+        return cascadeSplits;
     }
 
     public static class Cascade {

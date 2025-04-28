@@ -19,12 +19,14 @@ import workbench.graphics.scene.ui.EditorInterface;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class ContextComponent {
     private final EditorInterface editorInterface;
     private boolean cameraCheckBox;
     private boolean openEnvironmentFogSettings;
     private boolean openEnvironmentSkySettings;
+    private boolean openEnvironmentShadowsSettings;
     private boolean openProjectSettings;
     private final FixedCamera sunCamera;
 
@@ -38,19 +40,25 @@ public class ContextComponent {
         this.cameraCheckBox = false;
         this.openEnvironmentFogSettings = false;
         this.openEnvironmentSkySettings = false;
+        this.openEnvironmentShadowsSettings = false;
         this.openProjectSettings = false;
     }
 
     public void context() {
         WBenchEnvironment environment = this.getEditorInterface().getOpenGLRenderer().getWorld().getEnvironment();
-        ImVec2 screenSize = ImGui.getIO().getDisplaySize();
+        if (this.isOpenEnvironmentShadowsSettings()) {
+            if (!ContextComponent.openWindow("Shadows", (e) -> {
+                float[] shadowSplits = new float[] {environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, environment.getShadowScene().getSunLightShadow().getCascadeSplits().z};
+                if (ImGui.dragFloat3("Cascade Splits", shadowSplits, 0.01f, 0.0f, 5.0f)) {
+                    environment.getShadowScene().getSunLightShadow().setCascadeSplits(new Vector3f(shadowSplits));
+                }
+            })) {
+                this.setOpenEnvironmentShadowsSettings(false);
+            }
+        }
 
         if (this.isOpenEnvironmentFogSettings()) {
-            ImVec2 windowSize = new ImVec2(400, 200);
-            ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
-            ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
-            ImBoolean opened = new ImBoolean(true);
-            if (ImGui.begin("Fog", opened, ImGuiWindowFlags.NoResize)) {
+            if (!ContextComponent.openWindow("Fog", (e) -> {
                 float[] fogIntensity = new float[] {JGemsHelper.math().clamp(environment.getFogScene().getFogDensity(), 0.0f, 1.0f)};
                 if (ImGui.dragFloat("Fog Intensity", fogIntensity, 1.0e-6f, 0.0f, 1.0f, "%.6f")) {
                     environment.getFogScene().setFogDensity(fogIntensity[0]);
@@ -65,19 +73,13 @@ public class ContextComponent {
                 if (ImGui.checkbox("Cover Sky", fogCoversSky)) {
                     environment.getSkyBox().setSkyCoveredByFog(!environment.getSkyBox().isSkyCoveredByFog());
                 }
-            }
-            ImGui.end();
-            if (!opened.get()) {
+            })) {
                 this.setOpenEnvironmentFogSettings(false);
             }
         }
 
         if (this.isOpenEnvironmentSkySettings()) {
-            ImVec2 windowSize = new ImVec2(400, 200);
-            ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
-            ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
-            ImBoolean opened = new ImBoolean(true);
-            if (ImGui.begin("SkyBox", opened, ImGuiWindowFlags.NoResize)) {
+            if (!ContextComponent.openWindow("SkyBox", (e) -> {
                 ImGui.text("Sun");
 
                 if (ImGui.checkbox("Sun's View", this.isCameraCheckBox())) {
@@ -134,9 +136,7 @@ public class ContextComponent {
                 } else {
                     ImGui.text("Empty");
                 }
-            }
-            ImGui.end();
-            if (!opened.get()) {
+            })) {
                 this.getEditorInterface().setNewCamera(null);
                 this.setOpenEnvironmentSkySettings(false);
                 this.setCameraCheckBox(false);
@@ -144,19 +144,26 @@ public class ContextComponent {
         }
 
         if (this.isOpenProjectSettings()) {
-            ImVec2 windowSize = new ImVec2(400, 300);
-            ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
-            ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
-            ImBoolean opened = new ImBoolean(true);
-            if (ImGui.begin("WBenchProject", opened, ImGuiWindowFlags.NoResize)) {
+            if (!ContextComponent.openWindow("WBenchProject", (e) -> {
                 ImGui.text("Map Size");
-
-            }
-            ImGui.end();
-            if (!opened.get()) {
+            })) {
                 this.setOpenProjectSettings(false);
             }
         }
+    }
+
+    public static boolean openWindow(String title, Consumer<Void> content) {
+        ImVec2 screenSize = ImGui.getIO().getDisplaySize();
+        ImVec2 windowSize = new ImVec2(400, 300);
+        ImGui.setNextWindowSize(windowSize.x, windowSize.y, ImGuiCond.Appearing);
+        ImGui.setNextWindowPos((screenSize.x - windowSize.x) / 2, (screenSize.y - windowSize.y) / 2, ImGuiCond.Appearing);
+        ImBoolean opened = new ImBoolean(true);
+        if (ImGui.begin(title, opened, ImGuiWindowFlags.NoResize)) {
+            content.accept(null);
+        }
+        ImGui.end();
+
+        return opened.get();
     }
 
     private Pair<Vector3f, Vector3f> adjustCamera(SunLight sun) {
@@ -176,6 +183,10 @@ public class ContextComponent {
         this.openEnvironmentSkySettings = openEnvironmentSkySettings;
     }
 
+    public void setOpenEnvironmentShadowsSettings(boolean openEnvironmentShadowsSettings) {
+        this.openEnvironmentShadowsSettings = openEnvironmentShadowsSettings;
+    }
+
     public void setOpenProjectSettings(boolean openProjectSettings) {
         this.openProjectSettings = openProjectSettings;
     }
@@ -190,6 +201,10 @@ public class ContextComponent {
 
     public boolean isOpenEnvironmentSkySettings() {
         return this.openEnvironmentSkySettings;
+    }
+
+    public boolean isOpenEnvironmentShadowsSettings() {
+        return this.openEnvironmentShadowsSettings;
     }
 
     public boolean isOpenProjectSettings() {

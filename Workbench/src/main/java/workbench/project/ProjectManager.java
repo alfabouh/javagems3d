@@ -5,15 +5,13 @@ import com.google.gson.JsonSyntaxException;
 import javagems3d.graphics.camera.ControlledCamera;
 import javagems3d.graphics.environment.fog.FogScene;
 import javagems3d.graphics.environment.lights.SunLight;
+import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.SkyBox;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.mapping.data.*;
-import javagems3d.mapping.data.items.FogData;
-import javagems3d.mapping.data.items.ObjectsData;
-import javagems3d.mapping.data.items.SkyData;
-import javagems3d.mapping.data.items.SunData;
+import javagems3d.mapping.data.items.*;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.collections.Pair;
@@ -135,7 +133,7 @@ public final class ProjectManager {
         }
 
         JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
-        MapDataPack mapDataPack = new MapDataPack();
+        MapDataPack mapDataPack;
         try {
             mapDataPack = jsonFileManaging.readFromFile(file, MapDataPack.class, null);
 
@@ -143,6 +141,7 @@ public final class ProjectManager {
             final SunData sunData = mapDataPack.getSunData();
             final FogData fogData = mapDataPack.getFogData();
             final ObjectsData objectsData = mapDataPack.getObjectsData();
+            final ShadowsData shadowsData = mapDataPack.getShadowsData();
 
             if (skyData != null) {
                 ICubeMapProgram cubeMapProgram = this.getProjectObjects().getSkyBoxes().get(skyData.skyboxPath);
@@ -169,6 +168,13 @@ public final class ProjectManager {
                 Log.get().debug("Read FogData");
             } else {
                 Log.get().error("Couldn't get FogData");
+            }
+
+            if (shadowsData != null) {
+                world.getEnvironment().getShadowScene().getSunLightShadow().setCascadeSplits(shadowsData.splits);
+                Log.get().debug("Read ShadowsData");
+            } else {
+                Log.get().error("Couldn't get ShadowsData");
             }
 
             if (objectsData != null) {
@@ -238,6 +244,8 @@ public final class ProjectManager {
         JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
         final SunLight sunLight = world.getEnvironment().getSkyBox().getSun();
         final FogScene fogScene = world.getEnvironment().getFogScene();
+        final IShadowScene shadowScene = world.getEnvironment().getShadowScene();
+
         final Set<SceneObject> objectsCopy = new HashSet<>(world.getSceneObjects());
         final Set<SceneObject> backgroundCopy = new HashSet<>(world.getEnvironment().getSkyBox().getBackground().getSkySceneObjects());
         final Set<MapObjectTemplate> props = new HashSet<>();
@@ -250,6 +258,7 @@ public final class ProjectManager {
         final SunData sunData = new SunData(sunLight.getSunBrightness(), sunLight.getLightColor(), sunLight.getLightPosition());
         final FogData fogData = new FogData(skyBox.isSkyCoveredByFog(), fogScene.getFogDensity(), fogScene.getFogColor());
         final SkyData skyData = new SkyData(this.getProjectObjects().getSkyBoxes().inverse().get(skyBox.getTexture()), world.getEnvironment().getSkyBox().getBackground().getViewScaling());
+        final ShadowsData shadowsData = new ShadowsData(shadowScene.getSunLightShadow().getCascadeSplits());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
@@ -287,7 +296,7 @@ public final class ProjectManager {
                 final ObjectsData objectsData = new ObjectsData(props, markers, entities, pointLights, backgroundProps);
                 MapDataPack mapDataPack = new MapDataPack();
                 jsonFileManaging.setMatch(MapDataPack.class, mapDataPack.getSerializationRules());
-                mapDataPack.set(fogData, sunData, objectsData, skyData);
+                mapDataPack.set(fogData, sunData, objectsData, skyData, shadowsData);
 
                 final String mapDataFile = this.getCurrentProject().getProjectName() + JGemsMapping.MAP_DATA_FILE;
                 this.getCurrentProject().setMapDataFile(mapDataFile);

@@ -21,6 +21,7 @@ public interface IEnvironment {
         this.getSkyBox().getSun().setLightColor(new Vector3f(1.0f));
         this.getSkyBox().getSun().setLightPosition(new Vector3f(1.0f));
         this.getSkyBox().getSun().setSunBrightness(1.0f);
+        this.getShadowScene().getSunLightShadow().setDefaultCascadeSplits();
 
         this.getFogScene().setFogColor(new Vector3f(0.85f));
         this.getFogScene().setFogDensity(0.0f);

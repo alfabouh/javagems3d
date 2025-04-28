@@ -1,10 +1,7 @@
 package javagems3d.mapping.data;
 
 import com.google.gson.*;
-import javagems3d.mapping.data.items.FogData;
-import javagems3d.mapping.data.items.ObjectsData;
-import javagems3d.mapping.data.items.SkyData;
-import javagems3d.mapping.data.items.SunData;
+import javagems3d.mapping.data.items.*;
 import javagems3d.system.service.args.ArbitraryArguments;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.IJSONSerializable;
@@ -19,22 +16,25 @@ public final class MapDataPack implements IJSONSerializable<MapDataPack> {
     private SunData sunData;
     private ObjectsData objectsData;
     private SkyData skyData;
+    private ShadowsData shadowsData;
 
     public MapDataPack() {
     }
 
-    public MapDataPack(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData) {
+    public MapDataPack(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData) {
         this.fogData = fogData;
         this.sunData = sunData;
         this.objectsData = objectsData;
         this.skyData = skyData;
+        this.shadowsData = shadowsData;
     }
 
-    public void set(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData) {
+    public void set(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData) {
         this.fogData = fogData;
         this.sunData = sunData;
         this.objectsData = objectsData;
         this.skyData = skyData;
+        this.shadowsData = shadowsData;
     }
 
     public FogData getFogData() {
@@ -53,6 +53,10 @@ public final class MapDataPack implements IJSONSerializable<MapDataPack> {
         return this.skyData;
     }
 
+    public ShadowsData getShadowsData() {
+        return shadowsData;
+    }
+
     @Override
     public JSONFileManaging.@NotNull SerializationRules<MapDataPack> getSerializationRules() {
         return new JSONFileManaging.SerializationRules<MapDataPack>() {
@@ -65,6 +69,7 @@ public final class MapDataPack implements IJSONSerializable<MapDataPack> {
                     jsonObject.add("sunData", context.serialize(toWrite.sunData, SunData.class));
                     jsonObject.add("objectsData", context.serialize(toWrite.objectsData, ObjectsData.class));
                     jsonObject.add("skyData", context.serialize(toWrite.skyData, SkyData.class));
+                    jsonObject.add("shadowsData", context.serialize(toWrite.shadowsData, ShadowsData.class));
 
                     return jsonObject;
                 } catch (Exception e) {
@@ -81,8 +86,9 @@ public final class MapDataPack implements IJSONSerializable<MapDataPack> {
                     SunData sunData = context.deserialize(jsonObject.get("sunData"), SunData.class);
                     ObjectsData objectsData = context.deserialize(jsonObject.get("objectsData"), ObjectsData.class);
                     SkyData skyData = context.deserialize(jsonObject.get("skyData"), SkyData.class);
+                    ShadowsData shadowsData = context.deserialize(jsonObject.get("shadowsData"), ShadowsData.class);
 
-                    return new MapDataPack(fogData, sunData, objectsData, skyData);
+                    return new MapDataPack(fogData, sunData, objectsData, skyData, shadowsData);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

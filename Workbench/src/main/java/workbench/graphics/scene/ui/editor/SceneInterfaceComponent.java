@@ -165,6 +165,7 @@ public class SceneInterfaceComponent {
                 sceneObjects.add(new Pair<>(object, intersection));
             }
         }
+
         sceneObjects.sort(Comparator.comparingDouble(e -> e.getSecond().distance(origin)));
         return sceneObjects;
     }

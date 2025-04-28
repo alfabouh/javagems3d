@@ -14,6 +14,7 @@ import api.system.JGemsAPI;
 import javagems3d.JGems3D;
 import javagems3d.graphics.environment.fog.IFogScene;
 import javagems3d.graphics.environment.lights.PointLight;
+import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.entities.SceneProp;
@@ -28,6 +29,7 @@ import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.data.MapDataPack;
 import javagems3d.mapping.data.ProjectData;
 import javagems3d.mapping.data.items.FogData;
+import javagems3d.mapping.data.items.ShadowsData;
 import javagems3d.mapping.data.items.SkyData;
 import javagems3d.mapping.data.items.SunData;
 import javagems3d.mapping.data.templates.MapObjectTemplate;
@@ -218,24 +220,35 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         this.processMapObjects(markerObjects, resourceMarkerMap, (template, data) -> this.onProcessMarker(template, (JGemsMarkerData) data, physicsWorld, sceneWorld));
     }
 
-    protected void onSetupSkyBox(Set<MapObjectTemplate> propObjects, SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
-        final Map<String, Pair<String, JGemsPath>> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
-
-        if (skyBoxesSet.containsKey(skyData.skyboxPath)) {
-            ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(null, skyBoxesSet.get(skyData.skyboxPath).getSecond(), skyBoxesSet.get(skyData.skyboxPath).getFirst(), new CubeMapTexture.Properties(true));
-            skyBox.setSky2DTexture(cubeMapProgram);
-        } else {
-            Log.get().error("Couldn't create cubeMap: " + skyData.skyboxPath);
+    protected void onSetupSkyBox(SunData sunData, SkyData skyData, ISkyBox skyBox, ISkyBackground background) {
+        if (skyData != null) {
+            final Map<String, Pair<String, JGemsPath>> skyBoxesSet = JGemsAPI.APIEditorResources().getEditorResourcesManager().getSkyBoxesMap();
+            if (skyBoxesSet.containsKey(skyData.skyboxPath)) {
+                ICubeMapProgram cubeMapProgram = this.getLocalResources().createCubeMapTexture(null, skyBoxesSet.get(skyData.skyboxPath).getSecond(), skyBoxesSet.get(skyData.skyboxPath).getFirst(), new CubeMapTexture.Properties(true));
+                skyBox.setSky2DTexture(cubeMapProgram);
+            } else {
+                Log.get().error("Couldn't create cubeMap: " + skyData.skyboxPath);
+            }
         }
 
-        skyBox.getSun().setLightPosition(sunData.position);
-        skyBox.getSun().setLightColor(sunData.color);
-        skyBox.getSun().setSunBrightness(sunData.brightness);
+        if (sunData != null) {
+            skyBox.getSun().setLightPosition(sunData.position);
+            skyBox.getSun().setLightColor(sunData.color);
+            skyBox.getSun().setSunBrightness(sunData.brightness);
+        }
+    }
+
+    protected void onSetupShadows(ShadowsData shadowsData, IShadowScene shadowScene) {
+        if (shadowsData != null) {
+            shadowScene.getSunLightShadow().setCascadeSplits(shadowsData.splits);
+        }
     }
 
     protected void onSetupFog(FogData fogData, IFogScene fogScene) {
-        fogScene.setFogColor(fogData.color);
-        fogScene.setFogDensity(fogData.density);
+        if (fogData != null) {
+            fogScene.setFogColor(fogData.color);
+            fogScene.setFogDensity(fogData.density);
+        }
     }
 
     @Override
@@ -262,16 +275,20 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     public final void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background) {
         final SunData sunData = this.getMapDataPack().getSunData();
         final SkyData skyData = this.getMapDataPack().getSkyData();
-        final Set<MapObjectTemplate> backgroundProps = this.getMapDataPack().getObjectsData().getBackgroundProps();
         background.setViewScaling(skyData.backGroundScaling);
-
-        this.onSetupSkyBox(backgroundProps, sunData, skyData, skyBox, background);
+        this.onSetupSkyBox(sunData, skyData, skyBox, background);
     }
 
     @Override
     public final void onSetupFog(IFogScene fogScene) {
         final FogData fogData = this.getMapDataPack().getFogData();
         this.onSetupFog(fogData, fogScene);
+    }
+
+    @Override
+    public final void onSetupShadows(IShadowScene shadowScene) {
+        final ShadowsData shadowsData = this.getMapDataPack().getShadowsData();
+        this.onSetupShadows(shadowsData, shadowScene);
     }
 
     @Override

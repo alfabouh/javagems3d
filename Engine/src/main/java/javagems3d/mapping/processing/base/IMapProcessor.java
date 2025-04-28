@@ -1,6 +1,7 @@
 package javagems3d.mapping.processing.base;
 
 import javagems3d.graphics.environment.fog.IFogScene;
+import javagems3d.graphics.environment.shadows.scene.IShadowScene;
 import javagems3d.graphics.environment.skybox.ISkyBox;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.entities.SceneProp;
@@ -19,6 +20,7 @@ public interface IMapProcessor {
     void onProcessing(PhysicsWorld world, SceneWorld sceneWorld);
     void postProcessing(PhysicsWorld world, SceneWorld sceneWorld);
 
+    void onSetupShadows(IShadowScene shadowScene);
     void onSetupSkyBox(ISkyBox skyBox, ISkyBackground background);
     void onSetupFog(IFogScene fogScene);
 
