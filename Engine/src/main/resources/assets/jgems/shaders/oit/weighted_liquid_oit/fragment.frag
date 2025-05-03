@@ -33,6 +33,7 @@ const int normals_code = CONST.NORMALS_CODE;
 const int emission_code = CONST.EMISSION_CODE;
 const int metallic_roughness_code = CONST.METALLIC_ROUGHNESS_CODE;
 
+uniform float opacity;
 uniform vec4 diffuse_color;
 uniform vec3 emission_color;
 uniform float metallic_factor;
@@ -157,7 +158,8 @@ void main()
     vec3 lights = calc_light(gPosition, gNormal, gMetallicRoughness.g, model_vertex_pos);
     vec4 frag_color = gColor * vec4(lights + gEmission, 1.0);
     frag_color = calc_fog(gPosition, frag_color);
-
+    frag_color.a *= opacity;
+    
     float weight = max(min(1.0, max(max(frag_color.r, frag_color.g), frag_color.b) * frag_color.a), frag_color.a) * clamp(0.03 / (1.0e-5f + pow(gl_FragCoord.z / 200.0, 4.0)), 1.0e-2f, 3.0e+3f);
     accumulated = vec4(frag_color.rgb * frag_color.a, frag_color.a) * weight;
     reveal = frag_color.a;

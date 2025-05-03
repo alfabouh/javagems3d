@@ -148,7 +148,6 @@ public class SunLightShadow extends Shadow {
             }
 
             Matrix4f lightViewMatrix = TransformUtils.getLookAtMatrix(eye, up, frustumCenter);
-
             Matrix4f lightOrthoMatrix = TransformUtils.getOrthographic3DMatrix(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z, true);
 
             Cascade cascade = this.getCascades().get(i);

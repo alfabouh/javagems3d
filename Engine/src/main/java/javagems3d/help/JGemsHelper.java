@@ -499,6 +499,10 @@ public final class JGemsHelper {
 
             ICubeMapProgram cubeMapProgram = environment.getSkyBox().getTexture();
 
+            if (shaderManager.isUniformExist(new UniformString("opacity"))) {
+                shaderManager.performUniform(new UniformString("opacity"), UniformFunctions.FLOAT(material.getOpacity()));
+            }
+
             shaderManager.disableWarns();
             if (cubeMapProgram != null) {
                 if (shaderManager.isUniformExist(new UniformString("ambient_cubemap"))) {
