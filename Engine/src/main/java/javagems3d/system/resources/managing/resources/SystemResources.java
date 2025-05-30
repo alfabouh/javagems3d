@@ -4,7 +4,7 @@ import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
-import javagems3d.system.resources.assets.loading.models.ModelMeshLoader;
+import javagems3d.system.resources.assets.loading.models.old.ModelMeshLoader;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;

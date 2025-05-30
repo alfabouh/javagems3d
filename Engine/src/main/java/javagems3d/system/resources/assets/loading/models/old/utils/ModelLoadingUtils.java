@@ -1,4 +1,4 @@
-package javagems3d.system.resources.assets.loading.models.utils;
+package javagems3d.system.resources.assets.loading.models.old.utils;
 
 import com.google.common.io.ByteStreams;
 import javagems3d.JGems3D;
@@ -278,7 +278,6 @@ public abstract class ModelLoadingUtils {
                 Log.get().exception(e);
             }
         }
-
 
         Material material = new Material.Builder().diffuseMap(diffuseMap).diffuseColor(diffuseColor).emissionMap(emissionMap).emissionColor(emissionColor).metallicRoughnessMap(metallicRoughnessMap).normalsMap(normalsMap).metallicFactor(metallicFactor).roughnessFactor(roughnessFactor).build();
         material.getTransparency().setHasTransparentPixels(textureIsImageAndHasAlphaPixels);

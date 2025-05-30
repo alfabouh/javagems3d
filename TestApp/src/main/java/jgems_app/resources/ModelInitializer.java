@@ -2,6 +2,7 @@ package jgems_app.resources;
 
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.loading.models.gltf.GLTF2ModelLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.SystemResources;

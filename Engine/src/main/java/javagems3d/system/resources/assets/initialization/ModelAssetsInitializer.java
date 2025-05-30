@@ -2,6 +2,7 @@ package javagems3d.system.resources.assets.initialization;
 
 import javagems3d.JGems3D;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.loading.models.gltf.GLTF2ModelLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.resources.SystemResources;
@@ -15,7 +16,9 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
     @Override
     public void load(SystemResources systemResources) {
         this.createDefaults(systemResources);
-        this.grassCube = systemResources.createMeshGroup_Buffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), true, false);
+        //this.grassCube = systemResources.createMeshGroup_Buffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "cube/cube.gltf"), true, false);
+        GLTF2ModelLoader gltf2ModelLoader = new GLTF2ModelLoader(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), systemResources);
+        this.grassCube = gltf2ModelLoader.loadModel(null);
     }
 
     private void createDefaults(SystemResources systemResources) {

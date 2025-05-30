@@ -1,4 +1,4 @@
-package javagems3d.system.resources.assets.loading.models.utils;
+package javagems3d.system.resources.assets.loading.models.old.utils;
 
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.animation.AnimationFrame;

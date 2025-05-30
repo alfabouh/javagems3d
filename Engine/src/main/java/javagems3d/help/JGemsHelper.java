@@ -707,6 +707,20 @@ public final class JGemsHelper {
             return byteBuffer;
         }
 
+        public ByteBuffer toByteBufferSized(InputStream inputStream, int size) throws IOException {
+            final int BUFFER_SIZE = 8 * 1024;
+            ByteBuffer byteBuffer = MemoryUtil.memAlloc(size);
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteBuffer.put(buffer, 0, bytesRead);
+            }
+
+            byteBuffer.flip();
+            return byteBuffer;
+        }
+
         public String openFolderViewer(@Nullable String defaultStr) {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

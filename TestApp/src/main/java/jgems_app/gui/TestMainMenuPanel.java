@@ -15,15 +15,20 @@ import javagems3d.graphics.screen.window.Window;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 
 import javagems3d.help.JGemsHelper;
+import javagems3d.mapping.IGameMap;
+import javagems3d.mapping.processing.ManualMapProcessor;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.managing.JGemsResourceManager;
+import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
+import jgems_app.entities.TestPlayer;
 import jgems_app.map.ExternalLoader;
 import jgems_app.map.TestMap;
 import jgems_app.map.TestMapAnim;
 import jgems_app.map.TestMapDirect;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -72,10 +77,15 @@ public class TestMainMenuPanel extends AbstractPanelUI {
                     ui.setPanel(new DefaultGamePanel(null));
                 });
 
-        ui.buttonUI("DirectRendMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0x00ff00, 0.5f)
+        ui.buttonUI("DefaultMap2", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 120), new Vector2i(300, 60), 0x00ff00, 0.5f)
                 .setOnClick(() -> {
-                    JGemsHelper.map().loadMap(new TestMapDirect());
-                    ui.setPanel(new DefaultGamePanel(null));
+                    JGemsHelper.map().loadMap(new ManualMapProcessor.Default() {
+                        @Override
+                        public @NotNull IGameMap.IPlayerConstructor getPlayerConstructor() {
+                            return (world) -> new Pair<>(new TestPlayer(world, new Vector3f(0.0f), new Vector3f(0.0f)), null);
+                        }
+                    });
+                    JGemsHelper.ui().openPanel(new DefaultGamePanel(null));
                 });
 
         ui.buttonUI("DefaultMap", JGemsResourceManager.globalTextureAssets.buttonFont, new Vector2i(windowW / 2 - 150, windowH / 2 - 30), new Vector2i(300, 60), 0xffffff, 0.5f)

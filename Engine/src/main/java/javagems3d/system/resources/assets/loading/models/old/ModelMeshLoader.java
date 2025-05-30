@@ -1,16 +1,16 @@
-package javagems3d.system.resources.assets.loading.models;
+package javagems3d.system.resources.assets.loading.models.old;
 
 import javagems3d.JGems3D;
 import javagems3d.help.JGemsUtils;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.loading.ILoadingHelper;
-import javagems3d.system.resources.assets.loading.models.utils.AnimationLoadingUtils;
+import javagems3d.system.resources.assets.loading.models.old.utils.AnimationLoadingUtils;
 import javagems3d.system.resources.assets.materials.Material;
 import javagems3d.system.resources.assets.models.animation.Animation;
 import javagems3d.system.resources.assets.models.animation.components.Bone;
 import javagems3d.system.resources.assets.models.animation.components.SkeletonData;
-import javagems3d.system.resources.assets.loading.models.utils.ModelLoadingUtils;
+import javagems3d.system.resources.assets.loading.models.old.utils.ModelLoadingUtils;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.DataMesh;
 import javagems3d.system.resources.assets.models.mesh.data.MeshCollisionData;
