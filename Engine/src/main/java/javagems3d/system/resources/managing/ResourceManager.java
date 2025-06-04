@@ -135,6 +135,7 @@ public abstract class ResourceManager {
         if (this.getAnimationMatricesTexture() != null) {
             this.getAnimationMatricesTexture().clear();
         }
+
         int totalMatrices = 0;
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
             for (Animation animation : meshStructure3D.getAnimationsList()) {
@@ -144,24 +145,43 @@ public abstract class ResourceManager {
                 }
             }
         }
-        Log.get().debug("Loading " + totalMatrices + " animations in texture-buffer");
+
+        int totalPixels = totalMatrices * 4;
+        int size = (int) Math.ceil(Math.sqrt(totalPixels));
+        int totalTexels = size * size;
+        int totalFloats = totalTexels * 4;
+
+        Log.get().debug("Loading " + totalMatrices + " matrices in texture-buffer. Texture size: " + size);
+
         Texture2DProgram texture2DProgram = new Texture2DProgram(true);
-        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(totalMatrices * 16);
+        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(totalFloats);
+
+        int matricesWritten = 0;
         for (MeshStructure3D<?> meshStructure3D : meshStructuresCollection) {
             for (Animation animation : meshStructure3D.getAnimationsList()) {
                 for (AnimationFrame animationFrame : animation.getFrameList()) {
                     for (Matrix4f matrix4f : animationFrame.getBoneMatrices()) {
-                        floatBuffer.put(matrix4f.get(new float[16]));
+                        if (matricesWritten < totalTexels / 4) {
+                            floatBuffer.put(matrix4f.get(new float[16]));
+                            matricesWritten++;
+                        }
                     }
                 }
             }
         }
+
+        int remainingFloats = totalFloats - matricesWritten * 16;
+        for (int i = 0; i < remainingFloats; i++) {
+            floatBuffer.put(0.0f);
+        }
+
         floatBuffer.flip();
-        int s = (int) Math.ceil(Math.sqrt(totalMatrices * 4));
-        texture2DProgram.createTexture(new Vector2i(s), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+        texture2DProgram.createTexture(new Vector2i(size), new Texture2DProgram.Properties(GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_NEAREST, GL46.GL_NEAREST, GL46.GL_NONE, GL46.GL_LESS, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, null), floatBuffer);
+
         MemoryUtil.memFree(floatBuffer);
         return texture2DProgram;
     }
+
 
     public void clearAll() {
         for (SystemResources systemResources : this.gameResourcesMap.values()) {

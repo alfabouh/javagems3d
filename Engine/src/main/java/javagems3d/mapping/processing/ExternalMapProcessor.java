@@ -323,7 +323,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessBackgroundProp(MapObjectTemplate template, JGemsPropData propData, SceneWorld sceneWorld, ISkyBackground background) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false, false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false);
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -334,7 +334,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
         @Override
         protected @Nullable SceneProp onProcessProp(MapObjectTemplate template, JGemsPropData propData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false, false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(propData.getPathToModel(), false);
             SceneWorldProp sceneWorldProp = new SceneWorldProp(template.getObjectNameId(), sceneWorld, new PropRenderData(propData.getPropRenderData(), buffer));
             sceneWorldProp.getModel().getPose().setPosition(template.getPosition() == null ? new Vector3f(0.0f) : template.getPosition());
             sceneWorldProp.getModel().getPose().setRotation(template.getRotation() == null ? new Vector3f(0.0f) : template.getRotation());
@@ -353,7 +353,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         @Override
         protected @Nullable WorldItem onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach) {
             final TagRadioBoolean tagPhysics = template.getTagsContainer().getTagItem(TagID.DEFAULT.PHYSICS_STATE);
-            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.getPathToModel(), false, false);
+            MeshBuffer buffer = this.getLocalResources().createMeshBuffer(entityData.getPathToModel(), false);
 
             JGemsBody jGemsBody = null;
             if (tagPhysics == null || tagPhysics.getValues()[0].isFlag()) {

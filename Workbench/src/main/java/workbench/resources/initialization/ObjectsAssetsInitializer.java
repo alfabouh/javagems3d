@@ -70,7 +70,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
     }
 
     private WBenchObjectTemplate constructObjectTemplate(SystemResources systemResources, WBenchObject.ID objectId, WBenchObjectData wBenchObjectData) {
-        MeshGroup meshGroup = systemResources.createMeshGroup_Buffer(wBenchObjectData.getPathToModel(),true, false);
+        MeshGroup meshGroup = systemResources.createMeshGroup_Buffer(wBenchObjectData.getPathToModel(),true);
         return new WBenchObjectTemplate(objectId, meshGroup, RenderAttributes.get(RenderTable.getIndirect(), wBenchObjectData.getRenderProperties()), wBenchObjectData.getTagsContainer(), wBenchObjectData.getTranslationConstraints());
     }
 
@@ -79,7 +79,7 @@ public class ObjectsAssetsInitializer implements IAssetsInitializer {
         if (wBenchMarkerData.getDefaultMarker() != null) {
             meshGroup = this.getModelFromDefaultMarker(systemResources, wBenchMarkerData.getDefaultMarker());
         } else {
-            meshGroup = systemResources.createMeshGroup_Buffer(wBenchMarkerData.getPathToModel(), false, false);
+            meshGroup = systemResources.createMeshGroup_Buffer(wBenchMarkerData.getPathToModel(), false);
         }
         return new WBenchMarkerTemplate(objectId, meshGroup, wBenchMarkerData.getTagsContainer(), wBenchMarkerData.getTranslationConstraints(), wBenchMarkerData.getColor(), wBenchMarkerData.isTransparent());
     }

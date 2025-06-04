@@ -122,7 +122,7 @@ public class MeshCollisionData {
             float zExtent = cullingAABB.getAabbMax().z - cullingAABB.getAabbMin().z;
 
             final CompoundCollisionShape compoundCollisionShape = new CompoundCollisionShape();
-            CollisionShape collisionShape = new BoxCollisionShape(xExtent / 2.0f, yExtent / 2.0f, zExtent / 2.0f);
+            CollisionShape collisionShape = new BoxCollisionShape(2f);
             compoundCollisionShape.addChildShape(collisionShape, new com.jme3.math.Vector3f(0.0f, yExtent / 2.0f, 0.0f));
             return compoundCollisionShape;
         }

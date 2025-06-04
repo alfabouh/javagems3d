@@ -4,6 +4,7 @@ import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITexture2DProgram;
 import javagems3d.graphics.rendering.programs.textures.base.ITextureProgram;
 import javagems3d.system.resources.assets.initialization.base.IAssetsInitializer;
+import javagems3d.system.resources.assets.loading.models.gltf.GLTF2ModelLoader;
 import javagems3d.system.resources.assets.loading.models.old.ModelMeshLoader;
 import javagems3d.system.resources.assets.loading.samples.CubeMapsLoader;
 import javagems3d.system.resources.assets.loading.samples.TexturesLoader;
@@ -60,28 +61,28 @@ public abstract class SystemResources implements ISystemResources {
         return SoundBuffer.createSoundBuffer(this.getResourceCache(), soundPath, soundFormat);
     }
 
-    public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory, boolean animated) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshBuffer(fabric, keepNodesInMemory, animated));
+    public MeshBuffer createMeshBuffer(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(this, modelPath).createMeshBuffer(fabric, keepNodesInMemory));
     }
 
-    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory, boolean animated) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(fabric, false, keepNodesInMemory, animated));
+    public MeshGroup createMeshGroup(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(this, modelPath).createMeshGroup(fabric, false, keepNodesInMemory));
     }
 
-    public MeshGroup createMeshGroup_Buffer(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory, boolean animated) {
-        return this.loadModel(modelPath, () -> new ModelMeshLoader(this, modelPath).createMeshGroup(fabric, true, keepNodesInMemory, animated));
+    public MeshGroup createMeshGroup_Buffer(@Nullable MeshCollisionData.Fabric fabric, @NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.loadModel(modelPath, () -> new GLTF2ModelLoader(this, modelPath).createMeshGroup(fabric, true, keepNodesInMemory));
     }
 
-    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, boolean keepNodesInMemory, boolean animated) {
-        return this.createMeshBuffer(null, modelPath, keepNodesInMemory, animated);
+    public MeshBuffer createMeshBuffer(@NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.createMeshBuffer(null, modelPath, keepNodesInMemory);
     }
 
-    public MeshGroup createMeshGroup(JGemsPath modelPath, boolean keepNodesInMemory, boolean animated) {
-        return this.createMeshGroup(null, modelPath, keepNodesInMemory, animated);
+    public MeshGroup createMeshGroup(JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.createMeshGroup(null, modelPath, keepNodesInMemory);
     }
 
-    public MeshGroup createMeshGroup_Buffer(@NotNull JGemsPath modelPath, boolean keepNodesInMemory, boolean animated) {
-        return this.createMeshGroup_Buffer(null, modelPath, keepNodesInMemory, animated);
+    public MeshGroup createMeshGroup_Buffer(@NotNull JGemsPath modelPath, boolean keepNodesInMemory) {
+        return this.createMeshGroup_Buffer(null, modelPath, keepNodesInMemory);
     }
 
     public ITexture2DProgram createTexture(@Nullable ITexture2DProgram returnDefault, @NotNull JGemsPath path, @Nullable ImageTexture.Properties textureProperties) {

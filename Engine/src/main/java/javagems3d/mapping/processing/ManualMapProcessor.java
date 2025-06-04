@@ -22,7 +22,9 @@ import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.Zone;
 import javagems3d.physics.world.triggers.liquids.Water;
+import javagems3d.system.resources.assets.loading.models.gltf.GLTF2ModelLoader;
 import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshBuffer;
+import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup;
 import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.service.collections.Pair;
 import javagems3d.system.service.path.JGemsPath;
@@ -49,7 +51,7 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
         @Override
         public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false, false);
+            MeshBuffer ground2 = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "map04/map04.gltf"), false);
 
             JGemsStaticBody worldModeledBrush = (JGemsStaticBody) new JGemsStaticBody(MeshCollider.getStatic(ground2), world, new Vector3f(0.0f), "grass").setCanBeDestroyed(false);
             JGemsHelper.world().addWorldItem(worldModeledBrush, new EntityRenderData(JGemsResourceManager.globalRenderDataAssets.ground, ground2));
@@ -62,15 +64,15 @@ public abstract class ManualMapProcessor extends MapProcessor {
 
             PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
             pointLight.on();
-            sceneWorld.addLight(pointLight, null);
+           // sceneWorld.addLight(pointLight, null);
 
             PointLight pointLight2 = new PointLight(new Vector3f(-10.0f, 0.0f, -12.0f), new Vector3f(1.0f, 1.0f, 0.0f)).setBrightness(10.0f);
             pointLight2.on();
-            sceneWorld.addLight(pointLight2, null);
+           // sceneWorld.addLight(pointLight2, null);
 
             PointLight pointLight3 = new PointLight(new Vector3f(0.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 1.0f)).setBrightness(10.0f);
             pointLight3.on();
-            sceneWorld.addLight(pointLight3, null);
+          //  sceneWorld.addLight(pointLight3, null);
         }
 
         @Override

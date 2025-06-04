@@ -33,7 +33,7 @@ public class TestMapDirect extends ManualMapProcessor {
 
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshGroup meshGroup = JGemsResourceManager.globalModelAssets.grassCube;
+        MeshBuffer cube = JGemsResourceManager.globalModelAssets.grassCube;
 
         int size = 15;
         float spacing = 1.5f;
@@ -42,7 +42,7 @@ public class TestMapDirect extends ManualMapProcessor {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {
                     Vector3f position = new Vector3f(x * spacing, y * spacing, z * spacing);
-                    SceneWorldProp sceneWorldProp = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshGroup));
+                    SceneWorldProp sceneWorldProp = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), cube));
                     sceneWorld.addObject(sceneWorldProp);
                     sceneWorldProp.getModel().getPose().setPosition(position);
                 }

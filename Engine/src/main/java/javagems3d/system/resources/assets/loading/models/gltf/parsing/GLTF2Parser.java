@@ -6,12 +6,14 @@ import com.google.gson.JsonObject;
 import javagems3d.JGems3D;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.loading.models.gltf.parsing.structure.*;
+import javagems3d.system.resources.assets.loading.models.gltf.parsing.structure.skinning.GLTF2Animations;
+import javagems3d.system.resources.assets.loading.models.gltf.parsing.structure.skinning.GLTF2Skin;
 import javagems3d.system.service.collections.Pair;
+import javagems3d.system.service.exceptions.JGemsException;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
-import logger.managers.JGemsLogging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
@@ -19,18 +21,24 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.Math;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class GLTF2Parser {
+    public static final String DEFAULT_IDENTIFIER = "unknown";
+
     public static GLTF2RawData parse(JGemsPath pathToMainFile) {
         try (InputStream jsonInput = JGems3D.loadFileFromJar(pathToMainFile)) {
             JSONFileManaging jsonFileManaging = JSONFileManaging.create();
             JsonElement root = jsonFileManaging.read(jsonInput);
             return GLTF2Parser.readStructure(pathToMainFile, root);
-        } catch (IOException e) {
+        } catch (JGemsException e) {
+            Log.get().error("Failed to load: " + pathToMainFile);
+            throw e;
+        } catch (Exception e) {
+            Log.get().error("Failed to load: " + pathToMainFile);
             throw new JGemsIOException(e);
         }
     }
@@ -43,11 +51,17 @@ public abstract class GLTF2Parser {
         for (int i = 0; i < buffers.size(); i++) {
             JsonObject bufferObj = buffers.get(i).getAsJsonObject();
             String bufferUri = bufferObj.get("uri").getAsString();
-            JGemsPath pathToBin = new JGemsPath(pathToMainFile.getDirectory(), bufferUri);
-            try (InputStream binInput = JGems3D.loadFileFromJar(pathToBin)) {
-                buffersList.add(JGemsHelper.files().toByteBufferSized(binInput, bufferObj.get("byteLength").getAsInt()));
-            } catch (IOException e) {
-                throw new JGemsIOException(e);
+            if (bufferUri.startsWith("data:application")) {
+                String base64Data = bufferUri.substring(bufferUri.indexOf(",") + 1);
+                byte[] decodedBytes = Base64.getDecoder().decode(base64Data);
+                buffersList.add(ByteBuffer.wrap(decodedBytes));
+            } else {
+                JGemsPath pathToBin = new JGemsPath(pathToMainFile.getDirectory(), bufferUri);
+                try (InputStream binInput = JGems3D.loadFileFromJar(pathToBin)) {
+                    buffersList.add(JGemsHelper.files().toByteBufferSized(binInput, bufferObj.get("byteLength").getAsInt()));
+                } catch (IOException e) {
+                    throw new JGemsIOException(e);
+                }
             }
         }
 
@@ -57,19 +71,12 @@ public abstract class GLTF2Parser {
         JsonArray sceneNodes = sceneJson.getAsJsonArray("nodes");
         JsonArray nodesArray = rootObject.getAsJsonArray("nodes");
         JsonObject asset = rootObject.getAsJsonObject("asset");
+        final String sceneName = sceneJson.has("name") ? sceneJson.get("name").getAsString() : GLTF2Parser.DEFAULT_IDENTIFIER;
 
-        final String sceneName = sceneJson.get("name").getAsString();
-        final String generator = asset.getAsJsonPrimitive("generator").getAsString();
-        final String version = asset.getAsJsonPrimitive("version").getAsString();
+        final String generator = (asset != null && asset.has("generator")) ? asset.getAsJsonPrimitive("generator").getAsString() : GLTF2Parser.DEFAULT_IDENTIFIER;
+        final String version = (asset != null && asset.has("version")) ? asset.getAsJsonPrimitive("version").getAsString() : GLTF2Parser.DEFAULT_IDENTIFIER;
 
-        List<GLTF2Node> nodeList = new ArrayList<>();
-        List<GLTF2Material> materialList = new ArrayList<>();
-
-        for (int i = 0; i < sceneNodes.size(); i++) {
-            int nodeIndex = sceneNodes.get(i).getAsInt();
-            GLTF2Parser.readNodeRecursive(pathToMainFile, nodeList, rootObject, nodesArray, nodeIndex, new Matrix4f().identity(), buffersList);
-        }
-
+        final List<GLTF2Material> materialList = new ArrayList<>();
         if (rootObject.has("materials")) {
             JsonArray materials = rootObject.getAsJsonArray("materials");
 
@@ -82,101 +89,243 @@ public abstract class GLTF2Parser {
             }
         }
 
-        GLTF2Scene gltf2Scene = new GLTF2Scene(sceneName, nodeList, materialList);
+        final List<GLTF2Node> nodes = GLTF2Parser.readNodes(rootObject, nodesArray, buffersList);
+        List<GLTF2Skin> skins = GLTF2Parser.readSkin(nodes, buffersList, rootObject);
+        List<GLTF2Animations> animations = GLTF2Parser.readAnimations(buffersList, rootObject);
+
+        if ((skins == null && animations != null) || (skins != null && animations == null)) {
+            throw new JGemsIOException("Model has invalid animations data");
+        }
+
+        GLTF2Scene gltf2Scene = new GLTF2Scene(sceneName, materialList, skins, animations, nodes);
         buffersList.forEach(MemoryUtil::memFree);
         buffersList.clear();
 
         return new GLTF2RawData(new GLTF2Asset(generator, version), gltf2Scene);
     }
 
-    private static void readNodeRecursive(JGemsPath pathToMainFile, List<GLTF2Node> list, JsonObject rootObject, JsonArray nodesArray, int nodeIndex, Matrix4f parentTransform, List<ByteBuffer> buffersList) {
-        JsonObject node = nodesArray.get(nodeIndex).getAsJsonObject();
-        String nodeName = node.has("name") ? node.get("name").getAsString() : "unnamed";
+    private static List<GLTF2Node> readNodes(JsonObject rootObject, JsonArray nodesArray, List<ByteBuffer> buffersList) {
+        final List<GLTF2Node> nodes = new ArrayList<>();
+        final Map<Integer, List<Integer>> tempChildrenMap = new HashMap<>();
 
-        Matrix4f localTransform = new Matrix4f().identity();
-        if (node.has("scale")) {
-            JsonArray scale = node.getAsJsonArray("scale");
-            localTransform.scale(scale.get(0).getAsFloat(), scale.get(1).getAsFloat(), scale.get(2).getAsFloat());
-        }
+        for (int i = 0; i < nodesArray.size(); i++) {
+            JsonObject node = nodesArray.get(i).getAsJsonObject();
+            final String nodeName = node.has("name") ? node.get("name").getAsString() : (GLTF2Parser.DEFAULT_IDENTIFIER + "_" + i);
+            final int meshIndex = node.has("mesh") ? node.get("mesh").getAsInt() : -1;
+            final int skin = node.has("skin") ? node.get("skin").getAsInt() : -1;
+            final Matrix4f localTransform = GLTF2Parser.pullMatrixFromNode(node);
+            final JsonArray children = node.getAsJsonArray("children");
 
-        if (node.has("rotation")) {
-            JsonArray rotation = node.getAsJsonArray("rotation");
-            Quaternionf q = new Quaternionf(rotation.get(0).getAsFloat(), rotation.get(1).getAsFloat(), rotation.get(2).getAsFloat(), rotation.get(3).getAsFloat());
-            localTransform.rotate(q);
-        }
+            GLTF2Mesh gltf2Mesh = meshIndex != -1 ? GLTF2Parser.readMesh(buffersList, rootObject, meshIndex) : null;
+            GLTF2Node gltf2Node = new GLTF2Node(nodeName, gltf2Mesh);
 
-        if (node.has("translation")) {
-            JsonArray translation = node.getAsJsonArray("translation");
-            localTransform.translate(translation.get(0).getAsFloat(), translation.get(1).getAsFloat(), translation.get(2).getAsFloat());
-        }
+            gltf2Node.setLocalTransform(localTransform);
+            gltf2Node.setSkin(skin);
+            nodes.add(gltf2Node);
 
-        Matrix4f worldTransform = new Matrix4f(parentTransform).mul(localTransform);
-
-        int meshIndex = node.has("mesh") ? node.get("mesh").getAsInt() : -1;
-        GLTF2Mesh gltf2Mesh = meshIndex != -1 ? GLTF2Parser.readMesh(pathToMainFile, buffersList, rootObject, meshIndex) : null;
-        GLTF2Node gltf2Node = new GLTF2Node(nodeName, gltf2Mesh);
-
-        if (gltf2Mesh != null) {
-            for (GLTF2Primitive primitive : gltf2Mesh.getPrimitives()) {
-                List<Float> positions = primitive.getPOSITION().getObjects();
-
-                for (int i = 0; i < positions.size(); i += 3) {
-                    Vector4f pos = new Vector4f(positions.get(i), positions.get(i + 1), positions.get(i + 2), 1.0f);
-                    worldTransform.transform(pos);
-                    positions.set(i, pos.x);
-                    positions.set(i + 1, pos.y);
-                    positions.set(i + 2, pos.z);
-                }
-
-                if (primitive.getNORMAL() != null) {
-                    List<Float> normals = primitive.getNORMAL().getObjects();
-                    Matrix3f normalMatrix = new Matrix3f();
-                    worldTransform.normal(normalMatrix);
-
-                    for (int i = 0; i < normals.size(); i += 3) {
-                        Vector3f n = new Vector3f(normals.get(i), normals.get(i + 1), normals.get(i + 2));
-                        normalMatrix.transform(n);
-                        n.normalize();
-                        normals.set(i, n.x);
-                        normals.set(i + 1, n.y);
-                        normals.set(i + 2, n.z);
+            if (node.has("children")) {
+                for (int j = 0; j < children.size(); j++) {
+                    int childIndex = children.get(j).getAsInt();
+                    if (!tempChildrenMap.containsKey(i)) {
+                        tempChildrenMap.put(i, new ArrayList<>());
                     }
+                    tempChildrenMap.get(i).add(childIndex);
                 }
+            }
+        }
 
-                if (primitive.getTANGENT() != null) {
-                    List<Float> tangents = primitive.getTANGENT().getObjects();
+        for (Map.Entry<Integer, List<Integer>> listEntry : tempChildrenMap.entrySet()) {
+            final int nodeId = listEntry.getKey();
+            final List<Integer> children = listEntry.getValue();
+
+            GLTF2Node parent = nodes.get(nodeId);
+            for (Integer childId : children) {
+                GLTF2Node child = nodes.get(childId);
+                parent.getChildren().add(child);
+                child.setParent(parent);
+            }
+        }
+
+        for (GLTF2Node gltf2Node : nodes) {
+            GLTF2Mesh gltf2Mesh = gltf2Node.getMesh();
+            Matrix4f worldTransform = gltf2Node.computeMeshTransform();
+
+            if (gltf2Mesh != null) {
+                for (GLTF2Primitive primitive : gltf2Mesh.getPrimitives()) {
+                    List<Float> positions = primitive.getPOSITION().getObjects();
+
+                    for (int i = 0; i < positions.size(); i += 3) {
+                        Vector4f pos = new Vector4f(positions.get(i), positions.get(i + 1), positions.get(i + 2), 1.0f);
+                        worldTransform.transform(pos);
+                        positions.set(i, pos.x);
+                        positions.set(i + 1, pos.y);
+                        positions.set(i + 2, pos.z);
+                    }
+
                     Matrix3f normalMatrix = new Matrix3f();
                     worldTransform.normal(normalMatrix);
 
-                    for (int i = 0; i < tangents.size(); i += 3) {
-                        Vector3f tangentVec3 = new Vector3f(tangents.get(i), tangents.get(i + 1), tangents.get(i + 2));
-                        normalMatrix.transform(tangentVec3);
-                        tangentVec3.normalize();
-                        tangents.set(i, tangentVec3.x);
-                        tangents.set(i + 1, tangentVec3.y);
-                        tangents.set(i + 2, tangentVec3.z);
+                    if (primitive.getNORMAL() != null) {
+                        List<Float> normals = primitive.getNORMAL().getObjects();
+                        for (int i = 0; i < normals.size(); i += 3) {
+                            Vector3f n = new Vector3f(normals.get(i), normals.get(i + 1), normals.get(i + 2));
+                            normalMatrix.transform(n);
+                            n.normalize();
+                            normals.set(i, n.x);
+                            normals.set(i + 1, n.y);
+                            normals.set(i + 2, n.z);
+                        }
+                    }
+
+                    if (primitive.getTANGENT() != null) {
+                        List<Float> tangents = primitive.getTANGENT().getObjects();
+                        for (int i = 0; i < tangents.size(); i += 3) {
+                            Vector3f tangentVec3 = new Vector3f(tangents.get(i), tangents.get(i + 1), tangents.get(i + 2));
+                            normalMatrix.transform(tangentVec3);
+                            tangentVec3.normalize();
+                            tangents.set(i, tangentVec3.x);
+                            tangents.set(i + 1, tangentVec3.y);
+                            tangents.set(i + 2, tangentVec3.z);
+                        }
                     }
                 }
             }
         }
 
-        if (node.has("children")) {
-            JsonArray children = node.getAsJsonArray("children");
-            for (int i = 0; i < children.size(); i++) {
-                int childIndex = children.get(i).getAsInt();
-                GLTF2Parser.readNodeRecursive(pathToMainFile, list, rootObject, nodesArray, childIndex, worldTransform, buffersList);
-            }
-        }
-
-        list.add(gltf2Node);
+        return nodes;
     }
 
+    private static List<GLTF2Skin> readSkin(List<GLTF2Node> nodes, List<ByteBuffer> buffersList, JsonObject rootObject) {
+        if (!rootObject.has("skins")) {
+            return null;
+        }
 
-    private static GLTF2Mesh readMesh(JGemsPath pathToMainFile, List<ByteBuffer> buffersList, JsonObject rootObject, int meshIndex) {
+        JsonArray skinsArray = rootObject.getAsJsonArray("skins");
+        if (skinsArray.isEmpty()) {
+            return null;
+        }
+
+        final List<GLTF2Skin> skinList = new ArrayList<>();
+        for (int k = 0; k < skinsArray.size(); k++) {
+            JsonObject skinObj = skinsArray.get(k).getAsJsonObject();
+            JsonArray jointsArray = skinObj.getAsJsonArray("joints");
+            String name = skinObj.has("name") ? skinObj.get("name").getAsString() : (GLTF2Parser.DEFAULT_IDENTIFIER + "_" + k);
+            GLTF2Skin gltf2Skin = new GLTF2Skin(name);
+
+            List<Integer> jointIndices = new ArrayList<>();
+            for (int i = 0; i < jointsArray.size(); i++) {
+                final int joint = jointsArray.get(i).getAsInt();
+                jointIndices.add(joint);
+                gltf2Skin.getTargetIdJointId().put(joint, i);
+                gltf2Skin.getJoints().add(joint);
+            }
+
+            int skeletonRootIndex = skinObj.has("skeleton") ? skinObj.get("skeleton").getAsInt() : -1;
+            if (skeletonRootIndex >= 0) {
+                gltf2Skin.getSkeletonRoots().add(nodes.get(skeletonRootIndex));
+            } else {
+                for (int jointIndex : jointIndices) {
+                    if (nodes.get(jointIndex).getParent() == null) {
+                        gltf2Skin.getSkeletonRoots().add(nodes.get(jointIndex));
+                    }
+                }
+            }
+
+            if (gltf2Skin.getSkeletonRoots().isEmpty()) {
+                throw new JGemsIOException("Couldn't find root skeleton nodes in the model");
+            }
+
+            //final int inverseBindingMatrixId = skinObj.get("inverseBindMatrices").getAsInt();
+            //JsonArray accessors = rootObject.getAsJsonArray("accessors");
+            //JsonArray bufferViews = rootObject.getAsJsonArray("bufferViews");
+            //GLTF2AccessorData AD = GLTF2Parser.readAccessorData(accessors.get(82).getAsJsonObject());
+            //GLTF2BufferView BV = GLTF2Parser.readBufferView(bufferViews.get(AD.getBufferView()).getAsJsonObject());
+            //GLTF2Accessor<Float> inverseBindingMatrices = GLTF2Parser.readAccessor(BV, AD, buffersList);
+            //List<Float> matrixData = inverseBindingMatrices.getObjects();
+            //for (int i = 0; i < matrixData.size(); i += 16) {
+            //    Matrix4f mat = new Matrix4f(
+            //            matrixData.get(i + 0), matrixData.get(i + 4), matrixData.get(i + 8), matrixData.get(i + 12),
+            //            matrixData.get(i + 1), matrixData.get(i + 5), matrixData.get(i + 9), matrixData.get(i + 13),
+            //            matrixData.get(i + 2), matrixData.get(i + 6), matrixData.get(i + 10), matrixData.get(i + 14),
+            //            matrixData.get(i + 3), matrixData.get(i + 7), matrixData.get(i + 11), matrixData.get(i + 15)
+            //    );
+            //    gltf2Skin.getInverseBindingMatrices().add(mat);
+            //}
+
+            for (int jointId : jointIndices) {
+                GLTF2Node node = nodes.get(jointId);
+                gltf2Skin.getInverseBindingMatrices().add(node.computeMeshTransform().invert());
+            }
+
+            skinList.add(gltf2Skin);
+        }
+
+        return skinList;
+    }
+
+    private static List<GLTF2Animations> readAnimations(List<ByteBuffer> buffersList, JsonObject rootObject) {
+        if (!rootObject.has("animations")) {
+            return null;
+        }
+
+        JsonArray animations = rootObject.getAsJsonArray("animations");
+        if (animations.isEmpty()) {
+            return null;
+        }
+
+        JsonArray accessors = rootObject.getAsJsonArray("accessors");
+        JsonArray bufferViews = rootObject.getAsJsonArray("bufferViews");
+        final List<GLTF2Animations> animationsList = new ArrayList<>();
+
+        for (int i = 0; i < animations.size(); i++) {
+            JsonObject animation = animations.get(i).getAsJsonObject();
+            final String name = animation.has("name") ? animation.get("name").getAsString() : (GLTF2Parser.DEFAULT_IDENTIFIER + "_" + i);
+
+            JsonArray channels = animation.getAsJsonArray("channels");
+            JsonArray samplers = animation.getAsJsonArray("samplers");
+
+            final List<GLTF2Animations.Sampler> samplerList = new ArrayList<>();
+            final List<GLTF2Animations.Channel> channelList = new ArrayList<>();
+            for (int j = 0; j < samplers.size(); j++) {
+                JsonObject sampler = samplers.get(j).getAsJsonObject();
+                final int inputId = sampler.get("input").getAsInt();
+                final int outputId = sampler.get("output").getAsInt();
+
+                GLTF2AccessorData inputAD = GLTF2Parser.readAccessorData(accessors.get(inputId).getAsJsonObject());
+                GLTF2BufferView inputBV = GLTF2Parser.readBufferView(bufferViews.get(inputAD.getBufferView()).getAsJsonObject());
+                GLTF2AccessorData outputAD = GLTF2Parser.readAccessorData(accessors.get(outputId).getAsJsonObject());
+                GLTF2BufferView outputBV = GLTF2Parser.readBufferView(bufferViews.get(outputAD.getBufferView()).getAsJsonObject());
+
+                GLTF2Accessor<Float> timeStamps = GLTF2Parser.readAccessor(inputBV, inputAD, buffersList);
+                GLTF2Accessor<Float> dataOnTime = GLTF2Parser.readAccessor(outputBV, outputAD, buffersList);
+                GLTF2Animations.Sampler.Interpolation interpolation = GLTF2Animations.Sampler.Interpolation.choose(sampler.get("interpolation").getAsString());
+
+                samplerList.add(new GLTF2Animations.Sampler(timeStamps, dataOnTime, interpolation));
+            }
+
+            for (int j = 0; j < channels.size(); j++) {
+                JsonObject channel = channels.get(j).getAsJsonObject();
+                JsonObject target = channel.getAsJsonObject("target");
+                final int samplerId = channel.get("sampler").getAsInt();
+
+                GLTF2Animations.Sampler sampler = samplerList.get(samplerId);
+                final int node = target.get("node").getAsInt();
+                final GLTF2Animations.Channel.Path path = GLTF2Animations.Channel.Path.choose(target.get("path").getAsString());
+
+                channelList.add(new GLTF2Animations.Channel(sampler, node, path));
+            }
+
+            animationsList.add(new GLTF2Animations(name, channelList, samplerList));
+        }
+
+        return animationsList;
+    }
+
+    private static GLTF2Mesh readMesh(List<ByteBuffer> buffersList, JsonObject rootObject, int meshIndex) {
         JsonArray meshes = rootObject.getAsJsonArray("meshes");
         JsonObject mesh = meshes.get(meshIndex).getAsJsonObject();
 
-        final String meshName = mesh.get("name").getAsString();
+        final String meshName = mesh.has("name") ? mesh.get("name").getAsString() : GLTF2Parser.DEFAULT_IDENTIFIER;
         JsonArray primitives = mesh.getAsJsonArray("primitives");
         GLTF2Mesh gltf2Mesh = new GLTF2Mesh(meshName);
         for (int j = 0; j < primitives.size(); j++) {
@@ -187,16 +336,17 @@ public abstract class GLTF2Parser {
                 throw new JGemsIOException("Couldn't find attribute: POSITION");
             }
 
-            if (!primitiveAttributes.has("NORMAL")) {
-                throw new JGemsIOException("Couldn't find attribute: NORMAL");
-            }
-
             if (!primitive.has("indices")) {
                 throw new JGemsIOException("Couldn't find attribute: indices");
             }
 
+            final boolean hasNormals = primitiveAttributes.has("NORMAL");
+            if (!hasNormals) {
+                Log.get().warn("Couldn't find attribute: NORMAL");
+            }
+
             int POSITION_ACCESSOR_ID = primitiveAttributes.get("POSITION").getAsInt();
-            int NORMAL_ACCESSOR_ID = primitiveAttributes.get("NORMAL").getAsInt();
+            int NORMAL_ACCESSOR_ID = hasNormals ? primitiveAttributes.get("NORMAL").getAsInt() : -1;
             int indices_ACCESSOR_ID = primitive.get("indices").getAsInt();
 
             int TEXCOORD_0_ACCESSOR_ID = primitiveAttributes.has("TEXCOORD_0") ? primitiveAttributes.get("TEXCOORD_0").getAsInt() : -1;
@@ -219,28 +369,35 @@ public abstract class GLTF2Parser {
                 JsonArray bufferViews = rootObject.getAsJsonArray("bufferViews");
 
                 @NotNull JsonObject POSITION_ACC_DATA_JS = accessors.get(POSITION_ACCESSOR_ID).getAsJsonObject();
-                @NotNull JsonObject NORMAL_ACC_DATA_JS = accessors.get(NORMAL_ACCESSOR_ID).getAsJsonObject();
                 @NotNull JsonObject indices_ACC_DATA_JS = accessors.get(indices_ACCESSOR_ID).getAsJsonObject();
-
                 @NotNull GLTF2AccessorData POSITION_ACC_DATA = GLTF2Parser.readAccessorData(POSITION_ACC_DATA_JS);
-                @NotNull GLTF2AccessorData NORMAL_ACC_DATA = GLTF2Parser.readAccessorData(NORMAL_ACC_DATA_JS);
                 @NotNull GLTF2AccessorData indices_ACC_DATA = GLTF2Parser.readAccessorData(indices_ACC_DATA_JS);
+
+                @Nullable GLTF2AccessorData NORMAL_ACC_DATA = null;
                 @Nullable GLTF2AccessorData TEXCOORD_0_ACC_DATA = null;
                 @Nullable GLTF2AccessorData TANGENT_ACC_DATA = null;
                 @Nullable GLTF2AccessorData JOINTS_0_ACC_DATA = null;
                 @Nullable GLTF2AccessorData WEIGHTS_0_ACC_DATA = null;
 
                 @NotNull GLTF2BufferView POSITION_BV = GLTF2Parser.readBufferView(bufferViews.get(POSITION_ACC_DATA.getBufferView()).getAsJsonObject());
-                @NotNull GLTF2BufferView NORMAL_BV = GLTF2Parser.readBufferView(bufferViews.get(NORMAL_ACC_DATA.getBufferView()).getAsJsonObject());
                 @NotNull GLTF2BufferView indices_BV = GLTF2Parser.readBufferView(bufferViews.get(indices_ACC_DATA.getBufferView()).getAsJsonObject());
+                @Nullable GLTF2BufferView NORMAL_BV = null;
                 @Nullable GLTF2BufferView TEXCOORD_0_BV = null;
                 @Nullable GLTF2BufferView TANGENT_BV = null;
                 @Nullable GLTF2BufferView JOINTS_0_BV = null;
                 @Nullable GLTF2BufferView WEIGHTS_0_BV = null;
 
                 POSITION = GLTF2Parser.readAccessor(POSITION_BV, POSITION_ACC_DATA, buffersList);
-                NORMAL = GLTF2Parser.readAccessor(NORMAL_BV, NORMAL_ACC_DATA, buffersList);
                 indices = GLTF2Parser.readAccessor(indices_BV, indices_ACC_DATA, buffersList);
+
+                if (NORMAL_ACCESSOR_ID >= 0) {
+                    JsonObject NORMAL_ACC_DATA_JS = accessors.get(NORMAL_ACCESSOR_ID).getAsJsonObject();
+                    NORMAL_ACC_DATA = GLTF2Parser.readAccessorData(NORMAL_ACC_DATA_JS);
+                    NORMAL_BV = GLTF2Parser.readBufferView(bufferViews.get(NORMAL_ACC_DATA.getBufferView()).getAsJsonObject());
+                    NORMAL = GLTF2Parser.readAccessor(NORMAL_BV, NORMAL_ACC_DATA, buffersList);
+                } else {
+                    NORMAL = new GLTF2Accessor<>(GLTF2Parser.calculateNormals(POSITION.getObjects(), indices.getObjects()), null);
+                }
 
                 if (TEXCOORD_0_ACCESSOR_ID >= 0) {
                     JsonObject TEXCOORD_0_ACC_DATA_JS = accessors.get(TEXCOORD_0_ACCESSOR_ID).getAsJsonObject();
@@ -261,7 +418,7 @@ public abstract class GLTF2Parser {
                         TANGENT = new GLTF2Accessor<>(tangents.getFirst(), null);
                         BiTANGENT = new GLTF2Accessor<>(tangents.getSecond(), null);
                     } else {
-                        Log.get().warn("The model: " + pathToMainFile + " doesn't have UV to calculate tangents and biTangents");
+                        Log.get().warn("The model doesn't have UV to calculate tangents and biTangents");
                         List<Float> uv = new ArrayList<>();
                         List<Float> bi_tangents = new ArrayList<>();
 
@@ -294,19 +451,218 @@ public abstract class GLTF2Parser {
                 }
             }
 
-            GLTF2Primitive gltf2Primitive = null;
-            if (primitive.has("material")) {
-                // "primitive materials"
-                {
-                    final int primitiveMaterialId = primitive.getAsJsonPrimitive("material").getAsInt();
-                    gltf2Primitive = new GLTF2Primitive(POSITION, NORMAL, TEXCOORD_0, TANGENT, BiTANGENT, JOINTS_0, WEIGHTS_0, primitiveMaterialId, indices);
-                }
-            }
-
+            final int primitiveMaterialId = primitive.has("material") ? primitive.getAsJsonPrimitive("material").getAsInt() : -1;
+            GLTF2Primitive gltf2Primitive = new GLTF2Primitive(POSITION, NORMAL, TEXCOORD_0, TANGENT, BiTANGENT, JOINTS_0, WEIGHTS_0, primitiveMaterialId, indices);
             gltf2Mesh.getPrimitives().add(gltf2Primitive);
         }
 
         return gltf2Mesh;
+    }
+
+    private static GLTF2ImageTexture getTextureFromIndex(int texIndex, JsonArray textures, JsonArray images) {
+        JsonObject textureObj = textures.get(texIndex).getAsJsonObject();
+        int sourceIndex = textureObj.get("source").getAsInt();
+        JsonObject imageObj = images.get(sourceIndex).getAsJsonObject();
+
+        String name = imageObj.has("name") ? imageObj.get("name").getAsString() : "unnamed";
+        String uri = imageObj.get("uri").getAsString();
+
+        return new GLTF2ImageTexture(name, uri);
+    }
+
+    public static GLTF2Material loadMaterial(JsonObject materialJson, JsonArray textures, JsonArray images) {
+        String name = materialJson.has("name") ? materialJson.get("name").getAsString() : GLTF2Parser.DEFAULT_IDENTIFIER;
+        GLTF2Material material = new GLTF2Material(name);
+
+        JsonObject pbr = materialJson.has("pbrMetallicRoughness") ? materialJson.getAsJsonObject("pbrMetallicRoughness") : null;
+        if (pbr != null) {
+            if (pbr.has("baseColorFactor")) {
+                JsonArray arr = pbr.getAsJsonArray("baseColorFactor");
+                if (arr.size() >= 4) {
+                    Vector4f baseColor = new Vector4f(arr.get(0).getAsFloat(), arr.get(1).getAsFloat(), arr.get(2).getAsFloat(), arr.get(3).getAsFloat());
+                    material.setDiffusionColor(baseColor);
+                }
+            }
+
+            if (pbr.has("baseColorTexture")) {
+                int index = pbr.getAsJsonObject("baseColorTexture").get("index").getAsInt();
+                GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
+                material.setDiffusionTextureIndex(tex);
+            }
+
+            if (pbr.has("metallicFactor")) {
+                material.setMetallicFactor(pbr.get("metallicFactor").getAsFloat());
+            }
+
+            if (pbr.has("roughnessFactor")) {
+                material.setRoughnessFactor(pbr.get("roughnessFactor").getAsFloat());
+            }
+
+            if (pbr.has("metallicRoughnessTexture")) {
+                int index = pbr.getAsJsonObject("metallicRoughnessTexture").get("index").getAsInt();
+                GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
+                material.setMetallicRoughnessTexture(tex);
+            }
+        }
+
+        if (materialJson.has("normalTexture")) {
+            int index = materialJson.getAsJsonObject("normalTexture").get("index").getAsInt();
+            GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
+            material.setNormalTextureIndex(tex);
+        }
+
+        if (materialJson.has("emissiveFactor")) {
+            JsonArray arr = materialJson.getAsJsonArray("emissiveFactor");
+            if (arr.size() >= 3) {
+                Vector3f emissiveColor = new Vector3f(arr.get(0).getAsFloat(), arr.get(1).getAsFloat(), arr.get(2).getAsFloat());
+                material.setEmissionColor(emissiveColor);
+            }
+        }
+
+        if (materialJson.has("emissiveTexture")) {
+            int index = materialJson.getAsJsonObject("emissiveTexture").get("index").getAsInt();
+            GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
+            material.setEmissionTexture(tex);
+        }
+
+        if (pbr != null && pbr.has("baseColorFactor") && pbr.getAsJsonArray("baseColorFactor").size() >= 4) {
+            float opacity = pbr.getAsJsonArray("baseColorFactor").get(3).getAsFloat();
+            material.setOpacity(opacity);
+        }
+
+        return material;
+    }
+
+    private static GLTF2AccessorData readAccessorData(JsonObject jsonObject) {
+        final int bufferView = jsonObject.get("bufferView").getAsInt();
+        final int componentType = jsonObject.get("componentType").getAsInt();
+        final int count = jsonObject.get("count").getAsInt();
+        final String typeStr = jsonObject.get("type").getAsString();
+        final int byteOffset = jsonObject.has("byteOffset") ? jsonObject.get("byteOffset").getAsInt() : 0;
+
+        return new GLTF2AccessorData(bufferView, count, byteOffset, componentType, typeStr);
+    }
+
+    private static GLTF2BufferView readBufferView(JsonObject jsonObject) {
+        final int bufferId = jsonObject.get("buffer").getAsInt();
+        final int byteLength = jsonObject.get("byteLength").getAsInt();
+        final int byteOffset = jsonObject.has("byteOffset") ? jsonObject.get("byteOffset").getAsInt() : 0;
+        final int byteStride = jsonObject.has("byteStride") ? jsonObject.get("byteStride").getAsInt() : 0;
+        final int target = jsonObject.has("target") ? jsonObject.get("target").getAsInt() : -1;
+
+        return new GLTF2BufferView(bufferId, byteLength, byteOffset, byteStride, target);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> GLTF2Accessor<T> readAccessor(GLTF2BufferView gltf2BufferView, GLTF2AccessorData gltf2AccessorData, List<ByteBuffer> bufferList) {
+        final int bytesOfType = GLTF2Parser.getBytesOfType(gltf2AccessorData.getComponentType());
+        final int typeSize = GLTF2Accessor.ValueType.getTypeSize(gltf2AccessorData.getTypeStr());
+        final int elementByteSize = typeSize * bytesOfType;
+        ByteBuffer buffer = bufferList.get(gltf2BufferView.getId());
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        int stride = gltf2BufferView.getByteStride() == 0 ? elementByteSize : gltf2BufferView.getByteStride();
+
+        final List<T> readObjects = new ArrayList<>(gltf2AccessorData.getCount() * typeSize);
+
+        for (int k = 0; k < gltf2AccessorData.getCount(); k++) {
+            int basePosition = gltf2BufferView.getByteOffset() + gltf2AccessorData.getByteOffset() + k * stride;
+            buffer.position(basePosition);
+            for (int i = 0; i < typeSize; i++) {
+                T component = (T) GLTF2Parser.readComponent(buffer, gltf2AccessorData.getComponentType());
+                readObjects.add(component);
+            }
+        }
+
+        return new GLTF2Accessor<>(readObjects, gltf2AccessorData);
+    }
+
+
+    private static Matrix4f pullMatrixFromNode(JsonObject node) {
+        Matrix4f localTransform = new Matrix4f().identity();
+
+        if (node.has("matrix")) {
+            JsonArray matrix = node.getAsJsonArray("matrix");
+            localTransform.set(
+                    matrix.get(0).getAsFloat(), matrix.get(4).getAsFloat(), matrix.get(8).getAsFloat(), matrix.get(12).getAsFloat(),
+                    matrix.get(1).getAsFloat(), matrix.get(5).getAsFloat(), matrix.get(9).getAsFloat(), matrix.get(13).getAsFloat(),
+                    matrix.get(2).getAsFloat(), matrix.get(6).getAsFloat(), matrix.get(10).getAsFloat(), matrix.get(14).getAsFloat(),
+                    matrix.get(3).getAsFloat(), matrix.get(7).getAsFloat(), matrix.get(11).getAsFloat(), matrix.get(15).getAsFloat()
+            );
+        } else {
+            Matrix4f s = new Matrix4f().identity();
+            Matrix4f r = new Matrix4f().identity();
+            Matrix4f t = new Matrix4f().identity();
+
+            if (node.has("scale")) {
+                JsonArray scale = node.getAsJsonArray("scale");
+                s.scale(scale.get(0).getAsFloat(), scale.get(1).getAsFloat(), scale.get(2).getAsFloat());
+            }
+
+            if (node.has("rotation")) {
+                JsonArray rotation = node.getAsJsonArray("rotation");
+                Quaternionf q = new Quaternionf(rotation.get(0).getAsFloat(), rotation.get(1).getAsFloat(), rotation.get(2).getAsFloat(), rotation.get(3).getAsFloat());
+                r.rotate(q);
+            }
+
+            if (node.has("translation")) {
+                JsonArray translation = node.getAsJsonArray("translation");
+                t.translate(translation.get(0).getAsFloat(), translation.get(1).getAsFloat(), translation.get(2).getAsFloat());
+            }
+
+            localTransform = new Matrix4f(t).mul(r).mul(s);
+        }
+
+        return localTransform;
+    }
+
+    private static List<Float> calculateNormals(List<Float> positions, List<Integer> indices) {
+        int vertexCount = positions.size() / 3;
+        float[] normals = new float[positions.size()];
+
+        for (int i = 0; i < indices.size(); i += 3) {
+            int i0 = indices.get(i);
+            int i1 = indices.get(i + 1);
+            int i2 = indices.get(i + 2);
+
+            float x0 = positions.get(i0 * 3), y0 = positions.get(i0 * 3 + 1), z0 = positions.get(i0 * 3 + 2);
+            float x1 = positions.get(i1 * 3), y1 = positions.get(i1 * 3 + 1), z1 = positions.get(i1 * 3 + 2);
+            float x2 = positions.get(i2 * 3), y2 = positions.get(i2 * 3 + 1), z2 = positions.get(i2 * 3 + 2);
+
+            float ex1 = x1 - x0, ey1 = y1 - y0, ez1 = z1 - z0;
+            float ex2 = x2 - x0, ey2 = y2 - y0, ez2 = z2 - z0;
+
+            float nx = ey1 * ez2 - ez1 * ey2;
+            float ny = ez1 * ex2 - ex1 * ez2;
+            float nz = ex1 * ey2 - ey1 * ex2;
+
+            normals[i0 * 3] += nx;
+            normals[i0 * 3 + 1] += ny;
+            normals[i0 * 3 + 2] += nz;
+
+            normals[i1 * 3] += nx;
+            normals[i1 * 3 + 1] += ny;
+            normals[i1 * 3 + 2] += nz;
+
+            normals[i2 * 3] += nx;
+            normals[i2 * 3 + 1] += ny;
+            normals[i2 * 3 + 2] += nz;
+        }
+
+        List<Float> result = new ArrayList<>();
+        for (int i = 0; i < vertexCount; i++) {
+            float nx = normals[i * 3];
+            float ny = normals[i * 3 + 1];
+            float nz = normals[i * 3 + 2];
+            float length = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
+            if (length == 0) {
+                length = 1.0f;
+            }
+            result.add(nx / length);
+            result.add(ny / length);
+            result.add(nz / length);
+        }
+
+        return result;
     }
 
     private static Pair<List<Float>, List<Float>> calculateTangentsAndBiTangents(List<Integer> indexes, List<Float> positions, List<Float> uv, int totalVertices) {
@@ -414,123 +770,6 @@ public abstract class GLTF2Parser {
 
         return biTangents;
     }
-
-    private static GLTF2ImageTexture getTextureFromIndex(int texIndex, JsonArray textures, JsonArray images) {
-        JsonObject textureObj = textures.get(texIndex).getAsJsonObject();
-        int sourceIndex = textureObj.get("source").getAsInt();
-        JsonObject imageObj = images.get(sourceIndex).getAsJsonObject();
-
-        String name = imageObj.has("name") ? imageObj.get("name").getAsString() : "unnamed";
-        String uri = imageObj.get("uri").getAsString();
-
-        return new GLTF2ImageTexture(name, uri);
-    }
-
-    public static GLTF2Material loadMaterial(JsonObject materialJson, JsonArray textures, JsonArray images) {
-        String name = materialJson.has("name") ? materialJson.get("name").getAsString() : "unknown";
-        GLTF2Material material = new GLTF2Material(name);
-
-        JsonObject pbr = materialJson.has("pbrMetallicRoughness") ? materialJson.getAsJsonObject("pbrMetallicRoughness") : null;
-        if (pbr != null) {
-            if (pbr.has("baseColorFactor")) {
-                JsonArray arr = pbr.getAsJsonArray("baseColorFactor");
-                if (arr.size() >= 4) {
-                    Vector4f baseColor = new Vector4f(arr.get(0).getAsFloat(), arr.get(1).getAsFloat(), arr.get(2).getAsFloat(), arr.get(3).getAsFloat());
-                    material.setDiffusionColor(baseColor);
-                }
-            }
-
-            if (pbr.has("baseColorTexture")) {
-                int index = pbr.getAsJsonObject("baseColorTexture").get("index").getAsInt();
-                GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
-                material.setDiffusionTextureIndex(tex);
-            }
-
-            if (pbr.has("metallicFactor")) {
-                material.setMetallicFactor(pbr.get("metallicFactor").getAsFloat());
-            }
-
-            if (pbr.has("roughnessFactor")) {
-                material.setRoughnessFactor(pbr.get("roughnessFactor").getAsFloat());
-            }
-
-            if (pbr.has("metallicRoughnessTexture")) {
-                int index = pbr.getAsJsonObject("metallicRoughnessTexture").get("index").getAsInt();
-                GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
-                material.setMetallicRoughnessTexture(tex);
-            }
-        }
-
-        if (materialJson.has("normalTexture")) {
-            int index = materialJson.getAsJsonObject("normalTexture").get("index").getAsInt();
-            GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
-            material.setNormalTextureIndex(tex);
-        }
-
-        if (materialJson.has("emissiveFactor")) {
-            JsonArray arr = materialJson.getAsJsonArray("emissiveFactor");
-            if (arr.size() >= 3) {
-                Vector3f emissiveColor = new Vector3f(arr.get(0).getAsFloat(), arr.get(1).getAsFloat(), arr.get(2).getAsFloat());
-                material.setEmissionColor(emissiveColor);
-            }
-        }
-
-        if (materialJson.has("emissiveTexture")) {
-            int index = materialJson.getAsJsonObject("emissiveTexture").get("index").getAsInt();
-            GLTF2ImageTexture tex = GLTF2Parser.getTextureFromIndex(index, textures, images);
-            material.setEmissionTexture(tex);
-        }
-
-        if (pbr != null && pbr.has("baseColorFactor") && pbr.getAsJsonArray("baseColorFactor").size() >= 4) {
-            float opacity = pbr.getAsJsonArray("baseColorFactor").get(3).getAsFloat();
-            material.setOpacity(opacity);
-        }
-
-        return material;
-    }
-
-    private static GLTF2AccessorData readAccessorData(JsonObject jsonObject) {
-        final int bufferView = jsonObject.get("bufferView").getAsInt();
-        final int componentType = jsonObject.get("componentType").getAsInt();
-        final int count = jsonObject.get("count").getAsInt();
-        final String typeStr = jsonObject.get("type").getAsString();
-
-        return new GLTF2AccessorData(bufferView, count, componentType, typeStr);
-    }
-
-    private static GLTF2BufferView readBufferView(JsonObject jsonObject) {
-        final int bufferId = jsonObject.get("buffer").getAsInt();
-        final int byteLength = jsonObject.get("byteLength").getAsInt();
-        final int byteOffset = jsonObject.get("byteOffset").getAsInt();
-        final int byteStride = jsonObject.has("byteStride") ? jsonObject.get("byteStride").getAsInt() : 0;
-        final int target = jsonObject.get("target").getAsInt();
-
-        return new GLTF2BufferView(bufferId, byteLength, byteOffset, byteStride, target);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> GLTF2Accessor<T> readAccessor(GLTF2BufferView gltf2BufferView, GLTF2AccessorData gltf2AccessorData, List<ByteBuffer> bufferList) {
-        final int bytesOfType = GLTF2Parser.getBytesOfType(gltf2AccessorData.getComponentType());
-        final int typeSize = GLTF2Accessor.ValueType.getTypeSize(gltf2AccessorData.getTypeStr());
-        final int elementByteSize = typeSize * bytesOfType;
-        ByteBuffer buffer = bufferList.get(gltf2BufferView.getId());
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        int stride = gltf2BufferView.getByteStride() == 0 ? elementByteSize : gltf2BufferView.getByteStride();
-
-        final List<T> readObjects = new ArrayList<>(gltf2AccessorData.getCount() * typeSize);
-
-        for (int k = 0; k < gltf2AccessorData.getCount(); k++) {
-            int basePosition = gltf2BufferView.getByteOffset() + k * stride;
-            buffer.position(basePosition);
-            for (int i = 0; i < typeSize; i++) {
-                T component = (T) GLTF2Parser.readComponent(buffer, gltf2AccessorData.getComponentType());
-                readObjects.add(component);
-            }
-        }
-
-        return new GLTF2Accessor<>(readObjects, gltf2AccessorData);
-    }
-
 
     private static Object readComponent(ByteBuffer buffer, int componentType) {
         switch (componentType) {

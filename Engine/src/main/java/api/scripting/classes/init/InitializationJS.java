@@ -43,7 +43,7 @@ public final class InitializationJS {
                 return null;
             }
             JGemsEntityData jGemsEntityData = templatesTable.find(entName).getFabricGame().create();
-            MeshBuffer meshBuffer = this.getResourceManager().getLocalResources().createMeshBuffer(jGemsEntityData.getPathToModel(), false, false);
+            MeshBuffer meshBuffer = this.getResourceManager().getLocalResources().createMeshBuffer(jGemsEntityData.getPathToModel(), false);
 
             EntityTemplateJS entityTemplateJS = new EntityTemplateJS(group, entName);
             this.getScriptingManaging().getEntityRenderDataMap().put(entityTemplateJS, new EntityRenderData(jGemsEntityData.getEntityRenderData(), meshBuffer));
@@ -65,7 +65,7 @@ public final class InitializationJS {
                 return null;
             }
             JGemsPropData jGemsPropData = templatesTable.find(propName).getFabricGame().create();
-            MeshBuffer meshBuffer = this.getResourceManager().getLocalResources().createMeshBuffer(jGemsPropData.getPathToModel(), false, false);
+            MeshBuffer meshBuffer = this.getResourceManager().getLocalResources().createMeshBuffer(jGemsPropData.getPathToModel(), false);
 
             PropTemplateJS propTemplateJS = new PropTemplateJS(group, propName);
             this.getScriptingManaging().getPropRenderDataMap().put(propTemplateJS, new PropRenderData(jGemsPropData.getPropRenderData(), meshBuffer));

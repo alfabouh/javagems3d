@@ -31,10 +31,10 @@ public class ModelAssetsInitializer implements IAssetsInitializer {
         this.defaultCube_gr = IAssetsInitializer.createDefaultCubeGroup();
         systemResources.getResourceCache().addObjectInBuffer("DEFAULT_CUBE_GR", this.defaultCube_gr);
 
-        this.markerDefault = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker/marker.gltf"), true, false);
-        this.markerCursor = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cursor/marker.gltf"), true, false);
-        this.markerAabb = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_aabb/marker.gltf"), true, false);
-        this.markerCube = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cube/marker.gltf"), true, false);
+        this.markerDefault = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker/marker.gltf"), true);
+        this.markerCursor = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cursor/marker.gltf"), true);
+        this.markerAabb = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_aabb/marker.gltf"), true);
+        this.markerCube = systemResources.createMeshGroup(new JGemsPath("/assets/jgems/models/marker_cube/marker.gltf"), true);
     }
 
     @Override

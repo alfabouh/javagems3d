@@ -19,6 +19,10 @@ public final class GLTF2Accessor<T> {
         return this.gltf2AccessorData;
     }
 
+    public int size() {
+        return this.getObjects().size();
+    }
+
     public List<T> getObjects() {
         return this.objects;
     }

@@ -30,23 +30,23 @@ public class TestMapAnim extends ManualMapProcessor {
 
     @Override
     public void onProcessing(PhysicsWorld world, SceneWorld sceneWorld) {
-        MeshBuffer meshBuffer = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "test_anim/boblampclean.md5mesh"), true, true);
+        MeshBuffer meshBuffer = this.getLocalResources().createMeshBuffer(new JGemsPath(JGems3D.DEFAULT_PATHS.MODELS, "CesiumMan/glTF/CesiumMan.gltf"), false);
 
         SceneWorldProp sceneWorldProp = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshBuffer));
         sceneWorld.addObject(sceneWorldProp);
-        sceneWorldProp.getModel().getPose().setScaling(new Vector3f(0.05f));
+        sceneWorldProp.getModel().getPose().setRotation(new Vector3f((float) (Math.PI / 2.0f), 0.0f, (float) (Math.PI / 2.0f)));
         sceneWorldProp.getModel().getPose().setPosition(new Vector3f(0.0f));
 
         SceneWorldProp sceneWorldProp1 = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshBuffer));
         sceneWorld.addObject(sceneWorldProp1);
         sceneWorldProp1.setAnimationSpeed(2.75f);
-        sceneWorldProp1.getModel().getPose().setScaling(new Vector3f(0.1f));
+        sceneWorldProp1.getModel().getPose().setRotation(new Vector3f((float) (Math.PI / 2.0f), 0.0f, (float) (Math.PI / 2.0f)));
         sceneWorldProp1.getModel().getPose().setPosition(new Vector3f(3.0f, 0.0f, 0.0f));
 
         SceneWorldProp sceneWorldProp2 = new SceneWorldProp("cubetest", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), meshBuffer));
         sceneWorld.addObject(sceneWorldProp2);
         sceneWorldProp2.setAnimationSpeed(3.45f);
-        sceneWorldProp2.getModel().getPose().setScaling(new Vector3f(0.15f));
+        sceneWorldProp2.getModel().getPose().setRotation(new Vector3f((float) (Math.PI / 2.0f), 0.0f, (float) (Math.PI / 2.0f)));
         sceneWorldProp2.getModel().getPose().setPosition(new Vector3f(7.0f, 0.0f, 0.0f));
 
      //  SceneWorldProp sceneWorldProp = new SceneWorldProp("cube", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), JGemsResourceManager.globalModelAssets.defaultCube_bff));
