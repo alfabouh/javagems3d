@@ -428,13 +428,13 @@ public class GLTF2ModelLoader implements ILoadingHelper {
 
         final ImageTexture.Properties imageProperties = new ImageTexture.Properties(true, true);
 
-        if (gltf2Material.hasFlag(GLTF2Material.OPACITY)) {
-            opacityConstant = gltf2Material.getOpacity();
-        }
-
         Vector4f diffuseColorVec = gltf2Material.getDiffusionColor();
         if (diffuseColorVec != null) {
             diffuseColor = new Color4Texture(new Vector4f(diffuseColorVec.x, diffuseColorVec.y, diffuseColorVec.z, diffuseColorVec.w * opacityConstant));
+        } else {
+            if (gltf2Material.hasFlag(GLTF2Material.OPACITY)) {
+                opacityConstant = gltf2Material.getOpacity();
+            }
         }
 
         Vector3f emissionColorVec = gltf2Material.getEmissionColor();
