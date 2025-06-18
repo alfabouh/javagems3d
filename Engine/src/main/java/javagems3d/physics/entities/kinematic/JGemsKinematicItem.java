@@ -1,14 +1,18 @@
 package javagems3d.physics.entities.kinematic;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.CollisionFlag;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.bullet.collision.PhysicsSweepTestResult;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
+import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Transform;
+import javagems3d.graphics.rendering.scene.renderer.JGemsOpenGLRenderer;
+import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
 import javagems3d.help.JGemsHelper;
 import javagems3d.physics.entities.bullet.IJGemsBulletEntity;
 import javagems3d.physics.entities.properties.collision.CollisionType;
@@ -20,7 +24,11 @@ import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.thread.JGemsPhysics;
 import javagems3d.physics.world.thread.dynamics.DynamicsSystem;
 import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
+import javagems3d.system.global.JGemsConfig;
+import javagems3d.system.service.collections.Pair;
+import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -68,6 +76,10 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
 
     protected ConvexShape createPhysicsShape() {
         return new CapsuleCollisionShape(this.shapeSize().x + 0.01f, this.shapeSize().y - 0.01f, 1);
+    }
+
+    protected ConvexShape createGhostShapeShapeForGroundCheck() {
+        return new CapsuleCollisionShape(this.shapeSize().x - 0.01f, this.shapeSize().y - 0.01f, 1);
     }
 
     protected abstract Vector2f shapeSize();
@@ -123,49 +135,100 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         ((PhysicsWorld) iWorld).getDynamics().removeCollisionObject(this.getPhysicsBody());
     }
 
-    private boolean checkIfOnGround(PhysicsRigidBody ghostBody) {
-       SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), ghostBody, (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), new Vector3f(0.0f, -0.1f, 0.0f), new Vector3i(0, 1, 0));
-       if (sweepResult.getHitNormal() != null) {
-           return this.checkDotAngle(this.up(), sweepResult.getHitNormal(), this.getSlopeAngle(), true);
-       }
-
-        //float threshold = 0.1f;
-        //SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), PhysicsRigidBody, (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition().add(0.0f, 0.01f, 0.0f), new Vector3f(0.0f, -threshold, 0.0f), new Vector3i(0, 1, 0));
-        //if (sweepResult.getHitNormal() != null) {
-        //    BoundingBox boundingBox = new BoundingBox();
-        //    this.getGhostBody().boundingBox(boundingBox);
-        //    RayResult result = RayResult.getRayHitResult(this.getWorld().getDynamics(), PhysicsRigidBody, sweepResult.getCorrectedPos(), new Vector3f(sweepResult.getCorrectedPos()).sub(0.0f, boundingBox.getYExtent() + 1.0f, 0.0f));
-        //    if (result.getHitNormal() != null) {
-        //        return this.checkDotAngle(this.up(), result.getHitNormal(), this.getSlopeAngle(), true);
-        //    }
-        //}
-        return false;
-    }
-
-    private boolean checkAngleOnPos(PhysicsRigidBody ghostBody, double toCheckAngle, Vector3f pos, Vector3f vector, boolean ifNoHit) {
-        SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), ghostBody, (ConvexShape) this.getGhostBody().getCollisionShape(), pos, vector, new Vector3i(0, 1, 0));
-        if (sweepResult.getHitNormal() != null) {
-            float dot = sweepResult.getHitNormal().dot(this.up());
-            if (dot >= 1.0f) {
-                return ifNoHit;
-            }
-            return Math.acos(dot) <= toCheckAngle;
-        }
-        return ifNoHit;
-    }
-
-    private float getStepDownY() {
-        float maxY = (float) Math.max(Math.sin(this.getSlopeAngle()), this.getStepHeight());
-        SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getPhysicsBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), new Vector3f(0.0f, -maxY, 0.0f), new Vector3i(0, 1, 0));
-        if (sweepResult.getHitNormal() != null) {
-            if (this.checkDotAngle(this.up(), sweepResult.getHitNormal(), this.getSlopeAngle(), true)) {
-                float y = sweepResult.getCorrectedPos().y;
-                if (y < this.getPosition().y) {
-                    return y;
+    private boolean checkIfOnGround(PhysicsRigidBody ghostBody, Vector3f fromPosition) {
+        {
+            SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), ghostBody, this.createGhostShapeShapeForGroundCheck(), fromPosition, new Vector3f(0.0f, -0.1f, 0.0f), new Vector3i(0, 1, 0));
+            if (sweepResult.getHitNormal() != null) {
+                if (this.checkDotAngle(this.up(), sweepResult.getHitNormal(), this.getSlopeAngle(), true)) {
+                    return true;
                 }
             }
         }
-        return 0.0f;
+        {
+            float threshold = 0.05f;
+            SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), ghostBody, this.createGhostShapeShapeForGroundCheck(), new Vector3f(fromPosition).add(0.0f, 0.01f, 0.0f), new Vector3f(0.0f, -threshold, 0.0f), new Vector3i(0, 1, 0));
+            if (sweepResult.getHitNormal() != null) {
+                BoundingBox boundingBox = new BoundingBox();
+                this.getGhostBody().boundingBox(boundingBox);
+                RayResult result = RayResult.getRayHitResult(this.getWorld().getDynamics(), ghostBody, sweepResult.getCorrectedPos(), new Vector3f(sweepResult.getCorrectedPos()).sub(0.0f, boundingBox.getYExtent() + (this.getStepHeight() + threshold), 0.0f));
+                if (result.getHitNormal() != null) {
+                    float y = sweepResult.getCorrectedPos().y;
+                    if (JGemsConfig.DEBUG.SHOW_DEBUG_LINES) {
+                        JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.LineRequest(sweepResult.getCorrectedPos(), new Vector3f(sweepResult.getCorrectedPos()).sub(0.0f, boundingBox.getYExtent() + (this.getStepHeight() + threshold), 0.0f), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.noDepth()));
+                    }
+                    return this.checkDotAngle(this.up(), result.getHitNormal(), this.getSlopeAngle(), true);
+                }
+            }
+        }
+        return false;
+    }
+
+    private Vector3f tryStepDown(Vector3f currPos, float height) {
+        final float maxY = (float) Math.max(Math.sin(this.getSlopeAngle()), height) + 0.05f;
+
+        BoundingBox boundingBox = new BoundingBox();
+        this.getGhostBody().boundingBox(boundingBox);
+        RayResult rayResult = RayResult.getRayHitResult(this.getWorld().getDynamics(), this.getGhostBody(), currPos, new Vector3f(currPos).sub(0.0f, boundingBox.getYExtent() + 1.0f, 0.0f));
+
+        if (rayResult.getHitNormal() != null) {
+            if (this.checkDotAngle(this.up(), rayResult.getHitNormal(), this.getSlopeAngle(), true)) {
+                SweepResult sweepDown = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.createGhostShapeShapeForGroundCheck(), currPos, new Vector3f(0.0f, -maxY, 0.0f), new Vector3i(0, 1, 0));
+                boolean onGround = this.checkIfOnGround(this.getGhostBody(), sweepDown.getCorrectedPos());
+                if (onGround) {
+                    float deltaY = currPos.y - sweepDown.getCorrectedPos().y;
+                    if (deltaY > 0.01f && deltaY <= maxY) {
+                        return sweepDown.getCorrectedPos();
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private Vector3f tryStepUp(Vector3f currPos, Vector3f motion, float height) {
+        final float motionSpeed = motion.length();
+        Vector3f rawResult = this.tryStepInterval(currPos, motion, height);
+
+        if (rawResult == null) {
+            return null;
+        }
+
+        final float yGet = (rawResult.y - currPos.y) + 0.005f;
+        Vector3f normalizedMotion = new Vector3f(motion.x, yGet, motion.z).normalize(motionSpeed).mul(1.0f, 0.0f, 1.0f);
+        Vector3f newAttempt = this.tryStepInterval(currPos, normalizedMotion, yGet);
+
+        if (newAttempt != null) {
+            return newAttempt;
+        }
+
+        return rawResult;
+    }
+
+    private Vector3f tryStepInterval(Vector3f currPos, Vector3f motion, float height) {
+        SweepResult sweepUp = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.createGhostShapeShapeForGroundCheck(), currPos, new Vector3f(0.0f, height, 0.0f), new Vector3i(0, 1, 0));
+        Vector3f steppedUpPos = sweepUp.getCorrectedPos();
+
+        SweepResult sweepForward = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.createGhostShapeShapeForGroundCheck(), steppedUpPos, motion, new Vector3i(1));
+        Vector3f forwardPos = sweepForward.getCorrectedPos();
+
+        float movedDist = new Vector3f(forwardPos).sub(steppedUpPos).length();
+        if (movedDist < 0.01f) {
+            return null;
+        }
+
+        SweepResult sweepDown = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.createGhostShapeShapeForGroundCheck(), forwardPos, new Vector3f(0.0f, -height, 0.0f), new Vector3i(0, 1, 0));
+        Vector3f landedPos = sweepDown.getCorrectedPos();
+
+        if (sweepDown.getHitNormal() != null && this.checkDotAngle(this.up(), sweepDown.getHitNormal(), this.getSlopeAngle(), true)) {
+            boolean onGround = this.checkIfOnGround(this.getGhostBody(), landedPos);
+            float deltaY = landedPos.y - currPos.y;
+            if (onGround && deltaY > 0.0f && deltaY <= height) {
+                return landedPos;
+            }
+        }
+
+        return null;
     }
 
     private boolean checkDotAngle(Vector3f v1, Vector3f v2, double angle, boolean ifOrthogonal) {
@@ -174,54 +237,6 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
             return ifOrthogonal;
         }
         return Math.acos(dot) <= angle;
-    }
-
-    /*
-    private Vector3f tryStepUp(Vector3f currPos, Vector3f motion, float height) {
-        SweepResult sweepResultUp = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), currPos, new Vector3f(0.0f, height, 0.0f), new Vector3i(0, 1, 0));
-        Vector3f getHitUp = sweepResultUp.getCorrectedPos();
-
-        SweepResult sweepResultStep = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), getHitUp, motion, new Vector3i(1));
-        Vector3f getHitStep = sweepResultStep.getCorrectedPos();
-
-        BoundingBox boundingBox = new BoundingBox();
-        this.getGhostBody().boundingBox(boundingBox);
-
-        RayResult result = RayResult.getRayHitResult(this.getWorld().getDynamics(), this.getGhostBody(), getHitStep, new Vector3f(getHitStep).sub(0.0f, boundingBox.getYExtent() + 1.0f, 0.0f));
-        if (result.getHitNormal() != null) {
-            if (this.checkDotAngle(this.up(), result.getHitNormal(), this.getSlopeAngle(), true)) {
-                SweepResult sweepResultDown = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), getHitStep, new Vector3f(0.0f, -height, 0.0f), new Vector3i(0, 1, 0));
-                if (sweepResultDown.getHitNormal() != null && sweepResultDown.getCorrectedPos().y > currPos.y) {
-                     return sweepResultDown.getCorrectedPos();
-                }
-            }
-        }
-
-       // SweepResult sweepResultDown = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getPhysicsRigidBody(), (ConvexShape) this.getPhysicsRigidBody().getCollisionShape(), getHitStep, new Vector3f(0.0f, -height, 0.0f), new Vector3i(0, 1, 0));
-       // if (sweepResultDown.getHitNormal() != null && sweepResultDown.getCorrectedPos().y > currPos.y) {
-       //     if (this.checkDotAngle(this.up(), sweepResultDown.getHitNormal(), this.getSlopeAngle(), true)) {
-       //         return sweepResultDown.getCorrectedPos();
-       //     }
-       // }
-
-        return null;
-    }
-    */
-
-    private float checkSlopeY(Vector3f checkFrom, Vector3f motion) {
-        SweepResult sweepResult0 = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), checkFrom, motion, new Vector3i(1));
-
-        if (sweepResult0.getSlideMotion() != null) {
-            float y = sweepResult0.getSlideMotion().y;
-            if (y > 0.0f) {
-                boolean flag = this.checkAngleOnPos(this.getGhostBody(), this.getSlopeAngle(), sweepResult0.getCorrectedPos().add(sweepResult0.getSlideMotion().mul(0.05f, 1.0f, 0.05f)), new Vector3f(0.0f, -1.0f, 0.0f), false);
-                if (flag) {
-                    return y;
-                }
-            }
-        }
-
-        return -1.0f;
     }
 
     private float getLiquidSwimUpFactor() {
@@ -263,7 +278,6 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                 com.jme3.math.Vector3f hitP = DynamicsUtils.lerp(rayFrom, rayTo, physicsRayTestResult.getHitFraction());
                 float f1 = rayFrom.distance(rayTo);
                 float f2 = rayFrom.distance(hitP);
-                //Math.pow(1.0f - (f2 / f1), 0.5f)
                 return 1.0f - (f2 / f1);
             }
         }
@@ -284,7 +298,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         }
 
         this.jumpCooldownR -= 1;
-        this.isOnGround = this.checkIfOnGround(this.getGhostBody());
+        this.isOnGround = this.checkIfOnGround(this.getGhostBody(), this.getPosition());
 
         final float walkSpeed = this.getWalkSpeed();
         final float jumpSpeed = this.getJumpHeight();
@@ -299,11 +313,7 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
 
         JGemsHelper.math().clampVectorToZeroThreshold(this.bodyVelocity, 0.001f);
 
-       //if (motion.y <= 0.0f)
-       //this.setBodyVelocity(new Vector3f(this.getBodyVelocity().x, -0.1f, this.getBodyVelocity().z));
-
         this.move(this.getBodyVelocity());
-        //this.move(new Vector3f(this.getMoveVector()).mul(0.25f));
     }
 
     protected void tryToJump(float gravity, Vector3f motionVecController, float jumpHeight) {
@@ -379,127 +389,83 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         if (motion.length() > 0) {
             this.moveWithCollision(motion);
         }
+        if (motion.y < 0.0f) {
+            this.motionYAlignment(0.05f);
+        }
+    }
 
-        SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), new Vector3f(0.0f, -0.1f, 0.0f), new Vector3i(0, 1, 0));
+    protected void motionYAlignment(float measure) {
+        SweepResult sweepResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), this.createGhostShapeShapeForGroundCheck(), this.getPosition(), new Vector3f(0.0f, -0.1f, 0.0f), new Vector3i(0, 1, 0));
+
         if (sweepResult.getHitNormal() != null) {
             if (this.checkDotAngle(this.up(), sweepResult.getHitNormal(), this.getSlopeAngle(), true)) {
-                Vector3f newPos = sweepResult.getCorrectedPos().add(0.0f, 0.01f, 0.0f);
-                if (newPos.y > this.getPosition().y) {
-                   // this.setPosition(newPos);
+                final float threshold = 0.01f;
+                Vector3f newPos = sweepResult.getCorrectedPos().add(0.0f, threshold, 0.0f);
+                if (newPos.y - this.getPosition().y < measure) {
+                    this.setPosition(newPos);
                 }
             }
         }
     }
 
     private void moveWithCollision(Vector3f motion) {
-        float ySlope = this.checkSlopeY(this.getPosition(), motion);
-       //if (ySlope <= 0.0f) {
-       //    if (this.isOnGround() && motion.y == 0.0f) {
-       //        Vector3f tryStepUp = this.tryStepUp(this.getPosition(), motion, this.getStepHeight());
-       //        if (tryStepUp != null) {
-       //           this.setPosition(tryStepUp);
-       //           return;
-       //        }
-       //    }
-       //}
+        if (this.isOnGround()) {
+            Vector3f tryStepUp = this.tryStepUp(this.getPosition(), motion, this.getStepHeight());
+            if (tryStepUp != null) {
+                this.setPosition(new Vector3f(tryStepUp.x, tryStepUp.y + 0.01f, tryStepUp.z));
+                return;
+            }
+        }
 
-        boolean f1 = !this.moveTestVerticalY(motion, ySlope);
-        boolean f2 = !this.moveTestHorizontalXZ(motion, ySlope);
-        if (f1 && f2) {
-            if (motion.y <= 0.0f) {
-                float yDown = this.getStepDownY();
-                if (this.isOnGround() && yDown != 0.0f) {
-                    this.setPosition(new Vector3f(this.getPosition().x, yDown, this.getPosition().z));
+        if (this.moveTestXYZ(motion)) {
+            if (Math.abs(motion.y) <= 0.01f) {
+                Vector3f tryStepDown = this.tryStepDown(this.getPosition(), this.getStepHeight());
+                if (tryStepDown != null) {
+                    this.setPosition(new Vector3f(tryStepDown.x, tryStepDown.y + 0.01f, tryStepDown.z));
                 }
             }
         }
     }
 
-    public boolean moveTestVerticalY(Vector3f motion, final float ySlope) {
-        Vector3f slide = new Vector3f(0.0f);
-        Vector3f checkTo = new Vector3f(motion).mul(0.0f, 1.0f, 0.0f);
-
-        if (ySlope > 0.0f) {
-            checkTo.y += ySlope;
-        }
-
-        SweepResult slideResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), checkTo, new Vector3i(0, 1, 0));
-        if (slideResult.getSlideMotion() != null) {
-            slide = slideResult.getSlideMotion();
-        }
-
-        if (slide.length() > 0.0f && slide.length() < 0.001f) {
-            slide.normalize().mul(0.001f);
-        }
-
-        SweepResult slideResult2 = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), new Vector3f(slide), new Vector3i(1));
-        if (slideResult2.getHitNormal() != null) {
-            Vector3f corrPosSlide = new Vector3f(slideResult2.getCorrectedPos());
-            this.setPosition(new Vector3f(corrPosSlide.x, corrPosSlide.y, corrPosSlide.z));
-
-            SweepResult slideResultInner = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), new Vector3f(slideResult2.getSlideMotion().x, 0.0f, slideResult2.getSlideMotion().z), new Vector3i(1));
-            this.setPosition(slideResultInner.getCorrectedPos());
-        } else {
-            Vector3f corrPosSweep = new Vector3f(slideResult.getCorrectedPos());
-            float ySpeed = checkTo.length();
-            float lenCor = ySpeed == 0.0f ? 1.0f : 1.0f - Math.min(corrPosSweep.distance(this.getPosition()) / Math.abs(ySpeed), 1.0f);
-            slide.mul(lenCor);
-            corrPosSweep.add(slide);
-            this.setPosition(corrPosSweep);
-        }
-
-        return ySlope > 0.0f;
-    }
-
-    public boolean moveTestHorizontalXZ(Vector3f motion, final float ySlope) {
-        boolean flag = false;
-        Vector3f slide = new Vector3f(0.0f);
-        Vector3f checkTo = new Vector3f(motion).mul(1.0f, 0.0f, 1.0f);
-
-        SweepResult slideResult = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), this.getPosition(), checkTo, new Vector3i(1, 0, 1), ySlope > 0.0f ? null : new Vector3f(1.0f, 0.0f, 1.0f));
-        if (slideResult.getSlideMotion() != null) {
-            slide = slideResult.getSlideMotion().mul(1.0f, 0.0f, 1.0f);
-        }
-
-        if (slide.length() > 0.0f && slide.length() < 0.001f) {
-            slide.normalize().mul(0.001f);
-        }
-
-        float xzSpeed = Math.max(checkTo.length(), this.getWalkSpeed());
-        Vector3f corrPosSweep = new Vector3f(slideResult.getCorrectedPos());
-        float x0 = corrPosSweep.x;
-        float y0 = Math.min(this.getPosition().y, corrPosSweep.y);
-        float z0 = corrPosSweep.z;
-        Vector3f corrected = new Vector3f(x0, y0, z0);
-        float lenCor = xzSpeed == 0.0f ? 1.0f : 1.0f - Math.min(corrected.distance(this.getPosition()) / xzSpeed, 1.0f);
-        slide.mul(lenCor);
-
-        SweepResult slideResult2 = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), new Vector3f(corrected), new Vector3f(slide), new Vector3i(1, 0, 1));
-        if (slide.length() > 0.0f && slideResult2.getHitNormal() != null) {
-            Vector3f corrPosSlide = new Vector3f(slideResult2.getCorrectedPos().x, Math.min(slideResult2.getCorrectedPos().y, this.getPosition().y), slideResult2.getCorrectedPos().z);
-
-            if (slideResult2.getSlideMotion().y > 0.0f) {
-                if (this.checkAngleOnPos(this.getGhostBody(), this.getSlopeAngle(), new Vector3f(corrPosSlide).add(0.0f, slideResult2.getSlideMotion().y, 0.0f), new Vector3f(0.0f, -0.1f, 0.0f), false)) {
-                    SweepResult slideResultInner = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), new Vector3f(corrPosSlide), new Vector3f(0.0f, slideResult2.getSlideMotion().y, 0.0f), new Vector3i(1));
-                    corrPosSlide = slideResultInner.getCorrectedPos();
-                    flag = true;
+    // slide?
+    public boolean moveTestXYZ(Vector3f motion) {
+        Vector3f correctedPos = new Vector3f(this.getPosition());
+        Vector3f slideVec = null;
+        final int maxBumps = 64;
+        final float epsilon = 1e-6f;
+        for (int i = 0; i < maxBumps; i++) {
+            Vector3f inputMotion = (slideVec == null) ? new Vector3f(motion) : slideVec;
+            Pair<Vector3f, Vector3f> result = this.bump(correctedPos, inputMotion);
+            correctedPos = result.getFirst();
+            slideVec = result.getSecond();
+            if (slideVec != null) {
+                float dot = slideVec.dot(motion);
+                if (dot <= 0f) {
+                    slideVec.set(0f, 0f, 0f);
                 }
             }
-
-            this.setPosition(corrPosSlide);
-           // this.setBodyVelocity(new Vector3f(0.0f, this.getBodyVelocity().y, 0.0f));
-        } else {
-            this.setPosition(new Vector3f(corrected).add(slide));
-            //if (slide.length() > 0.0f) {
-            //    Vector3f normalCheckTo = checkTo.normalize();
-            //    float dot = 1.0f - Math.abs(normalCheckTo.dot(slideResult.getHitNormal()));
-            //    Vector3f normalSlide = slide.normalize();
-            //    Vector2f reductionP = new Vector2f(0.0f + (dot * Math.abs(normalSlide.x)), 0.0f + (dot * Math.abs(normalSlide.z)));
-            //    this.setBodyVelocity(new Vector3f(this.getBodyVelocity().x * reductionP.x, this.getBodyVelocity().y, this.getBodyVelocity().z * reductionP.y));
-            //}
+            if (slideVec == null || slideVec.lengthSquared() < epsilon) {
+                break;
+            }
+        }
+        if (correctedPos != null) {
+            this.setPosition(correctedPos);
         }
 
-        return flag;
+        return slideVec == null || Math.abs(slideVec.y) < 0.01f;
+    }
+
+    // corrected + slide(nullable)
+    public Pair<@NotNull Vector3f, @Nullable Vector3f> bump(Vector3f fromPos, Vector3f motion) {
+        Vector3f from = new Vector3f(fromPos);
+        Vector3f checkTo = new Vector3f(from).add(motion);
+
+        SweepResult sweepTest = SweepResult.getSweepHitResult(this.getWorld().getDynamics(), this.getGhostBody(), (ConvexShape) this.getGhostBody().getCollisionShape(), from, motion, new Vector3i(1), 0.01f);
+        if (sweepTest.getHitNormal() == null) {
+            return new Pair<>(checkTo, null);
+        }
+
+        return new Pair<>(sweepTest.getCorrectedPos(), sweepTest.getSlideMotion());
     }
 
     public int getCollisionGroup() {
@@ -719,7 +685,6 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
         }
 
         public static SweepResult getSweepHitResult(DynamicsSystem dynamicsSystem, PhysicsRigidBody ghostObject, ConvexShape convexShape, Vector3f posFrom, Vector3f motion, Vector3i axis, Vector3f slideNormalCorrection, float ccd) {
-           // motion.mul(0.15f, 1f, 0.15f);
             Vector3f nmAxisM = new Vector3f(motion).mul(new Vector3f(axis));
             Vector3f moveTo1 = new Vector3f(posFrom).add(nmAxisM);
             Transform start = new Transform().setTranslation(DynamicsUtils.convertV3F_JME(posFrom));
@@ -761,15 +726,27 @@ public abstract class JGemsKinematicItem extends WorldItem implements IWorldTick
                     normal.normalize();
                 }
 
-                Vector3f motionAlongNormal = new Vector3f(normal).mul(new Vector3f(motion).dot(normal));
-                Vector3f slideMotion = new Vector3f(motion).sub(motionAlongNormal);
+                float motionLen = motion.length();
+                Vector3f motionDir = motionLen > 1e-6f ? new Vector3f(motion).normalize() : new Vector3f(0f,0f,0f);
+                float passedLen = distanceToHit * motionLen;
+                float eps = 0.001f;
+                passedLen = Math.max(0f, passedLen - eps);
+                Vector3f passed = new Vector3f(motionDir).mul(passedLen);
+                Vector3f remaining = new Vector3f(motion).sub(passed);
+
+                float dotRem = remaining.dot(normal);
+                Vector3f motionAlongNormal = new Vector3f(normal).mul(dotRem);
+                Vector3f slideMotion = new Vector3f(remaining).sub(motionAlongNormal);
+
+                //motionAlongNormal = new Vector3f(normal).mul(new Vector3f(motion).dot(normal));
+                //slideMotion = new Vector3f(motion).sub(motionAlongNormal);
 
                 if (!slideMotion.isFinite()) {
                     slideMotion.set(0.0f);
                 }
 
-                float offset = 0.005f; //Math.min(nmAxisM.length() * 0.01f, 0.002f);
-                corrected.add(new Vector3f(normal).mul(offset));
+                //float normalizedOffset = JGemsHelper.math().clamp(motionLen * 0.02f, 0.001f, 0.005f);
+                corrected.add(new Vector3f(normal).mul(0.005f));
 
                 return new SweepResult(corrected, normal, slideMotion, distanceToHit);
             }

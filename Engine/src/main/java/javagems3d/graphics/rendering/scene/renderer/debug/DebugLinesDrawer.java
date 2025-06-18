@@ -54,38 +54,40 @@ public class DebugLinesDrawer {
     }
 
     public void render() {
-        Iterator<Request> requestIterator = this.getRequests().iterator();
-        while (requestIterator.hasNext()) {
-            Request request = requestIterator.next();
-            if (request.getPreRender() != null) {
-                request.getPreRender().accept(this.getDrawerShader());
+        synchronized (DebugLinesDrawer.monitor) {
+            Iterator<Request> requestIterator = this.getRequests().iterator();
+            while (requestIterator.hasNext()) {
+                Request request = requestIterator.next();
+                if (request.getPreRender() != null) {
+                    request.getPreRender().accept(this.getDrawerShader());
+                }
+
+                GL46.glBindVertexArray(this.getVao());
+
+                GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.getVbo());
+                GL46.glBufferSubData(GL46.GL_ARRAY_BUFFER, 0L, request.getVectorsToDraw());
+
+                GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getEbo());
+                GL46.glBufferSubData(GL46.GL_ELEMENT_ARRAY_BUFFER, 0L, request.getIndexes());
+
+                MemoryUtil.memFree(request.getVectorsToDraw());
+                MemoryUtil.memFree(request.getIndexes());
+
+                this.getDrawerShader().beginShading();
+                this.getDrawerShader().performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(request.getColor(), 1.0f)));
+                this.getDrawerShader().performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
+                this.getDrawerShader().performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
+                GL46.glEnableVertexAttribArray(0);
+                GL46.glDrawElements(GL46.GL_LINES, request.indexes.remaining(), GL46.GL_UNSIGNED_INT, 0);
+                GL46.glDisableVertexAttribArray(0);
+                this.getDrawerShader().endShading();
+                GL46.glBindVertexArray(0);
+
+                if (request.getPostRender() != null) {
+                    request.getPostRender().accept(this.getDrawerShader());
+                }
+                requestIterator.remove();
             }
-
-            GL46.glBindVertexArray(this.getVao());
-
-            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.getVbo());
-            GL46.glBufferSubData(GL46.GL_ARRAY_BUFFER, 0L, request.getVectorsToDraw());
-
-            GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, this.getEbo());
-            GL46.glBufferSubData(GL46.GL_ELEMENT_ARRAY_BUFFER, 0L, request.getIndexes());
-
-            MemoryUtil.memFree(request.getVectorsToDraw());
-            MemoryUtil.memFree(request.getIndexes());
-
-            this.getDrawerShader().beginShading();
-            this.getDrawerShader().performUniform(new UniformString("color"), UniformFunctions.VEC4F(new Vector4f(request.getColor(), 1.0f)));
-            this.getDrawerShader().performPerspectiveMatrix(new UniformString("projection_matrix"), JGemsTransformManager.INSTANCE.getPerspectiveMatrix());
-            this.getDrawerShader().performViewMatrix(new UniformString("view_matrix"), JGemsTransformManager.INSTANCE.getCameraViewMatrix());
-            GL46.glEnableVertexAttribArray(0);
-            GL46.glDrawElements(GL46.GL_LINES, request.indexes.remaining(), GL46.GL_UNSIGNED_INT, 0);
-            GL46.glDisableVertexAttribArray(0);
-            this.getDrawerShader().endShading();
-            GL46.glBindVertexArray(0);
-
-            if (request.getPostRender() != null) {
-                request.getPostRender().accept(this.getDrawerShader());
-            }
-            requestIterator.remove();
         }
     }
 

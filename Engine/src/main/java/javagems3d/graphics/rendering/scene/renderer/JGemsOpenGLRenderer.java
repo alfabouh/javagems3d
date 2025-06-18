@@ -2,6 +2,7 @@ package javagems3d.graphics.rendering.scene.renderer;
 
 import api.events.EventBus;
 import api.events.EventLauncher;
+import com.jme3.bounding.BoundingBox;
 import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.lights.scene.LightScene;
@@ -40,6 +41,9 @@ import javagems3d.help.JGemsHelper;
 import javagems3d.mapping.IGameMap;
 import javagems3d.mapping.processing.base.IMapProcessor;
 import javagems3d.mapping.processing.callbacks.IMapActionCallback;
+import javagems3d.physics.entities.kinematic.JGemsKinematicItem;
+import javagems3d.physics.entities.kinematic.player.IPlayer;
+import javagems3d.physics.world.thread.dynamics.DynamicsUtils;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
@@ -240,6 +244,14 @@ public class JGemsOpenGLRenderer extends OpenGLRenderer implements IJGemsUIImp, 
                 CullingAABB cullingAABB = sceneObject.getCullingData();
                 if (cullingAABB != null) {
                     JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(cullingAABB.getAabbMin(), cullingAABB.getAabbMax(), new Vector3f(1.0f, 0.0f, 0.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
+                }
+                IPlayer player = JGemsHelper.map().getCurrentGameMapPlayer();
+                if (player instanceof JGemsKinematicItem) {
+                    BoundingBox boundingBox = new BoundingBox();
+                    ((JGemsKinematicItem) player).getPhysicsBody().boundingBox(boundingBox);
+                    Vector3f min = DynamicsUtils.convertV3F_JOML(boundingBox.getMin(new com.jme3.math.Vector3f()));
+                    Vector3f max = DynamicsUtils.convertV3F_JOML(boundingBox.getMax(new com.jme3.math.Vector3f()));
+                    JGemsOpenGLRenderer.DebugLinesDrawer().addRequest(DebugLinesDrawer.BoxRequest(min, max, new Vector3f(0.0f, 0.0f, 1.0f), DebugLinesDrawer.noDepth(), DebugLinesDrawer.Depth()));
                 }
                 //if (sceneObject instanceof SceneEntity) {
                 //    SceneEntity sceneEntity = (SceneEntity) sceneObject;

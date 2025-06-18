@@ -2,6 +2,7 @@ package javagems3d.physics.entities.kinematic.player;
 
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.ConvexShape;
+import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.triggers.ITriggerAction;
 import javagems3d.system.inventory.InventoryOwner;
@@ -12,6 +13,7 @@ import org.joml.Vector3f;
 
 public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implements IPlayer, InventoryOwner {
     private InventoryBase inventoryBase;
+    private float scalarSpeed;
 
     public JGemsKinematicPlayer(PhysicsWorld world, @NotNull Vector3f pos, @NotNull Vector3f rot, String itemName) {
         super(world, pos, rot, itemName);
@@ -56,8 +58,14 @@ public class JGemsKinematicPlayer extends JGemsKinematicControlledItem implement
     }
 
     @Override
+    protected void onTick(IWorld iWorld) {
+        super.onTick(iWorld);
+        this.scalarSpeed = this.getPrevPosition().distance(this.getPosition());
+    }
+
+    @Override
     public float getScalarSpeed() {
-        return this.getBodyVelocity().length();
+        return this.scalarSpeed;
     }
 
     @Override

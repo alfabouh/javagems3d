@@ -60,8 +60,6 @@ public abstract class ManualMapProcessor extends MapProcessor {
             Water water = new Water(new Zone(new Vector3f(14.0f, -10.0f, 10.0f), new Vector3f(20.0f, 8.0f, 18.0f)));
             JGemsHelper.world().addLiquid(water, JGemsResourceManager.globalRenderDataAssets.water);
 
-            JGemsHelper.world().addProp(new SceneWorldProp("cube", sceneWorld, new PropRenderData(new RenderAttributes(RenderTable.getIndirect(), JGemsRenderProperties.getDefault()), JGemsResourceManager.globalModelAssets.defaultCube_bff)));
-
             PointLight pointLight = new PointLight(new Vector3f(-20.0f, 0.0f, -12.0f), new Vector3f(1.0f, 0.0f, 0.0f)).setBrightness(10.0f);
             pointLight.on();
            // sceneWorld.addLight(pointLight, null);

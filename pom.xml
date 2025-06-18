@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <properties>
-        <project.groupId>com.github.gltexture</project.groupId>
-        <project.artifactId>javagems3d</project.artifactId>
-        <project.version>0.2</project.version>
         <github.global.server>github</github.global.server>
         <lwjgl.version>3.3.6</lwjgl.version>
         <joml.version>1.10.8</joml.version>
@@ -18,9 +15,9 @@
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>${project.groupId}</groupId>
-    <artifactId>${project.artifactId}</artifactId>
-    <version>${project.version}</version>
+    <groupId>com.github.gltexture</groupId>
+    <artifactId>javagems3d</artifactId>
+    <version>0.2</version>
     <packaging>pom</packaging>
 
     <name>JavaGems3D</name>
