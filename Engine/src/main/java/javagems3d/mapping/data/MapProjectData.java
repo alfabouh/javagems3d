@@ -1,25 +1,22 @@
 package javagems3d.mapping.data;
 
 import javagems3d.JGems3D;
-import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.core.JGemsCore;
 import javagems3d.system.service.exceptions.JGemsIOException;
-import javagems3d.system.service.path.JGemsPath;
+import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("all")
-public class ProjectData {
+public class MapProjectData {
     protected String information;
     protected String projectName;
     protected String version;
     protected String mapDataFile;
     protected List<String> scriptFiles;
 
-    public ProjectData(String information, String projectName, String version, String mapDataFile) {
+    public MapProjectData(@NotNull String information, @NotNull String projectName, @NotNull String version, @NotNull String mapDataFile) {
         this.information = information;
         this.projectName = projectName;
         this.version = version;
@@ -47,10 +44,11 @@ public class ProjectData {
         return this.scriptFiles;
     }
 
+    //TODO
     public void checkVersion() {
-        final String version = this.getVersion();
-        if (!JGemsMapping.SUPPORTED_VERSIONS.contains(version)) {
-            throw new JGemsIOException("Project's version " + version + " is not supported in current JGems3D version: " + JGemsCore.ENG_VER);
-        }
+        //final String version = this.getVersion();
+        //if (!JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_SUPPORTED_VERSIONS.contains(version)) {
+        //    throw new JGemsIOException("Map's version " + version + " is not supported in current JGems3D version: " + JGemsCore.ENG_VER);
+        //}
     }
 }

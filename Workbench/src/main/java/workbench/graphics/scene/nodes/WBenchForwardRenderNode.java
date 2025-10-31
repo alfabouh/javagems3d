@@ -21,7 +21,7 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.world.WBenchWorld;
 import workbench.resources.WBenchResourceManager;
 
@@ -36,7 +36,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
     public void onRender(FrameTicking frameTicking) {
         super.onRender(frameTicking);
 
-        if (EditorInterface.VIEW_CHESS_TERRAIN) {
+        if (MapEditorInterface.VIEW_CHESS_TERRAIN) {
             final WBenchWorld wBenchWorld = (WBenchWorld) this.getWorld();
             this.getOutColorBuffer().bindFBO();
             GL46.glEnable(GL46.GL_BLEND);
@@ -76,7 +76,7 @@ public class WBenchForwardRenderNode extends ForwardRenderNode {
 
     @Override
     public boolean renderBackground() {
-        return ((EditorInterface) WBenchOpenGLRenderer.getEditorInterface()).getOldCamera() == null;
+        return ((MapEditorInterface) WBenchOpenGLRenderer.getMapEditorInterface()).getOldCamera() == null;
     }
 
     @Override

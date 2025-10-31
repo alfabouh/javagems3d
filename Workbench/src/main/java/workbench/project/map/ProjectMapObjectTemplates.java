@@ -1,26 +1,23 @@
-package workbench.project;
+package workbench.project.map;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import javagems3d.graphics.rendering.programs.textures.base.ICubeMapProgram;
 import javagems3d.help.JGemsUtils;
-import javagems3d.system.service.collections.Pair;
 import workbench.graphics.objects.templates.WBenchMarkerTemplate;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.objects.templates.WBenchTemplate;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-public class ProjectTemplates {
+public class ProjectMapObjectTemplates {
     private final Map<String, TemplatesTable<WBenchObjectTemplate>> entityGroups;
     private final Map<String, TemplatesTable<WBenchObjectTemplate>> propGroups;
     private final Map<String, TemplatesTable<WBenchMarkerTemplate>> markerGroups;
     private final BiMap<String, ICubeMapProgram> skyBoxes;
 
-    public ProjectTemplates() {
+    public ProjectMapObjectTemplates() {
         this.entityGroups = new HashMap<>();
         this.propGroups = new HashMap<>();
         this.markerGroups = new HashMap<>();

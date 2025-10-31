@@ -7,6 +7,7 @@ import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.IDearUIImp;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.system.core.JGemsCore;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.os.OS;
@@ -21,8 +22,10 @@ import org.lwjgl.glfw.GLFW;
 import workbench.controller.WBenchControllerDispatcher;
 import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.screen.WBenchScreen;
-import workbench.project.ProjectManager;
-import workbench.project.ProjectTemplates;
+import workbench.project.game.WBenchGameProject;
+import workbench.project.game.WBenchGameProjectManager;
+import workbench.project.map.WBenchMapProjectManager;
+import workbench.project.map.ProjectMapObjectTemplates;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.frame.LoadingInterfaceSwing;
 import workbench.settings.WBenchSettings;
@@ -49,7 +52,7 @@ public final class WBench {
     private final WBenchScreen screen;
     private final WBenchResourceManager resourceManager;
     private WBenchSettings settings;
-    private final ProjectManager projectManager;
+    private final WBenchGameProjectManager wBenchGameProject;
 
     private static JGemsAPIEditorResources apiEditorResources;
 
@@ -67,8 +70,6 @@ public final class WBench {
         WBench.rngSeed = WBench.systemTime();
         WBench.random = new Random(WBench.rngSeed);
 
-        this.settings = new WBenchSettings();
-
         try {
             this.settings = WBenchSettings.load(new JGemsPath(WBench.getFilesFolder()));
         } catch (JGemsIOException | IllegalStateException | JsonSyntaxException e) {
@@ -77,7 +78,7 @@ public final class WBench {
 
         this.resourceManager = new WBenchResourceManager();
         this.screen = new WBenchScreen();
-        this.projectManager = new ProjectManager();
+        this.wBenchGameProject = new WBenchGameProjectManager();
 
         this.shouldBeClosed = false;
     }
@@ -99,9 +100,12 @@ public final class WBench {
     }
 
     @SuppressWarnings("all")
-    public static void launch() {
+    public static void launch(@NotNull JGemsLaunchArgsRegistry argsRegistry) {
         if (WBench.wBench != null) {
             throw new JGemsRuntimeException("Couldn't launch ToolBox more than 1 times");
+        }
+        if (argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG) == Boolean.TRUE) {
+            JGems3D.DEBUG_MODE = true;
         }
         WBench.wBench = new WBench();
         WBench.get().start();
@@ -126,10 +130,11 @@ public final class WBench {
 
     private static void start() {
         try {
+            JGemsLaunchArgsRegistry.INSTANCE.printArgs();
             Log.get().debug("BEGIN");
             Log.get().info("Starting system! Date: " + JGems3D.date());
             Log.get().info(WBench.get().toString());
-            Log.get().info("===============================================================");
+            Log.get().separator();
             JGemsCore.printSystemInfo();
             WBench.get().getResourceManager().initGlobalResources();
 
@@ -146,7 +151,8 @@ public final class WBench {
             } catch (JGemsIOException e) {
                 Log.get().exception(e);
             }
-            WBench.get().getProjectManager().closeProject(true);
+            JGemsLaunchArgsRegistry.clear();
+            WBench.get().getMapProjectManager().closeMapProject();
             WBench.get().getResourceManager().destroy();
             LoadingInterfaceSwing.dispose();
             JGemsAPI.get().close();
@@ -168,12 +174,12 @@ public final class WBench {
         return this.settings;
     }
 
-    public ProjectTemplates getProjectObjects() {
-        return this.getProjectManager().getProjectObjects();
+    public @NotNull WBenchMapProjectManager getMapProjectManager() {
+        return this.getGameProjectManager().getMapProjectManager();
     }
-
-    public ProjectManager getProjectManager() {
-        return this.projectManager;
+    
+    public @NotNull WBenchGameProjectManager getGameProjectManager() {
+        return this.wBenchGameProject;
     }
 
     public WBenchBindingManager getBindingManager() {

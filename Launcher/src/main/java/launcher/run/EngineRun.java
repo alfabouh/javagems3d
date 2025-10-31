@@ -1,14 +1,12 @@
 package launcher.run;
 
 import javagems3d.JGems3D;
-import javagems3d.system.service.args.InputArgs;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
+import org.jetbrains.annotations.NotNull;
 
 public final class EngineRun implements IRun {
     @Override
-    public void run(InputArgs inputArgs) {
-        if (inputArgs.getBoolValue("debug")) {
-            JGems3D.DEBUG_MODE = true;
-        }
-        JGems3D.launch();
+    public void run(@NotNull JGemsLaunchArgsRegistry argsRegistry) {
+        JGems3D.launch(argsRegistry);
     }
 }

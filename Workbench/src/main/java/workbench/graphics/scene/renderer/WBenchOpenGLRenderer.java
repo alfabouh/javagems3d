@@ -20,11 +20,9 @@ import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.graphics.screen.window.IWindow;
 import javagems3d.graphics.transformation.JGemsTransformManager;
-import javagems3d.help.JGemsHelper;
 import javagems3d.system.resources.assets.models.Model2D;
 import javagems3d.system.resources.assets.models.helper.MeshHelper;
 import javagems3d.system.resources.assets.models.mesh.vertex.pointers.DefaultAttributePointers;
-import javagems3d.system.resources.managing.JGemsResourceManager;
 import javagems3d.system.resources.managing.resources.data.cache.MeshBuffersDataCache;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
@@ -32,16 +30,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.graphics.scene.nodes.*;
 import workbench.graphics.scene.nodes.templates.IUIRenderNode;
-import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.game.GameEditorInterface;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.graphics.scene.ui.ProjectInitInterface;
-import workbench.graphics.scene.ui.editor.SelectedScene;
+import workbench.graphics.scene.ui.map.editor.SelectedScene;
 import workbench.graphics.scene.world.WBenchWorld;
-import workbench.project.WBenchProject;
+import workbench.project.map.WBenchMapProject;
 import workbench.resources.WBenchResourceManager;
 
 import java.util.*;
@@ -54,7 +52,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     public static final NodeID GLUING_RENDER_PASS = new NodeID("gluing-pass", 4);
     public static final NodeID UI_RENDER_PASS = new NodeID("ui-pass", 5);
 
-    private static DearUIInterface editorInterface;
+    private static DearUIInterface gameEditorInterface;
+    private static DearUIInterface mapEditorInterface;
     private static DearUIInterface projectInterface;
 
     protected Map<NodeID, IRenderNode> conveyorNodes;
@@ -71,7 +70,8 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         this.conveyorNodes = new TreeMap<>(Comparator.comparingInt(NodeID::getId));
 
         this.editorScenePreview = new FBOTexture2DProgram(true, false);
-        WBenchOpenGLRenderer.editorInterface = new EditorInterface(this, this.editorScenePreview, WBench.get().getProjectManager());
+        WBenchOpenGLRenderer.gameEditorInterface = new GameEditorInterface(this, WBench.get().getMapProjectManager());
+        WBenchOpenGLRenderer.mapEditorInterface = new MapEditorInterface(this, this.editorScenePreview, WBench.get().getMapProjectManager());
         WBenchOpenGLRenderer.projectInterface = new ProjectInitInterface();
 
         this.sceneIndirectBufferProgram = new IndirectBufferProgram(DefaultAttributePointers.ATTR_POSITIONS, DefaultAttributePointers.ATTR_NORMALS, DefaultAttributePointers.ATTR_TEXTURE_COORDINATES, DefaultAttributePointers.ATTR_TANGENTS, DefaultAttributePointers.ATTR_BI_TANGENTS, DefaultAttributePointers.ATTR_BONES_INDEXES, DefaultAttributePointers.ATTR_BONES_WEIGHTS);
@@ -82,7 +82,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     public static boolean isRenderingBackgroundScene() {
-        return (((EditorInterface) WBenchOpenGLRenderer.getEditorInterface()).getSelectedScene().equals(SelectedScene.BACKGROUND));
+        return (((MapEditorInterface) WBenchOpenGLRenderer.getMapEditorInterface()).getSelectedScene().equals(SelectedScene.BACKGROUND));
     }
 
     @Override
@@ -165,7 +165,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
             uiRenderNode.onRender(frameTicking);
             return;
         }
-        final EditorInterface editorInterface1 = ((EditorInterface) WBenchOpenGLRenderer.editorInterface);
+        final MapEditorInterface mapEditorInterface1 = ((MapEditorInterface) WBenchOpenGLRenderer.mapEditorInterface);
 
         IForwardRenderNode forwardRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.FORWARD_RENDER_PASS);
         IDeferredRenderNode deferredRenderNode = this.getRenderNodeByPass(WBenchOpenGLRenderer.DEFERRED_RENDER_PASS);
@@ -198,10 +198,10 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         postRenderNode.onRender(frameTicking);
         GL46.glDepthMask(true);
 
-        editorInterface1.setVisibleObjects(toRender);
+        mapEditorInterface1.setVisibleObjects(toRender);
         OpenGLRenderer.setViewPort(this.getWindowSize());
         uiRenderNode.onRender(frameTicking);
-        editorInterface1.renderPreviewItem();
+        mapEditorInterface1.renderPreviewItem();
     }
 
     @Override
@@ -219,7 +219,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     @Override
-    public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull WBenchProject WBenchProject) {
+    public void onOpeningProject(WBenchResourceManager resourceManager, @NotNull WBenchMapProject wBenchProject) {
         this.setDefaultNodes();
         this.getDebugLinesDrawer().setup();
 
@@ -239,7 +239,7 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
     }
 
     @Override
-    public void onClosingProject(WBenchResourceManager resourceManager, @NotNull WBenchProject WBenchProject) {
+    public void onClosingProject(WBenchResourceManager resourceManager, @NotNull WBenchMapProject wBenchProject) {
         this.destroySceneIndirectRenderBuffer();
         this.getDebugLinesDrawer().clear();
 
@@ -333,8 +333,12 @@ public class WBenchOpenGLRenderer extends OpenGLRenderer implements IDearUIImp, 
         return this.sceneCulling;
     }
 
-    public static DearUIInterface getEditorInterface() {
-        return WBenchOpenGLRenderer.editorInterface;
+    public static DearUIInterface getGameEditorInterface() {
+        return WBenchOpenGLRenderer.gameEditorInterface;
+    }
+
+    public static DearUIInterface getMapEditorInterface() {
+        return WBenchOpenGLRenderer.mapEditorInterface;
     }
 
     public static DearUIInterface getProjectInterface() {

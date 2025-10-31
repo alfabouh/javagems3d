@@ -1,30 +1,28 @@
-package workbench.project;
+package workbench.project.map;
 
 import api.scripting.functions.APIScriptsListing;
-import javagems3d.mapping.JGemsMapping;
-import javagems3d.mapping.data.ProjectData;
+import javagems3d.JGems3D;
+import javagems3d.mapping.data.MapProjectData;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Iterator;
 import java.util.List;
 
-public class WBenchProject extends ProjectData implements Serializable {
-    private static final long serialVersionUID = -2138L;
+public class WBenchMapProject extends MapProjectData {
     private transient JGemsPath currentProjectPath;
 
-    public WBenchProject(@NotNull String version, @NotNull String projectName) {
-        super(JGemsMapping.DATA_INFO, projectName, version, "");
+    public WBenchMapProject(@NotNull String version, @NotNull String projectName) {
+        super(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_INFO, projectName, version, "");
         this.currentProjectPath = null;
     }
 
     public JGemsPath getScriptPathTo(String name) {
-        return new JGemsPath(this.getCurrentProjectPath().getDirectory(), "scripts", name);
+        return new JGemsPath(this.getCurrentProjectPath().getDirectory(), WBenchMapProjectManager.SCRIPTS_PATH, name);
     }
 
     public void reviseScripts() {
@@ -42,7 +40,7 @@ public class WBenchProject extends ProjectData implements Serializable {
 
         Path scriptsDir = this.getScriptPathTo("").toPath();
         if (Files.exists(scriptsDir) && Files.isDirectory(scriptsDir)) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(scriptsDir, "*" + JGemsMapping.MAP_SCRIPT_FILE)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(scriptsDir, "*" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_SCRIPT_FILE)) {
                 for (Path scriptPath : stream) {
                     String fileName = scriptPath.getFileName().toString();
                     if (!scriptFiles.contains(fileName)) {
@@ -67,7 +65,7 @@ public class WBenchProject extends ProjectData implements Serializable {
                 Files.createDirectories(scriptsDir);
             }
 
-            final String scriptFile = name + JGemsMapping.MAP_SCRIPT_FILE;
+            final String scriptFile = name + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_SCRIPT_FILE;
             Path newScriptPath = scriptsDir.resolve(scriptFile);
             if (Files.exists(newScriptPath)) {
                 Log.get().warn("Script already exists: " + newScriptPath);

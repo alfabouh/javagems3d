@@ -2,6 +2,7 @@ package javagems3d.system.service.synchronizing;
 
 import org.lwjgl.opengl.GL46;
 
+@Deprecated
 public class GPUSyncer {
     private final long sync;
 

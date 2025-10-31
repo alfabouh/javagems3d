@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.editor;
+package workbench.graphics.scene.ui.map.editor;
 
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
@@ -7,28 +7,24 @@ import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.help.JGemsHelper;
-import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.tags.Tag;
 import javagems3d.mapping.tags.TagID;
 import javagems3d.mapping.tags.TagsContainer;
 import javagems3d.mapping.tags.items.*;
 import javagems3d.system.service.collections.Pair;
-import logger.Log;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
-import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 import java.util.*;
 
 public class ActionsInterfaceComponent {
-    private final EditorInterface editorInterface;
+    private final MapEditorInterface mapEditorInterface;
     private final float[] coordsToGen;
 
-    public ActionsInterfaceComponent(EditorInterface editorInterface) {
-        this.editorInterface = editorInterface;
+    public ActionsInterfaceComponent(MapEditorInterface mapEditorInterface) {
+        this.mapEditorInterface = mapEditorInterface;
         this.coordsToGen = new float[3];
         this.clear();
     }
@@ -212,7 +208,7 @@ public class ActionsInterfaceComponent {
         wBenchObject.setScaling(new Vector3f(sclArrayX[0], sclArrayY[0], sclArrayZ[0]));
     }
 
-    public EditorInterface getEditorInterface() {
-        return this.editorInterface;
+    public MapEditorInterface getEditorInterface() {
+        return this.mapEditorInterface;
     }
 }

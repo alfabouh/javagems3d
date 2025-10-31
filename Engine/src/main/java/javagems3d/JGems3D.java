@@ -1,9 +1,11 @@
 package javagems3d;
 
 import api.system.JGemsAPIData;
+import com.zaxxer.nuprocess.NuAbstractProcessHandler;
+import com.zaxxer.nuprocess.NuProcessBuilder;
 import javagems3d.graphics.rendering.scene.ISceneRenderer;
-import javagems3d.graphics.rendering.ui.jgems_imgui.IJGemsUIImp;
-import javagems3d.mapping.processing.base.IMapProcessor;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
+import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.service.exceptions.JGemsAPIException;
 import javagems3d.system.service.os.OS;
 import javagems3d.system.service.os.SysOSValidation;
@@ -11,10 +13,10 @@ import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 import api.system.JGemsAPI;
 import javagems3d.audio.JGemsSoundManager;
-import javagems3d.graphics.rendering.ui.jgems_imgui.panels.base.PanelUI;
 import javagems3d.graphics.screen.JGemsScreen;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.world.thread.JGemsPhysics;
@@ -33,11 +35,12 @@ import logger.managers.JGemsLogging;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.*;
 
 public final class JGems3D {
     private final OS os;
@@ -95,12 +98,13 @@ public final class JGems3D {
     }
 
     @SuppressWarnings("all")
-    public static void launch() {
+    public static void launch(@NotNull JGemsLaunchArgsRegistry argsRegistry) {
         if (JGems3D.mainObject != null) {
             throw new JGemsRuntimeException("Couldn't launch JavaGems more than 1 times");
         }
         try {
             JGems3D.mainObject = new JGems3D();
+            JGems3D.LAUNCH_ARGS_RESOLVE(argsRegistry);
         } catch (JGemsRuntimeException e) {
             LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!\n\n" + e.getMessage());
             Log.get().exception(e);
@@ -109,12 +113,32 @@ public final class JGems3D {
         JGems3D.start();
     }
 
+    public static void LAUNCH_ARGS_RESOLVE(@NotNull JGemsLaunchArgsRegistry argsRegistry) {
+        if (argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG) == Boolean.TRUE) {
+            JGems3D.DEBUG_MODE = true;
+        }
+        Vector2i newWinSize = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.WIN_SIZE);
+        if (newWinSize != null) {
+            JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH = newWinSize.x;
+            JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT = newWinSize.y;
+        }
+        Boolean noSound = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND);
+        if (noSound != null) {
+            JGemsConfig.SYSTEM.DISABLE_SOUNDS = noSound;
+        }
+        Boolean noFullScreen = argsRegistry.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_FULL_SCREEN);
+        if (noFullScreen != null) {
+            JGemsConfig.SYSTEM.DISABLE_FULLSCREEN_START_ADJUSTMENT = noFullScreen;
+        }
+    }
+
     private static void start() {
         try {
+            JGemsLaunchArgsRegistry.INSTANCE.printArgs();
             Log.get().debug("BEGIN");
             Log.get().info("Starting system! Date: " + JGems3D.date());
             Log.get().info(JGems3D.get().toString());
-            Log.get().info("===============================================================");
+            Log.get().separator();
             Log.get().info("Loading settings from path...");
             if (JGems3D.get().getGameSettings().makeSettingDirs()) {
                 JGems3D.FIRST_LAUNCH = true;
@@ -275,6 +299,33 @@ public final class JGems3D {
         return JGemsCore.ENG_NAME + ": " + JGemsCore.ENG_VER + " | appId = " + JGems3D.getAPIAppData().getId();
     }
 
+    public static abstract class DEFAULT_WORKBENCH_PROJECT_CONSTANTS {
+        public static final String MAPPING_DATA_COMM = "JAVAGEMS3D MAP FILE";
+        public static final String GAME_DATA_COMM = "JAVAGEMS3D GAME FILE";
+
+        public static final String GAME_DATA_VERSION = "1.0";
+        public static final String MAPPING_DATA_VERSION = "1.0";
+
+        public static final String MAPPING_PROJECT_FILE = ".jg3dmp";
+        public static final String GAME_PROJECT_FILE = ".jg3dgm";
+
+        public static final String MAPPING_DATA_FILE = ".jg3mp_data";
+        public static final String GAME_DATA_FILE = ".jg3gm_data";
+
+        public static final String MAPPING_SCRIPT_FILE = ".js";
+
+        //public static final Set<String> MAPPING_SUPPORTED_VERSIONS = new HashSet<String>() {{
+        //    add("1.0");
+        //}};
+
+        //public static final Set<String> GAME_SUPPORTED_VERSIONS = new HashSet<String>() {{
+        //    add("1.0");
+        //}};
+
+        public static final String MAPPING_DATA_INFO = DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_COMM + " VER: " + DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_VERSION;
+        public static final String GAME_DATA_INFO = DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_COMM + " VER: " + DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_VERSION;
+    }
+
     public static abstract class DEFAULT_PATHS {
         public static final String PARTICLES = "/assets/jgems/textures/particles/";
         public static final String CUBE_MAPS = "/assets/jgems/textures/cubemaps/";
@@ -285,5 +336,57 @@ public final class JGems3D {
         public static final String MAPS = "/assets/jgems/maps/";
         public static final String LANG = "/assets/jgems/lang/";
         public static final String ICONS = "/assets/jgems/icons/";
+    }
+
+    public static class IsolatedProcessLauncher {
+        public static void EXEC(String[] args) {
+            String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+            String classpath = System.getProperty("java.class.path");
+
+            List<String> command = new ArrayList<>();
+            command.add(javaBin);
+            command.add("-Dfile.encoding=UTF-8");
+            command.add("-Xms512m");
+            command.add("-Xmx2048m");
+            command.add("-XX:+UseG1GC");
+            command.add("-cp");
+            command.add(classpath);
+            command.add("javagems3d.JGems3DIsolatedProcessLauncher");
+
+            if (args != null) {
+                command.addAll(Arrays.asList(args));
+            }
+
+            NuProcessBuilder pb = new NuProcessBuilder(command);
+            pb.setProcessListener(new SimpleProcessHandler());
+            pb.environment().putAll(System.getenv());
+            pb.setCwd(Paths.get("."));
+            pb.start();
+        }
+
+        public static void main(String[] args) {
+            JGemsLaunchArgsRegistry.INSTANCE.read(args);
+            JGems3D.launch(JGemsLaunchArgsRegistry.INSTANCE);
+        }
+
+        private static class SimpleProcessHandler extends NuAbstractProcessHandler {
+            @Override
+            public void onStdout(ByteBuffer buffer, boolean closed) {
+                if (!closed && buffer.hasRemaining()) {
+                    byte[] bytes = new byte[buffer.remaining()];
+                    buffer.get(bytes);
+                    System.out.print(new String(bytes));
+                }
+            }
+
+            @Override
+            public void onStderr(ByteBuffer buffer, boolean closed) {
+                if (!closed && buffer.hasRemaining()) {
+                    byte[] bytes = new byte[buffer.remaining()];
+                    buffer.get(bytes);
+                    System.err.print(new String(bytes));
+                }
+            }
+        }
     }
 }

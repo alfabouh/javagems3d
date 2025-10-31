@@ -3,6 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <buildName>jgems3d-workbench</buildName>
+    </properties>
     <parent>
         <groupId>com.github.gltexture</groupId>
         <artifactId>javagems3d</artifactId>
@@ -11,25 +14,51 @@
     </parent>
 
     <artifactId>Workbench</artifactId>
-    <version>0.2</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <finalName>${buildName}</finalName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>create-bat</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="${project.build.directory}/${buildName}.jar" tofile="../output/core/${buildName}.jar"/>
+                                <echo file="../output/${buildName}-run.bat">
+                                    java -jar ./core/${buildName}.jar
+                                </echo>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
             <groupId>com.github.gltexture</groupId>
             <artifactId>SysLogger</artifactId>
-            <version>0.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.gltexture</groupId>
             <artifactId>Engine</artifactId>
-            <version>0.2</version>
         </dependency>
     </dependencies>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    
 </project>

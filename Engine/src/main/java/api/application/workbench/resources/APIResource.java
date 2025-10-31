@@ -2,13 +2,13 @@ package api.application.workbench.resources;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Resource<T, E> {
+public abstract class APIResource<T, E> {
     private final MapObjectFabric<T> fabricWBench;
     private final MapObjectFabric<E> fabricGame;
     private final String nameId;
     private String groupId;
 
-    public Resource(@NotNull String nameId, @NotNull Resource.MapObjectFabric<T> fabricWBench, @NotNull Resource.MapObjectFabric<E> fabricGame) {
+    public APIResource(@NotNull String nameId, @NotNull APIResource.MapObjectFabric<T> fabricWBench, @NotNull APIResource.MapObjectFabric<E> fabricGame) {
         this.nameId = nameId;
         this.fabricGame = fabricGame;
         this.fabricWBench = fabricWBench;

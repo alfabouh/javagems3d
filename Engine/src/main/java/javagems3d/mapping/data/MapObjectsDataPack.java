@@ -11,17 +11,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 
-public final class MapDataPack implements IJSONSerializable<MapDataPack> {
+public final class MapObjectsDataPack implements IJSONSerializable<MapObjectsDataPack> {
     private FogData fogData;
     private SunData sunData;
     private ObjectsData objectsData;
     private SkyData skyData;
     private ShadowsData shadowsData;
 
-    public MapDataPack() {
+    public MapObjectsDataPack() {
     }
 
-    public MapDataPack(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData) {
+    public MapObjectsDataPack(FogData fogData, SunData sunData, ObjectsData objectsData, SkyData skyData, ShadowsData shadowsData) {
         this.fogData = fogData;
         this.sunData = sunData;
         this.objectsData = objectsData;
@@ -58,10 +58,10 @@ public final class MapDataPack implements IJSONSerializable<MapDataPack> {
     }
 
     @Override
-    public JSONFileManaging.@NotNull SerializationRules<MapDataPack> getSerializationRules() {
-        return new JSONFileManaging.SerializationRules<MapDataPack>() {
+    public JSONFileManaging.@NotNull SerializationRules<MapObjectsDataPack> getSerializationRules() {
+        return new JSONFileManaging.SerializationRules<MapObjectsDataPack>() {
             @Override
-            public JsonElement write(MapDataPack toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public JsonElement write(MapObjectsDataPack toWrite, Type typeOfSrc, JsonSerializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = new JsonObject();
 
@@ -78,7 +78,7 @@ public final class MapDataPack implements IJSONSerializable<MapDataPack> {
             }
 
             @Override
-            public MapDataPack read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
+            public MapObjectsDataPack read(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context, @Nullable ArbitraryArguments metaData) throws JGemsIOException {
                 try {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
 
@@ -88,7 +88,7 @@ public final class MapDataPack implements IJSONSerializable<MapDataPack> {
                     SkyData skyData = context.deserialize(jsonObject.get("skyData"), SkyData.class);
                     ShadowsData shadowsData = context.deserialize(jsonObject.get("shadowsData"), ShadowsData.class);
 
-                    return new MapDataPack(fogData, sunData, objectsData, skyData, shadowsData);
+                    return new MapObjectsDataPack(fogData, sunData, objectsData, skyData, shadowsData);
                 } catch (Exception e) {
                     throw new JGemsIOException("Couldn't read: " + typeOfT, e);
                 }

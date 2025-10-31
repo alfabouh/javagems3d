@@ -1,6 +1,5 @@
 package javagems3d.graphics.rendering.ui.dear_imgui;
 
-import api.events.EventBus;
 import imgui.*;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
@@ -17,10 +16,10 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
-import api.events.EventLauncher;
 import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.resources.assets.texturing.maps.ImageTexture;
@@ -35,7 +34,8 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
     private final JGemsShaderManager shaderManager;
     private DearUIMesh dearImGuiMesh;
     private ITexture2DProgram textureSample;
-    private GLFWKeyCallback prevKeyCallback;
+    private GLFWKeyCallback keyCallback;
+    private GLFWCharCallback charCallback;
     private final IWindow window;
     private int sampler;
 
@@ -108,7 +108,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         io.setKeyMap(ImGuiKey.Escape, GLFW.GLFW_KEY_ESCAPE);
         io.setKeyMap(ImGuiKey.KeyPadEnter, GLFW.GLFW_KEY_KP_ENTER);
 
-        this.prevKeyCallback = GLFW.glfwSetKeyCallback(window.getDescriptor(), (descriptor, key, scanCode, action, mods) -> {
+        this.keyCallback = GLFW.glfwSetKeyCallback(window.getDescriptor(), (descriptor, key, scanCode, action, mods) -> {
             if (action == GLFW.GLFW_PRESS) {
                 io.setKeysDown(key, true);
             } else if (action == GLFW.GLFW_RELEASE) {
@@ -121,7 +121,7 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
             io.setKeySuper(io.getKeysDown(GLFW.GLFW_KEY_LEFT_SUPER));
         });
 
-        GLFW.glfwSetCharCallback(window.getDescriptor(), (descriptor, c) -> {
+        this.charCallback = GLFW.glfwSetCharCallback(window.getDescriptor(), (descriptor, c) -> {
             if (!io.getWantCaptureKeyboard()) {
                 return;
             }
@@ -216,11 +216,10 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
 
         this.getShaderManager().endShading();
 
-        ImGuiIO imGuiIO = ImGui.getIO();
-        imGuiIO.setMousePos((float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[0], (float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[1]);
-        imGuiIO.setMouseDown(0, mouseKeyboardController.getMouseAndKeyboard().isLeftKeyPressed());
-        imGuiIO.setMouseDown(1, mouseKeyboardController.getMouseAndKeyboard().isRightKeyPressed());
-        imGuiIO.setMouseWheel(mouseKeyboardController.getMouseAndKeyboard().getScrollVector());
+        io.setMousePos((float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[0], (float) mouseKeyboardController.getMouseAndKeyboard().getCursorCoordinates()[1]);
+        io.setMouseDown(0, mouseKeyboardController.getMouseAndKeyboard().isLeftKeyPressed());
+        io.setMouseDown(1, mouseKeyboardController.getMouseAndKeyboard().isRightKeyPressed());
+        io.setMouseWheel(mouseKeyboardController.getMouseAndKeyboard().getScrollVector());
     }
 
     public IWindow getWindow() {
@@ -245,8 +244,11 @@ public class DearUIRenderer implements IWindow.ResizeEvent {
         if (this.getTextureSample() != null) {
             this.getTextureSample().clear();
         }
-        if (this.prevKeyCallback != null) {
-            this.prevKeyCallback.free();
+        if (this.keyCallback != null) {
+            this.keyCallback.free();
+        }
+        if (this.charCallback != null) {
+            this.charCallback.free();
         }
     }
 

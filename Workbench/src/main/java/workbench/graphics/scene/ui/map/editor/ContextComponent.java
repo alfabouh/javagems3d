@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.editor;
+package workbench.graphics.scene.ui.map.editor;
 
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -16,14 +16,14 @@ import javagems3d.system.service.collections.Pair;
 import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.environment.WBenchEnvironment;
-import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public class ContextComponent {
-    private final EditorInterface editorInterface;
+    private final MapEditorInterface mapEditorInterface;
     private boolean cameraCheckBox;
     private boolean openEnvironmentFogSettings;
     private boolean openEnvironmentSkySettings;
@@ -31,8 +31,8 @@ public class ContextComponent {
     private boolean openProjectSettings;
     private final FixedCamera sunCamera;
 
-    public ContextComponent(EditorInterface editorInterface) {
-        this.editorInterface = editorInterface;
+    public ContextComponent(MapEditorInterface mapEditorInterface) {
+        this.mapEditorInterface = mapEditorInterface;
         this.sunCamera = new FixedCamera(new Vector3f(), new Vector3f());
         this.clear();
     }
@@ -124,7 +124,7 @@ public class ContextComponent {
 
                 ImGui.separator();
                 ImGui.text("Sky Texture");
-                Set<Map.Entry<String, ICubeMapProgram>> skyBoxes = WBench.get().getProjectObjects().getSkyBoxes().entrySet();
+                Set<Map.Entry<String, ICubeMapProgram>> skyBoxes = WBench.get().getMapProjectManager().getMapObjectTemplates().getSkyBoxes().entrySet();
                 if (!skyBoxes.isEmpty()) {
                     SkyBox skyBox = this.getEditorInterface().getOpenGLRenderer().getWorld().getEnvironment().getSkyBox();
                     ICubeMapProgram currentSky = skyBox.getTexture();
@@ -153,7 +153,7 @@ public class ContextComponent {
         }
 
         if (this.isOpenProjectSettings()) {
-            if (!ContextComponent.openWindow("WBenchProject", (e) -> {
+            if (!ContextComponent.openWindow("WBenchMapProject", (e) -> {
                 ImGui.text("Map Size");
             })) {
                 this.setOpenProjectSettings(false);
@@ -220,7 +220,7 @@ public class ContextComponent {
         return this.openProjectSettings;
     }
 
-    public EditorInterface getEditorInterface() {
-        return this.editorInterface;
+    public MapEditorInterface getEditorInterface() {
+        return this.mapEditorInterface;
     }
 }

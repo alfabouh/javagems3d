@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.editor;
+package workbench.graphics.scene.ui.map.editor;
 
 public enum SelectedScene {
     MAIN,

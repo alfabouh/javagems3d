@@ -1,5 +1,6 @@
 package javagems3d.audio.sound;
 
+import javagems3d.system.global.JGemsConfig;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL10;
@@ -150,6 +151,9 @@ public class GameSound {
     }
 
     public void playSound() {
+        if (JGemsConfig.SYSTEM.DISABLE_SOUNDS) {
+            return;
+        }
         if (!this.isValid()) {
             this.setupSound();
             JGemsSoundManager.checkALonErrors();

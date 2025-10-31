@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.editor;
+package workbench.graphics.scene.ui.map.editor;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -10,16 +10,16 @@ import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
-import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 import java.util.HashSet;
 import java.util.List;
 
 public class ItemsInterfaceComponent {
-    private final EditorInterface editorInterface;
+    private final MapEditorInterface mapEditorInterface;
 
-    public ItemsInterfaceComponent(EditorInterface editorInterface) {
-        this.editorInterface = editorInterface;
+    public ItemsInterfaceComponent(MapEditorInterface mapEditorInterface) {
+        this.mapEditorInterface = mapEditorInterface;
         this.clear();
     }
 
@@ -27,7 +27,7 @@ public class ItemsInterfaceComponent {
     }
 
     public void itemsContent() {
-        if (EditorInterface.ctrlC()) {
+        if (MapEditorInterface.ctrlC()) {
             this.cloneSelected(this.getEditorInterface().getCurrentSelectedObject());
         }
 
@@ -184,7 +184,7 @@ public class ItemsInterfaceComponent {
         }
     }
 
-    public EditorInterface getEditorInterface() {
-        return this.editorInterface;
+    public MapEditorInterface getEditorInterface() {
+        return this.mapEditorInterface;
     }
 }

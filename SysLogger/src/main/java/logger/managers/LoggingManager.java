@@ -94,6 +94,10 @@ public abstract class LoggingManager {
         return integer.get() == 0;
     }
 
+    public void separator() {
+        this.log.info("======================================================");
+    }
+
     public void error(String message, Object... objects) {
         this.log.error(message, objects);
     }

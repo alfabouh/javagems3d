@@ -71,11 +71,14 @@ public class JGemsScreen implements IScreen {
 
     public void createScreenAndContext() {
         Log.get().info("Init Graphics");
-        if (this.tryToBuildScreen()) {
+
+        if (this.tryToBuildScreen(!JGemsConfig.SYSTEM.DISABLE_FULLSCREEN_START_ADJUSTMENT && JGems3D.get().getGameSettings().windowMode.getValue() == 0)) {
             JGemsTransformManager.INSTANCE.setProjectionData(this.getWindow(), JGemsConfig.SYSTEM.FOV, JGemsConfig.SYSTEM.Z_NEAR, JGemsConfig.SYSTEM.Z_FAR);
             JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
 
-            this.adjustScreenMode();
+            if (!JGemsConfig.SYSTEM.DISABLE_FULLSCREEN_START_ADJUSTMENT) {
+                this.adjustScreenMode();
+            }
             this.adjustVSync();
             GL.createCapabilities();
             String validate = OpenGLSysUtils.validateOGLFunctions();
@@ -120,7 +123,7 @@ public class JGemsScreen implements IScreen {
         JGemsTransformManager.INSTANCE.updateSetOfMatrices(this.getWindow());
     }
 
-    public boolean tryToBuildScreen() {
+    public boolean tryToBuildScreen(boolean fullScreen) {
         GLFWErrorCallback.createPrint(System.err).set();
         if (!GLFW.glfwInit()) {
             throw new JGemsRuntimeException("Error, while initializing GLFW");
@@ -135,7 +138,7 @@ public class JGemsScreen implements IScreen {
         GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
 
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        boolean flag = vidMode != null && JGems3D.get().getGameSettings().windowMode.getValue() == 0;
+        boolean flag = vidMode != null && fullScreen;
 
         int width = flag ? vidMode.width() : JGemsConfig.SYSTEM.DEFAULT_SCREEN_WIDTH;
         int height = flag ? vidMode.height() : JGemsConfig.SYSTEM.DEFAULT_SCREEN_HEIGHT;

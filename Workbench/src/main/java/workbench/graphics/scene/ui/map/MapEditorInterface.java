@@ -1,11 +1,10 @@
-package workbench.graphics.scene.ui;
+package workbench.graphics.scene.ui.map;
 
 import imgui.ImGui;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.extension.texteditor.TextEditor;
-import imgui.extension.texteditor.TextEditorLanguageDefinition;
-import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
+import javagems3d.JGems3D;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.graphics.environment.skybox.background.ISkyBackground;
 import javagems3d.graphics.objects.SceneObject;
@@ -19,6 +18,7 @@ import javagems3d.graphics.transformation.TransformUtils;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
 import javagems3d.system.controller.binding.Binding;
+import javagems3d.system.core.JGemsLaunchArgsRegistry;
 import javagems3d.system.global.JGemsConfig;
 import javagems3d.system.resources.assets.models.mesh.RenderMesh;
 import javagems3d.system.resources.assets.models.mesh.structures.nodes.MeshNode3D;
@@ -26,6 +26,7 @@ import javagems3d.system.resources.assets.models.mesh.structures.solid.MeshGroup
 import javagems3d.system.resources.assets.models.pose.Pose3D;
 import javagems3d.system.resources.assets.shaders.uniform.UniformString;
 import javagems3d.system.resources.assets.texturing.colors.ISampleColor4;
+import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
@@ -38,9 +39,9 @@ import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.graphics.scene.ui.editor.*;
+import workbench.graphics.scene.ui.map.editor.*;
 import workbench.graphics.screen.WBenchScreen;
-import workbench.project.ProjectManager;
+import workbench.project.map.WBenchMapProjectManager;
 import workbench.resources.WBenchResourceManager;
 import workbench.resources.shaders.WBenchShaderManager;
 
@@ -48,7 +49,7 @@ import java.lang.Math;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class EditorInterface implements DearUIInterface {
+public class MapEditorInterface implements DearUIInterface {
     private SelectedScene selectedScene;
     private final TextEditor editor;
 
@@ -60,7 +61,7 @@ public class EditorInterface implements DearUIInterface {
 
     public static final Object monitor = new Object();
     private final WBenchOpenGLRenderer openGLRenderer;
-    private final ProjectManager projectManager;
+    private final WBenchMapProjectManager WBenchMapProjectManager;
 
     private float previewDistance;
 
@@ -80,10 +81,10 @@ public class EditorInterface implements DearUIInterface {
 
     public static boolean isCursorInsideScene;
 
-    public EditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull ProjectManager projectManager) {
+    public MapEditorInterface(WBenchOpenGLRenderer openGLRenderer, FBOTexture2DProgram scenePreview, @NotNull WBenchMapProjectManager WBenchMapProjectManager) {
         this.editor = new TextEditor();
 
-        this.projectManager = projectManager;
+        this.WBenchMapProjectManager = WBenchMapProjectManager;
         this.openGLRenderer = openGLRenderer;
         this.scenePreview = scenePreview;
 
@@ -123,7 +124,7 @@ public class EditorInterface implements DearUIInterface {
 
     @Override
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
-        if (this.getProjectManager().getCurrentProject() == null) {
+        if (WBench.get().getMapProjectManager().getCurrentMapProject() == null) {
             return;
         }
         if (false) {
@@ -131,8 +132,8 @@ public class EditorInterface implements DearUIInterface {
             ImGui.showDemoWindow();
         }
 
-        if (EditorInterface.ctrlS()) {
-            WBench.get().getProjectManager().saveProject(false);
+        if (MapEditorInterface.ctrlS()) {
+            WBench.get().getMapProjectManager().saveMapProject(false);
             Log.get().info("Saved...");
         }
 
@@ -148,17 +149,26 @@ public class EditorInterface implements DearUIInterface {
         }
 
         ImGui.beginMainMenuBar();
-        if (ImGui.beginMenu("WBenchProject")) {
+        if (ImGui.beginMenu("WBenchMapProject")) {
+            if (ImGui.menuItem("Run Map InGame")) {
+                JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.DEBUG, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_SOUND, "true"),
+                        new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.NO_FULL_SCREEN, "true")
+                ));
+            }
+            ImGui.separator();
             if (ImGui.menuItem("Save")) {
                 Log.get().info("Saved...");
-                WBench.get().getProjectManager().saveProject(false);
+                WBench.get().getMapProjectManager().saveMapProject(false);
             }
            // if (ImGui.menuItem("Compile")) {
 //
            // }
             if (ImGui.menuItem("Exit")) {
                 if (LoggingManager.showConfirmationWindowDialog("Are you sure?")) {
-                    WBench.get().getProjectManager().closeProject(false);
+                    WBench.get().getMapProjectManager().closeMapProject();
                     ImGui.endMenu();
                     ImGui.endMainMenuBar();
                     return;
@@ -207,22 +217,22 @@ public class EditorInterface implements DearUIInterface {
                 this.setCurrentSelectedObject(null);
             }
         }
-        JGemsConfig.DEBUG.FULL_BRIGHT = EditorInterface.FULL_BRIGHT;
+        JGemsConfig.DEBUG.FULL_BRIGHT = MapEditorInterface.FULL_BRIGHT;
         if (ImGui.beginMenu("View")) {
-            if (ImGui.checkbox("Fog", EditorInterface.VIEW_FOG)) {
-                EditorInterface.VIEW_FOG = !EditorInterface.VIEW_FOG;
+            if (ImGui.checkbox("Fog", MapEditorInterface.VIEW_FOG)) {
+                MapEditorInterface.VIEW_FOG = !MapEditorInterface.VIEW_FOG;
             }
-            if (ImGui.checkbox("Full Bright", EditorInterface.FULL_BRIGHT)) {
-                EditorInterface.FULL_BRIGHT = !EditorInterface.FULL_BRIGHT;
+            if (ImGui.checkbox("Full Bright", MapEditorInterface.FULL_BRIGHT)) {
+                MapEditorInterface.FULL_BRIGHT = !MapEditorInterface.FULL_BRIGHT;
             }
-            if (ImGui.checkbox("Shadows", EditorInterface.VIEW_SHADOWS)) {
-                EditorInterface.VIEW_SHADOWS = !EditorInterface.VIEW_SHADOWS;
+            if (ImGui.checkbox("Shadows", MapEditorInterface.VIEW_SHADOWS)) {
+                MapEditorInterface.VIEW_SHADOWS = !MapEditorInterface.VIEW_SHADOWS;
             }
-            if (ImGui.checkbox("Chess Terrain", EditorInterface.VIEW_CHESS_TERRAIN)) {
-                EditorInterface.VIEW_CHESS_TERRAIN = !EditorInterface.VIEW_CHESS_TERRAIN;
+            if (ImGui.checkbox("Chess Terrain", MapEditorInterface.VIEW_CHESS_TERRAIN)) {
+                MapEditorInterface.VIEW_CHESS_TERRAIN = !MapEditorInterface.VIEW_CHESS_TERRAIN;
             }
-            if (ImGui.checkbox("HDR", EditorInterface.VIEW_HDR)) {
-                EditorInterface.VIEW_HDR = !EditorInterface.VIEW_HDR;
+            if (ImGui.checkbox("HDR", MapEditorInterface.VIEW_HDR)) {
+                MapEditorInterface.VIEW_HDR = !MapEditorInterface.VIEW_HDR;
             }
             ImGui.endMenu();
         }
@@ -281,9 +291,9 @@ public class EditorInterface implements DearUIInterface {
             if (ImGui.isMouseClicked(1)) {
                 ImGui.setWindowFocus();
             }
-            EditorInterface.isCursorInsideScene = true;
+            MapEditorInterface.isCursorInsideScene = true;
         } else if (!WBench.get().getControllerDispatcher().getCurrentController().getMouseAndKeyboard().isRightKeyPressed()) {
-            EditorInterface.isCursorInsideScene = false;
+            MapEditorInterface.isCursorInsideScene = false;
         }
 
         Vector3f camPos = this.getOpenGLRenderer().getCamera().getCamPosition();
@@ -470,7 +480,7 @@ public class EditorInterface implements DearUIInterface {
     }
 
     public void setCurrentSelectedObject(WBenchObject currentSelectedObject) {
-        synchronized (EditorInterface.monitor) {
+        synchronized (MapEditorInterface.monitor) {
             this.currentSelectedObject = currentSelectedObject;
         }
     }
@@ -543,7 +553,7 @@ public class EditorInterface implements DearUIInterface {
         return this.openGLRenderer;
     }
 
-    public ProjectManager getProjectManager() {
-        return this.projectManager;
+    public WBenchMapProjectManager getProjectManager() {
+        return this.WBenchMapProjectManager;
     }
 }

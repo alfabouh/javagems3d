@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.editor;
+package workbench.graphics.scene.ui.map.editor;
 
 import imgui.ImGui;
 import imgui.extension.imguizmo.ImGuizmo;
@@ -6,7 +6,6 @@ import imgui.extension.imguizmo.flag.Mode;
 import javagems3d.graphics.objects.SceneObject;
 import javagems3d.graphics.rendering.scene.culling.bounds.CullingAABB;
 import javagems3d.graphics.rendering.scene.renderer.debug.DebugLinesDrawer;
-import javagems3d.graphics.rendering.scene.renderer.nodes.templates.abstractions.ForwardRenderNode;
 import javagems3d.graphics.rendering.scene.renderer.nodes.templates.interfaces.IPostFXRenderNode;
 import javagems3d.graphics.transformation.JGemsTransformManager;
 import javagems3d.graphics.transformation.TransformUtils;
@@ -19,7 +18,7 @@ import org.joml.*;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 import java.lang.Math;
 import java.lang.Runtime;
@@ -28,12 +27,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SceneInterfaceComponent {
-    private final EditorInterface editorInterface;
+    private final MapEditorInterface mapEditorInterface;
     private AtomicBoolean isThreadInProcess;
     //private boolean wasWindowFocused;
 
-    public SceneInterfaceComponent(EditorInterface editorInterface) {
-        this.editorInterface = editorInterface;
+    public SceneInterfaceComponent(MapEditorInterface mapEditorInterface) {
+        this.mapEditorInterface = mapEditorInterface;
         this.isThreadInProcess = new AtomicBoolean();
         this.clear();
     }
@@ -64,7 +63,7 @@ public class SceneInterfaceComponent {
         ImGuizmo.setRect(imagePosX, imagePosY, imageSizeX, imageSizeY);
 
         if (!this.getEditorInterface().getContextComponent().isCameraCheckBox()) {
-            if (!ImGuizmo.isUsing() && EditorInterface.isCursorInsideScene) {
+            if (!ImGuizmo.isUsing() && MapEditorInterface.isCursorInsideScene) {
                 if (ImGui.isMouseReleased(0)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     if (!this.isThreadInProcess.get()) {
@@ -235,7 +234,7 @@ public class SceneInterfaceComponent {
         }
     }
 
-    public EditorInterface getEditorInterface() {
-        return this.editorInterface;
+    public MapEditorInterface getEditorInterface() {
+        return this.mapEditorInterface;
     }
 }

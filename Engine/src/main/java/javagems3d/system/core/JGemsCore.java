@@ -14,6 +14,7 @@ import javagems3d.system.service.exceptions.JGemsRuntimeException;
 import javagems3d.system.service.synchronizing.SyncManager;
 import logger.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import javagems3d.JGems3D;
@@ -164,6 +165,13 @@ public final class JGemsCore implements ICore {
                 this.engineState().engineIsReady = true;
                 this.createMappingObject();
                 this.getScreen().runRenderThread();
+
+                if (JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST) == Boolean.TRUE) {
+                    @Nullable String mapPath = JGemsLaunchArgsRegistry.INSTANCE.getValue(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_PATH);
+                    if (mapPath != null) {
+                        //this.getMapping().loadMap(new External);
+                    }
+                }
             } catch (Exception e) {
                 JGems3D.close(null);
                 this.appendException(err, e);
@@ -178,6 +186,7 @@ public final class JGemsCore implements ICore {
                     if (this.getScreen().getScene() != null) {
                         this.getScreen().getScene().getSceneRenderer().destroySceneIndirectRenderBuffer();
                     }
+                    JGemsLaunchArgsRegistry.clear();
                     this.getSoundManager().stopAllSounds();
                     this.getResourceManager().destroy();
                     this.getSoundManager().destroy();
@@ -282,9 +291,9 @@ public final class JGemsCore implements ICore {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long maxMemory = Runtime.getRuntime().maxMemory();
 
-        Log.get().info("==========================================================");
+        Log.get().separator();
         Log.get().info("****DATA***");
-        Log.get().info("==========================================================");
+        Log.get().separator();
 
         Log.get().info("SYSTEM INFO");
         Log.get().info(osBean.getName());
@@ -312,23 +321,23 @@ public final class JGemsCore implements ICore {
         Log.get().info("Total memory: " + totalMemory / 1024 / 1024 + " MB");
         Log.get().info("Max memory: " + (maxMemory == Long.MAX_VALUE ? "UNLIMITED" : maxMemory / 1024 / 1024 + " MB"));
 
-        Log.get().info("==========================================================");
+        Log.get().separator();
         Log.get().info("****DATA***");
-        Log.get().info("==========================================================");
+        Log.get().separator();
         Log.get().info("");
     }
 
     private void printGraphicsInfo() {
         Log.get().info("");
-        Log.get().info("==========================================================");
+        Log.get().separator();
         Log.get().info("***RENDER INFO***");
-        Log.get().info("==========================================================");
+        Log.get().separator();
         Log.get().info("Renderer: " + GL46.glGetString(GL46.GL_RENDERER));
         Log.get().info("OpenGL Version: " + GL46.glGetString(GL46.GL_VERSION));
         Log.get().info("Vendor: " + GL46.glGetString(GL46.GL_VENDOR));
-        Log.get().info("==========================================================");
+        Log.get().separator();
         Log.get().info("***RENDER INFO***");
-        Log.get().info("==========================================================");
+        Log.get().separator();
         Log.get().info("");
     }
 

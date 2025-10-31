@@ -24,6 +24,7 @@ public class WBenchSettings implements Serializable {
         this.camSpeed = JGemsConfig.SYSTEM.CAM_SENS;
     }
 
+    @SuppressWarnings("all")
     public static void save(WBenchSettings wBenchSettings, JGemsPath path) throws JGemsIOException {
         JSONFileManaging jsonFileManaging = JSONFileManaging.create();
         jsonFileManaging.writeToFile(wBenchSettings, new File(path.getFullPath(), WBenchSettings.extension), null);
@@ -40,7 +41,8 @@ public class WBenchSettings implements Serializable {
             throw new JGemsIOException(e);
         }
         JSONFileManaging jsonFileManaging = JSONFileManaging.create();
-        return jsonFileManaging.readFromFile(file, WBenchSettings.class, null);
+        WBenchSettings settings = jsonFileManaging.readFromFile(file, WBenchSettings.class, null);
+        return settings == null ? new WBenchSettings() : settings;
     }
 
     public void addPath(String path) {

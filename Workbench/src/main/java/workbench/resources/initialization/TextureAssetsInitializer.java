@@ -18,7 +18,7 @@ public class TextureAssetsInitializer implements IAssetsInitializer {
         for (Map.Entry<String, Pair<String, JGemsPath>> entry : map.entrySet()) {
             ICubeMapProgram cubeMapProgram = systemResources.createCubeMapTexture(null, entry.getValue().getSecond(), entry.getValue().getFirst(), new CubeMapTexture.Properties(true));
             if (cubeMapProgram != null) {
-                WBench.get().getProjectObjects().addSkyBox(entry.getKey(), cubeMapProgram);
+                WBench.get().getMapProjectManager().getMapObjectTemplates().addSkyBox(entry.getKey(), cubeMapProgram);
             }
         }
     }

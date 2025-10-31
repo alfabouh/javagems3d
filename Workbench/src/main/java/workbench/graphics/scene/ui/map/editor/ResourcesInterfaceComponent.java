@@ -1,4 +1,4 @@
-package workbench.graphics.scene.ui.editor;
+package workbench.graphics.scene.ui.map.editor;
 
 import api.scripting.doc.JGemsScriptingDocs;
 import api.scripting.functions.APIScriptingFunction;
@@ -8,14 +8,12 @@ import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import imgui.extension.texteditor.flag.TextEditorPaletteIndex;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import javagems3d.graphics.camera.base.ICamera;
 import javagems3d.help.JGemsHelper;
-import javagems3d.help.JGemsUtils;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
@@ -24,14 +22,13 @@ import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchPointLightObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
-import workbench.graphics.scene.ui.EditorInterface;
-import workbench.project.ProjectTemplates;
-import workbench.project.WBenchProject;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
+import workbench.project.map.ProjectMapObjectTemplates;
+import workbench.project.map.WBenchMapProject;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -51,14 +48,14 @@ public class ResourcesInterfaceComponent {
         CODE
     }
 
-    private final EditorInterface editorInterface;
+    private final MapEditorInterface mapEditorInterface;
     private final ImInt currentSelectedScript;
     private final ImString newScriptName = new ImString(64);
     private String scriptTextTemplate;
 
-    public ResourcesInterfaceComponent(EditorInterface editorInterface) {
+    public ResourcesInterfaceComponent(MapEditorInterface mapEditorInterface) {
         this.currentSelectedScript = new ImInt(-1);
-        this.editorInterface = editorInterface;
+        this.mapEditorInterface = mapEditorInterface;
         this.clear();
     }
 
@@ -86,18 +83,18 @@ public class ResourcesInterfaceComponent {
             }
             ImGui.separator();
             if (ImGui.collapsingHeader("Entities")) {
-                this.renderObjectGroupsList(WBench.get().getProjectObjects().getEntityGroups());
+                this.renderObjectGroupsList(WBench.get().getMapProjectManager().getMapObjectTemplates().getEntityGroups());
             }
         }
         if (ImGui.collapsingHeader("Props")) {
-            this.renderObjectGroupsList(WBench.get().getProjectObjects().getPropGroups());
+            this.renderObjectGroupsList(WBench.get().getMapProjectManager().getMapObjectTemplates().getPropGroups());
         }
         if (ImGui.collapsingHeader("Markers")) {
-            this.renderObjectGroupsList(WBench.get().getProjectObjects().getMarkerGroups());
+            this.renderObjectGroupsList(WBench.get().getMapProjectManager().getMapObjectTemplates().getMarkerGroups());
         }
         if (ImGui.collapsingHeader("Scripts")) {
             ImGui.treePush();
-            final WBenchProject wBenchProject = WBench.get().getProjectManager().getCurrentProject();
+            final WBenchMapProject wBenchProject = WBench.get().getMapProjectManager().getCurrentMapProject();
             final List<String> scriptPaths = wBenchProject.getScriptFiles();
 
             List<String> itemsList = new ArrayList<>();
@@ -130,7 +127,7 @@ public class ResourcesInterfaceComponent {
                     String name = this.newScriptName.get();
                     if (!name.isEmpty()) {
                         this.newScriptName.clear();
-                        WBench.get().getProjectManager().getCurrentProject().createNewScript(name);
+                        WBench.get().getMapProjectManager().getCurrentMapProject().createNewScript(name);
                         ImGui.closeCurrentPopup();
                     }
                 }
@@ -166,7 +163,7 @@ public class ResourcesInterfaceComponent {
                 ImGui.setNextWindowPos(wSize.x / 2.0f - wSize.x / 4.0f, wSize.y / 2.0f - wSize.y / 4.0f, ImGuiCond.Appearing);
                 ImGui.setNextWindowSize(wSize.x / 2.0f, wSize.y / 2.0f);
                 ImBoolean scriptingOpened = new ImBoolean(true);
-                boolean shouldSave = EditorInterface.ctrlS();
+                boolean shouldSave = MapEditorInterface.ctrlS();
                 if (ImGui.begin("Scripting", scriptingOpened, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.MenuBar)) {
                     if (ImGui.beginMenuBar()) {
                         if (ImGui.beginMenu("View")) {
@@ -199,7 +196,7 @@ public class ResourcesInterfaceComponent {
 
                     if (shouldSave) {
                         final String textToSave = this.getEditorInterface().getEditor().getText();
-                        WBench.get().getProjectManager().getCurrentProject().writeScriptFile(selectedPath, textToSave);
+                        WBench.get().getMapProjectManager().getCurrentMapProject().writeScriptFile(selectedPath, textToSave);
                         this.scriptTextTemplate = textToSave;
                     }
                 }
@@ -376,8 +373,8 @@ public class ResourcesInterfaceComponent {
         ImGui.treePop();
     }
 
-    private <T extends WBenchObjectTemplate> void renderObjectGroupsList(Map<String, ProjectTemplates.TemplatesTable<T>> tableMap) {
-        for (Map.Entry<String, ProjectTemplates.TemplatesTable<T>> entry : tableMap.entrySet()) {
+    private <T extends WBenchObjectTemplate> void renderObjectGroupsList(Map<String, ProjectMapObjectTemplates.TemplatesTable<T>> tableMap) {
+        for (Map.Entry<String, ProjectMapObjectTemplates.TemplatesTable<T>> entry : tableMap.entrySet()) {
             String groupName = entry.getKey();
             Collection<T> objects = entry.getValue().getTemplateMap().values();
 
@@ -403,8 +400,8 @@ public class ResourcesInterfaceComponent {
         }
     }
 
-    public EditorInterface getEditorInterface() {
-        return this.editorInterface;
+    public MapEditorInterface getEditorInterface() {
+        return this.mapEditorInterface;
     }
 
     private static class JSDefinition {

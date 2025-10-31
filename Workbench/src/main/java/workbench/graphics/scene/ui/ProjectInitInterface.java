@@ -7,10 +7,10 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImString;
+import javagems3d.JGems3D;
 import javagems3d.graphics.rendering.ui.dear_imgui.interfaces.DearUIInterface;
 import javagems3d.help.JGemsHelper;
 import javagems3d.system.controller.base.MouseKeyboardController;
-import javagems3d.mapping.JGemsMapping;
 import javagems3d.system.service.path.JGemsPath;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL46;
@@ -46,8 +46,8 @@ public class ProjectInitInterface implements DearUIInterface {
         if (f1) {
             ImGui.pushStyleColor(ImGuiCol.FrameBg, 1.0f, 0.0f, 0.0f, 1.0f);
         }
-        ImGui.text("WBenchProject name:");
-        ImGui.inputText("##project_name", this.projectName, ImGuiInputTextFlags.CallbackCharFilter, new ImGuiInputTextCallback() {
+        ImGui.text("Game project name:");
+        ImGui.inputText("##game_project_name", this.projectName, ImGuiInputTextFlags.CallbackCharFilter, new ImGuiInputTextCallback() {
             @Override
             public void accept(ImGuiInputTextCallbackData data) {
                 char c = (char) data.getEventChar();
@@ -63,8 +63,8 @@ public class ProjectInitInterface implements DearUIInterface {
         if (f2) {
             ImGui.pushStyleColor(ImGuiCol.FrameBg, 1.0f, 0.0f, 0.0f, 1.0f);
         }
-        ImGui.text("WBenchProject path:");
-        ImGui.inputText("##project_path", this.projectPath);
+        ImGui.text("Game project path:");
+        ImGui.inputText("##game_project_path", this.projectPath);
         if (f2) {
             ImGui.popStyleColor();
         }
@@ -79,7 +79,9 @@ public class ProjectInitInterface implements DearUIInterface {
             String projectPath = this.projectPath.get();
             String projectName = this.projectName.get();
             if (!projectPath.isEmpty() && !projectName.isEmpty()) {
-                WBench.get().getProjectManager().createProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGemsMapping.MAP_PROJECT_FILE), projectName);
+                //WBench.get().getMapProjectManager().createMapProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE), projectName);
+                projectPath += "/" + projectName;
+                WBench.get().getGameProjectManager().crateGameProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_PROJECT_FILE), projectName);
                 WBench.get().getSettings().addPath(projectPath);
             }
         }
@@ -87,8 +89,9 @@ public class ProjectInitInterface implements DearUIInterface {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.1f, 0.2f, 0.9f, 1.0f);
         if (ImGui.button("Open project", 120, 30)) {
             String projectPath = JGemsHelper.files().openFolderViewer("");
-            if (!projectPath.isEmpty() && WBench.get().getProjectManager().getCurrentProject() == null) {
-                WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
+            if (!projectPath.isEmpty() && WBench.get().getMapProjectManager().getCurrentMapProject() == null) {
+                //WBench.get().getMapProjectManager().openMapProject(new JGemsPath(projectPath));
+                WBench.get().getGameProjectManager().openGameProject(new JGemsPath(projectPath));
                 WBench.get().getSettings().addPath(projectPath);
             }
         }
@@ -101,8 +104,9 @@ public class ProjectInitInterface implements DearUIInterface {
             for (String projectPath : wBenchSettings.getRecentProjects()) {
                 ImGui.text(projectPath);
                 ImGui.sameLine();
-                if (ImGui.button("Open##" + projectPath) && WBench.get().getProjectManager().getCurrentProject() == null) {
-                    WBench.get().getProjectManager().openProject(new JGemsPath(projectPath));
+                if (ImGui.button("Open##" + projectPath) && WBench.get().getMapProjectManager().getCurrentMapProject() == null) {
+                    WBench.get().getGameProjectManager().openGameProject(new JGemsPath(projectPath));
+                    //WBench.get().getMapProjectManager().openMapProject(new JGemsPath(projectPath));
                 }
             }
         }
@@ -112,6 +116,6 @@ public class ProjectInitInterface implements DearUIInterface {
 
     @Override
     public String toString() {
-        return "HUB";
+        return "Editor's HUB";
     }
 }

@@ -45,7 +45,7 @@ public class WBenchScreen implements IScreen {
     public void createObjects(IWindow window) {
         this.controllerDispatcher = new WBenchControllerDispatcher(window);
         this.scene = new WBenchScene(window, new WBenchWorld());
-        WBench.get().getProjectManager().setWorld(this.getScene().getWorld());
+        WBench.get().getMapProjectManager().setWorld(this.getScene().getWorld());
     }
 
     public void createScreenAndContext() {
@@ -180,7 +180,6 @@ public class WBenchScreen implements IScreen {
         JGemsTimer perSecondTimer = this.getTimerPool().createTimer();
         JGemsTimer renderTimer = this.getTimerPool().createTimer();
         JGemsTimer deltaTimer = this.getTimerPool().createTimer();
-
         JGemsTimer autoSaveTimer = this.getTimerPool().createTimer();
 
         while (!WBench.get().isShouldBeClosed()) {
@@ -202,9 +201,9 @@ public class WBenchScreen implements IScreen {
             }
 
             if (autoSaveTimer.resetTimerAfterReachedSeconds(60.0f)) {
-                if (WBench.get().getProjectManager().getCurrentProject() != null) {
+                if (WBench.get().getMapProjectManager().getCurrentMapProject() != null) {
                     Log.get().trace("Autosave...");
-                    WBench.get().getProjectManager().saveProject(false);
+                    WBench.get().getMapProjectManager().saveMapProject(false);
                 }
             }
 

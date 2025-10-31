@@ -1,10 +1,10 @@
 package javagems3d.mapping.processing;
 
 import api.application.workbench.manager.APIWBenchDataManager;
-import api.application.workbench.resources.Resource;
-import api.application.workbench.resources.ResourceEntity;
-import api.application.workbench.resources.ResourceMarker;
-import api.application.workbench.resources.ResourceProp;
+import api.application.workbench.resources.APIResource;
+import api.application.workbench.resources.ApiResourceEntity;
+import api.application.workbench.resources.ApiResourceMarker;
+import api.application.workbench.resources.ApiResourceProp;
 import api.application.workbench.resources.data.jgems.IJGemsObjectData;
 import api.application.workbench.resources.data.jgems.JGemsEntityData;
 import api.application.workbench.resources.data.jgems.JGemsMarkerData;
@@ -26,8 +26,8 @@ import javagems3d.graphics.world.SceneWorld;
 import javagems3d.help.JGemsHelper;
 import javagems3d.help.JGemsUtils;
 import javagems3d.mapping.IGameMap;
-import javagems3d.mapping.data.MapDataPack;
-import javagems3d.mapping.data.ProjectData;
+import javagems3d.mapping.data.MapObjectsDataPack;
+import javagems3d.mapping.data.MapProjectData;
 import javagems3d.mapping.data.items.FogData;
 import javagems3d.mapping.data.items.ShadowsData;
 import javagems3d.mapping.data.items.SkyData;
@@ -43,7 +43,6 @@ import javagems3d.physics.entities.bullet.bodies.JGemsDynamicBody;
 import javagems3d.physics.entities.bullet.bodies.JGemsStaticBody;
 import javagems3d.physics.entities.kinematic.player.IPlayer;
 import javagems3d.physics.entities.kinematic.player.JGemsKinematicPlayer;
-import javagems3d.physics.world.IWorld;
 import javagems3d.physics.world.PhysicsWorld;
 import javagems3d.physics.world.basic.WorldItem;
 import javagems3d.physics.world.triggers.Zone;
@@ -72,8 +71,8 @@ import java.util.function.BiConsumer;
 
 public abstract class ExternalMapProcessor extends MapProcessor {
     private final JGemsPath pathToJG3DFile;
-    private MapDataPack mapDataPack;
-    private ProjectData projectData;
+    private MapObjectsDataPack mapObjectsDataPack;
+    private MapProjectData mapProjectData;
 
     public ExternalMapProcessor(JGemsPath pathToJG3DFile, boolean inJar) {
         super();
@@ -87,19 +86,19 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         final JSONFileManaging jsonFileManaging = TagsContainer.createJSONFileManaging();
 
         try {
-            this.projectData = this.loadJson(jsonFileManaging, pathToJG3DFile, inJar, ProjectData.class);
-            if (this.projectData == null) {
+            this.mapProjectData = this.loadJson(jsonFileManaging, pathToJG3DFile, inJar, MapProjectData.class);
+            if (this.mapProjectData == null) {
                 throw new JGemsIOException("Couldn't load map(no project data): " + pathToJG3DFile);
             }
-            this.projectData.checkVersion();
+            this.mapProjectData.checkVersion();
 
-            this.mapDataPack = this.loadJson(jsonFileManaging, new JGemsPath(pathToJG3DFile.getDirectory(), this.projectData.getMapDataFile()), inJar, MapDataPack.class);
-            if (this.mapDataPack == null) {
+            this.mapObjectsDataPack = this.loadJson(jsonFileManaging, new JGemsPath(pathToJG3DFile.getDirectory(), this.mapProjectData.getMapDataFile()), inJar, MapObjectsDataPack.class);
+            if (this.mapObjectsDataPack == null) {
                 throw new JGemsIOException("Couldn't load map(no map data): " + pathToJG3DFile);
             }
 
-            Log.get().info("Found " + this.projectData.getScriptFiles().size() + " scripts");
-            this.loadScripts(pathToJG3DFile, this.projectData.getScriptFiles(), inJar);
+            Log.get().info("Found " + this.mapProjectData.getScriptFiles().size() + " scripts");
+            this.loadScripts(pathToJG3DFile, this.mapProjectData.getScriptFiles(), inJar);
         } catch (Exception e) {
             throw new JGemsIOException(e);
         }
@@ -144,8 +143,8 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     protected abstract @Nullable WorldItem onProcessEntity(MapObjectTemplate template, JGemsEntityData entityData, PhysicsWorld physicsWorld, SceneWorld sceneWorld, @Nullable List<PointLight> pointLightsToAttach);
     protected abstract void onProcessMarker(MapObjectTemplate template, JGemsMarkerData markerData, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
 
-    protected abstract void preProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
-    protected abstract void postProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+    protected abstract void preProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
+    protected abstract void postProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld);
 
     protected @Nullable Pair<PointLight, Integer> onProcessPointLight(MapObjectTemplate template, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         final Vector4f tagColor = template.getTagsContainer().<TagColor>getTagItem(TagID.DEFAULT.COLOR3).getColorVector();
@@ -165,7 +164,7 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     @SuppressWarnings("all")
-    private <T extends IJGemsObjectData, R extends Resource<?, ?>> void processMapObjects(Collection<MapObjectTemplate> templates, Map<String, APIWBenchDataManager.TemplatesTable<R>> resourceMap, BiConsumer<MapObjectTemplate, T> processor) {
+    private <T extends IJGemsObjectData, R extends APIResource<?, ?>> void processMapObjects(Collection<MapObjectTemplate> templates, Map<String, APIWBenchDataManager.TemplatesTable<R>> resourceMap, BiConsumer<MapObjectTemplate, T> processor) {
         for (MapObjectTemplate template : templates) {
             final String name = template.getObjectNameId();
             final String group = template.getObjectGroup();
@@ -179,9 +178,9 @@ public abstract class ExternalMapProcessor extends MapProcessor {
     }
 
     protected void onProcessing(Set<MapObjectTemplate> backgroundPropObjects, Set<MapObjectTemplate> propObjects, Set<MapObjectTemplate> markerObjects, Set<MapObjectTemplate> entityObjects, Set<MapObjectTemplate> pointLights, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
-        final Map<String, APIWBenchDataManager.TemplatesTable<ResourceProp>> resourcePropMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourcePropMap();
-        final Map<String, APIWBenchDataManager.TemplatesTable<ResourceEntity>> resourceEntityMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourceEntityMap();
-        final Map<String, APIWBenchDataManager.TemplatesTable<ResourceMarker>> resourceMarkerMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourceMarkerMap();
+        final Map<String, APIWBenchDataManager.TemplatesTable<ApiResourceProp>> resourcePropMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourcePropMap();
+        final Map<String, APIWBenchDataManager.TemplatesTable<ApiResourceEntity>> resourceEntityMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourceEntityMap();
+        final Map<String, APIWBenchDataManager.TemplatesTable<ApiResourceMarker>> resourceMarkerMap = JGemsAPI.APIEditorResources().getEditorResourcesManager().getResourceMarkerMap();
 
         Map<Integer, List<PointLight>> pointLightIdMap = new HashMap<>();
         for (MapObjectTemplate template : pointLights) {
@@ -301,12 +300,12 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         return this.getProjectData().getInformation();
     }
 
-    protected ProjectData getProjectData() {
-        return this.projectData;
+    protected MapProjectData getProjectData() {
+        return this.mapProjectData;
     }
 
-    protected MapDataPack getMapDataPack() {
-        return this.mapDataPack;
+    protected MapObjectsDataPack getMapDataPack() {
+        return this.mapObjectsDataPack;
     }
 
     public JGemsPath getPathToJG3DFile() {
@@ -397,12 +396,12 @@ public abstract class ExternalMapProcessor extends MapProcessor {
         }
 
         @Override
-        protected void preProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        protected void preProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
 
         }
 
         @Override
-        protected void postProcessing(MapDataPack mapDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
+        protected void postProcessing(MapObjectsDataPack mapObjectsDataPack, PhysicsWorld physicsWorld, SceneWorld sceneWorld) {
         }
 
         @Override

@@ -5,8 +5,8 @@ import api.application.workbench.resources.data.wbench.MapObjectsIdentifiers;
 import api.application.workbench.resources.data.wbench.WBenchMarkerData;
 import org.jetbrains.annotations.NotNull;
 
-public class ResourceMarker extends Resource<WBenchMarkerData, JGemsMarkerData> {
-    public ResourceMarker(@NotNull String id, @NotNull Resource.MapObjectFabric<WBenchMarkerData> fabricWBench) {
+public class ApiResourceMarker extends APIResource<WBenchMarkerData, JGemsMarkerData> {
+    public ApiResourceMarker(@NotNull String id, @NotNull APIResource.MapObjectFabric<WBenchMarkerData> fabricWBench) {
         super(MapObjectsIdentifiers.MARKER + id, fabricWBench, JGemsMarkerData::new);
     }
 }

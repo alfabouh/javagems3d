@@ -11,7 +11,7 @@ import javagems3d.graphics.screen.ticking.FrameTicking;
 import javagems3d.system.resources.assets.shaders.manager.JGemsShaderManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
-import workbench.graphics.scene.ui.EditorInterface;
+import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.resources.WBenchResourceManager;
 
 public class WBenchPostFXRenderNode extends IRenderNode.Template implements IPostFXRenderNode {
@@ -40,7 +40,7 @@ public class WBenchPostFXRenderNode extends IRenderNode.Template implements IPos
         this.getBloomRenderProcessor().runProcessorRendering(frameTicking);
 
         this.getOutColorBuffer().bindFBO();
-        this.getHdrRenderProcessor().setUseHDR(EditorInterface.VIEW_HDR);
+        this.getHdrRenderProcessor().setUseHDR(MapEditorInterface.VIEW_HDR);
         this.getHdrRenderProcessor().runProcessorRendering(frameTicking);
         this.getOutColorBuffer().unBindFBO();
     }

@@ -31,14 +31,16 @@ public class DynamicsSystem {
     }
 
     public void init() {
-        Path path = Paths.get(JGems3D.getEngineFilesFolder().toString(), "natives");
-        try {
-            String lib = NativesExtractor.extractNativesAndReturnPath(path, JGems3D.get().getOS());
-            System.load(lib);
-            Log.get().info("Injected lib: " + lib);
-            VALID = true;
-        } catch (Exception e) {
-            throw new JGemsRuntimeException(e);
+        if (!DynamicsSystem.VALID) {
+            Path path = Paths.get(JGems3D.getEngineFilesFolder().toString(), "natives");
+            try {
+                String lib = NativesExtractor.extractNativesAndReturnPath(path, JGems3D.get().getOS());
+                DynamicsSystem.VALID = true;
+                System.load(lib);
+                Log.get().info("Injected lib: " + lib);
+            } catch (Exception e) {
+                throw new JGemsRuntimeException(e);
+            }
         }
         CollisionConfiguration collisionConfiguration = new CollisionConfiguration();
         this.physicsSpace = new PhysicsSpace(new Vector3f(-JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE, -JGems3D.MAP_MAX_SIZE), new Vector3f(JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE, JGems3D.MAP_MAX_SIZE), PhysicsSpace.BroadphaseType.AXIS_SWEEP_3, SolverType.SI, collisionConfiguration);

@@ -21,8 +21,11 @@ public abstract class JGemsConfig {
     }
 
     public static abstract class SYSTEM {
-        public static final int DEFAULT_SCREEN_WIDTH = 1280;
-        public static final int DEFAULT_SCREEN_HEIGHT = 720;
+        public static int DEFAULT_SCREEN_WIDTH = 1280;
+        public static int DEFAULT_SCREEN_HEIGHT = 720;
+        public static boolean DISABLE_SOUNDS = false;
+        public static boolean DISABLE_FULLSCREEN_START_ADJUSTMENT = false;
+
         public static final double RENDER_TICKS_UPD_RATE = 60.0d;
         public static float FOV = (float) Math.toRadians(60.0f);
         public static float Z_NEAR = 0.1f;
@@ -51,7 +54,7 @@ public abstract class JGemsConfig {
 
         public static int MAX_VERTEXES_IN_MODEL = (int) Math.pow(2, 22);
 
-        public static int INDIRECT_SSBO_SIZE_MUL = 20;
+        public static int INDIRECT_SSBO_SIZE_MUL = 1;
 
         public static int MAX_INDIRECT_RENDERING_MESH_PROPERTIES = 512 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
         public static int MAX_INDIRECT_RENDERING_MESH_MATERIALS = 256 * JGemsConfig.SYSTEM.INDIRECT_SSBO_SIZE_MUL;
