@@ -10,15 +10,16 @@ import javagems3d.system.service.collections.Pair;
 import logger.Log;
 import org.joml.Vector3f;
 import workbench.graphics.objects.WBenchObject;
+import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 import java.util.HashSet;
 import java.util.List;
 
-public class ItemsInterfaceComponent {
+public class ItemsInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
 
-    public ItemsInterfaceComponent(MapEditorInterface mapEditorInterface) {
+    public ItemsInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.clear();
     }
@@ -27,7 +28,7 @@ public class ItemsInterfaceComponent {
     }
 
     public void itemsContent() {
-        if (MapEditorInterface.ctrlC()) {
+        if (ProjectUIUtils.ctrlC()) {
             this.cloneSelected(this.getEditorInterface().getCurrentSelectedObject());
         }
 

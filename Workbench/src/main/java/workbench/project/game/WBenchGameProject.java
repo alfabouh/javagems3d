@@ -38,7 +38,7 @@ public class WBenchGameProject extends GameProjectData {
         this.getMaps().add(map);
     }
 
-    public List<String> getMaps() {
+    public @NotNull List<String> getMaps() {
         return this.maps;
     }
 

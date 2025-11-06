@@ -11,11 +11,14 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
-import workbench.project.map.WBenchMapProject;
 import workbench.project.map.WBenchMapProjectManager;
-import workbench.resources.frame.LoadingInterfaceSwing;
 
 import java.io.File;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class WBenchGameProjectManager {
@@ -48,8 +51,40 @@ public class WBenchGameProjectManager {
         }
     }
 
+    //TODO
     public void readGameProject() {
+        this.refreshMapsFolderData();
+    }
 
+    //TODO
+    public void saveGameProject(boolean wait) {
+        this.saveGameProjectFile();
+    }
+
+    public void refreshMapsFolderData() {
+        String absPath = this.getCurrentGameProject().getCurrentProjectPath().getFullPath() + "/maps";
+        Iterator<String> stringIterator = this.getCurrentGameProject().getMaps().iterator();
+        while (stringIterator.hasNext()) {
+            String s = stringIterator.next();
+            if (!(new File(absPath, s)).exists()) {
+                Log.get().warn("Couldn't find: " + s);
+                stringIterator.remove();
+            }
+        }
+    }
+
+    public void closeGameProject() {
+        if (this.getCurrentGameProject() != null) {
+            Log.get().info("Closing project " + this.getCurrentGameProject());
+            this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
+            this.currentGameProject = null;
+            Log.get().info("Game successfully closed");
+        }
+    }
+
+    private void closeWorkingSpace(DearUIInterface dearUIInterface) {
+        this.saveGameProject(true);
+        WBench.get().openInterface(dearUIInterface);
     }
 
     public boolean openGameProject(JGemsPath path) {
@@ -75,7 +110,8 @@ public class WBenchGameProjectManager {
             Log.get().info("Opened WBenchGameProject: " + wBenchGameProject);
             Log.get().info(wBenchGameProject.getGameInfo());
 
-            LoadingInterfaceSwing.setResource("JSON Processing...");
+            //LoadingInterfaceSwing.invoke();
+            //LoadingInterfaceSwing.setResource("JSON Processing...");
             this.readGameProject();
             this.initWorkingSpace(WBenchOpenGLRenderer.getGameEditorInterface());
 
@@ -86,7 +122,7 @@ public class WBenchGameProjectManager {
             Log.get().exception(e);
             return false;
         } finally {
-            LoadingInterfaceSwing.dispose();
+            //LoadingInterfaceSwing.dispose();
         }
     }
 
@@ -124,7 +160,7 @@ public class WBenchGameProjectManager {
         }
     }
 
-    public @Nullable WBenchGameProject getCurrentGameProject() {
+    public WBenchGameProject getCurrentGameProject() {
         return this.currentGameProject;
     }
 

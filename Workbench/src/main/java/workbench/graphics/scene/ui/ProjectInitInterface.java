@@ -17,6 +17,8 @@ import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.settings.WBenchSettings;
 
+import java.util.Iterator;
+
 public class ProjectInitInterface implements DearUIInterface {
     private final ImString projectName = new ImString(256);
     private final ImString projectPath = new ImString(512);
@@ -80,7 +82,7 @@ public class ProjectInitInterface implements DearUIInterface {
             String projectName = this.projectName.get();
             if (!projectPath.isEmpty() && !projectName.isEmpty()) {
                 //WBench.get().getMapProjectManager().createMapProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE), projectName);
-                projectPath += "/" + projectName;
+                projectPath += "\\" + projectName;
                 WBench.get().getGameProjectManager().crateGameProject(new JGemsPath(projectPath), new JGemsPath(projectPath, projectName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_PROJECT_FILE), projectName);
                 WBench.get().getSettings().addPath(projectPath);
             }
@@ -101,11 +103,15 @@ public class ProjectInitInterface implements DearUIInterface {
         if (wBenchSettings != null && wBenchSettings.getRecentProjects() != null) {
             ImGui.separator();
             ImGui.text("Recent: ");
-            for (String projectPath : wBenchSettings.getRecentProjects()) {
+            Iterator<String> projectPaths = wBenchSettings.getRecentProjects().iterator();
+            while (projectPaths.hasNext()) {
+                String projectPath = projectPaths.next();
                 ImGui.text(projectPath);
                 ImGui.sameLine();
                 if (ImGui.button("Open##" + projectPath) && WBench.get().getMapProjectManager().getCurrentMapProject() == null) {
-                    WBench.get().getGameProjectManager().openGameProject(new JGemsPath(projectPath));
+                    if (!WBench.get().getGameProjectManager().openGameProject(new JGemsPath(projectPath))) {
+                        projectPaths.remove();
+                    }
                     //WBench.get().getMapProjectManager().openMapProject(new JGemsPath(projectPath));
                 }
             }

@@ -19,11 +19,11 @@ import workbench.graphics.scene.ui.map.MapEditorInterface;
 
 import java.util.*;
 
-public class ActionsInterfaceComponent {
+public class ActionsInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
     private final float[] coordsToGen;
 
-    public ActionsInterfaceComponent(MapEditorInterface mapEditorInterface) {
+    public ActionsInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.coordsToGen = new float[3];
         this.clear();

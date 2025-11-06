@@ -26,12 +26,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class SceneInterfaceComponent {
+public class SceneInterfaceComponentM {
     private final MapEditorInterface mapEditorInterface;
     private AtomicBoolean isThreadInProcess;
     //private boolean wasWindowFocused;
 
-    public SceneInterfaceComponent(MapEditorInterface mapEditorInterface) {
+    public SceneInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.isThreadInProcess = new AtomicBoolean();
         this.clear();

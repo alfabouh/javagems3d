@@ -32,13 +32,13 @@ import logger.managers.LoggingManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 import workbench.WBench;
 import workbench.controller.binding.WBenchBindingManager;
 import workbench.graphics.objects.WBenchObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
+import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.map.editor.*;
 import workbench.graphics.screen.WBenchScreen;
 import workbench.project.map.WBenchMapProjectManager;
@@ -73,11 +73,11 @@ public class MapEditorInterface implements DearUIInterface {
     private final FBOTexture2DProgram scenePreview;
     private Collection<SceneObject> visibleObjects;
 
-    private final ContextComponent contextComponent;
-    private final ActionsInterfaceComponent actionsContent;
-    private final ItemsInterfaceComponent itemsComponent;
-    private final ResourcesInterfaceComponent resourcesComponent;
-    private final SceneInterfaceComponent sceneComponent;
+    private final ContextComponentM contextComponent;
+    private final ActionsInterfaceComponentM actionsContent;
+    private final ItemsInterfaceComponentM itemsComponent;
+    private final ResourcesInterfaceComponentM resourcesComponent;
+    private final SceneInterfaceComponentM sceneComponent;
 
     public static boolean isCursorInsideScene;
 
@@ -88,11 +88,11 @@ public class MapEditorInterface implements DearUIInterface {
         this.openGLRenderer = openGLRenderer;
         this.scenePreview = scenePreview;
 
-        this.contextComponent = new ContextComponent(this);
-        this.actionsContent = new ActionsInterfaceComponent(this);
-        this.itemsComponent = new ItemsInterfaceComponent(this);
-        this.resourcesComponent = new ResourcesInterfaceComponent(this);
-        this.sceneComponent = new SceneInterfaceComponent(this);
+        this.contextComponent = new ContextComponentM(this);
+        this.actionsContent = new ActionsInterfaceComponentM(this);
+        this.itemsComponent = new ItemsInterfaceComponentM(this);
+        this.resourcesComponent = new ResourcesInterfaceComponentM(this);
+        this.sceneComponent = new SceneInterfaceComponentM(this);
 
         this.clear();
     }
@@ -114,14 +114,6 @@ public class MapEditorInterface implements DearUIInterface {
         this.visibleObjects = null;
     }
 
-    public static boolean ctrlS() {
-        return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_S, false);
-    }
-
-    public static boolean ctrlC() {
-        return ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(GLFW.GLFW_KEY_C, false);
-    }
-
     @Override
     public void drawGui(Vector2i windowSize, MouseKeyboardController mouseKeyboardController) {
         if (WBench.get().getMapProjectManager().getCurrentMapProject() == null) {
@@ -132,7 +124,7 @@ public class MapEditorInterface implements DearUIInterface {
             ImGui.showDemoWindow();
         }
 
-        if (MapEditorInterface.ctrlS()) {
+        if (ProjectUIUtils.ctrlS()) {
             WBench.get().getMapProjectManager().saveMapProject(false);
             Log.get().info("Saved...");
         }
@@ -149,7 +141,7 @@ public class MapEditorInterface implements DearUIInterface {
         }
 
         ImGui.beginMainMenuBar();
-        if (ImGui.beginMenu("WBenchMapProject")) {
+        if (ImGui.beginMenu("Map Project")) {
             if (ImGui.menuItem("Run Map InGame")) {
                 JGems3D.IsolatedProcessLauncher.EXEC(JGemsLaunchArgsRegistry.getArgumentFrom(
                         new Pair<>(JGemsLaunchArgsRegistry.JGemsLaunchArgs.MAP_TEST, "true"),
@@ -426,7 +418,7 @@ public class MapEditorInterface implements DearUIInterface {
         }
     }
 
-    private void consoleContent() {
+    public static void consoleContent() {
         String[] textLines = LoggingManager.consoleText().split("\n");
         for (String s : textLines) {
             if (s.isEmpty()) {
@@ -513,23 +505,23 @@ public class MapEditorInterface implements DearUIInterface {
         return this.selectedScene;
     }
 
-    public ContextComponent getContextComponent() {
+    public ContextComponentM getContextComponent() {
         return this.contextComponent;
     }
 
-    public ActionsInterfaceComponent getActionsContent() {
+    public ActionsInterfaceComponentM getActionsContent() {
         return this.actionsContent;
     }
 
-    public ItemsInterfaceComponent getItemsComponent() {
+    public ItemsInterfaceComponentM getItemsComponent() {
         return this.itemsComponent;
     }
 
-    public ResourcesInterfaceComponent getResourcesComponent() {
+    public ResourcesInterfaceComponentM getResourcesComponent() {
         return this.resourcesComponent;
     }
 
-    public SceneInterfaceComponent getSceneComponent() {
+    public SceneInterfaceComponentM getSceneComponent() {
         return this.sceneComponent;
     }
 

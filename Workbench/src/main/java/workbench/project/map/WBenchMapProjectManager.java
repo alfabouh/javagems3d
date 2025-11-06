@@ -325,7 +325,7 @@ public final class WBenchMapProjectManager {
             this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
             this.destroyLocalResources(this.getCurrentMapProject());
             this.currentMapProject = null;
-            Log.get().info("WBenchMapProject successfully closed");
+            Log.get().info("Map successfully closed");
         }
     }
 

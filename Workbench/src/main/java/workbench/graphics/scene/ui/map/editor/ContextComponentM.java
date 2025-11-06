@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class ContextComponent {
+public class ContextComponentM {
     private final MapEditorInterface mapEditorInterface;
     private boolean cameraCheckBox;
     private boolean openEnvironmentFogSettings;
@@ -31,7 +31,7 @@ public class ContextComponent {
     private boolean openProjectSettings;
     private final FixedCamera sunCamera;
 
-    public ContextComponent(MapEditorInterface mapEditorInterface) {
+    public ContextComponentM(MapEditorInterface mapEditorInterface) {
         this.mapEditorInterface = mapEditorInterface;
         this.sunCamera = new FixedCamera(new Vector3f(), new Vector3f());
         this.clear();
@@ -50,7 +50,7 @@ public class ContextComponent {
 
         WBenchEnvironment environment = this.getEditorInterface().getOpenGLRenderer().getWorld().getEnvironment();
         if (this.isOpenEnvironmentShadowsSettings()) {
-            if (!ContextComponent.openWindow("Shadows", (e) -> {
+            if (!ContextComponentM.openWindow("Shadows", (e) -> {
                 float[] shadowSplits = new float[] {environment.getShadowScene().getSunLightShadow().getCascadeSplits().x, environment.getShadowScene().getSunLightShadow().getCascadeSplits().y, 0.0f};
                 if (ImGui.dragFloat2("Cascade Splits", shadowSplits, 0.01f, 0.0f, 5.0f)) {
                     environment.getShadowScene().getSunLightShadow().setCascadeSplits(new Vector3f(shadowSplits));
@@ -67,7 +67,7 @@ public class ContextComponent {
         }
 
         if (this.isOpenEnvironmentFogSettings()) {
-            if (!ContextComponent.openWindow("Fog", (e) -> {
+            if (!ContextComponentM.openWindow("Fog", (e) -> {
                 float[] fogIntensity = new float[] {JGemsHelper.math().clamp(environment.getFogScene().getFogDensity(), 0.0f, 1.0f)};
                 if (ImGui.dragFloat("Fog Intensity", fogIntensity, 1.0e-6f, 0.0f, 1.0f, "%.6f")) {
                     environment.getFogScene().setFogDensity(fogIntensity[0]);
@@ -88,7 +88,7 @@ public class ContextComponent {
         }
 
         if (this.isOpenEnvironmentSkySettings()) {
-            if (!ContextComponent.openWindow("SkyBox", (e) -> {
+            if (!ContextComponentM.openWindow("SkyBox", (e) -> {
                 ImGui.text("Sun");
 
                 if (ImGui.checkbox("Sun's View", this.isCameraCheckBox())) {
@@ -153,7 +153,7 @@ public class ContextComponent {
         }
 
         if (this.isOpenProjectSettings()) {
-            if (!ContextComponent.openWindow("WBenchMapProject", (e) -> {
+            if (!ContextComponentM.openWindow("WBenchMapProject", (e) -> {
                 ImGui.text("Map Size");
             })) {
                 this.setOpenProjectSettings(false);

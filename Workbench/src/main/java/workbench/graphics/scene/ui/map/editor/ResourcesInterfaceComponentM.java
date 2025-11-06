@@ -22,6 +22,7 @@ import org.joml.Vector3f;
 import workbench.WBench;
 import workbench.graphics.objects.WBenchPointLightObject;
 import workbench.graphics.objects.templates.WBenchObjectTemplate;
+import workbench.graphics.scene.ui.ProjectUIUtils;
 import workbench.graphics.scene.ui.map.MapEditorInterface;
 import workbench.project.map.ProjectMapObjectTemplates;
 import workbench.project.map.WBenchMapProject;
@@ -34,13 +35,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ResourcesInterfaceComponent {
+public class ResourcesInterfaceComponentM {
     private static JGemsScriptingDocs scriptingDocs;
     private static CodeMode currentCodeMode;
 
     static {
-        ResourcesInterfaceComponent.scriptingDocs = new JGemsScriptingDocs();
-        ResourcesInterfaceComponent.currentCodeMode = CodeMode.CODE;
+        ResourcesInterfaceComponentM.scriptingDocs = new JGemsScriptingDocs();
+        ResourcesInterfaceComponentM.currentCodeMode = CodeMode.CODE;
     }
 
     enum CodeMode {
@@ -53,7 +54,7 @@ public class ResourcesInterfaceComponent {
     private final ImString newScriptName = new ImString(64);
     private String scriptTextTemplate;
 
-    public ResourcesInterfaceComponent(MapEditorInterface mapEditorInterface) {
+    public ResourcesInterfaceComponentM(MapEditorInterface mapEditorInterface) {
         this.currentSelectedScript = new ImInt(-1);
         this.mapEditorInterface = mapEditorInterface;
         this.clear();
@@ -163,15 +164,15 @@ public class ResourcesInterfaceComponent {
                 ImGui.setNextWindowPos(wSize.x / 2.0f - wSize.x / 4.0f, wSize.y / 2.0f - wSize.y / 4.0f, ImGuiCond.Appearing);
                 ImGui.setNextWindowSize(wSize.x / 2.0f, wSize.y / 2.0f);
                 ImBoolean scriptingOpened = new ImBoolean(true);
-                boolean shouldSave = MapEditorInterface.ctrlS();
+                boolean shouldSave = ProjectUIUtils.ctrlS();
                 if (ImGui.begin("Scripting", scriptingOpened, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.MenuBar)) {
                     if (ImGui.beginMenuBar()) {
                         if (ImGui.beginMenu("View")) {
-                            if (ImGui.selectable("Code", ResourcesInterfaceComponent.currentCodeMode == CodeMode.CODE)) {
-                                ResourcesInterfaceComponent.currentCodeMode = CodeMode.CODE;
+                            if (ImGui.selectable("Code", ResourcesInterfaceComponentM.currentCodeMode == CodeMode.CODE)) {
+                                ResourcesInterfaceComponentM.currentCodeMode = CodeMode.CODE;
                             }
-                            if (ImGui.selectable("Documentary", ResourcesInterfaceComponent.currentCodeMode == CodeMode.DOC)) {
-                                ResourcesInterfaceComponent.currentCodeMode = CodeMode.DOC;
+                            if (ImGui.selectable("Documentary", ResourcesInterfaceComponentM.currentCodeMode == CodeMode.DOC)) {
+                                ResourcesInterfaceComponentM.currentCodeMode = CodeMode.DOC;
                             }
                             ImGui.endMenu();
                         }
@@ -203,7 +204,7 @@ public class ResourcesInterfaceComponent {
                 if (!scriptingOpened.get()) {
                     this.currentSelectedScript.set(-1);
                 }
-                switch (ResourcesInterfaceComponent.currentCodeMode) {
+                switch (ResourcesInterfaceComponentM.currentCodeMode) {
                     case CODE: {
                         this.getEditorInterface().getEditor().render("TextEditor");
                         break;
@@ -226,7 +227,7 @@ public class ResourcesInterfaceComponent {
         ImGui.separator();
         ImGui.treePush();
 
-        for (JGemsScriptingDocs.ClassDesc classDesc : ResourcesInterfaceComponent.scriptingDocs.getTypes()) {
+        for (JGemsScriptingDocs.ClassDesc classDesc : ResourcesInterfaceComponentM.scriptingDocs.getTypes()) {
             if (classDesc.parent() != null && !classDesc.parent().equals("Object")) {
                 ImGui.pushStyleColor(ImGuiCol.Text, 0xffffffc1);
                 ImGui.textWrapped(classDesc.parent() + " ->");
@@ -429,7 +430,7 @@ public class ResourcesInterfaceComponent {
             for (APIScriptingFunction apiScriptingFunction : APIScriptsListing.getAllFunctions()) {
                 identifiers.put(apiScriptingFunction.getName(), apiScriptingFunction.getDescription());
             }
-            for (JGemsScriptingDocs.ClassDesc classDesc : ResourcesInterfaceComponent.scriptingDocs.getTypes()) {
+            for (JGemsScriptingDocs.ClassDesc classDesc : ResourcesInterfaceComponentM.scriptingDocs.getTypes()) {
                 identifiers.put(classDesc.classSimpleName(), classDesc.description());
                 identifiers.put(classDesc.classVarName(), classDesc.description());
                 for (JGemsScriptingDocs.MethodDesc methodDesc : classDesc.getMethods()) {
