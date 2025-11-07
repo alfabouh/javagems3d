@@ -8,6 +8,7 @@ import javagems3d.system.service.json.JSONFileManaging;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import workbench.WBench;
 import workbench.graphics.scene.renderer.WBenchOpenGLRenderer;
@@ -35,6 +36,7 @@ public class WBenchGameProjectManager {
     public boolean crateGameProject(JGemsPath absPath, JGemsPath path, String name) {
         try {
             WBenchGameProject wBenchGameProject = new WBenchGameProject(JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.GAME_DATA_VERSION, name);
+            wBenchGameProject.init();
             this.createGameSystemFiles(absPath, name);
             this.setCurrentProject(path, wBenchGameProject);
             this.saveGameProjectFile();
@@ -53,7 +55,7 @@ public class WBenchGameProjectManager {
 
     //TODO
     public void readGameProject() {
-        this.refreshMapsFolderData();
+        this.refreshAllGameFiles();
     }
 
     //TODO
@@ -61,14 +63,22 @@ public class WBenchGameProjectManager {
         this.saveGameProjectFile();
     }
 
+    public void refreshAllGameFiles() {
+        this.refreshMapsFolderData();
+    }
+
     public void refreshMapsFolderData() {
-        String absPath = this.getCurrentGameProject().getCurrentProjectPath().getFullPath() + "/maps";
-        Iterator<String> stringIterator = this.getCurrentGameProject().getMaps().iterator();
-        while (stringIterator.hasNext()) {
-            String s = stringIterator.next();
-            if (!(new File(absPath, s)).exists()) {
-                Log.get().warn("Couldn't find: " + s);
-                stringIterator.remove();
+        this.getCurrentGameProject().getMaps().clear();
+        String absPath = this.getCurrentGameProject().getCurrentProjectPath().getDirectory().getFullPath() + "/maps";
+        Log.get().debug("Looking in... " + absPath);
+        File[] files = new File(absPath).listFiles();
+        if (files != null) {
+            for (File file : files) {
+                final String mapName = file.getName();
+                File mapFile = new File(file, mapName + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE);
+                if (mapFile.exists()) {
+                    this.getCurrentGameProject().getMaps().add(mapName);
+                }
             }
         }
     }
@@ -104,6 +114,7 @@ public class WBenchGameProjectManager {
             if (wBenchGameProject == null) {
                 return false;
             }
+            wBenchGameProject.init();
             wBenchGameProject.checkVersion();
 
             this.createGameSystemFiles(path, wBenchGameProject.getGameTitle());
@@ -126,10 +137,11 @@ public class WBenchGameProjectManager {
         }
     }
 
-    public WBenchGameProject readMainFile(JGemsPath path) {
+    public WBenchGameProject readMainFile(@NotNull JGemsPath path) {
         try {
             JSONFileManaging jsonFileManaging = JSONFileManaging.create();
             WBenchGameProject wBenchGameProject = jsonFileManaging.readFromFile(new File(path.toString()), WBenchGameProject.class, null);
+            wBenchGameProject.init();
             this.setCurrentProject(path, wBenchGameProject);
             return wBenchGameProject;
         } catch (JGemsIOException | JsonSyntaxException e) {
@@ -158,6 +170,10 @@ public class WBenchGameProjectManager {
         if (currentGameProject != null) {
             currentGameProject.setCurrentProjectPath(path);
         }
+    }
+
+    public JGemsPath getMapsPath() {
+        return new JGemsPath(this.getCurrentGameProject().getCurrentProjectPath().getDirectory(), WBenchGameProjectManager.MAPS_PATH);
     }
 
     public WBenchGameProject getCurrentGameProject() {

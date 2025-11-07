@@ -152,7 +152,7 @@ public final class WBench {
                 Log.get().exception(e);
             }
             JGemsLaunchArgsRegistry.clear();
-            WBench.get().getMapProjectManager().closeMapProject();
+            WBench.get().getMapProjectManager().closeMapProject(false);
             WBench.get().getResourceManager().destroy();
             LoadingInterfaceSwing.dispose();
             JGemsAPI.get().close();

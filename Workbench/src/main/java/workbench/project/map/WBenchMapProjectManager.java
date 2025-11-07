@@ -74,10 +74,6 @@ public final class WBenchMapProjectManager {
             this.saveMapProjectFile();
             Log.get().debug("Created WBenchMapProject: " + wBenchMapProject + ". Path: " + path + " (" + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE + ")");
 
-            this.initLocalResources(wBenchMapProject);
-            this.initWorkingSpace(WBenchOpenGLRenderer.getMapEditorInterface());
-            LoadingInterfaceSwing.dispose();
-
             return true;
         } catch (JGemsIOException e) {
             LoggingManager.showExceptionDialog("Internal error! Couldn't create object!\n" + e.getMessage());
@@ -319,10 +315,13 @@ public final class WBenchMapProjectManager {
         scripts.mkdirs();
     }
 
-    public void closeMapProject() {
+    public void closeMapProject(boolean save) {
         if (this.getCurrentMapProject() != null) {
             Log.get().info("Closing project " + this.getCurrentMapProject());
-            this.closeWorkingSpace(WBenchOpenGLRenderer.getProjectInterface());
+            if (save) {
+                this.saveMapProject(true);
+            }
+            this.closeWorkingSpace(WBenchOpenGLRenderer.getGameEditorInterface());
             this.destroyLocalResources(this.getCurrentMapProject());
             this.currentMapProject = null;
             Log.get().info("Map successfully closed");

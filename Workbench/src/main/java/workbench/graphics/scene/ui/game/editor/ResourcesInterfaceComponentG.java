@@ -6,8 +6,13 @@ import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
 import javagems3d.JGems3D;
 import javagems3d.system.service.path.JGemsPath;
+import logger.Log;
+import logger.managers.LoggingManager;
 import workbench.WBench;
 import workbench.project.game.WBenchGameProjectManager;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class ResourcesInterfaceComponentG {
     private CreateMapContext createMapContext;
@@ -48,10 +53,11 @@ public class ResourcesInterfaceComponentG {
 
                 if (this.createMapContext.errTest == null)  {
                     final String mapNameFile = name + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE;
-                    final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectPath(), WBenchGameProjectManager.MAPS_PATH, name);
-                    WBench.get().getMapProjectManager().createMapProject(new JGemsPath(WBench.get().getGameProjectManager().getCurrentGameProject().getCurrentProjectPath(), WBenchGameProjectManager.MAPS_PATH, name), new JGemsPath(absPath, mapNameFile), name);
-                    WBench.get().getGameProjectManager().getCurrentGameProject().getMaps().add(name + "/" + mapNameFile);
-                    WBench.get().getGameProjectManager().saveGameProject(true);
+                    final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), name);
+                    if (WBench.get().getMapProjectManager().createMapProject(absPath, new JGemsPath(absPath, mapNameFile), name)) {
+                        WBench.get().getGameProjectManager().getCurrentGameProject().getMaps().add(name);
+                        WBench.get().getGameProjectManager().saveGameProject(true);
+                    }
                     ImGui.closeCurrentPopup();
                 }
             }
@@ -61,7 +67,6 @@ public class ResourcesInterfaceComponentG {
             }
             ImGui.endPopup();
         }
-
         if (ImGui.button("Refresh")) {
             WBench.get().getGameProjectManager().refreshMapsFolderData();
         }
@@ -79,9 +84,18 @@ public class ResourcesInterfaceComponentG {
             if (WBench.get().getGameProjectManager().getCurrentGameProject().getMaps().isEmpty()) {
                 ImGui.text("<Empty>");
             } else {
-                for (String mapProject : WBench.get().getGameProjectManager().getCurrentGameProject().getMaps()) {
+                for (String mapProject : new ArrayList<>(WBench.get().getGameProjectManager().getCurrentGameProject().getMaps())) {
                     if (ImGui.selectable(mapProject)) {
-                        System.out.println(mapProject);
+                        final JGemsPath pathToMap = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), mapProject);
+                        File file = new File(pathToMap.getFullPath());
+                        if (!file.exists()) {
+                            final String err = "Couldn't open file: " + mapProject;
+                            Log.get().error(err);
+                            LoggingManager.showExceptionDialog(err);
+                        } else {
+                            WBench.get().getMapProjectManager().openMapProject(pathToMap);
+                        }
+                        WBench.get().getGameProjectManager().refreshMapsFolderData();
                     }
                 }
             }

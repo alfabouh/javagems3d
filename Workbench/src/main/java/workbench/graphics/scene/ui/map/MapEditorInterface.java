@@ -160,7 +160,7 @@ public class MapEditorInterface implements DearUIInterface {
            // }
             if (ImGui.menuItem("Exit")) {
                 if (LoggingManager.showConfirmationWindowDialog("Are you sure?")) {
-                    WBench.get().getMapProjectManager().closeMapProject();
+                    WBench.get().getMapProjectManager().closeMapProject(true);
                     ImGui.endMenu();
                     ImGui.endMainMenuBar();
                     return;
