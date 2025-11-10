@@ -46,7 +46,7 @@ public class WBenchGameProjectManager {
 
             return true;
         } catch (JGemsIOException e) {
-            LoggingManager.showExceptionDialog("Internal error! Couldn't create object\n" + e.getMessage());
+            LoggingManager.showExceptionDialog("Internal error! Couldn't create object", e);
             Log.get().exception(e);
             this.setCurrentProject(null, null);
             return false;
@@ -129,7 +129,7 @@ public class WBenchGameProjectManager {
             return true;
         } catch (JGemsIOException e) {
             this.currentGameProject = null;
-            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!\n" + e.getMessage());
+            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!", e);
             Log.get().exception(e);
             return false;
         } finally {
@@ -145,7 +145,7 @@ public class WBenchGameProjectManager {
             this.setCurrentProject(path, wBenchGameProject);
             return wBenchGameProject;
         } catch (JGemsIOException | JsonSyntaxException e) {
-            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!\n" + e.getMessage());
+            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!", e);
             Log.get().exception(e);
             return null;
         }

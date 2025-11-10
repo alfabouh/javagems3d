@@ -7,12 +7,16 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -38,7 +42,26 @@ public abstract class LoggingManager {
         return JGemsLogging.consoleText.toString();
     }
 
-    public static void showExceptionDialog(String msg) {
+    private static void appendException(StringBuilder err, Exception ex) {
+        err.append(ex.getClass().getSimpleName());
+        String message = ex.getMessage();
+        if (message != null && !message.isEmpty()) {
+            err.append(": ").append(message);
+        }
+        err.append(System.lineSeparator());
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        if (stackTrace != null && stackTrace.length > 0) {
+            StackTraceElement element = stackTrace[0];
+            err.append("-> ").append(element.getClassName()).append(".").append(element.getMethodName()).append("(").append(element.getFileName()).append(":").append(element.getLineNumber()).append(")").append(System.lineSeparator());
+        }
+        err.append(System.lineSeparator());
+    }
+
+    public static void showExceptionDialog(@Nullable String msg, @NotNull Exception exception) {
+        LoggingManager.showExceptionDialog(msg, new ArrayList<Exception>() {{ add(exception); }});
+    }
+
+    public static void showExceptionDialog(@Nullable String msg, @NotNull ArrayList<Exception> exceptions) {
         JButton openLogFolderButton = new JButton("Open logs");
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
@@ -53,10 +76,26 @@ public abstract class LoggingManager {
         });
 
         JTextArea textArea = new JTextArea(10, 50);
+        textArea.setFont(new Font("Arial", Font.BOLD, 12));
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<html>");
+        if (msg != null) {
+            stringBuilder.append("<p style='color: black;'>");
+            stringBuilder.append(msg);
+            stringBuilder.append("</p>\n\n");
+        }
+        for (Exception e : exceptions) {
+            stringBuilder.append("<p style='color: red;'>");
+            LoggingManager.appendException(stringBuilder, e);
+            stringBuilder.append("</p>");
+        }
+        stringBuilder.append("</html>");
+
         textArea.setEditable(false);
-        textArea.setText(msg);
+        textArea.setText(stringBuilder.toString());
         textArea.setWrapStyleWord(true);
         textArea.setLineWrap(true);
+        textArea.setBackground(Color.LIGHT_GRAY);
         textArea.setCaretPosition(0);
 
         JScrollPane scrollPane = new JScrollPane(textArea);

@@ -33,7 +33,7 @@ public class Graph implements Serializable {
             fileWriter.write(json);
         } catch (IOException e) {
             Log.get().exception(e);
-            LoggingManager.showExceptionDialog("Couldn't save NavMesh");
+            LoggingManager.showExceptionDialog("Couldn't save NavMesh", e);
         }
     }
 

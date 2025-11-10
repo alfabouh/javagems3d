@@ -5,6 +5,7 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
 import javagems3d.JGems3D;
+import javagems3d.system.service.exceptions.JGemsIOException;
 import javagems3d.system.service.path.JGemsPath;
 import logger.Log;
 import logger.managers.LoggingManager;
@@ -84,19 +85,21 @@ public class ResourcesInterfaceComponentG {
             if (WBench.get().getGameProjectManager().getCurrentGameProject().getMaps().isEmpty()) {
                 ImGui.text("<Empty>");
             } else {
-                for (String mapProject : new ArrayList<>(WBench.get().getGameProjectManager().getCurrentGameProject().getMaps())) {
-                    if (ImGui.selectable(mapProject)) {
-                        final JGemsPath pathToMap = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), mapProject);
-                        File file = new File(pathToMap.getFullPath());
-                        if (!file.exists()) {
-                            final String err = "Couldn't open file: " + mapProject;
-                            Log.get().error(err);
-                            LoggingManager.showExceptionDialog(err);
-                        } else {
+                try {
+                    for (String mapProject : new ArrayList<>(WBench.get().getGameProjectManager().getCurrentGameProject().getMaps())) {
+                        if (ImGui.selectable(mapProject)) {
+                            final JGemsPath pathToMap = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), mapProject);
+                            File file = new File(pathToMap.getFullPath());
+                            if (!file.exists()) {
+                                throw new JGemsIOException("Couldn't open file: " + mapProject);
+                            }
                             WBench.get().getMapProjectManager().openMapProject(pathToMap);
+                            WBench.get().getGameProjectManager().refreshMapsFolderData();
                         }
-                        WBench.get().getGameProjectManager().refreshMapsFolderData();
                     }
+                } catch (JGemsIOException e) {
+                    Log.get().exception(e);
+                    LoggingManager.showExceptionDialog("Error!", e);
                 }
             }
             ImGui.treePop();

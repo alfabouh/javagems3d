@@ -106,7 +106,7 @@ public final class JGems3D {
             JGems3D.mainObject = new JGems3D();
             JGems3D.LAUNCH_ARGS_RESOLVE(argsRegistry);
         } catch (JGemsRuntimeException e) {
-            LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!\n\n" + e.getMessage());
+            LoggingManager.showExceptionDialog("Where was an error, while creating an application instance!", e);
             Log.get().exception(e);
             return;
         }
@@ -149,7 +149,7 @@ public final class JGems3D {
             JGems3D.get().getCore().startSystem();
         } catch (Exception e) {
             Log.get().exception(e);
-            JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
+            JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.", e);
         }
     }
 

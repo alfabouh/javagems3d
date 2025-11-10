@@ -26,9 +26,7 @@ import logger.managers.JGemsLogging;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public final class JGemsCore implements ICore {
     public static final String ENG_FILEPATH = "jgems3d";
@@ -146,13 +144,13 @@ public final class JGemsCore implements ICore {
 
     @SuppressWarnings("all")
     public void startSystem() {
+        final ArrayList<Exception> exceptionList = new ArrayList<>();
         JGemsCore.printSystemInfo();
         if (this.engineState().isEngineIsReady()) {
             Log.get().warn("Engine thread is currently running");
             return;
         }
         this.systemThread = new Thread(() -> {
-            StringBuilder err = new StringBuilder();
             try {
                 JGemsAPI.APIAppData().preInit(this);
                 JGems3D.get().getLocalisation().setLanguage(JGems3D.get().getGameSettings().language.getCurrentLanguage());
@@ -174,7 +172,7 @@ public final class JGemsCore implements ICore {
                 }
             } catch (Exception e) {
                 JGems3D.close(null);
-                this.appendException(err, e);
+                exceptionList.add(e);
                 Log.get().exception(e);
             } finally {
                 try {
@@ -194,42 +192,17 @@ public final class JGemsCore implements ICore {
                     JGemsAPI.get().close();
                     Log.get().debug("END");
                 } catch (Exception e) {
-                    this.appendException(err, e);
+                    exceptionList.add(e);
                     Log.get().exception(e);
                 } finally {
-                    String mss = err.toString();
-                    if (!mss.isEmpty()) {
-                        this.collectExceptions(err);
-                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.\n\n" + mss);
+                    if (!exceptionList.isEmpty()) {
+                        JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder to find out the details.", exceptionList);
                     }
                 }
             }
         });
         this.systemThread.setName("system");
         this.systemThread.start();
-    }
-
-    private void appendException(StringBuilder err, Exception ex) {
-        err.append(ex.getClass().getSimpleName());
-        String message = ex.getMessage();
-        if (message != null && !message.isEmpty()) {
-            err.append(": ").append(message);
-        }
-        err.append(System.lineSeparator());
-        StackTraceElement[] stackTrace = ex.getStackTrace();
-        if (stackTrace != null && stackTrace.length > 0) {
-            StackTraceElement element = stackTrace[0];
-            err.append("-> ").append(element.getClassName()).append(".").append(element.getMethodName()).append("(").append(element.getFileName()).append(":").append(element.getLineNumber()).append(")").append(System.lineSeparator()).append(System.lineSeparator());
-        }
-    }
-
-    private void collectExceptions(StringBuilder err) {
-        Iterator<Exception> iterator = this.getExceptionsBuffer().iterator();
-        while (iterator.hasNext()) {
-            Exception ex = iterator.next();
-            this.appendException(err, ex);
-            iterator.remove();
-        }
     }
 
     public void addExceptionInTrace(Exception e) {

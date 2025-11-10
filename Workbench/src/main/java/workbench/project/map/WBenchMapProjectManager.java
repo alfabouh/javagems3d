@@ -76,7 +76,7 @@ public final class WBenchMapProjectManager {
 
             return true;
         } catch (JGemsIOException e) {
-            LoggingManager.showExceptionDialog("Internal error! Couldn't create object!\n" + e.getMessage());
+            LoggingManager.showExceptionDialog("Internal error! Couldn't create object!", e);
             Log.get().exception(e);
             this.setCurrentProject(null, null);
             return false;
@@ -295,7 +295,7 @@ public final class WBenchMapProjectManager {
                 this.saveMapProjectFile();
             } catch (Exception e) {
                 Log.get().exception(e);
-                LoggingManager.showExceptionDialog("Where was an error, while saving map!\n\n" + e.getMessage());
+                LoggingManager.showExceptionDialog("Where was an error, while saving map!", e);
             } finally {
                 executorService.shutdown();
             }
@@ -362,7 +362,7 @@ public final class WBenchMapProjectManager {
                 this.destroyLocalResources(this.getCurrentMapProject());
                 this.currentMapProject = null;
             }
-            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!\n" + e.getMessage());
+            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!", e);
             Log.get().exception(e);
             return false;
         } finally {
@@ -377,7 +377,7 @@ public final class WBenchMapProjectManager {
             this.setCurrentProject(path, wBenchMapProject);
             return wBenchMapProject;
         } catch (JGemsIOException | JsonSyntaxException e) {
-            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!\n" + e.getMessage());
+            LoggingManager.showExceptionDialog("Internal error! Couldn't open project!", e);
             Log.get().exception(e);
             return null;
         }

@@ -144,7 +144,7 @@ public final class WBench {
 
         } catch (Exception e) {
             Log.get().exception(e);
-            JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.");
+            JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.", e);
         } finally {
             try {
                 WBenchSettings.save(WBench.get().getSettings(), new JGemsPath(WBench.getFilesFolder()));
