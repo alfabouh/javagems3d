@@ -50,9 +50,10 @@ public abstract class LoggingManager {
         }
         err.append(System.lineSeparator());
         StackTraceElement[] stackTrace = ex.getStackTrace();
-        if (stackTrace != null && stackTrace.length > 0) {
-            StackTraceElement element = stackTrace[0];
-            err.append("-> ").append(element.getClassName()).append(".").append(element.getMethodName()).append("(").append(element.getFileName()).append(":").append(element.getLineNumber()).append(")").append(System.lineSeparator());
+        if (stackTrace != null) {
+            for (StackTraceElement stackTraceElement : stackTrace) {
+                err.append("-> ").append(stackTraceElement.getClassName()).append(".").append(stackTraceElement.getMethodName()).append("(").append(stackTraceElement.getFileName()).append(":").append(stackTraceElement.getLineNumber()).append(")").append(System.lineSeparator());
+            }
         }
         err.append(System.lineSeparator());
     }
@@ -76,20 +77,11 @@ public abstract class LoggingManager {
         });
 
         JTextArea textArea = new JTextArea(10, 50);
-        textArea.setFont(new Font("Arial", Font.BOLD, 12));
+        textArea.setFont(new Font("Arial", Font.BOLD, 14));
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<html>");
-        if (msg != null) {
-            stringBuilder.append("<p style='color: black;'>");
-            stringBuilder.append(msg);
-            stringBuilder.append("</p>\n\n");
-        }
         for (Exception e : exceptions) {
-            stringBuilder.append("<p style='color: red;'>");
             LoggingManager.appendException(stringBuilder, e);
-            stringBuilder.append("</p>");
         }
-        stringBuilder.append("</html>");
 
         textArea.setEditable(false);
         textArea.setText(stringBuilder.toString());
@@ -97,10 +89,17 @@ public abstract class LoggingManager {
         textArea.setLineWrap(true);
         textArea.setBackground(Color.LIGHT_GRAY);
         textArea.setCaretPosition(0);
+        textArea.setForeground(Color.RED);
 
         JScrollPane scrollPane = new JScrollPane(textArea);
 
         JPanel contentPanel = new JPanel(new BorderLayout());
+        if (msg != null) {
+            final JLabel label = new JLabel("<html>" + msg + "</html>");
+            label.setFont(new Font("Arial", Font.BOLD, 14));
+            label.setForeground(Color.BLACK);
+            contentPanel.add(label, BorderLayout.NORTH);
+        }
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();

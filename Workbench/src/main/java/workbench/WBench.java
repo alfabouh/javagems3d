@@ -141,7 +141,6 @@ public final class WBench {
             WBench.get().getScreen().createScreenAndContext();
             WBench.get().getScreen().createObjects(WBench.get().getScreen().getWindow());
             WBench.get().getScreen().runRenderThread();
-
         } catch (Exception e) {
             Log.get().exception(e);
             JGemsLogging.showExceptionDialog("An exception occurred inside the system. Open the logs folder for details.", e);

@@ -3,6 +3,7 @@ package workbench.graphics.scene.ui.game.editor;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImString;
 import javagems3d.JGems3D;
 import javagems3d.system.service.exceptions.JGemsIOException;
@@ -37,7 +38,7 @@ public class ResourcesInterfaceComponentG {
             ImGui.inputText("##mapName", this.createMapContext.getMapNamePopup());
 
             if (this.createMapContext.errTest != null) {
-                ImGui.pushStyleColor(ImGuiCol.Text,0xff0000ff);
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xff0000ff);
                 ImGui.text(this.createMapContext.errTest);
                 ImGui.popStyleColor();
             }
@@ -52,7 +53,7 @@ public class ResourcesInterfaceComponentG {
                     this.createMapContext.errTest = "Use valid symbols!";
                 }
 
-                if (this.createMapContext.errTest == null)  {
+                if (this.createMapContext.errTest == null) {
                     final String mapNameFile = name + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_PROJECT_FILE;
                     final JGemsPath absPath = new JGemsPath(WBench.get().getGameProjectManager().getMapsPath(), name);
                     if (WBench.get().getMapProjectManager().createMapProject(absPath, new JGemsPath(absPath, mapNameFile), name)) {
@@ -71,13 +72,23 @@ public class ResourcesInterfaceComponentG {
         if (ImGui.button("Refresh")) {
             WBench.get().getGameProjectManager().refreshMapsFolderData();
         }
-        if (ImGui.button("Create New")) {
+        ImGui.sameLine();
+        if (ImGui.button("Create")) {
             this.createMapContext.clear();
             ImGui.openPopup("NewMapPopup");
         }
         ImGui.sameLine();
-        if (ImGui.button("Import")) {
-
+        if (ImGui.button("Open Folder")) {
+            try {
+                File folder = new File(WBench.get().getGameProjectManager().getMapsPath().getFullPath());
+                if (folder.exists()) {
+                    java.awt.Desktop.getDesktop().open(folder);
+                } else {
+                    Log.get().error("Folder not found: " + folder.getAbsolutePath());
+                }
+            } catch (Exception e) {
+                Log.get().error("Failed to open folder: " + e.getMessage());
+            }
         }
         ImGui.separator();
         ImGui.treePush();
