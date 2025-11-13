@@ -132,6 +132,6 @@ public class WBenchMapProject extends MapProjectData {
     }
 
     public String toString() {
-        return this.getProjectName() + " - " + this.getVersion();
+        return this.getMapName() + " - " + this.getVersion();
     }
 }

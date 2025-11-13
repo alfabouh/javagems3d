@@ -289,7 +289,7 @@ public final class WBenchMapProjectManager {
                 jsonFileManaging.setMatch(MapObjectsDataPack.class, mapObjectsDataPack.getSerializationRules());
                 mapObjectsDataPack.set(fogData, sunData, objectsData, skyData, shadowsData);
 
-                final String mapDataFile = this.getCurrentMapProject().getProjectName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_FILE;
+                final String mapDataFile = this.getCurrentMapProject().getMapName() + JGems3D.DEFAULT_WORKBENCH_PROJECT_CONSTANTS.MAPPING_DATA_FILE;
                 this.getCurrentMapProject().setMapDataFile(mapDataFile);
                 jsonFileManaging.writeToFile(mapObjectsDataPack, new File(this.getCurrentMapProject().getCurrentProjectPath().getDirectory().getFullPath(), mapDataFile), null);
                 this.saveMapProjectFile();
@@ -347,9 +347,9 @@ public final class WBenchMapProjectManager {
             }
             wBenchMapProject.checkVersion();
 
-            this.createMapSystemFiles(path, wBenchMapProject.getProjectName());
+            this.createMapSystemFiles(path, wBenchMapProject.getMapName());
             Log.get().info("Opened WBenchMapProject: " + wBenchMapProject);
-            Log.get().info(wBenchMapProject.getInformation());
+            Log.get().info(wBenchMapProject.getMapDescription());
 
             this.initLocalResources(wBenchMapProject);
             LoadingInterfaceSwing.setResource("JSON Processing...");

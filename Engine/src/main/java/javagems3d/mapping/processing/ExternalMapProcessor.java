@@ -292,12 +292,12 @@ public abstract class ExternalMapProcessor extends MapProcessor {
 
     @Override
     public final @NotNull String getMapName() {
-        return this.getProjectData().getProjectName();
+        return this.getProjectData().getMapName();
     }
 
     @Override
     public final @NotNull String getMapInformation() {
-        return this.getProjectData().getInformation();
+        return this.getProjectData().getMapDescription();
     }
 
     protected MapProjectData getProjectData() {
